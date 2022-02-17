@@ -74,7 +74,7 @@ public class ReferencedAppendRectangularRoiAlgorithm extends JIPipeIteratingAlgo
         ImagePlus reference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
         Rectangle bounds = new Rectangle(0, 0, reference.getWidth(), reference.getHeight());
         for (Margin margin : rectangles) {
-            currentData.add(new ShapeRoi(margin.apply(bounds)));
+            currentData.add(new ShapeRoi(margin.getInsideArea(bounds)));
         }
         dataBatch.addOutputData(getFirstOutputSlot(), currentData, progressInfo);
     }

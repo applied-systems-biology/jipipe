@@ -76,7 +76,7 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus img = inputData.getImage();
 
         Rectangle imageArea = new Rectangle(0, 0, img.getWidth(), img.getHeight());
-        Rectangle cropped = roi.apply(imageArea);
+        Rectangle cropped = roi.getInsideArea(imageArea);
         if (cropped == null || cropped.width == 0 || cropped.height == 0) {
             throw new UserFriendlyRuntimeException(new NullPointerException("Cropped rectangle is null or empty!"),
                     "Cropped rectangle is empty!",

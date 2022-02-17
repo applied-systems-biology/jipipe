@@ -75,7 +75,7 @@ public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgo
 
         ROIListData currentData = new ROIListData();
         for (Margin margin : rectangles) {
-            Rectangle rectangle = margin.apply(boundaries);
+            Rectangle rectangle = margin.getInsideArea(boundaries);
             currentData.add(new ShapeRoi(rectangle));
             if (split) {
                 getFirstOutputSlot().addData(currentData, progressInfo);

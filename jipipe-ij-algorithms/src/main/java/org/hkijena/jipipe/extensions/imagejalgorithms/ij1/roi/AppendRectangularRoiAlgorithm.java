@@ -68,7 +68,7 @@ public class AppendRectangularRoiAlgorithm extends JIPipeSimpleIteratingAlgorith
         ROIListData currentData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate();
         Rectangle bounds = currentData.getBounds();
         for (Margin margin : rectangles) {
-            currentData.add(new ShapeRoi(margin.apply(bounds)));
+            currentData.add(new ShapeRoi(margin.getInsideArea(bounds)));
         }
         dataBatch.addOutputData(getFirstOutputSlot(), currentData, progressInfo);
     }

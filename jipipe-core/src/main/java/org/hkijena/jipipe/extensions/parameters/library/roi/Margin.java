@@ -25,13 +25,12 @@ import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import java.awt.*;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Function;
 
 /**
  * Parameter that allows users to define a rectangle ROI.
  * Users can define a rectangle the classical way (x, y, width, height), but also other ways.
  */
-public class Margin implements Function<Rectangle, Rectangle>, JIPipeParameterCollection {
+public class Margin implements JIPipeParameterCollection {
     public static final int PARAM_LEFT = 1;
     public static final int PARAM_TOP = 2;
     public static final int PARAM_RIGHT = 4;
@@ -229,19 +228,18 @@ public class Margin implements Function<Rectangle, Rectangle>, JIPipeParameterCo
      * Generates the rectangle defined by the definition.
      * If the rectangle is invalid, null is returned
      *
-     * @param rectangle rectangle describing the available area.
+     * @param availableArea rectangle describing the available area.
      * @return Rectangle within the area
      */
-    @Override
-    public Rectangle apply(Rectangle rectangle) {
-        final int left_ = (int) left.apply(rectangle.width);
-        final int top_ = (int) top.apply(rectangle.height);
-        final int right_ = (int) right.apply(rectangle.width);
-        final int bottom_ = (int) bottom.apply(rectangle.height);
-        final int width_ = (int) width.apply(rectangle.width);
-        final int height_ = (int) height.apply(rectangle.height);
-        final int aw = rectangle.width;
-        final int ah = rectangle.height;
+    public Rectangle getInsideArea(Rectangle availableArea) {
+        final int left_ = (int) left.apply(availableArea.width);
+        final int top_ = (int) top.apply(availableArea.height);
+        final int right_ = (int) right.apply(availableArea.width);
+        final int bottom_ = (int) bottom.apply(availableArea.height);
+        final int width_ = (int) width.apply(availableArea.width);
+        final int height_ = (int) height.apply(availableArea.height);
+        final int aw = availableArea.width;
+        final int ah = availableArea.height;
 
         int ox;
         int oy;
@@ -320,7 +318,7 @@ public class Margin implements Function<Rectangle, Rectangle>, JIPipeParameterCo
             return null;
         }
 
-        return new Rectangle(ox + rectangle.x, oy + rectangle.y, ow, oh);
+        return new Rectangle(ox + availableArea.x, oy + availableArea.y, ow, oh);
     }
 
     @Override

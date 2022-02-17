@@ -76,7 +76,7 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
         ROIListData data = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class, progressInfo).duplicate();
         data.outline(outline);
         ImagePlus reference = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
-        Rectangle inside = borderDefinition.apply(new Rectangle(0, 0, reference.getWidth(), reference.getHeight()));
+        Rectangle inside = borderDefinition.getInsideArea(new Rectangle(0, 0, reference.getWidth(), reference.getHeight()));
 
         data.removeIf(roi -> {
             FloatPolygon fp = roi.getFloatPolygon();

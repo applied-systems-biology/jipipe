@@ -124,7 +124,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     private void processROIList(JIPipeDataBatch dataBatch, ROIListData inputData, ImagePlus reference, JIPipeProgressInfo progressInfo) {
         // Find the bounds and future stack position
-        Rectangle bounds = imageArea.apply(inputData.getBounds());
+        Rectangle bounds = imageArea.getInsideArea(inputData.getBounds());
         int sx = bounds.width + bounds.x;
         int sy = bounds.height + bounds.y;
         int sz = 1;
