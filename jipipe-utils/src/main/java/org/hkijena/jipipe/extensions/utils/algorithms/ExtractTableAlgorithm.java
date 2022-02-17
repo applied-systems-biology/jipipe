@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.datatables.algorithms;
+package org.hkijena.jipipe.extensions.utils.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
@@ -19,7 +20,7 @@ import java.util.List;
 
 @JIPipeDocumentation(name = "Extract data table", description = "Extracts data stored in the input slot into the output." +
         " If multiple tables are supplied, the rows are merged.")
-@JIPipeInputSlot(value = JIPipeDataTableData.class, slotName = "Table", autoCreate = true)
+@JIPipeInputSlot(value = JIPipeDataTable.class, slotName = "Table", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
@@ -46,20 +47,20 @@ public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-            JIPipeDataTableData dataTableData = getFirstInputSlot().getData(row, JIPipeDataTableData.class,
+            JIPipeDataTable dataTable = getFirstInputSlot().getData(row, JIPipeDataTable.class,
                     progressInfo.resolve("Table", row, getFirstInputSlot().getRowCount()));
 
-            for (int row2 = 0; row2 < dataTableData.getDataSlot().getRowCount(); row2++) {
+            for (int row2 = 0; row2 < dataTable.getRowCount(); row2++) {
                 annotations.clear();
-                annotations.addAll(dataTableData.getDataSlot().getAnnotations(row2));
+                annotations.addAll(dataTable.getTextAnnotations(row2));
                 annotations.addAll(parameterAnnotations);
                 if (mergeAnnotations) {
                     annotations.addAll(getFirstInputSlot().getTextAnnotations(row));
                 }
-                getFirstOutputSlot().addData(dataTableData.getDataSlot().getVirtualData(row2),
+                getFirstOutputSlot().addData(dataTable.getVirtualData(row2),
                         annotations,
                         mergeStrategy,
-                        dataTableData.getDataSlot().getDataAnnotations(row2),
+                        dataTable.getDataAnnotations(row2),
                         JIPipeDataAnnotationMergeMode.OverwriteExisting);
             }
 

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -24,14 +24,14 @@ import java.awt.*;
  * Renders additional {@link String} columns in a table
  */
 public class JIPipeDataSlotTableColumnHeaderRenderer implements TableCellRenderer {
-    private JIPipeExportedDataTable dataTable;
+    private JIPipeDataTableMetadata dataTable;
 
     /**
      * Creates a new instance
      *
      * @param dataTable The table
      */
-    public JIPipeDataSlotTableColumnHeaderRenderer(JIPipeExportedDataTable dataTable) {
+    public JIPipeDataSlotTableColumnHeaderRenderer(JIPipeDataTableMetadata dataTable) {
         this.dataTable = dataTable;
     }
 

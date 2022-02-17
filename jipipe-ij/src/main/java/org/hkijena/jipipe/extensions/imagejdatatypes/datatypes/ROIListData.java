@@ -31,7 +31,7 @@ import ij.process.ImageProcessor;
 import ij.process.LUT;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
@@ -385,8 +385,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        if (source instanceof JIPipeCacheSlotDataSource) {
-            CachedROIListDataViewerWindow window = new CachedROIListDataViewerWindow(workbench, (JIPipeCacheSlotDataSource) source, displayName, false);
+        if (source instanceof JIPipeDataTableDataSource) {
+            CachedROIListDataViewerWindow window = new CachedROIListDataViewerWindow(workbench, (JIPipeDataTableDataSource) source, displayName, false);
             window.setVisible(true);
         } else {
             ImagePlus mask;

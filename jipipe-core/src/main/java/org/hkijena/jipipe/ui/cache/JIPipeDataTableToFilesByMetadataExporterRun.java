@@ -19,6 +19,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -42,7 +43,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
 
-    private final List<JIPipeDataTable> slots;
+    private final List<? extends JIPipeDataTable> dataTables;
     private final boolean splitBySlot;
     private final JIPipeDataByMetadataExporter exporter;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -50,12 +51,12 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
 
     /**
      * @param workbench   the workbench
-     * @param slots       the slots to save
+     * @param dataTables       the slots to save
      * @param splitBySlot if slots should be split
      */
-    public JIPipeDataTableToFilesByMetadataExporterRun(JIPipeWorkbench workbench, List<JIPipeDataTable> slots, boolean splitBySlot) {
+    public JIPipeDataTableToFilesByMetadataExporterRun(JIPipeWorkbench workbench, List<? extends JIPipeDataTable> dataTables, boolean splitBySlot) {
         super(workbench);
-        this.slots = slots;
+        this.dataTables = dataTables;
         this.splitBySlot = splitBySlot;
         this.exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
@@ -119,19 +120,19 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
     @Override
     public void run() {
         Set<String> existing = new HashSet<>();
-        progressInfo.setMaxProgress(slots.size());
-        for (int i = 0; i < slots.size(); i++) {
+        progressInfo.setMaxProgress(dataTables.size());
+        for (int i = 0; i < dataTables.size(); i++) {
             progressInfo.setProgress(i + 1);
-            JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Slot", i, slots.size());
-            JIPipeDataTable slot = slots.get(i);
+            JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Slot", i, dataTables.size());
+            JIPipeDataTable slot = dataTables.get(i);
             Path targetPath = outputPath;
             if (splitBySlot) {
-                targetPath = outputPath.resolve(StringUtils.makeUniqueString(slot.getName(), " ", existing));
+                targetPath = outputPath.resolve(StringUtils.makeUniqueString(slot.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, ""), " ", existing));
             }
             try {
                 if (!Files.isDirectory(targetPath))
                     Files.createDirectories(targetPath);
-                exporter.writeToFolder(slot, targetPath, subProgress.resolve("Slot " + slot.getName()));
+                exporter.writeToFolder(slot, targetPath, subProgress.resolve("Slot " + slot.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "")));
             } catch (Exception e) {
                 IJ.handleException(e);
                 progressInfo.log(ExceptionUtils.getStackTrace(e));
@@ -160,8 +161,8 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
         }
     }
 
-    public List<JIPipeDataTable> getSlots() {
-        return slots;
+    public List<? extends JIPipeDataTable> getDataTables() {
+        return dataTables;
     }
 
     @Override

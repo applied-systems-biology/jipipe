@@ -162,7 +162,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         boolean enableVirtual = VirtualDataSettings.getInstance().isVirtualMode();
-        if (enableVirtual && !removeLut && fileData.getPath().toString().endsWith(".tif") && getFirstOutputSlot().isVirtual()) {
+        if (enableVirtual && !removeLut && fileData.getPath().toString().endsWith(".tif") && getFirstOutputSlot().isNewDataVirtual()) {
             // Alternative path for virtual data to get rid of load-saving-load
             // Only works for something that is directly compatible to the row storage format (TIFF)
             List<JIPipeTextAnnotation> annotations = new ArrayList<>(dataBatch.getMergedAnnotations().values());

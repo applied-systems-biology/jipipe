@@ -185,7 +185,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
 
     private void exportAsTable() {
         AnnotationTableData tableData = new AnnotationTableData();
-        for (JIPipeExportedDataTable exportedDataTable : mergedDataTable.getAddedTables()) {
+        for (JIPipeDataTableMetadata exportedDataTable : mergedDataTable.getAddedTables()) {
             tableData.addRows(exportedDataTable.toAnnotationTable());
         }
         TableEditor.openWindow(getWorkbench(), tableData, "Metadata");
@@ -195,7 +195,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
             AnnotationTableData tableData = new AnnotationTableData();
-            for (JIPipeExportedDataTable exportedDataTable : mergedDataTable.getAddedTables()) {
+            for (JIPipeDataTableMetadata exportedDataTable : mergedDataTable.getAddedTables()) {
                 tableData.addRows(exportedDataTable.toAnnotationTable());
             }
             tableData.saveAsCSV(path);
@@ -204,7 +204,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
 
     private void handleSlotRowDefaultAction(int selectedRow) {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
-        JIPipeExportedDataTableRow rowInstance = mergedDataTable.getRowList().get(row);
+        JIPipeDataTableMetadataRow rowInstance = mergedDataTable.getRowList().get(row);
         JIPipeDataSlot slot = mergedDataTable.getSlot(row);
         JIPipeResultDataSlotRowUI ui = JIPipe.getDataTypes().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
         ui.handleDefaultAction();
@@ -214,10 +214,10 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         rowUIList.clear();
         for (int viewRow : selectedRows) {
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
-            JIPipeExportedDataTableRow rowInstance = mergedDataTable.getRowList().get(row);
+            JIPipeDataTableMetadataRow rowInstance = mergedDataTable.getRowList().get(row);
             JIPipeDataSlot slot = mergedDataTable.getSlot(row);
             JLabel nameLabel = new JLabel("" + rowInstance.getIndex(), JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
-            nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
+            nameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(slot));
             JIPipeResultDataSlotRowUI rowUI = JIPipe.getDataTypes().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
             rowUIList.addToForm(rowUI, nameLabel, null);
         }
@@ -226,7 +226,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
     private void reloadTable() {
         mergedDataTable = new JIPipeMergedExportedDataTable();
         for (JIPipeDataSlot slot : this.slots) {
-            JIPipeExportedDataTable dataTable = JIPipeExportedDataTable.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
+            JIPipeDataTableMetadata dataTable = JIPipeDataTableMetadata.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
             mergedDataTable.add(getProject(), slot, dataTable);
         }
         if (GeneralDataSettings.getInstance().isGenerateResultPreviews())
@@ -235,7 +235,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
             table.setRowHeight(25);
         previewRenderer = new JIPipeRowDataMergedTableCellRenderer(getProjectWorkbench(), mergedDataTable, scrollPane, table);
         dataAnnotationPreviewRenderer = new JIPipeRowDataAnnotationMergedTableCellRenderer(getProjectWorkbench(), mergedDataTable, scrollPane, table);
-        table.setDefaultRenderer(JIPipeExportedDataTableRow.class, previewRenderer);
+        table.setDefaultRenderer(JIPipeDataTableMetadataRow.class, previewRenderer);
         table.setDefaultRenderer(JIPipeExportedDataAnnotation.class, dataAnnotationPreviewRenderer);
         table.setModel(mergedDataTable);
         refreshTable();

@@ -32,22 +32,61 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     private final List<TableModelListener> listeners = new ArrayList<>();
 
     // The main data table
-    private ArrayList<JIPipeVirtualData> data = new ArrayList<>();
+    private final ArrayList<JIPipeVirtualData> data = new ArrayList<>();
 
     // String annotations
-    private List<String> annotationColumns = new ArrayList<>();
-    private Map<String, ArrayList<JIPipeTextAnnotation>> annotations = new HashMap<>();
+    private final List<String> annotationColumns = new ArrayList<>();
+    private final Map<String, ArrayList<JIPipeTextAnnotation>> annotations = new HashMap<>();
 
     // Data annotations
-    private List<String> dataAnnotationColumns = new ArrayList<>();
-    private Map<String, ArrayList<JIPipeVirtualData>> dataAnnotations = new HashMap<>();
+    private final List<String> dataAnnotationColumns = new ArrayList<>();
+    private final Map<String, ArrayList<JIPipeVirtualData>> dataAnnotations = new HashMap<>();
+
+    // Metadata
+    private boolean newDataVirtual = false;
 
     public JIPipeDataTable(Class<? extends JIPipeData> acceptedDataType) {
         this.acceptedDataType = acceptedDataType;
     }
 
     public JIPipeDataTable(JIPipeDataTable other, boolean shallow, JIPipeProgressInfo progressInfo) {
-    TODO
+
+        // Copy properties
+        this.acceptedDataType = other.getAcceptedDataType();
+        this.newDataVirtual = other.isNewDataVirtual();
+
+        for (int row = 0; row < other.data.size(); row++) {
+            JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Row", row, other.data.size());
+            JIPipeVirtualData virtualData = other.getVirtualData(row);
+            if(!shallow) {
+                // Copy the main data
+                virtualData = virtualData.duplicate(rowProgress);
+            }
+            List<JIPipeDataAnnotation> dataAnnotations = other.getDataAnnotations(row);
+            if(!shallow) {
+                // Copy data annotations
+                List<JIPipeDataAnnotation> dataAnnotationsCopy = new ArrayList<>();
+                for (JIPipeDataAnnotation dataAnnotation : dataAnnotations) {
+                    dataAnnotationsCopy.add(dataAnnotation.duplicate(rowProgress));
+                }
+                dataAnnotations = dataAnnotationsCopy;
+            }
+            addData(virtualData,
+                    other.getTextAnnotations(row),
+                    JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                    dataAnnotations,
+                    JIPipeDataAnnotationMergeMode.OverwriteExisting);
+        }
+    }
+
+    @Override
+    public void addTableModelListener(TableModelListener l) {
+        listeners.add(l);
+    }
+
+    @Override
+    public void removeTableModelListener(TableModelListener l) {
+        listeners.remove(l);
     }
 
     @Override
@@ -125,16 +164,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-
-    }
-
-    @Override
-    public void addTableModelListener(TableModelListener l) {
-
-    }
-
-    @Override
-    public void removeTableModelListener(TableModelListener l) {
 
     }
 
@@ -483,8 +512,9 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnData(annotation.getName());
             annotationArray.set(getRowCount() - 1, annotation);
         }
-        if (isVirtual())
+        if (isNewDataVirtual())
             virtualData.makeVirtual(progressInfo, false);
+        fireChangedEvent(new TableModelEvent(this));
     }
 
     /**
@@ -500,6 +530,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                 continue;
             annotationArray.set(i, annotation);
         }
+        fireChangedEvent(new TableModelEvent(this));
     }
 
     /**
@@ -562,12 +593,10 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * Saves the data contained in this slot into the storage path.
      *
      * @param storagePath  the path that contains the data folders and table
-     * @param basePath     the base path of all stored data. Stored in the table that allows later to find the internal path relative to the output folder. Can be null.
      * @param saveProgress save progress
      */
-    public void save(Path storagePath, Path basePath, JIPipeProgressInfo saveProgress) {
+    public void save(Path storagePath, JIPipeProgressInfo saveProgress) {
         // Save data
-        List<Integer> indices = new ArrayList<>();
         for (int row = 0; row < getRowCount(); ++row) {
             JIPipeProgressInfo rowProgress = saveProgress.resolveAndLog("Row", row, getRowCount());
             Path path = storagePath.resolve("" + row);
@@ -580,9 +609,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
                             "Check if the path is valid, and you have write-access.");
                 }
             }
-
-            indices.add(row);
-            data.get(row).getData(saveProgress.resolve("Load virtual data")).saveTo(path, getName(), false, rowProgress);
+            data.get(row).getData(saveProgress.resolve("Load virtual data")).saveTo(path, "data", false, rowProgress);
         }
 
         // Save data annotations via dummy slots
@@ -590,7 +617,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         for (int i = 0; i < dataAnnotationColumns.size(); i++) {
             JIPipeProgressInfo dataAnnotationProgress = saveProgress.resolveAndLog("Data annotation", i, dataAnnotationColumns.size());
             String dataAnnotationColumn = dataAnnotationColumns.get(i);
-            JIPipeDataSlot dummy = new JIPipeDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, getSlotType(), getName() + "_" + dataAnnotationColumn, null), getNode());
+            JIPipeDataTable dummy = new JIPipeDataTable(JIPipeData.class);
             for (int row = 0; row < getRowCount(); row++) {
                 JIPipeData dataAnnotation = getDataAnnotation(row, dataAnnotationColumn).getData(JIPipeData.class, dataAnnotationProgress);
                 if (dataAnnotation != null) {
@@ -601,11 +628,10 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             }
 
             Path dataAnnotationStoragePath = storagePath.resolve("_" + i);
-            dummy.setStoragePath(dataAnnotationStoragePath);
-            dummy.save(dataAnnotationStoragePath, basePath, dataAnnotationProgress);
+            dummy.save(dataAnnotationStoragePath, dataAnnotationProgress);
         }
 
-        JIPipeExportedDataTable dataTable = new JIPipeExportedDataTable(this, basePath, indices);
+        JIPipeDataTableMetadata dataTable = new JIPipeDataTableMetadata(this);
         try {
             dataTable.saveAsJson(storagePath.resolve("data-table.json"));
             dataTable.saveAsCSV(storagePath.resolve("data-table.csv"));
@@ -760,8 +786,8 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param rows the rows
      * @return the sliced slot
      */
-    public JIPipeDataSlot slice(Collection<Integer> rows) {
-        JIPipeDataSlot result = new JIPipeDataSlot(getInfo(), getNode());
+    public JIPipeDataTable slice(Collection<Integer> rows) {
+        JIPipeDataTable result = new JIPipeDataTable(getAcceptedDataType());
         for (Integer row : rows) {
             result.addData(getVirtualData(row), getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting);
             for (Map.Entry<String, JIPipeVirtualData> entry : getVirtualDataAnnotationMap(row).entrySet()) {
@@ -838,12 +864,12 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @return the data
      */
     public static JIPipeDataTable importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
-        JIPipeExportedDataTable dataTable = JIPipeExportedDataTable.loadFromJson(storagePath.resolve("data-table.json"));
+        JIPipeDataTableMetadata dataTable = JIPipeDataTableMetadata.loadFromJson(storagePath.resolve("data-table.json"));
         Class<? extends JIPipeData> acceptedDataType = JIPipe.getDataTypes().getById(dataTable.getAcceptedDataTypeId());
         JIPipeDataTable slot = new JIPipeDataTable(acceptedDataType);
         for (int i = 0; i < dataTable.getRowCount(); i++) {
             JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Row", i, dataTable.getRowCount());
-            JIPipeExportedDataTableRow row = dataTable.getRowList().get(i);
+            JIPipeDataTableMetadataRow row = dataTable.getRowList().get(i);
             Path rowStorage = storagePath.resolve("" + row.getIndex());
             Class<? extends JIPipeData> rowDataType = JIPipe.getDataTypes().getById(row.getTrueDataType());
             JIPipeData data = JIPipe.importData(rowStorage, rowDataType, rowProgress);
@@ -862,9 +888,9 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     @Override
     public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         if (forceName) {
-            save(storageFilePath.resolve(name), null, progressInfo);
+            save(storageFilePath.resolve(name), progressInfo);
         } else {
-            save(storageFilePath, null, progressInfo);
+            save(storageFilePath, progressInfo);
         }
     }
 
@@ -889,5 +915,42 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     @Override
     public String toString() {
         return getRowCount() + " rows of " + JIPipeData.getNameOf(getAcceptedDataType());
+    }
+
+    /**
+     * Determines if newly added data should be virtual
+     * @return true if newly added data will be virtual
+     */
+    public boolean isNewDataVirtual() {
+        return newDataVirtual;
+    }
+
+    /**
+     * Determines if newly added data should be virtual
+     * @param newDataVirtual if newly added data will be virtual
+     */
+    public void setNewDataVirtual(boolean newDataVirtual) {
+        this.newDataVirtual = newDataVirtual;
+    }
+
+    /**
+     * Returns info about the location of this data table.
+     * Returns null if no info with given key exists.
+     * @param key the key
+     * @return the location. null if no info is available
+     */
+    public String getLocation(String key) {
+        return getLocation(key, null);
+    }
+
+    /**
+     * Returns info about the location of this data table.
+     * Returns the default value if no info with given key exists.
+     * @param key the key
+     * @param defaultValue returned if no info about the key exists
+     * @return the location. default value if no info is available
+     */
+    public String getLocation(String key, String defaultValue) {
+        return null;
     }
 }

@@ -21,8 +21,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
+import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.data.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -70,7 +70,7 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
                     "You tried to import data from a JIPipe output slot folder located at " + dataFolder + ". JIPipe has a very specific format to store such folders. The directory seems to not conform to this format.",
                     "Check if the folder contains many numeric subfolders and a data-table.json file.");
         }
-        JIPipeExportedDataTable exportedDataTable = JIPipeExportedDataTable.loadFromJson(dataFolder.resolve("data-table.json"));
+        JIPipeDataTableMetadata exportedDataTable = JIPipeDataTableMetadata.loadFromJson(dataFolder.resolve("data-table.json"));
         Class<? extends JIPipeData> dataType = JIPipe.getDataTypes().getById(exportedDataTable.getAcceptedDataTypeId());
         if (dataType == null) {
             throw new UserFriendlyRuntimeException("Unknown data type id: " + exportedDataTable.getAcceptedDataTypeId(),
@@ -80,7 +80,7 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
                     "Check if you installed the necessary plugins and extensions.");
         }
 
-        for (JIPipeExportedDataTableRow row : exportedDataTable.getRowList()) {
+        for (JIPipeDataTableMetadataRow row : exportedDataTable.getRowList()) {
             progressInfo.log("Importing data row " + row.getIndex());
             Path storageFolder = dataFolder.resolve("" + row.getIndex());
             List<JIPipeTextAnnotation> annotationList = ignoreImportedDataAnnotations ? Collections.emptyList() : row.getAnnotations();

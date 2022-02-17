@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 
@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Renders row data of an {@link JIPipeExportedDataTable}
+ * Renders row data of an {@link JIPipeDataTableMetadata}
  */
 public class JIPipeRowDataAnnotationTableCellRenderer implements TableCellRenderer {
 

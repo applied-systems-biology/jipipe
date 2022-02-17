@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.ui.cache;
 
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -75,12 +75,12 @@ public class JIPipeCachedDataViewerAnnotationInfoPanel extends JIPipeWorkbenchPa
         }
     }
 
-    public void displayAnnotations(JIPipeCacheSlotDataSource dataSource) {
+    public void displayAnnotations(JIPipeDataTableDataSource dataSource) {
         ResultsTableData model = new ResultsTableData();
         model.addStringColumn("Name");
         model.addStringColumn("Value");
         if (dataSource != null) {
-            for (JIPipeTextAnnotation annotation : dataSource.getSlot().getTextAnnotations(dataSource.getRow())) {
+            for (JIPipeTextAnnotation annotation : dataSource.getDataTable().getTextAnnotations(dataSource.getRow())) {
                 model.addRow();
                 model.setLastValue(annotation.getName(), "Name");
                 model.setLastValue(annotation.getValue(), "Value");

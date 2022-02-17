@@ -17,7 +17,7 @@ import com.google.common.base.Charsets;
 import org.apache.commons.lang.CharSetUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
@@ -73,8 +73,8 @@ public class StringData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        if (source instanceof JIPipeCacheSlotDataSource) {
-            CachedTextViewerWindow window = new CachedTextViewerWindow(workbench, (JIPipeCacheSlotDataSource) source, displayName, false);
+        if (source instanceof JIPipeDataTableDataSource) {
+            CachedTextViewerWindow window = new CachedTextViewerWindow(workbench, (JIPipeDataTableDataSource) source, displayName, false);
             window.setVisible(true);
             SwingUtilities.invokeLater(window::reloadDisplayedData);
         } else {

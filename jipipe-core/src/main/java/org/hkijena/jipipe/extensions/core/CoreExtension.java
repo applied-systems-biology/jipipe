@@ -4,6 +4,7 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.categories.*;
@@ -50,8 +51,8 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
                 ResourceUtils.getPluginResource("icons/data-types/data-type.png"),
                 null,
                 null);
-        registerDatatype("jipipe:merged-data-annotations",
-                JIPipeMergedDataAnnotationsData.class,
+        registerDatatype("jipipe:data-table",
+                JIPipeDataTable.class,
                 ResourceUtils.getPluginResource("icons/data-types/data-table.png"),
                 null,
                 null);

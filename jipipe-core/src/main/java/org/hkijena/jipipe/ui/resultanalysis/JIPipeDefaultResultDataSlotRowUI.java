@@ -50,7 +50,7 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
      * @param slot        The data slot
      * @param row         The data slow row
      */
-    public JIPipeDefaultResultDataSlotRowUI(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
+    public JIPipeDefaultResultDataSlotRowUI(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row) {
         super(workbenchUI, slot, row);
         String datatypeId = row.getTrueDataType();
         importOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedImportOperationsFor(datatypeId);

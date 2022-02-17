@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.datatables.algorithms;
+package org.hkijena.jipipe.extensions.utils.algorithms;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -13,7 +13,7 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
         "Such tables might be needed for some nodes that process lists of data.")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeOutputSlot(value = JIPipeDataTableData.class, slotName = "Tables", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeDataTable.class, slotName = "Tables", autoCreate = true)
 public class MergeDataToTableAlgorithm extends JIPipeMergingAlgorithm {
     public MergeDataToTableAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -25,14 +25,14 @@ public class MergeDataToTableAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input), null);
-        for (Integer row : dataBatch.getInputSlotRows().get(getFirstInputSlot())) {
-            slot.addData(getFirstInputSlot().getVirtualData(row),
+        JIPipeDataTable dataTable = new JIPipeDataTable(JIPipeData.class);
+        for (int row : dataBatch.getInputSlotRows().get(getFirstInputSlot())) {
+            dataTable.addData(getFirstInputSlot().getVirtualData(row),
                     getFirstInputSlot().getTextAnnotations(row),
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
                     getFirstInputSlot().getDataAnnotations(row),
                     JIPipeDataAnnotationMergeMode.OverwriteExisting);
         }
-        dataBatch.addOutputData(getFirstOutputSlot(), new JIPipeDataTableData(slot), progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(),dataTable, progressInfo);
     }
 }

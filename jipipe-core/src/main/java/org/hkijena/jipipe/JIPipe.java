@@ -123,17 +123,6 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         }
     }
 
-    /**
-     * Imports data from a slot folder
-     *
-     * @param slotFolder   a folder that contains data-table.json
-     * @param progressInfo the progress info
-     * @return the imported data slot
-     */
-    public static JIPipeDataSlot importDataSlot(Path slotFolder, JIPipeProgressInfo progressInfo) {
-        return JIPipeDataSlot.loadFromStoragePath(slotFolder, progressInfo);
-    }
-
     public static JIPipeParameterTypeRegistry getParameterTypes() {
         return instance.parameterTypeRegistry;
     }

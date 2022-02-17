@@ -5,6 +5,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -53,8 +54,8 @@ public class RunProcessMergingAlgorithm extends JIPipeMergingAlgorithm {
 
         // Save all inputs
         for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
-            JIPipeDataSlot dummy = slot.slice(dataBatch.getInputRows(slot));
-            dummy.save(inputPath.resolve(slot.getName()), inputPath, progressInfo.resolve("Save inputs"));
+            JIPipeDataTable dummy = slot.slice(dataBatch.getInputRows(slot));
+            dummy.save(inputPath.resolve(slot.getName()), progressInfo.resolve("Save inputs"));
         }
 
         // Run process
@@ -82,7 +83,7 @@ public class RunProcessMergingAlgorithm extends JIPipeMergingAlgorithm {
                 continue;
             Path slotPath = outputPath.resolve(slot.getName());
             if (Files.exists(slotPath.resolve("data-table.json"))) {
-                JIPipeDataSlot loaded = JIPipeDataSlot.loadFromStoragePath(slotPath, progressInfo.resolve("Extracting output '" + slot.getName() + "'"));
+                JIPipeDataTable loaded = JIPipeDataTable.importFrom(slotPath, progressInfo.resolve("Extracting output '" + slot.getName() + "'"));
                 for (int i = 0; i < loaded.getRowCount(); i++) {
                     dataBatch.addOutputData(slot.getName(), loaded.getData(i, slot.getAcceptedDataType(), progressInfo), progressInfo);
                 }

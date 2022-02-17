@@ -123,7 +123,7 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
                 throw new RuntimeException(e);
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
-            slot.save(tempPath, null, progressInfo);
+            slot.save(tempPath, progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
         }
 
@@ -156,7 +156,7 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
 
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
-            JIPipeExportedDataTable table = JIPipeExportedDataTable.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
+            JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);

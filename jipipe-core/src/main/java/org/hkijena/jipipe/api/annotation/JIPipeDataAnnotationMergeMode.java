@@ -45,11 +45,9 @@ public enum JIPipeDataAnnotationMergeMode {
                 if (values.size() <= 1) {
                     result.addAll(values);
                 } else {
-                    JIPipeMergedDataAnnotationsData mergedDataAnnotationsData = new JIPipeMergedDataAnnotationsData(new JIPipeDataSlot(
-                            new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Merged", null), null
-                    ));
+                    JIPipeDataTable mergedDataAnnotationsData = new JIPipeDataTable(JIPipeData.class);
                     for (JIPipeDataAnnotation value : values) {
-                        mergedDataAnnotationsData.getDataSlot().addData(value.getVirtualData(), Collections.emptyList(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
+                        mergedDataAnnotationsData.addData(value.getVirtualData(), Collections.emptyList(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
                     }
                     result.add(new JIPipeDataAnnotation(name, mergedDataAnnotationsData));
                 }
@@ -65,20 +63,18 @@ public enum JIPipeDataAnnotationMergeMode {
             for (String name : dataAnnotationMap.keySet()) {
                 List<JIPipeVirtualData> allData = new ArrayList<>();
                 for (JIPipeDataAnnotation dataAnnotation : dataAnnotationMap.get(name)) {
-                    if (JIPipeMergedDataAnnotationsData.class.isAssignableFrom(dataAnnotation.getDataClass())) {
-                        JIPipeMergedDataAnnotationsData table = dataAnnotation.getData(JIPipeMergedDataAnnotationsData.class, new JIPipeProgressInfo());
-                        for (int row = 0; row < table.getDataSlot().getRowCount(); row++) {
-                            allData.add(table.getDataSlot().getVirtualData(row));
+                    if (JIPipeDataTable.class.isAssignableFrom(dataAnnotation.getDataClass())) {
+                        JIPipeDataTable table = dataAnnotation.getData(JIPipeDataTable.class, new JIPipeProgressInfo());
+                        for (int row = 0; row < table.getRowCount(); row++) {
+                            allData.add(table.getVirtualData(row));
                         }
                     } else {
                         allData.add(dataAnnotation.getVirtualData());
                     }
                 }
-                JIPipeMergedDataAnnotationsData mergedDataAnnotationsData = new JIPipeMergedDataAnnotationsData(new JIPipeDataSlot(
-                        new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Merged", null), null
-                ));
+                JIPipeDataTable mergedDataAnnotationsData = new JIPipeDataTable(JIPipeData.class);
                 for (JIPipeVirtualData virtualData : allData) {
-                    mergedDataAnnotationsData.getDataSlot().addData(virtualData, Collections.emptyList(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
+                    mergedDataAnnotationsData.addData(virtualData, Collections.emptyList(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
                 }
                 result.add(new JIPipeDataAnnotation(name, mergedDataAnnotationsData));
             }

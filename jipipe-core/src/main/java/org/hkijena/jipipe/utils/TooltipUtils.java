@@ -18,10 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 
@@ -282,32 +279,35 @@ public class TooltipUtils {
     /**
      * Creates a tooltip for an {@link JIPipeDataSlot}
      *
-     * @param slot the slot
+     * @param dataTable the data table
      * @return tooltip
      */
-    public static String getSlotInstanceTooltip(JIPipeDataSlot slot) {
+    public static String getDataTableTooltip(JIPipeDataTable dataTable) {
         StringBuilder builder = new StringBuilder();
         builder.append("<html>");
         builder.append("<table>");
         builder.append("<tr>");
         builder.append("<td>").append("<img src=\"")
-                .append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType()))
+                .append(JIPipe.getDataTypes().getIconURLFor(dataTable.getAcceptedDataType()))
                 .append("\"/>").append("</td>");
-        builder.append("<td>").append(slot.getName()).append("</td>");
+        builder.append("<td>").append(dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "")).append("</td>");
         builder.append("</tr>");
         builder.append("</table>");
 
-        builder.append("<br>Data type: <i>").append(JIPipeData.getNameOf(slot.getAcceptedDataType())).append("</i><br>");
-        String description = JIPipeData.getDescriptionOf(slot.getAcceptedDataType());
+        builder.append("<br>Data type: <i>").append(JIPipeData.getNameOf(dataTable.getAcceptedDataType())).append("</i><br>");
+        String description = JIPipeData.getDescriptionOf(dataTable.getAcceptedDataType());
         if (description != null && !description.isEmpty()) {
             builder.append("<br>").append(description).append("<br><br/>");
         }
 
-        if (slot.isInput())
-            builder.append("Input");
-        else
-            builder.append("Output");
-        builder.append(" of ").append(slot.getNode().getName()).append("<br/>");
+        if(dataTable instanceof JIPipeDataSlot) {
+         JIPipeDataSlot slot = (JIPipeDataSlot) dataTable;
+            if (slot.isInput())
+                builder.append("Input");
+            else
+                builder.append("Output");
+            builder.append(" of ").append(slot.getNode().getName()).append("<br/>");
+        }
 
         builder.append("</html>");
 

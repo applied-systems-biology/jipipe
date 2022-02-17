@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.resultanalysis;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -42,7 +43,7 @@ public abstract class JIPipeAsyncResultDataPlotPreview extends JIPipeResultDataS
      * @param row            the row
      * @param dataAnnotation the data annotation (Optional)
      */
-    public JIPipeAsyncResultDataPlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+    public JIPipeAsyncResultDataPlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
         super(workbench, table, slot, row, dataAnnotation);
         initialize();
     }
@@ -81,10 +82,10 @@ public abstract class JIPipeAsyncResultDataPlotPreview extends JIPipeResultDataS
      */
     protected JIPipeData loadData(Path storageFolder) {
         if (getDataAnnotation() == null)
-            return JIPipe.importData(storageFolder, getSlot().getAcceptedDataType(), progressInfo);
+            return JIPipe.importData(storageFolder, getSlot().getAcceptedDataType(), new JIPipeProgressInfo());
         else {
             if (Files.exists(storageFolder))
-                return JIPipe.importData(storageFolder, JIPipe.getDataTypes().getById(getDataAnnotation().getTrueDataType()), progressInfo);
+                return JIPipe.importData(storageFolder, JIPipe.getDataTypes().getById(getDataAnnotation().getTrueDataType()), new JIPipeProgressInfo());
             else
                 return new JIPipeEmptyData();
         }

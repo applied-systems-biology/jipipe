@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.forms.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -34,7 +35,7 @@ public abstract class ParameterFormData extends FormData {
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         FormPanel formPanel = new FormPanel(new MarkdownDocument("This is a preview of the form."),
                 FormPanel.WITH_DOCUMENTATION | FormPanel.WITH_SCROLLING | FormPanel.DOCUMENTATION_BELOW);
-        ParameterFormData duplicate = (ParameterFormData) duplicate(progressInfo);
+        ParameterFormData duplicate = (ParameterFormData) duplicate(new JIPipeProgressInfo());
         if (isShowName()) {
             formPanel.addToForm(duplicate.getEditor(workbench), new JLabel(getName()), description.toMarkdown());
         } else {

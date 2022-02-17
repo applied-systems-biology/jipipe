@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.strings;
 
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -35,7 +35,7 @@ public class CachedTextViewerWindow extends JIPipeCacheDataViewerWindow {
     private EditorPane textArea;
     private JLabel errorLabel;
 
-    public CachedTextViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName, boolean deferLoading) {
+    public CachedTextViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
         initialize();
         if (!deferLoading)

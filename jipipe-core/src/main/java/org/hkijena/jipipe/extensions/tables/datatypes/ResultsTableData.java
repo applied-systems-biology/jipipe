@@ -33,7 +33,7 @@ import ij.util.Tools;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
@@ -631,9 +631,9 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        if (source instanceof JIPipeCacheSlotDataSource) {
-//            CacheAwareTableEditor.show(workbench, (JIPipeCacheSlotDataSource) source, displayName);
-            CachedTableViewerWindow window = new CachedTableViewerWindow(workbench, (JIPipeCacheSlotDataSource) source, displayName, false);
+        if (source instanceof JIPipeDataTableDataSource) {
+//            CacheAwareTableEditor.show(workbench, (JIPipeDataTableDataSource) source, displayName);
+            CachedTableViewerWindow window = new CachedTableViewerWindow(workbench, (JIPipeDataTableDataSource) source, displayName, false);
             window.setVisible(true);
         } else {
             workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/results-table.png"),

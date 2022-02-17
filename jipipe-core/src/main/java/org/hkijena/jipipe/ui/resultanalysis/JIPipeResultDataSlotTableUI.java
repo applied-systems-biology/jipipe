@@ -47,14 +47,14 @@ import java.nio.file.Path;
 import java.util.Collections;
 
 /**
- * UI that displays the {@link JIPipeExportedDataTable} of an {@link JIPipeDataSlot}
+ * UI that displays the {@link JIPipeDataTableMetadata} of an {@link JIPipeDataSlot}
  */
 public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
     private JIPipeRun run;
     private JIPipeDataSlot slot;
     private JXTable table;
-    private JIPipeExportedDataTable dataTable;
+    private JIPipeDataTableMetadata dataTable;
     private FormPanel rowUIList;
     private SearchTextField searchTextField = new SearchTextField();
     private JIPipeRowDataTableCellRenderer previewRenderer;
@@ -95,7 +95,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         table.setDefaultRenderer(JIPipeDataInfo.class, new JIPipeDataInfoCellRenderer());
         previewRenderer = new JIPipeRowDataTableCellRenderer(getProjectWorkbench(), slot, table, scrollPane);
         dataAnnotationPreviewRenderer = new JIPipeRowDataAnnotationTableCellRenderer(getProjectWorkbench(), slot, table, scrollPane);
-        table.setDefaultRenderer(JIPipeExportedDataTableRow.class, previewRenderer);
+        table.setDefaultRenderer(JIPipeDataTableMetadataRow.class, previewRenderer);
         table.setDefaultRenderer(JIPipeExportedDataAnnotation.class, dataAnnotationPreviewRenderer);
         table.setDefaultRenderer(JIPipeTextAnnotation.class, new JIPipeAnnotationTableCellRenderer());
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -192,7 +192,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
     private void handleSlotRowDefaultAction(int selectedRow) {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
-        JIPipeExportedDataTableRow rowInstance = dataTable.getRowList().get(row);
+        JIPipeDataTableMetadataRow rowInstance = dataTable.getRowList().get(row);
         JIPipeResultDataSlotRowUI ui = JIPipe.getDataTypes().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
         ui.handleDefaultAction();
     }
@@ -201,16 +201,16 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         rowUIList.clear();
         for (int viewRow : selectedRows) {
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
-            JIPipeExportedDataTableRow rowInstance = dataTable.getRowList().get(row);
+            JIPipeDataTableMetadataRow rowInstance = dataTable.getRowList().get(row);
             JLabel nameLabel = new JLabel("" + rowInstance.getIndex(), JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
-            nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
+            nameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(slot));
             JIPipeResultDataSlotRowUI rowUI = JIPipe.getDataTypes().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
             rowUIList.addToForm(rowUI, nameLabel, null);
         }
     }
 
     private void reloadTable() {
-        dataTable = JIPipeExportedDataTable.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
+        dataTable = JIPipeDataTableMetadata.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
         if (GeneralDataSettings.getInstance().isGenerateResultPreviews())
             table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
         else

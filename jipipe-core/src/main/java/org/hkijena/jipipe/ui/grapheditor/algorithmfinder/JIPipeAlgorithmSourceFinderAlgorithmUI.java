@@ -185,7 +185,7 @@ public class JIPipeAlgorithmSourceFinderAlgorithmUI extends JPanel {
                 ++row;
                 int finalRow = row;
                 JLabel label = new JLabel(slot.getName(), JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
-                label.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
+                label.setToolTipText(TooltipUtils.getDataTableTooltip(slot));
                 centerPanel.add(label, new GridBagConstraints() {
                     {
                         anchor = WEST;

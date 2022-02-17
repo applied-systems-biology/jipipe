@@ -20,7 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -139,7 +139,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
                     Files.createDirectories(targetPath);
 
                 // Load the data table
-                JIPipeExportedDataTable dataTable = JIPipeExportedDataTable.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
+                JIPipeDataTableMetadata dataTable = JIPipeDataTableMetadata.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
                 for (int row = 0; row < dataTable.getRowCount(); row++) {
                     JIPipeProgressInfo rowSubStatus = subStatus.resolveAndLog("Row", row, dataTable.getRowCount());
                     String metadataString = exporter.generateMetadataString(dataTable, row, existingMetadata);

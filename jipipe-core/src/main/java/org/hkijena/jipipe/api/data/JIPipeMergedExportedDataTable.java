@@ -27,26 +27,26 @@ import java.util.List;
 import java.util.UUID;
 
 /**
- * Merges multiple {@link JIPipeExportedDataTable}
+ * Merges multiple {@link JIPipeDataTableMetadata}
  */
 public class JIPipeMergedExportedDataTable implements TableModel {
 
     private ArrayList<JIPipeProjectCompartment> compartmentList = new ArrayList<>();
     private ArrayList<JIPipeGraphNode> algorithmList = new ArrayList<>();
-    private ArrayList<JIPipeExportedDataTableRow> rowList = new ArrayList<>();
+    private ArrayList<JIPipeDataTableMetadataRow> rowList = new ArrayList<>();
     private List<String> annotationColumns = new ArrayList<>();
     private List<String> dataAnnotationColumns = new ArrayList<>();
     private ArrayList<JIPipeDataSlot> slotList = new ArrayList<>();
-    private List<JIPipeExportedDataTable> addedTables = new ArrayList<>();
+    private List<JIPipeDataTableMetadata> addedTables = new ArrayList<>();
 
     /**
-     * Adds an {@link JIPipeExportedDataTable}
+     * Adds an {@link JIPipeDataTableMetadata}
      *
      * @param project  The project
      * @param dataSlot The data slot
      * @param table    The table
      */
-    public void add(JIPipeProject project, JIPipeDataSlot dataSlot, JIPipeExportedDataTable table) {
+    public void add(JIPipeProject project, JIPipeDataSlot dataSlot, JIPipeDataTableMetadata table) {
         addedTables.add(table);
         for (String annotationColumn : table.getAnnotationColumns()) {
             if (!annotationColumns.contains(annotationColumn))
@@ -60,7 +60,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
         JIPipeProjectCompartment compartment = project.getCompartments().get(compartmentUUID);
         JIPipeGraphNode algorithm = dataSlot.getNode();
 
-        for (JIPipeExportedDataTableRow row : table.getRowList()) {
+        for (JIPipeDataTableMetadataRow row : table.getRowList()) {
             slotList.add(dataSlot);
             compartmentList.add(compartment);
             algorithmList.add(algorithm);
@@ -134,7 +134,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
         else if (columnIndex == 3)
             return JIPipeDataInfo.class;
         else if (columnIndex == 4)
-            return JIPipeExportedDataTableRow.class;
+            return JIPipeDataTableMetadataRow.class;
         else if (toDataAnnotationColumnIndex(columnIndex) != -1)
             return JIPipeExportedDataAnnotation.class;
         else
@@ -206,11 +206,11 @@ public class JIPipeMergedExportedDataTable implements TableModel {
     /**
      * @return List of rows
      */
-    public List<JIPipeExportedDataTableRow> getRowList() {
+    public List<JIPipeDataTableMetadataRow> getRowList() {
         return rowList;
     }
 
-    public List<JIPipeExportedDataTable> getAddedTables() {
+    public List<JIPipeDataTableMetadata> getAddedTables() {
         return Collections.unmodifiableList(addedTables);
     }
 }

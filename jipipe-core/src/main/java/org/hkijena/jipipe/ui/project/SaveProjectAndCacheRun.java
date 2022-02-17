@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeCachedSlotToOutputExporterRun;
+import org.hkijena.jipipe.ui.cache.JIPipeDataTableToOutputExporterRun;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;
@@ -90,7 +90,7 @@ public class SaveProjectAndCacheRun implements JIPipeRunnable {
                 throw new RuntimeException(e);
             }
 
-            JIPipeCachedSlotToOutputExporterRun run = new JIPipeCachedSlotToOutputExporterRun(workbench, nodeDir,
+            JIPipeDataTableToOutputExporterRun run = new JIPipeDataTableToOutputExporterRun(workbench, nodeDir,
                     new ArrayList<>(cache.values()), true);
             run.setProgressInfo(nodeProgress);
             run.run();

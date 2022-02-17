@@ -17,7 +17,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -41,7 +41,7 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow i
     private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
     private ImageViewerPanel imageViewerPanel;
 
-    public CachedROIListDataViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName, boolean deferLoading) {
+    public CachedROIListDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
         initialize();
         if (!deferLoading)

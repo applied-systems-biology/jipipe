@@ -438,12 +438,12 @@ public class JIPipeDatatypeRegistry {
      * @param row         table row
      * @return slot UI
      */
-    public JIPipeResultDataSlotRowUI getUIForResultSlot(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTableRow row) {
+    public JIPipeResultDataSlotRowUI getUIForResultSlot(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row) {
         Class<? extends JIPipeData> dataClass = getById(row.getTrueDataType());
         Class<? extends JIPipeResultDataSlotRowUI> uiClass = resultUIs.getOrDefault(dataClass, null);
         if (uiClass != null) {
             try {
-                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, JIPipeProjectWorkbench.class, JIPipeDataSlot.class, JIPipeExportedDataTableRow.class)
+                return ConstructorUtils.getMatchingAccessibleConstructor(uiClass, JIPipeProjectWorkbench.class, JIPipeDataSlot.class, JIPipeDataTableMetadataRow.class)
                         .newInstance(workbenchUI, slot, row);
             } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                 throw new RuntimeException(e);
@@ -463,13 +463,13 @@ public class JIPipeDatatypeRegistry {
      * @param dataAnnotation the data annotation (optional)
      * @return cell renderer
      */
-    public JIPipeResultDataSlotPreview getCellRendererFor(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+    public JIPipeResultDataSlotPreview getCellRendererFor(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
         Class<? extends JIPipeData> dataClass = getById(row.getTrueDataType());
         if (GeneralDataSettings.getInstance().isGenerateResultPreviews()) {
             Class<? extends JIPipeResultDataSlotPreview> rendererClass = resultTableCellUIs.getOrDefault(dataClass, null);
             if (rendererClass != null) {
                 try {
-                    return rendererClass.getConstructor(JIPipeProjectWorkbench.class, JTable.class, JIPipeDataSlot.class, JIPipeExportedDataTableRow.class, JIPipeExportedDataAnnotation.class)
+                    return rendererClass.getConstructor(JIPipeProjectWorkbench.class, JTable.class, JIPipeDataSlot.class, JIPipeDataTableMetadataRow.class, JIPipeExportedDataAnnotation.class)
                             .newInstance(workbench, table, slot, row, dataAnnotation);
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
                     throw new RuntimeException(e);

@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.extensions.tables.display;
 
-import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -25,7 +25,7 @@ import javax.swing.*;
 public class CacheAwareOpenResultsTableInJIPipeDataOperation implements JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedTableViewerWindow window = new CachedTableViewerWindow(workbench, (JIPipeCacheSlotDataSource) source, displayName, false);
+        CachedTableViewerWindow window = new CachedTableViewerWindow(workbench, (JIPipeDataTableDataSource) source, displayName, false);
         window.setVisible(true);
     }
 

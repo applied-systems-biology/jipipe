@@ -20,6 +20,14 @@ public class JIPipeDataAnnotation implements JIPipeAnnotation {
         this.virtualData = new JIPipeVirtualData(data);
     }
 
+    /**
+     * Fully duplicates the data
+     * @return the copy
+     */
+    public JIPipeDataAnnotation duplicate(JIPipeProgressInfo progressInfo) {
+        return new JIPipeDataAnnotation(getName(), getVirtualData().duplicate(progressInfo));
+    }
+
     public Class<? extends JIPipeData> getDataClass() {
         return virtualData.getDataClass();
     }

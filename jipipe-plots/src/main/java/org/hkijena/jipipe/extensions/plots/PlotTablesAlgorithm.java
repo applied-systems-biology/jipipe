@@ -74,7 +74,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
         super(other);
         this.plotType = new JIPipeDataInfoRef(other.plotType);
         if (other.plotTypeParameters != null)
-            this.plotTypeParameters = (PlotData) other.plotTypeParameters.duplicate(progressInfo);
+            this.plotTypeParameters = (PlotData) other.plotTypeParameters.duplicate(new JIPipeProgressInfo());
         this.inputColumns = new JIPipeDynamicParameterCollection(other.inputColumns);
         this.seriesName = new StringQueryExpression(other.seriesName);
     }

@@ -142,7 +142,7 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
         toolBar.add(algorithmNameLabel);
         toolBar.add(Box.createHorizontalStrut(5));
         JLabel slotNameLabel = new JLabel(inputSlot.getName(), JIPipe.getDataTypes().getIconFor(inputSlot.getAcceptedDataType()), JLabel.LEFT);
-        slotNameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(inputSlot));
+        slotNameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(inputSlot));
         toolBar.add(slotNameLabel);
 
         toolBar.add(Box.createHorizontalGlue());

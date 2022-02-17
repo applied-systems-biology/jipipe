@@ -13,19 +13,22 @@
 
 package org.hkijena.jipipe.api.data;
 
-public class JIPipeCacheSlotDataSource implements JIPipeDataSource {
-    private final JIPipeDataSlot slot;
+/**
+ * A {@link JIPipeDataSource} 
+ */
+public class JIPipeDataTableDataSource implements JIPipeDataSource {
+    private final JIPipeDataTable dataTable;
     private final int row;
     private final String dataAnnotation;
 
-    public JIPipeCacheSlotDataSource(JIPipeDataSlot slot, int row) {
-        this.slot = slot;
+    public JIPipeDataTableDataSource(JIPipeDataTable dataTable, int row) {
+        this.dataTable = dataTable;
         this.row = row;
         this.dataAnnotation = null;
     }
 
-    public JIPipeCacheSlotDataSource(JIPipeDataSlot slot, int row, String dataAnnotation) {
-        this.slot = slot;
+    public JIPipeDataTableDataSource(JIPipeDataTable dataTable, int row, String dataAnnotation) {
+        this.dataTable = dataTable;
         this.row = row;
         this.dataAnnotation = dataAnnotation;
     }
@@ -35,8 +38,8 @@ public class JIPipeCacheSlotDataSource implements JIPipeDataSource {
      *
      * @return the data slot
      */
-    public JIPipeDataSlot getSlot() {
-        return slot;
+    public JIPipeDataTable getDataTable() {
+        return dataTable;
     }
 
     /**

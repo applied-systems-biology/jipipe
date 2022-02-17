@@ -14,11 +14,12 @@
 package org.hkijena.jipipe.ui.batchassistant;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeExtendedDataTableInfoUI;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheMultiDataSlotTableUI;
+import org.hkijena.jipipe.ui.cache.JIPipeExtendedMultiDataTableInfoUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 
 import javax.swing.*;
@@ -74,17 +75,17 @@ public class DataBatchBrowserUI extends JIPipeWorkbenchPanel {
     }
 
     private void showDataSlots(List<JIPipeDataSlot> slots) {
-        List<JIPipeDataSlot> filtered = new ArrayList<>();
+        List<JIPipeDataTable> filtered = new ArrayList<>();
         for (JIPipeDataSlot slot : slots) {
             filtered.add(slot.slice(dataBatch.getInputRows(slot)));
         }
-        JIPipeCacheMultiDataSlotTableUI ui = new JIPipeCacheMultiDataSlotTableUI(getWorkbench(), filtered, false);
+        JIPipeExtendedMultiDataTableInfoUI ui = new JIPipeExtendedMultiDataTableInfoUI(getWorkbench(), filtered, false);
         splitPane.setRightComponent(ui);
         revalidate();
     }
 
     private void showDataSlot(JIPipeDataSlot dataSlot) {
-        JIPipeDataSlot filtered = dataSlot.slice(dataBatch.getInputSlotRows().get(dataSlot));
+        JIPipeDataTable filtered = dataSlot.slice(dataBatch.getInputSlotRows().get(dataSlot));
         JIPipeExtendedDataTableInfoUI ui = new JIPipeExtendedDataTableInfoUI(getWorkbench(), filtered);
         splitPane.setRightComponent(ui);
         revalidate();

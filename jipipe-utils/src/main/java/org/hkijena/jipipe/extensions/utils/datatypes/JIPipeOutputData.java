@@ -40,7 +40,7 @@ public class JIPipeOutputData extends FolderData {
     }
 
     public static JIPipeOutputData importFrom(Path folder) {
-        return new JIPipeOutputData(FolderData.importFrom(folder).getPath());
+        return new JIPipeOutputData(FolderData.importFrom(folder, new JIPipeProgressInfo()).getPath());
     }
 
     @Override

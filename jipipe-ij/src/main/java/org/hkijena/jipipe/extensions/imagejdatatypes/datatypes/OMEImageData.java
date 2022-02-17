@@ -43,7 +43,7 @@ import ome.xml.model.primitives.PositiveInteger;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
@@ -1039,8 +1039,8 @@ public class OMEImageData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        if (source instanceof JIPipeCacheSlotDataSource) {
-            CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(workbench, (JIPipeCacheSlotDataSource) source, displayName, true);
+        if (source instanceof JIPipeDataTableDataSource) {
+            CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(workbench, (JIPipeDataTableDataSource) source, displayName, true);
             window.setVisible(true);
             SwingUtilities.invokeLater(window::reloadDisplayedData);
         } else {

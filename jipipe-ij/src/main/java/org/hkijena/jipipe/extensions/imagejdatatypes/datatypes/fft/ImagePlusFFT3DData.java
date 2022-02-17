@@ -49,7 +49,7 @@ public class ImagePlusFFT3DData extends ImagePlusFFT2DData {
     }
 
     public static ImagePlusFFT3DData importFrom(Path storageFolder, JIPipeProgressInfo progressInfo) {
-        return new ImagePlusFFT3DData(ImagePlusFFTData.importFrom(storageFolder).getImage());
+        return new ImagePlusFFT3DData(ImagePlusFFTData.importFrom(storageFolder, progressInfo).getImage());
     }
 
     /**

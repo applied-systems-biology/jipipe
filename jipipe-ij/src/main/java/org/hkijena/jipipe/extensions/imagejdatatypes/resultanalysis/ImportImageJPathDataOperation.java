@@ -61,7 +61,7 @@ public class ImportImageJPathDataOperation implements JIPipeDataImportOperation,
     }
 
     @Override
-    public boolean canShow(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, Path rowStorageFolder) {
+    public boolean canShow(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, Path rowStorageFolder) {
         Path targetPath = getTargetPath(rowStorageFolder);
         if (targetPath == null)
             return false;
@@ -85,7 +85,7 @@ public class ImportImageJPathDataOperation implements JIPipeDataImportOperation,
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         Path targetPath = getTargetPath(rowStorageFolder);
         if (targetPath == null)
             return null;

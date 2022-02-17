@@ -5,6 +5,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
@@ -54,8 +55,8 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Save all inputs
         for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
-            JIPipeDataSlot dummy = slot.slice(Collections.singletonList(dataBatch.getInputRow(slot)));
-            dummy.save(inputPath.resolve(slot.getName()), inputPath, progressInfo.resolve("Save inputs"));
+            JIPipeDataTable dummy = slot.slice(Collections.singletonList(dataBatch.getInputRow(slot)));
+            dummy.save(inputPath.resolve(slot.getName()), progressInfo.resolve("Save inputs"));
         }
 
         // Run process
@@ -83,7 +84,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
                 continue;
             Path slotPath = outputPath.resolve(slot.getName());
             if (Files.exists(slotPath.resolve("data-table.json"))) {
-                JIPipeDataSlot loaded = JIPipeDataSlot.loadFromStoragePath(slotPath, progressInfo.resolve("Extracting output '" + slot.getName() + "'"));
+                JIPipeDataTable loaded = JIPipeDataTable.importFrom(slotPath, progressInfo.resolve("Extracting output '" + slot.getName() + "'"));
                 for (int i = 0; i < loaded.getRowCount(); i++) {
                     dataBatch.addOutputData(slot.getName(), loaded.getData(i, slot.getAcceptedDataType(), progressInfo), progressInfo);
                 }

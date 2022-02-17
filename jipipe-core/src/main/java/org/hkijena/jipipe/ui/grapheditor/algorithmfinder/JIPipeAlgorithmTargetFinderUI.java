@@ -142,7 +142,7 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
         toolBar.add(algorithmNameLabel);
         toolBar.add(Box.createHorizontalStrut(5));
         JLabel slotNameLabel = new JLabel(outputSlot.getName(), JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()), JLabel.LEFT);
-        slotNameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(outputSlot));
+        slotNameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(outputSlot));
         toolBar.add(slotNameLabel);
 
         toolBar.add(Box.createHorizontalGlue());

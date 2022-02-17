@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
@@ -40,7 +40,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
     private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
     private ImageViewerPanel imageViewerPanel;
 
-    public CachedImagePlusDataViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName, boolean deferLoadingData) {
+    public CachedImagePlusDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoadingData) {
         super(workbench, dataSource, displayName);
         initialize();
         if (!deferLoadingData)

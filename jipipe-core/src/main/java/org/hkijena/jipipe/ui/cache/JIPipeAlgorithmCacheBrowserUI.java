@@ -135,7 +135,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void showDataSlots(List<JIPipeDataSlot> slots) {
-        JIPipeCacheMultiDataSlotTableUI ui = new JIPipeCacheMultiDataSlotTableUI(getProjectWorkbench(), slots, false);
+        JIPipeExtendedMultiDataTableInfoUI ui = new JIPipeExtendedMultiDataTableInfoUI(getProjectWorkbench(), slots, false);
         splitPane.setRightComponent(ui);
         revalidate();
     }
@@ -236,7 +236,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            JIPipeCachedSlotToOutputExporterRun run = new JIPipeCachedSlotToOutputExporterRun(getWorkbench(), outputFolder,
+            JIPipeDataTableToOutputExporterRun run = new JIPipeDataTableToOutputExporterRun(getWorkbench(), outputFolder,
                     new ArrayList<>(stateMap.get(exportedState).values()), true);
             JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), run);
         }

@@ -89,7 +89,7 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
                     "You tried to import data from a JIPipe output slot folder located at " + dataFolder + ". JIPipe has a very specific format to store such folders. The directory seems to not conform to this format.",
                     "Check if the folder contains many numeric subfolders and a data-table.json file.");
         }
-        JIPipeExportedDataTable exportedDataTable = JIPipeExportedDataTable.loadFromJson(dataFolder.resolve("data-table.json"));
+        JIPipeDataTableMetadata exportedDataTable = JIPipeDataTableMetadata.loadFromJson(dataFolder.resolve("data-table.json"));
         Class<? extends JIPipeData> dataType = JIPipe.getDataTypes().getById(exportedDataTable.getAcceptedDataTypeId());
         if (dataType == null) {
             slotProgressInfo.log("Error: Unknown data type id " + exportedDataTable.getAcceptedDataTypeId());
@@ -100,7 +100,7 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
                     "Check if you installed the necessary plugins and extensions.");
         }
 
-        for (JIPipeExportedDataTableRow row : exportedDataTable.getRowList()) {
+        for (JIPipeDataTableMetadataRow row : exportedDataTable.getRowList()) {
             slotProgressInfo.log("Importing data row " + row.getIndex());
             Path storageFolder = dataFolder.resolve("" + row.getIndex());
             List<JIPipeTextAnnotation> annotationList = row.getAnnotations();

@@ -43,6 +43,20 @@ public class JIPipeVirtualData {
     }
 
     /**
+     * Fully duplicates the virtual data
+     * @param progressInfo the progress info
+     * @return the copy
+     */
+    public JIPipeVirtualData duplicate(JIPipeProgressInfo progressInfo) {
+        JIPipeData data = getData(progressInfo).duplicate(progressInfo);
+        JIPipeVirtualData virtualData = new JIPipeVirtualData(data);
+        if(isVirtual()) {
+            virtualData.makeVirtual(progressInfo, true);
+        }
+        return virtualData;
+    }
+
+    /**
      * Creates a custom virtual data. You have to ensure that everything inside here is correct!
      *
      * @param dataClass            the data class

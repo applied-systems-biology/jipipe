@@ -234,8 +234,8 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        if (source instanceof JIPipeCacheSlotDataSource) {
-            CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(workbench, (JIPipeCacheSlotDataSource) source, displayName, true);
+        if (source instanceof JIPipeDataTableDataSource) {
+            CachedImagePlusDataViewerWindow window = new CachedImagePlusDataViewerWindow(workbench, (JIPipeDataTableDataSource) source, displayName, true);
             window.setVisible(true);
             SwingUtilities.invokeLater(window::reloadDisplayedData);
         } else {

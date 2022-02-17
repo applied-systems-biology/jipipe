@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
@@ -45,8 +46,8 @@ public class AddROIToActiveJIPipeImageViewerDataDisplay implements JIPipeDataDis
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
-        ROIListData rois = ROIListData.importFrom(rowStorageFolder);
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+        ROIListData rois = ROIListData.importFrom(rowStorageFolder, new JIPipeProgressInfo());
         display(rois, displayName, workbench, new JIPipeResultSlotDataSource(slot, row, rowStorageFolder));
         return rois;
     }

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.tables.display;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeCacheSlotDataSource;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -32,7 +32,7 @@ public class CachedTableViewerWindow extends JIPipeCacheDataViewerWindow {
     private JLabel errorLabel;
     private JIPipeCachedDataViewerAnnotationInfoPanel annotationInfoPanel;
 
-    public CachedTableViewerWindow(JIPipeWorkbench workbench, JIPipeCacheSlotDataSource dataSource, String displayName, boolean deferLoading) {
+    public CachedTableViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
         initialize();
         if (!deferLoading)

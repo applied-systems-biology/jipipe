@@ -10,7 +10,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -183,7 +183,7 @@ public class PythonUtils {
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
             JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), node, slot);
-            dummy.save(tempPath, null, progressInfo);
+            dummy.save(tempPath, progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
         }
         PythonUtils.inputSlotsToPython(code, inputSlotPaths);
@@ -200,7 +200,7 @@ public class PythonUtils {
                 throw new RuntimeException(e);
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
-            slot.save(tempPath, null, progressInfo);
+            slot.save(tempPath, progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
         }
         PythonUtils.inputSlotsToPython(code, inputSlotPaths);
@@ -218,7 +218,7 @@ public class PythonUtils {
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
             JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), node, slot);
-            dummy.save(tempPath, null, progressInfo);
+            dummy.save(tempPath, progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
         }
         PythonUtils.inputSlotsToPython(code, inputSlotPaths);
@@ -239,7 +239,7 @@ public class PythonUtils {
     public static void extractOutputs(JIPipeDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
-            JIPipeExportedDataTable table = JIPipeExportedDataTable.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
+            JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
@@ -252,7 +252,7 @@ public class PythonUtils {
     public static void extractOutputs(JIPipeMergingDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
-            JIPipeExportedDataTable table = JIPipeExportedDataTable.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
+            JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
@@ -265,7 +265,7 @@ public class PythonUtils {
     public static void extractOutputs(Map<String, Path> outputSlotPaths, List<JIPipeDataSlot> outputSlots, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
-            JIPipeExportedDataTable table = JIPipeExportedDataTable.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
+            JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);

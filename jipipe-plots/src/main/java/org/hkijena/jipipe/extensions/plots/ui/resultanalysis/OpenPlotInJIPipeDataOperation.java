@@ -22,7 +22,7 @@ public class OpenPlotInJIPipeDataOperation implements JIPipeDataDisplayOperation
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         PlotData plotData = PlotData.fromFolder(rowStorageFolder);
         PlotEditor plotBuilderUI = new PlotEditor(workbench);
         plotBuilderUI.importExistingPlot(plotData);

@@ -424,7 +424,7 @@ public class JIPipeRun implements JIPipeRunnable {
             if (configuration.isSaveToDisk() && !configuration.getDisableSaveToDiskNodes().contains(slot.getNode())) {
                 JIPipeProgressInfo saveProgress = progressInfo.resolveAndLog(String.format("Saving data in slot '%s' (data type %s)", slot.getDisplayName(), JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName()));
                 progressInfo.resolve("GC").log("Flushing output slot " + slot.getDisplayName());
-                slot.flush(configuration.getOutputPath(), saveProgress);
+                slot.flush(saveProgress);
             } else {
                 progressInfo.resolve("GC").log("Clearing output slot " + slot.getDisplayName());
                 slot.clearData();

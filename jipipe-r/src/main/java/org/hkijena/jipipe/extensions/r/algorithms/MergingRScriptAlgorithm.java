@@ -141,7 +141,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
             JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), this, slot);
-            dummy.save(tempPath, null, progressInfo);
+            dummy.save(tempPath, progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
             dummySlots.add(dummy);
         }
@@ -175,7 +175,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
 
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
-            JIPipeExportedDataTable table = JIPipeExportedDataTable.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
+            JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);

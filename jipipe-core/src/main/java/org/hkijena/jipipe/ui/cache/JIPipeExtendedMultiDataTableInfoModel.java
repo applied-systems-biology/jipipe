@@ -19,7 +19,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.api.nodes.JIPipeEmptyNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
@@ -32,73 +33,76 @@ import java.util.List;
 import java.util.*;
 
 /**
- * Merges multiple {@link JIPipeDataSlot}
+ * Merges multiple {@link JIPipeDataTable}
  * Please not the previews are initialized with deferred rendering.
  * You will need to set a scroll pane to. Then the rendering will work.
  */
-public class JIPipeMergedDataSlotTableModel implements TableModel {
+public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
 
     private final JTable table;
     private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
-    private ArrayList<JIPipeProjectCompartment> compartmentList = new ArrayList<>();
-    private ArrayList<JIPipeGraphNode> algorithmList = new ArrayList<>();
-    private List<String> annotationColumns = new ArrayList<>();
-    private List<String> dataAnnotationColumns = new ArrayList<>();
-    private ArrayList<JIPipeDataSlot> slotList = new ArrayList<>();
-    private ArrayList<Integer> rowList = new ArrayList<>();
-    private List<Component> previewCache = new ArrayList<>();
-    private Map<String, List<Component>> dataAnnotationPreviewCache = new HashMap<>();
+    private final ArrayList<JIPipeProjectCompartment> compartmentList = new ArrayList<>();
+    private final ArrayList<JIPipeGraphNode> nodeList = new ArrayList<>();
+    private final List<String> annotationColumns = new ArrayList<>();
+    private final List<String> dataAnnotationColumns = new ArrayList<>();
+    private final ArrayList<JIPipeDataTable> slotList = new ArrayList<>();
+    private final ArrayList<Integer> rowList = new ArrayList<>();
+    private final List<Component> previewCache = new ArrayList<>();
+    private final Map<String, List<Component>> dataAnnotationPreviewCache = new HashMap<>();
     private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
     private JScrollPane scrollPane;
-    private boolean withCompartmentAndAlgorithm;
+    private final boolean withCompartmentAndAlgorithm;
 
-    public JIPipeMergedDataSlotTableModel(JTable table, boolean withCompartmentAndAlgorithm) {
+    public JIPipeExtendedMultiDataTableInfoModel(JTable table, boolean withCompartmentAndAlgorithm) {
         this.table = table;
         this.withCompartmentAndAlgorithm = withCompartmentAndAlgorithm;
     }
 
-    public List<JIPipeDataSlot> getSlotList() {
+    public List<JIPipeDataTable> getSlotList() {
         return Collections.unmodifiableList(slotList);
     }
 
     /**
-     * Adds an {@link JIPipeExportedDataTable}
+     * Adds an {@link JIPipeDataTableMetadata}
      *
      * @param project  The project
-     * @param dataSlot The data slot
+     * @param dataTable The data slot
      */
-    public void add(JIPipeProject project, JIPipeDataSlot dataSlot) {
-        for (String annotationColumn : dataSlot.getAnnotationColumns()) {
+    public void add(JIPipeProject project, JIPipeDataTable dataTable) {
+        for (String annotationColumn : dataTable.getAnnotationColumns()) {
             if (!annotationColumns.contains(annotationColumn))
                 annotationColumns.add(annotationColumn);
         }
-        for (String annotationColumn : dataSlot.getDataAnnotationColumns()) {
+        for (String annotationColumn : dataTable.getDataAnnotationColumns()) {
             if (!dataAnnotationColumns.contains(annotationColumn))
                 dataAnnotationColumns.add(annotationColumn);
         }
         JIPipeProjectCompartment compartment = null;
-        if (project != null) {
-            compartment = project.getCompartments().getOrDefault(dataSlot.getNode().getCompartmentUUIDInGraph(), null);
+        if (project != null && dataTable instanceof JIPipeDataSlot) {
+            compartment = project.getCompartments().getOrDefault(((JIPipeDataSlot) dataTable).getNode().getCompartmentUUIDInGraph(), null);
         }
         if (compartment == null) {
             compartment = new JIPipeProjectCompartment(new JIPipeEmptyNodeInfo());
         }
-        JIPipeGraphNode algorithm = dataSlot.getNode();
+        JIPipeGraphNode node = null;
+        if(dataTable instanceof JIPipeDataSlot) {
+            node = ((JIPipeDataSlot) dataTable).getNode();
+        }
 
-        for (int i = 0; i < dataSlot.getRowCount(); ++i) {
-            slotList.add(dataSlot);
+        for (int i = 0; i < dataTable.getRowCount(); ++i) {
+            slotList.add(dataTable);
             compartmentList.add(compartment);
-            algorithmList.add(algorithm);
+            nodeList.add(node);
             rowList.add(i);
             previewCache.add(null);
         }
-        for (String dataAnnotationColumn : dataSlot.getDataAnnotationColumns()) {
+        for (String dataAnnotationColumn : dataTable.getDataAnnotationColumns()) {
             List<Component> dataAnnotationPreviews = dataAnnotationPreviewCache.getOrDefault(dataAnnotationColumn, null);
             if (dataAnnotationPreviews == null) {
                 dataAnnotationPreviews = new ArrayList<>();
                 dataAnnotationPreviewCache.put(dataAnnotationColumn, dataAnnotationPreviews);
             }
-            for (int i = 0; i < dataSlot.getRowCount(); ++i) {
+            for (int i = 0; i < dataTable.getRowCount(); ++i) {
                 dataAnnotationPreviews.add(null);
             }
         }
@@ -264,11 +268,11 @@ public class JIPipeMergedDataSlotTableModel implements TableModel {
     public Object getValueAt(int rowIndex, int columnIndex) {
         if (withCompartmentAndAlgorithm) {
             if (columnIndex == 0)
-                return slotList.get(rowIndex).getName();
+                return slotList.get(rowIndex).getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");
             else if (columnIndex == 1)
                 return compartmentList.get(rowIndex);
             else if (columnIndex == 2)
-                return algorithmList.get(rowIndex);
+                return nodeList.get(rowIndex);
             else if (columnIndex == 3)
                 return rowList.get(rowIndex);
             else if (columnIndex == 4)
@@ -281,12 +285,12 @@ public class JIPipeMergedDataSlotTableModel implements TableModel {
                 return getDataAnnotationPreviewComponent(rowIndex, columnIndex);
             } else {
                 String annotationColumn = annotationColumns.get(toAnnotationColumnIndex(columnIndex));
-                JIPipeDataSlot slot = slotList.get(rowIndex);
+                JIPipeDataTable slot = slotList.get(rowIndex);
                 return slot.getTextAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
             }
         } else {
             if (columnIndex == 0)
-                return slotList.get(rowIndex).getName();
+                return slotList.get(rowIndex).getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");
             else if (columnIndex == 1)
                 return rowList.get(rowIndex);
             else if (columnIndex == 2)
@@ -299,7 +303,7 @@ public class JIPipeMergedDataSlotTableModel implements TableModel {
                 return getDataAnnotationPreviewComponent(rowIndex, columnIndex);
             } else {
                 String annotationColumn = annotationColumns.get(toAnnotationColumnIndex(columnIndex));
-                JIPipeDataSlot slot = slotList.get(rowIndex);
+                JIPipeDataTable slot = slotList.get(rowIndex);
                 return slot.getTextAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
             }
         }
@@ -369,7 +373,7 @@ public class JIPipeMergedDataSlotTableModel implements TableModel {
      * @param row Row index
      * @return The slot that defined the row
      */
-    public JIPipeDataSlot getSlot(int row) {
+    public JIPipeDataTable getSlot(int row) {
         return slotList.get(row);
     }
 

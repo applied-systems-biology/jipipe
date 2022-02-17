@@ -93,7 +93,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
             }
             if (virtualLabel != null) {
                 if (getSlot().getNode() instanceof JIPipeAlgorithm) {
-                    virtualLabel.setVisible(getSlot().isVirtual());
+                    virtualLabel.setVisible(getSlot().isNewDataVirtual());
                 } else {
                     virtualLabel.setVisible(false);
                 }
@@ -135,7 +135,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
 
         nameLabel = new ZoomLabel("", null, getGraphUI());
         reloadName();
-        nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(getSlot()));
+        nameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(getSlot()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));
         nameLabel.setIcon(new ZoomIcon(JIPipe.getDataTypes().getIconFor(getSlotDataType()), getGraphUI()));
         if (!(getSlot().getNode() instanceof JIPipeCommentNode)) {

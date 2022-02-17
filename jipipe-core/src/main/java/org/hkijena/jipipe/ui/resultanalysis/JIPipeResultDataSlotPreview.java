@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
+import org.hkijena.jipipe.api.data.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -34,7 +34,7 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
 
     private final JTable table;
     private final JIPipeDataSlot slot;
-    private final JIPipeExportedDataTableRow row;
+    private final JIPipeDataTableMetadataRow row;
     private final JIPipeExportedDataAnnotation dataAnnotation;
 
     /**
@@ -46,7 +46,7 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
      * @param row            the row
      * @param dataAnnotation optional data annotation. if null, the main data is referenced
      */
-    public JIPipeResultDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeExportedDataTableRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+    public JIPipeResultDataSlotPreview(JIPipeProjectWorkbench workbench, JTable table, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
         super(workbench);
         this.slot = slot;
         this.row = row;
@@ -86,7 +86,7 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
      * @param dataAnnotation optional data annotation
      * @return The display name
      */
-    public static String getDisplayName(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeExportedDataTableRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+    public static String getDisplayName(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
         return getAlgorithmCompartment(workbenchUI, slot) + "/" + getNodeName(slot) + "/" + slot.getName() + "/" + row.getIndex() + (dataAnnotation != null ? "/$" + dataAnnotation.getName() : "");
     }
 
@@ -98,7 +98,7 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
      * @param dataAnnotation optional data annotation name
      * @return The row storage folder
      */
-    public static Path getRowStorageFolder(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, JIPipeExportedDataAnnotation dataAnnotation) {
+    public static Path getRowStorageFolder(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
         if (dataAnnotation == null)
             return slot.getStoragePath().resolve("" + row.getIndex());
         else
@@ -122,7 +122,7 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
         return slot;
     }
 
-    public JIPipeExportedDataTableRow getRow() {
+    public JIPipeDataTableMetadataRow getRow() {
         return row;
     }
 

@@ -15,8 +15,8 @@ package org.hkijena.jipipe.ui.resultanalysis;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTable;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataTableRow;
+import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.data.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 
@@ -27,7 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Renders row data of an {@link JIPipeExportedDataTable}
+ * Renders row data of an {@link JIPipeDataTableMetadata}
  */
 public class JIPipeRowDataTableCellRenderer implements TableCellRenderer {
 
@@ -65,7 +65,7 @@ public class JIPipeRowDataTableCellRenderer implements TableCellRenderer {
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-        if (value instanceof JIPipeExportedDataTableRow) {
+        if (value instanceof JIPipeDataTableMetadataRow) {
             row = table.convertRowIndexToModel(row);
             while (row > previewCache.size() - 1) {
                 previewCache.add(null);
@@ -73,7 +73,7 @@ public class JIPipeRowDataTableCellRenderer implements TableCellRenderer {
             revalidatePreviewCache();
             JIPipeResultDataSlotPreview preview = previewCache.get(row);
             if (preview == null) {
-                preview = JIPipe.getDataTypes().getCellRendererFor(workbenchUI, table, slot, (JIPipeExportedDataTableRow) value, null);
+                preview = JIPipe.getDataTypes().getCellRendererFor(workbenchUI, table, slot, (JIPipeDataTableMetadataRow) value, null);
                 previewCache.set(row, preview);
             }
             if (isSelected) {

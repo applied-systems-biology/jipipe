@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.filesystem.resultanalysis;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -48,10 +49,10 @@ public class CopyPathDataOperation implements JIPipeDataImportOperation, JIPipeD
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
         Path listFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".json");
         if (listFile != null) {
-            PathData pathData = PathData.importFrom(rowStorageFolder, progressInfo);
+            PathData pathData = PathData.importFrom(rowStorageFolder, new JIPipeProgressInfo());
             StringSelection selection = new StringSelection(pathData.getPath());
             Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
             clipboard.setContents(selection, selection);

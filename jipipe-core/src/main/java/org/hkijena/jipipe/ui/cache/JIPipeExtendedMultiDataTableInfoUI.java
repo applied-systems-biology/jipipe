@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -61,34 +62,34 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
- * UI that displays a {@link JIPipeDataSlot} that is cached
+ * Displays multiple {@link JIPipeDataTable} in one table.
  */
-public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
+public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
 
-    private final List<JIPipeDataSlot> slots;
+    private final List<? extends JIPipeDataTable> dataTables;
     private final boolean withCompartmentAndAlgorithm;
-    private JIPipeMergedDataSlotTableModel multiSlotTable;
+    private JIPipeExtendedMultiDataTableInfoModel multiSlotTable;
     private JXTable table;
     private FormPanel rowUIList;
     private SearchTextField searchTextField = new SearchTextField();
 
     /**
      * @param workbenchUI                 the workbench UI
-     * @param slots                       The slots
+     * @param dataTables                       The slots
      * @param withCompartmentAndAlgorithm
      */
-    public JIPipeCacheMultiDataSlotTableUI(JIPipeWorkbench workbenchUI, List<JIPipeDataSlot> slots, boolean withCompartmentAndAlgorithm) {
+    public JIPipeExtendedMultiDataTableInfoUI(JIPipeWorkbench workbenchUI, List<? extends JIPipeDataTable> dataTables, boolean withCompartmentAndAlgorithm) {
         super(workbenchUI);
-        this.slots = slots;
+        this.dataTables = dataTables;
         this.withCompartmentAndAlgorithm = withCompartmentAndAlgorithm;
         table = new JXTable();
-        this.multiSlotTable = new JIPipeMergedDataSlotTableModel(table, withCompartmentAndAlgorithm);
+        this.multiSlotTable = new JIPipeExtendedMultiDataTableInfoModel(table, withCompartmentAndAlgorithm);
         JIPipeProject project = null;
         if (getWorkbench() instanceof JIPipeProjectWorkbench) {
             project = ((JIPipeProjectWorkbench) getWorkbench()).getProject();
         }
-        for (JIPipeDataSlot slot : slots) {
-            multiSlotTable.add(project, slot);
+        for (JIPipeDataTable dataTable : dataTables) {
+            multiSlotTable.add(project, dataTable);
         }
 
         initialize();
@@ -203,10 +204,10 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
 
         JMenuItem openReferenceWindowItem = new JMenuItem("Open in new tab", UIUtils.getIconFromResources("actions/tab.png"));
         openReferenceWindowItem.addActionListener(e-> {
-            String name = "Cache: " + slots.stream().map(slot -> slot.getNode().getName()).distinct().collect(Collectors.joining(", "));
+            String name = "Cache: " + dataTables.stream().map(slot -> slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "")).distinct().collect(Collectors.joining(", "));
             getWorkbench().getDocumentTabPane().addTab(name,
                     UIUtils.getIconFromResources("actions/database.png"),
-                    new JIPipeCacheMultiDataSlotTableUI(getWorkbench(), slots, withCompartmentAndAlgorithm),
+                    new JIPipeExtendedMultiDataTableInfoUI(getWorkbench(), dataTables, withCompartmentAndAlgorithm),
                     DocumentTabPane.CloseMode.withSilentCloseButton,
                     true);
             getWorkbench().getDocumentTabPane().switchToLastTab();
@@ -231,7 +232,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void exportByMetadataExporter() {
-        JIPipeDataTableToFilesByMetadataExporterRun run = new JIPipeDataTableToFilesByMetadataExporterRun(getWorkbench(), slots, true);
+        JIPipeDataTableToFilesByMetadataExporterRun run = new JIPipeDataTableToFilesByMetadataExporterRun(getWorkbench(), dataTables, true);
         if (run.setup()) {
             JIPipeRunnerQueue.getInstance().enqueue(run);
         }
@@ -240,7 +241,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
     private void exportAsJIPipeSlot() {
         Path path = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export data as JIPipe output slot");
         if (path != null) {
-            JIPipeCachedSlotToOutputExporterRun run = new JIPipeCachedSlotToOutputExporterRun(getWorkbench(), path, slots, true);
+            JIPipeDataTableToOutputExporterRun run = new JIPipeDataTableToOutputExporterRun(getWorkbench(), path, dataTables, true);
             JIPipeRunnerQueue.getInstance().enqueue(run);
         }
     }
@@ -248,12 +249,12 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
 
     private void exportAsTable() {
         AnnotationTableData tableData = new AnnotationTableData();
-        for (JIPipeDataSlot slot : multiSlotTable.getSlotList()) {
+        for (JIPipeDataTable slot : multiSlotTable.getSlotList()) {
             tableData.addRows(slot.toAnnotationTable(true));
         }
         Set<String> nodes = new HashSet<>();
-        for (JIPipeDataSlot dataSlot : multiSlotTable.getSlotList()) {
-            nodes.add(dataSlot.getNode().getDisplayName());
+        for (JIPipeDataTable dataSlot : multiSlotTable.getSlotList()) {
+            nodes.add(dataSlot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_DISPLAY_NAME, ""));
         }
         TableEditor.openWindow(getWorkbench(), tableData, nodes.stream().sorted().collect(Collectors.joining(", ")));
     }
@@ -262,7 +263,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
             AnnotationTableData tableData = new AnnotationTableData();
-            for (JIPipeDataSlot slot : multiSlotTable.getSlotList()) {
+            for (JIPipeDataTable slot : multiSlotTable.getSlotList()) {
                 tableData.addRows(slot.toAnnotationTable(true));
             }
             tableData.saveAsCSV(path);
@@ -271,9 +272,9 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
 
     private void handleSlotRowDefaultAction(int selectedRow) {
         int multiRow = table.getRowSorter().convertRowIndexToModel(selectedRow);
-        JIPipeDataSlot slot = multiSlotTable.getSlot(multiRow);
+        JIPipeDataTable slot = multiSlotTable.getSlot(multiRow);
         int row = multiSlotTable.getRow(multiRow);
-        JIPipeDataSlotRowUI rowUI = new JIPipeDataSlotRowUI(getWorkbench(), slot, row);
+        JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), slot, row);
         rowUI.handleDefaultAction();
 //        slot.getData(row, JIPipeData.class).display(slot.getNode().getName() + "/" + slot.getName() + "/" + row, getWorkbench());
     }
@@ -282,21 +283,22 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
         rowUIList.clear();
 
         JLabel infoLabel = new JLabel();
-        int rowCount = slots.stream().mapToInt(JIPipeDataSlot::getRowCount).sum();
-        infoLabel.setText(rowCount + " rows" + (slots.size() > 1 ? " across " + slots.size() + " tables" : "") + (selectedRows.length > 0 ? ", " + selectedRows.length + " selected" : ""));
+        int rowCount = dataTables.stream().mapToInt(JIPipeDataTable::getRowCount).sum();
+        infoLabel.setText(rowCount + " rows" + (dataTables.size() > 1 ? " across " + dataTables.size() + " tables" : "") + (selectedRows.length > 0 ? ", " + selectedRows.length + " selected" : ""));
         infoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         rowUIList.addWideToForm(infoLabel, null);
 
         for (int viewRow : selectedRows) {
             int multiRow = table.getRowSorter().convertRowIndexToModel(viewRow);
-            JIPipeDataSlot slot = multiSlotTable.getSlot(multiRow);
+            JIPipeDataTable slot = multiSlotTable.getSlot(multiRow);
             int row = multiSlotTable.getRow(multiRow);
             Class<? extends JIPipeData> dataClass = slot.getDataClass(row);
-            String name = slot.getNode().getName() + "/" + slot.getName() + "/" + row;
+            String name = slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "")+ "/" +
+                    slot.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row;
             JLabel nameLabel = new JLabel(name, JIPipe.getDataTypes().getIconFor(dataClass), JLabel.LEFT);
-            nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
-            JIPipeDataSlotRowUI JIPipeDataSlotRowUI = new JIPipeDataSlotRowUI(getWorkbench(), slot, row);
-            rowUIList.addToForm(JIPipeDataSlotRowUI, nameLabel, null);
+            nameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(slot));
+            JIPipeDataTableRowUI JIPipeDataTableRowUI = new JIPipeDataTableRowUI(getWorkbench(), slot, row);
+            rowUIList.addToForm(JIPipeDataTableRowUI, nameLabel, null);
         }
     }
 
@@ -312,7 +314,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
 
     private void updateStatus() {
         boolean hasData = false;
-        for (JIPipeDataSlot slot : slots) {
+        for (JIPipeDataTable slot : dataTables) {
             if (slot.getRowCount() > 0) {
                 hasData = true;
                 break;
@@ -336,20 +338,20 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
      * Renders the column header
      */
     public static class MultiDataSlotTableColumnRenderer implements TableCellRenderer {
-        private final JIPipeMergedDataSlotTableModel dataTable;
+        private final JIPipeExtendedMultiDataTableInfoModel dataTable;
 
         /**
          * Creates a new instance
          *
          * @param dataTable The table
          */
-        public MultiDataSlotTableColumnRenderer(JIPipeMergedDataSlotTableModel dataTable) {
+        public MultiDataSlotTableColumnRenderer(JIPipeExtendedMultiDataTableInfoModel dataTable) {
             this.dataTable = dataTable;
         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            JIPipeMergedDataSlotTableModel model = (JIPipeMergedDataSlotTableModel) table.getModel();
+            JIPipeExtendedMultiDataTableInfoModel model = (JIPipeExtendedMultiDataTableInfoModel) table.getModel();
             TableCellRenderer defaultRenderer = table.getTableHeader().getDefaultRenderer();
             int modelColumn = table.convertColumnIndexToModel(column);
             int spacer = model.isWithCompartmentAndAlgorithm() ? 7 : 5;

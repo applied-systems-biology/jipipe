@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * A row in the table
  */
-public class JIPipeExportedDataTableRow {
+public class JIPipeDataTableMetadataRow {
     private int index;
     private List<JIPipeTextAnnotation> annotations = new ArrayList<>();
     private List<JIPipeExportedDataAnnotation> dataAnnotations = new ArrayList<>();
@@ -19,7 +19,7 @@ public class JIPipeExportedDataTableRow {
     /**
      * Creates new instance
      */
-    public JIPipeExportedDataTableRow() {
+    public JIPipeDataTableMetadataRow() {
     }
 
     /**
