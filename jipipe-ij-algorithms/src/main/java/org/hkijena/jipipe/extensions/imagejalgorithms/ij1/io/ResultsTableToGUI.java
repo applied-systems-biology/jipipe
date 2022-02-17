@@ -44,7 +44,7 @@ public class ResultsTableToGUI extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData inputData = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         String title = dataBatch.getMergedAnnotations().values().stream().map(a -> a.getName() + "=" + a.getValue()).collect(Collectors.joining(", "));
-        ((ResultsTableData) inputData.duplicate()).getTable().show(title);
+        ((ResultsTableData) inputData.duplicate(progressInfo)).getTable().show(title);
         dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
     }
 }

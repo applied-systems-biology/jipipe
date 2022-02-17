@@ -68,7 +68,7 @@ public class JIPipeExportedDataTable implements TableModel {
         for (int row = 0; row < slot.getRowCount(); ++row) {
             JIPipeExportedDataTableRow rowInstance = new JIPipeExportedDataTableRow();
             rowInstance.setIndex(indices.get(row));
-            rowInstance.setAnnotations(slot.getAnnotations(row));
+            rowInstance.setAnnotations(slot.getTextAnnotations(row));
             rowInstance.setTrueDataType(JIPipeDataInfo.getInstance(slot.getDataClass(row)).getId());
             for (int i = 0; i < dataAnnotationColumns.size(); i++) {
                 JIPipeVirtualData virtualDataAnnotation = slot.getVirtualDataAnnotation(row, dataAnnotationColumns.get(i));

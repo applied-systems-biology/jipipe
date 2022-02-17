@@ -54,7 +54,7 @@ public class DisplayRangeCalibrationAlgorithm extends JIPipeSimpleIteratingAlgor
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         if (duplicateImage)
-            data = (ImagePlusData) data.duplicate();
+            data = (ImagePlusData) data.duplicate(progressInfo);
         ImagePlus image = data.getImage();
         if (applyToAllPlanes && image.isStack()) {
             ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.plots.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -52,8 +53,8 @@ public class LineCategoryPlotData extends CategoryPlotData {
         this.lineThickness = other.lineThickness;
     }
 
-    public static LineCategoryPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, LineCategoryPlotData.class);
+    public static LineCategoryPlotData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
+        return PlotData.importFrom(storagePath, LineCategoryPlotData.class, progressInfo);
     }
 
     @Override

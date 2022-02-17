@@ -58,7 +58,7 @@ public class RemoveArrayAnnotationsAlgorithm extends JIPipeParameterSlotAlgorith
         if (removeColumn) {
             Set<String> toRemove = annotationNameFilter.queryAll(getFirstInputSlot().getAnnotationColumns(), new ExpressionVariables()).stream().filter(columnName -> {
                 for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-                    JIPipeTextAnnotation existing = getFirstInputSlot().getAnnotationOr(row, columnName, null);
+                    JIPipeTextAnnotation existing = getFirstInputSlot().getTextAnnotationOr(row, columnName, null);
                     if (existing != null && existing.isArray())
                         return true;
                 }
@@ -70,7 +70,7 @@ public class RemoveArrayAnnotationsAlgorithm extends JIPipeParameterSlotAlgorith
             }
         } else {
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-                List<JIPipeTextAnnotation> annotations = getFirstInputSlot().getAnnotations(row);
+                List<JIPipeTextAnnotation> annotations = getFirstInputSlot().getTextAnnotations(row);
                 annotations.removeIf(annotation -> annotationNameFilter.test(annotation.getName()) && annotation.isArray());
                 getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row),
                         annotations,

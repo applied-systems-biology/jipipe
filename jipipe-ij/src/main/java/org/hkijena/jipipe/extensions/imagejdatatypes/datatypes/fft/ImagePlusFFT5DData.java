@@ -17,6 +17,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.nio.file.Path;
@@ -47,7 +48,7 @@ public class ImagePlusFFT5DData extends ImagePlusFFT2DData {
         }
     }
 
-    public static ImagePlusFFT5DData importFrom(Path storageFolder) {
+    public static ImagePlusFFT5DData importFrom(Path storageFolder, JIPipeProgressInfo progressInfo) {
         return new ImagePlusFFT5DData(ImagePlusFFTData.importFrom(storageFolder).getImage());
     }
 

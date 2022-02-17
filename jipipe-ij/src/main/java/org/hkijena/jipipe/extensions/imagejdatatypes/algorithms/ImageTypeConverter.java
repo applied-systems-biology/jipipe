@@ -69,7 +69,7 @@ public class ImageTypeConverter extends JIPipeAlgorithm {
         for (int i = 0; i < inputSlot.getRowCount(); ++i) {
             ImagePlusData data = inputSlot.getData(i, ImagePlusData.class, progressInfo);
             JIPipeData converted = JIPipe.createData(outputSlot.getAcceptedDataType(), data.getImage());
-            outputSlot.addData(converted, outputSlot.getAnnotations(i), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+            outputSlot.addData(converted, outputSlot.getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
     }
 

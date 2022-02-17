@@ -36,7 +36,7 @@ public class OMEROImageReferenceData implements JIPipeData {
         this.imageId = imageId;
     }
 
-    public static OMEROImageReferenceData importFrom(Path storageFilePath) {
+    public static OMEROImageReferenceData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
         Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
         try {
             return JsonUtils.getObjectMapper().readerFor(OMEROImageReferenceData.class).readValue(targetFile.toFile());
@@ -66,7 +66,7 @@ public class OMEROImageReferenceData implements JIPipeData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new OMEROImageReferenceData(imageId);
     }
 

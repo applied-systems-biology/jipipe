@@ -17,6 +17,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AsserterWrapperImageSource;
@@ -60,8 +61,8 @@ public class ImagePlus4DData extends ImagePlusData {
         super(new AsserterWrapperImageSource(new ConverterWrapperImageSource(source, ImageJUtils::convert3ChannelToRGBIfNeeded), ImageJUtils::assert4DImage), colorSpace);
     }
 
-    public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlus4DData(ImagePlusData.importImagePlusFrom(storageFolder));
+    public static ImagePlusData importFrom(Path storageFolder, JIPipeProgressInfo progressInfo) {
+        return new ImagePlus4DData(ImagePlusData.importImagePlusFrom(storageFolder, progressInfo));
     }
 
     /**

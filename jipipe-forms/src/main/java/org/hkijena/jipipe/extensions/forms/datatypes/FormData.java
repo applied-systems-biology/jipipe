@@ -50,12 +50,13 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
     /**
      * Helper method that simplifies the importFrom() method definition
      *
+     * @param <T>             the form class
      * @param storageFilePath the storage folder
      * @param klass           the form class
-     * @param <T>             the form class
+     * @param progressInfo
      * @return the deserialized form
      */
-    public static <T extends FormData> T importFrom(Path storageFilePath, Class<T> klass) {
+    public static <T extends FormData> T importFrom(Path storageFilePath, Class<T> klass, JIPipeProgressInfo progressInfo) {
         try {
             FormData formData = JsonUtils.getObjectMapper().readerFor(klass).readValue(storageFilePath.resolve("form.json").toFile());
             return (T) formData;

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.plots.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.renderer.category.BarRenderer;
@@ -50,8 +51,8 @@ public class BarStatisticalCategoryPlotData extends StatisticalCategoryPlotData 
         super(other);
     }
 
-    public static BarStatisticalCategoryPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, BarStatisticalCategoryPlotData.class);
+    public static BarStatisticalCategoryPlotData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
+        return PlotData.importFrom(storagePath, BarStatisticalCategoryPlotData.class, progressInfo);
     }
 
     @Override

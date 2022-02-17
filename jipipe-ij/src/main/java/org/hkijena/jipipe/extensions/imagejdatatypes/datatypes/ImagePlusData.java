@@ -110,7 +110,7 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
         this.colorSpace = colorSpace;
     }
 
-    public static ImagePlus importImagePlusFrom(Path storageFilePath) {
+    public static ImagePlus importImagePlusFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
         Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
         if (targetFile == null) {
             throw new UserFriendlyNullPointerException("Could not find a compatible image file in '" + storageFilePath + "'!",
@@ -121,15 +121,16 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
         }
         String fileName = targetFile.toString().toLowerCase();
         if ((fileName.endsWith(".tiff") || fileName.endsWith(".tif")) && ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
-            OMEImageData omeImageData = OMEImageData.importFrom(storageFilePath);
+            OMEImageData omeImageData = OMEImageData.importFrom(storageFilePath, progressInfo);
             return omeImageData.getImage();
         } else {
+            progressInfo.log("ImageJ import " + targetFile);
             return IJ.openImage(targetFile.toString());
         }
     }
 
-    public static ImagePlusData importFrom(Path storageFilePath) {
-        return new ImagePlusData(importImagePlusFrom(storageFilePath));
+    public static ImagePlusData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
+        return new ImagePlusData(importImagePlusFrom(storageFilePath, progressInfo));
     }
 
     /**
@@ -201,7 +202,7 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         if (image != null) {
             ImagePlus imp = ImageJUtils.duplicate(image);
             imp.setTitle(getImage().getTitle());

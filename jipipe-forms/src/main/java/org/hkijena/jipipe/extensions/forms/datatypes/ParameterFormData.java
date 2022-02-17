@@ -34,7 +34,7 @@ public abstract class ParameterFormData extends FormData {
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         FormPanel formPanel = new FormPanel(new MarkdownDocument("This is a preview of the form."),
                 FormPanel.WITH_DOCUMENTATION | FormPanel.WITH_SCROLLING | FormPanel.DOCUMENTATION_BELOW);
-        ParameterFormData duplicate = (ParameterFormData) duplicate();
+        ParameterFormData duplicate = (ParameterFormData) duplicate(progressInfo);
         if (isShowName()) {
             formPanel.addToForm(duplicate.getEditor(workbench), new JLabel(getName()), description.toMarkdown());
         } else {

@@ -41,7 +41,7 @@ public class OpenPathDataOperation implements JIPipeDataImportOperation, JIPipeD
 
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeExportedDataTableRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
-        PathData pathData = PathData.importFrom(rowStorageFolder);
+        PathData pathData = PathData.importFrom(rowStorageFolder, progressInfo);
         UIUtils.openFileInNative(pathData.toPath());
         return null;
     }

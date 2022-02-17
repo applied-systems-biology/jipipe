@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.plots.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 
@@ -45,8 +46,8 @@ public class ScatterXYPlotData extends XYPlotData {
         super(other);
     }
 
-    public static ScatterXYPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, ScatterXYPlotData.class);
+    public static ScatterXYPlotData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
+        return PlotData.importFrom(storagePath, ScatterXYPlotData.class, progressInfo);
     }
 
     @Override

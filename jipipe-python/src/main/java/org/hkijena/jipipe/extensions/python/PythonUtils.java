@@ -243,7 +243,7 @@ public class PythonUtils {
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
-                JIPipeData data = JIPipe.importData(rowStoragePath, dataInfo.getDataClass());
+                JIPipeData data = JIPipe.importData(rowStoragePath, dataInfo.getDataClass(), progressInfo);
                 dataBatch.addOutputData(outputSlot, data, table.getRowList().get(row).getAnnotations(), annotationMergeStrategy, progressInfo);
             }
         }
@@ -256,7 +256,7 @@ public class PythonUtils {
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
-                JIPipeData data = JIPipe.importData(rowStoragePath, dataInfo.getDataClass());
+                JIPipeData data = JIPipe.importData(rowStoragePath, dataInfo.getDataClass(), progressInfo);
                 dataBatch.addOutputData(outputSlot, data, table.getRowList().get(row).getAnnotations(), annotationMergeStrategy, progressInfo);
             }
         }
@@ -269,7 +269,7 @@ public class PythonUtils {
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
-                JIPipeData data = JIPipe.importData(rowStoragePath, dataInfo.getDataClass());
+                JIPipeData data = JIPipe.importData(rowStoragePath, dataInfo.getDataClass(), progressInfo);
                 outputSlot.addData(data, table.getRowList().get(row).getAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
             }
         }

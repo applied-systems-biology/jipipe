@@ -62,7 +62,7 @@ public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
                     variableSet.set("title", title);
                     if (titleFilterExpression.test(variableSet)) {
                         ResultsTableData tableData = new ResultsTableData(resultsTable);
-                        dataBatch.addOutputData(getFirstOutputSlot(), tableData.duplicate(), progressInfo);
+                        dataBatch.addOutputData(getFirstOutputSlot(), tableData.duplicate(progressInfo), progressInfo);
                     }
                 }
             }

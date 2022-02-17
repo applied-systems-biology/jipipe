@@ -61,8 +61,8 @@ public class ImagePlusColorHSBData extends ImagePlusColorData implements Colored
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorHSBIfNeeded));
     }
 
-    public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlusColorHSBData(ImagePlusData.importImagePlusFrom(storageFolder));
+    public static ImagePlusData importFrom(Path storageFolder, JIPipeProgressInfo progressInfo) {
+        return new ImagePlusColorHSBData(ImagePlusData.importImagePlusFrom(storageFolder, progressInfo));
     }
 
     /**

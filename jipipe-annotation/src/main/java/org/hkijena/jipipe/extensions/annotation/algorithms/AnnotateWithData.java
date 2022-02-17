@@ -49,9 +49,9 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
 
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
         if (mergeInputAnnotations)
-            annotationList.addAll(inputDataSlot.getAnnotations(dataRow));
+            annotationList.addAll(inputDataSlot.getTextAnnotations(dataRow));
         if (mergeLabelAnnotations)
-            annotationList.addAll(inputAnnotationSlot.getAnnotations(annotationRow));
+            annotationList.addAll(inputAnnotationSlot.getTextAnnotations(annotationRow));
 
         getFirstOutputSlot().addData(inputDataSlot.getVirtualData(dataRow),
                 annotationList,

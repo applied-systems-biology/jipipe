@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.plots.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -51,8 +52,8 @@ public class LineXYPlotData extends XYPlotData {
         this.lineThickness = other.lineThickness;
     }
 
-    public static LineXYPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, LineXYPlotData.class);
+    public static LineXYPlotData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
+        return PlotData.importFrom(storagePath, LineXYPlotData.class, progressInfo);
     }
 
     @Override

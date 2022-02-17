@@ -17,6 +17,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.LABColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -62,8 +63,8 @@ public class ImagePlus5DColorLABData extends ImagePlus5DColorData implements Col
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorLABIfNeeded));
     }
 
-    public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlus5DColorLABData(ImagePlusData.importImagePlusFrom(storageFolder));
+    public static ImagePlusData importFrom(Path storageFolder, JIPipeProgressInfo progressInfo) {
+        return new ImagePlus5DColorLABData(ImagePlusData.importImagePlusFrom(storageFolder, progressInfo));
     }
 
     /**

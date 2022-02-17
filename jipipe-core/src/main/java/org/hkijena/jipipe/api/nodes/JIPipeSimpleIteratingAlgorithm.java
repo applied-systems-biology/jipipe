@@ -157,7 +157,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                     JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", i, getFirstInputSlot().getRowCount());
                     JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                     dataBatch.setInputData(getFirstInputSlot(), i);
-                    dataBatch.addMergedAnnotations(getFirstInputSlot().getAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
+                    dataBatch.addMergedAnnotations(getFirstInputSlot().getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
                     dataBatch.addMergedDataAnnotations(getFirstInputSlot().getDataAnnotations(i), JIPipeDataAnnotationMergeMode.MergeTables);
                     dataBatch.addMergedAnnotations(parameterAnnotations, JIPipeTextAnnotationMergeMode.Merge);
                     uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
@@ -180,7 +180,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                         JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", rowIndex, getFirstInputSlot().getRowCount());
                         JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                         dataBatch.setInputData(getFirstInputSlot(), rowIndex);
-                        dataBatch.addMergedAnnotations(getFirstInputSlot().getAnnotations(rowIndex), JIPipeTextAnnotationMergeMode.Merge);
+                        dataBatch.addMergedAnnotations(getFirstInputSlot().getTextAnnotations(rowIndex), JIPipeTextAnnotationMergeMode.Merge);
                         dataBatch.addMergedDataAnnotations(getFirstInputSlot().getDataAnnotations(rowIndex), JIPipeDataAnnotationMergeMode.MergeTables);
                         dataBatch.addMergedAnnotations(parameterAnnotations, JIPipeTextAnnotationMergeMode.Merge);
                         uploadAdaptiveParameters(dataBatch, finalTree, parameterBackups, progressInfo);
@@ -354,7 +354,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
                 continue;
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             dataBatch.addInputData(slot, i);
-            dataBatch.addMergedAnnotations(slot.getAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
+            dataBatch.addMergedAnnotations(slot.getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
             batches.add(dataBatch);
         }
         return batches;

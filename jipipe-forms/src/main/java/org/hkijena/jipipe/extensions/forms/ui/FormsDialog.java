@@ -71,10 +71,10 @@ public class FormsDialog extends JFrame {
     private JIPipeDataSlot createFormsInstanceFor(int index, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot copy = new JIPipeDataSlot(originalForms.getInfo(), originalForms.getNode());
         for (int row = 0; row < originalForms.getRowCount(); row++) {
-            FormData formCopy = (FormData) originalForms.getData(row, FormData.class, progressInfo).duplicate();
+            FormData formCopy = (FormData) originalForms.getData(row, FormData.class, progressInfo).duplicate(progressInfo);
             formCopy.loadData(dataBatchList.get(index));
             copy.addData(formCopy,
-                    originalForms.getAnnotations(row),
+                    originalForms.getTextAnnotations(row),
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
                     progressInfo);
         }
@@ -228,7 +228,7 @@ public class FormsDialog extends JFrame {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         JIPipeDataSlot formsForRow = dataBatchForms.get(selectedRow);
         for (int row = 0; row < formsForRow.getRowCount(); row++) {
-            String tab = formsForRow.getAnnotationOr(row, tabAnnotation, new JIPipeTextAnnotation(tabAnnotation, "General")).getValue();
+            String tab = formsForRow.getTextAnnotationOr(row, tabAnnotation, new JIPipeTextAnnotation(tabAnnotation, "General")).getValue();
             List<Integer> rowList = groupedByTabName.getOrDefault(tab, null);
             if (rowList == null) {
                 rowList = new ArrayList<>();
@@ -288,7 +288,7 @@ public class FormsDialog extends JFrame {
         for (int row = 0; row < formsForRow.getRowCount(); row++) {
             FormData formData = formsForRow.getData(row, FormData.class, progressInfo);
             String name = formData.toString();
-            String tab = formsForRow.getAnnotationOr(row, tabAnnotation, new JIPipeTextAnnotation(tabAnnotation, "General")).getValue();
+            String tab = formsForRow.getTextAnnotationOr(row, tabAnnotation, new JIPipeTextAnnotation(tabAnnotation, "General")).getValue();
             if (formData instanceof ParameterFormData) {
                 name = ((ParameterFormData) formData).getName();
             }
@@ -504,9 +504,9 @@ public class FormsDialog extends JFrame {
             FormData target = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
             if (target.isUsingCustomReset()) {
                 target.customReset();
-                copy.addData(target, tmpCopy.getAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+                copy.addData(target, tmpCopy.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
             } else {
-                copy.addData(src, tmpCopy.getAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+                copy.addData(src, tmpCopy.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
             }
         }
         dataBatchForms.set(i, copy);
@@ -557,12 +557,12 @@ public class FormsDialog extends JFrame {
                     if (targetData.isUsingCustomCopy())
                         targetData.customCopy(srcData, report.resolve("Item " + (i + 1)));
                     else
-                        targetData = (FormData) srcData.duplicate();
+                        targetData = (FormData) srcData.duplicate(progressInfo);
                 } else {
                     encounteredImmutable = true;
                 }
                 copy.addData(targetData,
-                        forms.getAnnotations(row),
+                        forms.getTextAnnotations(row),
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         progressInfo);
             }

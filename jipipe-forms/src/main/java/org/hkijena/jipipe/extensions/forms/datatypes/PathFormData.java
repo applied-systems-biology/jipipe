@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.forms.datatypes;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -49,8 +50,8 @@ public class PathFormData extends ParameterFormData {
         annotationIOSettings.getEventBus().register(this);
     }
 
-    public static PathFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, PathFormData.class);
+    public static PathFormData importFrom(Path rowStorage, JIPipeProgressInfo progressInfo) {
+        return FormData.importFrom(rowStorage, PathFormData.class, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial string value")
@@ -156,7 +157,7 @@ public class PathFormData extends ParameterFormData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new PathFormData(this);
     }
 

@@ -45,7 +45,7 @@ public class RemoveLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         if (duplicateImage)
-            data = (ImagePlusData) data.duplicate();
+            data = (ImagePlusData) data.duplicate(progressInfo);
         ImagePlus image = data.getImage();
         ImageJUtils.removeLUT(image, applyToAllPlanes);
         dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);

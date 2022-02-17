@@ -161,7 +161,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
 
                 // Copy user-modified forms
                 for (int row = 0; row < forms.getRowCount(); row++) {
-                    List<JIPipeTextAnnotation> annotations = new ArrayList<>(forms.getAnnotations(row));
+                    List<JIPipeTextAnnotation> annotations = new ArrayList<>(forms.getTextAnnotations(row));
                     annotations.addAll(dataBatch.getMergedAnnotations().values());
                     formsOutputSlot.addData(forms.getVirtualData(row),
                             annotations,

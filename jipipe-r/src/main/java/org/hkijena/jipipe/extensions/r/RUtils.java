@@ -144,7 +144,7 @@ public class RUtils {
             StringBuilder stringBuilder = new StringBuilder();
             for (int row = 0; row < slot.getRowCount(); row++) {
                 stringBuilder.setLength(0);
-                for (JIPipeTextAnnotation annotation : slot.getAnnotations(row)) {
+                for (JIPipeTextAnnotation annotation : slot.getTextAnnotations(row)) {
                     if (stringBuilder.length() > 0)
                         stringBuilder.append(", ");
                     stringBuilder.append("\"")

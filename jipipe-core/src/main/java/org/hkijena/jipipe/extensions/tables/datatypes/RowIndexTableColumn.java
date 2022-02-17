@@ -28,7 +28,7 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "Row index table column", description = "A table column that generates each row based on the current row index")
 @JIPipeDataStorageDocumentation("This is a structural data type. The storage folder is empty.")
 public class RowIndexTableColumn implements TableColumn {
-    public static RowIndexTableColumn importFrom(Path storagePath) {
+    public static RowIndexTableColumn importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
         return new RowIndexTableColumn();
     }
 
@@ -86,7 +86,7 @@ public class RowIndexTableColumn implements TableColumn {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new RowIndexTableColumn();
     }
 

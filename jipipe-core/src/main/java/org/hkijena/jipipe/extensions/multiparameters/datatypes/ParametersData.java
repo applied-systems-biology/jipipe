@@ -53,7 +53,7 @@ public class ParametersData implements JIPipeData {
 
     private Map<String, Object> parameterData = new HashMap<>();
 
-    public static ParametersData importFrom(Path storageFilePath) {
+    public static ParametersData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
         Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
         try {
             return JsonUtils.getObjectMapper().readerFor(ParametersData.class).readValue(targetFile.toFile());
@@ -73,7 +73,7 @@ public class ParametersData implements JIPipeData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         ParametersData data = new ParametersData();
         data.parameterData = new HashMap<>(parameterData);
         return data;

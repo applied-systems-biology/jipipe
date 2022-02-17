@@ -36,7 +36,7 @@ public abstract class JIPipeJsonData implements JIPipeData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return (JIPipeData) ReflectionUtils.newInstance(getClass(), this);
     }
 }

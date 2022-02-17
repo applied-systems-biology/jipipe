@@ -139,7 +139,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
                 JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
                 dataBatch.setInputData(getFirstInputSlot(), row);
                 dataBatch.addMergedAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
-                dataBatch.addMergedAnnotations(getFirstInputSlot().getAnnotations(row), dataBatchGenerationSettings.getAnnotationMergeStrategy());
+                dataBatch.addMergedAnnotations(getFirstInputSlot().getTextAnnotations(row), dataBatchGenerationSettings.getAnnotationMergeStrategy());
                 dataBatches.add(dataBatch);
             }
         } else {
@@ -258,7 +258,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
                 if (keepOriginalAnnotations) {
                     for (int row : rows) {
                         JIPipeVirtualData virtualData = inputSlot.getVirtualData(row);
-                        List<JIPipeTextAnnotation> annotations = inputSlot.getAnnotations(row);
+                        List<JIPipeTextAnnotation> annotations = inputSlot.getTextAnnotations(row);
                         outputSlot.addData(virtualData,
                                 annotations,
                                 JIPipeTextAnnotationMergeMode.OverwriteExisting,

@@ -346,7 +346,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
             int inputRow = inputRowList.get(i);
 
             // Fetch original annotations and write them
-            List<JIPipeTextAnnotation> annotationList = new ArrayList<>(getInputSlot("Input").getAnnotations(inputRow));
+            List<JIPipeTextAnnotation> annotationList = new ArrayList<>(getInputSlot("Input").getTextAnnotations(inputRow));
 
             // Read diameters
             if (diameterAnnotation.isEnabled()) {

@@ -52,7 +52,7 @@ public class SetLUTFromImageAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlusData data = dataBatch.getInputData("Input", ImagePlusGreyscaleData.class, progressInfo);
         ImagePlusData lutData = dataBatch.getInputData("LUT", ImagePlus2DColorRGBData.class, progressInfo);
         if (duplicateImage)
-            data = (ImagePlusData) data.duplicate();
+            data = (ImagePlusData) data.duplicate(progressInfo);
         LUT lut = ImageJUtils.lutFromImage(lutData.getImage());
         ImagePlus image = data.getImage();
         if (applyToAllPlanes && image.isStack()) {

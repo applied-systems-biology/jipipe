@@ -95,7 +95,7 @@ public class ColorRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         ROIListData outputData = new ROIListData();
 
         for (Map.Entry<ImagePlusData, ROIListData> entry : getReferenceImage(dataBatch, progressInfo).entrySet()) {
-            ROIListData data = (ROIListData) entry.getValue().duplicate();
+            ROIListData data = (ROIListData) entry.getValue().duplicate(progressInfo);
 
             // Obtain statistics
             roiStatisticsAlgorithm.clearSlotData();

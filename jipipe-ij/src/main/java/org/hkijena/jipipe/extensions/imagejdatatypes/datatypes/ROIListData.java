@@ -120,7 +120,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      *
      * @param storageFilePath path that contains a zip/roi file
      */
-    public static ROIListData importFrom(Path storageFilePath) {
+    public static ROIListData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
         ROIListData result = new ROIListData();
         Path zipFile = PathUtils.findFileByExtensionIn(storageFilePath, ".zip");
         Path roiFile = PathUtils.findFileByExtensionIn(storageFilePath, ".roi");
@@ -364,7 +364,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new ROIListData(this);
     }
 

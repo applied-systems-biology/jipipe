@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.cache;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 
 import javax.swing.*;
@@ -29,12 +29,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Wraps around a {@link JIPipeDataSlot} to display a "toString" column
+ * Wraps around a {@link org.hkijena.jipipe.api.data.JIPipeDataTable} to display additional columns.
+ * For example, it is capable of displaying previews.
  */
-public class JIPipeDataSlotTableModel implements TableModel {
+public class JIPipeExtendedDataTableInfoModel implements TableModel {
 
     private final JTable table;
-    private final JIPipeDataSlot slot;
+    private final JIPipeDataTable dataTable;
     private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
     private List<Component> previewCache = new ArrayList<>();
     private Map<String, List<Component>> dataAnnotationPreviewCache = new HashMap<>();
@@ -45,25 +46,25 @@ public class JIPipeDataSlotTableModel implements TableModel {
      * Creates a new instance
      *
      * @param table the table
-     * @param slot  the wrapped slot
+     * @param dataTable  the wrapped slot
      */
-    public JIPipeDataSlotTableModel(JTable table, JIPipeDataSlot slot) {
+    public JIPipeExtendedDataTableInfoModel(JTable table, JIPipeDataTable dataTable) {
         this.table = table;
-        this.slot = slot;
-        for (int i = 0; i < slot.getRowCount(); i++) {
+        this.dataTable = dataTable;
+        for (int i = 0; i < dataTable.getRowCount(); i++) {
             previewCache.add(null);
         }
-        for (String annotationColumn : slot.getDataAnnotationColumns()) {
+        for (String annotationColumn : dataTable.getDataAnnotationColumns()) {
             List<Component> componentList = new ArrayList<>();
-            for (int i = 0; i < slot.getRowCount(); i++) {
+            for (int i = 0; i < dataTable.getRowCount(); i++) {
                 componentList.add(null);
             }
             dataAnnotationPreviewCache.put(annotationColumn, componentList);
         }
     }
 
-    public JIPipeDataSlot getSlot() {
-        return slot;
+    public JIPipeDataTable getDataTable() {
+        return dataTable;
     }
 
     private void revalidatePreviewCache() {
@@ -87,8 +88,8 @@ public class JIPipeDataSlotTableModel implements TableModel {
      * @return relative annotation column index, or -1
      */
     public int toAnnotationColumnIndex(int columnIndex) {
-        if (columnIndex >= slot.getDataAnnotationColumns().size() + 4)
-            return columnIndex - slot.getDataAnnotationColumns().size() - 4;
+        if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 4)
+            return columnIndex - dataTable.getDataAnnotationColumns().size() - 4;
         else
             return -1;
     }
@@ -100,7 +101,7 @@ public class JIPipeDataSlotTableModel implements TableModel {
      * @return relative data annotation column index, or -1
      */
     public int toDataAnnotationColumnIndex(int columnIndex) {
-        if (columnIndex < slot.getDataAnnotationColumns().size() + 4 && (columnIndex - 4) < slot.getDataAnnotationColumns().size()) {
+        if (columnIndex < dataTable.getDataAnnotationColumns().size() + 4 && (columnIndex - 4) < dataTable.getDataAnnotationColumns().size()) {
             return columnIndex - 4;
         } else {
             return -1;
@@ -109,12 +110,12 @@ public class JIPipeDataSlotTableModel implements TableModel {
 
     @Override
     public int getRowCount() {
-        return slot.getRowCount();
+        return dataTable.getRowCount();
     }
 
     @Override
     public int getColumnCount() {
-        return slot.getAnnotationColumns().size() + slot.getDataAnnotationColumns().size() + 4;
+        return dataTable.getAnnotationColumns().size() + dataTable.getDataAnnotationColumns().size() + 4;
     }
 
     @Override
@@ -128,9 +129,9 @@ public class JIPipeDataSlotTableModel implements TableModel {
         else if (columnIndex == 3)
             return "String representation";
         else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
-            return "$" + slot.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
+            return "$" + dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
         } else {
-            return slot.getAnnotationColumns().get(toAnnotationColumnIndex(columnIndex));
+            return dataTable.getAnnotationColumns().get(toAnnotationColumnIndex(columnIndex));
         }
     }
 
@@ -161,13 +162,13 @@ public class JIPipeDataSlotTableModel implements TableModel {
         if (columnIndex == 0)
             return rowIndex;
         else if (columnIndex == 1)
-            return JIPipeDataInfo.getInstance(slot.getDataClass(rowIndex));
+            return JIPipeDataInfo.getInstance(dataTable.getDataClass(rowIndex));
         else if (columnIndex == 2) {
             revalidatePreviewCache();
             Component preview = previewCache.get(rowIndex);
             if (preview == null) {
                 if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                    preview = new JIPipeCachedDataPreview(table, slot.getVirtualData(rowIndex), true);
+                    preview = new JIPipeCachedDataPreview(table, dataTable.getVirtualData(rowIndex), true);
                     previewCache.set(rowIndex, preview);
                 } else {
                     preview = new JLabel("N/A");
@@ -176,13 +177,13 @@ public class JIPipeDataSlotTableModel implements TableModel {
             }
             return preview;
         } else if (columnIndex == 3)
-            return "" + slot.getVirtualData(rowIndex).getStringRepresentation();
+            return "" + dataTable.getVirtualData(rowIndex).getStringRepresentation();
         else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
             revalidatePreviewCache();
-            String dataAnnotationName = slot.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
+            String dataAnnotationName = dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
             Component preview = dataAnnotationPreviewCache.get(dataAnnotationName).get(rowIndex);
             if (preview == null) {
-                JIPipeDataAnnotation dataAnnotation = slot.getDataAnnotation(rowIndex, dataAnnotationName);
+                JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(rowIndex, dataAnnotationName);
                 if (dataAnnotation != null && GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
                     preview = new JIPipeCachedDataPreview(table, dataAnnotation.getVirtualData(), true);
                     dataAnnotationPreviewCache.get(dataAnnotationName).set(rowIndex, preview);
@@ -193,7 +194,7 @@ public class JIPipeDataSlotTableModel implements TableModel {
             }
             return preview;
         } else {
-            return slot.getAnnotation(rowIndex, toAnnotationColumnIndex(columnIndex));
+            return dataTable.getTextAnnotation(rowIndex, toAnnotationColumnIndex(columnIndex));
         }
     }
 

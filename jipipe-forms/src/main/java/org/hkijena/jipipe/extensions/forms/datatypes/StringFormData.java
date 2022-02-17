@@ -4,6 +4,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -37,8 +38,8 @@ public class StringFormData extends ParameterFormData {
         annotationIOSettings.getEventBus().register(this);
     }
 
-    public static StringFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, StringFormData.class);
+    public static StringFormData importFrom(Path rowStorage, JIPipeProgressInfo progressInfo) {
+        return FormData.importFrom(rowStorage, StringFormData.class, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial string value")
@@ -80,7 +81,7 @@ public class StringFormData extends ParameterFormData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new StringFormData(this);
     }
 

@@ -60,7 +60,7 @@ public class PathData implements JIPipeData {
     protected PathData() {
     }
 
-    public static PathData importFrom(Path storageFilePath) {
+    public static PathData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
         Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
         try {
             return JsonUtils.getObjectMapper().readerFor(PathData.class).readValue(targetFile.toFile());
@@ -80,7 +80,7 @@ public class PathData implements JIPipeData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new PathData(path);
     }
 

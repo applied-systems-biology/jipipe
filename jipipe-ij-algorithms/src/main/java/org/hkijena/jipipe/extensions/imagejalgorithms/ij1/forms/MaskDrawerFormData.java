@@ -111,7 +111,7 @@ public class MaskDrawerFormData extends FormData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         // Initialize the viewer
         getImageViewerPanel();
         return new MaskDrawerFormData(dataBatches, drawMaskAlgorithm);

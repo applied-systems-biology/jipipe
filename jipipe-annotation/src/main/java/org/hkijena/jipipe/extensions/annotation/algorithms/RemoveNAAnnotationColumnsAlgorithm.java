@@ -52,7 +52,7 @@ public class RemoveNAAnnotationColumnsAlgorithm extends JIPipeParameterSlotAlgor
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         Set<String> toRemove = annotationNameFilter.queryAll(getFirstInputSlot().getAnnotationColumns(), new ExpressionVariables()).stream().filter(columnName -> {
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
-                JIPipeTextAnnotation existing = getFirstInputSlot().getAnnotationOr(row, columnName, null);
+                JIPipeTextAnnotation existing = getFirstInputSlot().getTextAnnotationOr(row, columnName, null);
                 if (existing == null)
                     return true;
             }

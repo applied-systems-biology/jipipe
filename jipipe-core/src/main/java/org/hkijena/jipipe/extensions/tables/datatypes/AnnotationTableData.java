@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.tables.datatypes;
 
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -64,8 +65,8 @@ public class AnnotationTableData extends ResultsTableData {
         super(other);
     }
 
-    public static AnnotationTableData importFrom(Path storageFolder) {
-        return new AnnotationTableData(ResultsTableData.importFrom(storageFolder));
+    public static AnnotationTableData importFrom(Path storageFolder, JIPipeProgressInfo progressInfo) {
+        return new AnnotationTableData(ResultsTableData.importFrom(storageFolder, progressInfo));
     }
 
     /**

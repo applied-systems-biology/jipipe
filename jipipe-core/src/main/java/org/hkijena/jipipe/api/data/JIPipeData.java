@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 
 /**
  * Base class for any JIPipe data wrapper class
- * There must be a static function importFrom(Path) that imports the data from a row storage folder.
+ * There must be a static function importFrom(Path, JIPipeProgressInfo) that imports the data from a row storage folder.
  * Additionally, there must be a annotation of type {@link JIPipeDataStorageDocumentation} that describes the structure of a valid row storage folder for humans.
  * The static importFrom(Path) method and the {@link JIPipeDataStorageDocumentation} annotation can be omitted for abstract data types or interfaces.
  * {@link JIPipeDataStorageDocumentation} can be inherited from parent classes.
@@ -170,8 +170,9 @@ public interface JIPipeData {
      * Duplicates the data
      *
      * @return a deep copy of the data
+     * @param progressInfo the progress of duplicating the data
      */
-    JIPipeData duplicate();
+    JIPipeData duplicate(JIPipeProgressInfo progressInfo);
 
     /**
      * This function should display the data in the GUI.

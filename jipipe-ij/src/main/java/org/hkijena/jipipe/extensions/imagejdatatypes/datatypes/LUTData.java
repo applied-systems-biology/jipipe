@@ -157,7 +157,7 @@ public class LUTData implements JIPipeData {
         return data;
     }
 
-    public static LUTData importFrom(Path storagePath) {
+    public static LUTData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
         Path path = PathUtils.findFileByExtensionIn(storagePath, ".json");
         return JsonUtils.readFromFile(path, LUTData.class);
     }
@@ -186,7 +186,7 @@ public class LUTData implements JIPipeData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new LUTData(this);
     }
 

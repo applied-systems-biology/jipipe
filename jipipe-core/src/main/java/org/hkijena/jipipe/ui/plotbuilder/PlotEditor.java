@@ -132,7 +132,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     private void openPlot() {
         Path path = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Open plot");
         if (path != null) {
-            PlotData plotData = PlotData.importFrom(path, PlotData.class);
+            PlotData plotData = PlotData.importFrom(path, PlotData.class, new JIPipeProgressInfo());
             importExistingPlot(plotData);
         }
     }

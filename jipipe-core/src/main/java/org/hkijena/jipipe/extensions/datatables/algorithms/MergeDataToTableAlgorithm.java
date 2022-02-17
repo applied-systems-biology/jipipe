@@ -28,7 +28,7 @@ public class MergeDataToTableAlgorithm extends JIPipeMergingAlgorithm {
         JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input), null);
         for (Integer row : dataBatch.getInputSlotRows().get(getFirstInputSlot())) {
             slot.addData(getFirstInputSlot().getVirtualData(row),
-                    getFirstInputSlot().getAnnotations(row),
+                    getFirstInputSlot().getTextAnnotations(row),
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
                     getFirstInputSlot().getDataAnnotations(row),
                     JIPipeDataAnnotationMergeMode.OverwriteExisting);

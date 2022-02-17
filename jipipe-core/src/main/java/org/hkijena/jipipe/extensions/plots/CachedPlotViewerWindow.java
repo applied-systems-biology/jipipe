@@ -92,7 +92,7 @@ public class CachedPlotViewerWindow extends JIPipeCacheDataViewerWindow {
     protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
         annotationInfoPanel.displayAnnotations(getDataSource());
         PlotData data = (PlotData) virtualData.getData(progressInfo);
-        PlotData duplicate = (PlotData) data.duplicate();
+        PlotData duplicate = (PlotData) data.duplicate(progressInfo);
         plotEditor.importExistingPlot(duplicate);
     }
 }

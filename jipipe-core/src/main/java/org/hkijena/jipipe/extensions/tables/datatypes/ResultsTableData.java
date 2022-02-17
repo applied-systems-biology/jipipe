@@ -76,7 +76,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     private static final char commaSubstitute = 0x08B3;
 
     private ResultsTable table;
-    private List<TableModelListener> listeners = new ArrayList<>();
+    private final List<TableModelListener> listeners = new ArrayList<>();
 
     /**
      * Creates a new instance
@@ -127,7 +127,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
         this.table = (ResultsTable) other.table.clone();
     }
 
-    public static ResultsTableData importFrom(Path storagePath) {
+    public static ResultsTableData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
         try {
             return new ResultsTableData(ResultsTable.open(PathUtils.findFileByExtensionIn(storagePath, ".csv").toString()));
         } catch (IOException e) {
@@ -625,7 +625,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new ResultsTableData((ResultsTable) table.clone());
     }
 
@@ -637,7 +637,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
             window.setVisible(true);
         } else {
             workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/results-table.png"),
-                    new TableEditor(workbench, (ResultsTableData) duplicate()), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
+                    new TableEditor(workbench, (ResultsTableData) duplicate(new JIPipeProgressInfo())), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
             workbench.getDocumentTabPane().switchToLastTab();
         }
     }

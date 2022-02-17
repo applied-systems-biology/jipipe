@@ -282,7 +282,7 @@ public class JIPipeMergedDataSlotTableModel implements TableModel {
             } else {
                 String annotationColumn = annotationColumns.get(toAnnotationColumnIndex(columnIndex));
                 JIPipeDataSlot slot = slotList.get(rowIndex);
-                return slot.getAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
+                return slot.getTextAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
             }
         } else {
             if (columnIndex == 0)
@@ -300,7 +300,7 @@ public class JIPipeMergedDataSlotTableModel implements TableModel {
             } else {
                 String annotationColumn = annotationColumns.get(toAnnotationColumnIndex(columnIndex));
                 JIPipeDataSlot slot = slotList.get(rowIndex);
-                return slot.getAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
+                return slot.getTextAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
             }
         }
     }

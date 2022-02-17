@@ -5,6 +5,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -38,8 +39,8 @@ public class DoubleFormData extends ParameterFormData {
         annotationIOSettings.getEventBus().register(this);
     }
 
-    public static DoubleFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, DoubleFormData.class);
+    public static DoubleFormData importFrom(Path rowStorage, JIPipeProgressInfo progressInfo) {
+        return FormData.importFrom(rowStorage, DoubleFormData.class, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial value")
@@ -82,7 +83,7 @@ public class DoubleFormData extends ParameterFormData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new DoubleFormData(this);
     }
 

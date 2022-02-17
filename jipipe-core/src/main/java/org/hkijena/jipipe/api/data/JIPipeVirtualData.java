@@ -111,7 +111,7 @@ public class JIPipeVirtualData {
                 throw new UnsupportedOperationException("Tried to load virtual data, but no path is set. This should not be possible.");
             }
             progressInfo.log("Loading data of type " + JIPipeDataInfo.getInstance(dataClass).getName() + " from virtual path " + virtualStoragePath.getPath());
-            data = JIPipe.importData(virtualStoragePath.getPath(), dataClass);
+            data = JIPipe.importData(virtualStoragePath.getPath(), dataClass, progressInfo);
             dataReference = null;
             stringRepresentation = "" + data;
 

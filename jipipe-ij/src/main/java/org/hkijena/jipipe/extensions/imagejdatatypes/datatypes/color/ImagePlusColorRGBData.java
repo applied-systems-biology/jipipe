@@ -60,8 +60,8 @@ public class ImagePlusColorRGBData extends ImagePlusColorData implements Colored
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorRGBIfNeeded));
     }
 
-    public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlusColorRGBData(ImagePlusData.importImagePlusFrom(storageFolder));
+    public static ImagePlusData importFrom(Path storageFolder, JIPipeProgressInfo progressInfo) {
+        return new ImagePlusColorRGBData(ImagePlusData.importImagePlusFrom(storageFolder, progressInfo));
     }
 
     /**

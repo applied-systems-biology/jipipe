@@ -17,6 +17,7 @@ import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
@@ -55,8 +56,8 @@ public class ImagePlus4DGreyscale8UData extends ImagePlus4DGreyscaleData {
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGreyscale8UIfNeeded), colorSpace);
     }
 
-    public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlus4DGreyscale8UData(ImagePlusData.importImagePlusFrom(storageFolder));
+    public static ImagePlusData importFrom(Path storageFolder, JIPipeProgressInfo progressInfo) {
+        return new ImagePlus4DGreyscale8UData(ImagePlusData.importImagePlusFrom(storageFolder, progressInfo));
     }
 
     /**

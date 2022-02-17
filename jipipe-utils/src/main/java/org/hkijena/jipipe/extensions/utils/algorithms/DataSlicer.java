@@ -41,7 +41,7 @@ public class DataSlicer extends JIPipeParameterSlotAlgorithm {
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
             if (indices.contains(row)) {
                 getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row),
-                        getFirstInputSlot().getAnnotations(row),
+                        getFirstInputSlot().getTextAnnotations(row),
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         getFirstInputSlot().getDataAnnotations(row),
                         JIPipeDataAnnotationMergeMode.OverwriteExisting);

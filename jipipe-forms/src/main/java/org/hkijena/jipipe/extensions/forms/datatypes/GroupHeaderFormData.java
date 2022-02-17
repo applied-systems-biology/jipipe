@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.forms.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -21,8 +22,8 @@ public class GroupHeaderFormData extends ParameterFormData {
         super(other);
     }
 
-    public static GroupHeaderFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, GroupHeaderFormData.class);
+    public static GroupHeaderFormData importFrom(Path rowStorage, JIPipeProgressInfo progressInfo) {
+        return FormData.importFrom(rowStorage, GroupHeaderFormData.class, progressInfo);
     }
 
     @Override
@@ -31,7 +32,7 @@ public class GroupHeaderFormData extends ParameterFormData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new GroupHeaderFormData(this);
     }
 

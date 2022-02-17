@@ -69,7 +69,7 @@ public class SetLUTFromColorsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo);
         if (duplicateImage)
-            data = (ImagePlusData) data.duplicate();
+            data = (ImagePlusData) data.duplicate(progressInfo);
         LUT lut = createGradientLUT(firstColor, secondColor);
         ImagePlus image = data.getImage();
         if (applyToAllPlanes && image.isStack()) {

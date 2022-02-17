@@ -5,6 +5,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -41,8 +42,8 @@ public class BooleanFormData extends ParameterFormData {
         annotationIOSettings.getEventBus().register(this);
     }
 
-    public static BooleanFormData importFrom(Path rowStorage) {
-        return FormData.importFrom(rowStorage, BooleanFormData.class);
+    public static BooleanFormData importFrom(Path rowStorage, JIPipeProgressInfo progressInfo) {
+        return FormData.importFrom(rowStorage, BooleanFormData.class, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial value")
@@ -94,7 +95,7 @@ public class BooleanFormData extends ParameterFormData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new BooleanFormData(this);
     }
 

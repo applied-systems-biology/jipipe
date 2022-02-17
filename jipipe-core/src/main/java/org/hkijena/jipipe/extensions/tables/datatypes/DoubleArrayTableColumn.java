@@ -46,8 +46,8 @@ public class DoubleArrayTableColumn implements MutableTableColumn {
         this.label = label;
     }
 
-    public static DoubleArrayTableColumn importFrom(Path storagePath) {
-        ResultsTableData resultsTableData = ResultsTableData.importFrom(storagePath);
+    public static DoubleArrayTableColumn importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
+        ResultsTableData resultsTableData = ResultsTableData.importFrom(storagePath, progressInfo);
         TableColumn source = resultsTableData.getColumnReference(0);
         return new DoubleArrayTableColumn(source.getDataAsDouble(source.getRows()), source.getLabel());
     }
@@ -108,7 +108,7 @@ public class DoubleArrayTableColumn implements MutableTableColumn {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new DoubleArrayTableColumn(Arrays.copyOf(data, data.length), label);
     }
 

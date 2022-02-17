@@ -94,7 +94,7 @@ public class CachedTableViewerWindow extends JIPipeCacheDataViewerWindow {
     protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
         annotationInfoPanel.displayAnnotations(getDataSource());
         ResultsTableData data = (ResultsTableData) virtualData.getData(progressInfo);
-        ResultsTableData duplicate = (ResultsTableData) data.duplicate();
+        ResultsTableData duplicate = (ResultsTableData) data.duplicate(progressInfo);
         tableEditor.setTableModel(duplicate);
     }
 }

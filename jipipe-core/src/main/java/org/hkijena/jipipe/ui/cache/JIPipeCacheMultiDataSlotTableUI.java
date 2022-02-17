@@ -231,7 +231,7 @@ public class JIPipeCacheMultiDataSlotTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void exportByMetadataExporter() {
-        JIPipeCachedSlotToFilesByMetadataExporterRun run = new JIPipeCachedSlotToFilesByMetadataExporterRun(getWorkbench(), slots, true);
+        JIPipeDataTableToFilesByMetadataExporterRun run = new JIPipeDataTableToFilesByMetadataExporterRun(getWorkbench(), slots, true);
         if (run.setup()) {
             JIPipeRunnerQueue.getInstance().enqueue(run);
         }

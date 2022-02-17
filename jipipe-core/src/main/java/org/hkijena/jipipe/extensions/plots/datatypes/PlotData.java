@@ -124,7 +124,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         this.customColorMap = new ColorListParameter(other.customColorMap);
     }
 
-    public static <T extends PlotData> T importFrom(Path storageFilePath, Class<T> klass) {
+    public static <T extends PlotData> T importFrom(Path storageFilePath, Class<T> klass, JIPipeProgressInfo progressInfo) {
         try {
             JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
             PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(node);
@@ -210,7 +210,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
             window.setVisible(true);
         } else {
             PlotEditor plotBuilderUI = new PlotEditor(workbench);
-            plotBuilderUI.importExistingPlot((PlotData) duplicate());
+            plotBuilderUI.importExistingPlot((PlotData) duplicate(progressInfo));
             workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/data-type-plot.png"),
                     plotBuilderUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
             workbench.getDocumentTabPane().switchToLastTab();
@@ -280,7 +280,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return JIPipe.createData(getClass(), this);
     }
 

@@ -68,7 +68,7 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<String> interestingColumns = columns.queryAll(input.getColumnNames(), new ExpressionVariables());
         if (interestingColumns.isEmpty()) {
-            dataBatch.addOutputData(getFirstOutputSlot(), input.duplicate(), progressInfo);
+            dataBatch.addOutputData(getFirstOutputSlot(), input.duplicate(progressInfo), progressInfo);
         } else {
             List<String> rowConditions = new ArrayList<>();
             for (int row = 0; row < input.getRowCount(); row++) {

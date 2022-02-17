@@ -74,7 +74,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
         super(other);
         this.plotType = new JIPipeDataInfoRef(other.plotType);
         if (other.plotTypeParameters != null)
-            this.plotTypeParameters = (PlotData) other.plotTypeParameters.duplicate();
+            this.plotTypeParameters = (PlotData) other.plotTypeParameters.duplicate(progressInfo);
         this.inputColumns = new JIPipeDynamicParameterCollection(other.inputColumns);
         this.seriesName = new StringQueryExpression(other.seriesName);
     }
@@ -87,7 +87,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
             plotColumns.put(column.name(), column);
         }
 
-        PlotData plot = (PlotData) plotTypeParameters.duplicate();
+        PlotData plot = (PlotData) plotTypeParameters.duplicate(progressInfo);
         int seriesCounter = 0;
         for (int row : dataBatch.getInputRows(getFirstInputSlot())) {
 
@@ -96,7 +96,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
             seriesTable.addRows(inputData.getRowCount());
 
             ExpressionVariables variables = new ExpressionVariables();
-            List<JIPipeTextAnnotation> originalAnnotations = getFirstInputSlot().getAnnotations(row);
+            List<JIPipeTextAnnotation> originalAnnotations = getFirstInputSlot().getTextAnnotations(row);
             for (JIPipeTextAnnotation annotation : originalAnnotations) {
                 variables.set(annotation.getName(), annotation.getValue());
             }
@@ -116,7 +116,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
             if (seriesCounter >= plotMetadata.maxSeriesCount()) {
                 progressInfo.log("Maximum number of series was reached (maximum is " + plotMetadata.maxSeriesCount() + "!). Creating a new plot.");
                 dataBatch.addOutputData(getFirstOutputSlot(), plot, progressInfo);
-                plot = (PlotData) plotTypeParameters.duplicate();
+                plot = (PlotData) plotTypeParameters.duplicate(progressInfo);
                 seriesCounter = 0;
             }
         }

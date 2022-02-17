@@ -67,7 +67,7 @@ public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         for (JIPipeDataSlot inputSlot : getEffectiveInputSlots()) {
             for (int row = 0; row < inputSlot.getRowCount(); row++) {
-                annotations.addAll(inputSlot.getAnnotations(row));
+                annotations.addAll(inputSlot.getTextAnnotations(row));
             }
         }
         getFirstOutputSlot().addData(currentResult, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);

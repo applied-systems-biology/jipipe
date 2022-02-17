@@ -19,7 +19,7 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -40,9 +40,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
+public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
 
-    private final List<JIPipeDataSlot> slots;
+    private final List<JIPipeDataTable> slots;
     private final boolean splitBySlot;
     private final JIPipeDataByMetadataExporter exporter;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -53,7 +53,7 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
      * @param slots       the slots to save
      * @param splitBySlot if slots should be split
      */
-    public JIPipeCachedSlotToFilesByMetadataExporterRun(JIPipeWorkbench workbench, List<JIPipeDataSlot> slots, boolean splitBySlot) {
+    public JIPipeDataTableToFilesByMetadataExporterRun(JIPipeWorkbench workbench, List<JIPipeDataTable> slots, boolean splitBySlot) {
         super(workbench);
         this.slots = slots;
         this.splitBySlot = splitBySlot;
@@ -123,7 +123,7 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
         for (int i = 0; i < slots.size(); i++) {
             progressInfo.setProgress(i + 1);
             JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Slot", i, slots.size());
-            JIPipeDataSlot slot = slots.get(i);
+            JIPipeDataTable slot = slots.get(i);
             Path targetPath = outputPath;
             if (splitBySlot) {
                 targetPath = outputPath.resolve(StringUtils.makeUniqueString(slot.getName(), " ", existing));
@@ -160,7 +160,7 @@ public class JIPipeCachedSlotToFilesByMetadataExporterRun extends JIPipeWorkbenc
         }
     }
 
-    public List<JIPipeDataSlot> getSlots() {
+    public List<JIPipeDataTable> getSlots() {
         return slots;
     }
 

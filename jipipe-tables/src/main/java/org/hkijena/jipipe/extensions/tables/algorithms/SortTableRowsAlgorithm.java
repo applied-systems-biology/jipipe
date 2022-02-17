@@ -71,7 +71,7 @@ public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
 
         if (sortOrderList.isEmpty()) {
-            dataBatch.addOutputData(getFirstOutputSlot(), input.duplicate(), progressInfo);
+            dataBatch.addOutputData(getFirstOutputSlot(), input.duplicate(progressInfo), progressInfo);
             return;
         }
         Comparator<Integer> comparator = getRowComparator(sortOrderList.get(0), input);

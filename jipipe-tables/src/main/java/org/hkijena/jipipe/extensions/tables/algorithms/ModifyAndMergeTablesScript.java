@@ -128,7 +128,7 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
 
             rowDictionary.put("data", tableData.toPython());
             rowDictionary.put("nrow", tableData.getRowCount());
-            rowDictionary.put("annotations", JIPipeTextAnnotation.annotationListToPython(getFirstInputSlot().getAnnotations(row)));
+            rowDictionary.put("annotations", JIPipeTextAnnotation.annotationListToPython(getFirstInputSlot().getTextAnnotations(row)));
 
             rows.add(rowDictionary);
         }

@@ -30,7 +30,7 @@ public abstract class SimpleFormGeneratorAlgorithm extends FormGeneratorAlgorith
 
     public SimpleFormGeneratorAlgorithm(SimpleFormGeneratorAlgorithm other) {
         super(other);
-        this.formData = (FormData) other.formData.duplicate();
+        this.formData = (FormData) other.formData.duplicate(progressInfo);
         registerSubParameter(formData);
     }
 
@@ -46,6 +46,6 @@ public abstract class SimpleFormGeneratorAlgorithm extends FormGeneratorAlgorith
         if (formData.getTabSettings().getTabAnnotation().isEnabled()) {
             annotationList.add(formData.getTabSettings().getTabAnnotation().createAnnotation(formData.getTabSettings().getTab()));
         }
-        combined.addData(formData.duplicate(), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+        combined.addData(formData.duplicate(progressInfo), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
     }
 }

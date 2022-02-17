@@ -69,7 +69,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
      * @return the annotations
      */
     public List<JIPipeTextAnnotation> getOriginalAnnotations(JIPipeDataSlot slot) {
-        return slot.getAnnotations(inputSlotRows.get(slot));
+        return slot.getTextAnnotations(inputSlotRows.get(slot));
     }
 
     /**

@@ -24,6 +24,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -67,8 +68,8 @@ public class PlotDataSeries extends ResultsTableData implements JIPipeParameterC
         this.name = other.name;
     }
 
-    public static PlotDataSeries importFrom(Path storageFolder) {
-        return new PlotDataSeries(ResultsTableData.importFrom(storageFolder).getTable());
+    public static PlotDataSeries importFrom(Path storageFolder, JIPipeProgressInfo progressInfo) {
+        return new PlotDataSeries(ResultsTableData.importFrom(storageFolder, progressInfo).getTable());
     }
 
     /**

@@ -43,7 +43,7 @@ public class CellPoseModelData implements JIPipeData {
         this.name = other.name;
     }
 
-    public static CellPoseModelData importFrom(Path storagePath) {
+    public static CellPoseModelData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
         List<Path> files = PathUtils.findFilesByExtensionIn(storagePath);
         Path file = null;
 
@@ -82,7 +82,7 @@ public class CellPoseModelData implements JIPipeData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new CellPoseModelData(this);
     }
 

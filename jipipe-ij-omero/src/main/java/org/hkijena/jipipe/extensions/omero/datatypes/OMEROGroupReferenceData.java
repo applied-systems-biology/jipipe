@@ -39,7 +39,7 @@ public class OMEROGroupReferenceData implements JIPipeData {
         this.groupId = groupId;
     }
 
-    public static OMEROGroupReferenceData importFrom(Path storageFilePath) {
+    public static OMEROGroupReferenceData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
         Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
         try {
             return JsonUtils.getObjectMapper().readerFor(OMEROGroupReferenceData.class).readValue(targetFile.toFile());
@@ -69,7 +69,7 @@ public class OMEROGroupReferenceData implements JIPipeData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new OMEROGroupReferenceData(groupId);
     }
 

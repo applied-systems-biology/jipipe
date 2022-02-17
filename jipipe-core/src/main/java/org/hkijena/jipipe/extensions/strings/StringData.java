@@ -48,7 +48,7 @@ public class StringData implements JIPipeData {
         this.data = other.data;
     }
 
-    public static StringData importFrom(Path path) {
+    public static StringData importFrom(Path path, JIPipeProgressInfo progressInfo) {
         Path file = PathUtils.findFileByExtensionIn(path, ".txt");
         try {
             return new StringData(new String(Files.readAllBytes(file), Charsets.UTF_8));
@@ -67,7 +67,7 @@ public class StringData implements JIPipeData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new StringData(data);
     }
 

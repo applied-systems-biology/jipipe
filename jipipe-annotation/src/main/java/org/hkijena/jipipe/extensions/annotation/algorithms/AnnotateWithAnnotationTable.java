@@ -125,7 +125,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
 
             Map<String, JIPipeTextAnnotation> newAnnotations = new HashMap<>();
             for (int row : metadataRows) {
-                for (JIPipeTextAnnotation annotation : dummy.getAnnotations(row)) {
+                for (JIPipeTextAnnotation annotation : dummy.getTextAnnotations(row)) {
                     JIPipeTextAnnotation existing = newAnnotations.getOrDefault(annotation.getName(), null);
                     if (existing != null) {
                         String value = getTableMergeSettings().getAnnotationMergeStrategy().merge(existing.getValue(), annotation.getValue());
@@ -142,7 +142,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
 
                 // Fetch existing annotations
                 if (!discardExistingAnnotations) {
-                    for (JIPipeTextAnnotation annotation : dataInputSlot.getAnnotations(row)) {
+                    for (JIPipeTextAnnotation annotation : dataInputSlot.getTextAnnotations(row)) {
                         annotationMap.put(annotation.getName(), annotation);
                     }
                 }

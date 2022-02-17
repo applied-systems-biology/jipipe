@@ -18,7 +18,7 @@ import ij.IJ;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
@@ -37,7 +37,7 @@ import java.util.Set;
 public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
 
     private final Path outputPath;
-    private final List<JIPipeDataSlot> slots;
+    private final List<JIPipeDataTable> slots;
     private final boolean splitBySlot;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
@@ -47,7 +47,7 @@ public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel im
      * @param slots       the slots to save
      * @param splitBySlot if slots should be split
      */
-    public JIPipeCachedSlotToOutputExporterRun(JIPipeWorkbench workbench, Path outputPath, List<JIPipeDataSlot> slots, boolean splitBySlot) {
+    public JIPipeCachedSlotToOutputExporterRun(JIPipeWorkbench workbench, Path outputPath, List<JIPipeDataTable> slots, boolean splitBySlot) {
         super(workbench);
         this.outputPath = outputPath;
         this.slots = slots;
@@ -62,7 +62,7 @@ public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel im
         for (int i = 0; i < slots.size(); i++) {
             progressInfo.setProgress(i);
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Slot", i, slots.size());
-            JIPipeDataSlot slot = slots.get(i);
+            JIPipeDataTable slot = slots.get(i);
             Path targetPath = outputPath;
             if (splitBySlot) {
                 targetPath = outputPath.resolve(StringUtils.makeUniqueString(slot.getName(), " ", existing));
@@ -103,7 +103,7 @@ public class JIPipeCachedSlotToOutputExporterRun extends JIPipeWorkbenchPanel im
         }
     }
 
-    public List<JIPipeDataSlot> getSlots() {
+    public List<JIPipeDataTable> getSlots() {
         return slots;
     }
 

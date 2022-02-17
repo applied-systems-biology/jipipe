@@ -81,10 +81,10 @@ public abstract class JIPipeAsyncResultDataPlotPreview extends JIPipeResultDataS
      */
     protected JIPipeData loadData(Path storageFolder) {
         if (getDataAnnotation() == null)
-            return JIPipe.importData(storageFolder, getSlot().getAcceptedDataType());
+            return JIPipe.importData(storageFolder, getSlot().getAcceptedDataType(), progressInfo);
         else {
             if (Files.exists(storageFolder))
-                return JIPipe.importData(storageFolder, JIPipe.getDataTypes().getById(getDataAnnotation().getTrueDataType()));
+                return JIPipe.importData(storageFolder, JIPipe.getDataTypes().getById(getDataAnnotation().getTrueDataType()), progressInfo);
             else
                 return new JIPipeEmptyData();
         }

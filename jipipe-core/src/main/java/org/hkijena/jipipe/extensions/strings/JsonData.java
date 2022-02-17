@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.strings;
 
 import com.google.common.base.Charsets;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -33,7 +34,7 @@ public class JsonData extends StringData {
         super(other);
     }
 
-    public static JsonData importFrom(Path path) {
+    public static JsonData importFrom(Path path, JIPipeProgressInfo progressInfo) {
         Path file = PathUtils.findFileByExtensionIn(path, ".json");
         try {
             return new JsonData(new String(Files.readAllBytes(file), Charsets.UTF_8));

@@ -34,7 +34,7 @@ public class OpenResultsTableInImageJDataOperation implements JIPipeDataImportOp
 
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        ((ResultsTableData) data.duplicate()).getTable().show(displayName);
+        ((ResultsTableData) data.duplicate(progressInfo)).getTable().show(displayName);
     }
 
     @Override

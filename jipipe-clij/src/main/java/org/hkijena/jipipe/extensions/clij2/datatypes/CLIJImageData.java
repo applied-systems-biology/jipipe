@@ -58,8 +58,8 @@ public class CLIJImageData implements JIPipeData {
         other.image.copyTo(this.image, true);
     }
 
-    public static CLIJImageData importFrom(Path storageFilePath) {
-        return new CLIJImageData(ImagePlusData.importFrom(storageFilePath));
+    public static CLIJImageData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
+        return new CLIJImageData(ImagePlusData.importFrom(storageFilePath, progressInfo));
     }
 
     @Override
@@ -69,7 +69,7 @@ public class CLIJImageData implements JIPipeData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new CLIJImageData(this);
     }
 

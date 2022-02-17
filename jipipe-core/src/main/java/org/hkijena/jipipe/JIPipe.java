@@ -108,15 +108,16 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * Imports data of given data type from its output folder.
      * Generally, the output folder should conform to the data type's saveTo() function without 'forceName' enabled
      *
+     * @param <T>          the data type
      * @param outputFolder the folder that contains the data
      * @param klass        the data type
-     * @param <T>          the data type
+     * @param progressInfo the progress info
      * @return imported data
      */
-    public static <T extends JIPipeData> T importData(Path outputFolder, Class<T> klass) {
+    public static <T extends JIPipeData> T importData(Path outputFolder, Class<T> klass, JIPipeProgressInfo progressInfo) {
         try {
-            Method method = klass.getDeclaredMethod("importFrom", Path.class);
-            return (T) method.invoke(null, outputFolder);
+            Method method = klass.getDeclaredMethod("importFrom", Path.class, JIPipeProgressInfo.class);
+            return (T) method.invoke(null, outputFolder, progressInfo);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
@@ -512,7 +513,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                 continue;
             // Check if we can find a method "import"
             try {
-                Method method = dataType.getDeclaredMethod("importFrom", Path.class);
+                Method method = dataType.getDeclaredMethod("importFrom", Path.class, JIPipeProgressInfo.class);
                 if (!Modifier.isStatic(method.getModifiers())) {
                     throw new IllegalArgumentException("Import method is not static!");
                 }
@@ -522,6 +523,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             } catch (NoClassDefFoundError | Exception e) {
                 // Unregister node
                 logService.warn("Data type '" + dataType + "' cannot be instantiated.");
+                logService.warn("Ensure that a method static JIPipeData importFrom(Path, JIPipeProgressInfo) is present!");
                 issues.getErroneousDataTypes().add(dataType);
                 e.printStackTrace();
             }

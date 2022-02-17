@@ -114,7 +114,7 @@ public class MergeTableColumnsAlgorithm extends JIPipeMergingAlgorithm {
 
             // Collect all per-condition tables
             for (ResultsTableData inputTable : inputTables) {
-                ResultsTableData uniqueColumnInputTable = (ResultsTableData) inputTable.duplicate();
+                ResultsTableData uniqueColumnInputTable = (ResultsTableData) inputTable.duplicate(progressInfo);
 
                 // Rename to make columns unique (except merged ones)
                 for (String columnName : ImmutableList.copyOf(uniqueColumnInputTable.getColumnNames())) {

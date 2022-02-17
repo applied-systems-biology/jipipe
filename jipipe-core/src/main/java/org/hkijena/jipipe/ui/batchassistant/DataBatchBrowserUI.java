@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheDataSlotTableUI;
+import org.hkijena.jipipe.ui.cache.JIPipeExtendedDataTableInfoUI;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheMultiDataSlotTableUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 
@@ -85,7 +85,7 @@ public class DataBatchBrowserUI extends JIPipeWorkbenchPanel {
 
     private void showDataSlot(JIPipeDataSlot dataSlot) {
         JIPipeDataSlot filtered = dataSlot.slice(dataBatch.getInputSlotRows().get(dataSlot));
-        JIPipeCacheDataSlotTableUI ui = new JIPipeCacheDataSlotTableUI(getWorkbench(), filtered);
+        JIPipeExtendedDataTableInfoUI ui = new JIPipeExtendedDataTableInfoUI(getWorkbench(), filtered);
         splitPane.setRightComponent(ui);
         revalidate();
     }

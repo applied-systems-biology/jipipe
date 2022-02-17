@@ -35,8 +35,8 @@ public class RelabeledTableColumn implements TableColumn {
     }
 
     @Override
-    public JIPipeData duplicate() {
-        return new RelabeledTableColumn((TableColumn) tableColumn.duplicate(), label);
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
+        return new RelabeledTableColumn((TableColumn) tableColumn.duplicate(progressInfo), label);
     }
 
     @Override

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.plots.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -70,8 +71,8 @@ public class HistogramPlotData extends PlotData {
         this.valueAxisMaximum = new OptionalDoubleParameter(other.valueAxisMaximum);
     }
 
-    public static HistogramPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, HistogramPlotData.class);
+    public static HistogramPlotData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
+        return PlotData.importFrom(storagePath, HistogramPlotData.class, progressInfo);
     }
 
     @Override

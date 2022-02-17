@@ -64,14 +64,14 @@ public class SortRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
             Comparator<Integer> local;
             if (annotationOrderSortOrder.get(key) == SortOrder.Ascending) {
                 local = (o1, o2) -> {
-                    JIPipeTextAnnotation lhs = getFirstInputSlot().getAnnotationOr(o1, key, new JIPipeTextAnnotation());
-                    JIPipeTextAnnotation rhs = getFirstInputSlot().getAnnotationOr(o2, key, new JIPipeTextAnnotation());
+                    JIPipeTextAnnotation lhs = getFirstInputSlot().getTextAnnotationOr(o1, key, new JIPipeTextAnnotation());
+                    JIPipeTextAnnotation rhs = getFirstInputSlot().getTextAnnotationOr(o2, key, new JIPipeTextAnnotation());
                     return lhs.compareTo(rhs);
                 };
             } else {
                 local = (o1, o2) -> {
-                    JIPipeTextAnnotation lhs = getFirstInputSlot().getAnnotationOr(o1, key, new JIPipeTextAnnotation());
-                    JIPipeTextAnnotation rhs = getFirstInputSlot().getAnnotationOr(o2, key, new JIPipeTextAnnotation());
+                    JIPipeTextAnnotation lhs = getFirstInputSlot().getTextAnnotationOr(o1, key, new JIPipeTextAnnotation());
+                    JIPipeTextAnnotation rhs = getFirstInputSlot().getTextAnnotationOr(o2, key, new JIPipeTextAnnotation());
                     return -lhs.compareTo(rhs);
                 };
             }
@@ -92,7 +92,7 @@ public class SortRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         for (Integer row : rows) {
             annotations.clear();
-            annotations.addAll(getFirstInputSlot().getAnnotations(row));
+            annotations.addAll(getFirstInputSlot().getTextAnnotations(row));
             annotations.addAll(parameterAnnotations);
             getFirstOutputSlot().addData(getFirstInputSlot().getData(row, JIPipeData.class, progressInfo), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }

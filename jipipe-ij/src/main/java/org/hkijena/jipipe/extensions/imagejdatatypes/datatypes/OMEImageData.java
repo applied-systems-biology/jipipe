@@ -89,7 +89,7 @@ public class OMEImageData implements JIPipeData {
         this.metadata = metadata;
     }
 
-    public static OMEImageData importFrom(Path storageFilePath) {
+    public static OMEImageData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
         Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif");
         if (targetFile == null) {
             throw new UserFriendlyNullPointerException("Could not find TIFF file in '" + storageFilePath + "'!",
@@ -98,6 +98,7 @@ public class OMEImageData implements JIPipeData {
                     "JIPipe needs to load the image from a folder, but it could not find any matching file.",
                     "Please contact the JIPipe developers about this issue.");
         }
+        progressInfo.log("OME import " + targetFile);
         return simpleOMEImport(targetFile);
     }
 
@@ -1028,7 +1029,7 @@ public class OMEImageData implements JIPipeData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         ImagePlus imp = ImageJUtils.duplicate(image);
         imp.setTitle(getImage().getTitle());
         OMEImageData copy = new OMEImageData(imp, new ROIListData(rois), metadata);

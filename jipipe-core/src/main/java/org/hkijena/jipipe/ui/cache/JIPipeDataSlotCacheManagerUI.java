@@ -123,7 +123,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void openData(JIPipeProjectCacheState state) {
-//        JIPipeCacheDataSlotTableUI cacheTable = new JIPipeCacheDataSlotTableUI(getProjectWorkbench(), cachedSlot);
+//        JIPipeExtendedDataTableInfoUI cacheTable = new JIPipeExtendedDataTableInfoUI(getProjectWorkbench(), cachedSlot);
 //        String tabName = getDataSlot().getAlgorithm().getName() + "/" + getDataSlot().getName() + " @ " + state.getGenerationTime().format(DateTimeFormatter.ISO_LOCAL_DATE) + " " +
 //                state.getGenerationTime().format(DateTimeFormatter.ofPattern("HH:mm:ss"));
 

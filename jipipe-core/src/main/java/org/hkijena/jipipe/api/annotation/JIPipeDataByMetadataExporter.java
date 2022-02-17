@@ -350,9 +350,9 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
                     continue;
                 JIPipeTextAnnotation metadataValue;
                 if (ignoreMissingMetadata) {
-                    metadataValue = dataSlot.getAnnotationOr(row, metadataKey, null);
+                    metadataValue = dataSlot.getTextAnnotationOr(row, metadataKey, null);
                 } else {
-                    metadataValue = dataSlot.getAnnotationOr(row, metadataKey, new JIPipeTextAnnotation(metadataKey, missingString));
+                    metadataValue = dataSlot.getTextAnnotationOr(row, metadataKey, new JIPipeTextAnnotation(metadataKey, missingString));
                 }
                 if (metadataValue != null) {
                     if (metadataValue.getValue().length() > metadataValueLengthLimit)
@@ -368,7 +368,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             ExpressionVariables parameters = new ExpressionVariables();
             for (int col = 0; col < dataSlot.getAnnotationColumns().size(); col++) {
                 String metadataKey = dataSlot.getAnnotationColumns().get(col);
-                JIPipeTextAnnotation metadataValue = dataSlot.getAnnotationOr(row, metadataKey, null);
+                JIPipeTextAnnotation metadataValue = dataSlot.getTextAnnotationOr(row, metadataKey, null);
                 if (metadataValue == null && ignoreMissingMetadata)
                     continue;
                 String value = metadataValue != null ? metadataValue.getValue() : missingString;
@@ -398,7 +398,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             ExpressionVariables parameters = new ExpressionVariables();
             for (int col = 0; col < dataSlot.getAnnotationColumns().size(); col++) {
                 String metadataKey = dataSlot.getAnnotationColumns().get(col);
-                JIPipeTextAnnotation metadataValue = dataSlot.getAnnotationOr(row, metadataKey, null);
+                JIPipeTextAnnotation metadataValue = dataSlot.getTextAnnotationOr(row, metadataKey, null);
                 if (metadataValue == null && ignoreMissingMetadata)
                     continue;
                 String value = metadataValue != null ? metadataValue.getValue() : missingString;

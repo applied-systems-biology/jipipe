@@ -70,11 +70,11 @@ public class AssembleExtractedROIAlgorithm extends JIPipeMergingAlgorithm {
         JIPipeDataSlot targetImageSlot = getInputSlot("Target");
         JIPipeDataSlot roiSlot = getInputSlot("ROI");
         for (Integer targetImageRow : dataBatch.getInputRows(targetImageSlot)) {
-            ImagePlusData targetImage = (ImagePlusData) targetImageSlot.getData(targetImageRow, ImagePlusData.class, progressInfo).duplicate();
+            ImagePlusData targetImage = (ImagePlusData) targetImageSlot.getData(targetImageRow, ImagePlusData.class, progressInfo).duplicate(progressInfo);
             for (Integer roiImageRow : dataBatch.getInputRows(roiSlot)) {
                 ImagePlusData roiImage = roiSlot.getData(roiImageRow, ImagePlusData.class, progressInfo);
                 ImagePlus convertedRoiImage = ImageJUtils.convertToSameTypeIfNeeded(roiImage.getImage(), targetImage.getImage(), doScaling);
-                Map<String, String> annotationMap = JIPipeTextAnnotation.annotationListToMap(roiSlot.getAnnotations(roiImageRow), JIPipeTextAnnotationMergeMode.OverwriteExisting);
+                Map<String, String> annotationMap = JIPipeTextAnnotation.annotationListToMap(roiSlot.getTextAnnotations(roiImageRow), JIPipeTextAnnotationMergeMode.OverwriteExisting);
                 int x = NumberUtils.createDouble(annotationMap.get(annotationX)).intValue();
                 int y = NumberUtils.createDouble(annotationMap.get(annotationY)).intValue();
                 int z = 0;

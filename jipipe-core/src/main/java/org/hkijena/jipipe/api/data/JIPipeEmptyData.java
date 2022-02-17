@@ -11,7 +11,7 @@ import java.nio.file.Path;
 @JIPipeDataStorageDocumentation("The storage folder is empty.")
 @JIPipeHidden
 public class JIPipeEmptyData implements JIPipeData {
-    public static JIPipeEmptyData importFrom(Path storagePath) {
+    public static JIPipeEmptyData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
         return new JIPipeEmptyData();
     }
 
@@ -21,7 +21,7 @@ public class JIPipeEmptyData implements JIPipeData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return this;
     }
 

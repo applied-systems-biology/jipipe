@@ -138,7 +138,7 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void showDataSlot(JIPipeDataSlot dataSlot) {
-        JIPipeCacheDataSlotTableUI ui = new JIPipeCacheDataSlotTableUI(getProjectWorkbench(), dataSlot);
+        JIPipeExtendedDataTableInfoUI ui = new JIPipeExtendedDataTableInfoUI(getProjectWorkbench(), dataSlot);
         splitPane.setRightComponent(ui);
         revalidate();
     }

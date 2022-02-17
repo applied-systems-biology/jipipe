@@ -18,7 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
@@ -49,25 +49,24 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 /**
- * UI that displays a {@link JIPipeDataSlot} that is cached
+ * UI that displays a {@link JIPipeDataTable} that is cached
  */
-public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
+public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
 
-    private final JIPipeDataSlot slot;
+    private final JIPipeDataTable slot;
     private JXTable table;
     private FormPanel rowUIList;
     private SearchTextField searchTextField = new SearchTextField();
-    private JIPipeDataSlotTableModel dataTable;
+    private JIPipeExtendedDataTableInfoModel dataTable;
     private JScrollPane scrollPane;
 
     /**
      * @param workbenchUI the workbench UI
      * @param slot        The slot
      */
-    public JIPipeCacheDataSlotTableUI(JIPipeWorkbench workbenchUI, JIPipeDataSlot slot) {
+    public JIPipeExtendedDataTableInfoUI(JIPipeWorkbench workbenchUI, JIPipeDataTable slot) {
         super(workbenchUI);
         this.slot = slot;
 
@@ -89,7 +88,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void reloadTable() {
-        dataTable = new JIPipeDataSlotTableModel(table, slot);
+        dataTable = new JIPipeExtendedDataTableInfoModel(table, slot);
         table.setModel(dataTable);
         dataTable.setScrollPane(scrollPane);
         if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
@@ -184,7 +183,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
             String name = "Cache: " +slot.getDisplayName();
             getWorkbench().getDocumentTabPane().addTab(name,
                     UIUtils.getIconFromResources("actions/database.png"),
-                    new JIPipeCacheDataSlotTableUI(getWorkbench(), slot),
+                    new JIPipeExtendedDataTableInfoUI(getWorkbench(), slot),
                     DocumentTabPane.CloseMode.withSilentCloseButton,
                     true);
             getWorkbench().getDocumentTabPane().switchToLastTab();
@@ -209,12 +208,12 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void exportAsTable() {
-        ResultsTableData tableData = dataTable.getSlot().toAnnotationTable(true);
+        ResultsTableData tableData = dataTable.getDataTable().toAnnotationTable(true);
         TableEditor.openWindow(getWorkbench(), tableData, slot.getNode().getDisplayName() + "/" + slot.getName());
     }
 
     private void exportByMetadataExporter() {
-        JIPipeCachedSlotToFilesByMetadataExporterRun run = new JIPipeCachedSlotToFilesByMetadataExporterRun(getWorkbench(), Collections.singletonList(slot), false);
+        JIPipeDataTableToFilesByMetadataExporterRun run = new JIPipeDataTableToFilesByMetadataExporterRun(getWorkbench(), Collections.singletonList(slot), false);
         if (run.setup()) {
             JIPipeRunnerQueue.getInstance().enqueue(run);
         }
@@ -231,7 +230,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
     private void exportAsCSV() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
         if (path != null) {
-            ResultsTableData tableData = dataTable.getSlot().toAnnotationTable(true);
+            ResultsTableData tableData = dataTable.getDataTable().toAnnotationTable(true);
             tableData.saveAsCSV(path);
         }
     }
@@ -239,7 +238,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
     private void handleSlotRowDefaultAction(int selectedRow) {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
 //        slot.getData(row, JIPipeData.class).display(slot.getNode().getName() + "/" + slot.getName() + "/" + row, getWorkbench());
-        JIPipeDataSlotRowUI rowUI = new JIPipeDataSlotRowUI(getWorkbench(), slot, row);
+        JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), slot, row);
         rowUI.handleDefaultAction();
     }
 
@@ -260,7 +259,7 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
                 name = slot.getName() + "/" + row;
             JLabel nameLabel = new JLabel(name, JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getSlotInstanceTooltip(slot));
-            JIPipeDataSlotRowUI rowUI = new JIPipeDataSlotRowUI(getWorkbench(), slot, row);
+            JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), slot, row);
             rowUIList.addToForm(rowUI, nameLabel, null);
         }
     }
@@ -291,17 +290,17 @@ public class JIPipeCacheDataSlotTableUI extends JIPipeWorkbenchPanel {
 
 
     /**
-     * Renders the column header of {@link JIPipeDataSlotTableModel}
+     * Renders the column header of {@link JIPipeExtendedDataTableInfoModel}
      */
     public static class WrapperColumnHeaderRenderer implements TableCellRenderer {
-        private final JIPipeDataSlot dataTable;
+        private final JIPipeDataTable dataTable;
 
         /**
          * Creates a new instance
          *
          * @param dataTable The table
          */
-        public WrapperColumnHeaderRenderer(JIPipeDataSlot dataTable) {
+        public WrapperColumnHeaderRenderer(JIPipeDataTable dataTable) {
             this.dataTable = dataTable;
         }
 

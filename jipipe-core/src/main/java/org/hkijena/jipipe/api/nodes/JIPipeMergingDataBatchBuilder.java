@@ -229,7 +229,7 @@ public class JIPipeMergingDataBatchBuilder {
             progressInfo.resolve("Grouping rows").log("Slot " + slot.getName());
             Multimap<String, Integer> slotMap = HashMultimap.create();
             for (int row = 0; row < slot.getRowCount(); row++) {
-                JIPipeTextAnnotation annotation = slot.getAnnotationOr(row, annotationKey, null);
+                JIPipeTextAnnotation annotation = slot.getTextAnnotationOr(row, annotationKey, null);
                 String value = annotation != null ? annotation.getValue() : "";
                 slotMap.put(value, row);
                 allKeys.add(value);
@@ -266,7 +266,7 @@ public class JIPipeMergingDataBatchBuilder {
                 for (JIPipeDataSlot slot : slotList) {
                     Multimap<String, Integer> slotMap = matchedRows.get(slot);
                     dataBatch.addInputData(slot, slotMap.get(key));
-                    dataBatch.addMergedAnnotations(slot.getAnnotations(slotMap.get(key)), annotationMergeStrategy);
+                    dataBatch.addMergedAnnotations(slot.getTextAnnotations(slotMap.get(key)), annotationMergeStrategy);
                     dataBatch.addMergedDataAnnotations(slot.getDataAnnotations(slotMap.get(key)), getDataAnnotationMergeStrategy());
                 }
                 dataBatches.add(dataBatch);
@@ -312,7 +312,7 @@ public class JIPipeMergingDataBatchBuilder {
                 List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
                 for (JIPipeDataSlot slot : slotList) {
-                    annotations.addAll(slot.getAnnotations(dataBatch.getInputRows(slot)));
+                    annotations.addAll(slot.getTextAnnotations(dataBatch.getInputRows(slot)));
                     dataAnnotations.addAll(slot.getDataAnnotations(dataBatch.getInputRows(slot)));
                 }
                 dataBatch.addMergedAnnotations(annotations, getAnnotationMergeStrategy());
@@ -348,7 +348,7 @@ public class JIPipeMergingDataBatchBuilder {
                     batch.addEmptySlot(slot2);
                 }
                 batch.addInputData(slot, row);
-                batch.addMergedAnnotations(slot.getAnnotations(row), getAnnotationMergeStrategy());
+                batch.addMergedAnnotations(slot.getTextAnnotations(row), getAnnotationMergeStrategy());
                 batch.addMergedDataAnnotations(slot.getDataAnnotations(row), getDataAnnotationMergeStrategy());
                 split.add(batch);
             }
@@ -375,7 +375,7 @@ public class JIPipeMergingDataBatchBuilder {
                         return null;
                 }
                 batch.addInputData(slot, row);
-                annotations.addAll(slot.getAnnotations(row));
+                annotations.addAll(slot.getTextAnnotations(row));
                 dataAnnotations.addAll(slot.getDataAnnotations(row));
             }
             progressInfo.log("Merging " + annotations.size() + " annotations");
@@ -398,7 +398,7 @@ public class JIPipeMergingDataBatchBuilder {
                 Map<String, String> annotations = new HashMap<>();
                 if (referenceColumns != null) {
                     for (String column : referenceColumns) {
-                        JIPipeTextAnnotation annotation = slot.getAnnotationOr(row, column, null);
+                        JIPipeTextAnnotation annotation = slot.getTextAnnotationOr(row, column, null);
                         if (annotation != null) {
                             annotations.put(annotation.getName(), annotation.getValue());
                         }
@@ -541,7 +541,7 @@ public class JIPipeMergingDataBatchBuilder {
                     continue;
                 dataBatch.addInputData(rowNode.slot, rowNode.rows);
                 for (Integer row : rowNode.rows) {
-                    dataBatch.addMergedAnnotations(rowNode.slot.getAnnotations(row), annotationMergeStrategy);
+                    dataBatch.addMergedAnnotations(rowNode.slot.getTextAnnotations(row), annotationMergeStrategy);
                     dataBatch.addMergedDataAnnotations(rowNode.slot.getDataAnnotations(row), dataAnnotationMergeStrategy);
                 }
 

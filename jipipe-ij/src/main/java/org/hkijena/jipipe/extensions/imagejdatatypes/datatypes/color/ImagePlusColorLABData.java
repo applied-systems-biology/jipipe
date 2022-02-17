@@ -61,8 +61,8 @@ public class ImagePlusColorLABData extends ImagePlusColorData implements Colored
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorLABIfNeeded));
     }
 
-    public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlusColorLABData(ImagePlusData.importImagePlusFrom(storageFolder));
+    public static ImagePlusData importFrom(Path storageFolder, JIPipeProgressInfo progressInfo) {
+        return new ImagePlusColorLABData(ImagePlusData.importImagePlusFrom(storageFolder, progressInfo));
     }
 
     /**

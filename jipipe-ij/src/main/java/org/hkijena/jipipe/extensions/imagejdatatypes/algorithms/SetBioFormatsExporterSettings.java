@@ -44,7 +44,7 @@ public class SetBioFormatsExporterSettings extends JIPipeSimpleIteratingAlgorith
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         OMEImageData input = dataBatch.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
-        OMEImageData output = (OMEImageData) input.duplicate();
+        OMEImageData output = (OMEImageData) input.duplicate(progressInfo);
         output.setExporterSettings(new OMEExporterSettings(exporterSettings));
         dataBatch.addOutputData(getFirstOutputSlot(), output, progressInfo);
     }

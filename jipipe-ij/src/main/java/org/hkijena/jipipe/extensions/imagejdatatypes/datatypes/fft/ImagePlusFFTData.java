@@ -70,7 +70,7 @@ public class ImagePlusFFTData extends ImagePlusData {
         }
     }
 
-    public static ImagePlusFFTData importFrom(Path storageFolder) {
+    public static ImagePlusFFTData importFrom(Path storageFolder, JIPipeProgressInfo progressInfo) {
         Path fhtOutputPath = storageFolder.resolve("fht.ome.tif");
         Path powerSpectrumOutputPath = storageFolder.resolve("power_spectrum.ome.tif");
         ImagePlus fhtImage = null;

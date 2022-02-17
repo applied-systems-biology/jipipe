@@ -51,7 +51,7 @@ public class SetLUTFromColorMapAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo);
         if (duplicateImage)
-            data = (ImagePlusData) data.duplicate();
+            data = (ImagePlusData) data.duplicate(progressInfo);
         LUT lut = colorMap.toLUT();
         ImagePlus image = data.getImage();
         if (applyToAllPlanes && image.isStack()) {

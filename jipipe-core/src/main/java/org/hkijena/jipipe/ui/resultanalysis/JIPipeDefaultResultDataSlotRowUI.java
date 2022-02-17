@@ -167,7 +167,7 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                     @Override
                     public void run() {
                         progressInfo.log("Importing data from " + getRowStorageFolder() + " ...");
-                        JIPipeData data = JIPipe.importData(getRowStorageFolder(), JIPipe.getDataTypes().getById(getRow().getTrueDataType()));
+                        JIPipeData data = JIPipe.importData(getRowStorageFolder(), JIPipe.getDataTypes().getById(getRow().getTrueDataType()), progressInfo);
                         data.saveTo(path, "data", false, progressInfo.resolveAndLog("Saving data"));
                     }
 
@@ -204,7 +204,7 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                 @Override
                 public void run() {
                     progressInfo.log("Importing data from " + getRowStorageFolder() + " ...");
-                    JIPipeData data = JIPipe.importData(getRowStorageFolder(), JIPipe.getDataTypes().getById(getRow().getTrueDataType()));
+                    JIPipeData data = JIPipe.importData(getRowStorageFolder(), JIPipe.getDataTypes().getById(getRow().getTrueDataType()), progressInfo);
                     data.saveTo(path.getParent(), path.getFileName().toString(), true, progressInfo.resolveAndLog("Exporting data"));
                 }
 

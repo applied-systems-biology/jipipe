@@ -85,7 +85,7 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
             Path storageFolder = dataFolder.resolve("" + row.getIndex());
             List<JIPipeTextAnnotation> annotationList = ignoreImportedDataAnnotations ? Collections.emptyList() : row.getAnnotations();
             JIPipeDataInfo trueDataType = exportedDataTable.getDataTypeOf(row.getIndex());
-            JIPipeData data = JIPipe.importData(storageFolder, trueDataType.getDataClass());
+            JIPipeData data = JIPipe.importData(storageFolder, trueDataType.getDataClass(), progressInfo);
             dataBatch.addOutputData(getFirstOutputSlot(), data, annotationList, annotationMergeStrategy, progressInfo);
         }
     }

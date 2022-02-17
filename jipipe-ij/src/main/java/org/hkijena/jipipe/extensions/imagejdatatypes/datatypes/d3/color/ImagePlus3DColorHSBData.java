@@ -63,7 +63,7 @@ public class ImagePlus3DColorHSBData extends ImagePlus3DColorData implements Col
     }
 
     public static ImagePlusData importFrom(Path storageFolder) {
-        return new ImagePlus3DColorHSBData(ImagePlusData.importImagePlusFrom(storageFolder));
+        return new ImagePlus3DColorHSBData(ImagePlusData.importImagePlusFrom(storageFolder, progressInfo));
     }
 
     /**

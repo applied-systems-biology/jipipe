@@ -53,7 +53,7 @@ public class DataRowQueryExpression extends DefaultExpressionParameter {
      * @return if the expression matches
      */
     public boolean test(JIPipeDataSlot slot, int row) {
-        return test(slot.getVirtualData(row), slot.getAnnotations(row));
+        return test(slot.getVirtualData(row), slot.getTextAnnotations(row));
     }
 
     /**

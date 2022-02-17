@@ -42,7 +42,7 @@ public class CellPoseSizeModelData implements JIPipeData {
         this.name = other.name;
     }
 
-    public static CellPoseSizeModelData importFrom(Path storagePath) {
+    public static CellPoseSizeModelData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
         return new CellPoseSizeModelData(PathUtils.findFileByExtensionIn(storagePath, ".npy"));
     }
 
@@ -73,7 +73,7 @@ public class CellPoseSizeModelData implements JIPipeData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new CellPoseSizeModelData(this);
     }
 

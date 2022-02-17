@@ -58,7 +58,7 @@ public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path folder = dataBatch.getInputData("Data row folder", FolderData.class, progressInfo).toPath();
-        JIPipeData data = JIPipe.importData(folder, dataType.getInfo().getDataClass());
+        JIPipeData data = JIPipe.importData(folder, dataType.getInfo().getDataClass(), progressInfo);
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         for (StringAndStringPairParameter item : this.annotations) {
             annotations.add(new JIPipeTextAnnotation(item.getKey(), item.getValue()));

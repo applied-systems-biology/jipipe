@@ -112,11 +112,11 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         if (preferAssociatedImage) {
             for (Map.Entry<Optional<ImagePlus>, ROIListData> referenceEntry : dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).groupByReferenceImage().entrySet()) {
-                ROIListData inputData = (ROIListData) referenceEntry.getValue().duplicate();
+                ROIListData inputData = (ROIListData) referenceEntry.getValue().duplicate(progressInfo);
                 processROIList(dataBatch, inputData, referenceEntry.getKey().orElse(null), progressInfo);
             }
         } else {
-            ROIListData inputData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate();
+            ROIListData inputData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate(progressInfo);
             processROIList(dataBatch, inputData, null, progressInfo);
         }
 

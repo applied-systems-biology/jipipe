@@ -39,7 +39,7 @@ public class OMEROProjectReferenceData implements JIPipeData {
         this.projectId = projectId;
     }
 
-    public static OMEROProjectReferenceData importFrom(Path storageFilePath) {
+    public static OMEROProjectReferenceData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
         Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
         try {
             return JsonUtils.getObjectMapper().readerFor(OMEROProjectReferenceData.class).readValue(targetFile.toFile());
@@ -69,7 +69,7 @@ public class OMEROProjectReferenceData implements JIPipeData {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new OMEROProjectReferenceData(projectId);
     }
 

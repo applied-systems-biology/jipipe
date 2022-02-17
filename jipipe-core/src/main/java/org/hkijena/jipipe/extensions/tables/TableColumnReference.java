@@ -99,7 +99,7 @@ public class TableColumnReference implements TableColumn {
     }
 
     @Override
-    public JIPipeData duplicate() {
+    public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return this;
     }
 

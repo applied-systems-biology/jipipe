@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.plots.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
@@ -50,8 +51,8 @@ public class Pie2DPlotData extends PiePlotData {
         this.labelFontSize = other.labelFontSize;
     }
 
-    public static Pie2DPlotData importFrom(Path storagePath) {
-        return PlotData.importFrom(storagePath, Pie2DPlotData.class);
+    public static Pie2DPlotData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
+        return PlotData.importFrom(storagePath, Pie2DPlotData.class, progressInfo);
     }
 
     @Override

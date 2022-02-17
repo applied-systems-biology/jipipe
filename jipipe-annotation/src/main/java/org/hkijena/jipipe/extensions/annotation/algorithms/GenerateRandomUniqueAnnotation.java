@@ -78,7 +78,7 @@ public class GenerateRandomUniqueAnnotation extends JIPipeParameterSlotAlgorithm
         int index = 0;
         for (Integer row : availableRows) {
             annotations.clear();
-            annotations.addAll(getFirstInputSlot().getAnnotations(row));
+            annotations.addAll(getFirstInputSlot().getTextAnnotations(row));
             annotations.add(new JIPipeTextAnnotation(generatedAnnotation, "" + (index++)));
             getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row),
                     annotations,

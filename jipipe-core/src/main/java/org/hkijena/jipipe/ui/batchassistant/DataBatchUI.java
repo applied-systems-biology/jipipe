@@ -23,7 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.cache.JIPipeCacheDataSlotTableUI;
+import org.hkijena.jipipe.ui.cache.JIPipeExtendedDataTableInfoUI;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -100,9 +100,9 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
     private void displayData(JIPipeDataSlot slot, Set<Integer> rows) {
         JIPipeDataSlot copySlot = new JIPipeDataSlot(slot.getInfo(), slot.getNode());
         for (int row : rows) {
-            copySlot.addData(slot.getVirtualData(row), slot.getAnnotations(row), JIPipeTextAnnotationMergeMode.Merge);
+            copySlot.addData(slot.getVirtualData(row), slot.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.Merge);
         }
-        JIPipeCacheDataSlotTableUI tableUI = new JIPipeCacheDataSlotTableUI(getProjectWorkbench(), copySlot);
+        JIPipeExtendedDataTableInfoUI tableUI = new JIPipeExtendedDataTableInfoUI(getProjectWorkbench(), copySlot);
 //        DataSlotTableUI tableUI = new DataSlotTableUI(getProjectWorkbench(), copySlot);
         JFrame frame = new JFrame("Data batch contents");
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

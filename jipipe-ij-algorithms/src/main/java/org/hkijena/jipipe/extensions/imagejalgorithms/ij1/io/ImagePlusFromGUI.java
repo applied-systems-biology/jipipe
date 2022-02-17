@@ -78,7 +78,7 @@ public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
         for (ImagePlus rawImage : rawImages) {
             ImageQueryExpressionVariableSource.buildVariablesSet(rawImage, variableSet);
             if (imageFilters.test(variableSet)) {
-                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(rawImage).duplicate(), progressInfo);
+                dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(rawImage).duplicate(progressInfo), progressInfo);
             }
         }
     }
