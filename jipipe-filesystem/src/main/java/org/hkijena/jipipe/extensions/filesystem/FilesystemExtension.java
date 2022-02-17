@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.extensions.filesystem;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.filesystem.algorithms.*;
 import org.hkijena.jipipe.extensions.filesystem.compat.PathDataImageJAdapter;
@@ -29,6 +31,7 @@ import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -63,7 +66,7 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public void register() {
+    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         // Register main data types
         registerDatatype("path", PathData.class, ResourceUtils.getPluginResource("icons/data-types/path.png"),
                 null, FilesystemDataSlotPreview.class, new OpenPathDataOperation(), new CopyPathDataOperation());

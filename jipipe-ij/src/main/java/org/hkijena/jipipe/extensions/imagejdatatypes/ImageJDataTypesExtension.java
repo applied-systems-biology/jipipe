@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes;
 
 import ome.xml.model.enums.DimensionOrder;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
@@ -79,6 +81,7 @@ import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInImageJData
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInJIPipeTabDataOperation;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
@@ -226,7 +229,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
     }
 
     @Override
-    public void register() {
+    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerSettingsSheet(ImageJDataTypesSettings.ID,
                 "ImageJ data types",
                 UIUtils.getIconFromResources("apps/imagej.png"),

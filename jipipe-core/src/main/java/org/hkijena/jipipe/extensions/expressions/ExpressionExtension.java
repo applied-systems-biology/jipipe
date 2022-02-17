@@ -1,6 +1,8 @@
 package org.hkijena.jipipe.extensions.expressions;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.expressions.functions.*;
 import org.hkijena.jipipe.extensions.expressions.functions.collections.*;
@@ -21,6 +23,7 @@ import org.hkijena.jipipe.extensions.expressions.functions.string.*;
 import org.hkijena.jipipe.extensions.expressions.ui.DefaultExpressionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 @Plugin(type = JIPipeJavaExtension.class)
@@ -51,7 +54,7 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public void register() {
+    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerParameterType("expression",
                 DefaultExpressionParameter.class,
                 DefaultExpressionParameter.List.class,

@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.scijava.Context;
 import org.scijava.plugin.SciJavaPlugin;
 
 import javax.swing.*;
@@ -40,8 +42,11 @@ public interface JIPipeJavaExtension extends SciJavaPlugin, JIPipeDependency {
 
     /**
      * Registers custom modules into JIPipe
+     * @param jiPipe the {@link JIPipe} instance that calls this function
+     * @param context the SciJava {@link Context}
+     * @param progressInfo the progress info
      */
-    void register();
+    void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo);
 
     /**
      * Called after registration.

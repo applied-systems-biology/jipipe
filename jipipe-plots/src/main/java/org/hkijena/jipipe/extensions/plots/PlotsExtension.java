@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.extensions.plots;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataOperation;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
@@ -28,6 +30,7 @@ import org.hkijena.jipipe.extensions.plots.ui.resultanalysis.PlotDataSlotPreview
 import org.hkijena.jipipe.extensions.plots.utils.ColorMap;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -68,7 +71,7 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public void register() {
+    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
 
         // Register extension so users can create plots
         registerMenuExtension(NewPlotJIPipeMenuExtension.class);

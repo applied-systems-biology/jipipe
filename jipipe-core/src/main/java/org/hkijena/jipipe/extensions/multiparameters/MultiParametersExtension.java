@@ -15,11 +15,13 @@ package org.hkijena.jipipe.extensions.multiparameters;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -44,7 +46,7 @@ public class MultiParametersExtension extends JIPipePrepackagedDefaultJavaExtens
     }
 
     @Override
-    public void register() {
+    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         JIPipe.getNodes().getEventBus().register(this);
 
         // Register data types

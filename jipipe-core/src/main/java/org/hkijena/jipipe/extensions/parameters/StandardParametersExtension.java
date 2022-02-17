@@ -16,10 +16,12 @@ package org.hkijena.jipipe.extensions.parameters;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
@@ -88,6 +90,7 @@ import org.hkijena.jipipe.ui.grapheditor.layout.GraphAutoLayout;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.scijava.Context;
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
@@ -128,7 +131,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
     }
 
     @Override
-    public void register() {
+    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         // Fallback editor for any parameter collection
         registerParameterEditor(JIPipeParameterCollection.class, JIPipeParameterCollectionParameterEditorUI.class);
         registerParameterType("jipipe:imagej-update-site",

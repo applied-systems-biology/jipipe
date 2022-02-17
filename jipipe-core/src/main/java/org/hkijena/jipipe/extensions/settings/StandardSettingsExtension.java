@@ -13,11 +13,14 @@
 
 package org.hkijena.jipipe.extensions.settings;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -52,7 +55,7 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
     }
 
     @Override
-    public void register() {
+    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerSettingsSheet(RuntimeSettings.ID,
                 "Runtime",
                 UIUtils.getIconFromResources("actions/player_start.png"),

@@ -11,51 +11,63 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.tools;
+package org.hkijena.jipipe.extensions.imagej2;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
+import org.scijava.command.Command;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.SciJavaPlugin;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
- * Extension containing some additional tools
+ * Extension that adds ImageJ2 algorithms
  */
 @Plugin(type = JIPipeJavaExtension.class)
-public class ToolsExtension extends JIPipePrepackagedDefaultJavaExtension {
-    @Override
+public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
+
+        @Override
     public StringList getDependencyCitations() {
-        return new StringList();
+        StringList result = new StringList();
+        result.add("Rueden, C. T.; Schindelin, J. & Hiner, M. C. et al. (2017), \"ImageJ2: ImageJ for the next generation of scientific image data\", " +
+                "BMC Bioinformatics 18:529");
+        return result;
+    }
+
+    @Override
+    public List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
+        return Collections.emptyList();
     }
 
     @Override
     public String getName() {
-        return "Standard tools";
+        return "ImageJ2 algorithms";
     }
 
     @Override
     public HTMLText getDescription() {
-        return new HTMLText("Provides some additional tools.");
+        return new HTMLText("Integrates ImageJ2 algorithms into JIPipe");
     }
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-//        registerMenuExtension(ScreenshotWholeGraphToolPNG.class);
-//        registerMenuExtension(ScreenshotWholeGraphToolSVG.class);
-        registerMenuExtension(OpenImageJTool.class);
-        registerMenuExtension(CreateLaunchersTool.class);
-        registerMenuExtension(CloseAllImageJWindowsTool.class);
-        registerMenuExtension(RebuildAliasIdsTool.class);
-        registerMenuExtension(DissolveCompartmentsTool.class);
+        for (PluginInfo<SciJavaPlugin> info : jiPipe.getPluginService().getPluginsOfClass(Command.class)) {
+            progressInfo.log("Detected ImageJ2 plugin: " + info);
+        }
     }
 
     @Override
     public String getDependencyId() {
-        return "org.hkijena.jipipe:settings";
+        return "org.hkijena.jipipe:imagej2";
     }
 
     @Override
@@ -63,3 +75,6 @@ public class ToolsExtension extends JIPipePrepackagedDefaultJavaExtension {
         return "1.64.0";
     }
 }
+
+
+

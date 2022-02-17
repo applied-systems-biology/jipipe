@@ -15,6 +15,7 @@ package org.hkijena.jipipe;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.Prefs;
 import net.imagej.ImageJ;
@@ -397,6 +398,15 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      */
     public void initialize(ExtensionSettings extensionSettings, JIPipeRegistryIssues issues) {
         initializing = true;
+
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+        progressInfo.getEventBus().register(new Object() {
+            @Subscribe
+            public void onProgressStatusUpdated(JIPipeProgressInfo.StatusUpdatedEvent event) {
+                logService.info(event.getMessage());
+            }
+        });
+
         IJ.showStatus("Initializing JIPipe ...");
         nodeRegistry.installEvents();
         List<PluginInfo<JIPipeJavaExtension>> pluginList = pluginService.getPluginsOfType(JIPipeJavaExtension.class).stream()
@@ -429,7 +439,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             JIPipeJavaExtension extension = null;
             try {
                 extension = (JIPipeJavaExtension) javaExtensions.get(i);
-                extension.register();
+                extension.register(this, getContext(), progressInfo);
                 registeredExtensions.add(extension);
                 registeredExtensionIds.add(extension.getDependencyId());
                 eventBus.post(new ExtensionRegisteredEvent(this, extension));

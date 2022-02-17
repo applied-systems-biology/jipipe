@@ -1,8 +1,10 @@
 package org.hkijena.jipipe.extensions.clij2;
 
 import net.imagej.updater.UpdateSite;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.clij2.algorithms.*;
@@ -18,6 +20,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImagePlusDat
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
@@ -64,7 +67,7 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public void register() {
+    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerParameterType("clij2:opencl-kernel",
                 OpenCLKernelScript.class,
                 null,

@@ -212,6 +212,7 @@ See the LICENSE file provided with this code for the full license.
         <module>jipipe-plots</module>
         <module>jipipe-python</module>
         <module>jipipe-ij</module>
+        <module>jipipe-ij2</module>
         <module>jipipe-ij-omero</module>
         <module>jipipe-ij-algorithms</module>
         <module>jipipe-ij-multi-template-matching</module>

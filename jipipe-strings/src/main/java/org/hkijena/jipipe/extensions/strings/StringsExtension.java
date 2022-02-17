@@ -13,7 +13,9 @@
 
 package org.hkijena.jipipe.extensions.strings;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
 import org.hkijena.jipipe.extensions.core.data.OpenTextInJIPipeDataOperation;
@@ -21,6 +23,7 @@ import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.strings.datasources.StringDefinitionDataSource;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 /**
@@ -44,7 +47,7 @@ public class StringsExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public void register() {
+    public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerDatatype("string", StringData.class, UIUtils.getIconURLFromResources("data-types/string.png"), null, null,
                 new OpenInNativeApplicationDataImportOperation(".txt"), new OpenTextInJIPipeDataOperation(".txt"));
         registerDatatype("xml", XMLData.class, UIUtils.getIconURLFromResources("data-types/xml.png"), null, null,
