@@ -6,6 +6,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -56,6 +57,9 @@ public class ColorThresholdExpression2D extends JIPipeSimpleIteratingAlgorithm {
                 8);
 
         ExpressionVariables variableSet = new ExpressionVariables();
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+            variableSet.set(annotation.getName(), annotation.getValue());
+        }
         variableSet.set("width", img.getWidth());
         variableSet.set("height", img.getHeight());
         variableSet.set("num_z", img.getNSlices());

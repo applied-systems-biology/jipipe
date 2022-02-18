@@ -7,6 +7,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -87,6 +88,9 @@ public class ColorToGreyscaleExpression2D extends JIPipeSimpleIteratingAlgorithm
         }
 
         ExpressionVariables variableSet = new ExpressionVariables();
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+            variableSet.set(annotation.getName(), annotation.getValue());
+        }
         variableSet.set("width", img.getWidth());
         variableSet.set("height", img.getHeight());
         variableSet.set("num_z", img.getNSlices());
