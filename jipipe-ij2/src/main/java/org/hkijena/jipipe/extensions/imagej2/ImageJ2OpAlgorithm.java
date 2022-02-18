@@ -11,10 +11,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import java.util.Map;
 
 public class ImageJ2OpAlgorithm extends JIPipeIteratingAlgorithm implements JIPipeCustomParameterCollection {
-    private JIPipeDynamicParameterCollection ij2Parameters = new JIPipeDynamicParameterCollection();
+    private final JIPipeDynamicParameterCollection ij2Parameters;
 
     public ImageJ2OpAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.ij2Parameters = new JIPipeDynamicParameterCollection(((ImageJ2OpNodeInfo)info).getNodeParameters());
     }
 
     public ImageJ2OpAlgorithm(ImageJ2OpAlgorithm other) {

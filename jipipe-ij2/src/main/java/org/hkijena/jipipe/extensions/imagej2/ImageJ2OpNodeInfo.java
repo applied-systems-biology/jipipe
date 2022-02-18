@@ -4,11 +4,15 @@ import net.imagej.ops.OpInfo;
 import net.imagej.ops.OpUtils;
 import net.imglib2.Interval;
 import org.apache.commons.lang.WordUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -53,7 +57,12 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
      */
     private final Map<String, Function<Object, JIPipeData>> outputSlotToJIPipeConverters = new HashMap<>();
 
-    public ImageJ2OpNodeInfo(Context context, OpInfo opInfo, boolean single, JIPipeProgressInfo progressInfo) throws InstantiableException {
+    /**
+     * Parameter collection that will be assigned to the node
+     */
+    private final JIPipeDynamicParameterCollection nodeParameters = new JIPipeDynamicParameterCollection();
+
+    public ImageJ2OpNodeInfo(JIPipe jiPipe, Context context, OpInfo opInfo, boolean single, JIPipeProgressInfo progressInfo) throws InstantiableException {
         this.context = context;
         this.convertService = context.getService(ConvertService.class);
         this.id = "ij2:op:" + opInfo.getName() + "::" + opInfo.cInfo().getClassName();
@@ -73,10 +82,10 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
 
         this.name = "Op: " + WordUtils.capitalize(opInfo.getSimpleName());
         this.description = new HTMLText("An ImageJ2 Op<br/>" + opInfo.getName() + "<br/>" + OpUtils.opString(opInfo.cInfo()));
-        initializeParameters();
+        initializeParameters(jiPipe, progressInfo);
     }
 
-    private void initializeParameters() {
+    private void initializeParameters(JIPipe jiPipe, JIPipeProgressInfo progressInfo) {
         Set<String> existingInputs = new HashSet<>();
         Set<String> existingOutputs = new HashSet<>();
         for (ModuleItem<?> item : opInfo.inputs()) {
@@ -97,7 +106,29 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
                     outputSlots.add(new DefaultJIPipeOutputSlot(ImagePlusData.class, slotName, null, false));
                 }
             }
+            else if(item.getIOType() == ItemIO.INPUT) {
+                // Is this a parameter?
+                JIPipeParameterTypeInfo parameterTypeInfo = jiPipe.getParameterTypeRegistry().getInfoByFieldClass(item.getType());
+                if(parameterTypeInfo != null) {
+                    nodeParameters.addParameter(StringUtils.orElse(item.getPersistKey(), item.getName()), parameterTypeInfo.getFieldClass(), item.getName(), item.getDescription());
+//                    JIPipeManualParameterAccess.builder().setFieldClass(parameterTypeInfo.getFieldClass())
+//                            .setKey(StringUtils.orElse(item.getPersistKey(), item.getName()))
+//                            .setGetter(item.)
+                }
+                else {
+                    progressInfo.log("Unable to convert parameter " + item + " of type " + item.getType() + ". Is input of unknown data type and not supported by parameters.");
+                    conversionSuccessful = false;
+                }
+            }
+            else {
+                progressInfo.log("Unable to convert parameter " + item + " of type " + item.getType());
+                conversionSuccessful = false;
+            }
         }
+    }
+
+    public JIPipeDynamicParameterCollection getNodeParameters() {
+        return nodeParameters;
     }
 
     @Override

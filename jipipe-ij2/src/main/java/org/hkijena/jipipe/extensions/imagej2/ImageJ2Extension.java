@@ -25,6 +25,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringLi
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
+import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 import java.util.Collections;
@@ -35,7 +36,7 @@ import java.util.stream.Collectors;
 /**
  * Extension that adds ImageJ2 algorithms
  */
-@Plugin(type = JIPipeJavaExtension.class)
+@Plugin(type = JIPipeJavaExtension.class, priority = Priority.LOW)
 public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
@@ -71,7 +72,7 @@ public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
             progressInfo.log("IJ2-Ops: Detected " + entry.getValue().size() + " ops of type " + entry.getKey());
             for (OpInfo opInfo : entry.getValue()) {
                 try {
-                    ImageJ2OpNodeInfo nodeInfo = new ImageJ2OpNodeInfo(context, opInfo, entry.getValue().size() <= 1, progressInfo);
+                    ImageJ2OpNodeInfo nodeInfo = new ImageJ2OpNodeInfo(jiPipe, context, opInfo, entry.getValue().size() <= 1, progressInfo);
                     if(!nodeInfo.isConversionSuccessful()) {
                         progressInfo.log("Op " + opInfo.getName() + " could not be converted to JIPipe! Skipping.");
                         continue;
