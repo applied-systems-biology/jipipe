@@ -17,6 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJsonExtension;
+import org.hkijena.jipipe.extensions.jsonextensionloader.JsonExtensionLoaderExtension;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -84,6 +85,10 @@ public class JIPipePluginManagerUIPanel extends JIPipeProjectWorkbenchPanel {
         JButton installButton = new JButton("Install ...", UIUtils.getIconFromResources("actions/document-open-folder.png"));
         installButton.addActionListener(e -> JIPipeJsonExtensionWindow.installExtensions(getWorkbench()));
         toolBar.add(installButton);
+
+        JButton openPluginDirectory = new JButton("Open plugin directory", UIUtils.getIconFromResources("actions/document-open-folder.png"));
+        openPluginDirectory.addActionListener(e -> UIUtils.openFileInNative(JsonExtensionLoaderExtension.getPluginDirectory()));
+        toolBar.add(openPluginDirectory);
 
         toolBar.add(Box.createHorizontalGlue());
 
