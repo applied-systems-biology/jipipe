@@ -62,6 +62,20 @@ public class ReflectionUtils {
     }
 
     /**
+     * Gets the value of a field
+     * @param field the field
+     * @param instance the instance
+     * @return the return value
+     */
+    public static Object getFieldValue(Field field, Object instance) {
+        try {
+            return field.get(instance);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * Returns true if the class is a primitive wrapper
      *
      * @param targetClass target class

@@ -35,7 +35,7 @@ import java.util.List;
 @Plugin(type = JIPipeJavaExtension.class)
 public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
 
-        @Override
+    @Override
     public StringList getDependencyCitations() {
         StringList result = new StringList();
         result.add("Rueden, C. T.; Schindelin, J. & Hiner, M. C. et al. (2017), \"ImageJ2: ImageJ for the next generation of scientific image data\", " +
@@ -60,8 +60,18 @@ public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        for (PluginInfo<SciJavaPlugin> info : jiPipe.getPluginService().getPluginsOfClass(Command.class)) {
+        for (PluginInfo<?> info : jiPipe.getPluginService().getPlugins()) {
             progressInfo.log("Detected ImageJ2 plugin: " + info);
+            try {
+                Class<?> pluginClass = info.loadClass();
+                if (Command.class.isAssignableFrom(pluginClass)) {
+                    ImageJ2NodeInfo nodeInfo = new ImageJ2NodeInfo(context, info);
+                    registerNodeType(nodeInfo);
+                }
+            } catch (Exception | Error e) {
+                progressInfo.log("Unable to load ImageJ2 plugin " + info);
+                progressInfo.log(e.toString());
+            }
         }
     }
 
