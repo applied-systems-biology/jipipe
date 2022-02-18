@@ -9,11 +9,10 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils2;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
 @JIPipeDocumentation(name = "Overlay images", description = "Overlays the target image with the source image according to a mask or ROI.")
@@ -27,13 +26,13 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
 
     public MergeImagesAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        ImageJUtils2.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
+        ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
     public MergeImagesAlgorithm(MergeImagesAlgorithm other) {
         super(other);
         this.targetArea = other.targetArea;
-        ImageJUtils2.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
+        ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
     @Override
@@ -50,9 +49,9 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
                     "Please check if the images are correct.");
         }
 
-        ImageJUtils.forEachIndexedZCTSlice(output, (ip, index) -> {
+        org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(output, (ip, index) -> {
             ImageProcessor mask = getMask(dataBatch, index, progressInfo);
-            ImageProcessor srcProcessor = ImageJUtils.getSliceZero(src, index);
+            ImageProcessor srcProcessor = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getSliceZero(src, index);
             for (int y = 0; y < ip.getHeight(); y++) {
                 for (int x = 0; x < ip.getWidth(); x++) {
                     if (mask.get(x, y) > 0) {
@@ -74,7 +73,7 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("roi:target-area")
     public void setTargetArea(ImageROITargetArea targetArea) {
         this.targetArea = targetArea;
-        ImageJUtils2.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
+        ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
     public ImageProcessor getMask(JIPipeDataBatch dataBatch, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {

@@ -28,13 +28,12 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils2;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 
@@ -71,7 +70,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
-        ImageJUtils2.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
+        ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
     /**
@@ -88,7 +87,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
         this.thresholdCombinationExpression = new DefaultExpressionParameter(other.thresholdCombinationExpression);
         this.sourceArea = other.sourceArea;
         this.thresholdAnnotationStrategy = other.thresholdAnnotationStrategy;
-        ImageJUtils2.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
+        ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
     @Override
@@ -120,7 +119,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
 
         if (thresholdMode == SliceThresholdMode.ApplyPerSlice) {
             List<Integer> thresholds = new ArrayList<>();
-            ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+            org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 ImageProcessor mask = getMask(img.getWidth(),
                         img.getHeight(),
                         finalRoiInput,
@@ -148,7 +147,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                     progressInfo);
         } else if (thresholdMode == SliceThresholdMode.CombineSliceStatistics) {
             int[] combinedHistogram = new int[256];
-            ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+            org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 ImageProcessor mask = getMask(img.getWidth(),
                         img.getHeight(),
                         finalRoiInput,
@@ -167,7 +166,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
             if (thresholdAnnotation.isEnabled()) {
                 annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
             }
-            ImageJUtils.forEachSlice(img, ip -> {
+            org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachSlice(img, ip -> {
                 ip.threshold(threshold);
             }, progressInfo);
             dataBatch.addOutputData(getFirstOutputSlot(),
@@ -177,7 +176,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                     progressInfo);
         } else if (thresholdMode == SliceThresholdMode.CombineThresholdPerSlice) {
             List<Integer> thresholds = new ArrayList<>();
-            ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+            org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 ImageProcessor mask = getMask(img.getWidth(),
                         img.getHeight(),
                         finalRoiInput,
@@ -200,7 +199,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
             if (thresholdAnnotation.isEnabled()) {
                 annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
             }
-            ImageJUtils.forEachSlice(img, ip -> {
+            org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachSlice(img, ip -> {
                 ip.threshold(threshold);
             }, progressInfo);
             dataBatch.addOutputData(getFirstOutputSlot(),
@@ -293,7 +292,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("source-area")
     public void setSourceArea(ImageROITargetArea sourceArea) {
         this.sourceArea = sourceArea;
-        ImageJUtils2.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
+        ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
     private int[] getHistogram(ImageProcessor ip, ImageProcessor foregroundMask) {
@@ -323,7 +322,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private ImageProcessor getMask(int width, int height, ROIListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {
-        return ImageJUtils2.getMaskProcessorFromMaskOrROI(sourceArea, width, height, rois, mask, sliceIndex);
+        return ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea, width, height, rois, mask, sliceIndex);
     }
 
     public enum SliceThresholdMode {

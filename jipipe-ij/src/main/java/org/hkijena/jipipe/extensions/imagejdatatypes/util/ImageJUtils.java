@@ -60,9 +60,6 @@ import java.util.stream.Collectors;
  * Utility functions for ImageJ
  */
 public class ImageJUtils {
-    private ImageJUtils() {
-
-    }
 
     /**
      * Faster version of the duplicate() method in {@link ImagePlus}.

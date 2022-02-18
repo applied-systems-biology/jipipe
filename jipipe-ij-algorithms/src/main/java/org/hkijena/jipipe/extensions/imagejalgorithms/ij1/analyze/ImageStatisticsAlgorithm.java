@@ -24,10 +24,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils2;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
@@ -64,7 +63,7 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      */
     public ImageStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        ImageJUtils2.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
+        ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
     /**
@@ -79,7 +78,7 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.applyPerFrame = other.applyPerFrame;
         this.applyPerSlice = other.applyPerSlice;
         this.targetArea = other.targetArea;
-        ImageJUtils2.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
+        ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
     public static void addStatisticsRow(ResultsTableData resultsTableData, ImageStatistics statistics, ImageStatisticsSetParameter measurements, Collection<ImageSliceIndex> slices, int allPixels, int width, int height) {
@@ -221,14 +220,14 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             // Fetch the pixel buffers
             for (ImageSliceIndex index : indices) {
                 JIPipeProgressInfo indexProgress = batchProgress.resolveAndLog("Slice " + index);
-                ImageProcessor ip = ImageJUtils.getSliceZero(img, index);
-                ImageProcessor mask = ImageJUtils2.getMaskProcessorFromMaskOrROI(targetArea, dataBatch, index, indexProgress);
+                ImageProcessor ip = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getSliceZero(img, index);
+                ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(targetArea, dataBatch, index, indexProgress);
                 if (img.getBitDepth() == 8) {
-                    ImageJUtils.getMaskedPixels_8U(ip, mask, pixels8u);
+                    org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getMaskedPixels_8U(ip, mask, pixels8u);
                 } else if (img.getBitDepth() == 16) {
-                    ImageJUtils.getMaskedPixels_16U(ip, mask, pixels16u);
+                    org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getMaskedPixels_16U(ip, mask, pixels16u);
                 } else if (img.getBitDepth() == 32) {
-                    ImageJUtils.getMaskedPixels_32F(ip, mask, pixels32f);
+                    org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getMaskedPixels_32F(ip, mask, pixels32f);
                 }
             }
 
@@ -308,6 +307,6 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("roi:target-area")
     public void setTargetArea(ImageROITargetArea targetArea) {
         this.targetArea = targetArea;
-        ImageJUtils2.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
+        ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 }

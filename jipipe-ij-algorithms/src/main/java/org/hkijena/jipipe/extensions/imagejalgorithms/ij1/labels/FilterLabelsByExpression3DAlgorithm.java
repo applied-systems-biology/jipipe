@@ -25,9 +25,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils2;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -68,7 +67,7 @@ public class FilterLabelsByExpression3DAlgorithm extends JIPipeSimpleIteratingAl
             }
         }
 
-        ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> ImageJUtils2.removeLabelsExcept(ip, keptLabels.toArray()), progressInfo);
+        org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> ImageJAlgorithmUtils.removeLabelsExcept(ip, keptLabels.toArray()), progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(image), progressInfo);
     }
 

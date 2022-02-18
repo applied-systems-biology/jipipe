@@ -1,8 +1,16 @@
 package org.hkijena.jipipe.extensions.imagej2;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import net.imagej.ops.OpInfo;
 import net.imagej.ops.OpUtils;
 import net.imglib2.Interval;
+import net.imglib2.type.NativeType;
+import net.imglib2.type.numeric.IntegerType;
+import net.imglib2.type.numeric.RealType;
+import net.imglib2.type.numeric.integer.*;
+import net.imglib2.type.numeric.real.DoubleType;
+import net.imglib2.type.numeric.real.FloatType;
 import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
@@ -11,24 +19,17 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeManualParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
-import org.scijava.ItemIO;
 import org.scijava.convert.ConvertService;
 import org.scijava.module.ModuleItem;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 
 /**
@@ -45,8 +46,10 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
     private final JIPipeNodeTypeCategory nodeTypeCategory;
     private final List<JIPipeInputSlot> inputSlots = new ArrayList<>();
     private final List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
+    private BiMap<String, ModuleItem<?>> resultTableColumns = HashBiMap.create();
+    private String resultTableSlot;
     private HTMLText description;
-    private boolean conversionSuccessful;
+    private boolean conversionSuccessful = true;
 
     /**
      * Contains functions that map from an input slot name to a function to extract the result as {@link JIPipeData}
@@ -82,7 +85,17 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
 
         this.name = "Op: " + WordUtils.capitalize(opInfo.getSimpleName());
         this.description = new HTMLText("An ImageJ2 Op<br/>" + opInfo.getName() + "<br/>" + OpUtils.opString(opInfo.cInfo()));
-        initializeParameters(jiPipe, progressInfo);
+        initializeParameters(jiPipe, progressInfo.resolve(opInfo.cInfo().getClassName()));
+    }
+
+    private boolean isStatisticOutput(ModuleItem<?> item) {
+        if(NativeType.class.isAssignableFrom(item.getType())) {
+            return true;
+        }
+        if(item.getType() == String.class) {
+            return true;
+        }
+        return false;
     }
 
     private void initializeParameters(JIPipe jiPipe, JIPipeProgressInfo progressInfo) {
@@ -91,24 +104,74 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
         for (ModuleItem<?> item : opInfo.inputs()) {
             // Detect Interval type as images
             if(Interval.class.isAssignableFrom(item.getType())) {
-               if(item.getIOType() == ItemIO.INPUT || item.getIOType() == ItemIO.BOTH) {
+               if(item.isInput()) {
                    String slotName = StringUtils.makeUniqueString(StringUtils.makeFilesystemCompatible(WordUtils.capitalize(item.getName())),
                            " ",
                            existingInputs);
+                   if(slotName.toLowerCase(Locale.ROOT).contains("out")) {
+                       progressInfo.log("Skipping input '" + item + "' due to unexpected name. Operation is in-place?");
+                       continue;
+                   }
                    existingInputs.add(slotName);
                    inputSlots.add(new DefaultJIPipeInputSlot(ImagePlusData.class, slotName, true, false));
                }
-                if(item.getIOType() == ItemIO.OUTPUT || item.getIOType() == ItemIO.BOTH) {
+                if(item.isOutput()) {
                     String slotName = StringUtils.makeUniqueString(StringUtils.makeFilesystemCompatible(WordUtils.capitalize(item.getName())),
                             " ",
                             existingOutputs);
+                    if(slotName.toLowerCase(Locale.ROOT).contains("in")) {
+                        progressInfo.log("Skipping output '" + item + "' due to unexpected name. Operation is in-place?");
+                        continue;
+                    }
                     existingOutputs.add(slotName);
                     outputSlots.add(new DefaultJIPipeOutputSlot(ImagePlusData.class, slotName, null, false));
                 }
             }
-            else if(item.getIOType() == ItemIO.INPUT) {
+            else if(item.isOutput() && isStatisticOutput(item)) {
+                // This will be a statistic
+                resultTableColumns.put(item.getName(), item);
+            }
+            else if(item.isInput()) {
                 // Is this a parameter?
                 JIPipeParameterTypeInfo parameterTypeInfo = jiPipe.getParameterTypeRegistry().getInfoByFieldClass(item.getType());
+                if(parameterTypeInfo != null) {
+                    // Is a JIPipe parameter
+                }
+                else if(NativeType.class.isAssignableFrom(item.getType())) {
+                    // Is a imglib2 native type
+                    if(UnsignedByteType.class == item.getType()) {
+                        parameterTypeInfo = jiPipe.getParameterTypeRegistry().getInfoByFieldClass(Short.class);
+                    }
+                    else if(ByteType.class == item.getType()) {
+                        parameterTypeInfo = jiPipe.getParameterTypeRegistry().getInfoByFieldClass(Byte.class);
+                    }
+                    else if(UnsignedShortType.class == item.getType()) {
+                        parameterTypeInfo = jiPipe.getParameterTypeRegistry().getInfoByFieldClass(Integer.class);
+                    }
+                    else if(ShortType.class == item.getType()) {
+                        parameterTypeInfo = jiPipe.getParameterTypeRegistry().getInfoByFieldClass(Short.class);
+                    }
+                    else if(UnsignedIntType.class == item.getType()) {
+                        parameterTypeInfo = jiPipe.getParameterTypeRegistry().getInfoByFieldClass(Long.class);
+                    }
+                    else if(IntType.class == item.getType()) {
+                        parameterTypeInfo = jiPipe.getParameterTypeRegistry().getInfoByFieldClass(Integer.class);
+                    }
+                    else if(UnsignedLongType.class == item.getType()) {
+                        parameterTypeInfo = jiPipe.getParameterTypeRegistry().getInfoByFieldClass(Long.class);
+                    }
+                    else if(LongType.class == item.getType()) {
+                        parameterTypeInfo = jiPipe.getParameterTypeRegistry().getInfoByFieldClass(Long.class);
+                    }
+                    else  if(FloatType.class == item.getType()) {
+                        parameterTypeInfo = jiPipe.getParameterTypeRegistry().getInfoByFieldClass(Float.class);
+                    }
+                    else if(DoubleType.class == item.getType()) {
+                        parameterTypeInfo = jiPipe.getParameterTypeRegistry().getInfoByFieldClass(Double.class);
+                    }
+                }
+
+                // Convert to parameter
                 if(parameterTypeInfo != null) {
                     nodeParameters.addParameter(StringUtils.orElse(item.getPersistKey(), item.getName()), parameterTypeInfo.getFieldClass(), item.getName(), item.getDescription());
 //                    JIPipeManualParameterAccess.builder().setFieldClass(parameterTypeInfo.getFieldClass())
@@ -124,6 +187,14 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
                 progressInfo.log("Unable to convert parameter " + item + " of type " + item.getType());
                 conversionSuccessful = false;
             }
+        }
+
+        // Create result table slot
+        if(!resultTableColumns.isEmpty()) {
+            String slotName = StringUtils.makeUniqueString("Result table", " ", existingOutputs);
+            existingOutputs.add(slotName);
+            resultTableSlot = slotName;
+            outputSlots.add(new DefaultJIPipeOutputSlot(ResultsTableData.class, slotName, null, true));
         }
     }
 

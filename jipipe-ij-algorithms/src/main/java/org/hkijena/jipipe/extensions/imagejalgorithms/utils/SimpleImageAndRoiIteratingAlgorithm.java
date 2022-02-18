@@ -33,13 +33,13 @@ public abstract class SimpleImageAndRoiIteratingAlgorithm extends JIPipeIteratin
                 .addOutputSlot("Output", outputClass, outputInheritance, inheritanceConversions)
                 .seal()
                 .build());
-        ImageJUtils2.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
+        ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
     public SimpleImageAndRoiIteratingAlgorithm(SimpleImageAndRoiIteratingAlgorithm other) {
         super(other);
         this.targetArea = other.targetArea;
-        ImageJUtils2.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
+        ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
     @JIPipeDocumentation(name = "Only apply to ...", description = "Determines where the algorithm is applied to.")
@@ -51,7 +51,7 @@ public abstract class SimpleImageAndRoiIteratingAlgorithm extends JIPipeIteratin
     @JIPipeParameter("roi:target-area")
     public void setTargetArea(ImageROITargetArea targetArea) {
         this.targetArea = targetArea;
-        ImageJUtils2.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
+        ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
     public ImageProcessor getMask(JIPipeDataBatch dataBatch, ImageSliceIndex sliceIndex, JIPipeProgressInfo progressInfo) {

@@ -29,10 +29,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJUtils2;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageStatistics5DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -70,7 +69,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
     public ImageStatisticsExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.columns.setCustomInstanceGenerator(() -> new ExpressionTableColumnGeneratorProcessor("", ""));
-        ImageJUtils2.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
+        ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
     /**
@@ -86,7 +85,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
         this.targetArea = other.targetArea;
         this.columns = new ExpressionTableColumnGeneratorProcessorParameterList(other.columns);
         this.columns.setCustomInstanceGenerator(() -> new ExpressionTableColumnGeneratorProcessor("", ""));
-        ImageJUtils2.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
+        ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
     @Override
@@ -143,9 +142,9 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
             // Fetch the pixel buffers
             for (ImageSliceIndex index : indices) {
                 JIPipeProgressInfo indexProgress = batchProgress.resolveAndLog("Slice " + index);
-                ImageProcessor ip = ImageJUtils.getSliceZero(img, index);
-                ImageProcessor mask = ImageJUtils2.getMaskProcessorFromMaskOrROI(targetArea, dataBatch, index, indexProgress);
-                ImageJUtils.getMaskedPixels_Slow(ip, mask, pixelsList);
+                ImageProcessor ip = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getSliceZero(img, index);
+                ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(targetArea, dataBatch, index, indexProgress);
+                org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getMaskedPixels_Slow(ip, mask, pixelsList);
             }
 
             // Generate statistics
@@ -236,7 +235,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
     @JIPipeParameter("roi:target-area")
     public void setTargetArea(ImageROITargetArea targetArea) {
         this.targetArea = targetArea;
-        ImageJUtils2.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
+        ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
     }
 
     @JIPipeDocumentation(name = "Generated columns", description = "Use these expressions to generate the table columns. The expressions contain statistics, as well as incoming annotations of the current image.")

@@ -17,13 +17,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-public class ImageJUtils2 {
+public class ImageJAlgorithmUtils {
 
     public static void removeLabelsExcept(ImageProcessor processor, int[] labelsToKeep) {
         TIntSet labelsToKeep_ = new TIntHashSet();
@@ -71,7 +70,7 @@ public class ImageJUtils2 {
         ImageProcessor mask = new ByteProcessor(label.getWidth(), label.getHeight());
 
         // Ensure the correct type for label
-        label = ImageJUtils.convertToGreyscaleIfNeeded(new ImagePlus("", label)).getProcessor();
+        label = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.convertToGreyscaleIfNeeded(new ImagePlus("", label)).getProcessor();
 
         // Copy image
         image = image.duplicate();
@@ -280,24 +279,24 @@ public class ImageJUtils2 {
                     return ImageROITargetArea.createWhiteMask(img.getImage());
                 } else {
                     ImagePlus mask = rois.toMask(img.getImage(), true, false, 1);
-                    ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
+                    org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
                         ip.invert();
                     }, progressInfo.resolve("Invert mask"));
-                    return ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
+                    return org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
                 }
             }
             case InsideMask: {
                 ImagePlusData img = dataBatch.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
                 ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
-                return ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
+                return org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
             }
             case OutsideMask: {
                 ImagePlusData img = dataBatch.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
                 ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getDuplicateImage();
-                ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
+                org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
                     ip.invert();
                 }, progressInfo.resolve("Invert mask"));
-                return ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
+                return org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
             }
         }
         throw new UnsupportedOperationException();
