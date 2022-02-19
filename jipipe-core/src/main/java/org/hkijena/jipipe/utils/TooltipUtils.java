@@ -148,16 +148,22 @@ public class TooltipUtils {
             builder.append("<td><p style=\"background-color:#27ae60; color:white;border:3px solid #27ae60;border-radius:5px;text-align:center;\">Input</p></td>");
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType())).append("\"/></td>");
             builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(slot.getName())).append("</td>");
-            builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i></td>");
-            builder.append("</tr>");
+            builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i>");
+            if(!StringUtils.isNullOrEmpty(slot.getDescription())) {
+                builder.append(" ").append(slot.getDescription());
+            }
+            builder.append("</td></tr>");
         }
         for (JIPipeDataSlot slot : node.getOutputSlots()) {
             builder.append("<tr>");
             builder.append("<td><p style=\"background-color:#da4453; color:white;border:3px solid #da4453;border-radius:5px;text-align:center;\">Output</p></td>");
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType())).append("\"/></td>");
             builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(slot.getName())).append("</td>");
-            builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i></td>");
-            builder.append("</tr>");
+            builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i>");
+            if(!StringUtils.isNullOrEmpty(slot.getDescription())) {
+                builder.append(" ").append(slot.getDescription());
+            }
+            builder.append("</td></tr>");
         }
         builder.append("</table>\n\n");
 
@@ -217,16 +223,22 @@ public class TooltipUtils {
             builder.append("<td><p style=\"background-color:#27ae60; color:white;border:3px solid #27ae60;border-radius:5px;text-align:center;\">Input</p></td>");
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
             builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.slotName(), "-"))).append("</td>");
-            builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.value()).getName())).append(")</i></td>");
-            builder.append("</tr>");
+            builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.value()).getName())).append(")</i>");
+            if(!StringUtils.isNullOrEmpty(slot.description())) {
+                builder.append(" ").append(HtmlEscapers.htmlEscaper().escape(slot.description()));
+            }
+            builder.append("</td></tr>");
         }
         for (JIPipeOutputSlot slot : info.getOutputSlots()) {
             builder.append("<tr>");
             builder.append("<td><p style=\"background-color:#da4453; color:white;border:3px solid #da4453;border-radius:5px;text-align:center;\">Output</p></td>");
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
             builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.slotName(), "-"))).append("</td>");
-            builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.value()).getName())).append(")</i></td>");
-            builder.append("</tr>");
+            builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.value()).getName())).append(")</i>");
+            if(!StringUtils.isNullOrEmpty(slot.description())) {
+                builder.append(" ").append(HtmlEscapers.htmlEscaper().escape(slot.description()));
+            }
+            builder.append("</td></tr>");
         }
         builder.append("</table>\n\n");
 
@@ -259,16 +271,22 @@ public class TooltipUtils {
             builder.append("<td><p style=\"background-color:#27ae60; color:white;border:3px solid #27ae60;border-radius:5px;text-align:center;\">Input</p></td>");
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType())).append("\"/></td>");
             builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(slot.getName())).append("</td>");
-            builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i></td>");
-            builder.append("</tr>");
+            builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i>");
+            if(!StringUtils.isNullOrEmpty(slot.getDescription())) {
+                builder.append(" ").append(HtmlEscapers.htmlEscaper().escape(slot.getDescription()));
+            }
+            builder.append("</td></tr>");
         }
         for (JIPipeDataSlot slot : node.getOutputSlots()) {
             builder.append("<tr>");
             builder.append("<td><p style=\"background-color:#da4453; color:white;border:3px solid #da4453;border-radius:5px;text-align:center;\">Output</p></td>");
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType())).append("\"/></td>");
             builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(slot.getName())).append("</td>");
-            builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i></td>");
-            builder.append("</tr>");
+            builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i>");
+            if(!StringUtils.isNullOrEmpty(slot.getDescription())) {
+                builder.append(" ").append(HtmlEscapers.htmlEscaper().escape(slot.getDescription()));
+            }
+            builder.append("</td></tr>");
         }
         builder.append("</table>\n\n");
 

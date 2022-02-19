@@ -84,8 +84,11 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
             builder.append("<td><p style=\"background-color:#27ae60; color:white;border:3px solid #27ae60;border-radius:5px;text-align:center;\">Input</p></td>");
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
             builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.slotName(), "-"))).append("</td>");
-            builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(dataInfo.getName() + ": " + dataInfo.getDescription())).append(")</i></td>");
-            builder.append("</tr>");
+            builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(dataInfo.getName() + ": " + dataInfo.getDescription())).append(")</i>");
+            if(!StringUtils.isNullOrEmpty(slot.description())) {
+                builder.append(" ").append(HtmlEscapers.htmlEscaper().escape(slot.description()));
+            }
+            builder.append("</td></tr>");
         }
         for (JIPipeOutputSlot slot : info.getOutputSlots()) {
             JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(slot.value());
@@ -93,8 +96,11 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
             builder.append("<td><p style=\"background-color:#da4453; color:white;border:3px solid #da4453;border-radius:5px;text-align:center;\">Output</p></td>");
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
             builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.slotName(), "-"))).append("</td>");
-            builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(dataInfo.getName() + ": " + dataInfo.getDescription())).append(")</i></td>");
-            builder.append("</tr>");
+            builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(dataInfo.getName() + ": " + dataInfo.getDescription())).append(")</i>");
+            if(!StringUtils.isNullOrEmpty(slot.description())) {
+                builder.append(" ").append(HtmlEscapers.htmlEscaper().escape(slot.description()));
+            }
+            builder.append("</td></tr>");
         }
         builder.append("</table>\n\n");
 
