@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-02-19T03:36:07 CET">
+<meta name="revised" content="2022-02-19T03:51:07 CET">
 <title>Creating an algorithm :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -798,8 +798,8 @@
 </span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeNode</span><span style="color:#f92672">(</span><span style="color:#111">nodeTypeCategory</span> <span style="color:#f92672">=</span> <span style="color:#111">MiscellaneousNodeTypeCategory</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
 
 <span style="color:#75715e">// Input and output slots autoCreate automatically creates the slots if set to true and no slot configuration was provided
-</span><span style="color:#75715e"></span><span style="color:#75af00">@AlgorithmInputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
-<span style="color:#75af00">@AlgorithmOutputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
+</span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeInputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
+<span style="color:#75af00">@JIPipeOutputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
 
 <span style="color:#75715e">// You can add multiple JIPipeCitation annotations to provide citations for this node only
 </span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeCitation</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;Additional citation&#34;</span><span style="color:#f92672">)</span>
@@ -854,8 +854,7 @@
     
         <div class="chevrons">
     <div id="navigation">
-<a class="nav nav-prev" href="../../documentation-java-api/create-extension/" title="Creating an extension project"> <i class="fa fa-chevron-left"></i><label>Creating an extension project</label></a>
-    <a class="nav nav-next" href="../../documentation-java-api/algorithm/iterating-algorithms/" title="Handling multiple inputs" style="margin-right: 0px;"><label>Handling multiple inputs</label><i class="fa fa-chevron-right"></i></a></div>
+<a class="nav nav-next" href="../../documentation-java-api/algorithm/iterating-algorithms/" title="Handling multiple inputs" style="margin-right: 0px;"><label>Handling multiple inputs</label><i class="fa fa-chevron-right"></i></a></div>
   </div>
 
   </section>
