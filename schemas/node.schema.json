@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://www.jipipe.org/schemas/node.schema.json",
+  "type": "object",
+  "title": "Algorithm type",
+  "description": "Defines a new node type",
+  "required": [
+    "id",
+    "metadata",
+    "category",
+    "parameter-visibilities",
+    "graph",
+    "menu-path",
+    "jipipe:project-type"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/id",
+      "type": "string",
+      "title": "ID",
+      "description": "Unique algorithm ID",
+      "default": "",
+      "examples": [
+        "gaussian-blur"
+      ]
+    },
+    "metadata": {
+      "$id": "#/properties/metadata",
+      "type": "object",
+      "title": "Metadata",
+      "description": "General algorithm metadata",
+      "$ref": "https://www.jipipe.org/schemas/metadata.schema.json"
+    },
+    "category": {
+      "$id": "#/properties/category",
+      "type": "string",
+      "title": "Category",
+      "description": "The category",
+      "default": "org.hkijena.jipipe:miscellaneous",
+      "examples": [
+        "org.hkijena.jipipe:miscellaneous"
+      ]
+    },
+    "exported-parameters": {
+        "$id": "#/properties/exported-parameters",
+        "type": "object",
+        "title": "Exported parameters",
+        "description": "List of parameters that will be exported to users of the node",
+        "default": {}
+    },
+    "graph": {
+      "$id": "#/properties/graph",
+      "type": "object",
+      "title": "Wrapped algorithm graph",
+      "description": "This graph is executed when the algorithm is run",
+      "$ref": "https://www.jipipe.org/schemas/graph.schema.json"
+    },
+    "menu-path": {
+      "$id": "#/properties/menu-path",
+      "type": "string",
+      "title": "Menu path",
+      "description": "Optional menu path within the category menu",
+      "default": "",
+      "examples": [
+        "Blur"
+      ]
+    },
+    "jipipe:project-type": {
+      "$id": "#/properties/jipipe:project-type",
+      "type": "string",
+      "title": "Project type",
+      "description": "Identifies the JSON as algorithm",
+      "default": "graph-wrapper-algorithm",
+      "enum": [
+        "graph-wrapper-algorithm"
+      ]
+    }
+  }
+}

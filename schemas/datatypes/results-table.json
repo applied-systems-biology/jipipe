@@ -1,0 +1,21 @@
+{
+  "$id": "https://jipipe.org/schemas/datatypes/results-table.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Contains a single *.csv file that contains the table data.",
+  "type": "object",
+  "minProperties": 1,
+  "patternProperties": {
+    "^.*\\.csv": {
+      "$ref": "#/$defs/file"
+    }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "description": "A CSV file",
+      "properties": {
+        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+      }
+    }
+  }
+}

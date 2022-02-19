@@ -1,0 +1,9 @@
+{
+  "$id": "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "An empty data type. It is structural.",
+  "type": "object",
+  "required": [],
+  "properties": {},
+  "$defs": {}
+}

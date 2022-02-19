@@ -1,0 +1,24 @@
+{
+  "$id": "https://jipipe.org/schemas/datatypes/omero-project-reference-data.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Contains a single *.json file that a file path.",
+  "type": "object",
+  "minProperties": 1,
+  "patternProperties": {
+    "^.*\\.json": {
+      "$ref": "#/$defs/file",
+      "properties" : {
+        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+      }
+    }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "description": "A JSON file that contains information about the file path.",
+      "properties": {
+        "project-id": { "type": "number", "description": "The OMERO project ID" }
+      }
+    }
+  }
+}

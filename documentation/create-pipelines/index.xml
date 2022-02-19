@@ -12,7 +12,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation/create-pipelines/pipeline-editor/</guid>
-      <description>This guide is also available as video tutorial.The graph editor (pipeline editor) allows you to edit the processing steps of a graph compartment. Its user interface is separated into three sections:
+      <description>This guide is also available as video tutorial.  The graph editor (pipeline editor) allows you to edit the processing steps of a graph compartment. Its user interface is separated into three sections:
  The analysis graph contains the processing steps (also referred as algorithms) The settings panel shows the properties of the currently selected algorithms The toolbar allows you to add more algorithms into the graph, navigate to existing algorithms, change some behavior settings of the graph editor, and create screenshots  Analysis graph The analysis graph contains algorithms that are represented by rectangles.</description>
     </item>
     

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-02-16T11:10:37 CET">
+<meta name="revised" content="2022-02-19T03:36:07 CET">
 <title>Data table :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -735,11 +735,28 @@ organize data of any supported kind into an annotated table and store all
 required metadata to recover the data from the file system.</p>
 <p>A data table is located in a directory within the file system and contains
 following parts:</p>
-<ul>
-<li><code>data-table.json</code>, which contains all metadata and the table row definitions</li>
-<li>Numeric folders starting from zero (e.g., <code>0</code>, <code>1</code>, <code>52</code>) that correspond to rows defined in <code>data-table.json</code>. These contain files &amp; folders specific to the serialized data type.</li>
-</ul>
-<p><strong>The numeric folders are also referred as &ldquo;Row folders&rdquo;</strong>. Please visit the <a href="../../documentation-data-api/row-folder">row folder documentation</a> for more info.</p>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>data-table.json</code></td>
+<td>Metadata file for this data table.</td>
+</tr>
+<tr>
+<td>Data row directories</td>
+<td>Names have following RegEx format: <code>\\d+</code> (e.g., <code>0</code>, <code>1</code>, <code>52</code>). Number corresponds to the row in the data table. <strong>The numeric folders are also referred as &ldquo;Row folders&rdquo;</strong>. Please visit the <a href="../../documentation-data-api/row-folder">row folder documentation</a> for more info.</td>
+</tr>
+<tr>
+<td>Data annotation column contents</td>
+<td>Used to store data annotation <a href="../../documentation-data-api/row-folder">row folders</a>.<br/> <strong>Info:</strong> No standardized naming or content. To comply to the standard, you can store row folders anywhere relative to the data table directory. <br/><strong>Suggested structure (Implemented in JIPipe):</strong> Names are generated with following format: <code>_\\d+</code> (e.g., <code>_0</code>, <code>_1</code>, <code>_120</code>) to prevent collisions with data row folders. Each directory contains a data table that stores the whole column of data annotations.</td>
+</tr>
+</tbody>
+</table>
 <p>Here you see an example of such a folder that stores three data rows. Here we assume that the stored data types are
 <code>imagej-imgplus</code> (ImageJ images).</p>
 <link href="../../mermaid/mermaid.css" type="text/css" rel="stylesheet"/>

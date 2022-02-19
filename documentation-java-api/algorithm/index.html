@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-02-16T11:10:37 CET">
+<meta name="revised" content="2022-02-19T03:36:07 CET">
 <title>Creating an algorithm :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -841,7 +841,7 @@
 
     <span style="color:#75715e">// ... See previous tutorial for other methods
 </span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">register</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">register</span><span style="color:#f92672">(</span><span style="color:#111">JIPipe</span> <span style="color:#111">jiPipe</span><span style="color:#f92672">,</span> <span style="color:#111">Context</span> <span style="color:#111">context</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progressInfo</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
         <span style="color:#75715e">// Registers our algorithm with a unique ID and an icon
 </span><span style="color:#75715e"></span>        <span style="color:#111">registerNodeType</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-algorithm&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">MyAlgorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">UIUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">getIconURLFromResources</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;actions/viewimage.png&#34;</span><span style="color:#f92672">));</span>
     <span style="color:#f92672">}</span>

@@ -14,7 +14,7 @@
       <guid>https://www.jipipe.org/documentation-data-api/data-table/</guid>
       <description>The data table structure is the smallest unit of the data API. Its purpose is to organize data of any supported kind into an annotated table and store all required metadata to recover the data from the file system.
 A data table is located in a directory within the file system and contains following parts:
- data-table.json, which contains all metadata and the table row definitions Numeric folders starting from zero (e.</description>
+   Element Description     data-table.json Metadata file for this data table.</description>
     </item>
     
     <item>

@@ -1,0 +1,21 @@
+{
+  "$id": "https://jipipe.org/schemas/datatypes/imageplus-data.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpg, *.png.",
+  "type": "object",
+  "minProperties": 1,
+  "patternProperties": {
+    "^.*\\.(tif|tiff|png|jpeg|jpg|png)": {
+      "$ref": "#/$defs/file"
+    }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "description": "Image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpg, *.png",
+      "properties": {
+        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+      }
+    }
+  }
+}

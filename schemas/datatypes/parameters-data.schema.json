@@ -1,0 +1,29 @@
+{
+  "$id": "https://jipipe.org/schemas/datatypes/parameters-data.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Contains a single *.json file that stores the parameters.",
+  "type": "object",
+  "minProperties": 1,
+  "patternProperties": {
+    "^.*\\.json": {
+      "$ref": "#/$defs/file",
+      "properties" : {
+        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+      }
+    }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "description": "A JSON file that contains the parameters. The JSON object keys are the parameter unique IDs",
+      "additionalProperties": {
+        "type": "object",
+        "description": "",
+        "properties": {
+          "type-id": { "type": "string", "description": "The unique JIPipe parameter type ID" },
+          "value": { "description": "Serialized value of the parameter" }
+        }
+      }
+    }
+  }
+}

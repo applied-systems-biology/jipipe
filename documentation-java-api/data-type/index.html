@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-02-16T11:10:37 CET">
+<meta name="revised" content="2022-02-19T03:36:07 CET">
 <title>Creating a data type :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -541,97 +541,6 @@
       <a href="../../documentation-json-api/">JSON API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph-node/" class="dd-item">
-        <div>
-          <a href="../../documentation-json-api/graph-node/">
-            Graph node
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/algorithm/" class="dd-item">
-        <div>
-          <a href="../../documentation-json-api/algorithm/">
-            Algorithm type
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/dependency/" class="dd-item">
-        <div>
-          <a href="../../documentation-json-api/dependency/">
-            Dependency
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph-edge/" class="dd-item">
-        <div>
-          <a href="../../documentation-json-api/graph-edge/">
-            Graph Edge
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph/" class="dd-item">
-        <div>
-          <a href="../../documentation-json-api/graph/">
-            Graph
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/json-extension/" class="dd-item">
-        <div>
-          <a href="../../documentation-json-api/json-extension/">
-            Extension
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/metadata/" class="dd-item">
-        <div>
-          <a href="../../documentation-json-api/metadata/">
-            Metadata
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/point/" class="dd-item">
-        <div>
-          <a href="../../documentation-json-api/point/">
-            Point
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/project/" class="dd-item">
-        <div>
-          <a href="../../documentation-json-api/project/">
-            Project
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/slot-definition/" class="dd-item">
-        <div>
-          <a href="../../documentation-json-api/slot-definition/">
-            Slot definition
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table/" class="dd-item">
-        <div>
-          <a href="../../documentation-json-api/data-table/">
-            Data table
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table-row/" class="dd-item">
-        <div>
-          <a href="../../documentation-json-api/data-table-row/">
-            Data table row
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/annotation/" class="dd-item">
-        <div>
-          <a href="../../documentation-json-api/annotation/">
-            Annotation
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
         </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/documentation-data-api/" class="dd-item haschildren
@@ -748,10 +657,21 @@
 <p>JIPipe requires that data can be saved to a folder within the output directory. We also
 recommend that you include code that can load the data back into JIPipe or ImageJ in some form.</p>
 <p>There are no requirements on the constructor of the data type.
-The only requirements are that there is a function <code>importFrom(Path)</code> that imports <code>JIPipeData</code> from a row storage folder, and an annotation of type
-<a href="../../apidocs/org/hkijena/jipipe/core/api/data/JIPipeDataStorageDocumentation.html">@JIPipeStorageDocumentation</a> that explains the structure of the storage folder.</p>
+The only requirements are that there is a function <code>importFrom(Path, JIPipeProgressInfo)</code> that imports <code>JIPipeData</code> from a row storage folder, and an annotation of type
+<a href="../../apidocs/org/hkijena/jipipe/core/api/data/JIPipeDataStorageDocumentation.html">@JIPipeStorageDocumentation</a> that explains the structure of the storage folder. This documentation must include a human-readable description of the items contained in the storage directory, as well as a URL to a <a href="https://www.json-schema.org/">JSON Schema</a> that describes the structure of the directory, including any nested JSON data (if possible). You can build your schema based on following examples:</p>
+<ul>
+<li>Single text file (<code>*.txt</code>): <a href="https://jipipe.org/schemas/datatypes/string-data.schema.json">https://jipipe.org/schemas/datatypes/string-data.schema.json</a></li>
+<li>One of multiple image files: <a href="https://jipipe.org/schemas/datatypes/imageplus-data.schema.json">https://jipipe.org/schemas/datatypes/imageplus-data.schema.json</a></li>
+<li>Single JSON file with known structure: <a href="https://jipipe.org/schemas/datatypes/path-data.schema.json">https://jipipe.org/schemas/datatypes/path-data.schema.json</a></li>
+<li>Multiple image files plus JSON metadata with known structure: <a href="https://jipipe.org/schemas/datatypes/imageplus-fft-data.schema.json">https://jipipe.org/schemas/datatypes/imageplus-fft-data.schema.json</a></li>
+<li>Multiple CSV files plus JSON metadata with known structure: <a href="https://jipipe.org/schemas/datatypes/plot-data.schema.json">https://jipipe.org/schemas/datatypes/plot-data.schema.json</a></li>
+</ul>
+
+<div class="notices tip" ><p><p>Feel free to re-use schemata for different types if the structure matches.</p>
+</p></div>
+
 <p>The folder that is provided in <code>storageFilePath</code> is unique to the data and empty.
-The name parameter in <code>storageFilePath</code> is usually the data slot name and can be used as template for file names. It can be ignored <strong>undless</strong> <code>forceName</code> is true.
+The name parameter in <code>storageFilePath</code> is usually the data slot name and can be used as template for file names. It can be ignored <strong>unless</strong> <code>forceName</code> is true.
 The reason behind this is that then the name is pre-generated in a unique way for saving the data at a non-standard location (e.g. exporting the data).
 In such cases <strong>all file or folder names</strong> within the storage path should contain the name in some way, <strong>even if the import function cannot load the exported data anymore</strong>.</p>
 <p>There are two optional functions that you can override:</p>
@@ -759,8 +679,13 @@ In such cases <strong>all file or folder names</strong> within the storage path 
 <li><code>display()</code> shows the data in ImageJ, JIPipe, or any other GUI</li>
 <li><code>preview()</code> generates a GUI component that acts as thumbnail/preview of the contained data</li>
 </ul>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;My data&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;This is some data&#34;</span><span style="color:#f92672">)</span>
-<span style="color:#75af00">@JIPipeStorageDocumentation</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;Contains exactly one *.json file that stores the string value.&#34;</span><span style="color:#f92672">)</span>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// Documentation for this data type (for the GUI)
+</span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;My data&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;This is some data&#34;</span><span style="color:#f92672">)</span>
+
+<span style="color:#75715e">// Human-readable description plus a JSON Schema that describe the structure of a storage folder 
+</span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeStorageDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">humanReadableDescription</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Contains exactly one *.json file that stores the string value.&#34;</span><span style="color:#f92672">,</span> 
+<span style="color:#111">jsonSchemaURL</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json&#34;</span><span style="color:#f92672">)</span>
+
 <span style="color:#75715e">// You can use @JIPipeHidden to hide this data from data type list UIs
 </span><span style="color:#75715e"></span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyData</span> <span style="color:#00a8c8">implements</span> <span style="color:#111">JIPipeData</span> <span style="color:#f92672">{</span>
 
@@ -833,7 +758,7 @@ In such cases <strong>all file or folder names</strong> within the storage path 
     <span style="color:#f92672">}</span>
 
     <span style="color:#75715e">// Do not forget to add this method or JIPipe will refuse to start
-</span><span style="color:#75715e"></span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#111">MyData</span> <span style="color:#75af00">importFrom</span><span style="color:#f92672">(</span><span style="color:#111">Path</span> <span style="color:#111">rowStorageFolder</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span><span style="color:#75715e"></span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#111">MyData</span> <span style="color:#75af00">importFrom</span><span style="color:#f92672">(</span><span style="color:#111">Path</span> <span style="color:#111">rowStorageFolder</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
         <span style="color:#75715e">// You can use the PathUtils
 </span><span style="color:#75715e"></span>        <span style="color:#111">Path</span> <span style="color:#111">targetFile</span> <span style="color:#f92672">=</span> <span style="color:#111">PathUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">findFileByExtensionIn</span><span style="color:#f92672">(</span><span style="color:#111">storageFilePath</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">);</span>
         <span style="color:#00a8c8">return</span> <span style="color:#111">fromJson</span><span style="color:#f92672">(</span><span style="color:#111">targetFile</span><span style="color:#f92672">);</span>

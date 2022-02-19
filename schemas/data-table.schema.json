@@ -1,6 +1,6 @@
 {
   "$schema": "http://json-schema.org/draft-07/schema",
-  "$id": "https://www.jipipe.org/schemas/data-table-row.schema.json",
+  "$id": "https://www.jipipe.org/schemas/data-table.schema.json",
   "type": "object",
   "title": "Data table",
   "description": "Defines a data table",
@@ -9,18 +9,6 @@
     "data-type"
   ],
   "properties": {
-    "node-id": {
-      "$id": "#/properties/node-id",
-      "type": "string",
-      "title": "Node type ID",
-      "description": "The node type ID that generated the data. Optional."
-    },
-    "slot": {
-      "$id": "#/properties/slot",
-      "type": "string",
-      "title": "Slot name",
-      "description": "The slot name that generated the data. Optional."
-    },
     "rows": {
       "$id": "#/properties/rows",
       "type": "array",
