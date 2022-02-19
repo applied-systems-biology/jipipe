@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions;
 
 import org.hkijena.jipipe.JIPipeDefaultJavaExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.net.URL;
@@ -29,9 +30,11 @@ public abstract class JIPipePrepackagedDefaultJavaExtension extends JIPipeDefaul
     @Override
     public List<JIPipeAuthorMetadata> getAuthors() {
         final String HKI = "Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany";
-        final String uniJena = "Faculty of Biological Sciences, Friedrich-Schiller-University Jena, Germany";
-        return Arrays.asList(new JIPipeAuthorMetadata("Zoltán", "Cseresnyés", HKI),
-                new JIPipeAuthorMetadata("Ruman", "Gerst", HKI + "\n" + uniJena));
+        final String uniJena = "Faculty of Biological Sciences, Friedrich Schiller University Jena, Germany";
+        final String uniJena2 = "Institute of Microbiology, Faculty of Biological Sciences, Friedrich Schiller University Jena, Germany";
+        return Arrays.asList(new JIPipeAuthorMetadata("Dr.", "Zoltán", "Cseresnyés", new StringList(HKI), "zoltan.cseresnyes@leibniz-hki.de", true, false),
+                new JIPipeAuthorMetadata("", "Ruman", "Gerst", new StringList(HKI, uniJena), "ruman.gerst@leibniz-hki.de", true, false),
+                new JIPipeAuthorMetadata("Prof. Dr.", "Marc Thilo", "Figge", new StringList(HKI, uniJena2), "thilo.figge@leibniz-hki.de", false, true));
     }
 
     @Override

@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Collection;
@@ -32,9 +33,13 @@ public class JIPipeAuthorMetadata implements JIPipeParameterCollection {
 
     private final EventBus eventBus = new EventBus();
 
+    private String title;
     private String firstName;
     private String lastName;
-    private String affiliations;
+    private StringList affiliations;
+    private String contact;
+    private boolean firstAuthor;
+    private boolean correspondingAuthor;
 
     /**
      * Creates a new instance
@@ -44,26 +49,44 @@ public class JIPipeAuthorMetadata implements JIPipeParameterCollection {
 
     /**
      * Initializes the instance
-     *
+     * @param title the title (can be empty)
      * @param firstName    first name
      * @param lastName     last name
-     * @param affiliations affiliations
+     * @param affiliations list of affiliations
+     * @param contact contact information, e.g., an E-Mail address
+     * @param firstAuthor if the author is marked as first author
+     * @param correspondingAuthor if the author is marked as corresponding author
      */
-    public JIPipeAuthorMetadata(String firstName, String lastName, String affiliations) {
+    public JIPipeAuthorMetadata(String title, String firstName, String lastName, StringList affiliations, String contact, boolean firstAuthor, boolean correspondingAuthor) {
+        this.title = title;
         this.firstName = firstName;
         this.lastName = lastName;
         this.affiliations = affiliations;
+        this.contact = contact;
+        this.firstAuthor = firstAuthor;
+        this.correspondingAuthor = correspondingAuthor;
     }
 
-    /**
-     * Makes a copy
-     *
-     * @param other the original
-     */
     public JIPipeAuthorMetadata(JIPipeAuthorMetadata other) {
         this.firstName = other.firstName;
         this.lastName = other.lastName;
-        this.affiliations = other.affiliations;
+        this.affiliations = new StringList(other.affiliations);
+        this.contact = other.contact;
+        this.correspondingAuthor = other.correspondingAuthor;
+        this.firstAuthor = other.firstAuthor;
+    }
+
+    @JIPipeParameter(value = "title", uiOrder = -1)
+    @JsonGetter("title")
+    @JIPipeDocumentation(name = "Title", description = "The title (optional)")
+    public String getTitle() {
+        return title;
+    }
+
+    @JsonSetter("title")
+    @JIPipeParameter("title")
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     @JIPipeParameter(value = "first-name", uiOrder = 0)
@@ -94,24 +117,63 @@ public class JIPipeAuthorMetadata implements JIPipeParameterCollection {
         eventBus.post(new ParameterChangedEvent(this, "last-name"));
     }
 
-    @JIPipeParameter(value = "affiliations", uiOrder = 3)
+    @JIPipeParameter(value = "affiliations-list", uiOrder = 3)
     @JIPipeDocumentation(name = "Affiliations", description = "Author affiliations")
     @StringParameterSettings(multiline = true, monospace = true)
-    @JsonGetter("affiliations")
-    public String getAffiliations() {
+    @JsonGetter("affiliations-list")
+    public StringList getAffiliations() {
         return affiliations;
     }
 
-    @JIPipeParameter("affiliations")
-    @JsonSetter("affiliations")
-    public void setAffiliations(String affiliations) {
+    @JIPipeParameter("affiliations-list")
+    @JsonSetter("affiliations-list")
+    public void setAffiliations(StringList affiliations) {
         this.affiliations = affiliations;
         eventBus.post(new ParameterChangedEvent(this, "affiliations"));
     }
 
+    @JIPipeParameter(value = "contact", uiOrder = 4)
+    @JIPipeDocumentation(name = "Contact info", description = "Information on how to contact the author, for example an E-Mail address.")
+    @JsonGetter("contact")
+    public String getContact() {
+        return contact;
+    }
+
+    @JIPipeParameter("contact")
+    @JsonSetter("contact")
+    public void setContact(String contact) {
+        this.contact = contact;
+    }
+
+    @JIPipeParameter(value = "first-author", uiOrder = 5)
+    @JIPipeDocumentation(name = "Is first author", description = "If this author is marked as first author")
+    @JsonGetter("first-author")
+    public boolean isFirstAuthor() {
+        return firstAuthor;
+    }
+
+    @JIPipeParameter("first-author")
+    @JsonSetter("first-author")
+    public void setFirstAuthor(boolean firstAuthor) {
+        this.firstAuthor = firstAuthor;
+    }
+
+    @JIPipeParameter(value = "corresponding-author", uiOrder = 6)
+    @JIPipeDocumentation(name = "Is corresponding author", description = "If this author is marked as corresponding author")
+    @JsonGetter("corresponding-author")
+    public boolean isCorrespondingAuthor() {
+        return correspondingAuthor;
+    }
+
+    @JIPipeParameter("corresponding-author")
+    @JsonSetter("corresponding-author")
+    public void setCorrespondingAuthor(boolean correspondingAuthor) {
+        this.correspondingAuthor = correspondingAuthor;
+    }
+
     @Override
     public String toString() {
-        return StringUtils.nullToEmpty(firstName) + " " + StringUtils.nullToEmpty(lastName);
+        return (StringUtils.nullToEmpty(title) + " " + StringUtils.nullToEmpty(firstName) + " " + StringUtils.nullToEmpty(lastName) + (isFirstAuthor() ? "*" : "") + (isCorrespondingAuthor() ? "#" : "")).trim();
     }
 
     @Override

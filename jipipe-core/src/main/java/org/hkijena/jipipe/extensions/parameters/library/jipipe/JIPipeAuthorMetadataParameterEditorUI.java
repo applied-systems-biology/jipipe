@@ -17,7 +17,9 @@ import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTextField;
 
@@ -75,18 +77,16 @@ public class JIPipeAuthorMetadataParameterEditorUI extends JIPipeParameterEditor
 
         add(Box.createHorizontalStrut(8));
 
-        JButton editAffiliationsButton = new JButton("Affiliations", UIUtils.getIconFromResources("actions/graduation-cap.png"));
-        UIUtils.makeFlat(editAffiliationsButton);
-        editAffiliationsButton.setToolTipText("<html>Edit the affiliations<br/><br/>" + parameter.getAffiliations() + "</html>");
-        editAffiliationsButton.addActionListener(e -> {
-            String newAffiliations = UIUtils.getMultiLineStringByDialog(this, "Edit affiliations for " + parameter.getFirstName() + " " + parameter.getLastName(),
-                    "Please insert the new affiliations:",
-                    parameter.getAffiliations());
-            if (newAffiliations != null) {
-                parameter.setAffiliations(newAffiliations);
-                editAffiliationsButton.setToolTipText("<html>Edit the affiliations<br/><br/>" + parameter.getAffiliations() + "</html>");
-            }
+        JButton editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/stock_edit.png"));
+        UIUtils.makeFlat(editButton);
+        editButton.setToolTipText("<html>Edit the affiliations<br/><br/>" + parameter.getAffiliations() + "</html>");
+        editButton.addActionListener(e -> {
+            ParameterPanel.showDialog(getWorkbench(),
+                    parameter,
+                    new MarkdownDocument("# Edit author\n\nUse this editor to update additional author properties."),
+                    "Edit author",
+                    ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING);
         });
-        add(editAffiliationsButton);
+        add(editButton);
     }
 }

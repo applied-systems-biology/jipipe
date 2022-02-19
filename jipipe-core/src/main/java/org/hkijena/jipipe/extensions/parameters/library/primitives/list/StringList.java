@@ -15,6 +15,9 @@ package org.hkijena.jipipe.extensions.parameters.library.primitives.list;
 
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 
+import java.util.Arrays;
+import java.util.Collection;
+
 /**
  * A list of {@link String}
  */
@@ -27,13 +30,21 @@ public class StringList extends ListParameter<String> {
     }
 
     /**
-     * Creates a copy
-     *
-     * @param other the original
+     * Creates a new list from the provided items
+     * @param items the items to add
      */
-    public StringList(StringList other) {
+    public StringList(String... items) {
         super(String.class);
-        addAll(other);
+        this.addAll(Arrays.asList(items));
+    }
+
+    /**
+     * Creates a new list from the provided items
+     * @param items the items to add
+     */
+    public StringList(Collection<String> items) {
+        super(String.class);
+        addAll(items);
     }
 
     @Override
