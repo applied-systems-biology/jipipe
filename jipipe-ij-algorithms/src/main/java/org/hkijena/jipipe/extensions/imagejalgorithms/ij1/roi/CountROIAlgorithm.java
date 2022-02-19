@@ -32,8 +32,8 @@ public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
 
     public CountROIAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Counted ROI", ROIListData.class)
-                .addOutputSlot("Counts", AnnotationTableData.class, null)
+                .addInputSlot("Counted ROI", "ROI to be counted", ROIListData.class)
+                .addOutputSlot("Counts", "The counts", AnnotationTableData.class, null)
                 .restrictInputTo(ROIListData.class)
                 .sealOutput().build());
     }

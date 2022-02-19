@@ -65,8 +65,8 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
      */
     public ImagePlusFromFile(JIPipeNodeInfo info) {
         super(info,
-                JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Files", FileData.class)
-                        .addOutputSlot("Image", ImagePlusData.class, null)
+                JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Files", "The image file", FileData.class)
+                        .addOutputSlot("Image", "Imported image", ImagePlusData.class, null)
                         .sealOutput()
                         .sealInput()
                         .build());

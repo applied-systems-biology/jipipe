@@ -25,7 +25,7 @@ public class LoopEndNode extends IOInterfaceAlgorithm {
     public LoopEndNode(JIPipeNodeInfo info) {
         super(info);
         JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getSlotConfiguration();
-        slotConfiguration.addSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input, "Data"), true);
+        slotConfiguration.addSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input, "Data", ""), true);
     }
 
     public LoopEndNode(LoopEndNode other) {

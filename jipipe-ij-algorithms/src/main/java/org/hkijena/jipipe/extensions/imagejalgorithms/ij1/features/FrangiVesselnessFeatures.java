@@ -52,8 +52,8 @@ public class FrangiVesselnessFeatures extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public FrangiVesselnessFeatures(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale32FData.class)
-                .addOutputSlot("Output", ImagePlusGreyscale32FData.class, "Input", REMOVE_MASK_QUALIFIER)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale32FData.class)
+                .addOutputSlot("Output", "", ImagePlusGreyscale32FData.class, "Input", REMOVE_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

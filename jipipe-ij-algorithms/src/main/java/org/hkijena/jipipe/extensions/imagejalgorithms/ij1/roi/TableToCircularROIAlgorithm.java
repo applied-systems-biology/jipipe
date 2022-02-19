@@ -49,8 +49,8 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
      */
     public TableToCircularROIAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", ResultsTableData.class)
-                .addOutputSlot("Output", ROIListData.class, null)
+                .addInputSlot("Input", "", ResultsTableData.class)
+                .addOutputSlot("Output", "", ROIListData.class, null)
                 .seal()
                 .build());
     }

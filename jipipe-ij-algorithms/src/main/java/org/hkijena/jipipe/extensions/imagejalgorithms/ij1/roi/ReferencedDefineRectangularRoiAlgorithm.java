@@ -50,8 +50,8 @@ public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgo
      */
     public ReferencedDefineRectangularRoiAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Reference", ImagePlusData.class)
-                .addOutputSlot("Output", ROIListData.class, null)
+                .addInputSlot("Reference", "", ImagePlusData.class)
+                .addOutputSlot("Output", "", ROIListData.class, null)
                 .seal()
                 .build());
         rectangles.addNewInstance();

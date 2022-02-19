@@ -270,7 +270,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
             if (entry.getValue().getSlotType() == JIPipeSlotType.Input) {
                 inputSlots.add(new DefaultJIPipeInputSlot(entry.getValue().getDataClass(),
                         entry.getKey(),
-                        true, false));
+                        "", true, false));
                 usedSlotNames.add(entry.getKey());
             }
         }
@@ -279,7 +279,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
                 if (!usedSlotNames.contains(entry.getKey())) {
                     outputSlots.add(new DefaultJIPipeOutputSlot(entry.getValue().getDataClass(),
                             entry.getKey(),
-                            null,
+                            "", null,
                             true));
                 }
             }

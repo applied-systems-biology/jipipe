@@ -54,8 +54,8 @@ public class Hessian2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public Hessian2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscaleData.class)
-                .addOutputSlot("Output", ImagePlusGreyscale32FData.class, null)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscaleData.class)
+                .addOutputSlot("Output", "", ImagePlusGreyscale32FData.class, null)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

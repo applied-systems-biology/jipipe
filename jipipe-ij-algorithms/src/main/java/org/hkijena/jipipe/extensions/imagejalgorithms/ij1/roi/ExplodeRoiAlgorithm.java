@@ -49,8 +49,8 @@ public class ExplodeRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public ExplodeRoiAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ROIListData.class)
-                .addOutputSlot("Output", ROIListData.class, null)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ROIListData.class)
+                .addOutputSlot("Output", "", ROIListData.class, null)
                 .seal()
                 .build());
         generatedAnnotation.setContent("ROI index");

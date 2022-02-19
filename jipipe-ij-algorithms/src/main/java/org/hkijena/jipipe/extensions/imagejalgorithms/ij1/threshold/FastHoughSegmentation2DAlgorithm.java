@@ -69,10 +69,10 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
      * @param info algorithm info
      */
     public FastHoughSegmentation2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
-                .addOutputSlot("Mask", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
-                .addOutputSlot("Accumulator", ImagePlusGreyscaleData.class, null)
-                .addOutputSlot("Measurements", ResultsTableData.class, null)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "The input image", ImagePlusGreyscale8UData.class)
+                .addOutputSlot("Mask", "Mask of the detected circles", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
+                .addOutputSlot("Accumulator", "Accumulator image (circle parameter space)", ImagePlusGreyscaleData.class, null)
+                .addOutputSlot("Measurements", "Circle measurements", ResultsTableData.class, null)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

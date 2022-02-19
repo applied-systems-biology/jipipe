@@ -245,7 +245,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
         JIPipeDataSlotInfo slotDefinition;
         if (slotType == JIPipeSlotType.Input) {
-            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, null);
+            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, "", null);
             slotDefinition.setOptional(optionalInputEditor.isSelected());
         } else if (slotType == JIPipeSlotType.Output) {
             String inheritedSlot = null;
@@ -253,7 +253,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
                 inheritedSlot = inheritedSlotList.getSelectedItem().toString();
             }
 
-            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, inheritedSlot);
+            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, "", inheritedSlot);
         } else {
             throw new UnsupportedOperationException();
         }

@@ -67,7 +67,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
     public StackToDimensionMergerAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .restrictInputTo(ImageJDataTypesExtension.IMAGE_TYPES_DIMENSIONLESS)
-                .addOutputSlot("Output", ImagePlusData.class, "*")
+                .addOutputSlot("Output", "", ImagePlusData.class, "*")
                 .sealOutput()
                 .build());
     }

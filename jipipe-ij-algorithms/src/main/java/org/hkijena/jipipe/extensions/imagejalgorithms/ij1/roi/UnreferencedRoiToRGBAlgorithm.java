@@ -66,8 +66,8 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
      * @param info the info
      */
     public UnreferencedRoiToRGBAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ROIListData.class)
-                .addOutputSlot("Output", ImagePlusColorRGBData.class, null)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ROIListData.class)
+                .addOutputSlot("Output", "", ImagePlusColorRGBData.class, null)
                 .seal()
                 .build());
         imageArea.getWidth().ensureExactValue(false);

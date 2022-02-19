@@ -46,7 +46,7 @@ public class ImageTypeConverter extends JIPipeAlgorithm {
      */
     public ImageTypeConverter(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", ImagePlusData.class)
+                .addInputSlot("Input", "", ImagePlusData.class)
                 .restrictOutputTo(ImageJDataTypesExtension.IMAGE_TYPES)
                 .restrictOutputSlotCount(1)
                 .sealInput()

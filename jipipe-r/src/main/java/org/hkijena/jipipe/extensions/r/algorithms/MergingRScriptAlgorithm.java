@@ -262,7 +262,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     private enum Examples {
         LoadIris("Load IRIS data set", "library(datasets)\n\nJIPipe.AddOutputDataFrame(slot=\"Table\", data=iris)",
                 new JIPipeInputSlot[0], new JIPipeOutputSlot[]{
-                new DefaultJIPipeOutputSlot(ResultsTableData.class, "Table", null, false)
+                new DefaultJIPipeOutputSlot(ResultsTableData.class, "Table", "", null, false)
         }),
         PlotIris("Plot IRIS data set", "library(datasets)\n" +
                 "\n" +
@@ -275,7 +275,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
                 "\n" +
                 "# JIPipe will automatically load the data",
                 new JIPipeInputSlot[0], new JIPipeOutputSlot[]{
-                new DefaultJIPipeOutputSlot(ImagePlusColorRGBData.class, "Plot", null, false)
+                new DefaultJIPipeOutputSlot(ImagePlusColorRGBData.class, "Plot", "", null, false)
         });
 
         private final String name;
@@ -296,10 +296,10 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
             slotConfiguration.clearInputSlots(true);
             slotConfiguration.clearOutputSlots(true);
             for (JIPipeInputSlot inputSlot : inputSlots) {
-                slotConfiguration.addInputSlot(inputSlot.slotName(), inputSlot.value(), true);
+                slotConfiguration.addInputSlot(inputSlot.slotName(), inputSlot.description(), inputSlot.value(), true);
             }
             for (JIPipeOutputSlot outputSlot : outputSlots) {
-                slotConfiguration.addOutputSlot(outputSlot.slotName(), outputSlot.value(), null, true);
+                slotConfiguration.addOutputSlot(outputSlot.slotName(), outputSlot.description(), outputSlot.value(), null, true);
             }
         }
 

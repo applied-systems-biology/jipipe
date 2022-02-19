@@ -152,10 +152,10 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
         } else {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             if (!getInputSlotMap().containsKey("Pretrained model")) {
-                slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellPoseModelData.class, JIPipeSlotType.Input, null, null), false);
+                slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellPoseModelData.class, JIPipeSlotType.Input, null, "", null), false);
             }
             if (!getInputSlotMap().containsKey("Size model")) {
-                JIPipeDataSlotInfo slotInfo = new JIPipeDataSlotInfo(CellPoseSizeModelData.class, JIPipeSlotType.Input, null, null);
+                JIPipeDataSlotInfo slotInfo = new JIPipeDataSlotInfo(CellPoseSizeModelData.class, JIPipeSlotType.Input, null, "", null);
                 slotInfo.setOptional(true);
                 slotConfiguration.addSlot("Size model", slotInfo, false);
             }
@@ -640,7 +640,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
         if (outputParameters.isOutputLabels()) {
             if (!getOutputSlotMap().containsKey("Labels")) {
-                slotConfiguration.addOutputSlot("Labels", ImagePlus3DGreyscaleData.class, null, false);
+                slotConfiguration.addOutputSlot("Labels", "", ImagePlus3DGreyscaleData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("Labels")) {
@@ -649,7 +649,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
         if (outputParameters.isOutputFlows()) {
             if (!getOutputSlotMap().containsKey("Flows")) {
-                slotConfiguration.addOutputSlot("Flows", ImagePlus3DColorRGBData.class, null, false);
+                slotConfiguration.addOutputSlot("Flows", "", ImagePlus3DColorRGBData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("Flows")) {
@@ -658,7 +658,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
         if (outputParameters.isOutputProbabilities()) {
             if (!getOutputSlotMap().containsKey("Probabilities")) {
-                slotConfiguration.addOutputSlot("Probabilities", ImagePlus3DGreyscale32FData.class, null, false);
+                slotConfiguration.addOutputSlot("Probabilities", "", ImagePlus3DGreyscale32FData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("Probabilities")) {
@@ -667,7 +667,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
         if (outputParameters.isOutputStyles()) {
             if (!getOutputSlotMap().containsKey("Styles")) {
-                slotConfiguration.addOutputSlot("Styles", ImagePlus3DGreyscale32FData.class, null, false);
+                slotConfiguration.addOutputSlot("Styles", "", ImagePlus3DGreyscale32FData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("Styles")) {
@@ -676,7 +676,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
         if (outputParameters.isOutputROI()) {
             if (!getOutputSlotMap().containsKey("ROI")) {
-                slotConfiguration.addOutputSlot("ROI", ROIListData.class, null, false);
+                slotConfiguration.addOutputSlot("ROI", "", ROIListData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("ROI")) {

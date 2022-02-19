@@ -22,20 +22,23 @@ import java.lang.annotation.Annotation;
  */
 public class DefaultJIPipeOutputSlot implements JIPipeOutputSlot {
 
-    private Class<? extends JIPipeData> value;
-    private String slotName;
-    private String inheritedSlot;
-    private boolean autoCreate;
+    private final Class<? extends JIPipeData> value;
+    private final String slotName;
+    private final String description;
+    private final String inheritedSlot;
+    private final boolean autoCreate;
 
     /**
      * @param value         the data class
      * @param slotName      the slot name
+     * @param description the description
      * @param inheritedSlot An optional inherited slot.
      * @param autoCreate    Automatically create the slot if supported by the algorithm
      */
-    public DefaultJIPipeOutputSlot(Class<? extends JIPipeData> value, String slotName, String inheritedSlot, boolean autoCreate) {
+    public DefaultJIPipeOutputSlot(Class<? extends JIPipeData> value, String slotName, String description, String inheritedSlot, boolean autoCreate) {
         this.value = value;
         this.slotName = slotName;
+        this.description = description;
         this.inheritedSlot = inheritedSlot;
         this.autoCreate = autoCreate;
     }
@@ -58,6 +61,11 @@ public class DefaultJIPipeOutputSlot implements JIPipeOutputSlot {
     @Override
     public boolean autoCreate() {
         return autoCreate;
+    }
+
+    @Override
+    public String description() {
+        return description;
     }
 
     @Override

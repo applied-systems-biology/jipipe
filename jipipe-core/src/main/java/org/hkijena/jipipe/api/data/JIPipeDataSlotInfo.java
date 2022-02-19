@@ -48,6 +48,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     private String inheritedSlot;
     private Map<JIPipeDataInfo, JIPipeDataInfo> inheritanceConversions = new HashMap<>();
     private String customName;
+    private String description;
     private boolean virtual;
     private boolean saveOutputs = true;
     private boolean optional = false;
@@ -57,12 +58,14 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      * @param dataClass     slot data class
      * @param slotType      slot type
      * @param name          unique slot name
+     * @param description description of the slot
      * @param inheritedSlot only relevant if output slot. Can be an input slot name or '*' to automatically select the first input slot
      */
-    public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String name, String inheritedSlot) {
+    public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String name, String description, String inheritedSlot) {
         this.dataClass = dataClass;
         this.slotType = slotType;
         this.name = name;
+        this.description = description;
         this.inheritedSlot = inheritedSlot;
         setVirtualByDataType();
     }
@@ -71,9 +74,10 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      * @param dataClass slot data class
      * @param slotType  slot type
      * @param name      unique slot name
+     * @param description description of the slot
      */
-    public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String name) {
-        this(dataClass, slotType, name, null);
+    public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String name, String description) {
+        this(dataClass, slotType, name, description, null);
     }
 
     /**
@@ -81,14 +85,14 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      * @param slotType  slot type
      */
     public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType) {
-        this(dataClass, slotType, null, null);
+        this(dataClass, slotType, null, null, null);
     }
 
     /**
      * @param slot Imported annotation
      */
     public JIPipeDataSlotInfo(JIPipeInputSlot slot) {
-        this(slot.value(), JIPipeSlotType.Input, slot.slotName(), null);
+        this(slot.value(), JIPipeSlotType.Input, slot.slotName(), null, null);
         this.optional = slot.optional();
     }
 
@@ -97,7 +101,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      * @param slot Imported annotation
      */
     public JIPipeDataSlotInfo(JIPipeOutputSlot slot) {
-        this(slot.value(), JIPipeSlotType.Output, slot.slotName(), slot.inheritedSlot());
+        this(slot.value(), JIPipeSlotType.Output, slot.slotName(), null, slot.inheritedSlot());
     }
 
     /**
@@ -109,6 +113,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         this.dataClass = other.dataClass;
         this.slotType = other.slotType;
         this.name = other.name;
+        this.description = other.description;
         this.inheritedSlot = other.inheritedSlot;
         this.inheritanceConversions = new HashMap<>(other.inheritanceConversions);
         this.customName = other.customName;
@@ -209,13 +214,14 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         return Objects.equals(dataClass, that.dataClass) &&
                 slotType == that.slotType &&
                 Objects.equals(name, that.name) &&
+                Objects.equals(description, that.description) &&
                 Objects.equals(inheritedSlot, that.inheritedSlot) &&
                 Objects.equals(inheritanceConversions, that.inheritanceConversions);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(dataClass, slotType, name, inheritedSlot, inheritanceConversions);
+        return Objects.hash(dataClass, slotType, name, description, inheritedSlot, inheritanceConversions);
     }
 
     public boolean isInput() {
@@ -292,6 +298,17 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     public void setCustomName(String customName) {
         this.customName = customName;
         eventBus.post(new ParameterChangedEvent(this, "custom-name"));
+    }
+
+    @JIPipeParameter("description")
+    @JIPipeDocumentation(name = "Description", description = "Description of this slot")
+    public String getDescription() {
+        return description;
+    }
+
+    @JIPipeParameter("description")
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     @JIPipeDocumentation(name = "Is virtual", description = "Determines if the slot should be virtual.")
@@ -374,6 +391,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
             jsonGenerator.writeStringField("inherited-slot", definition.inheritedSlot);
             jsonGenerator.writeStringField("name", definition.name);
             jsonGenerator.writeStringField("custom-name", definition.customName);
+            jsonGenerator.writeStringField("description", definition.description);
             jsonGenerator.writeBooleanField("is-virtual", definition.virtual);
             jsonGenerator.writeBooleanField("save-outputs", definition.saveOutputs);
             jsonGenerator.writeBooleanField("is-optional", definition.optional);
@@ -399,7 +417,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
             JIPipeDataSlotInfo definition = new JIPipeDataSlotInfo(JIPipe.getDataTypes().getById(node.get("slot-data-type").asText()),
                     JIPipeSlotType.valueOf(node.get("slot-type").asText()),
                     node.get("name").asText(),
-                    inheritedSlotNode.isMissingNode() ? "" : inheritedSlotNode.asText(null));
+                    "", inheritedSlotNode.isMissingNode() ? "" : inheritedSlotNode.asText(null));
             JsonNode conversionsNode = node.path("inheritance-conversions");
             if (!conversionsNode.isMissingNode()) {
                 for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(conversionsNode.fields())) {
@@ -417,6 +435,10 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
             JsonNode customNameNode = node.path("custom-name");
             if (!customNameNode.isMissingNode() && !customNameNode.isNull()) {
                 definition.customName = customNameNode.textValue();
+            }
+            JsonNode descriptionNode = node.path("description");
+            if (!descriptionNode.isMissingNode() && !descriptionNode.isNull()) {
+                definition.description = descriptionNode.textValue();
             }
             JsonNode isVirtualNode = node.path("is-virtual");
             if (!isVirtualNode.isMissingNode()) {

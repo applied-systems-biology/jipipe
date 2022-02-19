@@ -46,8 +46,8 @@ public class ConvolveByParameter2DAlgorithm extends JIPipeSimpleIteratingAlgorit
      * @param info the info
      */
     public ConvolveByParameter2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale32FData.class)
-                .addOutputSlot("Output", ImagePlusGreyscale32FData.class, null)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale32FData.class)
+                .addOutputSlot("Output", "", ImagePlusGreyscale32FData.class, null)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

@@ -54,8 +54,8 @@ public class TransformRotateFree2DAlgorithm extends JIPipeSimpleIteratingAlgorit
      * @param info the info
      */
     public TransformRotateFree2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlusData.class, "Input")
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusData.class)
+                .addOutputSlot("Output", "", ImagePlusData.class, "Input")
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
@@ -136,7 +136,7 @@ public class TransformRotateFree2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         if (outputRoi) {
             if (!hasOutputSlot("Content")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.addOutputSlot("Content", ROIListData.class, null, false);
+                slotConfiguration.addOutputSlot("Content", "ROI that separates background from the original image", ROIListData.class, null, false);
             }
         } else {
             if (hasOutputSlot("Content")) {

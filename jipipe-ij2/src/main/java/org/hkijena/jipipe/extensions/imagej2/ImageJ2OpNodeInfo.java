@@ -6,8 +6,6 @@ import net.imagej.ops.OpInfo;
 import net.imagej.ops.OpUtils;
 import net.imglib2.Interval;
 import net.imglib2.type.NativeType;
-import net.imglib2.type.numeric.IntegerType;
-import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.integer.*;
 import net.imglib2.type.numeric.real.DoubleType;
 import net.imglib2.type.numeric.real.FloatType;
@@ -113,7 +111,7 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
                        continue;
                    }
                    existingInputs.add(slotName);
-                   inputSlots.add(new DefaultJIPipeInputSlot(ImagePlusData.class, slotName, true, false));
+                   inputSlots.add(new DefaultJIPipeInputSlot(ImagePlusData.class, slotName, "", true, false));
                }
                 if(item.isOutput()) {
                     String slotName = StringUtils.makeUniqueString(StringUtils.makeFilesystemCompatible(WordUtils.capitalize(item.getName())),
@@ -124,7 +122,7 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
                         continue;
                     }
                     existingOutputs.add(slotName);
-                    outputSlots.add(new DefaultJIPipeOutputSlot(ImagePlusData.class, slotName, null, false));
+                    outputSlots.add(new DefaultJIPipeOutputSlot(ImagePlusData.class, slotName, "", null, false));
                 }
             }
             else if(item.isOutput() && isStatisticOutput(item)) {
@@ -194,7 +192,7 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
             String slotName = StringUtils.makeUniqueString("Result table", " ", existingOutputs);
             existingOutputs.add(slotName);
             resultTableSlot = slotName;
-            outputSlots.add(new DefaultJIPipeOutputSlot(ResultsTableData.class, slotName, null, true));
+            outputSlots.add(new DefaultJIPipeOutputSlot(ResultsTableData.class, slotName, "", null, true));
         }
     }
 

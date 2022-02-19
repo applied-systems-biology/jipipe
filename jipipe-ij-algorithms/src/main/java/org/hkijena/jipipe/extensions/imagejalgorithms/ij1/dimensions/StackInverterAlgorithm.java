@@ -39,8 +39,8 @@ public class StackInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public StackInverterAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlus3DData.class)
-                .addOutputSlot("Output", ImagePlus3DData.class, "Input")
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlus3DData.class)
+                .addOutputSlot("Output", "", ImagePlus3DData.class, "Input")
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

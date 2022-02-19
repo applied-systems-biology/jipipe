@@ -74,7 +74,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         if (labels1Settings.isEnabled()) {
             if (!getOutputSlotMap().containsKey("Labels 1")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.addOutputSlot("Labels 1", ImagePlusGreyscaleData.class, null, false);
+                slotConfiguration.addOutputSlot("Labels 1", "", ImagePlusGreyscaleData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("Labels 1")) {
@@ -85,7 +85,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         if (labels2Settings.isEnabled()) {
             if (!getOutputSlotMap().containsKey("Labels 2")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.addOutputSlot("Labels 2", ImagePlusGreyscaleData.class, null, false);
+                slotConfiguration.addOutputSlot("Labels 2", "", ImagePlusGreyscaleData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("Labels 2")) {

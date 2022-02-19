@@ -37,8 +37,8 @@ public class SplitRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public SplitRoiAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ROIListData.class)
-                .addOutputSlot("Output", ROIListData.class, null)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ROIListData.class)
+                .addOutputSlot("Output", "", ROIListData.class, null)
                 .seal()
                 .build());
     }

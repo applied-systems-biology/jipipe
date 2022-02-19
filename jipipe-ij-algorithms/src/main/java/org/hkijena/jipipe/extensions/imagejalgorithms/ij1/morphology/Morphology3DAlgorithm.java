@@ -51,8 +51,8 @@ public class Morphology3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public Morphology3DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlusData.class, "Input")
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusData.class)
+                .addOutputSlot("Output", "", ImagePlusData.class, "Input")
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

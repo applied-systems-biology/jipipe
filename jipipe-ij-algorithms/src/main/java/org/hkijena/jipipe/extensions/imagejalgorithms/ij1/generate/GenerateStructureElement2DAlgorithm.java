@@ -50,7 +50,7 @@ public class GenerateStructureElement2DAlgorithm extends JIPipeSimpleIteratingAl
      */
     public GenerateStructureElement2DAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addOutputSlot("Kernel", ImagePlus2DGreyscaleMaskData.class, null).seal().build());
+                .addOutputSlot("Kernel", "", ImagePlus2DGreyscaleMaskData.class, null).seal().build());
     }
 
     /**

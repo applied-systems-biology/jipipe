@@ -47,7 +47,7 @@ public class JIPipeGraphGCHelper {
         // We create a dummy node for each JIPipeGraphNode and apply connections there.
         // This makes it easier to deal with nodes that have no inputs or outputs
         for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-            JIPipeDataSlot dummy = new JIPipeDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Dummy"), graphNode);
+            JIPipeDataSlot dummy = new JIPipeDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Dummy", ""), graphNode);
             gcGraph.addVertex(dummy);
             dummyNodes.put(graphNode, dummy);
             for (JIPipeDataSlot inputSlot : graphNode.getInputSlots()) {

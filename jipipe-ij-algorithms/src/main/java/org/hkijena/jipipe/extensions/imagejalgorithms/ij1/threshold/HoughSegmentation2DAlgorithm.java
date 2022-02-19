@@ -66,9 +66,9 @@ public class HoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
      * @param info algorithm info
      */
     public HoughSegmentation2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale8UData.class)
-                .addOutputSlot("Mask", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
-                .addOutputSlot("Measurements", ResultsTableData.class, null)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale8UData.class)
+                .addOutputSlot("Mask", "", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
+                .addOutputSlot("Measurements", "", ResultsTableData.class, null)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

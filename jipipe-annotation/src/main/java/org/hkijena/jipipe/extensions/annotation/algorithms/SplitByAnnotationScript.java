@@ -57,8 +57,8 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
      */
     public SplitByAnnotationScript(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", JIPipeData.class)
-                .addOutputSlot("Output", JIPipeData.class, "Input")
+                .addInputSlot("Input", "", JIPipeData.class)
+                .addOutputSlot("Output", "", JIPipeData.class, "Input")
                 .sealInput()
                 .build());
         code.setCode("# This script is executed for each row\n" +

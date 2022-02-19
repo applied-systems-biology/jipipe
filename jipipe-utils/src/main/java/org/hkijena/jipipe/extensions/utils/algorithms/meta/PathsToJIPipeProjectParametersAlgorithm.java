@@ -52,7 +52,7 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
     public PathsToJIPipeProjectParametersAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .restrictInputTo(PathData.class)
-                .addOutputSlot("Parameters", ParametersData.class, null)
+                .addOutputSlot("Parameters", "The project parameters", ParametersData.class, null)
                 .sealOutput()
                 .build());
         this.parameterKeyAssignments = new InputSlotMapParameterCollection(String.class, this, () -> "", false);

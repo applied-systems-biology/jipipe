@@ -34,7 +34,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
     public LoopStartNode(JIPipeNodeInfo info) {
         super(info);
         JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getSlotConfiguration();
-        slotConfiguration.addSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input, "Data"), true);
+        slotConfiguration.addSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input, "Data", ""), true);
     }
 
     public LoopStartNode(LoopStartNode other) {

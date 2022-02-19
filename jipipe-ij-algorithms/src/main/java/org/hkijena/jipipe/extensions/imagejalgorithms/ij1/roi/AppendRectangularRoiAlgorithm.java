@@ -46,8 +46,8 @@ public class AppendRectangularRoiAlgorithm extends JIPipeSimpleIteratingAlgorith
      */
     public AppendRectangularRoiAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", ROIListData.class)
-                .addOutputSlot("Output", ROIListData.class, null)
+                .addInputSlot("Input", "", ROIListData.class)
+                .addOutputSlot("Output", "", ROIListData.class, null)
                 .seal()
                 .build());
         rectangles.addNewInstance();

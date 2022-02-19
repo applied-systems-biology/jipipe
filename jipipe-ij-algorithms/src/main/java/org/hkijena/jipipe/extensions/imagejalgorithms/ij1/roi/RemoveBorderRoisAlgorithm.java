@@ -52,9 +52,9 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
      * @param info the info
      */
     public RemoveBorderRoisAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
-                .addInputSlot("Image", ImagePlusData.class)
-                .addOutputSlot("Cleaned ROI", ROIListData.class, null)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("ROI", "ROI to be processed", ROIListData.class)
+                .addInputSlot("Image", "The reference image", ImagePlusData.class)
+                .addOutputSlot("Cleaned ROI", "The cleaned ROI", ROIListData.class, null)
                 .seal()
                 .build());
         borderDefinition.setAnchor(Anchor.CenterCenter);

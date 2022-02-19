@@ -153,7 +153,7 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
                 slotConfiguration.addSlot(entry.getKey(), new JIPipeDataSlotInfo(info.getDataClass(),
                         JIPipeSlotType.Input,
                         entry.getKey(),
-                        null), false);
+                        "", null), false);
             }
         }
         if (jsonNode.has("add-output")) {
@@ -163,7 +163,7 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
                 slotConfiguration.addSlot(entry.getKey(), new JIPipeDataSlotInfo(info.getDataClass(),
                         JIPipeSlotType.Output,
                         entry.getKey(),
-                        null), false);
+                        "", null), false);
             }
         }
         if (jsonNode.has("input")) {

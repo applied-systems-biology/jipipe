@@ -43,9 +43,9 @@ public class ExportData extends JIPipeIteratingAlgorithm {
 
     public ExportData(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Data", JIPipeData.class)
-                .addInputSlot("Path", PathData.class)
-                .addOutputSlot("Path", PathData.class, null)
+                .addInputSlot("Data", "The data to be exported", JIPipeData.class)
+                .addInputSlot("Path", "The directory where the data will be stored", PathData.class)
+                .addOutputSlot("Path", "The directory where the data was stored", PathData.class, null)
                 .seal()
                 .build());
         registerSubParameter(exporter);
@@ -70,7 +70,7 @@ public class ExportData extends JIPipeIteratingAlgorithm {
                 throw new RuntimeException(e);
             }
         }
-        JIPipeDataSlot batchSlot = dataBatch.toDummySlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Output"), this, getInputSlot("Data"));
+        JIPipeDataSlot batchSlot = dataBatch.toDummySlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Output", ""), this, getInputSlot("Data"));
         exporter.writeToFolder(batchSlot, outputDirectory, progressInfo);
         dataBatch.addOutputData("Path", new PathData(outputDirectory), progressInfo);
     }

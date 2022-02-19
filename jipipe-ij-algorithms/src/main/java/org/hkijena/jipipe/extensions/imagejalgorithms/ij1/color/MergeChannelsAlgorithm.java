@@ -69,7 +69,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
     public MergeChannelsAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().restrictInputTo(TO_COLOR_RGB_CONVERSION.keySet())
                 .restrictInputSlotCount(ChannelColor.values().length)
-                .addOutputSlot("Output", ImagePlusData.class, "Input", TO_COLOR_RGB_CONVERSION)
+                .addOutputSlot("Output", "", ImagePlusData.class, "Input", TO_COLOR_RGB_CONVERSION)
                 .allowOutputSlotInheritance(true)
                 .sealOutput()
                 .build());

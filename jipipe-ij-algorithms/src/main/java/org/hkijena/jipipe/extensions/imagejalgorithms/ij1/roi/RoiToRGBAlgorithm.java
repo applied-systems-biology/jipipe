@@ -68,9 +68,9 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
      * @param info the info
      */
     public RoiToRGBAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
-                .addInputSlot("Image", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlusColorRGBData.class, null)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("ROI", "The ROI", ROIListData.class)
+                .addInputSlot("Image", "The image where ROI are drawn on", ImagePlusData.class)
+                .addOutputSlot("Output", "The ROI visualization (RGB image)", ImagePlusColorRGBData.class, null)
                 .seal()
                 .build());
         overrideLineWidth.setContent(1.0);

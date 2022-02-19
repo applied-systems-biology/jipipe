@@ -63,7 +63,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         if (roi1Settings.isEnabled()) {
             if (!getOutputSlotMap().containsKey("ROI 1")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.addOutputSlot("ROI 1", ROIListData.class, null, false);
+                slotConfiguration.addOutputSlot("ROI 1", "The first set of ROI", ROIListData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("ROI 1")) {
@@ -74,7 +74,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         if (roi2Settings.isEnabled()) {
             if (!getOutputSlotMap().containsKey("ROI 2")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.addOutputSlot("ROI 2", ROIListData.class, null, false);
+                slotConfiguration.addOutputSlot("ROI 2", "The second set of ROI", ROIListData.class, null, false);
             }
         } else {
             if (getOutputSlotMap().containsKey("ROI 2")) {

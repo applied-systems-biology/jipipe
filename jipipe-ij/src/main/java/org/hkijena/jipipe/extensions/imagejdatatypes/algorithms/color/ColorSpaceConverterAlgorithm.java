@@ -22,8 +22,8 @@ public abstract class ColorSpaceConverterAlgorithm extends JIPipeSimpleIterating
 
     public ColorSpaceConverterAlgorithm(JIPipeNodeInfo info, Class<? extends ColoredImagePlusData> outputDataType) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", ImagePlusData.class)
-                .addOutputSlot("Output", outputDataType, null)
+                .addInputSlot("Input", "", ImagePlusData.class)
+                .addOutputSlot("Output", "", outputDataType, null)
                 .seal()
                 .build());
         this.outputDataType = outputDataType;

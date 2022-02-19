@@ -47,8 +47,8 @@ public class MorphologyInternalGradient2DAlgorithm extends JIPipeSimpleIterating
      * @param info the info
      */
     public MorphologyInternalGradient2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscaleData.class)
-                .addOutputSlot("Output", ImagePlusGreyscaleData.class, "Input")
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscaleData.class)
+                .addOutputSlot("Output", "", ImagePlusGreyscaleData.class, "Input")
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

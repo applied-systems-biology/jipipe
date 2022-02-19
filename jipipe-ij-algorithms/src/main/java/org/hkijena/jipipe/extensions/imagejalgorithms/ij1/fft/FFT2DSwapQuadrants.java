@@ -40,8 +40,8 @@ public class FFT2DSwapQuadrants extends JIPipeSimpleIteratingAlgorithm {
      * @param info the algorithm info
      */
     public FFT2DSwapQuadrants(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusFFT2DData.class)
-                .addOutputSlot("Output", ImagePlusFFT2DData.class, null)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusFFT2DData.class)
+                .addOutputSlot("Output", "", ImagePlusFFT2DData.class, null)
                 .allowOutputSlotInheritance(false)
                 .seal()
                 .build());

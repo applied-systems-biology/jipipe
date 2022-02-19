@@ -52,8 +52,8 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
      * @param info the info
      */
     public UnreferencedRoiToMaskAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ROIListData.class)
-                .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, null)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ROIListData.class)
+                .addOutputSlot("Output", "", ImagePlusGreyscaleMaskData.class, null)
                 .seal()
                 .build());
         imageArea.getWidth().ensureExactValue(false);

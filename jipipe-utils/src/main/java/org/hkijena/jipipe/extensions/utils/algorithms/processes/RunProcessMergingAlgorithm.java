@@ -146,7 +146,11 @@ public class RunProcessMergingAlgorithm extends JIPipeMergingAlgorithm {
                     if (slotConfiguration.hasOutputSlot("Output folder")) {
                         slotConfiguration.removeOutputSlot("Output folder", false);
                     }
-                    slotConfiguration.addOutputSlot("Output folder", FolderData.class, null, false);
+                    slotConfiguration.addOutputSlot("Output folder",
+                            "Output folder designated to the current data batch",
+                            FolderData.class,
+                            null,
+                            false);
                 }
             } else {
                 if (slotConfiguration.hasOutputSlot("Output folder")) {

@@ -56,8 +56,8 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
      */
     public TableToRectangularROIAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", ResultsTableData.class)
-                .addOutputSlot("Output", ROIListData.class, null)
+                .addInputSlot("Input", "", ResultsTableData.class)
+                .addOutputSlot("Output", "", ROIListData.class, null)
                 .seal()
                 .build());
     }

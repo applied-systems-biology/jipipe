@@ -42,8 +42,8 @@ public class Voronoi2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public Voronoi2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscaleMaskData.class)
-                .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, "Input")
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscaleMaskData.class)
+                .addOutputSlot("Output", "", ImagePlusGreyscaleMaskData.class, "Input")
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

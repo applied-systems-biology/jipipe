@@ -46,7 +46,7 @@ public class DefineRectangularRoiAlgorithm extends JIPipeAlgorithm {
      */
     public DefineRectangularRoiAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addOutputSlot("Output", ROIListData.class, null)
+                .addOutputSlot("Output", "", ROIListData.class, null)
                 .seal()
                 .build());
         rectangles.addNewInstance();

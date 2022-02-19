@@ -46,6 +46,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
     private JList<JIPipeDataInfo> datatypeList;
     private JComboBox<String> inheritedSlotList;
     private JTextField nameEditor;
+    private JTextField descriptionEditor;
     private JIPipeDataInfo selectedInfo;
     private JButton confirmButton;
     private JDialog dialog;
@@ -97,6 +98,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
 
     private void setInitialValues() {
         nameEditor.setText(existingSlot.getName());
+        descriptionEditor.setText(existingSlot.getDescription());
         datatypeList.setSelectedValue(JIPipeDataInfo.getInstance(existingSlot.getAcceptedDataType()), true);
         if (existingSlot.isInput()) {
             optionalInputEditor.setSelected(existingSlot.getInfo().isOptional());
@@ -140,6 +142,17 @@ public class EditAlgorithmSlotPanel extends JPanel {
             }
         });
         formPanel.addToForm(nameEditor, new JLabel("Slot name"), null);
+
+        descriptionEditor = new JXTextField();
+        descriptionEditor.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyReleased(KeyEvent e) {
+                if (settingsAreValid() && e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    confirmButton.requestFocusInWindow();
+                }
+            }
+        });
+        formPanel.addToForm(descriptionEditor, new JLabel("Description"), null);
 
         if (existingSlot.getSlotType() == JIPipeSlotType.Input) {
             optionalInputEditor.setText("Optional input");
@@ -212,6 +225,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
     private void editSlot() {
 
         String slotName = nameEditor.getText().trim();
+        String slotDescription = StringUtils.nullToEmpty(descriptionEditor.getText()).trim();
         if (!JIPipeDataSlotInfo.isValidName(slotName)) {
             JOptionPane.showMessageDialog(this, "The name '" + slotName + "' is not a valid slot name. It can only contain alphanumeric characters and following characters: . _ , #");
             return;
@@ -230,7 +244,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
         JIPipeDataSlotInfo slotDefinition;
         if (slotType == JIPipeSlotType.Input) {
-            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, null);
+            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, slotDescription, null);
             slotDefinition.setOptional(optionalInputEditor.isSelected());
         } else if (slotType == JIPipeSlotType.Output) {
             String inheritedSlot = null;
@@ -238,7 +252,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
                 inheritedSlot = inheritedSlotList.getSelectedItem().toString();
             }
 
-            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, inheritedSlot);
+            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, slotDescription, inheritedSlot);
         } else {
             throw new UnsupportedOperationException();
         }

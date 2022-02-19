@@ -44,8 +44,8 @@ public class DivideByMaximumAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public DivideByMaximumAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale32FData.class)
-                .addOutputSlot("Output", ImagePlusGreyscale32FData.class, null)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale32FData.class)
+                .addOutputSlot("Output", "", ImagePlusGreyscale32FData.class, null)
                 .seal()
                 .build());
     }

@@ -54,8 +54,8 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public StackTo2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlus2DData.class, "Input", TO_2D_CONVERSION)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusData.class)
+                .addOutputSlot("Output", "", ImagePlus2DData.class, "Input", TO_2D_CONVERSION)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

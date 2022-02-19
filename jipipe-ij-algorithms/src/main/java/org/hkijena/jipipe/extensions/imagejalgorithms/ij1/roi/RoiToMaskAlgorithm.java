@@ -54,9 +54,9 @@ public class RoiToMaskAlgorithm extends JIPipeIteratingAlgorithm {
      * @param info the info
      */
     public RoiToMaskAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("ROI", ROIListData.class)
-                .addInputSlot("Image", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlusGreyscaleMaskData.class, null)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("ROI", "", ROIListData.class)
+                .addInputSlot("Image", "", ImagePlusData.class)
+                .addOutputSlot("Output", "", ImagePlusGreyscaleMaskData.class, null)
                 .seal()
                 .build());
     }

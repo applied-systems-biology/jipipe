@@ -48,9 +48,9 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
      */
     public SplitByAnnotation(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", JIPipeData.class)
+                .addInputSlot("Input", "", JIPipeData.class)
                 .sealInput()
-                .addOutputSlot("Output", JIPipeData.class, "Input")
+                .addOutputSlot("Output", "", JIPipeData.class, "Input")
                 .build());
         this.targetSlots = new OutputSlotMapParameterCollection(AnnotationGeneratorExpression.class, this, null, true);
         this.targetSlots.getEventBus().register(this);

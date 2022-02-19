@@ -59,9 +59,9 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
      */
     public ImageCalculator2DAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input 1", ImagePlusData.class)
-                .addInputSlot("Input 2", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlusData.class, "Input 1")
+                .addInputSlot("Input 1", "The first operand", ImagePlusData.class)
+                .addInputSlot("Input 2", "The second operand", ImagePlusData.class)
+                .addOutputSlot("Output", "The calculation result", ImagePlusData.class, "Input 1")
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

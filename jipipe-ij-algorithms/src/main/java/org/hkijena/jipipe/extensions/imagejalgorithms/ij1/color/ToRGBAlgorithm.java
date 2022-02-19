@@ -17,8 +17,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusCo
 public class ToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ToRGBAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlusColorRGBData.class, "Input", ImageJAlgorithmsExtension.TO_COLOR_RGB_CONVERSION)
+                .addInputSlot("Input", "", ImagePlusData.class)
+                .addOutputSlot("Output", "", ImagePlusColorRGBData.class, "Input", ImageJAlgorithmsExtension.TO_COLOR_RGB_CONVERSION)
                 .seal()
                 .build());
     }

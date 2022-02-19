@@ -39,8 +39,8 @@ public class FFT2DForwardTransform extends JIPipeSimpleIteratingAlgorithm {
      * @param info the algorithm info
      */
     public FFT2DForwardTransform(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlus2DData.class)
-                .addOutputSlot("Output", ImagePlusFFT2DData.class, null)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlus2DData.class)
+                .addOutputSlot("Output", "", ImagePlusFFT2DData.class, null)
                 .allowOutputSlotInheritance(false)
                 .seal()
                 .build());

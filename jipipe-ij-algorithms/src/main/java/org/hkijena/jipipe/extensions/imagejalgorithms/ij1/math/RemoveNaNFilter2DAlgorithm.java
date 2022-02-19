@@ -46,8 +46,8 @@ public class RemoveNaNFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public RemoveNaNFilter2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscale32FData.class)
-                .addOutputSlot("Output", ImagePlusGreyscale32FData.class, "Input")
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale32FData.class)
+                .addOutputSlot("Output", "", ImagePlusGreyscale32FData.class, "Input")
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

@@ -48,8 +48,8 @@ public class TransformRotate2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public TransformRotate2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlusData.class, "Input")
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusData.class)
+                .addOutputSlot("Output", "", ImagePlusData.class, "Input")
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

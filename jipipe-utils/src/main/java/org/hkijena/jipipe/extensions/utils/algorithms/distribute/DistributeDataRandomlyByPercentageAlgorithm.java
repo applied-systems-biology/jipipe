@@ -31,7 +31,7 @@ public class DistributeDataRandomlyByPercentageAlgorithm extends JIPipeMergingAl
 
     public DistributeDataRandomlyByPercentageAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", JIPipeData.class)
+                .addInputSlot("Input", "", JIPipeData.class)
                 .sealInput()
                 .build());
         getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);

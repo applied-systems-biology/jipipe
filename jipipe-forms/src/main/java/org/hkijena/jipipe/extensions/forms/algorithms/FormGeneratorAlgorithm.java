@@ -16,8 +16,8 @@ public abstract class FormGeneratorAlgorithm extends JIPipeAlgorithm {
             "The input slot requires no incoming edge.";
 
     public FormGeneratorAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Existing", FormData.class, true)
-                .addOutputSlot("Combined", FormData.class, null)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Existing", "Existing list of forms", FormData.class, true)
+                .addOutputSlot("Combined", "Existing list of forms plus the form defined by this node", FormData.class, null)
                 .seal()
                 .build());
     }

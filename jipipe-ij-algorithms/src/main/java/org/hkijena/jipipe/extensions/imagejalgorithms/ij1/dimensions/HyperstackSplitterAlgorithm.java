@@ -36,8 +36,8 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     public HyperstackSplitterAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlusData.class, "Input")
+                .addInputSlot("Input", "", ImagePlusData.class)
+                .addOutputSlot("Output", "", ImagePlusData.class, "Input")
                 .sealInput()
                 .build());
         this.outputIndices = new OutputSlotMapParameterCollection(OptionalIntegerRange.class, this, OptionalIntegerRange::new, false);

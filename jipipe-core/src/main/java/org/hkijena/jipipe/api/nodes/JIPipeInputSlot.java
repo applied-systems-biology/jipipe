@@ -39,6 +39,12 @@ public @interface JIPipeInputSlot {
     String slotName() default "";
 
     /**
+     * An optional description.
+     * @return slot description
+     */
+    String description() default "";
+
+    /**
      * If true, {@link JIPipeGraphNode} automatically configures its slots based on annotations (unless a custom {@link org.hkijena.jipipe.api.data.JIPipeSlotConfiguration}
      * is provided.
      *

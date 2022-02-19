@@ -58,8 +58,8 @@ public class CreateStackAlgorithm extends JIPipeMergingAlgorithm {
      * @param info the info
      */
     public CreateStackAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlus2DData.class)
-                .addOutputSlot("Output", ImagePlus3DData.class, "Input", TO_3D_CONVERSION)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlus2DData.class)
+                .addOutputSlot("Output", "", ImagePlus3DData.class, "Input", TO_3D_CONVERSION)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

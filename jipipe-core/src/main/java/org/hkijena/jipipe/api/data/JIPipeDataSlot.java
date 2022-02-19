@@ -88,7 +88,7 @@ public class JIPipeDataSlot extends JIPipeDataTable {
         JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(data.getClass(),
                 JIPipeSlotType.Input,
                 "Data",
-                null), node);
+                "", null), node);
         slot.addData(data, new JIPipeProgressInfo());
         return slot;
     }
@@ -285,5 +285,9 @@ public class JIPipeDataSlot extends JIPipeDataTable {
         } else {
             makeDataNonVirtual(progressInfo, false);
         }
+    }
+
+    public String getDescription() {
+        return getInfo().getDescription();
     }
 }

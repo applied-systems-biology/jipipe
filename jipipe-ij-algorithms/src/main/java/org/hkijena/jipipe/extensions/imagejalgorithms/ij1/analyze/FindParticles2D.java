@@ -75,9 +75,9 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
      */
     public FindParticles2D(JIPipeNodeInfo info) {
         super(info,
-                JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Mask", ImagePlusGreyscaleMaskData.class)
-                        .addOutputSlot("ROI", ROIListData.class, null)
-                        .addOutputSlot("Measurements", ResultsTableData.class, null)
+                JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Mask", "The mask where particles are extracted from. White pixels are foreground.", ImagePlusGreyscaleMaskData.class)
+                        .addOutputSlot("ROI", "The extracted ROI", ROIListData.class, null)
+                        .addOutputSlot("Measurements", "The measurements of the ROI", ResultsTableData.class, null)
                         .seal()
                         .build());
         this.annotationType.setContent("Image index");

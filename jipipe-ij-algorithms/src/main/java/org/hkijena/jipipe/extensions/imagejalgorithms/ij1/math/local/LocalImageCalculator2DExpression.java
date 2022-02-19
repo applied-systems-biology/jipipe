@@ -40,9 +40,9 @@ public class LocalImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
 
     public LocalImageCalculator2DExpression(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("I1", ImagePlusGreyscale32FData.class)
-                .addInputSlot("I2", ImagePlusGreyscale32FData.class)
-                .addOutputSlot("Output", ImagePlusGreyscale32FData.class, null)
+                .addInputSlot("I1", "First image", ImagePlusGreyscale32FData.class)
+                .addInputSlot("I2", "Second image", ImagePlusGreyscale32FData.class)
+                .addOutputSlot("Output", "Calculated result", ImagePlusGreyscale32FData.class, null)
                 .sealOutput()
                 .build());
     }

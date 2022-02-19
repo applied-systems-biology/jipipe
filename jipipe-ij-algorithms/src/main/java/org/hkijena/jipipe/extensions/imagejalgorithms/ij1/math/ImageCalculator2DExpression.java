@@ -33,9 +33,9 @@ public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
 
     public ImageCalculator2DExpression(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("I1", ImagePlusGreyscale32FData.class)
-                .addInputSlot("I2", ImagePlusGreyscale32FData.class)
-                .addOutputSlot("Output", ImagePlusGreyscale32FData.class, null)
+                .addInputSlot("I1", "The first input", ImagePlusGreyscale32FData.class)
+                .addInputSlot("I2", "The second input", ImagePlusGreyscale32FData.class)
+                .addOutputSlot("Output", "The output image", ImagePlusGreyscale32FData.class, null)
                 .sealOutput()
                 .build());
     }

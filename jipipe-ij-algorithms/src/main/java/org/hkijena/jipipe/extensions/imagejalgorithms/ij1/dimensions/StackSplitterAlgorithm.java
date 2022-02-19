@@ -62,8 +62,8 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public StackSplitterAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", ImagePlusData.class)
-                .addOutputSlot("Output", ImagePlusData.class, "Input")
+                .addInputSlot("Input", "", ImagePlusData.class)
+                .addOutputSlot("Output", "", ImagePlusData.class, "Input")
                 .sealInput()
                 .build());
         stackAssignments = new OutputSlotMapParameterCollection(IntegerRange.class,

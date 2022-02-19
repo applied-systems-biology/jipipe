@@ -33,7 +33,7 @@ public class ConverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public ConverterAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .sealInput()
-                .addInputSlot("Input", JIPipeData.class)
+                .addInputSlot("Input", "The data to be converted", JIPipeData.class)
                 .restrictOutputSlotCount(1).build());
     }
 

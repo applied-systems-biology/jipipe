@@ -22,20 +22,23 @@ import java.lang.annotation.Annotation;
  */
 public class DefaultJIPipeInputSlot implements JIPipeInputSlot {
 
-    private Class<? extends JIPipeData> value;
-    private String slotName;
-    private boolean autoCreate;
-    private boolean optional;
+    private final Class<? extends JIPipeData> value;
+    private final String slotName;
+    private final String description;
+    private final boolean autoCreate;
+    private final boolean optional;
 
     /**
      * @param value      the value
      * @param slotName   the slot name
+     * @param description the slot description
      * @param autoCreate if the slot should be automatically created
      * @param optional   if the slot is optional
      */
-    public DefaultJIPipeInputSlot(Class<? extends JIPipeData> value, String slotName, boolean autoCreate, boolean optional) {
+    public DefaultJIPipeInputSlot(Class<? extends JIPipeData> value, String slotName, String description, boolean autoCreate, boolean optional) {
         this.value = value;
         this.slotName = slotName;
+        this.description = description;
         this.autoCreate = autoCreate;
         this.optional = optional;
     }
@@ -48,6 +51,11 @@ public class DefaultJIPipeInputSlot implements JIPipeInputSlot {
     @Override
     public String slotName() {
         return slotName;
+    }
+
+    @Override
+    public String description() {
+        return description;
     }
 
     @Override

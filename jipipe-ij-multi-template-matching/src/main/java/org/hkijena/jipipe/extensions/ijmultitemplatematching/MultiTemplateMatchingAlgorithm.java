@@ -449,7 +449,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         if (assembleTemplates) {
             if (!hasOutputSlot("Assembled templates")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.addOutputSlot("Assembled templates", ImagePlusData.class, null, false);
+                slotConfiguration.addOutputSlot("Assembled templates", "The assembled templates", ImagePlusData.class, null, false);
             }
         } else {
             if (hasOutputSlot("Assembled templates")) {

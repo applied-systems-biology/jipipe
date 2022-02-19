@@ -80,8 +80,8 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public BioFormatsImporter(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", FileData.class)
-                .addOutputSlot("Output", OMEImageData.class, null)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "The image file", FileData.class)
+                .addOutputSlot("Output", "The imported data", OMEImageData.class, null)
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

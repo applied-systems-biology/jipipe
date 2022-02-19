@@ -42,8 +42,8 @@ public class ApplyDistanceTransform2DAlgorithm extends JIPipeSimpleIteratingAlgo
      * @param info the info
      */
     public ApplyDistanceTransform2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", ImagePlusGreyscaleMaskData.class)
-                .addOutputSlot("Output", ImagePlusGreyscale8UData.class, "Input")
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscaleMaskData.class)
+                .addOutputSlot("Output", "", ImagePlusGreyscale8UData.class, "Input")
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());

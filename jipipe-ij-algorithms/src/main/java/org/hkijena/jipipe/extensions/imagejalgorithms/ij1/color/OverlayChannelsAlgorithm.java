@@ -61,7 +61,7 @@ public class OverlayChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 
     public OverlayChannelsAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().restrictInputTo(ImagePlusGreyscale8UData.class, ImagePlusColorRGBData.class)
-                .addOutputSlot("Output", ImagePlusColorRGBData.class, "Input", TO_COLOR_RGB_CONVERSION)
+                .addOutputSlot("Output", "", ImagePlusColorRGBData.class, "Input", TO_COLOR_RGB_CONVERSION)
                 .allowOutputSlotInheritance(true)
                 .sealOutput()
                 .build());

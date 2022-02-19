@@ -25,7 +25,7 @@ public class DistributeDataRandomlyByCountAlgorithm extends JIPipeMergingAlgorit
 
     public DistributeDataRandomlyByCountAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", JIPipeData.class)
+                .addInputSlot("Input", "", JIPipeData.class)
                 .sealInput()
                 .build());
         counts = new OutputSlotMapParameterCollection(Integer.class, this, () -> 1, false);

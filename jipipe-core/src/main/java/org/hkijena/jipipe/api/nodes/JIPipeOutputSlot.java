@@ -39,6 +39,12 @@ public @interface JIPipeOutputSlot {
     String slotName() default "";
 
     /**
+     * An optional description.
+     * @return slot description
+     */
+    String description() default "";
+
+    /**
      * An optional inherited slot. Used if autoCreate is true
      * Either can be a valid input slot name to inherit the type of the input slot,
      * or can be '*' to inherit the type of the first slot

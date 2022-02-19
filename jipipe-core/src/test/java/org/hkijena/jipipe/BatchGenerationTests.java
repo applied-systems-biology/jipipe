@@ -50,7 +50,7 @@ public class BatchGenerationTests {
      */
     @Test
     public void simpleBatchGenerationTest() {
-        JIPipeDataSlot slot1 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot1", null), null);
+        JIPipeDataSlot slot1 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot1", "", null), null);
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         slot1.addData(new StringData("A"), Collections.singletonList(new JIPipeTextAnnotation("C1", "A")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         slot1.addData(new StringData("B"), Collections.singletonList(new JIPipeTextAnnotation("C1", "B")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
@@ -70,8 +70,8 @@ public class BatchGenerationTests {
     @Test
     public void simpleAssignmentBatchGenerationTest() {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-        JIPipeDataSlot slot1 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot1", null), null);
-        JIPipeDataSlot slot2 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot2", null), null);
+        JIPipeDataSlot slot1 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot1", "", null), null);
+        JIPipeDataSlot slot2 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot2", "", null), null);
         slot1.addData(new StringData("A"), Collections.singletonList(new JIPipeTextAnnotation("C1", "A")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         slot1.addData(new StringData("B"), Collections.singletonList(new JIPipeTextAnnotation("C1", "B")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         slot1.addData(new StringData("C"), Collections.singletonList(new JIPipeTextAnnotation("C1", "C")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
@@ -92,7 +92,7 @@ public class BatchGenerationTests {
     @Test
     public void twoColumnBatchGenerationTest() {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-        JIPipeDataSlot slot1 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot1", null), null);
+        JIPipeDataSlot slot1 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot1", "", null), null);
         slot1.addData(new StringData("A"), Arrays.asList(new JIPipeTextAnnotation("C1", "A"), new JIPipeTextAnnotation("C2", "X")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         slot1.addData(new StringData("B"), Arrays.asList(new JIPipeTextAnnotation("C1", "B"), new JIPipeTextAnnotation("C2", "Y")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         slot1.addData(new StringData("C"), Arrays.asList(new JIPipeTextAnnotation("C1", "C"), new JIPipeTextAnnotation("C3", "Z")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
@@ -111,12 +111,12 @@ public class BatchGenerationTests {
     @Test
     public void equalTwoSlotTest() {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-        JIPipeDataSlot slot1 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot1", null), null);
+        JIPipeDataSlot slot1 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot1", "", null), null);
         slot1.addData(new StringData("A"), Arrays.asList(new JIPipeTextAnnotation("C1", "A"), new JIPipeTextAnnotation("C2", "X")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         slot1.addData(new StringData("B"), Arrays.asList(new JIPipeTextAnnotation("C1", "B"), new JIPipeTextAnnotation("C2", "Y")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         slot1.addData(new StringData("C"), Arrays.asList(new JIPipeTextAnnotation("C1", "C"), new JIPipeTextAnnotation("C3", "Z")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
 
-        JIPipeDataSlot slot2 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot2", null), null);
+        JIPipeDataSlot slot2 = new JIPipeDataSlot(new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot2", "", null), null);
         slot2.addData(new StringData("A"), Arrays.asList(new JIPipeTextAnnotation("C1", "A"), new JIPipeTextAnnotation("C2", "X")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         slot2.addData(new StringData("B"), Arrays.asList(new JIPipeTextAnnotation("C1", "B"), new JIPipeTextAnnotation("C2", "Y")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         slot2.addData(new StringData("C"), Arrays.asList(new JIPipeTextAnnotation("C1", "C"), new JIPipeTextAnnotation("C3", "Z")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);

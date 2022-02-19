@@ -67,7 +67,7 @@ public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
      */
     public JythonScriptAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addOutputSlot("Table", ResultsTableData.class, null)
+                .addOutputSlot("Table", "", ResultsTableData.class, null)
                 .build());
         registerSubParameter(scriptParameters);
     }
