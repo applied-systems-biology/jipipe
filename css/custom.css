@@ -531,3 +531,28 @@ Examples page
     align-items: center;
   }
 }
+
+@keyframes logo-land {
+  0% {
+    opacity: 0;
+    transform: scale(1.5);
+  }
+  20% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.0);
+  }
+}
+
+.jipipe-logo-index {
+  opacity: 0;
+  transform: scale(1.5);
+  animation-timing-function: ease-out;
+  animation-delay: 0.5s;
+  animation-duration: 10s;
+  animation-fill-mode: forwards;
+  animation-name: logo-land;
+}
