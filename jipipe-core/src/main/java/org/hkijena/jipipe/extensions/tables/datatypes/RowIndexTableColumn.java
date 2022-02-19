@@ -26,7 +26,8 @@ import java.nio.file.Path;
  * Generates numbers from 0 to row count
  */
 @JIPipeDocumentation(name = "Row index table column", description = "A table column that generates each row based on the current row index")
-@JIPipeDataStorageDocumentation("This is a structural data type. The storage folder is empty.")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "This is a structural data type. The storage folder is empty.",
+jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
 public class RowIndexTableColumn implements TableColumn {
     public static RowIndexTableColumn importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
         return new RowIndexTableColumn();

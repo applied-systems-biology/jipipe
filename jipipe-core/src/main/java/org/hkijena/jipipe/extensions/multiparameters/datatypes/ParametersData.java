@@ -45,10 +45,11 @@ import java.util.Map;
 @JIPipeDocumentation(name = "Parameters", description = "Contains algorithm parameters")
 @JsonSerialize(using = ParametersData.Serializer.class)
 @JsonDeserialize(using = ParametersData.Deserializer.class)
-@JIPipeDataStorageDocumentation("Contains a single *.json file that stores the parameters. " +
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the parameters. " +
         "The JSON data is an object with keys being the parameter keys. The value is an object with two " +
         "items <code>value</code> and <code>type-id</code>. <code>value</code> contains the serialized parameter value." +
-        " <code>type-id</code> contains the standardized parameter type ID.")
+        " <code>type-id</code> contains the standardized parameter type ID.",
+jsonSchemaURL = "https://jipipe.org/schemas/datatypes/parameters-data.schema.json")
 public class ParametersData implements JIPipeData {
 
     private Map<String, Object> parameterData = new HashMap<>();

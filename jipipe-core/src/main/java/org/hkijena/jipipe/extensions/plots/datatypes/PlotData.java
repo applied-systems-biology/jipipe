@@ -68,7 +68,7 @@ import java.util.stream.Collectors;
  */
 @JIPipeDocumentation(name = "Plot", description = "A plot")
 @JsonSerialize(using = PlotData.Serializer.class)
-@JIPipeDataStorageDocumentation("The folder contains following files:<br/>" +
+@JIPipeDataStorageDocumentation(humanReadableDescription = "The folder contains following files:<br/>" +
         "<ul>" +
         "<li><code>plot-metadata.json</code> contains the serialized information about the plot.</li>" +
         "<li><code>series[Index].csv</code> contains the data of series [Index].</li>" +
@@ -78,7 +78,8 @@ import java.util.stream.Collectors;
         "<code>with-legend</code>, <code>title-font-size</code>, <code>legend-font-size</code>, <code>color-map</code>, and <code>plot-series</code>.<br/>" +
         "<code>plot-series</code> is mandatory and is a list of objects with each object having an object <code>metadata</code>, and " +
         "a string element <code>file-name</code>. The file name must point at the corresponding <code>series[Index].csv</code> file of the series. " +
-        "Additional metadata in the root object and series metadata depend on the exact plot type.")
+        "Additional metadata in the root object and series metadata depend on the exact plot type.",
+jsonSchemaURL = "https://jipipe.org/schemas/datatypes/plot-data.schema.json")
 public abstract class PlotData implements JIPipeData, JIPipeParameterCollection, JIPipeValidatable {
 
     private final EventBus eventBus = new EventBus();

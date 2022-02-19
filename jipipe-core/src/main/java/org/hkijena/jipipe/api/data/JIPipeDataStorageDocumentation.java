@@ -16,5 +16,11 @@ public @interface JIPipeDataStorageDocumentation {
      *
      * @return the storage documentation.
      */
-    String value();
+    String humanReadableDescription();
+
+    /**
+     * URL pointing to a JSON schema that describes how the data directory should be structured
+     * @return URL to a JSON schema document
+     */
+    String jsonSchemaURL();
 }

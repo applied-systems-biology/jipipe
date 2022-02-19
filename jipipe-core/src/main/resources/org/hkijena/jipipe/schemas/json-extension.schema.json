@@ -45,7 +45,7 @@
       "description": "List of added algorithms",
       "default": [],
       "items": {
-        "$ref": "https://www.jipipe.org/schemas/algorithm.schema.json"
+        "$ref": "https://www.jipipe.org/schemas/node.schema.json"
       }
     }
   }

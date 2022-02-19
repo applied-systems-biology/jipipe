@@ -44,8 +44,8 @@ import java.util.Collections;
  */
 @JIPipeDocumentation(name = "Image", description = "An ImageJ image")
 @JIPipeHeavyData
-@JIPipeDataStorageDocumentation("Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpeg, *.png. " +
-        "We recommend the usage of TIFF.")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpg, *.png. " +
+        "We recommend the usage of TIFF.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/imageplus-data.schema.json")
 public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
 
     /**

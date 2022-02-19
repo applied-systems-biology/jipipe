@@ -29,7 +29,8 @@ import java.nio.file.Path;
  */
 @JIPipeDocumentation(name = "Output data", description = "Output of a compartment")
 @JIPipeHidden
-@JIPipeDataStorageDocumentation("This is a structural data type. The storage folder is empty.")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "This is a structural data type. The storage folder is empty.",
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
 public class JIPipeCompartmentOutputData implements JIPipeData {
     public static JIPipeCompartmentOutputData importFrom(Path path, JIPipeProgressInfo progressInfo) {
         return new JIPipeCompartmentOutputData();

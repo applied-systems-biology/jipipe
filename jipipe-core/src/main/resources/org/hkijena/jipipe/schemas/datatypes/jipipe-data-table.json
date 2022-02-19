@@ -1,0 +1,22 @@
+{
+  "$id": "https://jipipe.org/schemas/datatypes/jipipe-data-table.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Stores a data table in the standard JIPipe format (data-table.json plus numeric slot folders)",
+  "type": "object",
+  "properties": {
+    "data-table.json": {
+      "$ref": "https://www.jipipe.org/schemas/data-table.schema.json"
+    }
+  },
+  "patternProperties": {
+    "^\\d+": {
+      "type": "object",
+      "description": "Directory that stores data for the specified row. Contents vary based on data type.",
+      "properties" : {
+        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-directory.schema.json" }
+      }
+    }
+  },
+  "$defs": {
+  }
+}

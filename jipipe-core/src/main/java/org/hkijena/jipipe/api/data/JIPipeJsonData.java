@@ -14,7 +14,8 @@ import java.nio.file.Path;
  * You also still need to add the proper {@link org.hkijena.jipipe.api.JIPipeDocumentation} annotation and
  * the JIPipeData importFrom(Path) static function.
  */
-@JIPipeDataStorageDocumentation("A JSON file that contains the serialized data")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "A JSON file that contains the serialized data",
+jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 public abstract class JIPipeJsonData implements JIPipeData {
 
     public JIPipeJsonData() {

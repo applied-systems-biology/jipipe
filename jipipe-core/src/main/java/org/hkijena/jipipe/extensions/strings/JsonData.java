@@ -24,7 +24,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "Json", description = "Text in JSON format")
-@JIPipeDataStorageDocumentation("Contains a single *.json file that stores the current data.")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the current data.",
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 public class JsonData extends StringData {
     public JsonData(String data) {
         super(data);

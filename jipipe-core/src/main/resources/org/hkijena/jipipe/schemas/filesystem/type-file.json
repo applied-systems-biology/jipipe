@@ -1,0 +1,9 @@
+{
+  "$id": "https://jipipe.org/schemas/filesystem/type-file.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Indicates that this file system entry is a file",
+  "type": "string",
+  "enum": ["file", "directory"],
+  "default": "file",
+  "readOnly": true
+}

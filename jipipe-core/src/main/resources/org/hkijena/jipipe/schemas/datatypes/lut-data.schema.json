@@ -1,0 +1,38 @@
+{
+  "$id": "https://jipipe.org/schemas/datatypes/lut-data.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Contains one file in *.json format that describes the LUT gradient stops.",
+  "type": "object",
+  "minProperties": 1,
+  "patternProperties": {
+    "^.*\\.json": {
+      "$ref": "#/$defs/file",
+      "properties": {
+        "fs:entry-type": {
+          "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "description": "A JSON file that contains information about the file path.",
+      "properties": {
+        "gradient-stops": {
+          "type": "array",
+          "description": "A list of gradient stops",
+          "items": { "$ref": "#/$defs/gradient-stop" }
+        }
+      }
+    },
+    "gradient-stop": {
+      "type": "object",
+      "description": "A gradient stop",
+      "properties": {
+        "position": { "type": "number", "description": "A number ranging within [0, 1]", "minimum": 0, "maximum": 1 },
+        "color": {"type": "string", "description": "The color in HEX notation", "pattern": "^#[0-9A-Fa-f]{6}"}
+      }
+    }
+  }
+}

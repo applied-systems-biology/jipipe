@@ -1,0 +1,20 @@
+{
+  "$id": "https://jipipe.org/schemas/datatypes/form-data.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Contains a file forms.json that stores all metadata of the current form type in JSON format.",
+  "type": "object",
+  "properties": {
+    "forms.json": {
+      "$ref": "#/$defs/file"
+    }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "description": "Serialized form data. Contents depend on the form class.",
+      "properties": {
+        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+      }
+    }
+  }
+}

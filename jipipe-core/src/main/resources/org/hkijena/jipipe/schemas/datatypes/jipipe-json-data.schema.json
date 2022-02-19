@@ -1,0 +1,21 @@
+{
+  "$id": "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "A JSON file that contains the serialized data",
+  "type": "object",
+  "minProperties": 1,
+  "patternProperties": {
+    "^.*\\.json": {
+      "$ref": "#/$defs/file"
+    }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "description": "A JSON file",
+      "properties": {
+        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+      }
+    }
+  }
+}

@@ -25,7 +25,8 @@ import java.nio.file.Path;
 import java.util.*;
 
 @JIPipeDocumentation(name = "Data table", description = "A table of data")
-@JIPipeDataStorageDocumentation("Stores a data table in the standard JIPipe format (data-table.json plus numeric slot folders)")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Stores a data table in the standard JIPipe format (data-table.json plus numeric slot folders)",
+jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-data-table.schema.json")
 public class JIPipeDataTable implements JIPipeData, TableModel {
     private Class<? extends JIPipeData> acceptedDataType;
     private final EventBus eventBus = new EventBus();

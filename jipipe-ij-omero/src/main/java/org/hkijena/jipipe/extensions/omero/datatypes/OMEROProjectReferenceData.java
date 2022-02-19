@@ -31,7 +31,8 @@ import java.nio.file.Path;
  * Data that stores a reference to an OMERO project
  */
 @JIPipeDocumentation(name = "OMERO Project", description = "An OMERO project ID")
-@JIPipeDataStorageDocumentation("Contains a single *.json file that stores the <pre>project-id</pre> in a JSON object.")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the <pre>project-id</pre> in a JSON object.",
+jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-project-reference-data.schema.json")
 public class OMEROProjectReferenceData implements JIPipeData {
     private long projectId;
 

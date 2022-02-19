@@ -8,7 +8,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "Empty data", description = "An empty data type")
-@JIPipeDataStorageDocumentation("The storage folder is empty.")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "The storage folder is empty.",
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
 @JIPipeHidden
 public class JIPipeEmptyData implements JIPipeData {
     public static JIPipeEmptyData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {

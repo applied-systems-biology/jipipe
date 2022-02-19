@@ -26,9 +26,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 @JIPipeDocumentation(name = "LUT", description = "A function that converts an intensity to a RGB color value")
-@JIPipeDataStorageDocumentation("Contains one file in *.json format. " +
-        "*.roi is a single ImageJ ROI. *.zip contains multiple ImageJ ROI. Please note that if multiple *.roi/*.zip are present, only " +
-        "one will be loaded.")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one file in *.json format that describes the LUT gradient stops.",
+jsonSchemaURL = "https://jipipe.org/schemas/datatypes/lut-data.schema.json")
 public class LUTData implements JIPipeData {
 
     private List<ImageJUtils.GradientStop> gradientStops = new ArrayList<>();

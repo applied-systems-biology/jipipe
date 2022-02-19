@@ -34,13 +34,13 @@ import java.nio.file.Paths;
  * Encapsulates a {@link java.nio.file.Path}
  */
 @JIPipeDocumentation(name = "Path", description = "A file or folder")
-@JIPipeDataStorageDocumentation("Contains a single *.json file. The JSON data has following structure: " +
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file. The JSON data has following structure: " +
         "<pre>" +
         "{\n" +
         "    \"jipipe:data-type\": \"[Data type ID]\",\n" +
         "    \"path\": \"[The path]\"\n" +
         "}" +
-        "</pre>")
+        "</pre>", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/path-data.schema.json")
 public class PathData implements JIPipeData {
     private String path;
 

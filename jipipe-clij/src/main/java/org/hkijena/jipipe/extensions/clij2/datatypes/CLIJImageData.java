@@ -21,8 +21,8 @@ import java.nio.file.Path;
  * Contains a CLIJ image
  */
 @JIPipeDocumentation(name = "GPU image", description = "Image data stored on the GPU utilized by CLIJ")
-@JIPipeDataStorageDocumentation("Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpeg, *.png. " +
-        "We recommend the usage of TIFF.")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpeg, *.png. " +
+        "We recommend the usage of TIFF.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/imageplus-data.schema.json")
 @JIPipeHeavyData
 public class CLIJImageData implements JIPipeData {
 

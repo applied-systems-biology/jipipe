@@ -160,6 +160,8 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
             builder.append("# Data storage\n\n");
             builder.append("Following information was provided about the standardized storage of this data type:\n\n");
             builder.append(info.getStorageDocumentation().getBody());
+            builder.append("\n\nPlease visit following link for a JSON schema that describes the data storage: ");
+            builder.append(info.getStorageSchema());
         }
         builder.append("\n\n");
 
@@ -169,6 +171,8 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
             builder.append("# Developer information\n\n");
             builder.append("<table>");
             builder.append("<tr><td><strong>Data type ID</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(info.getId())).append("</td></tr>");
+            builder.append("<tr><td><strong>Storage schema URL</strong></td><td><a href=\"").append(HtmlEscapers.htmlEscaper().escape(info.getStorageSchema()))
+                    .append("\">").append(HtmlEscapers.htmlEscaper().escape(info.getStorageSchema())).append("</a></td></tr>");
             for (String dependencyCitation : info.getAdditionalCitations()) {
                 builder.append("<tr><td><strong>Data type additional citation</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(dependencyCitation)).append("</td></tr>");
             }

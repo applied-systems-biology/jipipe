@@ -70,7 +70,8 @@ import static ij.measure.ResultsTable.COLUMN_NOT_FOUND;
 @JIPipeDocumentation(name = "Results table", description = "An ImageJ table")
 @JsonSerialize(using = ResultsTableData.Serializer.class)
 @JsonDeserialize(using = ResultsTableData.Deserializer.class)
-@JIPipeDataStorageDocumentation("Contains a single *.csv file that contains the table data.")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.csv file that contains the table data.",
+jsonSchemaURL = "https://jipipe.org/schemas/datatypes/results-table.schema.json")
 public class ResultsTableData implements JIPipeData, TableModel {
 
     private static final char commaSubstitute = 0x08B3;

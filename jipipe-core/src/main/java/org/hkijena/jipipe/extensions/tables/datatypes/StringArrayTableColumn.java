@@ -29,7 +29,8 @@ import java.util.Collections;
  * {@link TableColumn} that contains doubles.
  */
 @JIPipeDocumentation(name = "String table column", description = "A table column that contains text values")
-@JIPipeDataStorageDocumentation("Contains a single *.csv file that contains the table data.")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.csv file that contains the table data.",
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/results-table.schema.json")
 public class StringArrayTableColumn implements MutableTableColumn {
 
     private String[] data;

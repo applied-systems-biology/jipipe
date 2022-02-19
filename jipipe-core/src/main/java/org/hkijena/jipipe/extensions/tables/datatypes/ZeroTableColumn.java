@@ -26,7 +26,8 @@ import java.nio.file.Path;
  * Generates numbers from 0 to row count
  */
 @JIPipeDocumentation(name = "Zero table column", description = "A table column that generates zeros for each row.")
-@JIPipeDataStorageDocumentation("This is a structural data type. The storage folder is empty.")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "This is a structural data type. The storage folder is empty.",
+jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
 public class ZeroTableColumn implements TableColumn {
     public static ZeroTableColumn importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
         return new ZeroTableColumn();

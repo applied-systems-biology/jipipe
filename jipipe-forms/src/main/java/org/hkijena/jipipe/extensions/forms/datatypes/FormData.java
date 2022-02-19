@@ -32,7 +32,8 @@ import java.nio.file.Paths;
  */
 @JIPipeDocumentation(name = "Form", description = "Data that describes a user input element.")
 @JsonSerialize(using = FormData.Serializer.class)
-@JIPipeDataStorageDocumentation("Contains a file forms.json that stores all metadata of the current form type in JSON format.")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a file forms.json that stores all metadata of the current form type in JSON format.",
+jsonSchemaURL = "https://jipipe.org/schemas/datatypes/form-data.schema.json")
 public abstract class FormData implements JIPipeData, JIPipeParameterCollection, JIPipeValidatable {
 
     private final EventBus eventBus = new EventBus();

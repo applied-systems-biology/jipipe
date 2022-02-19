@@ -31,7 +31,8 @@ import java.nio.file.Path;
  * Data that stores a reference to an OMERO project
  */
 @JIPipeDocumentation(name = "OMERO Group", description = "An OMERO group ID")
-@JIPipeDataStorageDocumentation("Contains a single *.json file that stores the <pre>group-id</pre> in a JSON object.")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the <pre>group-id</pre> in a JSON object.",
+jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-group-data.schema.json")
 public class OMEROGroupReferenceData implements JIPipeData {
     private long groupId;
 

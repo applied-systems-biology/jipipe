@@ -28,7 +28,8 @@ import java.io.IOException;
 import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "OMERO Image", description = "An OMERO image ID")
-@JIPipeDataStorageDocumentation("Contains a single *.json file that stores the <pre>image-id</pre> in a JSON object.")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the <pre>image-id</pre> in a JSON object.",
+jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-image-reference-data.schema.json")
 public class OMEROImageReferenceData implements JIPipeData {
     private long imageId;
 

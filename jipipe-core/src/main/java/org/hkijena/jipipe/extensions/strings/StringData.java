@@ -35,7 +35,8 @@ import java.nio.file.Path;
  * A data type that contains a string
  */
 @JIPipeDocumentation(name = "String", description = "A text")
-@JIPipeDataStorageDocumentation("Contains a single *.txt file that stores the current string.")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.txt file that stores the current string.",
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/string-data.schema.json")
 public class StringData implements JIPipeData {
 
     private final String data;

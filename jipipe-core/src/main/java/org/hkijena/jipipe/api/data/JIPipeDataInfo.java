@@ -38,13 +38,14 @@ import java.util.*;
 public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
     private static Map<Class<? extends JIPipeData>, JIPipeDataInfo> cache = new HashMap<>();
 
-    private Class<? extends JIPipeData> dataClass;
-    private String name;
-    private String description;
-    private String menuPath;
-    private boolean hidden;
-    private boolean heavy;
-    private HTMLText storageDocumentation;
+    private final Class<? extends JIPipeData> dataClass;
+    private final String name;
+    private final String description;
+    private final String menuPath;
+    private final boolean hidden;
+    private final boolean heavy;
+    private final HTMLText storageDocumentation;
+    private final String storageSchema;
     private List<String> additionalCitations = new ArrayList<>();
 
     private JIPipeDataInfo(Class<? extends JIPipeData> dataClass) {
@@ -55,6 +56,7 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
         this.hidden = JIPipeData.isHidden(dataClass);
         this.heavy = JIPipeData.isHeavy(dataClass);
         this.storageDocumentation = JIPipeData.getStorageDocumentation(dataClass);
+        this.storageSchema = JIPipeData.getStorageSchema(dataClass);
         // Load additional citations
         for (JIPipeCitation citation : dataClass.getAnnotationsByType(JIPipeCitation.class)) {
             getAdditionalCitations().add(citation.value());
@@ -187,6 +189,10 @@ public class JIPipeDataInfo implements Comparable<JIPipeDataInfo> {
      */
     public JIPipeData newInstance(Object... args) {
         return (JIPipeData) ReflectionUtils.newInstance(dataClass, args);
+    }
+
+    public String getStorageSchema() {
+        return storageSchema;
     }
 
     /**
