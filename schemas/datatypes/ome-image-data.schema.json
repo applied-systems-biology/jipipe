@@ -1,0 +1,21 @@
+{
+  "$id": "https://jipipe.org/schemas/datatypes/ome-image-data.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Contains at least one image file with one of following extensions: *.tif, *.ome.tif. All images must belong to the same data set.",
+  "type": "object",
+  "minProperties": 1,
+  "patternProperties": {
+    "^.*\\.(tif)": {
+      "$ref": "#/$defs/file"
+    }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "description": "Image file with one of following extensions: *.tif, *.ome.tif",
+      "properties": {
+        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+      }
+    }
+  }
+}

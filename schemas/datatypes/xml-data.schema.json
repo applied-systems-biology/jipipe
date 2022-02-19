@@ -1,0 +1,21 @@
+{
+  "$id": "https://jipipe.org/schemas/datatypes/xml-data.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Contains a single *.xml file that stores the current string.",
+  "type": "object",
+  "minProperties": 1,
+  "patternProperties": {
+    "^.*\\.xml": {
+      "$ref": "#/$defs/file"
+    }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "description": "An XML file",
+      "properties": {
+        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+      }
+    }
+  }
+}

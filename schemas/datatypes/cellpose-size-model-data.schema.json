@@ -1,0 +1,21 @@
+{
+  "$id": "https://jipipe.org/schemas/datatypes/cellpose-size-model-data.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "A single .npy file that contains the Cellpose size model",
+  "type": "object",
+  "minProperties": 1,
+  "patternProperties": {
+    "^.*\\.npy": {
+      "$ref": "#/$defs/file"
+    }
+  },
+  "$defs": {
+    "file": {
+      "type": "object",
+      "description": "A Cellpose size model. Do not rename the file as it contains important parameters.",
+      "properties": {
+        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+      }
+    }
+  }
+}
