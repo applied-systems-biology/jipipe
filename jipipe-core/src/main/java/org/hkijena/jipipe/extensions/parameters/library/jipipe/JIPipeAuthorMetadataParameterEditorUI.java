@@ -86,6 +86,7 @@ public class JIPipeAuthorMetadataParameterEditorUI extends JIPipeParameterEditor
                     new MarkdownDocument("# Edit author\n\nUse this editor to update additional author properties."),
                     "Edit author",
                     ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING);
+            reload();
         });
         add(editButton);
     }
