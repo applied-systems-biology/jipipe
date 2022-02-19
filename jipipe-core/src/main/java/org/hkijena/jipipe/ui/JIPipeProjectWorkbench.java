@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.Prefs;
+import net.imagej.ui.swing.updater.ImageJUpdater;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
@@ -518,13 +519,19 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         installPluginButton.addActionListener(e -> JIPipeJsonExtensionWindow.installExtensions(this));
         pluginsMenu.add(installPluginButton);
 
-        JMenuItem managePluginsButton = new JMenuItem("Manage plugins", UIUtils.getIconFromResources("actions/wrench.png"));
+        JMenuItem managePluginsButton = new JMenuItem("Manage JIPipe plugins", UIUtils.getIconFromResources("apps/jipipe.png"));
         managePluginsButton.addActionListener(e -> managePlugins());
         pluginsMenu.add(managePluginsButton);
 
-        JMenuItem manageImageJPlugins = new JMenuItem("Manage ImageJ plugins", UIUtils.getIconFromResources("apps/imagej.png"));
-        manageImageJPlugins.addActionListener(e -> manageImageJPlugins());
+        pluginsMenu.addSeparator();
+
+        JMenuItem manageImageJPlugins = new JMenuItem("Manage ImageJ plugins (via JIPipe)", UIUtils.getIconFromResources("apps/imagej.png"));
+        manageImageJPlugins.addActionListener(e -> manageImageJPlugins(true));
         pluginsMenu.add(manageImageJPlugins);
+
+        JMenuItem manageImageJPluginsViaUpdater = new JMenuItem("Run ImageJ updater", UIUtils.getIconFromResources("apps/imagej.png"));
+        manageImageJPluginsViaUpdater.addActionListener(e -> manageImageJPlugins(false));
+        pluginsMenu.add(manageImageJPluginsViaUpdater);
 
         UIUtils.installMenuExtension(this, pluginsMenu, JIPipeMenuExtensionTarget.ProjectPluginsMenu, true);
 
@@ -669,18 +676,25 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         UIUtils.openFileInNative(getProject().getWorkDirectory());
     }
 
-    private void manageImageJPlugins() {
-        List<DocumentTabPane.DocumentTab> tabs = getDocumentTabPane().getTabsContaining(JIPipeImageJPluginManager.class);
-        if (!tabs.isEmpty()) {
-            getDocumentTabPane().switchToContent(tabs.get(0).getContent());
-        } else {
-            JIPipeImageJPluginManager pluginManager = new JIPipeImageJPluginManager(this);
-            getDocumentTabPane().addTab("Manage ImageJ plugins",
-                    UIUtils.getIconFromResources("apps/imagej.png"),
-                    pluginManager,
-                    DocumentTabPane.CloseMode.withSilentCloseButton,
-                    false);
-            getDocumentTabPane().switchToLastTab();
+    private void manageImageJPlugins(boolean useJIPipeUpdater) {
+        if(useJIPipeUpdater) {
+            List<DocumentTabPane.DocumentTab> tabs = getDocumentTabPane().getTabsContaining(JIPipeImageJPluginManager.class);
+            if (!tabs.isEmpty()) {
+                getDocumentTabPane().switchToContent(tabs.get(0).getContent());
+            } else {
+                JIPipeImageJPluginManager pluginManager = new JIPipeImageJPluginManager(this);
+                getDocumentTabPane().addTab("Manage ImageJ plugins",
+                        UIUtils.getIconFromResources("apps/imagej.png"),
+                        pluginManager,
+                        DocumentTabPane.CloseMode.withSilentCloseButton,
+                        false);
+                getDocumentTabPane().switchToLastTab();
+            }
+        }
+        else {
+            ImageJUpdater updater = new ImageJUpdater();
+            getContext().inject(updater);
+            updater.run();
         }
     }
 
