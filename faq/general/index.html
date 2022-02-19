@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-02-19T03:51:07 CET">
+<meta name="revised" content="2022-02-19T04:58:48 CET">
 <title>General questions :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -732,23 +732,21 @@
     
     
     
-    <h2 id="where-do-i-find-documentations">Where do I find documentations?</h2>
-<p>You can find all documentations in the <span class="fa fa-question-circle"  style="font-size:large" aria-hidden="true"></span> menu at the top right.</p>
+    <h2 id="where-do-i-find-documentation">Where do I find documentation?</h2>
+<p>You can find all documentation pages in the Help <span class="fa fa-question-circle"  style="font-size:large" aria-hidden="true"></span> menu at the top right.</p>
 <p>There are also context-based documentations available if you select a node in the graph.
 Hover your mouse over a parameter to show documentations for this parameter only.</p>
 <h2 id="does-jipipe-have-a-backup-function">Does JIPipe have a backup function?</h2>
 <p>Yes. By default, JIPipe creates a backup every 3 minutes. You can recover it via <code>Project &gt; Restore Backup</code>.</p>
 <h2 id="can-i-make-the-startup-faster">Can I make the startup faster?</h2>
 <p>Many JIPipe extensions rely on other ImageJ plugins to work. That is why JIPipe always checks if all necessary ImageJ plugins are available.
-If you are sure that you have everything installed, you can disable this check at <code>Project &gt; Application settings &gt; General &gt; Extensions</code>.
-Disable <code>Validate ImageJ dependencies</code>.</p>
-<p>If you do not have access to these setting (because you are offline or there are issues with the ImageJ servers), open the file <code>jipipe.properties.json</code>
-(located in your ImageJ directory) in a text editor search for a line <code>&quot;extensions/validate-imagej-dependencies&quot; : true</code> and replace <code>true</code> by <code>false</code>.</p>
-<p>If the file is not present, create a new file and put following text into it:</p>
-<pre><code>{
-  &quot;extensions/validate-imagej-dependencies&quot; : false
-}
-</code></pre><p>JIPipe will automatically add the other settings on the first startup.</p>
+This will only happen during the first startup, or if the ImageJ plugin database is not present/corrupt.
+If you have persisting issues, run the ImageJ updater from within ImageJ/Fiji or via <code>Plugins &gt; Run ImageJ updater</code></p>
+<h2 id="can-i-remember-the-settings-of-one-or-multiple-nodes-for-later-re-use">Can I remember the settings of one or multiple nodes for later re-use?</h2>
+<p>Yes. Select the nodes of interest, right-click a node and select <code>Create node template</code>. You can save the parameters and even connections if you have multiple nodes into the current project or globally. 
+You can find them in the <code>Node templates</code> list.</p>
+<h2 id="can-i-bookmark-specific-nodes">Can I bookmark specific nodes?</h2>
+<p>Yes. Right-click the node and set it as bookmark. The list is available in any project graph editor and in the project info screen.</p>
 <h2 id="can-i-expose-a-set-of-specific-parameters-for-collaborators">Can I expose a set of specific parameters for collaborators?</h2>
 <p>Yes. You can do this via the <code>Project &gt; Project settings &gt; Parameters</code>.
 They will be available in <code>Project &gt; Project overview</code>, alongside the description that can be set
