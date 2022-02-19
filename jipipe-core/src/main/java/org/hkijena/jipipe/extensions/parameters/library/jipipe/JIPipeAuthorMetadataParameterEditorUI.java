@@ -28,6 +28,10 @@ import javax.swing.event.DocumentEvent;
 
 public class JIPipeAuthorMetadataParameterEditorUI extends JIPipeParameterEditorUI {
 
+    private boolean isReloading = false;
+    private final JXTextField firstNameEditor = new JXTextField("First name");
+    private final JXTextField lastNameEditor = new JXTextField("Last name");
+
     /**
      * Creates new instance
      *
@@ -42,6 +46,48 @@ public class JIPipeAuthorMetadataParameterEditorUI extends JIPipeParameterEditor
 
     private void initialize() {
         setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+
+        firstNameEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
+            @Override
+            public void changed(DocumentEvent documentEvent) {
+            if(!isReloading) {
+                JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
+                parameter.setFirstName(firstNameEditor.getText());
+                setParameter(parameter, false);
+            }
+            }
+        });
+        add(firstNameEditor);
+
+        add(Box.createHorizontalStrut(8));
+
+        lastNameEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
+            @Override
+            public void changed(DocumentEvent documentEvent) {
+                if(!isReloading) {
+                    JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
+                    parameter.setLastName(lastNameEditor.getText());
+                    setParameter(parameter, false);
+                }
+            }
+        });
+        add(lastNameEditor);
+
+        add(Box.createHorizontalStrut(8));
+
+        JButton editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/stock_edit.png"));
+        UIUtils.makeFlat(editButton);
+        editButton.setToolTipText("Shows the full editor");
+        editButton.addActionListener(e -> {
+            JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
+            ParameterPanel.showDialog(getWorkbench(),
+                    parameter,
+                    new MarkdownDocument("# Edit author\n\nUse this editor to update additional author properties."),
+                    "Edit author",
+                    ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING);
+            reload();
+        });
+        add(editButton);
     }
 
     @Override
@@ -52,42 +98,13 @@ public class JIPipeAuthorMetadataParameterEditorUI extends JIPipeParameterEditor
     @Override
     public void reload() {
         JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
-
-        JXTextField firstNameEditor = new JXTextField("First name");
-        firstNameEditor.setText(parameter.getFirstName());
-        firstNameEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                parameter.setFirstName(firstNameEditor.getText());
-            }
-        });
-        add(firstNameEditor);
-
-        add(Box.createHorizontalStrut(8));
-
-        JXTextField lastNameEditor = new JXTextField("Last name");
-        lastNameEditor.setText(parameter.getLastName());
-        lastNameEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
-            @Override
-            public void changed(DocumentEvent documentEvent) {
-                parameter.setLastName(lastNameEditor.getText());
-            }
-        });
-        add(lastNameEditor);
-
-        add(Box.createHorizontalStrut(8));
-
-        JButton editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/stock_edit.png"));
-        UIUtils.makeFlat(editButton);
-        editButton.setToolTipText("<html>Edit the affiliations<br/><br/>" + parameter.getAffiliations() + "</html>");
-        editButton.addActionListener(e -> {
-            ParameterPanel.showDialog(getWorkbench(),
-                    parameter,
-                    new MarkdownDocument("# Edit author\n\nUse this editor to update additional author properties."),
-                    "Edit author",
-                    ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING);
-            reload();
-        });
-        add(editButton);
+        try {
+            isReloading = true;
+            firstNameEditor.setText(parameter.getFirstName());
+            lastNameEditor.setText(parameter.getLastName());
+        }
+        finally {
+            isReloading = false;
+        }
     }
 }

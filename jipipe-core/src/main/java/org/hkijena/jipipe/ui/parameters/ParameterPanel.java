@@ -126,6 +126,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
      */
     public static boolean showDialog(JIPipeWorkbench workbench, JIPipeParameterCollection parameterCollection, MarkdownDocument defaultDocumentation, String title, int flags) {
         JDialog dialog = new JDialog(workbench.getWindow());
+        dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         ParameterPanel parameterPanel = new ParameterPanel(workbench, parameterCollection, defaultDocumentation, flags);
 
         JPanel panel = new JPanel(new BorderLayout(8, 8));

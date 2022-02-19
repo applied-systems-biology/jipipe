@@ -22,6 +22,7 @@ import org.hkijena.jipipe.ui.components.BackgroundPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.html.ExtendedHTMLEditorKit;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
@@ -42,11 +43,11 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
 
     private final JTextPane descriptionReader;
     private final ParameterPanel parameterPanel;
-    private JScrollPane descriptionReaderScrollPane;
+    private final JScrollPane descriptionReaderScrollPane;
     private JTextField licenseInfo;
     private JTextField projectName;
     private JTextField projectStats;
-    private JTextPane projectAuthors;
+    private JPanel projectAuthors;
     private BackgroundPanel headerPanel;
     private JButton openWebsiteButton;
     private JButton copyCitationButton;
@@ -86,31 +87,23 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
 
     private void refreshHeaderText() {
         projectName.setText(StringUtils.orElse(getProject().getMetadata().getName(), "Unnamed project"));
-        StringBuilder authors = new StringBuilder();
-        StringBuilder affiliations = new StringBuilder();
-        authors.append("<html>");
-        affiliations.append("<html>");
+        projectAuthors.removeAll();
         for (JIPipeAuthorMetadata author : getProject().getMetadata().getAuthors()) {
-            authors.append(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(author.getFirstName())));
-            authors.append(" ");
-            authors.append(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(author.getLastName())));
-            authors.append("<br/>");
-
-            affiliations.append("<u>");
-            affiliations.append(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(author.getFirstName())));
-            affiliations.append(" ");
-            affiliations.append(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(author.getLastName())));
-            affiliations.append("</u>");
-            affiliations.append("<br/>");
-            affiliations.append(HtmlEscapers.htmlEscaper().escape(StringUtils.nullToEmpty(author.getAffiliations())).replace("\n", "<br/>"));
-            affiliations.append("<br/>");
-            affiliations.append("<br/>");
+            JButton authorButton = new JButton(author.toString(), UIUtils.getIconFromResources("actions/im-user.png"));
+            authorButton.setToolTipText("Click to show more information");
+            authorButton.addActionListener(e -> {
+                JIPipeAuthorMetadata.openAuthorInfoWindow(getWorkbench().getWindow(), getProject().getMetadata().getAuthors(), author);
+            });
+            authorButton.setOpaque(false);
+            authorButton.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+            authorButton.setBackground(new Color(0, 0, 0, 0));
+            projectAuthors.add(authorButton);
         }
-        affiliations.append("</html>");
-        authors.append("</html>");
-        projectAuthors.setText(authors.toString());
-        projectAuthors.setToolTipText(affiliations.toString());
+        projectAuthors.revalidate();
+        projectAuthors.repaint();
     }
+
+
 
     private void refreshHeaderButtons() {
         if (!StringUtils.isNullOrEmpty(getProject().getMetadata().getWebsite())) {
@@ -208,7 +201,8 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         projectName.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         nameAndAuthorPanel.addWideToForm(projectName, null);
 
-        projectAuthors = UIUtils.makeBorderlessReadonlyTextPane("");
+        projectAuthors = new JPanel();
+        projectAuthors.setLayout(new BoxLayout(projectAuthors, BoxLayout.X_AXIS));
         projectAuthors.setOpaque(false);
         projectAuthors.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         nameAndAuthorPanel.addWideToForm(projectAuthors, null);

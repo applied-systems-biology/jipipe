@@ -60,13 +60,17 @@ public class JIPipeDependencyUI extends JPanel {
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getMetadata().getName()), new JLabel("Name"), null);
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getDependencyId()), new JLabel("ID"), null);
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getDependencyVersion()), new JLabel("Version"), null);
-        for (JIPipeAuthorMetadata author : dependency.getMetadata().getAuthors()) {
-            JTextPane field = UIUtils.makeReadonlyTextPane(String.format("<html><strong>%s %s</strong><br/>%s</html>",
-                    author.getFirstName(),
-                    author.getLastName(),
-                    StringUtils.nullToEmpty(author.getAffiliations()).replace("\n", "<br/>")));
-            formPanel.addToForm(field, new JLabel("Author"), null);
+        if(!dependency.getMetadata().getAuthors().isEmpty()) {
+            JPanel authorPanel = new JPanel();
+            authorPanel.setLayout(new BoxLayout(authorPanel, BoxLayout.X_AXIS));
+            for (JIPipeAuthorMetadata author : dependency.getMetadata().getAuthors()) {
+                JButton button = new JButton(author.toString(), UIUtils.getIconFromResources("actions/im-user.png"));
+                button.addActionListener(e -> JIPipeAuthorMetadata.openAuthorInfoWindow(SwingUtilities.getWindowAncestor(this), dependency.getMetadata().getAuthors(), author));
+                authorPanel.add(button);
+            }
+            formPanel.addToForm(authorPanel, new JLabel("Authors"), null);
         }
+
         if (!StringUtils.isNullOrEmpty(dependency.getMetadata().getWebsite()))
             formPanel.addToForm(UIUtils.makeURLLabel(dependency.getMetadata().getWebsite()), new JLabel("Website"), null);
         if (!StringUtils.isNullOrEmpty(dependency.getMetadata().getCitation()))
