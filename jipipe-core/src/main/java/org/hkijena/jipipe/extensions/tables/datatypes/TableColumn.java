@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.tables.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.extensions.tables.MutableTableColumn;
 
 import java.util.List;
@@ -24,6 +25,8 @@ import java.util.List;
  * This type allows data to be provided
  */
 @JIPipeDocumentation(name = "Table column", description = "A table column")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "This is a generic data type. The storage folder is empty.",
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
 public interface TableColumn extends JIPipeData {
     /**
      * Returns true if the parameter is a mutable table column.

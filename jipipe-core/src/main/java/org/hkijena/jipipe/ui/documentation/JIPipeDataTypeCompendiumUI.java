@@ -51,7 +51,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
     }
 
     @Override
-    protected MarkdownDocument generateCompendiumFor(JIPipeDataInfo info) {
+    protected MarkdownDocument generateCompendiumFor(JIPipeDataInfo info, boolean forJava) {
         StringBuilder builder = new StringBuilder();
         builder.append("# ").append(info.getName()).append("\n\n");
 
@@ -62,102 +62,194 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
         builder.append("A trivial conversion involves no potentially expensive conversion operation. The data will directly match to input slots of the converted type. The edge has a dark-gray color.\n\n");
 
         builder.append("This type can be trivially converted into following types:\n\n");
-        builder.append("<table>");
-        {
-            builder.append("<tr>");
-            int column = 0;
-            for (JIPipeDataInfo dataInfo : dataInfos) {
-                if (dataInfo != info) {
-                    if (JIPipeDatatypeRegistry.isTriviallyConvertible(info.getDataClass(), dataInfo.getDataClass())) {
-                        builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/></td><td>").append(dataInfo.getName()).append("</td>");
-                        ++column;
-                        if (column % 5 == 0) {
-                            builder.append("</tr><tr>");
+
+        if(forJava) {
+            builder.append("<table>");
+            {
+                builder.append("<tr>");
+                int column = 0;
+                for (JIPipeDataInfo dataInfo : dataInfos) {
+                    if (dataInfo != info) {
+                        if (JIPipeDatatypeRegistry.isTriviallyConvertible(info.getDataClass(), dataInfo.getDataClass())) {
+                            builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/></td><td>").append(dataInfo.getName()).append("</td>");
+                            ++column;
+                            if (column % 5 == 0) {
+                                builder.append("</tr><tr>");
+                            }
                         }
                     }
                 }
+                if (column == 0) {
+                    builder.append("<td>None</td>");
+                }
+                builder.append("</tr>");
             }
-            if (column == 0) {
-                builder.append("<td>None</td>");
-            }
-            builder.append("</tr>");
+            builder.append("</table>\n\n");
         }
-        builder.append("</table>\n\n");
+        else {
+            builder.append("<ul>");
+            {
+                int column = 0;
+                for (JIPipeDataInfo dataInfo : dataInfos) {
+                    if (dataInfo != info) {
+                        if (JIPipeDatatypeRegistry.isTriviallyConvertible(info.getDataClass(), dataInfo.getDataClass())) {
+                            builder.append("<li>");
+                            builder.append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/><span>").append(dataInfo.getName()).append("</span>");
+                            builder.append("</li>\n");
+                            ++column;
+                        }
+                    }
+                }
+                if (column == 0) {
+                    builder.append("<li>None</li>");
+                }
+            }
+            builder.append("</ul>\n\n");
+        }
 
         builder.append("This type can be trivially converted from following types:\n\n");
-        builder.append("<table>");
-        {
-            builder.append("<tr>");
-            int column = 0;
-            for (JIPipeDataInfo dataInfo : dataInfos) {
-                if (dataInfo != info) {
-                    if (JIPipeDatatypeRegistry.isTriviallyConvertible(dataInfo.getDataClass(), info.getDataClass())) {
-                        builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/></td><td>").append(dataInfo.getName()).append("</td>");
-                        ++column;
-                        if (column % 5 == 0) {
-                            builder.append("</tr><tr>");
+        if(forJava) {
+            builder.append("<table>");
+            {
+                builder.append("<tr>");
+                int column = 0;
+                for (JIPipeDataInfo dataInfo : dataInfos) {
+                    if (dataInfo != info) {
+                        if (JIPipeDatatypeRegistry.isTriviallyConvertible(dataInfo.getDataClass(), info.getDataClass())) {
+                            builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/></td><td>").append(dataInfo.getName()).append("</td>");
+                            ++column;
+                            if (column % 5 == 0) {
+                                builder.append("</tr><tr>");
+                            }
                         }
                     }
                 }
+                if (column == 0) {
+                    builder.append("<td>None</td>");
+                }
+                builder.append("</tr>");
             }
-            if (column == 0) {
-                builder.append("<td>None</td>");
-            }
-            builder.append("</tr>");
+            builder.append("</table>\n\n");
         }
-        builder.append("</table>\n\n");
+        else {
+            builder.append("<ul>");
+            {
+                int column = 0;
+                for (JIPipeDataInfo dataInfo : dataInfos) {
+                    if (dataInfo != info) {
+                        if (JIPipeDatatypeRegistry.isTriviallyConvertible(dataInfo.getDataClass(), info.getDataClass())) {
+                            builder.append("<li>");
+                            builder.append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/><span>").append(dataInfo.getName()).append("</span>");
+                            builder.append("</li>\n");
+                            ++column;
+                        }
+                    }
+                }
+                if (column == 0) {
+                    builder.append("<li>None</li>");
+                }
+            }
+            builder.append("</ul>\n\n");
+        }
 
         builder.append("## Non-trivial conversions\n\n");
         builder.append("A non-trivial conversion is defined by the developer and might involve some more complex conversion operations. They are indicated as blue edge.\n\n");
 
         builder.append("This type can be also converted into following types:\n\n");
-        {
-            builder.append("<tr>");
-            int column = 0;
-            for (JIPipeDataInfo dataInfo : dataInfos) {
-                if (dataInfo != info) {
-                    if (!JIPipeDatatypeRegistry.isTriviallyConvertible(info.getDataClass(), dataInfo.getDataClass()) && JIPipe.getDataTypes().isConvertible(info.getDataClass(), dataInfo.getDataClass())) {
-                        builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/></td><td>").append(dataInfo.getName()).append("</td>");
-                        ++column;
-                        if (column % 5 == 0) {
-                            builder.append("</tr><tr>");
+        if(forJava) {
+            builder.append("<table>");
+            {
+                builder.append("<tr>");
+                int column = 0;
+                for (JIPipeDataInfo dataInfo : dataInfos) {
+                    if (dataInfo != info) {
+                        if (!JIPipeDatatypeRegistry.isTriviallyConvertible(info.getDataClass(), dataInfo.getDataClass()) && JIPipe.getDataTypes().isConvertible(info.getDataClass(), dataInfo.getDataClass())) {
+                            builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/></td><td>").append(dataInfo.getName()).append("</td>");
+                            ++column;
+                            if (column % 5 == 0) {
+                                builder.append("</tr><tr>");
+                            }
                         }
                     }
                 }
+                if (column == 0) {
+                    builder.append("<td>None</td>");
+                }
+                builder.append("</tr>");
             }
-            if (column == 0) {
-                builder.append("<td>None</td>");
-            }
-            builder.append("</tr>");
+            builder.append("</table>\n\n");
         }
-        builder.append("</table>\n\n");
+        else {
+            builder.append("<ul>");
+            {
+
+                int column = 0;
+                for (JIPipeDataInfo dataInfo : dataInfos) {
+                    if (dataInfo != info) {
+                        if (!JIPipeDatatypeRegistry.isTriviallyConvertible(info.getDataClass(), dataInfo.getDataClass()) && JIPipe.getDataTypes().isConvertible(info.getDataClass(), dataInfo.getDataClass())) {
+                            builder.append("<li>");
+                            builder.append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/><span>").append(dataInfo.getName()).append("</span>");
+                            builder.append("</li>\n");
+                            ++column;
+                        }
+                    }
+                }
+                if (column == 0) {
+                    builder.append("<li>None</li>");
+                }
+            }
+            builder.append("</ul>\n\n");
+        }
 
         builder.append("This type can be also converted from following types:\n\n");
-        builder.append("<table>");
-        {
-            builder.append("<tr>");
-            int column = 0;
-            for (JIPipeDataInfo dataInfo : dataInfos) {
-                if (dataInfo != info) {
-                    if (!JIPipeDatatypeRegistry.isTriviallyConvertible(dataInfo.getDataClass(), info.getDataClass()) && JIPipe.getDataTypes().isConvertible(dataInfo.getDataClass(), info.getDataClass())) {
-                        builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/></td><td>").append(dataInfo.getName()).append("</td>");
-                        ++column;
-                        if (column % 5 == 0) {
-                            builder.append("</tr><tr>");
+        if(forJava) {
+            builder.append("<table>");
+            {
+                builder.append("<tr>");
+                int column = 0;
+                for (JIPipeDataInfo dataInfo : dataInfos) {
+                    if (dataInfo != info) {
+                        if (!JIPipeDatatypeRegistry.isTriviallyConvertible(dataInfo.getDataClass(), info.getDataClass()) && JIPipe.getDataTypes().isConvertible(dataInfo.getDataClass(), info.getDataClass())) {
+                            builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/></td><td>").append(dataInfo.getName()).append("</td>");
+                            ++column;
+                            if (column % 5 == 0) {
+                                builder.append("</tr><tr>");
+                            }
                         }
                     }
                 }
+                if (column == 0) {
+                    builder.append("<td>None</td>");
+                }
+                builder.append("</tr>");
             }
-            if (column == 0) {
-                builder.append("<td>None</td>");
-            }
-            builder.append("</tr>");
+            builder.append("</table>\n\n");
         }
-        builder.append("</table>\n\n");
+        else {
+            builder.append("<ul>");
+            {
+                int column = 0;
+                for (JIPipeDataInfo dataInfo : dataInfos) {
+                    if (dataInfo != info) {
+                        if (!JIPipeDatatypeRegistry.isTriviallyConvertible(dataInfo.getDataClass(), info.getDataClass()) && JIPipe.getDataTypes().isConvertible(dataInfo.getDataClass(), info.getDataClass())) {
+                            builder.append("<li>");
+                            builder.append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(dataInfo)).append("\"/><span>").append(dataInfo.getName()).append("</span>");
+                            builder.append("</li>\n");
+                            ++column;
+                        }
+                    }
+                }
+                if (column == 0) {
+                    builder.append("<li>None</li>");
+                }
+
+            }
+            builder.append("</ul>\n\n");
+        }
 
         // Storage information
         if (info.getStorageDocumentation() != null) {
-            builder.append("# Data storage\n\n");
+            builder.append("## Data storage\n\n");
             builder.append("Following information was provided about the standardized storage of this data type:\n\n");
             builder.append(info.getStorageDocumentation().getBody());
             builder.append("\n\nPlease visit following link for a JSON schema that describes the data storage: ");
@@ -168,7 +260,8 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
         // Info about the developer
         JIPipeDependency source = JIPipe.getDataTypes().getSourceOf(info.getId());
         if (source != null) {
-            builder.append("# Developer information\n\n");
+//            System.out.println(info.getId());
+            builder.append("## Developer information\n\n");
             builder.append("<table>");
             builder.append("<tr><td><strong>Data type ID</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(info.getId())).append("</td></tr>");
             builder.append("<tr><td><strong>Storage schema URL</strong></td><td><a href=\"").append(HtmlEscapers.htmlEscaper().escape(info.getStorageSchema()))

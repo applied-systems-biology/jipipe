@@ -33,6 +33,8 @@ import java.util.stream.Collectors;
  * {@link JIPipeDataStorageDocumentation} can be inherited from parent classes.
  */
 @JIPipeDocumentation(name = "Data", description = "Generic data")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Unknown storage schema (generic data)",
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
 public interface JIPipeData {
 
     /**

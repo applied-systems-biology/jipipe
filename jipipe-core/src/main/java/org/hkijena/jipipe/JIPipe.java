@@ -508,6 +508,11 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
     private void validateDataTypes(JIPipeRegistryIssues issues) {
         for (Class<? extends JIPipeData> dataType : datatypeRegistry.getRegisteredDataTypes().values()) {
+            JIPipeDataInfo info = JIPipeDataInfo.getInstance(dataType);
+            if (info.getStorageDocumentation() == null) {
+                logService.warn("Data type '" + dataType + "' has no storage documentation.");
+                issues.getErroneousDataTypes().add(dataType);
+            }
             if (dataType.isInterface() || Modifier.isAbstract(dataType.getModifiers()))
                 continue;
             // Check if we can find a method "import"
@@ -525,11 +530,6 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                 logService.warn("Ensure that a method static JIPipeData importFrom(Path, JIPipeProgressInfo) is present!");
                 issues.getErroneousDataTypes().add(dataType);
                 e.printStackTrace();
-            }
-            JIPipeDataInfo info = JIPipeDataInfo.getInstance(dataType);
-            if (info.getStorageDocumentation() == null) {
-                logService.warn("Data type '" + dataType + "' has no storage documentation.");
-                issues.getErroneousDataTypes().add(dataType);
             }
         }
     }

@@ -86,7 +86,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
             Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Save as Markdown (*.md)", UIUtils.EXTENSION_FILTER_MD);
             if (selectedPath != null) {
                 try (BusyCursor cursor = new BusyCursor(this)) {
-                    MarkdownDocument wholeCompendium = generateWholeCompendium();
+                    MarkdownDocument wholeCompendium = generateWholeCompendium(false);
                     try {
                         Files.write(selectedPath, wholeCompendium.getMarkdown().getBytes(Charsets.UTF_8));
                     } catch (IOException e1) {
@@ -103,7 +103,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
             if (selectedPath != null) {
                 try (BusyCursor cursor = new BusyCursor(this)) {
                     try {
-                        MarkdownDocument wholeCompendium = generateWholeCompendium();
+                        MarkdownDocument wholeCompendium = generateWholeCompendium(false);
                         Files.write(selectedPath, wholeCompendium.getRenderedHTML().getBytes(Charsets.UTF_8));
                     } catch (IOException e1) {
                         throw new RuntimeException(e1);
@@ -118,7 +118,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
             Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Save as Portable Document Format (*.pdf)", UIUtils.EXTENSION_FILTER_PDF);
             if (selectedPath != null) {
                 try (BusyCursor cursor = new BusyCursor(this)) {
-                    MarkdownDocument wholeCompendium = generateWholeCompendium();
+                    MarkdownDocument wholeCompendium = generateWholeCompendium(true);
                     PdfConverterExtension.exportToPdf(selectedPath.toString(), wholeCompendium.getRenderedHTML(), "", OPTIONS);
                 }
             }
@@ -136,12 +136,13 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
      * Generates a document that contains the whole compendium
      *
      * @return the document
+     * @param forJava if the generated markdown is intended for usage within Java. Otherwise, more modern HTML code can be used
      */
-    public MarkdownDocument generateWholeCompendium() {
+    public MarkdownDocument generateWholeCompendium(boolean forJava) {
         StringBuilder builder = new StringBuilder();
         builder.append(defaultDocument.getMarkdown()).append("\n\n");
         for (T item : getFilteredItems()) {
-            builder.append(generateCompendiumFor(item).getMarkdown()).append("\n\n");
+            builder.append(generateCompendiumFor(item, forJava).getMarkdown()).append("\n\n");
         }
         return new MarkdownDocument(builder.toString());
     }
@@ -201,7 +202,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
         if (item != null) {
             MarkdownDocument document = compendiumCache.getOrDefault(item, null);
             if (document == null) {
-                document = generateCompendiumFor(item);
+                document = generateCompendiumFor(item, true);
                 compendiumCache.put(item, document);
             }
             markdownReader.setDocument(document);
@@ -214,7 +215,8 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
      * Generates the compendium page for the item
      *
      * @param item the item
+     * @param forJava if the generated markdown is intended for usage within Java. Otherwise, more modern HTML code can be used
      * @return compendium page
      */
-    protected abstract MarkdownDocument generateCompendiumFor(T item);
+    protected abstract MarkdownDocument generateCompendiumFor(T item, boolean forJava);
 }
