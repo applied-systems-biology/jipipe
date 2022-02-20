@@ -182,7 +182,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
         return mergedAnnotations;
     }
 
-    public void setMergedAnnotations(Map<String, JIPipeTextAnnotation> annotations) {
+    public void setMergedTextAnnotations(Map<String, JIPipeTextAnnotation> annotations) {
         this.mergedAnnotations = annotations;
     }
 

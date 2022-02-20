@@ -12,6 +12,17 @@ public class JIPipeExportedDataAnnotation {
     private String trueDataType;
     private JIPipeDataTableMetadataRow tableRow;
 
+    public JIPipeExportedDataAnnotation() {
+
+    }
+
+    public JIPipeExportedDataAnnotation(String name, Path rowStorageFolder, String trueDataType, JIPipeDataTableMetadataRow tableRow) {
+        this.name = name;
+        this.rowStorageFolder = rowStorageFolder;
+        this.trueDataType = trueDataType;
+        this.tableRow = tableRow;
+    }
+
     /**
      * This is a relative path pointing to the row storage folder of this data annotation
      * The path is relative to the storage path of the parent data table
@@ -28,6 +39,10 @@ public class JIPipeExportedDataAnnotation {
         this.rowStorageFolder = rowStorageFolder;
     }
 
+    /**
+     * ID of the data type stored in this data annotation
+     * @return the data type ID
+     */
     @JsonGetter("true-data-type")
     public String getTrueDataType() {
         return trueDataType;
@@ -38,6 +53,10 @@ public class JIPipeExportedDataAnnotation {
         this.trueDataType = trueDataType;
     }
 
+    /**
+     * The name of this data annotation
+     * @return the name
+     */
     @JsonGetter("name")
     public String getName() {
         return name;

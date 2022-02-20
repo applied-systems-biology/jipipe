@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.data;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import ij.measure.ResultsTable;
@@ -20,59 +21,29 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Contains all metadata exported from an {@link JIPipeDataTable}
  */
-public class JIPipeDataTableMetadata implements TableModel {
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
+public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTableMetadataRow> {
     private Class<? extends JIPipeData> acceptedDataType;
-    private List<JIPipeDataTableMetadataRow> rowList;
+    private List<JIPipeDataTableMetadataRow> rowList = new ArrayList<>();
     private List<String> annotationColumns;
     private List<String> dataAnnotationColumns;
 
-
-
-    /**
-     * Initializes a new table from a {@link JIPipeDataTable}
-     *
-     * @param dataTable    The slot
-     */
-    public JIPipeDataTableMetadata(JIPipeDataTable dataTable) {
-        this.acceptedDataType = dataTable.getAcceptedDataType();
-        this.rowList = new ArrayList<>();
-        List<String> dataAnnotationColumns = dataTable.getDataAnnotationColumns();
-        for (int row = 0; row < dataTable.getRowCount(); ++row) {
-            JIPipeDataTableMetadataRow rowInstance = new JIPipeDataTableMetadataRow();
-            rowInstance.setIndex(row);
-            rowInstance.setAnnotations(dataTable.getTextAnnotations(row));
-            rowInstance.setTrueDataType(JIPipeDataInfo.getInstance(dataTable.getDataClass(row)).getId());
-            for (int i = 0; i < dataAnnotationColumns.size(); i++) {
-                JIPipeVirtualData virtualDataAnnotation = dataTable.getVirtualDataAnnotation(row, dataAnnotationColumns.get(i));
-                if (virtualDataAnnotation != null) {
-                    JIPipeExportedDataAnnotation exportedDataAnnotation = new JIPipeExportedDataAnnotation();
-                    exportedDataAnnotation.setName(dataAnnotationColumns.get(i));
-                    exportedDataAnnotation.setRowStorageFolder(Paths.get("_" + i).resolve("" + row));
-                    exportedDataAnnotation.setTrueDataType(JIPipeDataInfo.getInstance(virtualDataAnnotation.getDataClass()).getId());
-                    exportedDataAnnotation.setTableRow(rowInstance);
-                    rowInstance.getDataAnnotations().add(exportedDataAnnotation);
-                }
-            }
-            rowList.add(rowInstance);
-        }
-    }
 
     public JIPipeDataTableMetadata() {
     }
@@ -100,6 +71,16 @@ public class JIPipeDataTableMetadata implements TableModel {
     }
 
     /**
+     * Returns the format version for storage in the JSON file.
+     * This might be used later to allow backward-compatibility
+     * @return the format version
+     */
+    @JsonGetter("jipipe:data-table-format-version")
+    public int getFormatVersion() {
+        return 1;
+    }
+
+    /**
      * @return The accepted datatype ID
      */
     @JsonGetter("data-type")
@@ -122,7 +103,7 @@ public class JIPipeDataTableMetadata implements TableModel {
      */
     @JsonGetter("rows")
     public List<JIPipeDataTableMetadataRow> getRowList() {
-        return rowList;
+        return Collections.unmodifiableList(rowList);
     }
 
     /**
@@ -133,6 +114,8 @@ public class JIPipeDataTableMetadata implements TableModel {
     @JsonSetter("rows")
     public void setRowList(List<JIPipeDataTableMetadataRow> rowList) {
         this.rowList = rowList;
+        this.annotationColumns = null;
+        this.dataAnnotationColumns = null;
     }
 
     /**
@@ -163,28 +146,29 @@ public class JIPipeDataTableMetadata implements TableModel {
      * @throws IOException Triggered by {@link ResultsTable}
      */
     public void saveAsCSV(Path fileName) throws IOException {
-        ResultsTable table = new ResultsTable();
+        ResultsTableData table = new ResultsTableData();
         for (JIPipeDataTableMetadataRow row : rowList) {
-            table.incrementCounter();
-            table.addValue("jipipe:data-type", JIPipe.getDataTypes().getIdOf(acceptedDataType));
-            table.addValue("jipipe:true-data-type", row.getTrueDataType());
-            table.addValue("jipipe:index", row.getIndex());
+            Map<String, Object> tableRow = new HashMap<>();
+            tableRow.put("jipipe:data-type", JIPipe.getDataTypes().getIdOf(acceptedDataType));
+            tableRow.put("jipipe:true-data-type", row.getTrueDataType());
+            tableRow.put("jipipe:index", row.getIndex());
             for (String dataAnnotationColumn : getDataAnnotationColumns()) {
                 JIPipeExportedDataAnnotation existing = row.getDataAnnotations().stream().filter(t -> t.nameEquals(dataAnnotationColumn)).findFirst().orElse(null);
                 if (existing != null)
-                    table.addValue(dataAnnotationColumn, existing.getRowStorageFolder().toString() + " [" + existing.getTrueDataType() + "]");
+                    tableRow.put("$" + dataAnnotationColumn, existing.getRowStorageFolder().toString() + " [" + existing.getTrueDataType() + "]");
                 else
-                    table.addValue(dataAnnotationColumn, "");
+                    tableRow.put("$" + dataAnnotationColumn, "");
             }
             for (String annotationColumn : getAnnotationColumns()) {
-                JIPipeTextAnnotation existing = row.getAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
+                JIPipeTextAnnotation existing = row.getTextAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
                 if (existing != null)
-                    table.addValue(annotationColumn, existing.getValue());
+                    tableRow.put(annotationColumn, existing.getValue());
                 else
-                    table.addValue(annotationColumn, "");
+                    tableRow.put(annotationColumn, "");
             }
+            table.addRow(tableRow);
         }
-        table.saveAs(fileName.toString());
+        table.saveAsCSV(fileName);
     }
 
     public List<String> getDataAnnotationColumns() {
@@ -205,7 +189,7 @@ public class JIPipeDataTableMetadata implements TableModel {
         if (annotationColumns == null) {
             Set<String> registeredAnnotations = new HashSet<>();
             for (JIPipeDataTableMetadataRow row : rowList) {
-                registeredAnnotations.addAll(row.getAnnotations().stream().map(JIPipeTextAnnotation::getName).collect(Collectors.toSet()));
+                registeredAnnotations.addAll(row.getTextAnnotations().stream().map(JIPipeTextAnnotation::getName).collect(Collectors.toSet()));
             }
             annotationColumns = new ArrayList<>(registeredAnnotations);
         }
@@ -296,7 +280,7 @@ public class JIPipeDataTableMetadata implements TableModel {
             return rowList.get(rowIndex).getDataAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         } else {
             String annotationColumn = annotationColumns.get(toAnnotationColumnIndex(columnIndex));
-            return rowList.get(rowIndex).getAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
+            return rowList.get(rowIndex).getTextAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         }
     }
 
@@ -339,7 +323,7 @@ public class JIPipeDataTableMetadata implements TableModel {
         int outputRow = 0;
         for (JIPipeDataTableMetadataRow row : getRowList()) {
             output.addRow();
-            for (JIPipeTextAnnotation annotation : row.getAnnotations()) {
+            for (JIPipeTextAnnotation annotation : row.getTextAnnotations()) {
                 if (annotation != null) {
                     int col = output.addAnnotationColumn(annotation.getName());
                     output.setValueAt(annotation.getValue(), outputRow, col);
@@ -350,4 +334,158 @@ public class JIPipeDataTableMetadata implements TableModel {
         return output;
     }
 
+    @Override
+    public int size() {
+        return rowList.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return rowList.isEmpty();
+    }
+
+    @Override
+    public boolean contains(Object o) {
+        return rowList.contains(o);
+    }
+
+    @NotNull
+    @Override
+    public Iterator<JIPipeDataTableMetadataRow> iterator() {
+        return rowList.iterator();
+    }
+
+    @NotNull
+    @Override
+    public Object[] toArray() {
+        return rowList.toArray();
+    }
+
+    @NotNull
+    @Override
+    public <T> T[] toArray(@NotNull T[] a) {
+        return rowList.toArray(a);
+    }
+
+    @Override
+    public boolean add(JIPipeDataTableMetadataRow row) {
+        rowList.add(row);
+        dataAnnotationColumns = null;
+        annotationColumns = null;
+        return true;
+    }
+
+    @Override
+    public boolean remove(Object o) {
+        if(rowList.remove(o)) {
+            dataAnnotationColumns = null;
+            annotationColumns = null;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean containsAll(@NotNull Collection<?> c) {
+        return rowList.containsAll(c);
+    }
+
+    @Override
+    public boolean addAll(@NotNull Collection<? extends JIPipeDataTableMetadataRow> c) {
+        rowList.addAll(c);
+        dataAnnotationColumns = null;
+        annotationColumns = null;
+        return true;
+    }
+
+    @Override
+    public boolean addAll(int index, @NotNull Collection<? extends JIPipeDataTableMetadataRow> c) {
+        rowList.addAll(index, c);
+        dataAnnotationColumns = null;
+        annotationColumns = null;
+        return true;
+    }
+
+    @Override
+    public boolean removeAll(@NotNull Collection<?> c) {
+        if(rowList.removeAll(c)) {
+            dataAnnotationColumns = null;
+            annotationColumns = null;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean retainAll(@NotNull Collection<?> c) {
+        if(rowList.retainAll(c)) {
+            dataAnnotationColumns = null;
+            annotationColumns = null;
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void clear() {
+        rowList.clear();
+        dataAnnotationColumns = null;
+        annotationColumns = null;
+    }
+
+    @Override
+    public JIPipeDataTableMetadataRow get(int index) {
+        return rowList.get(index);
+    }
+
+    @Override
+    public JIPipeDataTableMetadataRow set(int index, JIPipeDataTableMetadataRow element) {
+        JIPipeDataTableMetadataRow result = rowList.set(index, element);
+        dataAnnotationColumns = null;
+        annotationColumns = null;
+        return result;
+    }
+
+    @Override
+    public void add(int index, JIPipeDataTableMetadataRow element) {
+        rowList.add(index, element);
+        dataAnnotationColumns = null;
+        annotationColumns = null;
+    }
+
+    @Override
+    public JIPipeDataTableMetadataRow remove(int index) {
+        JIPipeDataTableMetadataRow result = rowList.remove(index);
+        dataAnnotationColumns = null;
+        annotationColumns = null;
+        return result;
+    }
+
+    @Override
+    public int indexOf(Object o) {
+        return rowList.indexOf(o);
+    }
+
+    @Override
+    public int lastIndexOf(Object o) {
+        return 0;
+    }
+
+    @NotNull
+    @Override
+    public ListIterator<JIPipeDataTableMetadataRow> listIterator() {
+        return rowList.listIterator();
+    }
+
+    @NotNull
+    @Override
+    public ListIterator<JIPipeDataTableMetadataRow> listIterator(int index) {
+        return rowList.listIterator(index);
+    }
+
+    @NotNull
+    @Override
+    public List<JIPipeDataTableMetadataRow> subList(int fromIndex, int toIndex) {
+        return rowList.subList(fromIndex, toIndex);
+    }
 }

@@ -49,6 +49,7 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
 
@@ -166,7 +167,7 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
         exportAsCsvItem.addActionListener(e -> exportAsCSV());
         exportMenu.add(exportAsCsvItem);
 
-        JMenuItem exportStandardizedSlotItem = new JMenuItem("Data as JIPipe slot output", UIUtils.getIconFromResources("apps/jipipe.png"));
+        JMenuItem exportStandardizedSlotItem = new JMenuItem("Data as JIPipe data table", UIUtils.getIconFromResources("apps/jipipe.png"));
         exportStandardizedSlotItem.addActionListener(e -> exportAsJIPipeSlot());
         exportMenu.add(exportStandardizedSlotItem);
 
@@ -223,9 +224,22 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
     }
 
     private void exportAsJIPipeSlot() {
-        Path path = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export data as JIPipe output slot");
-        if (path != null) {
-            JIPipeDataTableToOutputExporterRun run = new JIPipeDataTableToOutputExporterRun(getWorkbench(), path, Collections.singletonList(dataTable), false);
+        Path directory = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table");
+        if (directory != null) {
+            try {
+                if (Files.isDirectory(directory) && Files.list(directory).findAny().isPresent()) {
+                    if (JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " is not empty. The contents will be deleted before writing the outputs. " +
+                            "Continue anyways?", "Export as JIPipe data table", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+                        return;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            JIPipeDataTableToOutputExporterRun run = new JIPipeDataTableToOutputExporterRun(getWorkbench(),
+                    directory,
+                    Collections.singletonList(dataTable),
+                    false,
+                    true);
             JIPipeRunnerQueue.getInstance().enqueue(run);
         }
     }

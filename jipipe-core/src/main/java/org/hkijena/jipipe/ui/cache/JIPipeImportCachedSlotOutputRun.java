@@ -103,7 +103,7 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
         for (JIPipeDataTableMetadataRow row : exportedDataTable.getRowList()) {
             slotProgressInfo.log("Importing data row " + row.getIndex());
             Path storageFolder = dataFolder.resolve("" + row.getIndex());
-            List<JIPipeTextAnnotation> annotationList = row.getAnnotations();
+            List<JIPipeTextAnnotation> annotationList = row.getTextAnnotations();
             JIPipeDataInfo trueDataType = exportedDataTable.getDataTypeOf(row.getIndex());
             JIPipeData data = JIPipe.importData(storageFolder, trueDataType.getDataClass(), progressInfo);
             tempSlot.addData(data, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, slotProgressInfo);

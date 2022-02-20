@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class JIPipeDataTableMetadataRow {
     private int index;
-    private List<JIPipeTextAnnotation> annotations = new ArrayList<>();
+    private List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>();
     private List<JIPipeExportedDataAnnotation> dataAnnotations = new ArrayList<>();
     private String trueDataType;
 
@@ -43,19 +43,19 @@ public class JIPipeDataTableMetadataRow {
     /**
      * @return Annotations
      */
-    @JsonGetter("annotations")
-    public List<JIPipeTextAnnotation> getAnnotations() {
-        return annotations;
+    @JsonGetter("text-annotations")
+    public List<JIPipeTextAnnotation> getTextAnnotations() {
+        return textAnnotations;
     }
 
     /**
      * Sets annotations
      *
-     * @param annotations List of annotations
+     * @param textAnnotations List of annotations
      */
-    @JsonSetter("annotations")
-    public void setAnnotations(List<JIPipeTextAnnotation> annotations) {
-        this.annotations = annotations;
+    @JsonSetter("text-annotations")
+    public void setTextAnnotations(List<JIPipeTextAnnotation> textAnnotations) {
+        this.textAnnotations = textAnnotations;
     }
 
     @JsonGetter("data-annotations")
@@ -75,7 +75,17 @@ public class JIPipeDataTableMetadataRow {
      */
     @JsonSetter("traits")
     public void setTraits(List<JIPipeTextAnnotation> annotations) {
-        this.annotations = annotations;
+        this.textAnnotations = annotations;
+    }
+
+    /**
+     * Compatibility function to allow reading tables in an older format
+     *
+     * @param annotations List of annotations
+     */
+    @JsonSetter("annotations")
+    public void setAnnotations(List<JIPipeTextAnnotation> annotations) {
+        this.textAnnotations = annotations;
     }
 
     @JsonGetter("true-data-type")

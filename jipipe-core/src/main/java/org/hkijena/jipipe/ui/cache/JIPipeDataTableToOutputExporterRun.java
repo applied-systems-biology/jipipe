@@ -25,10 +25,12 @@ import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
@@ -40,19 +42,22 @@ public class JIPipeDataTableToOutputExporterRun extends JIPipeWorkbenchPanel imp
     private final Path outputPath;
     private final List<? extends JIPipeDataTable> dataTables;
     private final boolean splitBySlot;
+    private final boolean clearDirectory;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     /**
-     * @param workbench   the workbench
-     * @param outputPath  the output folder
-     * @param dataTables       the slots to save
-     * @param splitBySlot if slots should be split
+     * @param workbench      the workbench
+     * @param outputPath     the output folder
+     * @param dataTables     the slots to save
+     * @param splitBySlot    if slots should be split
+     * @param clearDirectory if the directory contents should be cleared
      */
-    public JIPipeDataTableToOutputExporterRun(JIPipeWorkbench workbench, Path outputPath, List<? extends JIPipeDataTable> dataTables, boolean splitBySlot) {
+    public JIPipeDataTableToOutputExporterRun(JIPipeWorkbench workbench, Path outputPath, List<? extends JIPipeDataTable> dataTables, boolean splitBySlot, boolean clearDirectory) {
         super(workbench);
         this.outputPath = outputPath;
         this.dataTables = dataTables;
         this.splitBySlot = splitBySlot;
+        this.clearDirectory = clearDirectory;
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
@@ -60,6 +65,20 @@ public class JIPipeDataTableToOutputExporterRun extends JIPipeWorkbenchPanel imp
     public void run() {
         Set<String> existing = new HashSet<>();
         progressInfo.setMaxProgress(dataTables.size());
+
+        if (clearDirectory) {
+            try {
+                if (Files.isDirectory(outputPath) && Files.list(outputPath).findAny().isPresent()) {
+                    if (Files.isDirectory(outputPath)) {
+                        PathUtils.deleteDirectoryRecursively(outputPath, getProgressInfo().resolve("Delete existing files"));
+                    }
+                    Files.createDirectories(outputPath);
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         for (int i = 0; i < dataTables.size(); i++) {
             progressInfo.setProgress(i);
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Slot", i, dataTables.size());

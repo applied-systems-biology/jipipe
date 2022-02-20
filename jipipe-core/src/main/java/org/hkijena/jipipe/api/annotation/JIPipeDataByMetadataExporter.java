@@ -427,7 +427,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
                     metadataStringBuilder.append(appendDataTypeMetadataKey).append(equalsString);
                 metadataStringBuilder.append(dataTypeName);
             }
-            for (JIPipeTextAnnotation metadataValue : dataRow.getAnnotations()) {
+            for (JIPipeTextAnnotation metadataValue : dataRow.getTextAnnotations()) {
                 if (metadataValue.getValue().length() > metadataValueLengthLimit)
                     continue;
                 if (!metadataKeyFilter.test(metadataValue.getName()))
@@ -440,7 +440,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             }
         } else {
             ExpressionVariables parameters = new ExpressionVariables();
-            for (JIPipeTextAnnotation annotation : dataRow.getAnnotations()) {
+            for (JIPipeTextAnnotation annotation : dataRow.getTextAnnotations()) {
                 parameters.put(annotation.getName(), annotation.getValue());
             }
 

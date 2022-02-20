@@ -93,7 +93,7 @@ public class JIPipeMergingDataBatchBuilder {
                     continue;
                 int targetRow = entry.getValue().iterator().next();
                 singleBatch.setInputData(entry.getKey(), targetRow);
-                singleBatch.setMergedAnnotations(batch.getMergedAnnotations());
+                singleBatch.setMergedTextAnnotations(batch.getMergedAnnotations());
                 singleBatch.setMergedDataAnnotations(batch.getMergedDataAnnotations());
             }
             result.add(singleBatch);

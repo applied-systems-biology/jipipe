@@ -163,7 +163,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
             return rowList.get(rowIndex).getDataAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         } else {
             String annotationColumn = annotationColumns.get(toAnnotationColumnIndex(columnIndex));
-            return rowList.get(rowIndex).getAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
+            return rowList.get(rowIndex).getTextAnnotations().stream().filter(t -> t.nameEquals(annotationColumn)).findFirst().orElse(null);
         }
     }
 

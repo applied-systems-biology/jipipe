@@ -597,50 +597,77 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param saveProgress save progress
      */
     public void save(Path storagePath, JIPipeProgressInfo saveProgress) {
+        JIPipeDataTableMetadata dataTableMetadata = new JIPipeDataTableMetadata();
+        dataTableMetadata.setAcceptedDataTypeId(JIPipe.getDataTypes().getIdOf(getAcceptedDataType()));
+
+        // We need to create unique and filesystem-safe mappings for data annotation column names
+        Map<String, String> dataAnnotationColumnNameMapping = new HashMap<>();
+        for (String dataAnnotationColumn : getDataAnnotationColumns()) {
+            String mappedName = StringUtils.makeUniqueString(StringUtils.makeFilesystemCompatible(dataAnnotationColumn),
+                    "_",
+                    dataAnnotationColumnNameMapping.values());
+            dataAnnotationColumnNameMapping.put(dataAnnotationColumn, mappedName);
+        }
+
         // Save data
         for (int row = 0; row < getRowCount(); ++row) {
+            JIPipeDataTableMetadataRow rowMetadata = new JIPipeDataTableMetadataRow();
+            rowMetadata.setIndex(row);
+            rowMetadata.setTrueDataType(JIPipe.getDataTypes().getIdOf(getVirtualData(row).getDataClass()));
+            rowMetadata.setTextAnnotations(getTextAnnotations(row));
             JIPipeProgressInfo rowProgress = saveProgress.resolveAndLog("Row", row, getRowCount());
-            Path path = storagePath.resolve("" + row);
-            if (!Files.isDirectory(path)) {
-                try {
-                    Files.createDirectories(path);
-                } catch (IOException e) {
-                    throw new UserFriendlyRuntimeException(e, "Unable to create directory '" + path + "'!",
-                            "Data slot '" + getDisplayName() + "'", "The path might be invalid, or you might not have the permissions to write in a parent folder.",
-                            "Check if the path is valid, and you have write-access.");
-                }
+            saveDataRow(storagePath, row, rowProgress);
+            for (JIPipeDataAnnotation dataAnnotation : getDataAnnotations(row)) {
+                JIPipeProgressInfo dataAnnotationProgress = rowProgress.resolveAndLog("Data annotation '" + dataAnnotation.getName() + "'");
+                Path dataAnnotationStore = saveDataAnnotationRow(storagePath, dataAnnotationProgress, row, rowProgress, dataAnnotation, dataAnnotationColumnNameMapping);
+                dataAnnotationStore = storagePath.relativize(dataAnnotationStore);
+                JIPipeExportedDataAnnotation dataAnnotationMetadata = new JIPipeExportedDataAnnotation(dataAnnotation.getName(),
+                        dataAnnotationStore,
+                        JIPipe.getDataTypes().getIdOf(dataAnnotation.getDataClass()),
+                        rowMetadata);
+                rowMetadata.getDataAnnotations().add(dataAnnotationMetadata);
             }
-            data.get(row).getData(saveProgress.resolve("Load virtual data")).saveTo(path, "data", false, rowProgress);
+            dataTableMetadata.add(rowMetadata);
         }
 
-        // Save data annotations via dummy slots
-        List<String> dataAnnotationColumns = getDataAnnotationColumns();
-        for (int i = 0; i < dataAnnotationColumns.size(); i++) {
-            JIPipeProgressInfo dataAnnotationProgress = saveProgress.resolveAndLog("Data annotation", i, dataAnnotationColumns.size());
-            String dataAnnotationColumn = dataAnnotationColumns.get(i);
-            JIPipeDataTable dummy = new JIPipeDataTable(JIPipeData.class);
-            for (int row = 0; row < getRowCount(); row++) {
-                JIPipeData dataAnnotation = getDataAnnotation(row, dataAnnotationColumn).getData(JIPipeData.class, dataAnnotationProgress);
-                if (dataAnnotation != null) {
-                    dummy.addData(dataAnnotation, dataAnnotationProgress);
-                } else {
-                    dummy.addData(new JIPipeEmptyData(), dataAnnotationProgress);
-                }
-            }
-
-            Path dataAnnotationStoragePath = storagePath.resolve("_" + i);
-            dummy.save(dataAnnotationStoragePath, dataAnnotationProgress);
-        }
-
-        JIPipeDataTableMetadata dataTable = new JIPipeDataTableMetadata(this);
         try {
-            dataTable.saveAsJson(storagePath.resolve("data-table.json"));
-            dataTable.saveAsCSV(storagePath.resolve("data-table.csv"));
+            dataTableMetadata.saveAsJson(storagePath.resolve("data-table.json"));
+            dataTableMetadata.saveAsCSV(storagePath.resolve("data-table.csv"));
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to save data table!",
                     "Data slot '" + getDisplayName() + "'", "JIPipe tried to write files into '" + storagePath + "'.",
                     "Check if you have permissions to write into the path, and if there is enough disk space.");
         }
+    }
+
+    private Path saveDataAnnotationRow(Path storagePath, JIPipeProgressInfo saveProgress, int row, JIPipeProgressInfo rowProgress, JIPipeDataAnnotation dataAnnotation, Map<String, String> dataAnnotationColumnNameMapping) {
+        Path dataAnnotationsStore = storagePath.resolve("data-annotations").resolve("" + row).resolve(dataAnnotationColumnNameMapping.get(dataAnnotation.getName()));
+        try {
+            Files.createDirectories(dataAnnotationsStore);
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Unable to create directory '" + dataAnnotationsStore + "'!",
+                    "Data slot '" + getDisplayName() + "'", "The path might be invalid, or you might not have the permissions to write in a parent folder.",
+                    "Check if the path is valid, and you have write-access.");
+        }
+        dataAnnotation.getData(JIPipeData.class, saveProgress.resolve("Load virtual data")).saveTo(dataAnnotationsStore,
+                dataAnnotationColumnNameMapping.get(dataAnnotation.getName()),
+                false,
+                rowProgress);
+        return dataAnnotationsStore;
+    }
+
+    private void saveDataRow(Path storagePath, int row, JIPipeProgressInfo rowProgress) {
+        Path path = storagePath.resolve("" + row);
+        if (!Files.isDirectory(path)) {
+            try {
+                Files.createDirectories(path);
+            } catch (IOException e) {
+                throw new UserFriendlyRuntimeException(e, "Unable to create directory '" + path + "'!",
+                        "Data slot '" + getDisplayName() + "'", "The path might be invalid, or you might not have the permissions to write in a parent folder.",
+                        "Check if the path is valid, and you have write-access.");
+            }
+        }
+        data.get(row).getData(rowProgress.resolve("Load virtual data")).saveTo(path, "data", false, rowProgress);
     }
 
     /**
@@ -874,7 +901,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             Path rowStorage = storagePath.resolve("" + row.getIndex());
             Class<? extends JIPipeData> rowDataType = JIPipe.getDataTypes().getById(row.getTrueDataType());
             JIPipeData data = JIPipe.importData(rowStorage, rowDataType, rowProgress);
-            slot.addData(data, row.getAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, rowProgress);
+            slot.addData(data, row.getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, rowProgress);
 
             for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
                 Path dataAnnotationRowStorage = storagePath.resolve(dataAnnotation.getRowStorageFolder());

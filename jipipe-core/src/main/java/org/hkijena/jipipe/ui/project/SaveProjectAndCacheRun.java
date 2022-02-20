@@ -91,7 +91,7 @@ public class SaveProjectAndCacheRun implements JIPipeRunnable {
             }
 
             JIPipeDataTableToOutputExporterRun run = new JIPipeDataTableToOutputExporterRun(workbench, nodeDir,
-                    new ArrayList<>(cache.values()), true);
+                    new ArrayList<>(cache.values()), true, false);
             run.setProgressInfo(nodeProgress);
             run.run();
         }

@@ -237,7 +237,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
                 e.printStackTrace();
             }
             JIPipeDataTableToOutputExporterRun run = new JIPipeDataTableToOutputExporterRun(getWorkbench(), outputFolder,
-                    new ArrayList<>(stateMap.get(exportedState).values()), true);
+                    new ArrayList<>(stateMap.get(exportedState).values()), true, false);
             JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), run);
         }
     }
