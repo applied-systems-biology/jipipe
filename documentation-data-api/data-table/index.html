@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-02-19T23:33:25 CET">
+<meta name="revised" content="2022-02-20T20:40:26 CET">
 <title>Data table :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -653,6 +653,13 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-types/" class="dd-item">
+        <div>
+          <a href="../../documentation-data-api/data-types/">
+            Data types
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
       <li data-nav-id="https://www.jipipe.org/documentation-data-api/pipeline-output/" class="dd-item">
         <div>
           <a href="../../documentation-data-api/pipeline-output/">
@@ -700,6 +707,7 @@
    Data API documentation</option> 
       <option value="/documentation-data-api/data-table/"  selected>- Data table</option>
       <option value="/documentation-data-api/row-folder/" >- Row folder</option>
+      <option value="/documentation-data-api/data-types/" >- Data types</option>
       <option value="/documentation-data-api/pipeline-output/" >- Pipeline output</option>
   
     <option value="/citation/" >
@@ -748,12 +756,12 @@ following parts:</p>
 <td>Metadata file for this data table.</td>
 </tr>
 <tr>
-<td>Data row directories</td>
-<td>Names have following RegEx format: <code>\\d+</code> (e.g., <code>0</code>, <code>1</code>, <code>52</code>). Number corresponds to the row in the data table. <strong>The numeric folders are also referred as &ldquo;Row folders&rdquo;</strong>. Please visit the <a href="../../documentation-data-api/row-folder">row folder documentation</a> for more info.</td>
+<td><code>&lt;data row index&gt;</code></td>
+<td>Stores the main <a href="../../documentation-data-api/row-folder">data</a> for this row. Names have following RegEx format: <code>\\d+</code> (e.g., <code>0</code>, <code>1</code>, <code>52</code>). Number corresponds to the row in the data table.</td>
 </tr>
 <tr>
-<td>Data annotation column contents</td>
-<td>Used to store data annotation <a href="../../documentation-data-api/row-folder">row folders</a>.<br/> <strong>Info:</strong> No standardized naming or content. To comply to the standard, you can store row folders anywhere relative to the data table directory. <br/><strong>Suggested structure (Implemented in JIPipe):</strong> Names are generated with following format: <code>_\\d+</code> (e.g., <code>_0</code>, <code>_1</code>, <code>_120</code>) to prevent collisions with data row folders. Each directory contains a data table that stores the whole column of data annotations.</td>
+<td><code>data-annotations/&lt;data row index&gt;/&lt;data annotation column name&gt;</code></td>
+<td>Used to store the data annotation <code>&lt;data annotation column name&gt;</code> for the table row <code>&lt;data row index&gt;</code>. <code>&lt;data annotation column name&gt;</code> directories contain <a href="../../documentation-data-api/row-folder">data</a> standard. <strong>Please note that data annotation names are not necessarily file system compatible. Use string manipulation methods to generate approximations if required!</strong></td>
 </tr>
 </tbody>
 </table>
@@ -770,6 +778,16 @@ Root --> R2["2/"];
 R0 --> R0Img["data.tif"];
 R1 --> R1Img["data.tif"];
 R2 --> R2Img["data.tif"];
+Root --> DataAnnotations["data-annotations"];
+DataAnnotations --> DR0["0/"];
+DataAnnotations --> DR1["1/"];
+DataAnnotations --> DR2["2/"];
+DR0 --> Label0["Label"];
+DR1 --> Label1["Label"];
+DR2 --> Label2["Label"];
+Label0 --> Label0Img["data.tif"];
+Label1 --> Label1Img["data.tif"];
+Label2 --> Label2Img["data.tif"];
 </div>
 <h1 id="data-tablejson">data-table.json</h1>
 <p>Here you will find the structure of the <code>data-table.json</code> file. You also can access

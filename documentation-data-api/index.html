@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-02-19T23:33:25 CET">
+<meta name="revised" content="2022-02-20T20:40:26 CET">
 <title>Data API documentation :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
 <link href="../css/font-awesome.min.css" rel="stylesheet">
@@ -653,6 +653,13 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-types/" class="dd-item">
+        <div>
+          <a href="../documentation-data-api/data-types/">
+            Data types
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
       <li data-nav-id="https://www.jipipe.org/documentation-data-api/pipeline-output/" class="dd-item">
         <div>
           <a href="../documentation-data-api/pipeline-output/">
@@ -700,6 +707,7 @@
    Data API documentation</option> 
       <option value="/documentation-data-api/data-table/" >- Data table</option>
       <option value="/documentation-data-api/row-folder/" >- Row folder</option>
+      <option value="/documentation-data-api/data-types/" >- Data types</option>
       <option value="/documentation-data-api/pipeline-output/" >- Pipeline output</option>
   
     <option value="/citation/" >
@@ -747,7 +755,7 @@ hierarchy. The specifications of this format are explained in this page / sub-pa
 <li>Exported cache</li>
 </ul>
 <p>Additionally, the data API incorporates elements from the JSON API to store metadata.</p>
-<p>The following graph gives an overview how these relate to tech other.</p>
+<p>The following graph gives an overview how these relate to tech other:</p>
 <link href="../mermaid/mermaid.css" type="text/css" rel="stylesheet"/>
 <script defer src="../mermaid/mermaid.js">mermaid.initialize({startOnLoad:true});</script>
 <div class="mermaid" align="left" >
@@ -756,6 +764,7 @@ DataTable["Data table"] --> DataTableRow["Data table row"];
 PipelineOutput["Pipeline output"] --> DataTable;
 ExportedCache["Exported cache"] --> DataTable;
 </div>
+<p>The smallest unit is the <em>data table row</em>. It stores the files of a data type in its own standardized way. Please use the</p>
 <h1 id="detailed-descriptions">Detailed descriptions</h1>
 <p>You will find detailed descriptions on the other pages.</p>
 <ul class="children children-li">
@@ -766,6 +775,10 @@ ExportedCache["Exported cache"] --> DataTable;
 <p><span><li>
 <a href="../documentation-data-api/row-folder/" >Row folder</a></li></p>
 <p>Data storage of a JIPipe data type in the file system</p>
+</span>
+<p><span><li>
+<a href="../documentation-data-api/data-types/" >Data types</a></li></p>
+<p>Current list of data types available in JIPipe</p>
 </span>
 <p><span><li>
 <a href="../documentation-data-api/pipeline-output/" >Pipeline output</a></li></p>

@@ -300,7 +300,7 @@ The UI has two main components:</description>
       <guid>https://www.jipipe.org/documentation-data-api/row-folder/</guid>
       <description>All data in a data table are stored in numeric folders called &amp;ldquo;row folders&amp;rdquo;, each containing the data of one table row.
 This data stores the raw serialized format, without metadata - metadata is located in data-table.json of the data table.
-The exact structure of a row folder depends on the data type and is documented in (?) &amp;gt; Data type compendium within JIPipe. Here we will provide you a list of the most important row folder structures supported by JIPipe.</description>
+The exact structure of a row folder depends on the data type. The current documentation can always be found by navigating to Help &amp;gt; Data type compendium within JIPipe. Alternatively, we uploaded a current database on this website.</description>
     </item>
     
     <item>
@@ -348,6 +348,18 @@ By default, there are four data types that can be used as input and output:</des
       
       <guid>https://www.jipipe.org/tutorials/guide-batch-processing/</guid>
       <description></description>
+    </item>
+    
+    <item>
+      <title>Data types</title>
+      <link>https://www.jipipe.org/documentation-data-api/data-types/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation-data-api/data-types/</guid>
+      <description>2D FFT Image Trivial conversions A trivial conversion involves no potentially expensive conversion operation. The data will directly match to input slots of the converted type. The edge has a dark-gray color.
+This type can be trivially converted into following types:
+Data FFT Image Image  This type can be trivially converted from following types:
+3D FFT Image 4D FFT Image 5D FFT Image  Non-trivial conversions A non-trivial conversion is defined by the developer and might involve some more complex conversion operations.</description>
     </item>
     
     <item>
@@ -402,17 +414,6 @@ To define parameters, use the algorithms found in Add data &amp;gt; Parameters. 
 Parameters are automatically serialized and deserialized.
 Please make sure to send an event when the parameter is set, so the UI can update.
 // ... see previous tutorials public class MyAlgorithm extends JIPipeIteratingAlgorithm { private float roundness = 0.</description>
-    </item>
-    
-    <item>
-      <title>Pipeline output</title>
-      <link>https://www.jipipe.org/documentation-data-api/pipeline-output/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/documentation-data-api/pipeline-output/</guid>
-      <description>A pipeline output folder is generated on running a pipeline using the Run function or via other means of running the pipeline and saving the results to the hard drive.
-The generated folder follows a hierarchical structure that is based on the location of data within graph compartments, nodes, and slots. It also contains a copy of the project that generated the data in a file project.jip.
-mermaid.initialize({startOnLoad:true}); graph LR; Root[&#34;</description>
     </item>
     
     <item>
@@ -485,6 +486,17 @@ We recommend to use the algorithms in Annotation &amp;gt; Generate while setting
       <guid>https://www.jipipe.org/documentation-json-api/graph/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph.schema.json
 A graphadditional-metadata:object[object Object]Dict of additional metadataSee additional-metadatanodes:object[object Object]The nodes. Keys are the UUIDs.See graph-nodeedges:object[]The edges.</description>
+    </item>
+    
+    <item>
+      <title>Pipeline output</title>
+      <link>https://www.jipipe.org/documentation-data-api/pipeline-output/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation-data-api/pipeline-output/</guid>
+      <description>A pipeline output folder is generated on running a pipeline using the Run function or via other means of running the pipeline and saving the results to the hard drive.
+The generated folder follows a hierarchical structure that is based on the location of data within graph compartments, nodes, and slots. It also contains a copy of the project that generated the data in a file project.jip.
+mermaid.initialize({startOnLoad:true}); graph LR; Root[&#34;</description>
     </item>
     
     <item>

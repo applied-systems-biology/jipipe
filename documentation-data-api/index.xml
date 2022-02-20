@@ -25,7 +25,19 @@ A data table is located in a directory within the file system and contains follo
       <guid>https://www.jipipe.org/documentation-data-api/row-folder/</guid>
       <description>All data in a data table are stored in numeric folders called &amp;ldquo;row folders&amp;rdquo;, each containing the data of one table row.
 This data stores the raw serialized format, without metadata - metadata is located in data-table.json of the data table.
-The exact structure of a row folder depends on the data type and is documented in (?) &amp;gt; Data type compendium within JIPipe. Here we will provide you a list of the most important row folder structures supported by JIPipe.</description>
+The exact structure of a row folder depends on the data type. The current documentation can always be found by navigating to Help &amp;gt; Data type compendium within JIPipe. Alternatively, we uploaded a current database on this website.</description>
+    </item>
+    
+    <item>
+      <title>Data types</title>
+      <link>https://www.jipipe.org/documentation-data-api/data-types/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation-data-api/data-types/</guid>
+      <description>2D FFT Image Trivial conversions A trivial conversion involves no potentially expensive conversion operation. The data will directly match to input slots of the converted type. The edge has a dark-gray color.
+This type can be trivially converted into following types:
+Data FFT Image Image  This type can be trivially converted from following types:
+3D FFT Image 4D FFT Image 5D FFT Image  Non-trivial conversions A non-trivial conversion is defined by the developer and might involve some more complex conversion operations.</description>
     </item>
     
     <item>

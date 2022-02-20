@@ -171,6 +171,10 @@
   </url>
   
   <url>
+    <loc>https://www.jipipe.org/documentation-data-api/data-types/</loc>
+  </url>
+  
+  <url>
     <loc>https://www.jipipe.org/documentation-json-api/dependency/</loc>
   </url>
   
@@ -192,10 +196,6 @@
   
   <url>
     <loc>https://www.jipipe.org/documentation-java-api/algorithm/parameters/</loc>
-  </url>
-  
-  <url>
-    <loc>https://www.jipipe.org/documentation-data-api/pipeline-output/</loc>
   </url>
   
   <url>
@@ -236,6 +236,10 @@
   
   <url>
     <loc>https://www.jipipe.org/documentation-json-api/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/documentation-data-api/pipeline-output/</loc>
   </url>
   
   <url>

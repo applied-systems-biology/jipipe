@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-02-19T23:33:25 CET">
+<meta name="revised" content="2022-02-20T20:40:26 CET">
 <title>Row folder :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -653,6 +653,13 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-types/" class="dd-item">
+        <div>
+          <a href="../../documentation-data-api/data-types/">
+            Data types
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
       <li data-nav-id="https://www.jipipe.org/documentation-data-api/pipeline-output/" class="dd-item">
         <div>
           <a href="../../documentation-data-api/pipeline-output/">
@@ -700,6 +707,7 @@
    Data API documentation</option> 
       <option value="/documentation-data-api/data-table/" >- Data table</option>
       <option value="/documentation-data-api/row-folder/"  selected>- Row folder</option>
+      <option value="/documentation-data-api/data-types/" >- Data types</option>
       <option value="/documentation-data-api/pipeline-output/" >- Pipeline output</option>
   
     <option value="/citation/" >
@@ -734,133 +742,8 @@
 folders called &ldquo;row folders&rdquo;, each containing the data of one table row.</p>
 <p>This data stores the <strong>raw serialized format</strong>, without metadata - metadata is located
 in <code>data-table.json</code> of the data table.</p>
-<p>The exact structure of a row folder depends on the data type and is documented in
-<code>(?) &gt; Data type compendium</code> within JIPipe. Here we will provide you a list of the most important
-row folder structures supported by JIPipe.</p>
-<p>Not all data types save data: For example structural data like &ldquo;Zero table&rdquo; column
-contain all necessary info in their type. There are also data types that are not instantiatable
-and therefore are never saved. Always refer to the <code>true-data-type</code> property that
-you can find within the data table.</p>
-<table>
-<tr>
-  <td><b>Data type</b></td>
-  <td><b>Data type ID(s)</b></td>
-  <td><b>Row folder structure</b></td>
-</tr>
-<tr>
-  <td>All ImageJ images (except FFT)</td>
-  <td>
-    <ul>
-    <li>imagej-imgplus</li>
-<li>imagej-imgplus-greyscale</li>
-<li>imagej-imgplus-greyscale-8u</li>
-<li>imagej-imgplus-greyscale-mask</li>
-<li>imagej-imgplus-greyscale-16u</li>
-<li>imagej-imgplus-greyscale-32fu</li>
-<li>imagej-imgplus-color</li>
-<li>imagej-imgplus-color-rgb</li>
-<li>imagej-imgplus-color-hsb</li>
-<li>imagej-imgplus-color-lab</li>
-<li>imagej-imgplus-2d</li>
-<li>imagej-imgplus-2d-greyscale</li>
-<li>imagej-imgplus-2d-greyscale-8u</li>
-<li>imagej-imgplus-2d-greyscale-mask</li>
-<li>imagej-imgplus-2d-greyscale-16u</li>
-<li>imagej-imgplus-2d-greyscale-32fu</li>
-<li>imagej-imgplus-2d-color</li>
-<li>imagej-imgplus-2d-color-rgb</li>
-<li>imagej-imgplus-2d-color-hsb</li>
-<li>imagej-imgplus-2d-color-lab</li>
-<li>imagej-imgplus-3d</li>
-<li>imagej-imgplus-3d-greyscale</li>
-<li>imagej-imgplus-3d-greyscale-8u</li>
-<li>imagej-imgplus-3d-greyscale-mask</li>
-<li>imagej-imgplus-3d-greyscale-16u</li>
-<li>imagej-imgplus-3d-greyscale-32fu</li>
-<li>imagej-imgplus-3d-color</li>
-<li>imagej-imgplus-3d-color-rgb</li>
-<li>imagej-imgplus-3d-color-hsb</li>
-<li>imagej-imgplus-3d-color-lab</li>
-<li>imagej-imgplus-4d</li>
-<li>imagej-imgplus-4d-greyscale</li>
-<li>imagej-imgplus-4d-greyscale-8u</li>
-<li>imagej-imgplus-4d-greyscale-mask</li>
-<li>imagej-imgplus-4d-greyscale-16u</li>
-<li>imagej-imgplus-4d-greyscale-32fu</li>
-<li>imagej-imgplus-4d-color</li>
-<li>imagej-imgplus-4d-color-rgb</li>
-<li>imagej-imgplus-4d-color-hsb</li>
-<li>imagej-imgplus-4d-color-lab</li>
-<li>imagej-imgplus-5d</li>
-<li>imagej-imgplus-5d-greyscale</li>
-<li>imagej-imgplus-5d-greyscale-8u</li>
-<li>imagej-imgplus-5d-greyscale-mask</li>
-<li>imagej-imgplus-5d-greyscale-16u</li>
-<li>imagej-imgplus-5d-greyscale-32fu</li>
-<li>imagej-imgplus-5d-color</li>
-<li>imagej-imgplus-5d-color-rgb</li>
-<li>imagej-imgplus-5d-color-hsb</li>
-<li>imagej-imgplus-5d-color-lab</li>
-    </ul>
-  </td>
-  <td>Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpeg, *.png. We recommend the usage of TIFF.</td>
-</tr>
-<tr>
-  <td>ImageJ FFT images</td>
-  <td>
-    <ul>
-      <li>imagej-imgplus-fft</li>
-      <li>imagej-imgplus-fft-2d</li>
-      <li>imagej-imgplus-fft-3d</li>
-      <li>imagej-imgplus-fft-4d</li>
-      <li>imagej-imgplus-fft-5d</li>
-    </ul>
-    Info: Dimensions greater than 2 are currently experimental due to limitations in ImageJ.
-  </td>
-  <td>
-    Contains two image files: fht.ome.tif / fht.tif and power_spectrum.ome.tif / power_spectrum.tif, as well as a file fht_info.json. Either the OME TIFF or TIFF must be present. fht.ome.tif / fht.tif contains the FHT (float32). power_spectrum.ome.tif / power_spectrum.tif contains the power spectrum (float32). fht_info.json contains a JSON object that defines following properties: quadrant-swap-needed (boolean), original-width (integer), original-height (integer), original-bit-depth (integer; 8, 16, or 32 are valid values), power-spectrum-mean (double).
-  </td>
-</tr>
-<tr>
-  <td>OME Image</td>
-  <td>imagej-ome</td>
-  <td>Contains one or multiple files in *.tif or *.ome.tif format. If OME TIFF is used, multiple tiff files can be present (due to the ability of OME TIFF to link them together). Although, we do recommend having multiple files, as sometimes OME TIFF can store absolute paths. If only standard TIFF files are present, only one will be loaded.</td>
-</tr>
-<tr>
-  <td>Tables and table columns</td>
-  <td>
-    <ul>
-      <li>imagej-results-table</li>
-      <li>annotation-table</li>
-      <li>table-column-string</li>
-      <li>table-column-numeric</li>
-    </ul>
-  </td>
-  <td>Contains a single *.csv file that contains the table data.</td>
-</tr>
-<tr>
-  <td>Plots</td>
-  <td>
-    <ul>
-      <li>plot-pie-2d</li>
-      <li>plot-pie-3d</li>
-      <li>plot-category-bar</li>
-      <li>plot-box-and-whisker</li>
-      <li>plot-histogram</li>
-      <li>plot-category-line</li>
-      <li>plot-category-bar-stacked</li>
-      <li>plot-category-statistical-bar</li>
-      <li>plot-category-statistical-line</li>
-      <li>plot-xy-line</li>
-      <li>plot-xy-scatter</li>
-    </ul>
-  </td>
-  <td>
-    plot-metadata.json contains the serialized information about the plot. series[Index].csv contains the data of series [Index].<br/>
-     The plot metadata JSON contains entries title, export-width,export-height, background-color, grid-color, with-legend, title-font-size, legend-font-size, color-map, and plot-series. plot-series is mandatory and is a list of objects with each object having an object metadata, and a string element file-name. The file name must point at the corresponding series[Index].csv file of the series. Additional metadata in the root object and series metadata depend on the exact plot type.
-  </td>
-</tr>
-</table>
+<p>The exact structure of a row folder depends on the data type. The current documentation can always be found by navigating to
+<code>Help &gt; Data type compendium</code> within JIPipe. Alternatively, we uploaded a current database <a href="../../documentation-data-api/data-types/">on this website</a>. A description of the storage directory is provided as human-readable text and in <a href="https://www.json-schema.org/">JSON schema</a> format.</p>
 
 
     
@@ -868,7 +751,7 @@ you can find within the data table.</p>
         <div class="chevrons">
     <div id="navigation">
 <a class="nav nav-prev" href="../../documentation-data-api/data-table/" title="Data table"> <i class="fa fa-chevron-left"></i><label>Data table</label></a>
-    <a class="nav nav-next" href="../../documentation-data-api/pipeline-output/" title="Pipeline output" style="margin-right: 0px;"><label>Pipeline output</label><i class="fa fa-chevron-right"></i></a></div>
+    <a class="nav nav-next" href="../../documentation-data-api/data-types/" title="Data types" style="margin-right: 0px;"><label>Data types</label><i class="fa fa-chevron-right"></i></a></div>
   </div>
 
   </section>
