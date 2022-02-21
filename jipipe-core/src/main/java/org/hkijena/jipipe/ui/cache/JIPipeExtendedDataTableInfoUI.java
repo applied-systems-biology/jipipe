@@ -16,7 +16,9 @@ package org.hkijena.jipipe.ui.cache;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
@@ -203,15 +205,15 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
 
         JMenuItem openReferenceWindowItem = new JMenuItem("Open in new tab", UIUtils.getIconFromResources("actions/tab.png"));
         openReferenceWindowItem.addActionListener(e-> {
-            String name = "Cache: " + getDataTable().getDisplayName();
-            getWorkbench().getDocumentTabPane().addTab(name,
-                    UIUtils.getIconFromResources("actions/database.png"),
-                    new JIPipeExtendedDataTableInfoUI(getWorkbench(), getDataTable(), true),
-                    DocumentTabPane.CloseMode.withSilentCloseButton,
-                    true);
-            getWorkbench().getDocumentTabPane().switchToLastTab();
+            openTableInNewTab();
         });
         windowMenu.add(openReferenceWindowItem);
+
+        JMenuItem openFilteredWindowItem = new JMenuItem("Apply filter", UIUtils.getIconFromResources("actions/filter.png"));
+        openFilteredWindowItem.addActionListener(e-> {
+            openFilteredTableInNewTab();
+        });
+        windowMenu.add(openFilteredWindowItem);
 
         // Size items
         JButton autoSizeButton = new JButton(UIUtils.getIconFromResources("actions/zoom-fit-width.png"));
@@ -228,6 +230,43 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
 
         PreviewControlUI previewControlUI = new PreviewControlUI();
         toolBar.add(previewControlUI);
+    }
+
+    private void openFilteredTableInNewTab() {
+        String name = getDataTable().getDisplayName();
+        if(searchTextField.getSearchStrings().length > 0) {
+            name = "[Filtered] " + name;
+        }
+        else {
+            name = "Copy of " + name;
+        }
+        JIPipeDataTable copy = new JIPipeDataTable(dataTable.getAcceptedDataType());
+        if(table.getRowFilter() != null) {
+            for (int viewRow = 0; viewRow < table.getRowCount(); viewRow++) {
+                int modelRow = table.convertRowIndexToModel(viewRow);
+                copy.addData(dataTable.getVirtualData(modelRow),
+                        dataTable.getTextAnnotations(modelRow),
+                        JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                        dataTable.getDataAnnotations(modelRow),
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting);
+            }
+        }
+        getWorkbench().getDocumentTabPane().addTab(name,
+                UIUtils.getIconFromResources("data-types/data-table.png"),
+                new JIPipeExtendedDataTableInfoUI(getWorkbench(), copy, true),
+                DocumentTabPane.CloseMode.withSilentCloseButton,
+                true);
+        getWorkbench().getDocumentTabPane().switchToLastTab();
+    }
+
+    private void openTableInNewTab() {
+        String name = "Cache: " + getDataTable().getDisplayName();
+        getWorkbench().getDocumentTabPane().addTab(name,
+                UIUtils.getIconFromResources("actions/database.png"),
+                new JIPipeExtendedDataTableInfoUI(getWorkbench(), getDataTable(), true),
+                DocumentTabPane.CloseMode.withSilentCloseButton,
+                true);
+        getWorkbench().getDocumentTabPane().switchToLastTab();
     }
 
     private void openSearchExpressionEditor(SearchTextField searchTextField) {

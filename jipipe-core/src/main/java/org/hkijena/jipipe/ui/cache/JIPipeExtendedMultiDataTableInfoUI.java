@@ -17,7 +17,9 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -211,14 +213,14 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
 
         JMenuItem openReferenceWindowItem = new JMenuItem("Open in new tab", UIUtils.getIconFromResources("actions/tab.png"));
         openReferenceWindowItem.addActionListener(e-> {
-            String name = "Cache: " + dataTables.stream().map(slot -> slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "")).distinct().collect(Collectors.joining(", "));
-            getWorkbench().getDocumentTabPane().addTab(name,
-                    UIUtils.getIconFromResources("actions/database.png"),
-                    new JIPipeExtendedMultiDataTableInfoUI(getWorkbench(), dataTables, withCompartmentAndAlgorithm),
-                    DocumentTabPane.CloseMode.withSilentCloseButton,
-                    true);
-            getWorkbench().getDocumentTabPane().switchToLastTab();
+            openTableInNewTab();
         });
+
+        JMenuItem openFilteredWindowItem = new JMenuItem("Apply filter", UIUtils.getIconFromResources("actions/filter.png"));
+        openFilteredWindowItem.addActionListener(e-> {
+            openFilteredTableInNewTab();
+        });
+
         windowMenu.add(openReferenceWindowItem);
 
         // Size controls
@@ -236,6 +238,45 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
 
         PreviewControlUI previewControlUI = new PreviewControlUI();
         toolBar.add(previewControlUI);
+    }
+
+    private void openFilteredTableInNewTab() {
+        String name = dataTables.stream().map(slot -> slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "")).distinct().collect(Collectors.joining(", "));
+        if(searchTextField.getSearchStrings().length > 0) {
+            name = "[Filtered] " + name;
+        }
+        else {
+            name = "Copy of " + name;
+        }
+        JIPipeDataTable copy = new JIPipeDataTable(JIPipeData.class);
+        if(table.getRowFilter() != null) {
+            for (int viewRow = 0; viewRow < table.getRowCount(); viewRow++) {
+                int modelRow = table.convertRowIndexToModel(viewRow);
+                JIPipeDataTable slot = multiSlotTable.getSlot(modelRow);
+                int row = multiSlotTable.getRow(modelRow);
+                copy.addData(slot.getVirtualData(row),
+                        slot.getTextAnnotations(row),
+                        JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                        slot.getDataAnnotations(row),
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting);
+            }
+        }
+        getWorkbench().getDocumentTabPane().addTab(name,
+                UIUtils.getIconFromResources("data-types/data-table.png"),
+                new JIPipeExtendedDataTableInfoUI(getWorkbench(), copy, true),
+                DocumentTabPane.CloseMode.withSilentCloseButton,
+                true);
+        getWorkbench().getDocumentTabPane().switchToLastTab();
+    }
+
+    private void openTableInNewTab() {
+        String name = "Cache: " + dataTables.stream().map(slot -> slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "")).distinct().collect(Collectors.joining(", "));
+        getWorkbench().getDocumentTabPane().addTab(name,
+                UIUtils.getIconFromResources("actions/database.png"),
+                new JIPipeExtendedMultiDataTableInfoUI(getWorkbench(), dataTables, withCompartmentAndAlgorithm),
+                DocumentTabPane.CloseMode.withSilentCloseButton,
+                true);
+        getWorkbench().getDocumentTabPane().switchToLastTab();
     }
 
     private void openSearchExpressionEditor(SearchTextField searchTextField) {

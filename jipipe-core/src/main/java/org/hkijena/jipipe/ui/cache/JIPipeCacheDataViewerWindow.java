@@ -160,7 +160,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         if (getAlgorithm() != null) {
             setTitle(getAlgorithm().getName() + "/" + getSlotName() + "/" + row + (dataSource.getDataAnnotation() != null ? "/$" + dataSource.getDataAnnotation() : ""));
         } else {
-            setTitle(getDisplayName() + (dataSource.getDataAnnotation() != null ? "/$" + dataSource.getDataAnnotation() : ""));
+            setTitle(getDisplayName() + "/" + row  + (dataSource.getDataAnnotation() != null ? "/$" + dataSource.getDataAnnotation() : ""));
         }
 
         removeDataControls();
@@ -233,9 +233,9 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         if (getToolBar() == null)
             return;
         getToolBar().add(alwaysOnTopToggle);
-        cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, getToolBar(), algorithm);
-        cacheAwareToggle.install();
         if (algorithm != null) {
+            cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, getToolBar(), algorithm);
+            cacheAwareToggle.install();
             cacheAwareToggle.installRefreshOnActivate(this::reloadFromCurrentCache);
         }
         getToolBar().add(nextRowButton, 0);
