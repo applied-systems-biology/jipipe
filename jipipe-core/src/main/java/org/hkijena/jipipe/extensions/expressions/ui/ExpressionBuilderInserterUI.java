@@ -49,7 +49,7 @@ public class ExpressionBuilderInserterUI extends JPanel {
                 JButton insertButton = new JButton("Insert", UIUtils.getIconFromResources("actions/insert-object.png"));
                 insertButton.addActionListener(e -> {
                     inserterCommitted = true;
-                    expressionBuilderUI.insertAtCaret(variable.getKey());
+                    expressionBuilderUI.insertVariableAtCaret(variable.getKey());
                 });
                 inserterButtonPanel.add(Box.createHorizontalGlue());
                 inserterButtonPanel.add(insertButton);

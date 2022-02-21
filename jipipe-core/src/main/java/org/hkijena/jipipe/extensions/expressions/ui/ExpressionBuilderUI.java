@@ -294,12 +294,12 @@ public class ExpressionBuilderUI extends JPanel {
         }
     }
 
-    private void insertVariableAtCaret(String variableName) {
+    public void insertVariableAtCaret(String variableName) {
         insertAtCaret(DefaultExpressionEvaluator.escapeVariable(variableName));
         expressionEditor.requestFocusInWindow();
     }
 
-    private void insertBrackets() {
+    public void insertBrackets() {
         int start = expressionEditor.getSelectionStart();
         int end = expressionEditor.getSelectionEnd();
         expressionEditor.insert("(", start);
