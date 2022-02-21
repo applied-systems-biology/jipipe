@@ -88,7 +88,7 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
         }
 
         if (removeOutputAnnotations)
-            dataBatch.getMergedAnnotations().clear();
+            dataBatch.getMergedTextAnnotations().clear();
 
         dataBatch.addOutputData(getFirstOutputSlot(), output, progressInfo);
 

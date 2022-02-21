@@ -48,6 +48,8 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
     private final int row;
     private final List<JIPipeDataAnnotation> dataAnnotations;
     private List<JIPipeDataDisplayOperation> displayOperations;
+    private JButton dataAnnotationsButton;
+    private JButton textAnnotationsButton;
 
     /**
      * Creates a new instance
@@ -72,8 +74,8 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
         add(Box.createHorizontalGlue());
 
         if (dataAnnotations.size() > 0) {
-            JButton dataAnnotationButton = new JButton("Data annotations ...", UIUtils.getIconFromResources("data-types/data-annotation.png"));
-            JPopupMenu menu = UIUtils.addPopupMenuToComponent(dataAnnotationButton);
+            dataAnnotationsButton = new JButton("Data annotations ...", UIUtils.getIconFromResources("data-types/data-annotation.png"));
+            JPopupMenu menu = UIUtils.addPopupMenuToComponent(dataAnnotationsButton);
 
             for (JIPipeDataAnnotation dataAnnotation : dataAnnotations) {
                 JMenu subMenu = new JMenu(dataAnnotation.getName());
@@ -89,12 +91,12 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
                 menu.add(subMenu);
             }
 
-            add(dataAnnotationButton);
+            add(dataAnnotationsButton);
         }
 
         if (!dataTable.getTextAnnotations(row).isEmpty()) {
-            JButton annotationButton = new JButton("Annotations ...", UIUtils.getIconFromResources("data-types/annotation.png"));
-            JPopupMenu annotationMenu = UIUtils.addPopupMenuToComponent(annotationButton);
+            textAnnotationsButton = new JButton("Annotations ...", UIUtils.getIconFromResources("data-types/annotation.png"));
+            JPopupMenu annotationMenu = UIUtils.addPopupMenuToComponent(textAnnotationsButton);
             for (JIPipeTextAnnotation annotation : dataTable.getTextAnnotations(row)) {
                 JMenu entryMenu = new JMenu(annotation.getName());
                 entryMenu.setIcon(UIUtils.getIconFromResources("data-types/annotation.png"));
@@ -111,7 +113,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
 
                 annotationMenu.add(entryMenu);
             }
-            add(annotationButton);
+            add(textAnnotationsButton);
         }
 
         JButton copyButton = new JButton("Copy string", UIUtils.getIconFromResources("actions/edit-copy.png"));
@@ -297,6 +299,30 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
             return result;
         }
         return null;
+    }
+
+    public JButton getDataAnnotationsButton() {
+        return dataAnnotationsButton;
+    }
+
+    public JButton getTextAnnotationsButton() {
+        return textAnnotationsButton;
+    }
+
+    public JIPipeDataTable getDataTable() {
+        return dataTable;
+    }
+
+    public int getRow() {
+        return row;
+    }
+
+    public List<JIPipeDataAnnotation> getDataAnnotations() {
+        return dataAnnotations;
+    }
+
+    public List<JIPipeDataDisplayOperation> getDisplayOperations() {
+        return displayOperations;
     }
 
     public void handleDefaultAction() {

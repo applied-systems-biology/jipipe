@@ -78,7 +78,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
                     continue;
                 JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
                 dataBatch.addInputData(dataSlot, row);
-                dataBatch.addMergedAnnotations(dataSlot.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.Merge);
+                dataBatch.addMergedTextAnnotations(dataSlot.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.Merge);
                 dataBatchList.add(dataBatch);
             }
 
@@ -163,7 +163,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
                 JIPipeDataSlot forms = dataBatchForms.get(i);
                 JIPipeMergingDataBatch dataBatch = dataBatchList.get(i);
                 getFirstOutputSlot().addData(dataBatch.getVirtualInputData(dataSlot).get(0),
-                        new ArrayList<>(dataBatch.getMergedAnnotations().values()),
+                        new ArrayList<>(dataBatch.getMergedTextAnnotations().values()),
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         new ArrayList<>(dataBatch.getMergedDataAnnotations().values()),
                         JIPipeDataAnnotationMergeMode.OverwriteExisting);
@@ -171,7 +171,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
                 // Copy user-modified forms
                 for (int row = 0; row < forms.getRowCount(); row++) {
                     List<JIPipeTextAnnotation> annotations = new ArrayList<>(forms.getTextAnnotations(row));
-                    annotations.addAll(dataBatch.getMergedAnnotations().values());
+                    annotations.addAll(dataBatch.getMergedTextAnnotations().values());
                     formsOutputSlot.addData(forms.getVirtualData(row),
                             annotations,
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
@@ -236,7 +236,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
                 continue;
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             dataBatch.addInputData(slot, i);
-            dataBatch.addMergedAnnotations(slot.getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
+            dataBatch.addMergedTextAnnotations(slot.getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge);
             batches.add(dataBatch);
         }
         return batches;

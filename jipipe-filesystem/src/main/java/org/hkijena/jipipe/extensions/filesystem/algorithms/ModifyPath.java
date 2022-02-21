@@ -39,7 +39,7 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
         PathData input = dataBatch.getInputData(getFirstInputSlot(), PathData.class, progressInfo);
         ExpressionVariables variableSet = new ExpressionVariables();
         if (accessAnnotations) {
-            for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+            for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
                 variableSet.set(annotation.getName(), annotation.getValue());
             }
         }

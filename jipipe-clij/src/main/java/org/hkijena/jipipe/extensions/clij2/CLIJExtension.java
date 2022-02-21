@@ -78,8 +78,6 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("clij2-image",
                 CLIJImageData.class,
                 UIUtils.getIconURLFromResources("data-types/clij.png"),
-                null,
-                null,
                 new ImagePlusDataImportIntoImageJOperation());
         for (Class<? extends JIPipeData> imageType : ImageJDataTypesExtension.IMAGE_TYPES) {
             registerDatatypeConversion(new CLIJImageToImagePlusDataConverter(imageType));

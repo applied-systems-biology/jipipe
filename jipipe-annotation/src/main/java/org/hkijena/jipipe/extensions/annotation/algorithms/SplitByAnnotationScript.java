@@ -104,14 +104,14 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        PyDictionary annotationDict = JIPipeTextAnnotation.annotationMapToPython(dataBatch.getMergedAnnotations());
+        PyDictionary annotationDict = JIPipeTextAnnotation.annotationMapToPython(dataBatch.getMergedTextAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.exec(code.getCode(getProjectWorkDirectory()));
         annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 
         // Convert the results back into JIPipe
-        dataBatch.getMergedAnnotations().clear();
-        JIPipeTextAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getMergedAnnotations());
+        dataBatch.getMergedTextAnnotations().clear();
+        JIPipeTextAnnotation.setAnnotationsFromPython(annotationDict, dataBatch.getMergedTextAnnotations());
 
         // Get the output slot
         PyObject outputSlotPy = pythonInterpreter.get("output_slot");

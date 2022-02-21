@@ -20,18 +20,21 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
 import org.hkijena.jipipe.api.JIPipeProjectCacheState;
+import org.hkijena.jipipe.api.annotation.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.batchassistant.DataBatchStatusData;
+import org.hkijena.jipipe.extensions.strings.StringData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.cache.JIPipeExtendedDataTableInfoUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.Timer;
 import javax.swing.*;
 import java.awt.*;
 import java.util.List;
@@ -46,22 +49,19 @@ import java.util.concurrent.ExecutionException;
 public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private final JIPipeAlgorithm algorithm;
     private final Runnable runTestBench;
-    private final ArrayDeque<JIPipeMergingDataBatch> infiniteScrollingQueue = new ArrayDeque<>();
     private final JIPipeParameterCollection batchSettings;
     private final Multimap<String, JIPipeDataSlot> currentCache = HashMultimap.create();
     AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, AutoResizeSplitPane.RATIO_1_TO_3);
     private JPanel batchPanel;
     private JPanel errorPanel;
     private JLabel errorLabel;
-    private final FormPanel batchListPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
-    private final Timer scrollToBeginTimer = new Timer(200, e -> scrollToBeginning());
     private JLabel batchPreviewNumberLabel;
     private JLabel batchPreviewMissingLabel;
     private JLabel batchPreviewDuplicateLabel;
     private JIPipeGraphNode batchesNodeCopy;
-    private final List<JIPipeMergingDataBatch> batches = new ArrayList<>();
     private boolean autoRefresh = true;
     private DataBatchGeneratorWorker lastWorker = null;
+    private DataBatchTableUI2 batchTable;
 
 
     /**
@@ -74,7 +74,6 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         this.algorithm = (JIPipeAlgorithm) algorithm;
         this.batchSettings = ((JIPipeDataBatchAlgorithm) algorithm).getGenerationSettingsInterface();
         this.runTestBench = runTestBench;
-        this.scrollToBeginTimer.setRepeats(false);
         initialize();
         updateStatus();
         getProject().getCache().getEventBus().register(this);
@@ -129,7 +128,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         if (currentCache.isEmpty()) {
             switchToError();
         } else {
-            switchToBatches();
+            refreshBatchPreview();
         }
     }
 
@@ -141,7 +140,6 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
 
     private void switchToBatches() {
         splitPane.setBottomComponent(batchPanel);
-        refreshBatchPreview();
         revalidate();
         repaint();
     }
@@ -163,34 +161,79 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
             }
         }
         // Generate dry-run
-        batches.clear();
-        infiniteScrollingQueue.clear();
-        batchListPanel.clear();
+        batchTable.setDataTable(new JIPipeDataTable(JIPipeData.class));
 
         lastWorker = new DataBatchGeneratorWorker(this, batchesNodeCopy);
         lastWorker.execute();
     }
 
     private void displayBatches(List<JIPipeMergingDataBatch> batches, JIPipeGraphNode algorithm) {
-        infiniteScrollingQueue.clear();
-        batchListPanel.clear();
+        batchTable.setDataTable(new JIPipeDataTable(DataBatchStatusData.class));
 
         batchPreviewNumberLabel.setText(batches.size() + " batches");
         batchPreviewMissingLabel.setVisible(false);
         batchPreviewDuplicateLabel.setVisible(false);
+
+        JIPipeDataTable dataTable = new JIPipeDataTable(JIPipeData.class);
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+
         for (JIPipeMergingDataBatch batch : batches) {
+            List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>(batch.getMergedTextAnnotations().values());
+            List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
+
+            boolean hasEmpty = false;
+            boolean hasMultiple = false;
+            DataBatchStatusData statusData = new DataBatchStatusData();
+
             for (JIPipeDataSlot inputSlot : algorithm.getEffectiveInputSlots()) {
-                List<JIPipeData> data = batch.getInputData(inputSlot, JIPipeData.class, new JIPipeProgressInfo());
-                if (data.isEmpty())
-                    batchPreviewMissingLabel.setVisible(true);
-                if (data.size() > 1)
-                    batchPreviewDuplicateLabel.setVisible(true);
+                List<JIPipeData> dataList = batch.getInputData(inputSlot, JIPipeData.class, progressInfo);
+                Map<String, Object> status = new HashMap<>();
+                JIPipeData singletonData;
+                if (dataList.isEmpty()) {
+                    singletonData = new StringData("Empty");
+                    hasEmpty = true;
+
+                    status.put("Slot", inputSlot.getName());
+                    status.put("Status", "Slot contains no data!");
+                }
+                else if(dataList.size() == 1) {
+                    singletonData = dataList.get(0);
+
+                    status.put("Slot", inputSlot.getName());
+                    status.put("Status", "Contains 1 item.");
+                }
+                else {
+                    JIPipeDataTable list = new JIPipeDataTable(JIPipeData.class);
+                    for (JIPipeData datum : dataList) {
+                        list.addData(datum, progressInfo);
+                    }
+                    singletonData = list;
+                    hasMultiple = true;
+
+                    status.put("Slot", inputSlot.getName());
+                    status.put("Status", "Slot contains " + dataList.size() + " items");
+                }
+
+                statusData.getPerSlotStatus().addRow(status);
+                dataAnnotations.add(new JIPipeDataAnnotation(inputSlot.getName(), singletonData));
             }
-            infiniteScrollingQueue.addLast(batch);
+
+            if(hasEmpty)
+                batchPreviewMissingLabel.setVisible(true);
+            if(hasMultiple)
+                batchPreviewDuplicateLabel.setVisible(true);
+            statusData.setStatusValid(!hasEmpty);
+            statusData.setStatusMessage(hasEmpty ? "Missing data!" : (hasMultiple ? "Multiple data per slot" : "One data per slot"));
+
+            dataTable.addData(statusData,
+                    textAnnotations,
+                    JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                    dataAnnotations,
+                    JIPipeDataAnnotationMergeMode.OverwriteExisting);
         }
-        batchListPanel.addVerticalGlue();
-        SwingUtilities.invokeLater(this::updateInfiniteScroll);
-        scrollToBeginTimer.restart();
+
+        batchTable.setDataTable(dataTable);
+        switchToBatches();
     }
 
     private void initialize() {
@@ -200,14 +243,10 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         initializeParameterPanel();
         initializeBatchPanel();
         initializeErrorPanel();
-        batchListPanel.getScrollPane().getVerticalScrollBar().addAdjustmentListener(e -> {
-            updateInfiniteScroll();
-        });
     }
 
     private void initializeBatchPanel() {
         batchPanel = new JPanel(new BorderLayout());
-        batchPanel.add(batchListPanel, BorderLayout.CENTER);
 
         JToolBar batchPreviewOverview = new JToolBar();
 
@@ -218,12 +257,14 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         batchPreviewMissingLabel = new JLabel("Missing items found!", UIUtils.getIconFromResources("emblems/warning.png"), JLabel.LEFT);
         batchPreviewOverview.add(batchPreviewMissingLabel);
 
-        batchPreviewDuplicateLabel = new JLabel("Multiple items per group", UIUtils.getIconFromResources("emblems/emblem-information.png"), JLabel.LEFT);
+        batchPreviewDuplicateLabel = new JLabel("Multiple items per batch", UIUtils.getIconFromResources("emblems/emblem-information.png"), JLabel.LEFT);
         batchPreviewOverview.add(batchPreviewDuplicateLabel);
 
         batchPreviewOverview.setFloatable(false);
         batchPanel.add(batchPreviewOverview, BorderLayout.NORTH);
-        batchPanel.add(batchListPanel, BorderLayout.CENTER);
+
+        this.batchTable = new DataBatchTableUI2(getWorkbench(), new JIPipeDataTable(JIPipeData.class));
+        batchPanel.add(batchTable, BorderLayout.CENTER);
     }
 
     private void initializeParameterPanel() {
@@ -273,24 +314,6 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
                 "Such data is stored in the project-wide cache. You might need to generate or update the cache by clicking the 'Update cache' button at the top-right corner.");
         explanation.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         errorPanel.add(explanation, BorderLayout.CENTER);
-    }
-
-    private void scrollToBeginning() {
-        batchListPanel.getScrollPane().getVerticalScrollBar().setValue(0);
-    }
-
-    private void updateInfiniteScroll() {
-        JScrollBar scrollBar = batchListPanel.getScrollPane().getVerticalScrollBar();
-        if ((!scrollBar.isVisible() || (scrollBar.getValue() + scrollBar.getVisibleAmount()) > (scrollBar.getMaximum() - 32)) && !infiniteScrollingQueue.isEmpty()) {
-            batchListPanel.removeLastRow();
-            JIPipeMergingDataBatch dataBatch = infiniteScrollingQueue.removeFirst();
-            DataBatchUI ui = new DataBatchUI(getProjectWorkbench(), batchesNodeCopy, dataBatch);
-            batchListPanel.addWideToForm(ui, null);
-            batchListPanel.addVerticalGlue();
-            batchListPanel.revalidate();
-            batchListPanel.repaint();
-            SwingUtilities.invokeLater(this::updateInfiniteScroll);
-        }
     }
 
     /**

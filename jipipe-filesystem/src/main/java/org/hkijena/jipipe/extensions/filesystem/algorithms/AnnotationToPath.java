@@ -60,7 +60,7 @@ public class AnnotationToPath extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeTextAnnotation matchingAnnotation = annotationExpression.queryFirst(dataBatch.getMergedAnnotations().values());
+        JIPipeTextAnnotation matchingAnnotation = annotationExpression.queryFirst(dataBatch.getMergedTextAnnotations().values());
         if (matchingAnnotation == null || StringUtils.isNullOrEmpty(matchingAnnotation.getValue())) {
             dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get("")), progressInfo);
             return;

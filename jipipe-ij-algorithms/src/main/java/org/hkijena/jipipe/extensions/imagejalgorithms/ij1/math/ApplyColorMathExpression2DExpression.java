@@ -75,7 +75,7 @@ public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingA
         ImagePlusColorData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         ExpressionVariables variableSet = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
         variableSet.set("width", inputData.getImage().getWidth());

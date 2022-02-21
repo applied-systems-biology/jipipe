@@ -62,7 +62,7 @@ public class AnnotationsToParametersAlgorithm extends JIPipeParameterlessSimpleI
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ParametersData data = new ParametersData();
         for (Map.Entry<String, JIPipeParameterAccess> entry : extractedParameters.getParameters().entrySet()) {
-            JIPipeTextAnnotation annotation = dataBatch.getMergedAnnotation(entry.getKey());
+            JIPipeTextAnnotation annotation = dataBatch.getMergedTextAnnotation(entry.getKey());
             if (annotation != null) {
                 try {
                     Object value = JsonUtils.getObjectMapper().readerFor(entry.getValue().getFieldClass()).readValue(annotation.getValue());

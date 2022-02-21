@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.cache;
+package org.hkijena.jipipe.ui.batchassistant;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
@@ -27,6 +27,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
+import org.hkijena.jipipe.ui.cache.*;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PreviewControlUI;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeComponentCellRenderer;
@@ -56,32 +57,25 @@ import java.util.Collections;
 /**
  * UI that displays a {@link JIPipeDataTable} that is cached
  */
-public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
+public class DataBatchTableUI2 extends JIPipeWorkbenchPanel {
 
     private JIPipeDataTable dataTable;
-    private final boolean updateWithCache;
     private JXTable table;
     private FormPanel rowUIList;
     private final SearchTextField searchTextField = new SearchTextField();
-    private JIPipeExtendedDataTableInfoModel dataTableModel;
+    private DataBatchTableModel2 dataTableModel;
     private JScrollPane scrollPane;
 
     /**
      * @param workbenchUI the workbench UI
      * @param dataTable        The slot
-     * @param updateWithCache if the table should refresh on project cache changes
      */
-    public JIPipeExtendedDataTableInfoUI(JIPipeWorkbench workbenchUI, JIPipeDataTable dataTable, boolean updateWithCache) {
+    public DataBatchTableUI2(JIPipeWorkbench workbenchUI, JIPipeDataTable dataTable) {
         super(workbenchUI);
         this.dataTable = dataTable;
-        this.updateWithCache = updateWithCache;
 
         initialize();
         reloadTable();
-        if (updateWithCache && getWorkbench() instanceof JIPipeProjectWorkbench) {
-            ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().register(this);
-        }
-        updateStatus();
         GeneralDataSettings.getInstance().getEventBus().register(new Object() {
             @Subscribe
             public void onPreviewSizeChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
@@ -103,7 +97,7 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
     }
 
     private void reloadTable() {
-        dataTableModel = new JIPipeExtendedDataTableInfoModel(table, dataTable);
+        dataTableModel = new DataBatchTableModel2(table, dataTable);
         table.setModel(dataTableModel);
         dataTableModel.setScrollPane(scrollPane);
         if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
@@ -117,9 +111,11 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
             column.setHeaderRenderer(new WrapperColumnHeaderRenderer(dataTable));
         }
         table.setAutoCreateRowSorter(true);
-        UIUtils.packDataTable(table);
         columnModel.getColumn(1).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
-        SwingUtilities.invokeLater(dataTableModel::updateRenderedPreviews);
+        SwingUtilities.invokeLater(() -> {
+            dataTableModel.updateRenderedPreviews();
+            UIUtils.packDataTable(table);
+        });
     }
 
     private void initialize() {
@@ -195,10 +191,10 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
 
         JMenuItem openReferenceWindowItem = new JMenuItem("Open in new tab", UIUtils.getIconFromResources("actions/tab.png"));
         openReferenceWindowItem.addActionListener(e-> {
-            String name = "Cache: " + getDataTable().getDisplayName();
+            String name = "Data batches: " + getDataTable().getDisplayName();
             getWorkbench().getDocumentTabPane().addTab(name,
                     UIUtils.getIconFromResources("actions/database.png"),
-                    new JIPipeExtendedDataTableInfoUI(getWorkbench(), getDataTable(), true),
+                    new DataBatchTableUI2(getWorkbench(), getDataTable()),
                     DocumentTabPane.CloseMode.withSilentCloseButton,
                     true);
             getWorkbench().getDocumentTabPane().switchToLastTab();
@@ -281,46 +277,16 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
 
         for (int viewRow : selectedRows) {
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
-            String name;
-            String nodeName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
-            if (!StringUtils.isNullOrEmpty(nodeName))
-                name = nodeName + "/" + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row;
-            else
-                name = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row;
-            JLabel nameLabel = new JLabel(name, JIPipe.getDataTypes().getIconFor(dataTable.getAcceptedDataType()), JLabel.LEFT);
-            nameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(dataTable));
+            JLabel nameLabel = new JLabel("Data batch " + row);
             JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), dataTable, row);
+            rowUI.getDataAnnotationsButton().setText("Slots ...");
+            rowUI.getDataAnnotationsButton().setIcon(UIUtils.getIconFromResources("data-types/slot.png"));
             rowUIList.addToForm(rowUI, nameLabel, null);
         }
     }
 
     /**
-     * Triggered when the cache was updated
-     *
-     * @param event generated event
-     */
-    @Subscribe
-    public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
-        updateStatus();
-    }
-
-    private void updateStatus() {
-        if (updateWithCache && dataTable.getRowCount() == 0) {
-            removeAll();
-            setLayout(new BorderLayout());
-            JLabel label = new JLabel("No data available", UIUtils.getIcon64FromResources("no-data.png"), JLabel.LEFT);
-            label.setFont(label.getFont().deriveFont(26.0f));
-            add(label, BorderLayout.CENTER);
-
-            if (getWorkbench() instanceof JIPipeProjectWorkbench) {
-                ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().unregister(this);
-            }
-        }
-    }
-
-
-    /**
-     * Renders the column header of {@link JIPipeExtendedDataTableInfoModel}
+     * Renders the column header of {@link DataBatchTableModel2}
      */
     public static class WrapperColumnHeaderRenderer implements TableCellRenderer {
         private final JIPipeDataTable dataTable;
@@ -341,8 +307,8 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
          * @return relative annotation column index, or -1
          */
         public int toAnnotationColumnIndex(int columnIndex) {
-            if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 4)
-                return columnIndex - dataTable.getDataAnnotationColumns().size() - 4;
+            if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 2)
+                return columnIndex - dataTable.getDataAnnotationColumns().size() - 2;
             else
                 return -1;
         }
@@ -354,8 +320,8 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
          * @return relative data annotation column index, or -1
          */
         public int toDataAnnotationColumnIndex(int columnIndex) {
-            if (columnIndex < dataTable.getDataAnnotationColumns().size() + 4 && (columnIndex - 4) < dataTable.getDataAnnotationColumns().size()) {
-                return columnIndex - 4;
+            if (columnIndex < dataTable.getDataAnnotationColumns().size() + 4 && (columnIndex - 2) < dataTable.getDataAnnotationColumns().size()) {
+                return columnIndex - 2;
             } else {
                 return -1;
             }
@@ -365,12 +331,12 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             TableCellRenderer defaultRenderer = table.getTableHeader().getDefaultRenderer();
             int modelColumn = table.convertColumnIndexToModel(column);
-            if (modelColumn < 4) {
+            if (modelColumn < 2) {
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             } else if (toDataAnnotationColumnIndex(modelColumn) != -1) {
                 String info = dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(modelColumn));
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
-                        UIUtils.getIconFromResources("data-types/data-annotation.png"),
+                        UIUtils.getIconFromResources("data-types/slot.png"),
                         info);
                 return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
             } else {

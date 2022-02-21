@@ -85,7 +85,7 @@ public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
             currentResult.setValueAt(1.0 * count, row, col);
         }
         if (addAnnotations) {
-            for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+            for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
                 int col = currentResult.getOrCreateColumnIndex(annotation.getName(), false);
                 currentResult.setValueAt(annotation.getValue(), row, col);
             }

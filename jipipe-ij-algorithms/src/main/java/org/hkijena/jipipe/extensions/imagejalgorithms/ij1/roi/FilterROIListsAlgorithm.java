@@ -43,7 +43,7 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         ExpressionVariables parameters = new ExpressionVariables();
         if (includeAnnotations) {
-            for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+            for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
                 parameters.set(annotation.getName(), annotation.getValue());
             }
         }

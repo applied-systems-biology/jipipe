@@ -49,12 +49,12 @@ public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
                     "Could not find data annotation!",
                     getDisplayName(),
                     "The node tried to find a data annotation that matches the expression '" + annotationNameQuery.getExpression() + "', but none did match. Following were available: " +
-                            String.join(", ", dataBatch.getMergedAnnotations().keySet()),
+                            String.join(", ", dataBatch.getMergedTextAnnotations().keySet()),
                     "Check if the expression is correct or enable 'Ignore missing annotations'");
         }
         JIPipeDataAnnotation dataAnnotation = dataBatch.getMergedDataAnnotation(targetedAnnotationName);
         if (!keepOtherDataAnnotations) {
-            dataBatch.getMergedAnnotations().clear();
+            dataBatch.getMergedTextAnnotations().clear();
             dataBatch.addMergedDataAnnotation(dataAnnotation, JIPipeDataAnnotationMergeMode.OverwriteExisting);
         }
         if (!keepCurrentAnnotation) {

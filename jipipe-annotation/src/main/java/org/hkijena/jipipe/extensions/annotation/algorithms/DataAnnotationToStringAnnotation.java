@@ -43,7 +43,7 @@ public class DataAnnotationToStringAnnotation extends JIPipeSimpleIteratingAlgor
             if (nameFilter.test(name)) {
                 annotationList.add(new JIPipeTextAnnotation(name, dataBatch.getMergedDataAnnotation(name).getVirtualData().getStringRepresentation()));
                 if (!keepDataAnnotations)
-                    dataBatch.getMergedAnnotations().remove(name);
+                    dataBatch.getMergedTextAnnotations().remove(name);
             }
         }
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), annotationList, annotationMergeStrategy, progressInfo);

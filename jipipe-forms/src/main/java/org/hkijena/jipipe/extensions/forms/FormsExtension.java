@@ -67,15 +67,15 @@ public class FormsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerDatatype("form", FormData.class, UIUtils.getIconURLFromResources("data-types/form.png"), null, null);
+        registerDatatype("form", FormData.class, UIUtils.getIconURLFromResources("data-types/form.png"));
 
-        registerDatatype("group-header-form", GroupHeaderFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"), null, null);
-        registerDatatype("string-form", StringFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"), null, null);
-        registerDatatype("integer-form", IntegerFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"), null, null);
-        registerDatatype("number-form", DoubleFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"), null, null);
-        registerDatatype("boolean-form", BooleanFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"), null, null);
-        registerDatatype("enum-form", EnumFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"), null, null);
-        registerDatatype("path-form", PathFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"), null, null);
+        registerDatatype("group-header-form", GroupHeaderFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"));
+        registerDatatype("string-form", StringFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"));
+        registerDatatype("integer-form", IntegerFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"));
+        registerDatatype("number-form", DoubleFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"));
+        registerDatatype("boolean-form", BooleanFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"));
+        registerDatatype("enum-form", EnumFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"));
+        registerDatatype("path-form", PathFormData.class, UIUtils.getIconURLFromResources("data-types/form.png"));
 
         registerNodeType("group-header-form", GroupHeaderFormGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));
         registerNodeType("string-form", StringFormGeneratorAlgorithm.class, UIUtils.getIconURLFromResources("data-types/form.png"));

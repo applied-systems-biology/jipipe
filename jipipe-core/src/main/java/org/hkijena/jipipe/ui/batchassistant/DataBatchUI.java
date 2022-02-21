@@ -58,7 +58,7 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
         add(dataBatchName, BorderLayout.NORTH);
 
         FormPanel metaDataList = new FormPanel(null, FormPanel.NONE);
-        for (JIPipeTextAnnotation annotation : batch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : batch.getMergedTextAnnotations().values()) {
             JLabel title = new JLabel(annotation.getName(), UIUtils.getIconFromResources("data-types/annotation.png"), JLabel.LEFT);
             JTextField content = UIUtils.makeReadonlyBorderlessTextField(WordUtils.abbreviate(annotation.getValue(), 50, 70, " ..."));
             content.setToolTipText(annotation.getValue());
@@ -102,7 +102,7 @@ public class DataBatchUI extends JIPipeProjectWorkbenchPanel {
         for (int row : rows) {
             copySlot.addData(slot.getVirtualData(row), slot.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.Merge);
         }
-        JIPipeExtendedDataTableInfoUI tableUI = new JIPipeExtendedDataTableInfoUI(getProjectWorkbench(), copySlot);
+        JIPipeExtendedDataTableInfoUI tableUI = new JIPipeExtendedDataTableInfoUI(getProjectWorkbench(), copySlot, true);
 //        DataSlotTableUI tableUI = new DataSlotTableUI(getProjectWorkbench(), copySlot);
         JFrame frame = new JFrame("Data batch contents");
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);

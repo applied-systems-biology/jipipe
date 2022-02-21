@@ -72,7 +72,7 @@ public class ProcessColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<TableColumn> resultColumns = new ArrayList<>();
         ExpressionVariables expressionVariables = new ExpressionVariables();
-        Map<String, String> annotationsMap = JIPipeTextAnnotation.annotationListToMap(dataBatch.getMergedAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
+        Map<String, String> annotationsMap = JIPipeTextAnnotation.annotationListToMap(dataBatch.getMergedTextAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
         expressionVariables.set("annotations", annotationsMap);
         if (append) {
             for (String columnName : input.getColumnNames()) {

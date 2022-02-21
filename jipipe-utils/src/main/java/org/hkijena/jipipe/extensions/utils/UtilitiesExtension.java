@@ -63,7 +63,7 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerDatatype("jipipe-run-output", JIPipeOutputData.class, UIUtils.getIconURLFromResources("apps/jipipe.png"), null, null, new OpenPathDataOperation(), new CopyPathDataOperation(), new ImportJIPipeProjectDataOperation());
+        registerDatatype("jipipe-run-output", JIPipeOutputData.class, UIUtils.getIconURLFromResources("apps/jipipe.png"), new OpenPathDataOperation(), new CopyPathDataOperation(), new ImportJIPipeProjectDataOperation());
         registerDatatypeConversion(new PathDataToJIPipeOutputConverter());
 
         registerNodeType("merge-data-to-table", MergeDataToTableAlgorithm.class, UIUtils.getIconURLFromResources("data-types/data-table.png"));

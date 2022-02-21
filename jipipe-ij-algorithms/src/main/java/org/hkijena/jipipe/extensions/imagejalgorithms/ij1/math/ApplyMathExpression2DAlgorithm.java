@@ -69,7 +69,7 @@ public class ApplyMathExpression2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
         ExpressionVariables variableSet = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
         variableSet.set("width", img.getWidth());

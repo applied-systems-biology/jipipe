@@ -66,7 +66,7 @@ public class AnnotateWithDataString extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
             JIPipeData inputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
-            dataBatch.addMergedAnnotation(new JIPipeTextAnnotation(generatedAnnotation, detailedDataString ? inputData.toDetailedString() : inputData.toString()), annotationMergeStrategy);
+            dataBatch.addMergedTextAnnotation(new JIPipeTextAnnotation(generatedAnnotation, detailedDataString ? inputData.toDetailedString() : inputData.toString()), annotationMergeStrategy);
             dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
         }
     }

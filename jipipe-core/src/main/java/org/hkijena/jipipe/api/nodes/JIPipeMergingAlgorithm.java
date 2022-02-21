@@ -178,7 +178,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             final int row = 0;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
-            dataBatch.addMergedAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
+            dataBatch.addMergedTextAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
             uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
             if (isPassThrough()) {
                 runPassThrough(slotProgress, dataBatch);
@@ -190,7 +190,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
         List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesDryRun(getNonParameterInputSlots(), progressInfo);
         for (JIPipeMergingDataBatch dataBatch : dataBatches) {
-            dataBatch.addMergedAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
+            dataBatch.addMergedTextAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
         }
 
 
@@ -258,7 +258,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
 
     private void uploadAdaptiveParameters(JIPipeMergingDataBatch dataBatch, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
         ExpressionVariables expressionVariables = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             expressionVariables.put(annotation.getName(), annotation.getValue());
         }
         for (StringQueryExpressionAndStringPairParameter overriddenParameter : getAdaptiveParameterSettings().getOverriddenParameters()) {
@@ -307,7 +307,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
             name = target.getName();
         name = getAdaptiveParameterSettings().getParameterAnnotationsPrefix() + name;
         String value = JsonUtils.toJsonString(newValue);
-        dataBatch.addMergedAnnotation(new JIPipeTextAnnotation(name, value), JIPipeTextAnnotationMergeMode.Merge);
+        dataBatch.addMergedTextAnnotation(new JIPipeTextAnnotation(name, value), JIPipeTextAnnotationMergeMode.Merge);
     }
 
     /**

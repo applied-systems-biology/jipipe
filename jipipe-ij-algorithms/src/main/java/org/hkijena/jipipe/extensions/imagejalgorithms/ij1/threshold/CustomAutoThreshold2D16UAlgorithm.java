@@ -116,7 +116,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         ImagePlus maskInput = null;
         ExpressionVariables parameters = new ExpressionVariables();
 
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             parameters.set(annotation.getName(), annotation.getValue());
         }
 

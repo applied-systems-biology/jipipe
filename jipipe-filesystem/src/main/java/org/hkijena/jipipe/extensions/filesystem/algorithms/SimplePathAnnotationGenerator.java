@@ -88,7 +88,7 @@ public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorith
                 }
             }
 
-            dataBatch.addMergedAnnotation(new JIPipeTextAnnotation(generatedAnnotation, annotationValue), annotationMergeStrategy);
+            dataBatch.addMergedTextAnnotation(new JIPipeTextAnnotation(generatedAnnotation, annotationValue), annotationMergeStrategy);
             dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
         }
     }

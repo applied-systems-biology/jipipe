@@ -57,7 +57,7 @@ public class ColorThresholdExpression2D extends JIPipeSimpleIteratingAlgorithm {
                 8);
 
         ExpressionVariables variableSet = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
         variableSet.set("width", img.getWidth());

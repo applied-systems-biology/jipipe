@@ -44,7 +44,7 @@ import java.util.Set;
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
 
-    private NamedAnnotationGeneratorExpression.List annotations = new NamedAnnotationGeneratorExpression.List();
+    private NamedTextAnnotationGeneratorExpression.List annotations = new NamedTextAnnotationGeneratorExpression.List();
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     /**
@@ -62,7 +62,7 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
      */
     public AnnotateByExpression(AnnotateByExpression other) {
         super(other);
-        this.annotations = new NamedAnnotationGeneratorExpression.List(other.annotations);
+        this.annotations = new NamedTextAnnotationGeneratorExpression.List(other.annotations);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
     }
 
@@ -75,12 +75,12 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        for (NamedAnnotationGeneratorExpression expression : annotations) {
+        for (NamedTextAnnotationGeneratorExpression expression : annotations) {
             ExpressionVariables variableSet = new ExpressionVariables();
             variableSet.set("data_string", getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
             variableSet.set("data_type", JIPipe.getDataTypes().getIdOf(getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getDataClass()));
             variableSet.set("row", dataBatch.getInputSlotRows().get(getFirstInputSlot()));
-            dataBatch.addMergedAnnotation(expression.generateAnnotation(dataBatch.getMergedAnnotations().values(), variableSet),
+            dataBatch.addMergedTextAnnotation(expression.generateTextAnnotation(dataBatch.getMergedTextAnnotations().values(), variableSet),
                     annotationMergeStrategy
             );
         }
@@ -92,12 +92,12 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Name", singleRow = false)
     @StringParameterSettings(monospace = true)
     @ExpressionParameterSettings(variableSource = VariableSource.class)
-    public NamedAnnotationGeneratorExpression.List getAnnotations() {
+    public NamedTextAnnotationGeneratorExpression.List getAnnotations() {
         return annotations;
     }
 
     @JIPipeParameter("generated-annotation")
-    public void setAnnotations(NamedAnnotationGeneratorExpression.List annotations) {
+    public void setAnnotations(NamedTextAnnotationGeneratorExpression.List annotations) {
         this.annotations = annotations;
     }
 
@@ -117,7 +117,7 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
     public void setToExample(JIPipeWorkbench parent) {
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
             annotations.clear();
-            NamedAnnotationGeneratorExpression expression = annotations.addNewInstance();
+            NamedTextAnnotationGeneratorExpression expression = annotations.addNewInstance();
             expression.setKey(new AnnotationGeneratorExpression("\"My value\""));
             expression.setValue("My annotation");
             getEventBus().post(new ParameterChangedEvent(this, "generated-annotation"));

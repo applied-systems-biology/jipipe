@@ -113,7 +113,7 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         // Apply filter
         ROIListData outputData = new ROIListData();
         ExpressionVariables variableSet = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
         for (int row = 0; row < allStatistics.getRowCount(); row++) {

@@ -80,7 +80,7 @@ public class ListSubfolders extends JIPipeSimpleIteratingAlgorithm {
 
         // Expression parameters from annotations
         ExpressionVariables expressionVariables = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             expressionVariables.set(annotation.getName(), annotation.getValue());
         }
 

@@ -173,7 +173,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             final int row = 0;
             JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
-            dataBatch.addMergedAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
+            dataBatch.addMergedTextAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
             uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
             if (isPassThrough()) {
                 runPassThrough(slotProgress, dataBatch);
@@ -195,8 +195,8 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                     continue;
                 JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
                 dataBatch.setInputData(getFirstInputSlot(), row);
-                dataBatch.addMergedAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
-                dataBatch.addMergedAnnotations(getFirstInputSlot().getTextAnnotations(row), dataBatchGenerationSettings.getAnnotationMergeStrategy());
+                dataBatch.addMergedTextAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
+                dataBatch.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(row), dataBatchGenerationSettings.getAnnotationMergeStrategy());
                 dataBatch.addMergedDataAnnotations(getFirstInputSlot().getDataAnnotations(row), dataBatchGenerationSettings.getDataAnnotationMergeStrategy());
                 uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
                 dataBatches.add(dataBatch);
@@ -227,7 +227,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             dataBatches = JIPipeMergingDataBatchBuilder.convertMergingToSingleDataBatches(mergingDataBatches);
             if (dataBatches != null) {
                 for (JIPipeDataBatch dataBatch : dataBatches) {
-                    dataBatch.addMergedAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
+                    dataBatch.addMergedTextAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
                 }
             }
         }
@@ -287,7 +287,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
 
     private void uploadAdaptiveParameters(JIPipeDataBatch dataBatch, JIPipeParameterTree tree, Map<String, Object> parameterBackups, JIPipeProgressInfo progressInfo) {
         ExpressionVariables expressionVariables = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             expressionVariables.put(annotation.getName(), annotation.getValue());
         }
         for (StringQueryExpressionAndStringPairParameter overriddenParameter : getAdaptiveParameterSettings().getOverriddenParameters()) {
@@ -336,7 +336,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             name = target.getName();
         name = getAdaptiveParameterSettings().getParameterAnnotationsPrefix() + name;
         String value = JsonUtils.toJsonString(newValue);
-        dataBatch.addMergedAnnotation(new JIPipeTextAnnotation(name, value), JIPipeTextAnnotationMergeMode.Merge);
+        dataBatch.addMergedTextAnnotation(new JIPipeTextAnnotation(name, value), JIPipeTextAnnotationMergeMode.Merge);
     }
 
     @JIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")

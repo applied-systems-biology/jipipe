@@ -126,7 +126,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
         RUtils.parametersToR(code, variables);
 
         // Add annotations
-        RUtils.annotationsToR(code, dataBatch.getMergedAnnotations().values());
+        RUtils.annotationsToR(code, dataBatch.getMergedTextAnnotations().values());
 
         Path workDirectory = getNewScratch();
 

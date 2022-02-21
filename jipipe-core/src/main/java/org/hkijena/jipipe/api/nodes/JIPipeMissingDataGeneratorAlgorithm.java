@@ -138,8 +138,8 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
                     break;
                 JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
                 dataBatch.setInputData(getFirstInputSlot(), row);
-                dataBatch.addMergedAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
-                dataBatch.addMergedAnnotations(getFirstInputSlot().getTextAnnotations(row), dataBatchGenerationSettings.getAnnotationMergeStrategy());
+                dataBatch.addMergedTextAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
+                dataBatch.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(row), dataBatchGenerationSettings.getAnnotationMergeStrategy());
                 dataBatches.add(dataBatch);
             }
         } else {

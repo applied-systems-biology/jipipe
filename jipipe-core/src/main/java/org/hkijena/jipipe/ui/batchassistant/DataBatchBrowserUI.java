@@ -86,7 +86,7 @@ public class DataBatchBrowserUI extends JIPipeWorkbenchPanel {
 
     private void showDataSlot(JIPipeDataSlot dataSlot) {
         JIPipeDataTable filtered = dataSlot.slice(dataBatch.getInputSlotRows().get(dataSlot));
-        JIPipeExtendedDataTableInfoUI ui = new JIPipeExtendedDataTableInfoUI(getWorkbench(), filtered);
+        JIPipeExtendedDataTableInfoUI ui = new JIPipeExtendedDataTableInfoUI(getWorkbench(), filtered, true);
         splitPane.setRightComponent(ui);
         revalidate();
     }

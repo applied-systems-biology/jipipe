@@ -66,7 +66,7 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<Integer> selectedRows = new ArrayList<>();
         ExpressionVariables variableSet = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
         for (int row = 0; row < input.getRowCount(); row++) {

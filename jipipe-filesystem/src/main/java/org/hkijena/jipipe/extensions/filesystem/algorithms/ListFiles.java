@@ -82,7 +82,7 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         // Expression parameters from annotations
         ExpressionVariables expressionVariables = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             expressionVariables.set(annotation.getName(), annotation.getValue());
         }
 

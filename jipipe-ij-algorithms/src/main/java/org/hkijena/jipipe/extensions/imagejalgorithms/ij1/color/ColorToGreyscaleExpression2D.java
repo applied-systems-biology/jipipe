@@ -88,7 +88,7 @@ public class ColorToGreyscaleExpression2D extends JIPipeSimpleIteratingAlgorithm
         }
 
         ExpressionVariables variableSet = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
         variableSet.set("width", img.getWidth());

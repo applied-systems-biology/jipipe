@@ -137,8 +137,8 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "An expression that is used to generate annotations",
                 DefaultExpressionParameterEditorUI.class);
         registerParameterType("named-annotation-generator-expression",
-                NamedAnnotationGeneratorExpression.class,
-                NamedAnnotationGeneratorExpression.List.class,
+                NamedTextAnnotationGeneratorExpression.class,
+                NamedTextAnnotationGeneratorExpression.List.class,
                 null,
                 null,
                 "Named annotation generator expression",

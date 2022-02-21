@@ -96,7 +96,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
             // Find labels to keep
             labelsToKeep.clear();
             variables.clear();
-            for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+            for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
                 variables.set(annotation.getName(), annotation.getValue());
             }
             for (int row = 0; row < forRoi.getRowCount(); row++) {

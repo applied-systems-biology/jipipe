@@ -46,19 +46,13 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerDatatype("jipipe:data",
                 JIPipeData.class,
-                ResourceUtils.getPluginResource("icons/data-types/data-type.png"),
-                null,
-                null);
+                ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
         registerDatatype("jipipe:empty-data",
                 JIPipeEmptyData.class,
-                ResourceUtils.getPluginResource("icons/data-types/data-type.png"),
-                null,
-                null);
+                ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
         registerDatatype("jipipe:data-table",
                 JIPipeDataTable.class,
-                ResourceUtils.getPluginResource("icons/data-types/data-table.png"),
-                null,
-                null);
+                ResourceUtils.getPluginResource("icons/data-types/data-table.png"));
         registerNodeTypeCategory(new InternalNodeTypeCategory());
         registerNodeTypeCategory(new DataSourceNodeTypeCategory());
         registerNodeTypeCategory(new FileSystemNodeTypeCategory());

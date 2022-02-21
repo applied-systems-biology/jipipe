@@ -93,13 +93,13 @@ public class ThresholdByAnnotation2DAlgorithm extends JIPipeSimpleIteratingAlgor
         float maxThreshold = Float.POSITIVE_INFINITY;
 
         if (minThresholdAnnotation.isEnabled()) {
-            JIPipeTextAnnotation annotation = dataBatch.getMergedAnnotation(minThresholdAnnotation.getContent());
+            JIPipeTextAnnotation annotation = dataBatch.getMergedTextAnnotation(minThresholdAnnotation.getContent());
             if (annotation != null) {
                 minThreshold = NumberUtils.createFloat(annotation.getValue().replace(',', '.'));
             }
         }
         if (maxThresholdAnnotation.isEnabled()) {
-            JIPipeTextAnnotation annotation = dataBatch.getMergedAnnotation(maxThresholdAnnotation.getContent());
+            JIPipeTextAnnotation annotation = dataBatch.getMergedTextAnnotation(maxThresholdAnnotation.getContent());
             if (annotation != null) {
                 maxThreshold = NumberUtils.createFloat(annotation.getValue().replace(',', '.'));
             }

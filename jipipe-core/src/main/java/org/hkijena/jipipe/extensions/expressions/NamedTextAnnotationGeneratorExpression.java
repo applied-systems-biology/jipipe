@@ -19,14 +19,14 @@ import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
 
 import java.util.Collection;
 
-public class NamedAnnotationGeneratorExpression extends PairParameter<AnnotationGeneratorExpression, String> {
-    public NamedAnnotationGeneratorExpression() {
+public class NamedTextAnnotationGeneratorExpression extends PairParameter<AnnotationGeneratorExpression, String> {
+    public NamedTextAnnotationGeneratorExpression() {
         super(AnnotationGeneratorExpression.class, String.class);
         setKey(new AnnotationGeneratorExpression());
         setValue("");
     }
 
-    public NamedAnnotationGeneratorExpression(PairParameter<AnnotationGeneratorExpression, String> other) {
+    public NamedTextAnnotationGeneratorExpression(PairParameter<AnnotationGeneratorExpression, String> other) {
         super(other);
     }
 
@@ -37,20 +37,20 @@ public class NamedAnnotationGeneratorExpression extends PairParameter<Annotation
      * @param variableSet existing variables
      * @return the annotation
      */
-    public JIPipeTextAnnotation generateAnnotation(Collection<JIPipeTextAnnotation> annotations, ExpressionVariables variableSet) {
+    public JIPipeTextAnnotation generateTextAnnotation(Collection<JIPipeTextAnnotation> annotations, ExpressionVariables variableSet) {
         return new JIPipeTextAnnotation(getValue(), getKey().generateAnnotationValue(annotations, variableSet));
     }
 
-    public static class List extends ListParameter<NamedAnnotationGeneratorExpression> {
+    public static class List extends ListParameter<NamedTextAnnotationGeneratorExpression> {
 
         public List() {
-            super(NamedAnnotationGeneratorExpression.class);
+            super(NamedTextAnnotationGeneratorExpression.class);
         }
 
         public List(List other) {
-            super(NamedAnnotationGeneratorExpression.class);
-            for (NamedAnnotationGeneratorExpression expression : other) {
-                add(new NamedAnnotationGeneratorExpression(expression));
+            super(NamedTextAnnotationGeneratorExpression.class);
+            for (NamedTextAnnotationGeneratorExpression expression : other) {
+                add(new NamedTextAnnotationGeneratorExpression(expression));
             }
         }
     }

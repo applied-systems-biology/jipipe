@@ -93,7 +93,7 @@ public class JIPipeMergingDataBatchBuilder {
                     continue;
                 int targetRow = entry.getValue().iterator().next();
                 singleBatch.setInputData(entry.getKey(), targetRow);
-                singleBatch.setMergedTextAnnotations(batch.getMergedAnnotations());
+                singleBatch.setMergedTextAnnotations(batch.getMergedTextAnnotations());
                 singleBatch.setMergedDataAnnotations(batch.getMergedDataAnnotations());
             }
             result.add(singleBatch);
@@ -266,7 +266,7 @@ public class JIPipeMergingDataBatchBuilder {
                 for (JIPipeDataSlot slot : slotList) {
                     Multimap<String, Integer> slotMap = matchedRows.get(slot);
                     dataBatch.addInputData(slot, slotMap.get(key));
-                    dataBatch.addMergedAnnotations(slot.getTextAnnotations(slotMap.get(key)), annotationMergeStrategy);
+                    dataBatch.addMergedTextAnnotations(slot.getTextAnnotations(slotMap.get(key)), annotationMergeStrategy);
                     dataBatch.addMergedDataAnnotations(slot.getDataAnnotations(slotMap.get(key)), getDataAnnotationMergeStrategy());
                 }
                 dataBatches.add(dataBatch);
@@ -315,7 +315,7 @@ public class JIPipeMergingDataBatchBuilder {
                     annotations.addAll(slot.getTextAnnotations(dataBatch.getInputRows(slot)));
                     dataAnnotations.addAll(slot.getDataAnnotations(dataBatch.getInputRows(slot)));
                 }
-                dataBatch.addMergedAnnotations(annotations, getAnnotationMergeStrategy());
+                dataBatch.addMergedTextAnnotations(annotations, getAnnotationMergeStrategy());
                 dataBatch.addMergedDataAnnotations(dataAnnotations, getDataAnnotationMergeStrategy());
             }
         }
@@ -348,7 +348,7 @@ public class JIPipeMergingDataBatchBuilder {
                     batch.addEmptySlot(slot2);
                 }
                 batch.addInputData(slot, row);
-                batch.addMergedAnnotations(slot.getTextAnnotations(row), getAnnotationMergeStrategy());
+                batch.addMergedTextAnnotations(slot.getTextAnnotations(row), getAnnotationMergeStrategy());
                 batch.addMergedDataAnnotations(slot.getDataAnnotations(row), getDataAnnotationMergeStrategy());
                 split.add(batch);
             }
@@ -379,7 +379,7 @@ public class JIPipeMergingDataBatchBuilder {
                 dataAnnotations.addAll(slot.getDataAnnotations(row));
             }
             progressInfo.log("Merging " + annotations.size() + " annotations");
-            batch.addMergedAnnotations(annotations, getAnnotationMergeStrategy());
+            batch.addMergedTextAnnotations(annotations, getAnnotationMergeStrategy());
             batch.addMergedDataAnnotations(dataAnnotations, getDataAnnotationMergeStrategy());
         }
         return Arrays.asList(batch);
@@ -541,7 +541,7 @@ public class JIPipeMergingDataBatchBuilder {
                     continue;
                 dataBatch.addInputData(rowNode.slot, rowNode.rows);
                 for (Integer row : rowNode.rows) {
-                    dataBatch.addMergedAnnotations(rowNode.slot.getTextAnnotations(row), annotationMergeStrategy);
+                    dataBatch.addMergedTextAnnotations(rowNode.slot.getTextAnnotations(row), annotationMergeStrategy);
                     dataBatch.addMergedDataAnnotations(rowNode.slot.getDataAnnotations(row), dataAnnotationMergeStrategy);
                 }
 

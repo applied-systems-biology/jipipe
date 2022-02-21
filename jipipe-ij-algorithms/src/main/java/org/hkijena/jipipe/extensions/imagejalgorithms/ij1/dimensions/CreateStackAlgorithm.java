@@ -97,7 +97,7 @@ public class CreateStackAlgorithm extends JIPipeMergingAlgorithm {
             JIPipeTextAnnotation defaultCounter = new JIPipeTextAnnotation(counterAnnotation, "");
             sortedInputRows = inputRows.stream().sorted(Comparator.comparing(row ->
                     getFirstInputSlot().getTextAnnotationOr(row, counterAnnotation, defaultCounter))).collect(Collectors.toList());
-            dataBatch.removeMergedAnnotation(counterAnnotation);
+            dataBatch.removeMergedTextAnnotation(counterAnnotation);
         } else {
             sortedInputRows = new ArrayList<>(inputRows);
         }

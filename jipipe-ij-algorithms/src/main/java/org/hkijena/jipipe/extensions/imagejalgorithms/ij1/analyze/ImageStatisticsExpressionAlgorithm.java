@@ -126,7 +126,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
         parameters.set("num_c", img.getNChannels());
         parameters.set("num_t", img.getNFrames());
 
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             parameters.set(annotation.getName(), annotation.getValue());
         }
 

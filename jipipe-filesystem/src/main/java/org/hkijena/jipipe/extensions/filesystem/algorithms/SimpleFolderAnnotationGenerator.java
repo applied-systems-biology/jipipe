@@ -61,7 +61,7 @@ public class SimpleFolderAnnotationGenerator extends JIPipeSimpleIteratingAlgori
         if (!StringUtils.isNullOrEmpty(generatedAnnotation)) {
             FolderData inputData = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo);
             String discriminator = inputData.toPath().getFileName().toString();
-            dataBatch.addMergedAnnotation(new JIPipeTextAnnotation(generatedAnnotation, discriminator), JIPipeTextAnnotationMergeMode.OverwriteExisting);
+            dataBatch.addMergedTextAnnotation(new JIPipeTextAnnotation(generatedAnnotation, discriminator), JIPipeTextAnnotationMergeMode.OverwriteExisting);
             dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
         }
     }

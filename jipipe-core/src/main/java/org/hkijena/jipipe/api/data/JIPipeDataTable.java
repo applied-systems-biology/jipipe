@@ -876,6 +876,31 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     }
 
     /**
+     * Adds data as virtual data reference
+     *
+     * @param data   the data
+     * @param annotations   the annotations
+     * @param mergeStrategy merge strategy
+     */
+    public void addData(JIPipeData data, List<JIPipeTextAnnotation> annotations, JIPipeTextAnnotationMergeMode mergeStrategy,
+                        List<JIPipeDataAnnotation> dataAnnotations, JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy) {
+        if (!accepts(data))
+            throw new IllegalArgumentException("Tried to add data of type " + data.getClass() + ", but slot only accepts "
+                    + acceptedDataType + ". A converter could not be found.");
+        if (!annotations.isEmpty()) {
+            annotations = mergeStrategy.merge(annotations);
+        }
+        this.data.add(new JIPipeVirtualData(data));
+        for (JIPipeTextAnnotation annotation : annotations) {
+            List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnData(annotation.getName());
+            annotationArray.set(getRowCount() - 1, annotation);
+        }
+        for (JIPipeDataAnnotation annotation : dataAnnotationMergeStrategy.merge(dataAnnotations)) {
+            setVirtualDataAnnotation(getRowCount() - 1, annotation.getName(), annotation.getVirtualData());
+        }
+    }
+
+    /**
      * Gets the true type of the data at given row
      *
      * @param row the row
@@ -929,7 +954,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        JIPipeExtendedDataTableInfoUI tableUI = new JIPipeExtendedDataTableInfoUI(workbench, this);
+        JIPipeExtendedDataTableInfoUI tableUI = new JIPipeExtendedDataTableInfoUI(workbench, this, true);
         JFrame frame = new JFrame(displayName);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
@@ -979,6 +1004,6 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @return the location. default value if no info is available
      */
     public String getLocation(String key, String defaultValue) {
-        return null;
+        return defaultValue;
     }
 }

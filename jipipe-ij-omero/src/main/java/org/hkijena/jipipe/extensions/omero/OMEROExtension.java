@@ -59,10 +59,10 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerSettingsSheet(OMEROSettings.ID, "OMERO", UIUtils.getIconFromResources("apps/omero.png"), "Extensions", null, new OMEROSettings());
-        registerDatatype("omero-group-id", OMEROGroupReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"), null, null);
-        registerDatatype("omero-project-id", OMEROProjectReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"), null, null);
-        registerDatatype("omero-dataset-id", OMERODatasetReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"), null, null);
-        registerDatatype("omero-image-id", OMEROImageReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"), null, null);
+        registerDatatype("omero-group-id", OMEROGroupReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
+        registerDatatype("omero-project-id", OMEROProjectReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
+        registerDatatype("omero-dataset-id", OMERODatasetReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
+        registerDatatype("omero-image-id", OMEROImageReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
 
         registerNodeType("omero-image-id-definition", OMEROImageReferenceDataSource.class);
         registerNodeType("omero-dataset-id-definition", OMERODatasetReferenceDataSource.class);

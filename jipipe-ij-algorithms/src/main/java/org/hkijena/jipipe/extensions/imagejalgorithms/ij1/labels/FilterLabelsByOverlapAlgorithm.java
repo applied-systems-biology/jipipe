@@ -142,7 +142,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Write annotations map
         Map<String, String> annotations = new HashMap<>();
-        for (Map.Entry<String, JIPipeTextAnnotation> entry : dataBatch.getMergedAnnotations().entrySet()) {
+        for (Map.Entry<String, JIPipeTextAnnotation> entry : dataBatch.getMergedTextAnnotations().entrySet()) {
             annotations.put(entry.getKey(), entry.getValue().getValue());
         }
         variables.set("annotations", annotations);

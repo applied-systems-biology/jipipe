@@ -61,8 +61,6 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
         registerDatatype("annotation-table",
                 AnnotationTableData.class,
                 ResourceUtils.getPluginResource("icons/data-types/annotation-table.png"),
-                null,
-                null,
                 new OpenResultsTableInImageJDataOperation(),
                 new OpenResultsTableInJIPipeTabDataOperation(),
                 new OpenInNativeApplicationDataImportOperation(".csv"));

@@ -125,7 +125,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         StringBuilder finalCode = new StringBuilder();
         // Inject annotations
         finalCode.append("function getJIPipeAnnotation(key) {\n");
-        for (Map.Entry<String, JIPipeTextAnnotation> entry : dataBatch.getMergedAnnotations().entrySet()) {
+        for (Map.Entry<String, JIPipeTextAnnotation> entry : dataBatch.getMergedTextAnnotations().entrySet()) {
             finalCode.append("if (key == \"").append(MacroUtils.escapeString(entry.getKey())).append("\") { return \"").append(MacroUtils.escapeString(entry.getValue().getValue())).append("\"; }\n");
         }
         finalCode.append("return \"\";\n");

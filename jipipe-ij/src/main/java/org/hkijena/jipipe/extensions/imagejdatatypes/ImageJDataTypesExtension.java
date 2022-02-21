@@ -322,7 +322,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 new AddToROIManagerDataDisplay(),
                 new AddROIToActiveJIPipeImageViewerDataDisplay(),
                 new AddROIToJIPipeImageViewerDataDisplay());
-        registerDatatype("imagej-lut", LUTData.class, ResourceUtils.getPluginResource("icons/data-types/lut.png"), null, null);
+        registerDatatype("imagej-lut", LUTData.class, ResourceUtils.getPluginResource("icons/data-types/lut.png"));
         registerImageJDataAdapter(new ROIDataImageJAdapter(), ROIDataImporterUI.class);
         registerDatatype("imagej-results-table",
                 ResultsTableData.class,

@@ -51,9 +51,7 @@ public class MultiParametersExtension extends JIPipePrepackagedDefaultJavaExtens
 
         // Register data types
         registerDatatype("parameters", ParametersData.class,
-                ResourceUtils.getPluginResource("icons/data-types/parameters.png"),
-                null,
-                null);
+                ResourceUtils.getPluginResource("icons/data-types/parameters.png"));
     }
 
     @Override

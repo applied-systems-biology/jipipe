@@ -89,36 +89,26 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
     private void registerColumnSources() {
         registerDatatype("table-column-row-index",
                 RowIndexTableColumn.class,
-                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                null,
-                null);
+                ResourceUtils.getPluginResource("icons/data-types/table-column.png"));
         registerDatatype("table-column-zero",
                 ZeroTableColumn.class,
-                ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                null,
-                null);
+                ResourceUtils.getPluginResource("icons/data-types/table-column.png"));
     }
 
     private void registerDataTypes() {
         registerDatatype("table-column",
                 TableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                null,
-                null,
                 new OpenResultsTableInImageJDataOperation(),
                 new OpenResultsTableInJIPipeTabDataOperation());
         registerDatatype("table-column-numeric",
                 DoubleArrayTableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                null,
-                null,
                 new OpenResultsTableInImageJDataOperation(),
                 new OpenResultsTableInJIPipeTabDataOperation());
         registerDatatype("table-column-string",
                 StringArrayTableColumn.class,
                 ResourceUtils.getPluginResource("icons/data-types/table-column.png"),
-                null,
-                null,
                 new OpenResultsTableInImageJDataOperation(),
                 new OpenResultsTableInJIPipeTabDataOperation());
         registerDatatypeConversion(new DoubleArrayColumnToTableConverter());

@@ -94,7 +94,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         int sy = img.getHeight();
 
         ExpressionVariables variables = new ExpressionVariables();
-        ImagePlusPropertiesExpressionParameterVariableSource.extractValues(variables, img, dataBatch.getMergedAnnotations().values());
+        ImagePlusPropertiesExpressionParameterVariableSource.extractValues(variables, img, dataBatch.getMergedTextAnnotations().values());
 
         if (xAxis.isEnabled() && yAxis.isEnabled()) {
             variables.set("x", sx);

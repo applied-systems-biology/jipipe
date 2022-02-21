@@ -71,8 +71,8 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
                     break;
                 JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
                 dataBatch.setInputData(getFirstInputSlot(), row);
-                dataBatch.addMergedAnnotations(parameterAnnotations, getDataBatchGenerationSettings().getAnnotationMergeStrategy());
-                dataBatch.addMergedAnnotations(getFirstInputSlot().getTextAnnotations(row), getDataBatchGenerationSettings().getAnnotationMergeStrategy());
+                dataBatch.addMergedTextAnnotations(parameterAnnotations, getDataBatchGenerationSettings().getAnnotationMergeStrategy());
+                dataBatch.addMergedTextAnnotations(getFirstInputSlot().getTextAnnotations(row), getDataBatchGenerationSettings().getAnnotationMergeStrategy());
                 dataBatches.add(dataBatch);
             }
         } else {

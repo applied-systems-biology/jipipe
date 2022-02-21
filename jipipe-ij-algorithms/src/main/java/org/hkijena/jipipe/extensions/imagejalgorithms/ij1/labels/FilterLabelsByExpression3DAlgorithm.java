@@ -56,7 +56,7 @@ public class FilterLabelsByExpression3DAlgorithm extends JIPipeSimpleIteratingAl
         int[] numPixels = LabelImages.pixelCount(image, allLabels);
         TIntArrayList keptLabels = new TIntArrayList();
         ExpressionVariables parameters = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedAnnotations().values()) {
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             parameters.set(annotation.getName(), annotation.getValue());
         }
         for (int i = 0; i < allLabels.length; i++) {

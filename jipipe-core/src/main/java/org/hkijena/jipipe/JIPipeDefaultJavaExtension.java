@@ -208,6 +208,22 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     }
 
     /**
+     * Registers a new data type
+     *
+     * @param id         Data type id
+     * @param dataClass  Data class
+     * @param icon       Icon for the data type. Can be null.
+     * @param operations list of operations to register. passed to registerDatatypeOperation.
+     */
+    public void registerDatatype(String id, Class<? extends JIPipeData> dataClass, URL icon, JIPipeDataOperation... operations) {
+        registry.getDatatypeRegistry().register(id, dataClass, this);
+        if (icon != null) {
+            registry.getDatatypeRegistry().registerIcon(dataClass, icon);
+        }
+        registerDatatypeOperation(id, operations);
+    }
+
+    /**
      * Shortcut for registering import and display operations.
      * If an instance is both, it is registered for both.
      *
