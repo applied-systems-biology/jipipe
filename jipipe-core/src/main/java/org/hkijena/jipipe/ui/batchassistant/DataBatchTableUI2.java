@@ -110,6 +110,7 @@ public class DataBatchTableUI2 extends JIPipeWorkbenchPanel {
         SwingUtilities.invokeLater(() -> {
             dataTableModel.updateRenderedPreviews();
             UIUtils.packDataTable(table);
+            showDataRows(new int[0]);
         });
     }
 

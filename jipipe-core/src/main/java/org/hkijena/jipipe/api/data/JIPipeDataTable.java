@@ -14,15 +14,19 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeExtendedDataTableInfoUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.ScreenImage;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.List;
 
 @JIPipeDocumentation(name = "Data table", description = "A table of data")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Stores a data table in the standard JIPipe format (data-table.json plus numeric slot folders)",
@@ -963,6 +967,38 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         frame.setSize(800, 600);
         frame.setLocationRelativeTo(workbench.getWindow());
         frame.setVisible(true);
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        if(isEmpty()) {
+            return JIPipeData.super.preview(width, height);
+        }
+        else {
+            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+            JPanel panel = new JPanel(new GridBagLayout());
+            for (int i = 0; i < Math.min(9, getRowCount()); i++) {
+                JIPipeVirtualData virtualData = getVirtualData(i);
+
+                GridBagConstraints constraints = new GridBagConstraints();
+                constraints.gridx = i % 3;
+                constraints.gridy = i / 3;
+                constraints.weightx = 1;
+                constraints.weighty = 1;
+                constraints.anchor = GridBagConstraints.CENTER;
+
+                if(!virtualData.isVirtual()) {
+                    Component preview = virtualData.getData(progressInfo).preview(width / 3, height / 3);
+                    if(preview == null)
+                        preview = new JLabel("N/A");
+                    panel.add(preview, constraints);
+                }
+                else {
+                    panel.add(new JLabel(JIPipe.getDataTypes().getIconFor(virtualData.getDataClass())), constraints);
+                }
+            }
+            return panel;
+        }
     }
 
     @Override
