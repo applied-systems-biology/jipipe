@@ -65,7 +65,7 @@ public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
     /**
      * Adds an {@link JIPipeDataTableMetadata}
      *
-     * @param project  The project
+     * @param project   The project
      * @param dataTable The data slot
      */
     public void add(JIPipeProject project, JIPipeDataTable dataTable) {
@@ -85,7 +85,7 @@ public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
             compartment = new JIPipeProjectCompartment(new JIPipeEmptyNodeInfo());
         }
         JIPipeGraphNode node = null;
-        if(dataTable instanceof JIPipeDataSlot) {
+        if (dataTable instanceof JIPipeDataSlot) {
             node = ((JIPipeDataSlot) dataTable).getNode();
         }
 
@@ -180,7 +180,7 @@ public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
     @Override
     public String getColumnName(int columnIndex) {
         if (withCompartmentAndAlgorithm) {
-            if(columnIndex == 0)
+            if (columnIndex == 0)
                 return "Slot";
             if (columnIndex == 1)
                 return "Compartment";
@@ -199,7 +199,7 @@ public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
             else
                 return textAnnotationColumns.get(toAnnotationColumnIndex(columnIndex));
         } else {
-            if(columnIndex == 0)
+            if (columnIndex == 0)
                 return "Slot";
             if (columnIndex == 1)
                 return "Index";
@@ -435,15 +435,18 @@ public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
         if (component.isRenderedOrRendering())
             return;
         // We assume view column = 0
-        int viewRow = table.convertRowIndexToView(modelRow);
-        if(viewRow >= 0) {
-            Rectangle rect = table.getCellRect(viewRow, 0, true);
-            Point pt = viewport.getViewPosition();
-            rect.setLocation(rect.x - pt.x, rect.y - pt.y);
-            boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
-            if (overlaps) {
-                component.renderPreview();
+        try {
+            int viewRow = table.convertRowIndexToView(modelRow);
+            if (viewRow >= 0) {
+                Rectangle rect = table.getCellRect(viewRow, 0, true);
+                Point pt = viewport.getViewPosition();
+                rect.setLocation(rect.x - pt.x, rect.y - pt.y);
+                boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
+                if (overlaps) {
+                    component.renderPreview();
+                }
             }
+        } catch (IndexOutOfBoundsException e) {
         }
     }
 }

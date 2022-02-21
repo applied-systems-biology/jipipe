@@ -111,16 +111,20 @@ public class JIPipeRowDataAnnotationTableCellRenderer implements TableCellRender
                 JIPipeResultDataSlotPreview component = previews.get(modelRow);
                 if (component == null)
                     continue;
-                int viewRow = table.convertRowIndexToView(modelRow);
-                if(viewRow >= 0) {
-                    // We assume view column = 0
-                    Rectangle rect = table.getCellRect(modelRow, 0, true);
-                    Point pt = viewport.getViewPosition();
-                    rect.setLocation(rect.x - pt.x, rect.y - pt.y);
-                    boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
-                    if (overlaps) {
-                        component.renderPreview();
+                try {
+                    int viewRow = table.convertRowIndexToView(modelRow);
+                    if (viewRow >= 0) {
+                        // We assume view column = 0
+                        Rectangle rect = table.getCellRect(modelRow, 0, true);
+                        Point pt = viewport.getViewPosition();
+                        rect.setLocation(rect.x - pt.x, rect.y - pt.y);
+                        boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
+                        if (overlaps) {
+                            component.renderPreview();
+                        }
                     }
+                }
+                catch (IndexOutOfBoundsException e) {
                 }
             }
         }

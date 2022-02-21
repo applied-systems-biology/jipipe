@@ -253,16 +253,20 @@ public class JIPipeExtendedDataTableInfoModel implements TableModel {
     private void updateRenderedPreviewComponent(JViewport viewport, int modelRow, JIPipeCachedDataPreview component) {
         if (component.isRenderedOrRendering())
             return;
-        // We assume view column = 0
-        int viewRow = table.convertRowIndexToView(modelRow);
-        if(viewRow >= 0) {
-            Rectangle rect = table.getCellRect(viewRow, 0, true);
-            Point pt = viewport.getViewPosition();
-            rect.setLocation(rect.x - pt.x, rect.y - pt.y);
-            boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
-            if (overlaps) {
-                component.renderPreview();
+        try {
+            // We assume view column = 0
+            int viewRow = table.convertRowIndexToView(modelRow);
+            if (viewRow >= 0) {
+                Rectangle rect = table.getCellRect(viewRow, 0, true);
+                Point pt = viewport.getViewPosition();
+                rect.setLocation(rect.x - pt.x, rect.y - pt.y);
+                boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
+                if (overlaps) {
+                    component.renderPreview();
+                }
             }
+        }
+        catch (IndexOutOfBoundsException e) {
         }
     }
 }
