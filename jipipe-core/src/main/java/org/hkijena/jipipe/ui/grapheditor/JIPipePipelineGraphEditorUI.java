@@ -152,6 +152,12 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                 });
                 addedAlgorithms.add(info);
                 subMenu.add(addItem);
+
+                if(subMenu.getMenuComponentCount() >= 30) {
+                    JMenu moreMenu = new JMenu("More ...");
+                    subMenu.add(moreMenu);
+                    subMenu = moreMenu;
+                }
             }
         }
     }

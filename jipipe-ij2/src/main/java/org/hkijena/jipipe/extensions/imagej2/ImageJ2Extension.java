@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagej2;
 
-import net.imagej.ops.OpInfo;
-import net.imagej.ops.OpService;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
@@ -22,16 +20,14 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.Priority;
+import org.scijava.module.ModuleInfo;
+import org.scijava.module.ModuleService;
 import org.scijava.plugin.Plugin;
 
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * Extension that adds ImageJ2 algorithms
@@ -64,24 +60,15 @@ public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        OpService opService = context.getService(OpService.class);
-        Map<String, List<OpInfo>> groupedByFullName = opService.infos().stream().collect(Collectors.groupingBy(info -> StringUtils.nullToEmpty(info.getName())));
-        for (Map.Entry<String, List<OpInfo>> entry : groupedByFullName.entrySet()) {
-            if(StringUtils.isNullOrEmpty(entry.getKey()))
-                continue;
-            progressInfo.log("IJ2-Ops: Detected " + entry.getValue().size() + " ops of type " + entry.getKey());
-            for (OpInfo opInfo : entry.getValue()) {
-                try {
-                    ImageJ2OpNodeInfo nodeInfo = new ImageJ2OpNodeInfo(jiPipe, context, opInfo, entry.getValue().size() <= 1, progressInfo);
-                    if(!nodeInfo.isConversionSuccessful()) {
-                        progressInfo.log("Op " + opInfo.getName() + " could not be converted to JIPipe! Skipping.");
-                        continue;
-                    }
-                    registerNodeType(nodeInfo, UIUtils.getIconURLFromResources("actions/op.png"));
-                } catch (Exception | Error e) {
-                    progressInfo.log("Unable to register op " + opInfo.getName());
-                    progressInfo.log(e.toString());
-                }
+        ModuleService moduleService = context.getService(ModuleService.class);
+        for (ModuleInfo module : moduleService.getModules()) {
+            try {
+                ImageJ2ModuleNodeInfo nodeInfo = new ImageJ2ModuleNodeInfo(context, module, progressInfo);
+                registerNodeType(nodeInfo);
+            }
+            catch (Exception e) {
+                progressInfo.log("Unable to register " + module.getTitle() + " @ " + module.getDelegateClassName() );
+                progressInfo.log(e.toString());
             }
         }
     }
