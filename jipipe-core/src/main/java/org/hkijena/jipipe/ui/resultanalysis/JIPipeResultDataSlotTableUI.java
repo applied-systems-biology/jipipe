@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.JIPipeRun;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.ui.ExpressionBuilderUI;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -45,6 +47,8 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * UI that displays the {@link JIPipeDataTableMetadata} of an {@link JIPipeDataSlot}
@@ -128,6 +132,9 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         toolBar.setFloatable(false);
 
         searchTextField.addActionListener(e -> refreshTable());
+        searchTextField.addButton("Open expression editor",
+                UIUtils.getIconFromResources("actions/insert-math-expression.png"),
+                this::openSearchExpressionEditor);
         toolBar.add(searchTextField);
 
         JButton openFolderButton = new JButton("Open folder", UIUtils.getIconFromResources("actions/folder-open.png"));
@@ -164,6 +171,17 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
         PreviewControlUI previewControlUI = new PreviewControlUI();
         toolBar.add(previewControlUI);
+    }
+
+    private void openSearchExpressionEditor(SearchTextField searchTextField) {
+        Set<ExpressionParameterVariable> variables = new HashSet<>();
+        for (int i = 0; i < table.getModel().getColumnCount(); i++) {
+            variables.add(new ExpressionParameterVariable(table.getModel().getColumnName(i), "", table.getModel().getColumnName(i)));
+        }
+        String result = ExpressionBuilderUI.showDialog(getWorkbench().getWindow(), searchTextField.getText(), variables);
+        if(result != null) {
+            searchTextField.setText(result);
+        }
     }
 
     private void openResultsFolder() {

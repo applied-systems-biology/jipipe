@@ -22,6 +22,7 @@ import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -31,6 +32,7 @@ public class SearchTextField extends JPanel implements Predicate<String> {
 
     private final JXTextField textField = new JXTextField();
     private String[] searchStrings = new String[0];
+    private JPanel buttonPanel = new JPanel();
 
     /**
      * Creates a new instance
@@ -44,14 +46,20 @@ public class SearchTextField extends JPanel implements Predicate<String> {
         textField.setBorder(null);
         add(textField, BorderLayout.CENTER);
 
-        JButton clearButton = new JButton(UIUtils.getIconFromResources("actions/edit-clear.png"));
-        clearButton.setOpaque(false);
-        clearButton.setToolTipText("Clear");
-        clearButton.addActionListener(e -> setText(""));
-        UIUtils.makeFlat25x25(clearButton);
-        clearButton.setBorder(null);
-        add(clearButton, BorderLayout.EAST);
+        buttonPanel.setBackground(UIManager.getColor("TextField.background"));
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        add(buttonPanel, BorderLayout.EAST);
+        addButton("Clear search", UIUtils.getIconFromResources("actions/edit-clear.png"), (searchTextField) -> searchTextField.setText(""));
+    }
 
+    public void addButton(String name, Icon icon, Consumer<SearchTextField> action) {
+        JButton button = new JButton(icon);
+        button.setToolTipText(name);
+        button.setOpaque(false);
+        button.addActionListener(e -> action.accept(this));
+        UIUtils.makeFlat25x25(button);
+        button.setBorder(null);
+        buttonPanel.add(button);
     }
 
     /**

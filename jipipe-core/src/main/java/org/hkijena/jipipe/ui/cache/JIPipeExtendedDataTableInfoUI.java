@@ -21,6 +21,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.ui.ExpressionBuilderUI;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -30,6 +32,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PreviewControlUI;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeComponentCellRenderer;
+import org.hkijena.jipipe.ui.components.search.ExtendedDataTableSearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.search.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
@@ -52,6 +55,8 @@ import java.awt.event.MouseEvent;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * UI that displays a {@link JIPipeDataTable} that is cached
@@ -110,7 +115,7 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
             table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
         else
             table.setRowHeight(25);
-        table.setRowFilter(new SearchTextFieldTableRowFilter(searchTextField));
+        table.setRowFilter(new ExtendedDataTableSearchTextFieldTableRowFilter(searchTextField));
         TableColumnModel columnModel = table.getColumnModel();
         for (int i = 0; i < columnModel.getColumnCount(); ++i) {
             TableColumn column = columnModel.getColumn(i);
@@ -164,6 +169,9 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
         toolBar.setFloatable(false);
 
         searchTextField.addActionListener(e -> reloadTable());
+        searchTextField.addButton("Open expression editor",
+                UIUtils.getIconFromResources("actions/insert-math-expression.png"),
+                this::openSearchExpressionEditor);
         toolBar.add(searchTextField);
 
         // Export menu
@@ -220,6 +228,17 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
 
         PreviewControlUI previewControlUI = new PreviewControlUI();
         toolBar.add(previewControlUI);
+    }
+
+    private void openSearchExpressionEditor(SearchTextField searchTextField) {
+        Set<ExpressionParameterVariable> variables = new HashSet<>();
+        for (int i = 0; i < table.getModel().getColumnCount(); i++) {
+            variables.add(new ExpressionParameterVariable(table.getModel().getColumnName(i), "", table.getModel().getColumnName(i)));
+        }
+        String result = ExpressionBuilderUI.showDialog(getWorkbench().getWindow(), searchTextField.getText(), variables);
+        if(result != null) {
+            searchTextField.setText(result);
+        }
     }
 
     private void exportAsTable() {

@@ -25,6 +25,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.ui.ExpressionBuilderUI;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
@@ -34,6 +36,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PreviewControlUI;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeComponentCellRenderer;
+import org.hkijena.jipipe.ui.components.search.ExtendedDataTableSearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.search.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
@@ -77,7 +80,7 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
     /**
      * @param workbenchUI                 the workbench UI
      * @param dataTables                       The slots
-     * @param withCompartmentAndAlgorithm
+     * @param withCompartmentAndAlgorithm if the compartment and algorithm are included as columns
      */
     public JIPipeExtendedMultiDataTableInfoUI(JIPipeWorkbench workbenchUI, List<? extends JIPipeDataTable> dataTables, boolean withCompartmentAndAlgorithm) {
         super(workbenchUI);
@@ -123,7 +126,7 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
             column.setHeaderRenderer(new MultiDataSlotTableColumnRenderer(multiSlotTable));
         }
         table.setAutoCreateRowSorter(true);
-        table.setRowFilter(new SearchTextFieldTableRowFilter(searchTextField));
+        table.setRowFilter(new ExtendedDataTableSearchTextFieldTableRowFilter(searchTextField));
         UIUtils.packDataTable(table);
 
         int previewColumn = withCompartmentAndAlgorithm ? 4 : 2;
@@ -174,6 +177,9 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
         toolBar.setFloatable(false);
 
         searchTextField.addActionListener(e -> reloadTable());
+        searchTextField.addButton("Open expression editor",
+                UIUtils.getIconFromResources("actions/insert-math-expression.png"),
+                this::openSearchExpressionEditor);
         toolBar.add(searchTextField);
 
         // Export menu
@@ -230,6 +236,17 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
 
         PreviewControlUI previewControlUI = new PreviewControlUI();
         toolBar.add(previewControlUI);
+    }
+
+    private void openSearchExpressionEditor(SearchTextField searchTextField) {
+        Set<ExpressionParameterVariable> variables = new HashSet<>();
+        for (int i = 0; i < table.getModel().getColumnCount(); i++) {
+            variables.add(new ExpressionParameterVariable(table.getModel().getColumnName(i), "", table.getModel().getColumnName(i)));
+        }
+        String result = ExpressionBuilderUI.showDialog(getWorkbench().getWindow(), searchTextField.getText(), variables);
+        if(result != null) {
+            searchTextField.setText(result);
+        }
     }
 
     private void exportByMetadataExporter() {
