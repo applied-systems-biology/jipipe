@@ -43,7 +43,7 @@ public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
     private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
     private final ArrayList<JIPipeProjectCompartment> compartmentList = new ArrayList<>();
     private final ArrayList<JIPipeGraphNode> nodeList = new ArrayList<>();
-    private final List<String> annotationColumns = new ArrayList<>();
+    private final List<String> textAnnotationColumns = new ArrayList<>();
     private final List<String> dataAnnotationColumns = new ArrayList<>();
     private final ArrayList<JIPipeDataTable> slotList = new ArrayList<>();
     private final ArrayList<Integer> rowList = new ArrayList<>();
@@ -70,8 +70,8 @@ public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
      */
     public void add(JIPipeProject project, JIPipeDataTable dataTable) {
         for (String annotationColumn : dataTable.getAnnotationColumns()) {
-            if (!annotationColumns.contains(annotationColumn))
-                annotationColumns.add(annotationColumn);
+            if (!textAnnotationColumns.contains(annotationColumn))
+                textAnnotationColumns.add(annotationColumn);
         }
         for (String annotationColumn : dataTable.getDataAnnotationColumns()) {
             if (!dataAnnotationColumns.contains(annotationColumn))
@@ -130,9 +130,9 @@ public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
     @Override
     public int getColumnCount() {
         if (withCompartmentAndAlgorithm)
-            return annotationColumns.size() + dataAnnotationColumns.size() + 7;
+            return textAnnotationColumns.size() + dataAnnotationColumns.size() + 7;
         else
-            return annotationColumns.size() + dataAnnotationColumns.size() + 5;
+            return textAnnotationColumns.size() + dataAnnotationColumns.size() + 5;
     }
 
     /**
@@ -197,7 +197,7 @@ public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
             else if (toDataAnnotationColumnIndex(columnIndex) != -1)
                 return dataAnnotationColumns.get(toDataAnnotationColumnIndex(columnIndex));
             else
-                return annotationColumns.get(toAnnotationColumnIndex(columnIndex));
+                return textAnnotationColumns.get(toAnnotationColumnIndex(columnIndex));
         } else {
             if(columnIndex == 0)
                 return "Slot";
@@ -212,7 +212,7 @@ public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
             else if (toDataAnnotationColumnIndex(columnIndex) != -1)
                 return dataAnnotationColumns.get(toDataAnnotationColumnIndex(columnIndex));
             else
-                return annotationColumns.get(toAnnotationColumnIndex(columnIndex));
+                return textAnnotationColumns.get(toAnnotationColumnIndex(columnIndex));
         }
     }
 
@@ -284,7 +284,7 @@ public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
             else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
                 return getDataAnnotationPreviewComponent(rowIndex, columnIndex);
             } else {
-                String annotationColumn = annotationColumns.get(toAnnotationColumnIndex(columnIndex));
+                String annotationColumn = textAnnotationColumns.get(toAnnotationColumnIndex(columnIndex));
                 JIPipeDataTable slot = slotList.get(rowIndex);
                 return slot.getTextAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
             }
@@ -302,7 +302,7 @@ public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
             else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
                 return getDataAnnotationPreviewComponent(rowIndex, columnIndex);
             } else {
-                String annotationColumn = annotationColumns.get(toAnnotationColumnIndex(columnIndex));
+                String annotationColumn = textAnnotationColumns.get(toAnnotationColumnIndex(columnIndex));
                 JIPipeDataTable slot = slotList.get(rowIndex);
                 return slot.getTextAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
             }
@@ -359,8 +359,8 @@ public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
     /**
      * @return Additional columns
      */
-    public List<String> getAnnotationColumns() {
-        return annotationColumns;
+    public List<String> getTextAnnotationColumns() {
+        return textAnnotationColumns;
     }
 
     public List<String> getDataAnnotationColumns() {

@@ -150,7 +150,7 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
                 if (e.getClickCount() == 2) {
                     int[] selectedRows = table.getSelectedRows();
                     if (selectedRows.length > 0)
-                        handleSlotRowDefaultAction(selectedRows[0]);
+                        handleSlotRowDefaultAction(selectedRows[0], table.columnAtPoint(e.getPoint()));
                 }
             }
         });
@@ -264,11 +264,11 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
         }
     }
 
-    private void handleSlotRowDefaultAction(int selectedRow) {
+    private void handleSlotRowDefaultAction(int selectedRow, int selectedColumn) {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
-//        slot.getData(row, JIPipeData.class).display(slot.getNode().getName() + "/" + slot.getName() + "/" + row, getWorkbench());
+        int dataAnnotationColumn = selectedColumn >= 0 ? dataTableModel.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(selectedColumn)) : -1;
         JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), dataTable, row);
-        rowUI.handleDefaultAction();
+        rowUI.handleDefaultActionOrDisplayDataAnnotation(dataAnnotationColumn);
     }
 
     private void showDataRows(int[] selectedRows) {

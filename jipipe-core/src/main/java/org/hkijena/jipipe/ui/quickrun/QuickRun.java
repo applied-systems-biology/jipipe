@@ -70,6 +70,14 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
         if (!settings.isStoreIntermediateResults()) {
             HashSet<JIPipeGraphNode> disabled = new HashSet<>(run.getGraph().getGraphNodes());
             disabled.remove(targetNodeCopy);
+            if(!settings.isStoreIntermediateResults() && settings.isExcludeSelected()) {
+                for (JIPipeDataSlot inputSlot : targetNodeCopy.getInputSlots()) {
+                    for (JIPipeDataSlot sourceSlot : getRun().getGraph().getSourceSlots(inputSlot)) {
+                        JIPipeGraphNode node = sourceSlot.getNode();
+                        disabled.remove(node);
+                    }
+                }
+            }
             configuration.setDisableSaveToDiskNodes(disabled);
             configuration.setDisableStoreToCacheNodes(disabled);
         }
@@ -127,6 +135,16 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
             if (!predecessorAlgorithms.contains(node)) {
                 if (node instanceof JIPipeAlgorithm) {
                     ((JIPipeAlgorithm) node).setEnabled(false);
+                }
+            }
+        }
+        if(settings.isExcludeSelected() && !settings.isStoreIntermediateResults()) {
+            for (JIPipeDataSlot inputSlot : targetNodeCopy.getInputSlots()) {
+                for (JIPipeDataSlot sourceSlot : getRun().getGraph().getSourceSlots(inputSlot)) {
+                    JIPipeGraphNode node = sourceSlot.getNode();
+                    if(node instanceof JIPipeAlgorithm) {
+                        ((JIPipeAlgorithm) node).setEnabled(true);
+                    }
                 }
             }
         }

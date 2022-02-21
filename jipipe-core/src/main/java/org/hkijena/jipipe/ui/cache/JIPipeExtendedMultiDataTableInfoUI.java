@@ -160,7 +160,7 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
                 if (e.getClickCount() == 2) {
                     int[] selectedRows = table.getSelectedRows();
                     if (selectedRows.length > 0)
-                        handleSlotRowDefaultAction(selectedRows[0]);
+                        handleSlotRowDefaultAction(selectedRows[0], table.columnAtPoint(e.getPoint()));
                 }
             }
         });
@@ -284,12 +284,18 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
         }
     }
 
-    private void handleSlotRowDefaultAction(int selectedRow) {
+    private void handleSlotRowDefaultAction(int selectedRow, int selectedColumn) {
         int multiRow = table.getRowSorter().convertRowIndexToModel(selectedRow);
+        int multiDataAnnotationColumn = selectedColumn >= 0 ? multiSlotTable.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(selectedColumn)) : -1;
         JIPipeDataTable slot = multiSlotTable.getSlot(multiRow);
         int row = multiSlotTable.getRow(multiRow);
+        int dataAnnotationColumn = -1;
+        if(multiDataAnnotationColumn >= 0) {
+            String name = multiSlotTable.getDataAnnotationColumns().get(multiDataAnnotationColumn);
+            dataAnnotationColumn = slot.getDataAnnotationColumns().indexOf(name);
+        }
         JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), slot, row);
-        rowUI.handleDefaultAction();
+        rowUI.handleDefaultActionOrDisplayDataAnnotation(dataAnnotationColumn);
 //        slot.getData(row, JIPipeData.class).display(slot.getNode().getName() + "/" + slot.getName() + "/" + row, getWorkbench());
     }
 
@@ -378,7 +384,7 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
                         info);
                 return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
             } else {
-                String info = dataTable.getAnnotationColumns().get(dataTable.toAnnotationColumnIndex(modelColumn));
+                String info = dataTable.getTextAnnotationColumns().get(dataTable.toAnnotationColumnIndex(modelColumn));
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                         UIUtils.getIconFromResources("data-types/annotation.png"),
                         info);

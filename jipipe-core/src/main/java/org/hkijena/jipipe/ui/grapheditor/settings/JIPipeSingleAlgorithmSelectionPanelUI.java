@@ -162,7 +162,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                                     false,
                                     true,
                                     false,
-                                    true,
+                                    false,
                                     true));
                     batchAssistantTabContent.add(browserUI, BorderLayout.CENTER);
                 }

@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.ui.batchassistant;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -24,7 +22,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.*;
@@ -38,8 +35,6 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeAnnotationTableCellRenderer;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -145,8 +140,9 @@ public class DataBatchTableUI2 extends JIPipeWorkbenchPanel {
             public void mouseClicked(MouseEvent e) {
                 if (e.getClickCount() == 2) {
                     int[] selectedRows = table.getSelectedRows();
-                    if (selectedRows.length > 0)
-                        handleSlotRowDefaultAction(selectedRows[0]);
+                    if (selectedRows.length > 0) {
+                        handleSlotRowDefaultAction(selectedRows[0], table.columnAtPoint(e.getPoint()));
+                    }
                 }
             }
         });
@@ -260,11 +256,11 @@ public class DataBatchTableUI2 extends JIPipeWorkbenchPanel {
         }
     }
 
-    private void handleSlotRowDefaultAction(int selectedRow) {
+    private void handleSlotRowDefaultAction(int selectedRow, int selectedColumn) {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
-//        slot.getData(row, JIPipeData.class).display(slot.getNode().getName() + "/" + slot.getName() + "/" + row, getWorkbench());
+        int dataAnnotationColumn = selectedColumn >= 0 ? dataTableModel.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(selectedColumn)) : -1;
         JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), dataTable, row);
-        rowUI.handleDefaultAction();
+        rowUI.handleDefaultActionOrDisplayDataAnnotation(dataAnnotationColumn);
     }
 
     private void showDataRows(int[] selectedRows) {
