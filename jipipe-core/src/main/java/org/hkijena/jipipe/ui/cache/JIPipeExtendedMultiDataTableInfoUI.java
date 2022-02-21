@@ -215,13 +215,14 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
         openReferenceWindowItem.addActionListener(e-> {
             openTableInNewTab();
         });
+        windowMenu.add(openReferenceWindowItem);
 
         JMenuItem openFilteredWindowItem = new JMenuItem("Apply filter", UIUtils.getIconFromResources("actions/filter.png"));
         openFilteredWindowItem.addActionListener(e-> {
             openFilteredTableInNewTab();
         });
+        windowMenu.add(openFilteredWindowItem);
 
-        windowMenu.add(openReferenceWindowItem);
 
         // Size controls
         JButton autoSizeButton = new JButton(UIUtils.getIconFromResources("actions/zoom-fit-width.png"));
