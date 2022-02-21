@@ -248,9 +248,9 @@ public class DocumentTabPane extends JPanel {
                 String newName = JOptionPane.showInputDialog(this, "Rename tab '" + titleLabel.getText() + "' to ...", titleLabel.getText());
                 if (newName != null && !newName.isEmpty()) {
                     tab.setTitle(newName);
+                    titleLabel.setText(newName);
                 }
             });
-            tabPanel.add(Box.createHorizontalStrut(8));
             popupMenu.add(renameButton);
         }
 
