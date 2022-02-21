@@ -48,16 +48,18 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private final Runnable runTestBench;
     private final ArrayDeque<JIPipeMergingDataBatch> infiniteScrollingQueue = new ArrayDeque<>();
     private final JIPipeParameterCollection batchSettings;
-    private JPanel errorUI;
-    private Multimap<String, JIPipeDataSlot> currentCache = HashMultimap.create();
+    private final Multimap<String, JIPipeDataSlot> currentCache = HashMultimap.create();
+    AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, AutoResizeSplitPane.RATIO_1_TO_3);
+    private JPanel batchPanel;
+    private JPanel errorPanel;
     private JLabel errorLabel;
-    private FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
+    private final FormPanel batchListPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
     private final Timer scrollToBeginTimer = new Timer(200, e -> scrollToBeginning());
     private JLabel batchPreviewNumberLabel;
     private JLabel batchPreviewMissingLabel;
     private JLabel batchPreviewDuplicateLabel;
     private JIPipeGraphNode batchesNodeCopy;
-    private List<JIPipeMergingDataBatch> batches = new ArrayList<>();
+    private final List<JIPipeMergingDataBatch> batches = new ArrayList<>();
     private boolean autoRefresh = true;
     private DataBatchGeneratorWorker lastWorker = null;
 
@@ -125,70 +127,23 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private void updateStatus() {
         updateCurrentCache();
         if (currentCache.isEmpty()) {
-            removeAll();
-            add(errorUI, BorderLayout.CENTER);
-            revalidate();
-            repaint();
+            switchToError();
         } else {
-            removeAll();
-            switchToEditor();
-            revalidate();
-            repaint();
+            switchToBatches();
         }
     }
 
-    private void switchToEditor() {
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        toolBar.add(Box.createHorizontalGlue());
+    private void switchToError() {
+        splitPane.setBottomComponent(errorPanel);
+        revalidate();
+        repaint();
+    }
 
-        JButton refreshButton = new JButton("Refresh batches", UIUtils.getIconFromResources("actions/view-refresh.png"));
-        refreshButton.setToolTipText("Refreshes the preview of generated batches");
-        refreshButton.addActionListener(e -> refreshBatchPreview());
-        toolBar.add(refreshButton);
-
-        JToggleButton autoRefreshButton = new JToggleButton(UIUtils.getIconFromResources("actions/quickopen-function.png"));
-        autoRefreshButton.setToolTipText("Auto refresh");
-        autoRefreshButton.setSelected(autoRefresh);
-        autoRefreshButton.addActionListener(e -> {
-            autoRefresh = autoRefreshButton.isSelected();
-            if (autoRefresh)
-                refreshBatchPreview();
-        });
-        toolBar.add(autoRefreshButton);
-
-        add(toolBar, BorderLayout.NORTH);
-
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, AutoResizeSplitPane.RATIO_1_TO_3);
-        add(splitPane, BorderLayout.CENTER);
-
-        ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
-                ((JIPipeDataBatchAlgorithm) algorithm).getGenerationSettingsInterface(),
-                null,
-                ParameterPanel.WITH_SCROLLING);
-        splitPane.setTopComponent(parameterPanel);
-
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        bottomPanel.add(formPanel, BorderLayout.CENTER);
-
-        JToolBar batchPreviewOverview = new JToolBar();
-
-        batchPreviewNumberLabel = new JLabel();
-        batchPreviewOverview.add(batchPreviewNumberLabel);
-        batchPreviewOverview.add(Box.createHorizontalGlue());
-
-        batchPreviewMissingLabel = new JLabel("Missing items found!", UIUtils.getIconFromResources("emblems/warning.png"), JLabel.LEFT);
-        batchPreviewOverview.add(batchPreviewMissingLabel);
-
-        batchPreviewDuplicateLabel = new JLabel("Multiple items per group", UIUtils.getIconFromResources("emblems/emblem-information.png"), JLabel.LEFT);
-        batchPreviewOverview.add(batchPreviewDuplicateLabel);
-
-        batchPreviewOverview.setFloatable(false);
-        bottomPanel.add(batchPreviewOverview, BorderLayout.NORTH);
-
-        splitPane.setBottomComponent(bottomPanel);
-
+    private void switchToBatches() {
+        splitPane.setBottomComponent(batchPanel);
         refreshBatchPreview();
+        revalidate();
+        repaint();
     }
 
     private void refreshBatchPreview() {
@@ -210,7 +165,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         // Generate dry-run
         batches.clear();
         infiniteScrollingQueue.clear();
-        formPanel.clear();
+        batchListPanel.clear();
 
         lastWorker = new DataBatchGeneratorWorker(this, batchesNodeCopy);
         lastWorker.execute();
@@ -218,7 +173,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
 
     private void displayBatches(List<JIPipeMergingDataBatch> batches, JIPipeGraphNode algorithm) {
         infiniteScrollingQueue.clear();
-        formPanel.clear();
+        batchListPanel.clear();
 
         batchPreviewNumberLabel.setText(batches.size() + " batches");
         batchPreviewMissingLabel.setVisible(false);
@@ -233,58 +188,107 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
             }
             infiniteScrollingQueue.addLast(batch);
         }
-        formPanel.addVerticalGlue();
+        batchListPanel.addVerticalGlue();
         SwingUtilities.invokeLater(this::updateInfiniteScroll);
         scrollToBeginTimer.restart();
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        initializeErrorUI();
-        formPanel.getScrollPane().getVerticalScrollBar().addAdjustmentListener(e -> {
+        add(splitPane, BorderLayout.CENTER);
+        initializeToolBar();
+        initializeParameterPanel();
+        initializeBatchPanel();
+        initializeErrorPanel();
+        batchListPanel.getScrollPane().getVerticalScrollBar().addAdjustmentListener(e -> {
             updateInfiniteScroll();
         });
     }
 
-    private void initializeErrorUI() {
-        errorUI = new JPanel(new BorderLayout());
+    private void initializeBatchPanel() {
+        batchPanel = new JPanel(new BorderLayout());
+        batchPanel.add(batchListPanel, BorderLayout.CENTER);
 
+        JToolBar batchPreviewOverview = new JToolBar();
+
+        batchPreviewNumberLabel = new JLabel();
+        batchPreviewOverview.add(batchPreviewNumberLabel);
+        batchPreviewOverview.add(Box.createHorizontalGlue());
+
+        batchPreviewMissingLabel = new JLabel("Missing items found!", UIUtils.getIconFromResources("emblems/warning.png"), JLabel.LEFT);
+        batchPreviewOverview.add(batchPreviewMissingLabel);
+
+        batchPreviewDuplicateLabel = new JLabel("Multiple items per group", UIUtils.getIconFromResources("emblems/emblem-information.png"), JLabel.LEFT);
+        batchPreviewOverview.add(batchPreviewDuplicateLabel);
+
+        batchPreviewOverview.setFloatable(false);
+        batchPanel.add(batchPreviewOverview, BorderLayout.NORTH);
+        batchPanel.add(batchListPanel, BorderLayout.CENTER);
+    }
+
+    private void initializeParameterPanel() {
+        ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
+                ((JIPipeDataBatchAlgorithm) algorithm).getGenerationSettingsInterface(),
+                null,
+                ParameterPanel.WITH_SCROLLING);
+        splitPane.setTopComponent(parameterPanel);
+    }
+
+    private void initializeToolBar() {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        toolBar.add(Box.createHorizontalGlue());
+
         JButton updateCacheButton = new JButton("Update cache", UIUtils.getIconFromResources("actions/database.png"));
-        updateCacheButton.setToolTipText("Updates the data cache, so this tool can be used");
+        updateCacheButton.setToolTipText("Updates the data cache");
         updateCacheButton.addActionListener(e -> runTestBench.run());
         toolBar.add(updateCacheButton);
-        errorUI.add(toolBar, BorderLayout.NORTH);
+        add(toolBar, BorderLayout.NORTH);
 
-        JPanel errorContent = new JPanel(new BorderLayout());
+        toolBar.add(Box.createHorizontalGlue());
+
+        JButton refreshButton = new JButton("Refresh batches", UIUtils.getIconFromResources("actions/view-refresh.png"));
+        refreshButton.setToolTipText("Refreshes the preview of generated batches");
+        refreshButton.addActionListener(e -> refreshBatchPreview());
+        toolBar.add(refreshButton);
+
+        JToggleButton autoRefreshButton = new JToggleButton(UIUtils.getIconFromResources("actions/quickopen-function.png"));
+        autoRefreshButton.setToolTipText("Auto refresh");
+        autoRefreshButton.setSelected(autoRefresh);
+        autoRefreshButton.addActionListener(e -> {
+            autoRefresh = autoRefreshButton.isSelected();
+            if (autoRefresh)
+                refreshBatchPreview();
+        });
+        toolBar.add(autoRefreshButton);
+    }
+
+    private void initializeErrorPanel() {
+        errorPanel = new JPanel(new BorderLayout());
         errorLabel = new JLabel("No cached data available", UIUtils.getIcon64FromResources("no-data.png"), JLabel.LEFT);
         errorLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         errorLabel.setFont(errorLabel.getFont().deriveFont(20.0f));
-        errorContent.add(errorLabel, BorderLayout.NORTH);
+        errorPanel.add(errorLabel, BorderLayout.NORTH);
 
         JTextArea explanation = UIUtils.makeReadonlyBorderlessTextArea("This tool can only work if it knows which metadata columns are available. " +
                 "Such data is stored in the project-wide cache. You might need to generate or update the cache by clicking the 'Update cache' button at the top-right corner.");
         explanation.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        errorContent.add(explanation, BorderLayout.CENTER);
-        errorUI.add(errorContent, BorderLayout.CENTER);
+        errorPanel.add(explanation, BorderLayout.CENTER);
     }
 
     private void scrollToBeginning() {
-        formPanel.getScrollPane().getVerticalScrollBar().setValue(0);
+        batchListPanel.getScrollPane().getVerticalScrollBar().setValue(0);
     }
 
     private void updateInfiniteScroll() {
-        JScrollBar scrollBar = formPanel.getScrollPane().getVerticalScrollBar();
+        JScrollBar scrollBar = batchListPanel.getScrollPane().getVerticalScrollBar();
         if ((!scrollBar.isVisible() || (scrollBar.getValue() + scrollBar.getVisibleAmount()) > (scrollBar.getMaximum() - 32)) && !infiniteScrollingQueue.isEmpty()) {
-            formPanel.removeLastRow();
+            batchListPanel.removeLastRow();
             JIPipeMergingDataBatch dataBatch = infiniteScrollingQueue.removeFirst();
             DataBatchUI ui = new DataBatchUI(getProjectWorkbench(), batchesNodeCopy, dataBatch);
-            formPanel.addWideToForm(ui, null);
-            formPanel.addVerticalGlue();
-            formPanel.revalidate();
-            formPanel.repaint();
+            batchListPanel.addWideToForm(ui, null);
+            batchListPanel.addVerticalGlue();
+            batchListPanel.revalidate();
+            batchListPanel.repaint();
             SwingUtilities.invokeLater(this::updateInfiniteScroll);
         }
     }
