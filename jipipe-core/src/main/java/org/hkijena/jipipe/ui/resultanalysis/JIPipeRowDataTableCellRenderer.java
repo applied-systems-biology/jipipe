@@ -88,15 +88,18 @@ public class JIPipeRowDataTableCellRenderer implements TableCellRenderer {
 
     public void updateRenderedPreviews() {
         JViewport viewport = scrollPane.getViewport();
-        for (int row = 0; row < previewCache.size(); row++) {
-            JIPipeResultDataSlotPreview component = previewCache.get(row);
+        for (int modelRow = 0; modelRow < previewCache.size(); modelRow++) {
+            JIPipeResultDataSlotPreview component = previewCache.get(modelRow);
             // We assume view column = 0
-            Rectangle rect = table.getCellRect(row, 0, true);
-            Point pt = viewport.getViewPosition();
-            rect.setLocation(rect.x - pt.x, rect.y - pt.y);
-            boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
-            if (overlaps) {
-                component.renderPreview();
+            int viewRow = table.convertRowIndexToView(modelRow);
+            if(viewRow >= 0) {
+                Rectangle rect = table.getCellRect(modelRow, 0, true);
+                Point pt = viewport.getViewPosition();
+                rect.setLocation(rect.x - pt.x, rect.y - pt.y);
+                boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
+                if (overlaps) {
+                    component.renderPreview();
+                }
             }
         }
     }

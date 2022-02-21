@@ -108,17 +108,20 @@ public class JIPipeRowDataAnnotationMergedTableCellRenderer implements TableCell
     public void updateRenderedPreviews() {
         JViewport viewport = scrollPane.getViewport();
         for (List<JIPipeResultDataSlotPreview> previews : previewCache.values()) {
-            for (int row = 0; row < previews.size(); row++) {
-                JIPipeResultDataSlotPreview component = previews.get(row);
+            for (int modelRow = 0; modelRow < previews.size(); modelRow++) {
+                JIPipeResultDataSlotPreview component = previews.get(modelRow);
                 if (component == null)
                     continue;
-                // We assume view column = 0
-                Rectangle rect = table.getCellRect(row, 0, true);
-                Point pt = viewport.getViewPosition();
-                rect.setLocation(rect.x - pt.x, rect.y - pt.y);
-                boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
-                if (overlaps) {
-                    component.renderPreview();
+                int viewRow = table.convertRowIndexToView(modelRow);
+                if(viewRow >= 0) {
+                    // We assume view column = 0
+                    Rectangle rect = table.getCellRect(modelRow, 0, true);
+                    Point pt = viewport.getViewPosition();
+                    rect.setLocation(rect.x - pt.x, rect.y - pt.y);
+                    boolean overlaps = new Rectangle(viewport.getExtentSize()).intersects(rect);
+                    if (overlaps) {
+                        component.renderPreview();
+                    }
                 }
             }
         }
