@@ -262,6 +262,29 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
         return null;
     }
 
+    public static JIPipeDataImportOperation getMainOperation(Class<? extends JIPipeData> dataClass) {
+        String dataTypeId = JIPipe.getDataTypes().getIdOf(dataClass);
+        List<JIPipeDataImportOperation> importOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedImportOperationsFor(dataTypeId);
+        if (!importOperations.isEmpty()) {
+            JIPipeDataImportOperation result = importOperations.get(0);
+            DynamicDataImportOperationIdEnumParameter parameter = DefaultResultImporterSettings.getInstance().getValue(dataTypeId, DynamicDataImportOperationIdEnumParameter.class);
+            if (parameter != null) {
+                String defaultName = parameter.getValue();
+                for (JIPipeDataImportOperation operation : importOperations) {
+                    if (Objects.equals(operation.getId(), defaultName)) {
+                        result = operation;
+                        break;
+                    }
+                }
+            }
+            if (result == null) {
+                result = JIPipe.getDataTypes().getAllRegisteredImportOperations(dataTypeId).get("jipipe:show");
+            }
+            return result;
+        }
+        return null;
+    }
+
     @Override
     public void handleDefaultAction() {
         JIPipeDataImportOperation mainOperation = getMainOperation();
@@ -269,4 +292,18 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
             SwingUtilities.invokeLater(() -> runImportOperation(mainOperation));
     }
 
+    @Override
+    public void handleDefaultActionOrDisplayDataAnnotation(int dataAnnotationColumn) {
+        if(dataAnnotationColumn >= 0 && dataAnnotationColumn < getRow().getDataAnnotations().size()) {
+            String dataTypeId = getRow().getDataAnnotations().get(dataAnnotationColumn).getTrueDataType();
+            Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(dataTypeId);
+            JIPipeDataImportOperation operation = getMainOperation(dataClass);
+            if(operation != null) {
+                SwingUtilities.invokeLater(() -> runImportOperation(operation, getRow().getDataAnnotations().get(dataAnnotationColumn)));
+            }
+        }
+        else {
+            handleDefaultAction();
+        }
+    }
 }

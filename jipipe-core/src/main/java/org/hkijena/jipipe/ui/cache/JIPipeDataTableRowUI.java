@@ -47,7 +47,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
     private final JIPipeDataTable dataTable;
     private final int row;
     private final List<JIPipeDataAnnotation> dataAnnotations;
-    private List<JIPipeDataDisplayOperation> displayOperations;
+    private final List<JIPipeDataDisplayOperation> displayOperations;
     private JButton dataAnnotationsButton;
     private JButton textAnnotationsButton;
 

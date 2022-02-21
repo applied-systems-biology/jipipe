@@ -114,7 +114,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
                 if (e.getClickCount() == 2) {
                     int[] selectedRows = table.getSelectedRows();
                     if (selectedRows.length > 0)
-                        handleSlotRowDefaultAction(selectedRows[0]);
+                        handleSlotRowDefaultAction(selectedRows[0], table.columnAtPoint(e.getPoint()));
                 }
             }
         });
@@ -202,12 +202,18 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         }
     }
 
-    private void handleSlotRowDefaultAction(int selectedRow) {
-        int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
-        JIPipeDataTableMetadataRow rowInstance = mergedDataTable.getRowList().get(row);
-        JIPipeDataSlot slot = mergedDataTable.getSlot(row);
+    private void handleSlotRowDefaultAction(int selectedRow, int selectedColumn) {
+        int multiRow = table.getRowSorter().convertRowIndexToModel(selectedRow);
+        int multiDataAnnotationColumn = selectedColumn >= 0 ? mergedDataTable.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(selectedColumn)) : -1;
+        JIPipeDataTableMetadataRow rowInstance = mergedDataTable.getRowList().get(multiRow);
+        JIPipeDataSlot slot = mergedDataTable.getSlot(multiRow);
         JIPipeResultDataSlotRowUI ui = JIPipe.getDataTypes().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
-        ui.handleDefaultAction();
+        int dataAnnotationColumn = -1;
+        if(multiDataAnnotationColumn >= 0) {
+            String name = mergedDataTable.getDataAnnotationColumns().get(multiDataAnnotationColumn);
+            dataAnnotationColumn = slot.getDataAnnotationColumns().indexOf(name);
+        }
+        ui.handleDefaultActionOrDisplayDataAnnotation(dataAnnotationColumn);
     }
 
     private void showDataRows(int[] selectedRows) {

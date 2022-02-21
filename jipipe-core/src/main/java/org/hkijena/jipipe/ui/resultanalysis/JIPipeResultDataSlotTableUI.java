@@ -114,7 +114,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
                 if (e.getClickCount() == 2) {
                     int[] selectedRows = table.getSelectedRows();
                     if (selectedRows.length > 0)
-                        handleSlotRowDefaultAction(selectedRows[0]);
+                        handleSlotRowDefaultAction(selectedRows[0], table.columnAtPoint(e.getPoint()));
                 }
             }
         });
@@ -190,11 +190,12 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         }
     }
 
-    private void handleSlotRowDefaultAction(int selectedRow) {
+    private void handleSlotRowDefaultAction(int selectedRow, int selectedColumn) {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
+        int dataAnnotationColumn = selectedColumn >= 0 ? dataTable.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(selectedColumn)) : -1;
         JIPipeDataTableMetadataRow rowInstance = dataTable.getRowList().get(row);
         JIPipeResultDataSlotRowUI ui = JIPipe.getDataTypes().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
-        ui.handleDefaultAction();
+        ui.handleDefaultActionOrDisplayDataAnnotation(dataAnnotationColumn);
     }
 
     private void showDataRows(int[] selectedRows) {

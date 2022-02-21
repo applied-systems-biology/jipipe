@@ -26,8 +26,8 @@ import java.nio.file.Path;
  * stored in output files. The folder that contains the files can be accessed via getRowStorageFolder()
  */
 public abstract class JIPipeResultDataSlotRowUI extends JIPipeProjectWorkbenchPanel {
-    private JIPipeDataSlot slot;
-    private JIPipeDataTableMetadataRow row;
+    private final JIPipeDataSlot slot;
+    private final JIPipeDataTableMetadataRow row;
 
     /**
      * @param workbenchUI The workbench
@@ -44,6 +44,13 @@ public abstract class JIPipeResultDataSlotRowUI extends JIPipeProjectWorkbenchPa
      * Action that is triggered when the user double-clicks on the entry in the table
      */
     public abstract void handleDefaultAction();
+
+    /**
+     * Runs the currently set default action for this data.
+     * If the data column index is valid, the associated data annotation is displayed instead (using its appropriate standard action)
+     * @param dataAnnotationColumn column index of the data column in the data table. if outside the range, silently will run the default data operation instead
+     */
+    public abstract void handleDefaultActionOrDisplayDataAnnotation(int dataAnnotationColumn);
 
     /**
      * Returns the data slot
