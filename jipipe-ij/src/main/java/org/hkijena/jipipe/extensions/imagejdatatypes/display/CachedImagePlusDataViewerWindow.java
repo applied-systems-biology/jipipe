@@ -34,11 +34,13 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
 
     private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
     private ImageViewerPanel imageViewerPanel;
+    private CustomDataLoader customDataLoader;
 
     public CachedImagePlusDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoadingData) {
         super(workbench, dataSource, displayName);
@@ -63,6 +65,14 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
         setContentPane(imageViewerPanel);
         revalidate();
         repaint();
+    }
+
+    public CustomDataLoader getCustomDataLoader() {
+        return customDataLoader;
+    }
+
+    public void setCustomDataLoader(CustomDataLoader customDataLoader) {
+        this.customDataLoader = customDataLoader;
     }
 
     @Override
@@ -107,7 +117,13 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
     protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
         ImagePlus image;
         ROIListData rois = new ROIListData();
-        if (ImagePlusData.class.isAssignableFrom(virtualData.getDataClass())) {
+        if(customDataLoader != null) {
+            customDataLoader.load(virtualData, progressInfo);
+            image = customDataLoader.getImagePlus();
+            rois = customDataLoader.getRois();
+            customDataLoader.setImagePlus(null);
+            customDataLoader.setRois(null);
+        } else if (ImagePlusData.class.isAssignableFrom(virtualData.getDataClass())) {
             ImagePlusData data = (ImagePlusData) virtualData.getData(progressInfo);
             imageViewerPanel.getCanvas().setError(null);
             image = data.getViewedImage(false);
@@ -167,5 +183,31 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
     @Override
     public void windowDeactivated(WindowEvent e) {
 
+    }
+
+    /**
+     * Used to override the data loading behavior
+     */
+    public abstract static class CustomDataLoader {
+        private ImagePlus imagePlus;
+        private ROIListData rois;
+
+        public ImagePlus getImagePlus() {
+            return imagePlus;
+        }
+
+        public void setImagePlus(ImagePlus imagePlus) {
+            this.imagePlus = imagePlus;
+        }
+
+        public ROIListData getRois() {
+            return rois;
+        }
+
+        public void setRois(ROIListData rois) {
+            this.rois = rois;
+        }
+
+        public abstract void load(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo);
     }
 }

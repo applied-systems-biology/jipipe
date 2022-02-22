@@ -13,11 +13,15 @@
 
 package org.hkijena.jipipe.extensions.imagej2;
 
+import net.imglib2.img.display.imagej.ImageJFunctions;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.imagej2.converters.ImageJ1ToImageJ2Converter;
+import org.hkijena.jipipe.extensions.imagej2.converters.ImageJ2ToImageJ1Converter;
+import org.hkijena.jipipe.extensions.imagej2.datatypes.ImageJ2DatasetData;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -26,6 +30,7 @@ import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,6 +65,10 @@ public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+        registerDatatype("ij2-dataset", ImageJ2DatasetData.class, UIUtils.getIconURLFromResources("apps/imglib2.png"));
+        registerDatatypeConversion(new ImageJ1ToImageJ2Converter());
+        registerDatatypeConversion(new ImageJ2ToImageJ1Converter());
+
 //        ModuleService moduleService = context.getService(ModuleService.class);
 //        for (ModuleInfo module : moduleService.getModules()) {
 //            try {
