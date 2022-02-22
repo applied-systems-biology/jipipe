@@ -139,6 +139,11 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
             for (JIPipeNodeInfo info : JIPipeNodeInfo.getSortedList(entry.getValue())) {
                 if (info.isHidden())
                     continue;
+                if(subMenu.getMenuComponentCount() >= 30) {
+                    JMenu moreMenu = new JMenu("More ...");
+                    subMenu.add(moreMenu);
+                    subMenu = moreMenu;
+                }
                 JMenuItem addItem = new JMenuItem(info.getName(), JIPipe.getNodes().getIconFor(info));
                 addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
                 addItem.addActionListener(e -> {
@@ -152,12 +157,6 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                 });
                 addedAlgorithms.add(info);
                 subMenu.add(addItem);
-
-                if(subMenu.getMenuComponentCount() >= 30) {
-                    JMenu moreMenu = new JMenu("More ...");
-                    subMenu.add(moreMenu);
-                    subMenu = moreMenu;
-                }
             }
         }
     }

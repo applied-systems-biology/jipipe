@@ -27,6 +27,8 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringLi
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.Priority;
+import org.scijava.module.ModuleInfo;
+import org.scijava.module.ModuleService;
 import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
@@ -69,21 +71,21 @@ public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatypeConversion(new ImageJ1ToImageJ2Converter());
         registerDatatypeConversion(new ImageJ2ToImageJ1Converter());
 
-//        ModuleService moduleService = context.getService(ModuleService.class);
-//        for (ModuleInfo module : moduleService.getModules()) {
-//            try {
-//                ImageJ2ModuleNodeInfo nodeInfo = new ImageJ2ModuleNodeInfo(context, module, progressInfo);
-//                if(nodeInfo.getInputSlots().isEmpty() && nodeInfo.getOutputSlots().isEmpty()) {
-//                    progressInfo.log(module.getTitle() + " has no data slots. Skipping.");
-//                    continue;
-//                }
-//                registerNodeType(nodeInfo);
-//            }
-//            catch (Exception e) {
-//                progressInfo.log("Unable to register " + module.getTitle() + " @ " + module.getDelegateClassName() );
-//                progressInfo.log(e.toString());
-//            }
-//        }
+        ModuleService moduleService = context.getService(ModuleService.class);
+        for (ModuleInfo module : moduleService.getModules()) {
+            try {
+                ImageJ2ModuleNodeInfo nodeInfo = new ImageJ2ModuleNodeInfo(context, module, progressInfo);
+                if(nodeInfo.getInputSlots().isEmpty() && nodeInfo.getOutputSlots().isEmpty()) {
+                    progressInfo.log(module.getTitle() + " has no data slots. Skipping.");
+                    continue;
+                }
+                registerNodeType(nodeInfo);
+            }
+            catch (Exception e) {
+                progressInfo.log("Unable to register " + module.getTitle() + " @ " + module.getDelegateClassName() );
+                progressInfo.log(e.toString());
+            }
+        }
     }
 
     @Override

@@ -62,7 +62,7 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
         if(moduleInfo.getMenuPath().isEmpty() || moduleInfo.getTitle().contains(":")) {
             List<String> strings = Arrays.stream(moduleInfo.getTitle().split("[:.$]")).map(String::trim).map(WordUtils::capitalize).collect(Collectors.toList());
             if(strings.size() > 1) {
-                this.name = "IJ2: " + strings.get(strings.size() - 1);
+                this.name = "IJ2: " + String.join(" ", org.apache.commons.lang.StringUtils.splitByCharacterTypeCamelCase(strings.get(strings.size() - 1)));
                 strings.remove(strings.size() - 1);
                 this.menuPath = "IJ2\n" + String.join("\n", strings);
             }
@@ -88,7 +88,7 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
 
     public void addOutputSlotForModuleItem(ModuleItem<?> item, Class<? extends JIPipeData> dataClass) {
         String name = StringUtils.makeUniqueString(WordUtils.capitalize(StringUtils.makeFilesystemCompatible(item.getName())), " ", outputSlotModuleItems.keySet());
-        outputSlots.add(new DefaultJIPipeOutputSlot(dataClass, name, item.getDescription(), null, false));
+        outputSlots.add(new DefaultJIPipeOutputSlot(dataClass, name, item.getDescription(), null, true));
         outputSlotModuleItems.put(name, item);
     }
 
