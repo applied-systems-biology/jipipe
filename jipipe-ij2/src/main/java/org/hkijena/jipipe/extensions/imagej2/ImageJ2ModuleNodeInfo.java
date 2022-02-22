@@ -31,6 +31,8 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
     private final JIPipeNodeTypeCategory nodeTypeCategory;
     private final List<JIPipeInputSlot> inputSlots = new ArrayList<>();
     private final List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
+    private final Map<ModuleItem<?>, ImageJ2ModuleIO> inputModuleIO = new HashMap<>();
+    private final Map<ModuleItem<?>, ImageJ2ModuleIO> outputModuleIO = new HashMap<>();
     private HTMLText description;
 
     /**
@@ -65,12 +67,16 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
             if(moduleIO == null) {
                 throw new RuntimeException("Unable to resolve input of type " + item.getType());
             }
+            moduleIO.install(this, item);
+            inputModuleIO.put(item, moduleIO);
         }
         for (ModuleItem<?> item : moduleInfo.outputs()) {
             ImageJ2ModuleIO moduleIO = service.findModuleIO(item);
             if(moduleIO == null) {
                 throw new RuntimeException("Unable to resolve output of type " + item.getType());
             }
+            moduleIO.install(this, item);
+            outputModuleIO.put(item, moduleIO);
         }
     }
 
@@ -141,5 +147,13 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
     @Override
     public boolean isHidden() {
         return false;
+    }
+
+    public Map<ModuleItem<?>, ImageJ2ModuleIO> getInputModuleIO() {
+        return inputModuleIO;
+    }
+
+    public Map<ModuleItem<?>, ImageJ2ModuleIO> getOutputModuleIO() {
+        return outputModuleIO;
     }
 }
