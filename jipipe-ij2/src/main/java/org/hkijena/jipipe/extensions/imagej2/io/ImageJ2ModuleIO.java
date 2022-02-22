@@ -1,11 +1,9 @@
 package org.hkijena.jipipe.extensions.imagej2.io;
 
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2ModuleNode;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2ModuleNodeInfo;
 import org.scijava.module.Module;
 import org.scijava.module.ModuleItem;
-import org.scijava.plugin.SciJavaPlugin;
 import org.scijava.service.Service;
 
 /**
@@ -34,17 +32,17 @@ public interface ImageJ2ModuleIO extends Service {
 
     /**
      * Transfers data from JIPipe into the module
-     * @param algorithm the JIPipe node
+     * @param node the JIPipe node
      * @param module the module
      * @return if successful
      */
-    boolean transferFromJIPipe(JIPipeAlgorithm algorithm, ModuleItem<?> moduleItem, Module module);
+    boolean transferFromJIPipe(ImageJ2ModuleNode node, ModuleItem<?> moduleItem, Module module);
 
     /**
      * Transfers data from JIPipe from the module
-     * @param algorithm the JIPipe node
+     * @param node the JIPipe node
      * @param module the module
      * @return if successful
      */
-    boolean transferToJIPipe(JIPipeAlgorithm algorithm, ModuleItem<?> moduleItem, Module module);
+    boolean transferToJIPipe(ImageJ2ModuleNode node, ModuleItem<?> moduleItem, Module module);
 }
