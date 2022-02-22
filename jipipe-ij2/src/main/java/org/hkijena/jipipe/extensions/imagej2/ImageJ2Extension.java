@@ -20,12 +20,12 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.Priority;
-import org.scijava.module.ModuleInfo;
-import org.scijava.module.ModuleService;
 import org.scijava.plugin.Plugin;
 
+import javax.swing.*;
 import java.util.Collections;
 import java.util.List;
 
@@ -60,17 +60,26 @@ public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        ModuleService moduleService = context.getService(ModuleService.class);
-        for (ModuleInfo module : moduleService.getModules()) {
-            try {
-                ImageJ2ModuleNodeInfo nodeInfo = new ImageJ2ModuleNodeInfo(context, module, progressInfo);
-                registerNodeType(nodeInfo);
-            }
-            catch (Exception e) {
-                progressInfo.log("Unable to register " + module.getTitle() + " @ " + module.getDelegateClassName() );
-                progressInfo.log(e.toString());
-            }
-        }
+//        ModuleService moduleService = context.getService(ModuleService.class);
+//        for (ModuleInfo module : moduleService.getModules()) {
+//            try {
+//                ImageJ2ModuleNodeInfo nodeInfo = new ImageJ2ModuleNodeInfo(context, module, progressInfo);
+//                if(nodeInfo.getInputSlots().isEmpty() && nodeInfo.getOutputSlots().isEmpty()) {
+//                    progressInfo.log(module.getTitle() + " has no data slots. Skipping.");
+//                    continue;
+//                }
+//                registerNodeType(nodeInfo);
+//            }
+//            catch (Exception e) {
+//                progressInfo.log("Unable to register " + module.getTitle() + " @ " + module.getDelegateClassName() );
+//                progressInfo.log(e.toString());
+//            }
+//        }
+    }
+
+    @Override
+    public List<ImageIcon> getSplashIcons() {
+        return Collections.singletonList(UIUtils.getIcon32FromResources("apps/imglib2.png"));
     }
 
     @Override

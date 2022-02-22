@@ -1,5 +1,8 @@
 package org.hkijena.jipipe.extensions.imagej2;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
+import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -9,6 +12,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2JIPipeModuleIOService;
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.MenuEntry;
@@ -33,6 +37,8 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
     private final List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
     private final Map<ModuleItem<?>, ImageJ2ModuleIO> inputModuleIO = new HashMap<>();
     private final Map<ModuleItem<?>, ImageJ2ModuleIO> outputModuleIO = new HashMap<>();
+    private final BiMap<String, ModuleItem<?>> inputSlotModuleItems = HashBiMap.create();
+    private final BiMap<String, ModuleItem<?>> outputSlotModuleItems = HashBiMap.create();
     private HTMLText description;
 
     /**
@@ -53,11 +59,45 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
         this.context = context;
         this.id = "ij2:module:" + moduleInfo.getDelegateClassName();
         this.nodeTypeCategory = new ImagesNodeTypeCategory();
-        this.menuPath = "IJ2\n" +  moduleInfo.getMenuPath().stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
-        this.name = "IJ2: " + moduleInfo.getTitle();
+        if(moduleInfo.getMenuPath().isEmpty() || moduleInfo.getTitle().contains(":")) {
+            List<String> strings = Arrays.stream(moduleInfo.getTitle().split("[:.$]")).map(String::trim).map(WordUtils::capitalize).collect(Collectors.toList());
+            if(strings.size() > 1) {
+                this.name = "IJ2: " + strings.get(strings.size() - 1);
+                strings.remove(strings.size() - 1);
+                this.menuPath = "IJ2\n" + String.join("\n", strings);
+            }
+            else {
+                this.name = "IJ2: " + moduleInfo.getTitle();
+                this.menuPath = "IJ2\n" +  moduleInfo.getMenuPath().stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
+            }
+        }
+        else {
+            this.name = "IJ2: " + moduleInfo.getTitle();
+            this.menuPath = "IJ2\n" +  moduleInfo.getMenuPath().stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
+        }
         this.description = new HTMLText("An ImageJ2 function<br/>" + moduleInfo.getName() + "<br/>" + moduleInfo.toString());
 
         initializeParameters(moduleInfo, context, progressInfo);
+    }
+
+    public void addInputSlotForModuleItem(ModuleItem<?> item, Class<? extends JIPipeData> dataClass) {
+        String name = StringUtils.makeUniqueString(WordUtils.capitalize(StringUtils.makeFilesystemCompatible(item.getName())), " ", inputSlotModuleItems.keySet());
+        inputSlots.add(new DefaultJIPipeInputSlot(dataClass, name, item.getDescription(), true, false));
+        inputSlotModuleItems.put(name, item);
+    }
+
+    public void addOutputSlotForModuleItem(ModuleItem<?> item, Class<? extends JIPipeData> dataClass) {
+        String name = StringUtils.makeUniqueString(WordUtils.capitalize(StringUtils.makeFilesystemCompatible(item.getName())), " ", outputSlotModuleItems.keySet());
+        outputSlots.add(new DefaultJIPipeOutputSlot(dataClass, name, item.getDescription(), null, false));
+        outputSlotModuleItems.put(name, item);
+    }
+
+    public BiMap<String, ModuleItem<?>> getInputSlotModuleItems() {
+        return inputSlotModuleItems;
+    }
+
+    public BiMap<String, ModuleItem<?>> getOutputSlotModuleItems() {
+        return outputSlotModuleItems;
     }
 
     private void initializeParameters(ModuleInfo moduleInfo, Context context, JIPipeProgressInfo progressInfo) {

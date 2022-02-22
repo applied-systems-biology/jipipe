@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imagej2.io;
 
+import org.jetbrains.annotations.Nullable;
 import org.scijava.InstantiableException;
 import org.scijava.log.LogService;
 import org.scijava.module.ModuleItem;
@@ -11,16 +12,23 @@ import java.util.*;
 
 @Plugin(type = ImageJ2JIPipeModuleIOService.class)
 public class DefaultImageJ2JIPipeModuleIOService extends AbstractService implements ImageJ2JIPipeModuleIOService {
-    private Map<Class<?>, ImageJ2ModuleIO> knownIOHandlers;
+    private Map<Class<?>, ImageJ2ModuleIO> knownInputHandlers;
+    private Map<Class<?>, ImageJ2ModuleIO> knownOutputHandlers;
     public DefaultImageJ2JIPipeModuleIOService() {
     }
 
     public void reload() {
-        knownIOHandlers = new HashMap<>();
+        knownInputHandlers = new HashMap<>();
+        knownOutputHandlers = new HashMap<>();
         for (PluginInfo<ImageJ2ModuleIO> plugin : getPlugins()) {
             try {
                 ImageJ2ModuleIO instance = plugin.createInstance();
-                knownIOHandlers.put(instance.getAcceptedModuleFieldClass(), instance);
+                if(instance.handlesInput()) {
+                    knownInputHandlers.put(instance.getAcceptedModuleFieldClass(), instance);
+                }
+                if(instance.handlesOutput()) {
+                    knownOutputHandlers.put(instance.getAcceptedModuleFieldClass(), instance);
+                }
             } catch (InstantiableException e) {
                 e.printStackTrace();
             }
@@ -29,9 +37,18 @@ public class DefaultImageJ2JIPipeModuleIOService extends AbstractService impleme
 
     @Override
     public ImageJ2ModuleIO findModuleIO(ModuleItem<?> moduleItem) {
-        if(knownIOHandlers == null) {
+        if(knownInputHandlers == null || knownOutputHandlers == null) {
             reload();
         }
+        if(moduleItem.isInput()) {
+            return findModuleIO(moduleItem, knownInputHandlers);
+        }
+        else {
+            return findModuleIO(moduleItem, knownOutputHandlers);
+        }
+    }
+
+    private ImageJ2ModuleIO findModuleIO(ModuleItem<?> moduleItem, Map<Class<?>, ImageJ2ModuleIO> knownIOHandlers) {
         ImageJ2ModuleIO result = knownIOHandlers.getOrDefault(moduleItem.getType(), null);
         if(result == null) {
             Queue<Class<?>> queue = new ArrayDeque<>();
