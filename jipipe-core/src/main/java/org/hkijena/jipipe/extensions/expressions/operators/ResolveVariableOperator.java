@@ -27,9 +27,9 @@ public class ResolveVariableOperator extends ExpressionOperator {
     }
 
     @Override
-    public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
+    public Object evaluate(Iterator<Object> operands, ExpressionVariables variables) {
         String right = operands.next() + "";
-        return ((ExpressionVariables) evaluationContext).get(right);
+        return ((ExpressionVariables) variables).get(right);
     }
 
     @Override

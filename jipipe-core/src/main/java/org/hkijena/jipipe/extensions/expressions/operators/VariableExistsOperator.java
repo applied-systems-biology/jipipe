@@ -27,9 +27,9 @@ public class VariableExistsOperator extends ExpressionOperator {
     }
 
     @Override
-    public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
+    public Object evaluate(Iterator<Object> operands, ExpressionVariables variables) {
         String left = operands.next() + "";
-        return ((ExpressionVariables) evaluationContext).get(left) != null;
+        return ((ExpressionVariables) variables).get(left) != null;
     }
 
     @Override

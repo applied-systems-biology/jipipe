@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.expressions.operators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionOperator;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.Collection;
@@ -33,7 +34,7 @@ public class ContainsOperator2 extends ExpressionOperator {
     }
 
     @Override
-    public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
+    public Object evaluate(Iterator<Object> operands, ExpressionVariables variables) {
         String left = "" + operands.next();
         String right = "" + operands.next();
         return left.contains(right);

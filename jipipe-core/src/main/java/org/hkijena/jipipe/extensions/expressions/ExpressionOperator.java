@@ -27,10 +27,10 @@ public abstract class ExpressionOperator extends Operator {
      * Evaluates the operator
      *
      * @param operands          the operands (contains booleans)
-     * @param evaluationContext the evaluation context
+     * @param variables the evaluation context
      * @return the result (should be a boolean)
      */
-    public abstract Object evaluate(Iterator<Object> operands, Object evaluationContext);
+    public abstract Object evaluate(Iterator<Object> operands, ExpressionVariables variables);
 
     /**
      * Returns info about the parameter at index (left to right)

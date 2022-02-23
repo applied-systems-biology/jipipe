@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.expressions.operators;
 
 import org.hkijena.jipipe.extensions.expressions.ExpressionOperator;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 
 import java.util.Iterator;
 
@@ -24,7 +25,7 @@ public abstract class NumericFunctionOperator extends ExpressionOperator {
     }
 
     @Override
-    public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
+    public Object evaluate(Iterator<Object> operands, ExpressionVariables variables) {
         Object o1 = operands.next();
         Object o2 = operands.next();
         double left;

@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.expressions.operators;
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionOperator;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.*;
@@ -27,7 +28,7 @@ public class ElementAccessOperator extends ExpressionOperator {
     }
 
     @Override
-    public Object evaluate(Iterator<Object> operands, Object evaluationContext) {
+    public Object evaluate(Iterator<Object> operands, ExpressionVariables variables) {
         Object array = operands.next();
         Object indices = operands.next();
         if (indices instanceof Number) {

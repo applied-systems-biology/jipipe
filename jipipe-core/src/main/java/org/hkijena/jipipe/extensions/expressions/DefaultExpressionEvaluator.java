@@ -354,7 +354,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     @Override
     protected Object evaluate(Operator operator, Iterator<Object> operands, Object evaluationContext) {
         if (operator instanceof ExpressionOperator) {
-            return ((ExpressionOperator) operator).evaluate(operands, evaluationContext);
+            return ((ExpressionOperator) operator).evaluate(operands, (ExpressionVariables) evaluationContext);
         } else if (operator == OPERATOR_NUMERIC_NEGATE || operator == OPERATOR_NUMERIC_NEGATE_HIGH) {
             return -(double) operands.next();
         }
