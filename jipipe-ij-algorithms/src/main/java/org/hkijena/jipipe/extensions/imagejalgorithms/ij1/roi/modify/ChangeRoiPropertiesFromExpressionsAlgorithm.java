@@ -111,8 +111,8 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
             variables.set("z", z);
             variables.set("c", c);
             variables.set("t", t);
-            variables.set("fill_color", roi.getFillColor());
-            variables.set("line_color", roi.getStrokeColor());
+            variables.set("fill_color", roi.getFillColor() != null ? ColorUtils.colorToHexString(roi.getFillColor()) : null);
+            variables.set("line_color", roi.getStrokeColor() != null ? ColorUtils.colorToHexString(roi.getStrokeColor()) : null);
             variables.set("line_width", roi.getStrokeWidth());
             variables.set("name", roi.getName());
 
