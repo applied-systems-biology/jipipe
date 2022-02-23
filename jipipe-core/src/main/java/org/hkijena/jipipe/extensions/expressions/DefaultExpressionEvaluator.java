@@ -30,6 +30,7 @@ import java.util.stream.Collectors;
  * Describes basic properties of a {@link ExpressionParameter}
  */
 public class DefaultExpressionEvaluator extends ExpressionEvaluator {
+    public static final ExpressionConstant CONSTANT_NULL = new NullConstant();
     public static final ExpressionConstant CONSTANT_TRUE = new BooleanTrueConstant();
     public static final ExpressionConstant CONSTANT_FALSE = new BooleanFalseConstant();
     public static final ExpressionConstant CONSTANT_PI = new NumericPiConstant();
@@ -84,6 +85,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         parameters.addFunctionBracket(BracketPair.PARENTHESES);
         parameters.addExpressionBracket(BracketPair.PARENTHESES);
 
+        parameters.add(CONSTANT_NULL);
         parameters.add(CONSTANT_TRUE);
         parameters.add(CONSTANT_FALSE);
         parameters.add(CONSTANT_E);
