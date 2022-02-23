@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imagej2.io;
 
+import org.apache.commons.lang3.ClassUtils;
 import org.jetbrains.annotations.Nullable;
 import org.scijava.InstantiableException;
 import org.scijava.log.LogService;
@@ -49,21 +50,24 @@ public class DefaultImageJ2JIPipeModuleIOService extends AbstractService impleme
     }
 
     private ImageJ2ModuleIO findModuleIO(ModuleItem<?> moduleItem, Map<Class<?>, ImageJ2ModuleIO> knownIOHandlers) {
-        ImageJ2ModuleIO result = knownIOHandlers.getOrDefault(moduleItem.getType(), null);
+        Class<?> moduleType = moduleItem.getType();
+        // Greatly simplifies the primitive handling
+        moduleType = ClassUtils.primitiveToWrapper(moduleType);
+        ImageJ2ModuleIO result = knownIOHandlers.getOrDefault(moduleType, null);
         if(result == null) {
             Queue<Class<?>> queue = new ArrayDeque<>();
-            if(moduleItem.getType().getSuperclass() != null)
-                queue.add(moduleItem.getType().getSuperclass());
-            queue.addAll(Arrays.asList(moduleItem.getType().getInterfaces()));
+            if(moduleType.getSuperclass() != null)
+                queue.add(moduleType.getSuperclass());
+            queue.addAll(Arrays.asList(moduleType.getInterfaces()));
             while(!queue.isEmpty()) {
                 Class<?> item = queue.remove();
-                if(item == Object.class)
-                    continue;
                 result = knownIOHandlers.getOrDefault(item, null);
                 if(result != null) {
                     knownIOHandlers.put(item, result);
                     return result;
                 }
+                if(item == Object.class)
+                    continue;
                 if(item.getSuperclass() != null)
                     queue.add(item.getSuperclass());
                 queue.addAll(Arrays.asList(item.getInterfaces()));

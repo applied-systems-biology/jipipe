@@ -30,15 +30,18 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
 
     private final Context context;
     private final String id;
+    private final ModuleInfo moduleInfo;
     private final String menuPath;
     private final String name;
     private final JIPipeNodeTypeCategory nodeTypeCategory;
     private final List<JIPipeInputSlot> inputSlots = new ArrayList<>();
     private final List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
-    private final Map<ModuleItem<?>, ImageJ2ModuleIO> inputModuleIO = new HashMap<>();
-    private final Map<ModuleItem<?>, ImageJ2ModuleIO> outputModuleIO = new HashMap<>();
-    private final BiMap<String, ModuleItem<?>> inputSlotModuleItems = HashBiMap.create();
-    private final BiMap<String, ModuleItem<?>> outputSlotModuleItems = HashBiMap.create();
+    private final Map<ModuleItem<?>, ImageJ2ModuleIO> inputModuleIO = new IdentityHashMap<>();
+    private final Map<ModuleItem<?>, ImageJ2ModuleIO> outputModuleIO = new IdentityHashMap<>();
+    private final Map<String, ModuleItem<?>> inputSlotToModuleItem = new HashMap<>();
+    private final Map<String, ModuleItem<?>> outputSlotToModuleItem = new HashMap<>();
+    private final Map<ModuleItem<?>, String> moduleItemToInputSlot = new IdentityHashMap<>();
+    private final Map<ModuleItem<?>, String> moduleItemToOutputSlot = new IdentityHashMap<>();
     private HTMLText description;
 
     /**
@@ -58,6 +61,7 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
     public ImageJ2ModuleNodeInfo(Context context, ModuleInfo moduleInfo, JIPipeProgressInfo progressInfo) throws InstantiableException {
         this.context = context;
         this.id = "ij2:module:" + moduleInfo.getDelegateClassName();
+        this.moduleInfo = moduleInfo;
         this.nodeTypeCategory = new ImagesNodeTypeCategory();
         if(moduleInfo.getMenuPath().isEmpty() || moduleInfo.getTitle().contains(":")) {
             List<String> strings = Arrays.stream(moduleInfo.getTitle().split("[:.$]")).map(String::trim).map(WordUtils::capitalize).collect(Collectors.toList());
@@ -81,23 +85,17 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
     }
 
     public void addInputSlotForModuleItem(ModuleItem<?> item, Class<? extends JIPipeData> dataClass) {
-        String name = StringUtils.makeUniqueString(WordUtils.capitalize(StringUtils.makeFilesystemCompatible(item.getName())), " ", inputSlotModuleItems.keySet());
+        String name = StringUtils.makeUniqueString(WordUtils.capitalize(StringUtils.makeFilesystemCompatible(item.getName())), " ", inputSlotToModuleItem.keySet());
         inputSlots.add(new DefaultJIPipeInputSlot(dataClass, name, item.getDescription(), true, false));
-        inputSlotModuleItems.put(name, item);
+        inputSlotToModuleItem.put(name, item);
+        moduleItemToInputSlot.put(item, name);
     }
 
     public void addOutputSlotForModuleItem(ModuleItem<?> item, Class<? extends JIPipeData> dataClass) {
-        String name = StringUtils.makeUniqueString(WordUtils.capitalize(StringUtils.makeFilesystemCompatible(item.getName())), " ", outputSlotModuleItems.keySet());
+        String name = StringUtils.makeUniqueString(WordUtils.capitalize(StringUtils.makeFilesystemCompatible(item.getName())), " ", outputSlotToModuleItem.keySet());
         outputSlots.add(new DefaultJIPipeOutputSlot(dataClass, name, item.getDescription(), null, true));
-        outputSlotModuleItems.put(name, item);
-    }
-
-    public BiMap<String, ModuleItem<?>> getInputSlotModuleItems() {
-        return inputSlotModuleItems;
-    }
-
-    public BiMap<String, ModuleItem<?>> getOutputSlotModuleItems() {
-        return outputSlotModuleItems;
+       outputSlotToModuleItem.put(name, item);
+       moduleItemToOutputSlot.put(item, name);
     }
 
     private void initializeParameters(ModuleInfo moduleInfo, Context context, JIPipeProgressInfo progressInfo) {
@@ -195,5 +193,17 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
 
     public Map<ModuleItem<?>, ImageJ2ModuleIO> getOutputModuleIO() {
         return outputModuleIO;
+    }
+
+    public String getOutputSlotName(ModuleItem<?> moduleItem) {
+        return moduleItemToOutputSlot.get(moduleItem);
+    }
+
+    public String getInputSlotName(ModuleItem<?> moduleItem) {
+        return moduleItemToInputSlot.get(moduleItem);
+    }
+
+    public ModuleInfo getModuleInfo() {
+        return moduleInfo;
     }
 }

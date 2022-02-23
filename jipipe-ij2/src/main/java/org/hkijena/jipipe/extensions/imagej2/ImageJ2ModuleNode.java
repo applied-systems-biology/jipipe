@@ -14,17 +14,25 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
 import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumParameter;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleException;
 import org.scijava.module.ModuleItem;
 
 import java.util.Map;
 
 public class ImageJ2ModuleNode extends JIPipeIteratingAlgorithm {
 
+    private final Module moduleInstance;
     private final JIPipeDynamicParameterCollection moduleParameters = new JIPipeDynamicParameterCollection(false);
     private final BiMap<String, ModuleItem<?>> moduleParameterAssignment = HashBiMap.create();
 
     public ImageJ2ModuleNode(JIPipeNodeInfo info) {
         super(info, createSlotConfiguration(info));
+        try {
+            this.moduleInstance =((ImageJ2ModuleNodeInfo) info).getModuleInfo().createModule();
+        } catch (ModuleException e) {
+            throw new RuntimeException(e);
+        }
         ImageJ2ModuleNodeInfo moduleNodeInfo = (ImageJ2ModuleNodeInfo) info;
         for (Map.Entry<ModuleItem<?>, ImageJ2ModuleIO> entry : moduleNodeInfo.getInputModuleIO().entrySet()) {
             entry.getValue().install(this, entry.getKey());
@@ -49,6 +57,7 @@ public class ImageJ2ModuleNode extends JIPipeIteratingAlgorithm {
 
     public ImageJ2ModuleNode(ImageJ2ModuleNode other) {
         super(other);
+        this.moduleInstance = other.getModuleInstance();
     }
 
     public ImageJ2ModuleNodeInfo getModuleNodeInfo() {
@@ -68,5 +77,9 @@ public class ImageJ2ModuleNode extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("module-parameters")
     public JIPipeDynamicParameterCollection getModuleParameters() {
         return moduleParameters;
+    }
+
+    public Module getModuleInstance() {
+        return moduleInstance;
     }
 }

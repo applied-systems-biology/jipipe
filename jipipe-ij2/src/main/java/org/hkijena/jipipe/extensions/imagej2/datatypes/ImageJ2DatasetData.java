@@ -26,6 +26,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Objects;
 
 @JIPipeDocumentation(name = "IJ2 Dataset", description = "An ImageJ2 image")
 @JIPipeHeavyData
@@ -36,7 +37,7 @@ public class ImageJ2DatasetData implements JIPipeData {
     private final Dataset dataset;
 
     public ImageJ2DatasetData(Dataset dataset) {
-        this.dataset = dataset;
+        this.dataset = Objects.requireNonNull(dataset);
     }
 
     public ImageJ2DatasetData(ImagePlus image) {

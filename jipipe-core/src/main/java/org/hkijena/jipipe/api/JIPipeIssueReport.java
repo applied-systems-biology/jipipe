@@ -136,10 +136,17 @@ public class JIPipeIssueReport {
      * @param source the source that triggers the check. passed to details
      */
     public void reportIsInvalid(String what, String why, String how, Object source) {
+        String message = null;
+        try {
+            message = ReflectionToStringBuilder.toString(source, ToStringStyle.MULTI_LINE_STYLE);
+        }
+        catch (Exception | Error e) {
+            message = "Unable to generate report due to following issue: " + e;
+        }
         report(new Issue(what,
                 why,
                 how,
-                source != null ? ReflectionToStringBuilder.toString(source, ToStringStyle.MULTI_LINE_STYLE) : null));
+                message));
     }
 
     /**

@@ -6,14 +6,14 @@ import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
 import org.scijava.plugin.Plugin;
 
 @Plugin(type = ImageJ2ModuleIO.class)
-public class RealTypeParameterImageJ2ModuleIO extends ParameterImageJ2ModuleIO<RealType, Double> {
+public class RealTypeParameterImageJ2ModuleInput extends ParameterImageJ2ModuleInput<RealType, Double> {
     @Override
-    public Double moduleToJIPipe(RealType obj) {
+    public Double convertFromModuleToJIPipe(RealType obj) {
         return obj.getRealDouble();
     }
 
     @Override
-    public RealType jiPipeToModule(Double obj) {
+    public RealType convertFromJIPipeToModule(Double obj) {
         return new DoubleType(obj);
     }
 

@@ -21,52 +21,25 @@ import org.scijava.service.AbstractService;
  * It is assumed that these refer to images (conversion to {@link ImageJ2DatasetData})
  */
 @Plugin(type = ImageJ2ModuleIO.class)
-public class DatasetImageJ2ModuleIO extends AbstractService implements ImageJ2ModuleIO {
+public class DatasetImageJ2ModuleIO extends DataSlotModuleIO<Dataset, ImageJ2DatasetData> {
+
     @Override
-    public Class<?> getAcceptedModuleFieldClass() {
+    public Dataset convertJIPipeToModuleData(ImageJ2DatasetData obj) {
+        return obj.getDataset();
+    }
+
+    @Override
+    public ImageJ2DatasetData convertModuleToJIPipeData(Dataset obj) {
+        return new ImageJ2DatasetData(obj);
+    }
+
+    @Override
+    public Class<Dataset> getModuleDataType() {
         return Dataset.class;
     }
 
     @Override
-    public boolean handlesInput() {
-        return true;
-    }
-
-    @Override
-    public boolean handlesOutput() {
-        return true;
-    }
-
-    @Override
-    public void install(ImageJ2ModuleNodeInfo nodeInfo, ModuleItem<?> moduleItem) {
-        if(moduleItem.isInput()) {
-            nodeInfo.addInputSlotForModuleItem(moduleItem, ImageJ2DatasetData.class);
-        }
-        if(moduleItem.isOutput()) {
-            nodeInfo.addOutputSlotForModuleItem(moduleItem, ImageJ2DatasetData.class);
-        }
-    }
-
-    @Override
-    public void install(ImageJ2ModuleNode node, ModuleItem<?> moduleItem) {
-
-    }
-
-    @Override
-    public boolean transferFromJIPipe(ImageJ2ModuleNode node, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
-        String slotName = node.getModuleNodeInfo().getOutputSlotModuleItems().inverse().get(moduleItem);
-        Dataset dataset = node.getOutputSlot(slotName).getData(0, ImageJ2DatasetData.class, progressInfo).getDataset();
-        moduleItem.setValue(module, dataset);
-        return true;
-    }
-
-    @Override
-    public boolean transferToJIPipe(ImageJ2ModuleNode node, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
-        Dataset dataset = (Dataset) moduleItem.getValue(module);
-        String slotName = node.getModuleNodeInfo().getInputSlotModuleItems().inverse().get(moduleItem);
-        JIPipeDataSlot slot = node.getInputSlot(slotName);
-        slot.clearData();
-        slot.addData(new ImageJ2DatasetData(dataset), progressInfo);
-        return true;
+    public Class<ImageJ2DatasetData> getJIPipeDataType() {
+        return ImageJ2DatasetData.class;
     }
 }

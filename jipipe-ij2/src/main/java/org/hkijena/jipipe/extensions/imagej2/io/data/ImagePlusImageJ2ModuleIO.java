@@ -19,52 +19,24 @@ import org.scijava.service.AbstractService;
  * It is assumed that these refer to images (conversion to {@link ImageJ2DatasetData})
  */
 @Plugin(type = ImageJ2ModuleIO.class)
-public class ImagePlusImageJ2ModuleIO extends AbstractService implements ImageJ2ModuleIO {
+public class ImagePlusImageJ2ModuleIO extends DataSlotModuleIO<ImagePlus, ImagePlusData> {
     @Override
-    public Class<?> getAcceptedModuleFieldClass() {
+    public ImagePlus convertJIPipeToModuleData(ImagePlusData obj) {
+        return obj.getImage();
+    }
+
+    @Override
+    public ImagePlusData convertModuleToJIPipeData(ImagePlus obj) {
+        return new ImagePlusData(obj);
+    }
+
+    @Override
+    public Class<ImagePlus> getModuleDataType() {
         return ImagePlus.class;
     }
 
     @Override
-    public boolean handlesInput() {
-        return true;
-    }
-
-    @Override
-    public boolean handlesOutput() {
-        return true;
-    }
-
-    @Override
-    public void install(ImageJ2ModuleNodeInfo nodeInfo, ModuleItem<?> moduleItem) {
-        if(moduleItem.isInput()) {
-            nodeInfo.addInputSlotForModuleItem(moduleItem, ImagePlusData.class);
-        }
-        if(moduleItem.isOutput()) {
-            nodeInfo.addOutputSlotForModuleItem(moduleItem, ImagePlusData.class);
-        }
-    }
-
-    @Override
-    public void install(ImageJ2ModuleNode node, ModuleItem<?> moduleItem) {
-
-    }
-
-    @Override
-    public boolean transferFromJIPipe(ImageJ2ModuleNode node, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
-        String slotName = node.getModuleNodeInfo().getOutputSlotModuleItems().inverse().get(moduleItem);
-        ImagePlus imagePlus = node.getOutputSlot(slotName).getData(0, ImagePlusData.class, progressInfo).getImage();
-        moduleItem.setValue(module, imagePlus);
-        return true;
-    }
-
-    @Override
-    public boolean transferToJIPipe(ImageJ2ModuleNode node, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
-        ImagePlus imagePlus = (ImagePlus) moduleItem.getValue(module);
-        String slotName = node.getModuleNodeInfo().getInputSlotModuleItems().inverse().get(moduleItem);
-        JIPipeDataSlot slot = node.getInputSlot(slotName);
-        slot.clearData();
-        slot.addData(new ImagePlusData(imagePlus), progressInfo);
-        return true;
+    public Class<ImagePlusData> getJIPipeDataType() {
+        return ImagePlusData.class;
     }
 }
