@@ -13,8 +13,9 @@
 
 package org.hkijena.jipipe.extensions.imagej2;
 
-import net.imglib2.img.display.imagej.ImageJFunctions;
-import net.imglib2.outofbounds.OutOfBoundsConstantValueFactory;
+import net.imagej.ops.OpInfo;
+import net.imagej.ops.OpService;
+import net.imagej.ops.OpUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
@@ -30,12 +31,10 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringLi
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.Priority;
-import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleService;
 import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
-import java.awt.*;
 import java.util.Collections;
 import java.util.List;
 
@@ -75,11 +74,11 @@ public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatypeConversion(new ImageJ2ToImageJ1Converter());
         registerImageJDataAdapter(new ImageJ2DataSetDataImageJAdapter(), ImagePlusDataImporterUI.class);
 
-        ModuleService moduleService = context.getService(ModuleService.class);
-        for (ModuleInfo module : moduleService.getModules()) {
-            JIPipeProgressInfo moduleProgress = progressInfo.resolve(module.getTitle() + " @ " + module.getDelegateClassName());
+        OpService opService = context.getService(OpService.class);
+        for (OpInfo info : opService.infos()) {
+            JIPipeProgressInfo moduleProgress = progressInfo.resolve(info.cInfo().getTitle() + " @ " + info.cInfo().getDelegateClassName());
             try {
-                ImageJ2ModuleNodeInfo nodeInfo = new ImageJ2ModuleNodeInfo(context, module, moduleProgress);
+                ImageJ2OpNodeInfo nodeInfo = new ImageJ2OpNodeInfo(context, info, moduleProgress);
                 if(nodeInfo.getInputSlots().isEmpty() && nodeInfo.getOutputSlots().isEmpty()) {
                     progressInfo.log("Node has no data slots. Skipping.");
                     continue;

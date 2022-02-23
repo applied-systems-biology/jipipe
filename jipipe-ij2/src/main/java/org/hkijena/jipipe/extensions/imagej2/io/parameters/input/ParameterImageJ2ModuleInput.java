@@ -3,8 +3,9 @@ package org.hkijena.jipipe.extensions.imagej2.io.parameters.input;
 import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.extensions.imagej2.ImageJ2ModuleNode;
-import org.hkijena.jipipe.extensions.imagej2.ImageJ2ModuleNodeInfo;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNode;
+import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNodeInfo;
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -24,34 +25,34 @@ public abstract class ParameterImageJ2ModuleInput<ModuleType, JIPipeType> extend
     }
 
     @Override
-    public void install(ImageJ2ModuleNodeInfo nodeInfo, ModuleItem<?> moduleItem) {
+    public void install(ImageJ2OpNodeInfo nodeInfo, ModuleItem<?> moduleItem) {
     }
 
     @Override
-    public void install(ImageJ2ModuleNode node, ModuleItem<?> moduleItem) {
-        if(!node.getModuleParameterAssignment().containsValue(moduleItem)) {
+    public void install(ImageJ2OpNode node, ModuleItem<?> moduleItem) {
+        if(!node.moduleItemIsParameter(moduleItem)) {
             String parameterKey = StringUtils.makeUniqueString(StringUtils.orElse(moduleItem.getPersistKey(), moduleItem.getName()).toLowerCase().replace(' ', '-'),
                     "-",
-                    node.getModuleParameterAssignment().keySet());
+                    node.getModuleParameters().getParameters().keySet());
             String parameterName = WordUtils.capitalize(String.join(" ", org.apache.commons.lang3.StringUtils.splitByCharacterTypeCamelCase(moduleItem.getName())));
-            node.getModuleParameters().addParameter(parameterKey, getJIPipeParameterClass(), parameterName, moduleItem.getDescription());
+            node.addParameterForModuleItem(parameterKey, parameterName, moduleItem.getDescription(), getJIPipeParameterClass(), moduleItem);
             Object result = moduleItem.getValue(node.getModuleInstance());
             if(result != null && getModuleClass().isAssignableFrom(result.getClass())) {
                 node.getModuleParameters().get(parameterKey).set(convertFromModuleToJIPipe((ModuleType) result));
             }
-            node.getModuleParameterAssignment().put(parameterKey, moduleItem);
         }
     }
 
     @Override
-    public boolean transferFromJIPipe(ImageJ2ModuleNode node, JIPipeDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
-        JIPipeType value = node.getParameter(node.getModuleParameterAssignment().inverse().get(moduleItem), getJIPipeParameterClass());
+    public boolean transferFromJIPipe(ImageJ2OpNode node, JIPipeDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
+        JIPipeParameterAccess access = node.getModuleItemParameterAccess(moduleItem);
+        JIPipeType value = access.get(getJIPipeParameterClass());
         moduleItem.setValue(module, convertFromJIPipeToModule(value));
         return true;
     }
 
     @Override
-    public boolean transferToJIPipe(ImageJ2ModuleNode node, JIPipeDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
+    public boolean transferToJIPipe(ImageJ2OpNode node, JIPipeDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
         return true;
     }
 

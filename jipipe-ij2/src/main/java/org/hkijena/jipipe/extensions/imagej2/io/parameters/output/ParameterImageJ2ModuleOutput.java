@@ -1,10 +1,9 @@
 package org.hkijena.jipipe.extensions.imagej2.io.parameters.output;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.extensions.imagej2.ImageJ2ModuleNode;
-import org.hkijena.jipipe.extensions.imagej2.ImageJ2ModuleNodeInfo;
+import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNode;
+import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNodeInfo;
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.scijava.module.Module;
@@ -23,21 +22,21 @@ public abstract class ParameterImageJ2ModuleOutput<ModuleType, JIPipeType> exten
     }
 
     @Override
-    public void install(ImageJ2ModuleNodeInfo nodeInfo, ModuleItem<?> moduleItem) {
+    public void install(ImageJ2OpNodeInfo nodeInfo, ModuleItem<?> moduleItem) {
         nodeInfo.getOrCreateParameterDataOutputSlot();
     }
 
     @Override
-    public void install(ImageJ2ModuleNode node, ModuleItem<?> moduleItem) {
+    public void install(ImageJ2OpNode node, ModuleItem<?> moduleItem) {
     }
 
     @Override
-    public boolean transferFromJIPipe(ImageJ2ModuleNode node, JIPipeDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
+    public boolean transferFromJIPipe(ImageJ2OpNode node, JIPipeDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
         return true;
     }
 
     @Override
-    public boolean transferToJIPipe(ImageJ2ModuleNode node, JIPipeDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
+    public boolean transferToJIPipe(ImageJ2OpNode node, JIPipeDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
         moduleOutputParameters.getParameterData().put(moduleItem.getName(), convertFromModuleToJIPipe((ModuleType) moduleItem.getValue(module)));
         return true;
     }

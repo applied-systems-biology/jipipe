@@ -2,8 +2,8 @@ package org.hkijena.jipipe.extensions.imagej2.io;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.extensions.imagej2.ImageJ2ModuleNode;
-import org.hkijena.jipipe.extensions.imagej2.ImageJ2ModuleNodeInfo;
+import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNode;
+import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNodeInfo;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.scijava.module.Module;
 import org.scijava.module.ModuleItem;
@@ -24,18 +24,18 @@ public interface ImageJ2ModuleIO extends Service {
     boolean handlesOutput();
 
     /**
-     * Applies changes to an {@link ImageJ2ModuleNodeInfo} required for this IO
+     * Applies changes to an {@link ImageJ2OpNodeInfo} required for this IO
      * @param nodeInfo the node info
      * @param moduleItem the module
      */
-    void install(ImageJ2ModuleNodeInfo nodeInfo, ModuleItem<?> moduleItem);
+    void install(ImageJ2OpNodeInfo nodeInfo, ModuleItem<?> moduleItem);
 
     /**
-     * Applies changes to an {@link ImageJ2ModuleNode} required for this IO
+     * Applies changes to an {@link ImageJ2OpNode} required for this IO
      * @param node the node info
      * @param moduleItem the module
      */
-    void install(ImageJ2ModuleNode node, ModuleItem<?> moduleItem);
+    void install(ImageJ2OpNode node, ModuleItem<?> moduleItem);
 
     /**
      * Transfers data from JIPipe into the module
@@ -46,7 +46,7 @@ public interface ImageJ2ModuleIO extends Service {
      * @param progressInfo the progress info
      * @return if successful
      */
-    boolean transferFromJIPipe(ImageJ2ModuleNode node, JIPipeDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo);
+    boolean transferFromJIPipe(ImageJ2OpNode node, JIPipeDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo);
 
     /**
      * Transfers data from JIPipe from the module
@@ -58,5 +58,5 @@ public interface ImageJ2ModuleIO extends Service {
      * @param progressInfo the progress info
      * @return if successful
      */
-    boolean transferToJIPipe(ImageJ2ModuleNode node, JIPipeDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo);
+    boolean transferToJIPipe(ImageJ2OpNode node, JIPipeDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo);
 }

@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imagej2;
 
+import net.imagej.ops.OpInfo;
 import net.imagej.ops.imagemoments.moments.DefaultMoment11;
 import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.JIPipeDependency;
@@ -17,6 +18,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.MenuEntry;
+import org.scijava.MenuPath;
 import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleItem;
 
@@ -27,11 +29,11 @@ import java.util.stream.Collectors;
 /**
  * A {@link JIPipeNodeInfo} implementation that reads its information from an ImageJ2 {@link org.scijava.command.Command}
  */
-public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
+public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
 
     private final Context context;
     private final String id;
-    private final ModuleInfo moduleInfo;
+    private final OpInfo opInfo;
     private final String menuPath;
     private final String name;
     private final JIPipeNodeTypeCategory nodeTypeCategory;
@@ -60,30 +62,32 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
      */
     private final JIPipeDynamicParameterCollection nodeParameters = new JIPipeDynamicParameterCollection();
 
-    public ImageJ2ModuleNodeInfo(Context context, ModuleInfo moduleInfo, JIPipeProgressInfo progressInfo) throws InstantiableException {
+    public ImageJ2OpNodeInfo(Context context, OpInfo opInfo, JIPipeProgressInfo progressInfo) throws InstantiableException {
         this.context = context;
-        this.id = "ij2:module:" + moduleInfo.getDelegateClassName();
-        this.moduleInfo = moduleInfo;
+        this.id = "ij2:op:" + opInfo.getName();
+        this.opInfo = opInfo;
         this.nodeTypeCategory = new ImagesNodeTypeCategory();
-        if(moduleInfo.getMenuPath().isEmpty() || moduleInfo.getTitle().contains(":")) {
-            List<String> strings = Arrays.stream(moduleInfo.getTitle().split("[:.$]")).map(String::trim).map(WordUtils::capitalize).collect(Collectors.toList());
+        String title = opInfo.cInfo().getTitle();
+        MenuPath menuPath = opInfo.cInfo().getMenuPath();
+        if(menuPath.isEmpty() || title.contains(":")) {
+            List<String> strings = Arrays.stream(title.split("[:.$]")).map(String::trim).map(WordUtils::capitalize).collect(Collectors.toList());
             if(strings.size() > 1) {
                 this.name = "IJ2: " + String.join(" ", org.apache.commons.lang.StringUtils.splitByCharacterTypeCamelCase(strings.get(strings.size() - 1)));
                 strings.remove(strings.size() - 1);
                 this.menuPath = "IJ2\n" + String.join("\n", strings);
             }
             else {
-                this.name = "IJ2: " + moduleInfo.getTitle();
-                this.menuPath = "IJ2\n" +  moduleInfo.getMenuPath().stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
+                this.name = "IJ2: " + title;
+                this.menuPath = "IJ2\n" +  menuPath.stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
             }
         }
         else {
-            this.name = "IJ2: " + moduleInfo.getTitle();
-            this.menuPath = "IJ2\n" +  moduleInfo.getMenuPath().stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
+            this.name = "IJ2: " + title;
+            this.menuPath = "IJ2\n" +  menuPath.stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
         }
-        this.description = new HTMLText("An ImageJ2 function<br/>" + moduleInfo.getName() + "<br/>" + moduleInfo.toString());
+        this.description = new HTMLText("An ImageJ2 function<br/>" + opInfo.getName() + "<br/>" + opInfo.toString());
 
-        initializeParameters(moduleInfo, context, progressInfo);
+        initializeParameters(context, progressInfo);
     }
 
     public boolean hasParameterDataOutputSlot() {
@@ -118,12 +122,9 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
        moduleItemToOutputSlot.put(item, name);
     }
 
-    private void initializeParameters(ModuleInfo moduleInfo, Context context, JIPipeProgressInfo progressInfo) {
+    private void initializeParameters(Context context, JIPipeProgressInfo progressInfo) {
         ImageJ2JIPipeModuleIOService service = context.getService(ImageJ2JIPipeModuleIOService.class);
-        if(moduleInfo.getDelegateClassName().equals(DefaultMoment11.class.getName())) {
-            System.out.println();
-        }
-        for (ModuleItem<?> item : moduleInfo.inputs()) {
+        for (ModuleItem<?> item : opInfo.inputs()) {
             if(item.isOutput() && !item.isRequired()) {
                 progressInfo.log("Skipping input " + item.getName() + ", as it seems to be an optional input, but is at the same time an output.");
                 continue;
@@ -135,7 +136,7 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
             moduleIO.install(this, item);
             inputModuleIO.put(item, moduleIO);
         }
-        for (ModuleItem<?> item : moduleInfo.outputs()) {
+        for (ModuleItem<?> item : opInfo.outputs()) {
             ImageJ2ModuleIO moduleIO = service.findModuleIO(item, JIPipeSlotType.Output);
             if(moduleIO == null) {
                 throw new RuntimeException("Unable to resolve output of type " + item.getType());
@@ -156,17 +157,17 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
 
     @Override
     public Class<? extends JIPipeGraphNode> getInstanceClass() {
-        return ImageJ2ModuleNode.class;
+        return ImageJ2OpNode.class;
     }
 
     @Override
     public JIPipeGraphNode newInstance() {
-        return new ImageJ2ModuleNode(this);
+        return new ImageJ2OpNode(this);
     }
 
     @Override
     public JIPipeGraphNode duplicate(JIPipeGraphNode algorithm) {
-        return new ImageJ2ModuleNode((ImageJ2ModuleNode) algorithm);
+        return new ImageJ2OpNode((ImageJ2OpNode) algorithm);
     }
 
     @Override
@@ -230,7 +231,11 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
         return moduleItemToInputSlot.get(moduleItem);
     }
 
-    public ModuleInfo getModuleInfo() {
-        return moduleInfo;
+    public OpInfo getOpInfo() {
+        return opInfo;
+    }
+
+    public Context getContext() {
+        return context;
     }
 }

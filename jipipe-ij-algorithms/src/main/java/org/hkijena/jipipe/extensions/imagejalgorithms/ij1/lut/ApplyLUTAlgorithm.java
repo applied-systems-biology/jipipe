@@ -27,7 +27,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusCo
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-@JIPipeDocumentation(name = "Apply LUT", description = "Applies a LUT and converts the image to an RGB image")
+@JIPipeDocumentation(name = "Apply LUT", description = "Applies the currently set LUT of an image and converts the image to an RGB image. " +
+        "To modify the LUT,  please use one of the 'Set LUT' nodes.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "LUT")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", autoCreate = true)
