@@ -90,7 +90,13 @@ public class JIPipePlotSeriesBuilderUI extends JIPipeWorkbenchPanel {
     }
 
     private void removeSeries() {
-        seriesBuilder.getPlotBuilderUI().removeSeries(seriesBuilder);
+        if(JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
+                "Do you really want to remove the series '" + seriesBuilder.getName() + "'?",
+                "Delete series",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.QUESTION_MESSAGE) == JOptionPane.YES_OPTION) {
+            seriesBuilder.getPlotBuilderUI().removeSeries(seriesBuilder);
+        }
     }
 
     private void toggleEnableDisable() {

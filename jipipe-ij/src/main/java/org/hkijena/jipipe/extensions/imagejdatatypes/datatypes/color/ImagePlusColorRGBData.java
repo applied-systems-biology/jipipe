@@ -76,12 +76,16 @@ public class ImagePlusColorRGBData extends ImagePlusColorData implements Colored
             if (image.getType() != ImagePlus.COLOR_RGB) {
                 // Standard method: Greyscale -> RGB
                 return new ImagePlusColorRGBData(data.getImage());
-            } else if (data instanceof ColoredImagePlusData) {
-                ImagePlus copy = data.getDuplicateImage();
-                COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
-                return new ImagePlusColorRGBData(copy);
             } else {
-                return new ImagePlusColorRGBData(data.getImage());
+                if(data.getColorSpace() instanceof RGBColorSpace) {
+                    // No conversion needed
+                    return new ImagePlusColorRGBData(data.getImage());
+                }
+                else {
+                    ImagePlus copy = data.getDuplicateImage();
+                    COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
+                    return new ImagePlusColorRGBData(copy);
+                }
             }
         } else {
             return new ImagePlusColorRGBData(data.getImageSource());

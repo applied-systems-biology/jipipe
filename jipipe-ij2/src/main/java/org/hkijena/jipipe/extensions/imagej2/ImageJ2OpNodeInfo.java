@@ -1,6 +1,8 @@
 package org.hkijena.jipipe.extensions.imagej2;
 
+import com.google.common.collect.Sets;
 import net.imagej.ops.OpInfo;
+import net.imagej.ops.Ops;
 import net.imagej.ops.imagemoments.moments.DefaultMoment11;
 import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.JIPipeDependency;
@@ -15,6 +17,7 @@ import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.jhotdraw.app.SDIApplication;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.MenuEntry;
@@ -110,7 +113,7 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
 
     public void addInputSlotForModuleItem(ModuleItem<?> item, Class<? extends JIPipeData> dataClass) {
         String name = StringUtils.makeUniqueString(WordUtils.capitalize(StringUtils.makeFilesystemCompatible(item.getName())), " ", inputSlotToModuleItem.keySet());
-        inputSlots.add(new DefaultJIPipeInputSlot(dataClass, name, item.getDescription(), true, false));
+        inputSlots.add(new DefaultJIPipeInputSlot(dataClass, name, item.getDescription(), true, true));
         inputSlotToModuleItem.put(name, item);
         moduleItemToInputSlot.put(item, name);
     }
@@ -124,6 +127,17 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
 
     private void initializeParameters(Context context, JIPipeProgressInfo progressInfo) {
         ImageJ2JIPipeModuleIOService service = context.getService(ImageJ2JIPipeModuleIOService.class);
+//        if(opInfo.getType() == Ops.Threshold.Otsu.class) {
+//            System.out.println();
+//        }
+        for (ModuleItem<?> item : opInfo.outputs()) {
+            ImageJ2ModuleIO moduleIO = service.findModuleIO(item, JIPipeSlotType.Output);
+            if(moduleIO == null) {
+                throw new RuntimeException("Unable to resolve output of type " + item.getType());
+            }
+            moduleIO.install(this, item);
+            outputModuleIO.put(item, moduleIO);
+        }
         for (ModuleItem<?> item : opInfo.inputs()) {
             if(item.isOutput() && !item.isRequired()) {
                 progressInfo.log("Skipping input " + item.getName() + ", as it seems to be an optional input, but is at the same time an output.");
@@ -136,14 +150,7 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
             moduleIO.install(this, item);
             inputModuleIO.put(item, moduleIO);
         }
-        for (ModuleItem<?> item : opInfo.outputs()) {
-            ImageJ2ModuleIO moduleIO = service.findModuleIO(item, JIPipeSlotType.Output);
-            if(moduleIO == null) {
-                throw new RuntimeException("Unable to resolve output of type " + item.getType());
-            }
-            moduleIO.install(this, item);
-            outputModuleIO.put(item, moduleIO);
-        }
+
     }
 
     public JIPipeDynamicParameterCollection getNodeParameters() {

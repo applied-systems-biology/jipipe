@@ -5,6 +5,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNode;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNodeInfo;
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
+import org.hkijena.jipipe.extensions.imagej2.io.parameters.ParameterModuleIO;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.scijava.module.Module;
 import org.scijava.module.ModuleItem;
@@ -15,7 +16,7 @@ import org.scijava.service.AbstractService;
  * @param <ModuleType> the type used in the module
  * @param <JIPipeType> the type used in JIPipe
  */
-public abstract class ParameterImageJ2ModuleOutput<ModuleType, JIPipeType> extends AbstractService implements ImageJ2ModuleIO {
+public abstract class ParameterImageJ2ModuleOutput<ModuleType, JIPipeType> extends AbstractService implements ParameterModuleIO {
     @Override
     public Class<?> getAcceptedModuleFieldClass() {
         return getModuleClass();

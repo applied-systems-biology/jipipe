@@ -77,12 +77,16 @@ public class ImagePlusColorHSBData extends ImagePlusColorData implements Colored
             if (image.getType() != ImagePlus.COLOR_RGB) {
                 // This will go through the standard method (greyscale -> RGB -> HSB)
                 return new ImagePlusColorHSBData(image);
-            } else if (data instanceof ColoredImagePlusData) {
-                ImagePlus copy = data.getDuplicateImage();
-                COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
-                return new ImagePlusColorHSBData(copy);
             } else {
-                return new ImagePlusColorHSBData(image);
+                if(data.getColorSpace() instanceof HSBColorSpace) {
+                    // No conversion needed
+                    return new ImagePlusColorHSBData(image);
+                }
+                else {
+                    ImagePlus copy = data.getDuplicateImage();
+                    COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
+                    return new ImagePlusColorHSBData(copy);
+                }
             }
         } else {
             return new ImagePlusColorHSBData(data.getImageSource());

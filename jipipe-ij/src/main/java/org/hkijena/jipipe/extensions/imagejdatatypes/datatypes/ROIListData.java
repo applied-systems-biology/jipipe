@@ -37,6 +37,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedROIListDataViewerWindow;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
@@ -377,7 +378,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             ROIListData copy = new ROIListData(this);
             copy.flatten();
             copy.crop(true, false, false, false);
-            mask = copy.toMask(new Margin(), false, true, 1);
+            mask = copy.toRGBImage(new Margin(), false, true, 1);
             mask.setLut(LUT.createLutFromColor(Color.RED));
         }
         return new ImagePlusData(mask).preview(width, height);
@@ -520,6 +521,41 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     /**
+     * Generates an RGB image from pure ROI data.
+     * The ROI's reference images are ignored.
+     *
+     * @param imageArea         modifications for the image area
+     * @param drawOutline       whether to draw an outline
+     * @param drawFilledOutline whether to fill the area
+     * @param lineThickness     line thickness for drawing
+     * @return the image
+     */
+    public ImagePlus toRGBImage(Margin imageArea, boolean drawOutline, boolean drawFilledOutline, int lineThickness) {
+        // Find the bounds and future stack position
+        Rectangle bounds = imageArea.getInsideArea(this.getBounds());
+        if (bounds == null) {
+            throw new UserFriendlyRuntimeException("Invalid margin:" + imageArea, "Invalid margin!", "ROI list to mask", "The provided margin is invalid.", "Please check any margin parameters. Set them to Center/Center and all values to zero to be sure.");
+        }
+        int sx = bounds.width + bounds.x;
+        int sy = bounds.height + bounds.y;
+        int sz = 1;
+        int sc = 1;
+        int st = 1;
+        for (Roi roi : this) {
+            int z = roi.getZPosition();
+            int c = roi.getCPosition();
+            int t = roi.getTPosition();
+            sz = Math.max(sz, z);
+            sc = Math.max(sc, c);
+            st = Math.max(st, t);
+        }
+
+        ImagePlus result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);
+        drawMask(drawOutline, drawFilledOutline, lineThickness, result);
+        return result;
+    }
+
+    /**
      * Generates a mask image from pure ROI data.
      * The ROI's reference images are ignored.
      *
@@ -643,6 +679,61 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         return result;
     }
 
+    /**
+     * Draw on top of an RGB image
+     * @param rgbImage the target image
+     * @param drawOutline draw an outline
+     * @param fillOutline fill the outline
+     * @param ignoreZ do not constrain Z
+     * @param ignoreC do not constrain channel
+     * @param ignoreT do not constrain frame
+     * @param defaultLineThickness default line thickness
+     * @param defaultFillColor default fill color
+     * @param defaultLineColor default line color
+     */
+    public void draw(ImagePlus rgbImage, boolean ignoreZ, boolean ignoreC, boolean ignoreT, boolean drawOutline, boolean fillOutline, int defaultLineThickness, Color defaultFillColor, Color defaultLineColor) {
+        ImageJUtils.forEachIndexedZCTSlice(rgbImage, (processor, index) -> {
+            for (Roi roi : this) {
+                int rz = ignoreZ ? 0 : roi.getZPosition();
+                int rc = ignoreC ? 0 : roi.getCPosition();
+                int rt = ignoreT ? 0 : roi.getTPosition();
+                if (rz != 0 && rz != (index.getZ() + 1))
+                    continue;
+                if (rc != 0 && rc != (index.getC() + 1))
+                    continue;
+                if (rt != 0 && rt != (index.getT() + 1))
+                    continue;
+                if (fillOutline) {
+                    Color color = (roi.getFillColor() == null) ? defaultFillColor : roi.getFillColor();
+                    processor.setColor(color);
+                    processor.fill(roi);
+                }
+                if (drawOutline) {
+                    Color color = (roi.getStrokeColor() == null) ? defaultLineColor : roi.getStrokeColor();
+                    int width = (roi.getStrokeWidth() <= 0) ? defaultLineThickness : (int) roi.getStrokeWidth();
+                    processor.setLineWidth(width);
+                    processor.setColor(color);
+                    roi.drawPixels(processor);
+                }
+            }
+        }, new JIPipeProgressInfo());
+    }
+
+    /**
+     * Draw on top of an RGB processor with specified coordinates.
+     * @param processor the target processor
+     * @param currentIndex current index in the stack
+     * @param ignoreZ do not constrain Z
+     * @param ignoreC do not constrain channel
+     * @param ignoreT do not constrain frame
+     * @param drawOutline draw an outline
+     * @param fillOutline fill the outline
+     * @param drawLabel draw labels
+     * @param defaultLineThickness default line thickness
+     * @param defaultFillColor default fill color
+     * @param defaultLineColor default line color
+     * @param highlighted highlighted rois (other ones are drawn darker)
+     */
     public void draw(ImageProcessor processor, ImageSliceIndex currentIndex, boolean ignoreZ, boolean ignoreC, boolean ignoreT, boolean drawOutline, boolean fillOutline, boolean drawLabel, int defaultLineThickness, Color defaultFillColor, Color defaultLineColor, Collection<Roi> highlighted) {
         ImagePlus tmp = new ImagePlus("tmp", processor);
         final int z = currentIndex.getZ();
