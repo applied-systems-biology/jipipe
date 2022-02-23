@@ -39,6 +39,7 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedROIListDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
@@ -378,8 +379,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             ROIListData copy = new ROIListData(this);
             copy.flatten();
             copy.crop(true, false, false, false);
-            mask = copy.toRGBImage(new Margin(), false, true, 1);
-            mask.setLut(LUT.createLutFromColor(Color.RED));
+            mask = copy.toRGBImage(new Margin(), ROIElementDrawingMode.Always, ROIElementDrawingMode.IfAvailable, 1, Color.RED, Color.RED);
+//            mask.setLut(LUT.createLutFromColor(Color.RED));
         }
         return new ImagePlusData(mask).preview(width, height);
     }
@@ -527,10 +528,12 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      * @param imageArea         modifications for the image area
      * @param drawOutline       whether to draw an outline
      * @param drawFilledOutline whether to fill the area
-     * @param lineThickness     line thickness for drawing
+     * @param defaultLineThickness     line thickness for drawing
+     * @param defaultFillColor the default fill color
+     * @param defaultLineColor the default line color
      * @return the image
      */
-    public ImagePlus toRGBImage(Margin imageArea, boolean drawOutline, boolean drawFilledOutline, int lineThickness) {
+    public ImagePlus toRGBImage(Margin imageArea, ROIElementDrawingMode drawOutline, ROIElementDrawingMode drawFilledOutline, int defaultLineThickness, Color defaultFillColor, Color defaultLineColor) {
         // Find the bounds and future stack position
         Rectangle bounds = imageArea.getInsideArea(this.getBounds());
         if (bounds == null) {
@@ -551,7 +554,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         }
 
         ImagePlus result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);
-        drawMask(drawOutline, drawFilledOutline, lineThickness, result);
+        draw(result, true, true, true, drawOutline, drawFilledOutline, defaultLineThickness, defaultFillColor, defaultLineColor);
         return result;
     }
 
@@ -691,7 +694,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      * @param defaultFillColor default fill color
      * @param defaultLineColor default line color
      */
-    public void draw(ImagePlus rgbImage, boolean ignoreZ, boolean ignoreC, boolean ignoreT, boolean drawOutline, boolean fillOutline, int defaultLineThickness, Color defaultFillColor, Color defaultLineColor) {
+    public void draw(ImagePlus rgbImage, boolean ignoreZ, boolean ignoreC, boolean ignoreT, ROIElementDrawingMode drawOutline, ROIElementDrawingMode fillOutline, int defaultLineThickness, Color defaultFillColor, Color defaultLineColor) {
         ImageJUtils.forEachIndexedZCTSlice(rgbImage, (processor, index) -> {
             for (Roi roi : this) {
                 int rz = ignoreZ ? 0 : roi.getZPosition();
@@ -703,12 +706,12 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                     continue;
                 if (rt != 0 && rt != (index.getT() + 1))
                     continue;
-                if (fillOutline) {
+                if (fillOutline.shouldDraw(roi.getFillColor(), defaultFillColor)) {
                     Color color = (roi.getFillColor() == null) ? defaultFillColor : roi.getFillColor();
                     processor.setColor(color);
                     processor.fill(roi);
                 }
-                if (drawOutline) {
+                if (drawOutline.shouldDraw(roi.getStrokeColor(), defaultLineColor)) {
                     Color color = (roi.getStrokeColor() == null) ? defaultLineColor : roi.getStrokeColor();
                     int width = (roi.getStrokeWidth() <= 0) ? defaultLineThickness : (int) roi.getStrokeWidth();
                     processor.setLineWidth(width);

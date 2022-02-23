@@ -28,6 +28,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.NumberParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
@@ -50,8 +51,8 @@ import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_AL
 @JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
 public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private boolean drawOutline = true;
-    private boolean drawFilledOutline = false;
+    private ROIElementDrawingMode drawOutlineMode = ROIElementDrawingMode.Always;
+    private ROIElementDrawingMode drawFilledOutlineMode = ROIElementDrawingMode.IfAvailable;
     private RoiLabel drawnLabel = RoiLabel.None;
     private OptionalColorParameter overrideFillColor = new OptionalColorParameter();
     private OptionalColorParameter overrideLineColor = new OptionalColorParameter();
@@ -61,6 +62,9 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     private OptionalColorParameter labelBackground = new OptionalColorParameter(Color.BLACK, false);
     private int labelSize = 9;
     private double opacity = 1.0;
+    private boolean ignoreZ = false;
+    private boolean ignoreC = false;
+    private boolean ignoreT = false;
 
     /**
      * Instantiates a new node type.
@@ -85,8 +89,8 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
      */
     public RoiToRGBAlgorithm(RoiToRGBAlgorithm other) {
         super(other);
-        this.drawOutline = other.drawOutline;
-        this.drawFilledOutline = other.drawFilledOutline;
+        this.drawOutlineMode = other.drawOutlineMode;
+        this.drawFilledOutlineMode = other.drawFilledOutlineMode;
         this.drawnLabel = other.drawnLabel;
         this.overrideFillColor = new OptionalColorParameter(other.overrideFillColor);
         this.overrideLineColor = new OptionalColorParameter(other.overrideLineColor);
@@ -96,6 +100,9 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.labelBackground = other.labelBackground;
         this.labelSize = other.labelSize;
         this.opacity = other.opacity;
+        this.ignoreC = other.ignoreC;
+        this.ignoreZ = other.ignoreZ;
+        this.ignoreT = other.ignoreT;
     }
 
     @Override
@@ -153,21 +160,21 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
                         if (progressInfo.isCancelled())
                             return;
 
-                        int rz = roi.getZPosition();
-                        int rc = roi.getCPosition();
-                        int rt = roi.getTPosition();
+                        int rz = ignoreZ ? 0 : roi.getZPosition();
+                        int rc = ignoreC ? 0 : roi.getCPosition();
+                        int rt = ignoreT ? 0 : roi.getTPosition();
                         if (rz != 0 && rz != (z + 1))
                             continue;
                         if (rc != 0 && rc != (c + 1))
                             continue;
                         if (rt != 0 && rt != (t + 1))
                             continue;
-                        if (drawFilledOutline) {
+                        if (drawFilledOutlineMode.shouldDraw(roi.getFillColor(), overrideFillColor.getContent())) {
                             Color color = (overrideFillColor.isEnabled() || roi.getFillColor() == null) ? overrideFillColor.getContent() : roi.getFillColor();
                             processor.setColor(color);
                             processor.fill(roi);
                         }
-                        if (drawOutline) {
+                        if (drawOutlineMode.shouldDraw(roi.getStrokeColor(), overrideLineColor.getContent())) {
                             Color color = (overrideLineColor.isEnabled() || roi.getStrokeColor() == null) ? overrideLineColor.getContent() : roi.getStrokeColor();
                             int width = (overrideLineWidth.isEnabled() || roi.getStrokeWidth() <= 0) ? (int) (double) (overrideLineWidth.getContent()) : (int) roi.getStrokeWidth();
                             processor.setLineWidth(width);
@@ -229,30 +236,30 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
-    @JIPipeParameter("draw-outline")
-    public boolean isDrawOutline() {
-        return drawOutline;
+    @JIPipeParameter("draw-outline-mode")
+    public ROIElementDrawingMode getDrawOutlineMode() {
+        return drawOutlineMode;
     }
 
-    @JIPipeParameter("draw-outline")
-    public void setDrawOutline(boolean drawOutline) {
-        this.drawOutline = drawOutline;
+    @JIPipeParameter("draw-outline-mode")
+    public void setDrawOutlineMode(ROIElementDrawingMode drawOutlineMode) {
+        this.drawOutlineMode = drawOutlineMode;
     }
 
     @JIPipeDocumentation(name = "Draw filled outline", description = "If enabled, fill the ROI areas")
-    @JIPipeParameter("fill-outline")
-    public boolean isDrawFilledOutline() {
-        return drawFilledOutline;
+    @JIPipeParameter("fill-outline-mode")
+    public ROIElementDrawingMode getDrawFilledOutlineMode() {
+        return drawFilledOutlineMode;
     }
 
-    @JIPipeParameter("fill-outline")
-    public void setDrawFilledOutline(boolean drawFilledOutline) {
-        this.drawFilledOutline = drawFilledOutline;
+    @JIPipeParameter("fill-outline-mode")
+    public void setDrawFilledOutlineMode(ROIElementDrawingMode drawFilledOutlineMode) {
+        this.drawFilledOutlineMode = drawFilledOutlineMode;
     }
 
     @JIPipeDocumentation(name = "Draw labels", description = "Allows to draw labels on top of ROI.")
     @JIPipeParameter("drawn-label")
-    public RoiLabel isDrawnLabel() {
+    public RoiLabel getDrawnLabel() {
         return drawnLabel;
     }
 
@@ -342,5 +349,38 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("draw-over")
     public void setDrawOver(boolean drawOver) {
         this.drawOver = drawOver;
+    }
+
+    @JIPipeDocumentation(name = "Ignore Z", description = "If enabled, ROI will show outside their Z layer")
+    @JIPipeParameter("ignore-z")
+    public boolean isIgnoreZ() {
+        return ignoreZ;
+    }
+
+    @JIPipeParameter("ignore-z")
+    public void setIgnoreZ(boolean ignoreZ) {
+        this.ignoreZ = ignoreZ;
+    }
+
+    @JIPipeDocumentation(name = "Ignore channel", description = "If enabled, ROI will show outside their channel (C) layer")
+    @JIPipeParameter("ignore-c")
+    public boolean isIgnoreC() {
+        return ignoreC;
+    }
+
+    @JIPipeParameter("ignore-c")
+    public void setIgnoreC(boolean ignoreC) {
+        this.ignoreC = ignoreC;
+    }
+
+    @JIPipeDocumentation(name = "Ignore frame", description = "If enabled, ROI will show outside their frame (T) layer")
+    @JIPipeParameter("ignore-t")
+    public boolean isIgnoreT() {
+        return ignoreT;
+    }
+
+    @JIPipeParameter("ignore-t")
+    public void setIgnoreT(boolean ignoreT) {
+        this.ignoreT = ignoreT;
     }
 }

@@ -72,6 +72,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.tools.BioFormatsConfigTool;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.OptionalBitDepth;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataPreview;
@@ -252,6 +253,10 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 AVICompression.class,
                 "AVI compression",
                 "Determines how AVI movies are compressed");
+        registerEnumParameterType("roi-element-drawing-mode",
+                ROIElementDrawingMode.class,
+                "ROI element drawing mode",
+                "Determines how ROI elements are drawn");
 
         // Register data types
         registerDatatype("imagej-ome",
