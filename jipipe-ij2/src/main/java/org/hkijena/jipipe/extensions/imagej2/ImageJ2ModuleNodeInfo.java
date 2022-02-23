@@ -86,6 +86,10 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
         initializeParameters(moduleInfo, context, progressInfo);
     }
 
+    public boolean hasParameterDataOutputSlot() {
+        return parameterOutputSlot != null;
+    }
+
     /**
      * Gets or creates the output slot for exported module parameters
      * The slot has a data type {@link org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData}

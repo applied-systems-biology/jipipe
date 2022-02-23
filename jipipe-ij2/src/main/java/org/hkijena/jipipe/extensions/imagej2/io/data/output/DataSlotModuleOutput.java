@@ -1,18 +1,17 @@
-package org.hkijena.jipipe.extensions.imagej2.io.data;
+package org.hkijena.jipipe.extensions.imagej2.io.data.output;
 
-import net.imagej.Dataset;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2ModuleNode;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2ModuleNodeInfo;
-import org.hkijena.jipipe.extensions.imagej2.datatypes.ImageJ2DatasetData;
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
+import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.scijava.module.Module;
 import org.scijava.module.ModuleItem;
 import org.scijava.service.AbstractService;
 
-public abstract class DataSlotModuleIO<ModuleDataType,JIPipeDataType extends JIPipeData> extends AbstractService implements ImageJ2ModuleIO {
+public abstract class DataSlotModuleOutput<ModuleDataType,JIPipeDataType extends JIPipeData> extends AbstractService implements ImageJ2ModuleIO {
 
     @Override
     public Class<?> getAcceptedModuleFieldClass() {
@@ -21,7 +20,7 @@ public abstract class DataSlotModuleIO<ModuleDataType,JIPipeDataType extends JIP
 
     @Override
     public boolean handlesInput() {
-        return true;
+        return false;
     }
 
     @Override
@@ -45,22 +44,16 @@ public abstract class DataSlotModuleIO<ModuleDataType,JIPipeDataType extends JIP
     }
 
     @Override
-    public boolean transferFromJIPipe(ImageJ2ModuleNode node, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
-        String slotName = node.getModuleNodeInfo().getOutputSlotName(moduleItem);
-        JIPipeDataType obj = node.getOutputSlot(slotName).getData(0, getJIPipeDataType(), progressInfo);
-        ModuleDataType converted = convertJIPipeToModuleData(obj);
-        moduleItem.setValue(module, converted);
+    public boolean transferFromJIPipe(ImageJ2ModuleNode node, JIPipeDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
         return true;
     }
 
     @Override
-    public boolean transferToJIPipe(ImageJ2ModuleNode node, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
+    public boolean transferToJIPipe(ImageJ2ModuleNode node, JIPipeDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
         ModuleDataType obj = (ModuleDataType) moduleItem.getValue(module);
         JIPipeDataType converted = convertModuleToJIPipeData(obj);
         String slotName = node.getModuleNodeInfo().getInputSlotName(moduleItem);
-        JIPipeDataSlot slot = node.getInputSlot(slotName);
-        slot.clearData();
-        slot.addData(converted, progressInfo);
+        dataBatch.addOutputData(slotName, converted, progressInfo);
         return true;
     }
 

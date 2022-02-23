@@ -1,8 +1,10 @@
 package org.hkijena.jipipe.extensions.imagej2.io;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2ModuleNode;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2ModuleNodeInfo;
+import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.scijava.module.Module;
 import org.scijava.module.ModuleItem;
 import org.scijava.plugin.Plugin;
@@ -40,12 +42,12 @@ public class ServiceImageJ2ModuleIO extends AbstractService implements ImageJ2Mo
     }
 
     @Override
-    public boolean transferFromJIPipe(ImageJ2ModuleNode node, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
+    public boolean transferFromJIPipe(ImageJ2ModuleNode node, JIPipeDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
         return true;
     }
 
     @Override
-    public boolean transferToJIPipe(ImageJ2ModuleNode node, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
+    public boolean transferToJIPipe(ImageJ2ModuleNode node, JIPipeDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
         return true;
     }
 }

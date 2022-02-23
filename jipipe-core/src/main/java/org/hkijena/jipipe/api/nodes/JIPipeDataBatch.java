@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import gnu.trove.set.TIntSet;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;

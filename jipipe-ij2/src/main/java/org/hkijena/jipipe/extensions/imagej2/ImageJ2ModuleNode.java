@@ -8,12 +8,11 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.parameters.JIPipeCustomParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
-import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumParameter;
+import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
+import org.scijava.Initializable;
 import org.scijava.module.Module;
 import org.scijava.module.ModuleException;
 import org.scijava.module.ModuleItem;
@@ -66,7 +65,35 @@ public class ImageJ2ModuleNode extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        Module iterationInstance;
+        ParametersData moduleOutputParameters = new ParametersData();
+        try {
+            iterationInstance = getModuleNodeInfo().getModuleInfo().createModule();
+            iterationInstance.initialize();
+        } catch (ModuleException e) {
+            throw new RuntimeException(e);
+        }
 
+        // Copy from JIPipe
+        for (Map.Entry<ModuleItem<?>, ImageJ2ModuleIO> entry : getModuleNodeInfo().getInputModuleIO().entrySet()) {
+            entry.getValue().transferFromJIPipe(this, dataBatch, entry.getKey(), iterationInstance, progressInfo);
+        }
+
+        // Initialize Ops after setting parameters
+        if(iterationInstance.getDelegateObject() instanceof net.imagej.ops.Initializable) {
+            ((net.imagej.ops.Initializable) iterationInstance.getDelegateObject()).initialize();
+        }
+
+        // Run operation
+        iterationInstance.run();
+
+        // Copy back to JIPipe
+        for (Map.Entry<ModuleItem<?>, ImageJ2ModuleIO> entry : getModuleNodeInfo().getInputModuleIO().entrySet()) {
+            entry.getValue().transferToJIPipe(this, dataBatch, moduleOutputParameters, entry.getKey(), iterationInstance, progressInfo);
+        }
+        if(getModuleNodeInfo().hasParameterDataOutputSlot()) {
+            dataBatch.addOutputData(getModuleNodeInfo().getOrCreateParameterDataOutputSlot().slotName(), moduleOutputParameters, progressInfo);
+        }
     }
 
     public BiMap<String, ModuleItem<?>> getModuleParameterAssignment() {

@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.imagej2.io.data;
+package org.hkijena.jipipe.extensions.imagej2.io.data.input;
 
 import net.imagej.DefaultDataset;
 import net.imagej.ImgPlus;
@@ -14,7 +14,7 @@ import org.scijava.plugin.Plugin;
  * It is assumed that these refer to images (conversion to {@link ImageJ2DatasetData})
  */
 @Plugin(type = ImageJ2ModuleIO.class)
-public class RandomAccessibleImageJ2ModuleIO extends DataSlotModuleIO<RandomAccessible, ImageJ2DatasetData> {
+public class RandomAccessibleImageJ2ModuleInput extends DataSlotModuleInput<RandomAccessible, ImageJ2DatasetData> {
 
     @Override
     public RandomAccessible convertJIPipeToModuleData(ImageJ2DatasetData obj) {

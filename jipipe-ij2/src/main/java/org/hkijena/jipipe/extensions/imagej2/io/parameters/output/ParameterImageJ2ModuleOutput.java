@@ -1,15 +1,12 @@
 package org.hkijena.jipipe.extensions.imagej2.io.parameters.output;
 
-import net.imglib2.type.numeric.RealType;
-import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2ModuleNode;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2ModuleNodeInfo;
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
-import org.hkijena.jipipe.extensions.multiparameters.algorithms.ConvertParametersToTableAlgorithm;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.module.Module;
 import org.scijava.module.ModuleItem;
 import org.scijava.service.AbstractService;
@@ -35,18 +32,13 @@ public abstract class ParameterImageJ2ModuleOutput<ModuleType, JIPipeType> exten
     }
 
     @Override
-    public boolean transferFromJIPipe(ImageJ2ModuleNode node, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
+    public boolean transferFromJIPipe(ImageJ2ModuleNode node, JIPipeDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
         return true;
     }
 
     @Override
-    public boolean transferToJIPipe(ImageJ2ModuleNode node, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
-        JIPipeDataSlot outputSlot = node.getOutputSlot(node.getModuleNodeInfo().getOrCreateParameterDataOutputSlot().slotName());
-        if(outputSlot.isEmpty()) {
-            outputSlot.addData(new ParametersData(), progressInfo);
-        }
-        ParametersData parametersData = outputSlot.getData(0, ParametersData.class, progressInfo);
-        parametersData.getParameterData().put(moduleItem.getName(), convertFromModuleToJIPipe((ModuleType) moduleItem.getValue(module)));
+    public boolean transferToJIPipe(ImageJ2ModuleNode node, JIPipeDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
+        moduleOutputParameters.getParameterData().put(moduleItem.getName(), convertFromModuleToJIPipe((ModuleType) moduleItem.getValue(module)));
         return true;
     }
 
