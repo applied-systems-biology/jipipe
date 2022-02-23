@@ -295,25 +295,27 @@ public class ImageViewerPanel extends JPanel {
         exportMenuButton.setToolTipText("Export currently displayed image");
         JPopupMenu exportMenu = new JPopupMenu();
 
-        JMenuItem saveRawImageItem = new JMenuItem("Raw image to *.tif", UIUtils.getIconFromResources("actions/save.png"));
+        JMenuItem saveRawImageItem = new JMenuItem("Export raw image to *.tif", UIUtils.getIconFromResources("actions/save.png"));
         saveRawImageItem.addActionListener(e -> saveRawImage());
         exportMenu.add(saveRawImageItem);
+
+        JMenuItem exportCurrentSliceItem = new JMenuItem("Export snapshot of current slice", UIUtils.getIconFromResources("actions/viewimage.png"));
+        exportCurrentSliceItem.addActionListener(e -> exportCurrentSliceToPNG());
+        exportMenu.add(exportCurrentSliceItem);
+
+        exportAllSlicesItem = new JMenuItem("Export snapshot of all slices", UIUtils.getIconFromResources("actions/qlipper.png"));
+        exportAllSlicesItem.addActionListener(e -> exportAllSlicesToPNG());
+        exportMenu.add(exportAllSlicesItem);
+
+        exportMovieItem = new JMenuItem("Export movie", UIUtils.getIconFromResources("actions/filmgrain.png"));
+        exportMovieItem.addActionListener(e -> exportVideo());
+        exportMenu.add(exportMovieItem);
+
+        exportMenu.addSeparator();
 
         JMenuItem copyCurrentSliceItem = new JMenuItem("Copy snapshot of current slice", UIUtils.getIconFromResources("actions/edit-copy.png"));
         copyCurrentSliceItem.addActionListener(e -> copyCurrentSliceToClipboard());
         exportMenu.add(copyCurrentSliceItem);
-
-        JMenuItem exportCurrentSliceItem = new JMenuItem("Snapshot of current slice", UIUtils.getIconFromResources("actions/viewimage.png"));
-        exportCurrentSliceItem.addActionListener(e -> exportCurrentSliceToPNG());
-        exportMenu.add(exportCurrentSliceItem);
-
-        exportAllSlicesItem = new JMenuItem("Snapshot of all slices", UIUtils.getIconFromResources("actions/qlipper.png"));
-        exportAllSlicesItem.addActionListener(e -> exportAllSlicesToPNG());
-        exportMenu.add(exportAllSlicesItem);
-
-        exportMovieItem = new JMenuItem("Movie", UIUtils.getIconFromResources("actions/filmgrain.png"));
-        exportMovieItem.addActionListener(e -> exportVideo());
-        exportMenu.add(exportMovieItem);
 
         UIUtils.addPopupMenuToComponent(exportMenuButton, exportMenu);
         toolBar.add(exportMenuButton);

@@ -1,11 +1,11 @@
 package org.hkijena.jipipe.extensions.imagej2;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
+import net.imagej.ops.imagemoments.moments.DefaultMoment11;
 import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -100,8 +100,15 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
 
     private void initializeParameters(ModuleInfo moduleInfo, Context context, JIPipeProgressInfo progressInfo) {
         ImageJ2JIPipeModuleIOService service = context.getService(ImageJ2JIPipeModuleIOService.class);
+        if(moduleInfo.getDelegateClassName().equals(DefaultMoment11.class.getName())) {
+            System.out.println();
+        }
         for (ModuleItem<?> item : moduleInfo.inputs()) {
-            ImageJ2ModuleIO moduleIO = service.findModuleIO(item);
+            if(item.isOutput() && !item.isRequired()) {
+                progressInfo.log("Skipping input " + item.getName() + ", as it seems to be an optional input, but is at the same time an output.");
+                continue;
+            }
+            ImageJ2ModuleIO moduleIO = service.findModuleIO(item, JIPipeSlotType.Input);
             if(moduleIO == null) {
                 throw new RuntimeException("Unable to resolve input of type " + item.getType());
             }
@@ -109,7 +116,7 @@ public class ImageJ2ModuleNodeInfo implements JIPipeNodeInfo {
             inputModuleIO.put(item, moduleIO);
         }
         for (ModuleItem<?> item : moduleInfo.outputs()) {
-            ImageJ2ModuleIO moduleIO = service.findModuleIO(item);
+            ImageJ2ModuleIO moduleIO = service.findModuleIO(item, JIPipeSlotType.Output);
             if(moduleIO == null) {
                 throw new RuntimeException("Unable to resolve output of type " + item.getType());
             }

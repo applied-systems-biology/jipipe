@@ -1,9 +1,8 @@
 package org.hkijena.jipipe.extensions.imagej2.io;
 
 import org.apache.commons.lang3.ClassUtils;
-import org.jetbrains.annotations.Nullable;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.scijava.InstantiableException;
-import org.scijava.log.LogService;
 import org.scijava.module.ModuleItem;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
@@ -37,16 +36,17 @@ public class DefaultImageJ2JIPipeModuleIOService extends AbstractService impleme
     }
 
     @Override
-    public ImageJ2ModuleIO findModuleIO(ModuleItem<?> moduleItem) {
+    public ImageJ2ModuleIO findModuleIO(ModuleItem<?> moduleItem, JIPipeSlotType ioType) {
         if(knownInputHandlers == null || knownOutputHandlers == null) {
             reload();
         }
-        if(moduleItem.isInput()) {
+        if(ioType == JIPipeSlotType.Input && moduleItem.isInput()) {
             return findModuleIO(moduleItem, knownInputHandlers);
         }
-        else {
+        if(ioType == JIPipeSlotType.Output && moduleItem.isOutput()) {
             return findModuleIO(moduleItem, knownOutputHandlers);
         }
+        return null;
     }
 
     private ImageJ2ModuleIO findModuleIO(ModuleItem<?> moduleItem, Map<Class<?>, ImageJ2ModuleIO> knownIOHandlers) {

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imagej2;
 
 import net.imglib2.img.display.imagej.ImageJFunctions;
+import net.imglib2.outofbounds.OutOfBoundsConstantValueFactory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
@@ -76,17 +77,18 @@ public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
 
         ModuleService moduleService = context.getService(ModuleService.class);
         for (ModuleInfo module : moduleService.getModules()) {
+            JIPipeProgressInfo moduleProgress = progressInfo.resolve(module.getTitle() + " @ " + module.getDelegateClassName());
             try {
-                ImageJ2ModuleNodeInfo nodeInfo = new ImageJ2ModuleNodeInfo(context, module, progressInfo);
+                ImageJ2ModuleNodeInfo nodeInfo = new ImageJ2ModuleNodeInfo(context, module, moduleProgress);
                 if(nodeInfo.getInputSlots().isEmpty() && nodeInfo.getOutputSlots().isEmpty()) {
-                    progressInfo.log(module.getTitle() + " has no data slots. Skipping.");
+                    progressInfo.log("Node has no data slots. Skipping.");
                     continue;
                 }
                 registerNodeType(nodeInfo, UIUtils.getIconURLFromResources("apps/imagej2.png"));
             }
             catch (Exception e) {
-                progressInfo.log("Unable to register " + module.getTitle() + " @ " + module.getDelegateClassName() );
-                progressInfo.log(e.toString());
+                moduleProgress.log("Unable to register module:");
+                moduleProgress.log(e.toString());
             }
         }
     }
