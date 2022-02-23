@@ -1,11 +1,12 @@
-package org.hkijena.jipipe.extensions.imagej2.io.parameters.primitives;
+package org.hkijena.jipipe.extensions.imagej2.io.parameters.output.primitives;
 
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
-import org.hkijena.jipipe.extensions.imagej2.io.parameters.ParameterImageJ2ModuleInput;
+import org.hkijena.jipipe.extensions.imagej2.io.parameters.input.ParameterImageJ2ModuleInput;
+import org.hkijena.jipipe.extensions.imagej2.io.parameters.output.ParameterImageJ2ModuleOutput;
 import org.scijava.plugin.Plugin;
 
 @Plugin(type = ImageJ2ModuleIO.class)
-public class ByteParameterImageJ2ModuleInput extends ParameterImageJ2ModuleInput<Byte, Byte> {
+public class ByteParameterImageJ2ModuleOutput extends ParameterImageJ2ModuleOutput<Byte, Byte> {
     @Override
     public Byte convertFromModuleToJIPipe(Byte obj) {
         return obj;

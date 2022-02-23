@@ -134,6 +134,24 @@ public interface JIPipeNodeInfo {
     List<JIPipeOutputSlot> getOutputSlots();
 
     /**
+     * If the current node info contains a slot with given name
+     * @param slotName the slot name
+     * @return if there is an input slot with the name
+     */
+    default boolean hasInputSlot(String slotName) {
+        return getInputSlots().stream().anyMatch(slot -> Objects.equals(slotName, slot.slotName()));
+    }
+
+    /**
+     * If the current node info contains a slot with given name
+     * @param slotName the slot name
+     * @return if there is an input slot with the name
+     */
+    default boolean hasOutputSlot(String slotName) {
+        return getOutputSlots().stream().anyMatch(slot -> Objects.equals(slotName, slot.slotName()));
+    }
+
+    /**
      * Returns all dependencies
      *
      * @return List of dependencies

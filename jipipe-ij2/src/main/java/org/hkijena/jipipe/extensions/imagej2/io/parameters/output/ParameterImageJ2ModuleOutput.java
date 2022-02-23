@@ -1,10 +1,14 @@
-package org.hkijena.jipipe.extensions.imagej2.io.parameters;
+package org.hkijena.jipipe.extensions.imagej2.io.parameters.output;
 
+import net.imglib2.type.numeric.RealType;
 import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2ModuleNode;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2ModuleNodeInfo;
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
+import org.hkijena.jipipe.extensions.multiparameters.algorithms.ConvertParametersToTableAlgorithm;
+import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.module.Module;
 import org.scijava.module.ModuleItem;
@@ -15,7 +19,7 @@ import org.scijava.service.AbstractService;
  * @param <ModuleType> the type used in the module
  * @param <JIPipeType> the type used in JIPipe
  */
-public abstract class ParameterImageJ2ModuleInput<ModuleType, JIPipeType> extends AbstractService implements ImageJ2ModuleIO {
+public abstract class ParameterImageJ2ModuleOutput<ModuleType, JIPipeType> extends AbstractService implements ImageJ2ModuleIO {
     @Override
     public Class<?> getAcceptedModuleFieldClass() {
         return getModuleClass();
@@ -23,44 +27,37 @@ public abstract class ParameterImageJ2ModuleInput<ModuleType, JIPipeType> extend
 
     @Override
     public void install(ImageJ2ModuleNodeInfo nodeInfo, ModuleItem<?> moduleItem) {
+        nodeInfo.getOrCreateParameterDataOutputSlot();
     }
 
     @Override
     public void install(ImageJ2ModuleNode node, ModuleItem<?> moduleItem) {
-        if(!node.getModuleParameterAssignment().containsValue(moduleItem)) {
-            String parameterKey = StringUtils.makeUniqueString(StringUtils.orElse(moduleItem.getPersistKey(), moduleItem.getName()).toLowerCase().replace(' ', '-'),
-                    "-",
-                    node.getModuleParameterAssignment().keySet());
-            String parameterName = WordUtils.capitalize(String.join(" ", org.apache.commons.lang3.StringUtils.splitByCharacterTypeCamelCase(moduleItem.getName())));
-            node.getModuleParameters().addParameter(parameterKey, getJIPipeParameterClass(), parameterName, moduleItem.getDescription());
-            Object result = moduleItem.getValue(node.getModuleInstance());
-            if(result != null && getModuleClass().isAssignableFrom(result.getClass())) {
-                node.getModuleParameters().get(parameterKey).set(convertFromModuleToJIPipe((ModuleType) result));
-            }
-            node.getModuleParameterAssignment().put(parameterKey, moduleItem);
-        }
     }
 
     @Override
     public boolean transferFromJIPipe(ImageJ2ModuleNode node, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
-        JIPipeType value = node.getParameter(node.getModuleParameterAssignment().inverse().get(moduleItem), getJIPipeParameterClass());
-        moduleItem.setValue(module, convertFromJIPipeToModule(value));
         return true;
     }
 
     @Override
     public boolean transferToJIPipe(ImageJ2ModuleNode node, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
+        JIPipeDataSlot outputSlot = node.getOutputSlot(node.getModuleNodeInfo().getOrCreateParameterDataOutputSlot().slotName());
+        if(outputSlot.isEmpty()) {
+            outputSlot.addData(new ParametersData(), progressInfo);
+        }
+        ParametersData parametersData = outputSlot.getData(0, ParametersData.class, progressInfo);
+        parametersData.getParameterData().put(moduleItem.getName(), convertFromModuleToJIPipe((ModuleType) moduleItem.getValue(module)));
         return true;
     }
 
     @Override
     public boolean handlesInput() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean handlesOutput() {
-        return false;
+        return true;
     }
 
     public abstract JIPipeType convertFromModuleToJIPipe(ModuleType obj);

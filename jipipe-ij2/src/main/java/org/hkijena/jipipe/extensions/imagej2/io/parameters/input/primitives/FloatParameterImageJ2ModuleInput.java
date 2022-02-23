@@ -1,7 +1,7 @@
-package org.hkijena.jipipe.extensions.imagej2.io.parameters.primitives;
+package org.hkijena.jipipe.extensions.imagej2.io.parameters.input.primitives;
 
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
-import org.hkijena.jipipe.extensions.imagej2.io.parameters.ParameterImageJ2ModuleInput;
+import org.hkijena.jipipe.extensions.imagej2.io.parameters.input.ParameterImageJ2ModuleInput;
 import org.scijava.plugin.Plugin;
 
 @Plugin(type = ImageJ2ModuleIO.class)
