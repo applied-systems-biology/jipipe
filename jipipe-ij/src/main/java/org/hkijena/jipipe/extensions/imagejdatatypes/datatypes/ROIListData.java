@@ -23,6 +23,7 @@ import ij.gui.ShapeRoi;
 import ij.io.RoiDecoder;
 import ij.io.RoiEncoder;
 import ij.measure.ResultsTable;
+import ij.plugin.RoiScaler;
 import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.Filler;
 import ij.plugin.frame.RoiManager;
@@ -422,6 +423,20 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             rois.add(roi);
         }
         return byImage;
+    }
+
+    /**
+     * Scales the ROI in this list and returns a new list containing the scaled instances
+     * @param scaleX the x-scale
+     * @param scaleY the y-scale
+     * @param centered if the scaling expands from the ROI center
+     */
+    public ROIListData scale(double scaleX, double scaleY, boolean centered) {
+        ROIListData result = new ROIListData();
+        for (Roi roi : this) {
+            result.add(RoiScaler.scale(roi, scaleX, scaleY, centered));
+        }
+        return result;
     }
 
     /**
