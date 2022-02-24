@@ -140,6 +140,24 @@ public class JIPipeVirtualData {
         }
     }
 
+    /**
+     * Gets the currently stored data. Applies conversion if needed.
+     * @param klass the output type
+     * @param progressInfo the progress info
+     * @param <T> the output type
+     * @return the output data
+     */
+    public synchronized <T extends JIPipeData> T getData(Class<T> klass, JIPipeProgressInfo progressInfo) {
+        JIPipeData data = getData(progressInfo);
+        data = JIPipe.getDataTypes().convert(data, klass);
+        return (T)data;
+    }
+
+    /**
+     * Gets the currently stored data
+     * @param progressInfo the progress info
+     * @return the data
+     */
     public synchronized JIPipeData getData(JIPipeProgressInfo progressInfo) {
         boolean shouldBeVirtual = isVirtual();
         if (dataReference != null) {

@@ -99,12 +99,12 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
     }
 
     @Override
-    protected void removeErrorUI() {
+    protected void hideErrorUI() {
         imageViewerPanel.getCanvas().setError(null);
     }
 
     @Override
-    protected void addErrorUI() {
+    protected void showErrorUI() {
         if (getAlgorithm() != null) {
             errorLabel.setText(String.format("No data available in node '%s', slot '%s', row %d", getAlgorithm().getName(), getSlotName(), getDataSource().getRow()));
         } else {

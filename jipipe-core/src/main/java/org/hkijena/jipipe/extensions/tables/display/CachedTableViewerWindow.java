@@ -71,12 +71,12 @@ public class CachedTableViewerWindow extends JIPipeCacheDataViewerWindow {
     }
 
     @Override
-    protected void removeErrorUI() {
+    protected void hideErrorUI() {
         errorLabel.setVisible(false);
     }
 
     @Override
-    protected void addErrorUI() {
+    protected void showErrorUI() {
         if (getAlgorithm() != null) {
             errorLabel.setText(String.format("No data available in node '%s', slot '%s', row %d",
                     getAlgorithm().getName(),

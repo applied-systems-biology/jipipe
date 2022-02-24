@@ -174,12 +174,12 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         repaint();
 
         if (dataTable != null && dataTable.getRowCount() > dataSource.getRow()) {
-            removeErrorUI();
+            hideErrorUI();
             dataSource = new JIPipeDataTableDataSource(dataTable, dataSource.getRow(), dataSource.getDataAnnotation());
             loadFromDataSource();
         } else {
             lastVirtualData = null;
-            addErrorUI();
+            showErrorUI();
         }
     }
 
@@ -203,12 +203,12 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     /**
      * Instruction to remove the error UI
      */
-    protected abstract void removeErrorUI();
+    protected abstract void hideErrorUI();
 
     /**
      * Instruction to add the error UI
      */
-    protected abstract void addErrorUI();
+    protected abstract void showErrorUI();
 
     /**
      * Instruction to load the data from the current data source
@@ -268,12 +268,12 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         Map<String, JIPipeDataSlot> currentCache = query.getCachedCache(algorithm);
         JIPipeDataSlot slot = currentCache.getOrDefault(slotName, null);
         if (slot != null && slot.getRowCount() > dataSource.getRow()) {
-            removeErrorUI();
+            hideErrorUI();
             dataSource = new JIPipeDataTableDataSource(slot, dataSource.getRow(), dataSource.getDataAnnotation());
             loadFromDataSource();
         } else {
             lastVirtualData = null;
-            addErrorUI();
+            showErrorUI();
         }
     }
 
@@ -289,7 +289,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         } else {
             JIPipeVirtualData virtualData = dataSource.getDataTable().getVirtualDataAnnotation(dataSource.getRow(), dataSource.getDataAnnotation());
             if (virtualData == null) {
-                addErrorUI();
+                showErrorUI();
                 return;
             }
             if (lastVirtualData != null && virtualData == lastVirtualData.get())
