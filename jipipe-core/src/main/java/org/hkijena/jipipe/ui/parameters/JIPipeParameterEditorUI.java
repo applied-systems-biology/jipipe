@@ -29,7 +29,7 @@ import java.util.Objects;
  */
 public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel implements Contextual {
     private Context context;
-    private JIPipeParameterAccess parameterAccess;
+    private final JIPipeParameterAccess parameterAccess;
     private int preventReload = 0;
     private boolean reloadScheduled = false;
 
