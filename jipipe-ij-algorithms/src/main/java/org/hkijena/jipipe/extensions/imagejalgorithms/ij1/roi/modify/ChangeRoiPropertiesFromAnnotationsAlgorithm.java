@@ -14,6 +14,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify;
 
 import ij.gui.Roi;
+import ij.plugin.RoiScaler;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -44,6 +46,9 @@ public class ChangeRoiPropertiesFromAnnotationsAlgorithm extends JIPipeSimpleIte
     private OptionalAnnotationNameParameter fillColor = new OptionalAnnotationNameParameter();
     private OptionalAnnotationNameParameter lineColor = new OptionalAnnotationNameParameter();
     private OptionalAnnotationNameParameter lineWidth = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter scaleX = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter scaleY = new OptionalAnnotationNameParameter();
+    private OptionalAnnotationNameParameter centerScale = new OptionalAnnotationNameParameter();
 
     /**
      * Instantiates a new node type.
@@ -73,14 +78,21 @@ public class ChangeRoiPropertiesFromAnnotationsAlgorithm extends JIPipeSimpleIte
         this.lineColor = new OptionalAnnotationNameParameter(other.lineColor);
         this.lineWidth = new OptionalAnnotationNameParameter(other.lineWidth);
         this.roiName = new OptionalAnnotationNameParameter(other.roiName);
+        this.scaleX = new OptionalAnnotationNameParameter(other.scaleX);
+        this.scaleY = new OptionalAnnotationNameParameter(other.scaleY);
+        this.centerScale = new OptionalAnnotationNameParameter(other.centerScale);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ROIListData data = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate(progressInfo);
-        for (Roi roi : data) {
+        for (int i = 0; i < data.size(); i++) {
+            Roi roi = data.get(i);
             double x;
             double y;
+            double scaleX = 1.0;
+            double scaleY = 1.0;
+            boolean centerScale = false;
             int z;
             int c;
             int t;
@@ -101,7 +113,6 @@ public class ChangeRoiPropertiesFromAnnotationsAlgorithm extends JIPipeSimpleIte
                 t = NumberUtils.createDouble(dataBatch.getMergedTextAnnotation(positionT.getContent()).getValue()).intValue();
             roi.setPosition(c, z, t);
             roi.setLocation(x, y);
-
             if (fillColor.isEnabled())
                 roi.setFillColor(ColorUtils.parseColor(dataBatch.getMergedTextAnnotation(fillColor.getContent()).getValue()));
             if (lineColor.isEnabled())
@@ -110,6 +121,16 @@ public class ChangeRoiPropertiesFromAnnotationsAlgorithm extends JIPipeSimpleIte
                 roi.setStrokeWidth(NumberUtils.createDouble(dataBatch.getMergedTextAnnotation(lineWidth.getContent()).getValue()));
             if (roiName.isEnabled())
                 roi.setName(dataBatch.getMergedTextAnnotation(roiName.getContent()).getValue());
+            if (this.scaleX.isEnabled())
+                scaleX = NumberUtils.createDouble(dataBatch.getMergedTextAnnotation(this.scaleX.getContent()).getValue());
+            if (this.scaleY.isEnabled())
+                scaleY = NumberUtils.createDouble(dataBatch.getMergedTextAnnotation(this.scaleY.getContent()).getValue());
+            if (this.centerScale.isEnabled())
+                centerScale = BooleanUtils.toBoolean(dataBatch.getMergedTextAnnotation(this.centerScale.getContent()).getValue());
+            if(scaleX != 1.0 || scaleY != 1.0) {
+                roi = RoiScaler.scale(roi, scaleX, scaleY, centerScale);
+                data.set(i, roi);
+            }
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
@@ -216,5 +237,38 @@ public class ChangeRoiPropertiesFromAnnotationsAlgorithm extends JIPipeSimpleIte
     @JIPipeParameter("roi-name")
     public void setRoiName(OptionalAnnotationNameParameter roiName) {
         this.roiName = roiName;
+    }
+
+    @JIPipeDocumentation(name = "Scale X", description = "Allows to scale the ROI. Please note that the scale will not be saved inside the ROI. Must be a number.")
+    @JIPipeParameter("scale-x")
+    public OptionalAnnotationNameParameter getScaleX() {
+        return scaleX;
+    }
+
+    @JIPipeParameter("scale-x")
+    public void setScaleX(OptionalAnnotationNameParameter scaleX) {
+        this.scaleX = scaleX;
+    }
+
+    @JIPipeDocumentation(name = "Scale Y", description = "Allows to scale the ROI. Please note that the scale will not be saved inside the ROI. Must be a number.")
+    @JIPipeParameter("scale-y")
+    public OptionalAnnotationNameParameter getScaleY() {
+        return scaleY;
+    }
+
+    @JIPipeParameter("scale-y")
+    public void setScaleY(OptionalAnnotationNameParameter scaleY) {
+        this.scaleY = scaleY;
+    }
+
+    @JIPipeDocumentation(name = "Center scale", description = "If the annotation is true, each ROI is scaled relative to its center. Defaults to false. Must be true or false")
+    @JIPipeParameter("center-scale")
+    public OptionalAnnotationNameParameter getCenterScale() {
+        return centerScale;
+    }
+
+    @JIPipeParameter("center-scale")
+    public void setCenterScale(OptionalAnnotationNameParameter centerScale) {
+        this.centerScale = centerScale;
     }
 }

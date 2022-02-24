@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify;
 
 import ij.gui.Roi;
+import ij.plugin.RoiScaler;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -23,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
@@ -45,6 +47,9 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
     private OptionalColorParameter fillColor = new OptionalColorParameter();
     private OptionalColorParameter lineColor = new OptionalColorParameter();
     private OptionalDoubleParameter lineWidth = new OptionalDoubleParameter();
+    private OptionalDoubleParameter scaleX = new OptionalDoubleParameter(1.0, false);
+    private OptionalDoubleParameter scaleY = new OptionalDoubleParameter(1.0, false);
+    private boolean centerScale = false;
 
     /**
      * Instantiates a new node type.
@@ -75,14 +80,20 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.lineColor = new OptionalColorParameter(other.lineColor);
         this.lineWidth = new OptionalDoubleParameter(other.lineWidth);
         this.roiName = new OptionalStringParameter(other.roiName);
+        this.scaleX = new OptionalDoubleParameter(other.scaleX);
+        this.scaleY = new OptionalDoubleParameter(other.scaleY);
+        this.centerScale = other.centerScale;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ROIListData data = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate(progressInfo);
-        for (Roi roi : data) {
+        for (int i = 0; i < data.size(); i++) {
+            Roi roi = data.get(i);
             double x;
             double y;
+            double scaleX = this.scaleX.isEnabled() ? this.scaleX.getContent() : 1.0;
+            double scaleY = this.scaleY.isEnabled() ? this.scaleY.getContent() : 1.0;
             int z;
             int c;
             int t;
@@ -112,6 +123,10 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
                 roi.setStrokeWidth(lineWidth.getContent());
             if (roiName.isEnabled())
                 roi.setName(roiName.getContent());
+            if(scaleX != 1.0 || scaleY != 1.0) {
+                roi = RoiScaler.scale(roi, scaleX, scaleY, centerScale);
+                data.set(i, roi);
+            }
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
@@ -218,5 +233,38 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
     @JIPipeParameter("roi-name")
     public void setRoiName(OptionalStringParameter roiName) {
         this.roiName = roiName;
+    }
+
+    @JIPipeDocumentation(name = "Scale X", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI. Must be a number.")
+    @JIPipeParameter("scale-x")
+    public OptionalDoubleParameter getScaleX() {
+        return scaleX;
+    }
+
+    @JIPipeParameter("scale-x")
+    public void setScaleX(OptionalDoubleParameter scaleX) {
+        this.scaleX = scaleX;
+    }
+
+    @JIPipeDocumentation(name = "Scale Y", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI. Must be a number.")
+    @JIPipeParameter("scale-y")
+    public OptionalDoubleParameter getScaleY() {
+        return scaleY;
+    }
+
+    @JIPipeParameter("scale-y")
+    public void setScaleY(OptionalDoubleParameter scaleY) {
+        this.scaleY = scaleY;
+    }
+
+    @JIPipeDocumentation(name = "Center scale", description = "If true, each ROI is scaled relative to its center.")
+    @JIPipeParameter("center-scale")
+    public boolean getCenterScale() {
+        return centerScale;
+    }
+
+    @JIPipeParameter("center-scale")
+    public void setCenterScale(boolean centerScale) {
+        this.centerScale = centerScale;
     }
 }

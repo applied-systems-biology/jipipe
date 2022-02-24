@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify;
 
 import ij.gui.Roi;
+import ij.plugin.RoiScaler;
 import net.imagej.ops.Ops;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -27,6 +28,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -54,6 +56,9 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
     private OptionalDefaultExpressionParameter fillColor = new OptionalDefaultExpressionParameter(false, "fill_color");
     private OptionalDefaultExpressionParameter lineColor = new OptionalDefaultExpressionParameter(false, "line_color");
     private OptionalDefaultExpressionParameter lineWidth = new OptionalDefaultExpressionParameter(false, "line_width");
+    private OptionalDefaultExpressionParameter scaleX = new OptionalDefaultExpressionParameter(false, "1.0");
+    private OptionalDefaultExpressionParameter scaleY = new OptionalDefaultExpressionParameter(false, "1.0");
+    private OptionalDefaultExpressionParameter centerScale = new OptionalDefaultExpressionParameter(false, "false");
 
     /**
      * Instantiates a new node type.
@@ -83,6 +88,9 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
         this.lineColor = new OptionalDefaultExpressionParameter(other.lineColor);
         this.lineWidth = new OptionalDefaultExpressionParameter(other.lineWidth);
         this.roiName = new OptionalDefaultExpressionParameter(other.roiName);
+        this.scaleX = new OptionalDefaultExpressionParameter(other.scaleX);
+        this.scaleY = new OptionalDefaultExpressionParameter(other.scaleY);
+        this.centerScale = new OptionalDefaultExpressionParameter(other.centerScale);
     }
 
     @Override
@@ -94,12 +102,16 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
             variables.set(annotation.getName(), annotation.getValue());
         }
 
-        for (Roi roi : data) {
+        for (int i = 0; i < data.size(); i++) {
+            Roi roi = data.get(i);
             double x;
             double y;
             int z;
             int c;
             int t;
+            double scaleX = 1.0;
+            double scaleY = 1.0;
+            boolean centerScale = false;
             x = roi.getXBase();
             y = roi.getYBase();
             z = roi.getZPosition();
@@ -137,6 +149,20 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
                 roi.setStrokeWidth(lineWidth.getContent().evaluateToNumber(variables));
             if (roiName.isEnabled())
                 roi.setName(StringUtils.nullToEmpty(roiName.getContent().evaluateToString(variables)));
+
+            if (this.scaleX.isEnabled()) {
+                scaleX = this.scaleX.getContent().evaluateToNumber(variables);
+            }
+            if (this.scaleY.isEnabled()) {
+                scaleY = this.scaleY.getContent().evaluateToNumber(variables);
+            }
+            if (this.centerScale.isEnabled()) {
+                centerScale = (boolean) this.centerScale.getContent().evaluate(variables);
+            }
+            if (scaleX != 1.0 || scaleY != 1.0) {
+                roi = RoiScaler.scale(roi, scaleX, scaleY, centerScale);
+                data.set(i, roi);
+            }
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
@@ -276,6 +302,42 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
     @JIPipeParameter("roi-name")
     public void setRoiName(OptionalDefaultExpressionParameter roiName) {
         this.roiName = roiName;
+    }
+
+    @JIPipeDocumentation(name = "Scale X", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI. Must evaluate to a number.")
+    @JIPipeParameter("scale-x")
+    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    public OptionalDefaultExpressionParameter getScaleX() {
+        return scaleX;
+    }
+
+    @JIPipeParameter("scale-x")
+    public void setScaleX(OptionalDefaultExpressionParameter scaleX) {
+        this.scaleX = scaleX;
+    }
+
+    @JIPipeDocumentation(name = "Scale Y", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI. Must evaluate to a number.")
+    @JIPipeParameter("scale-y")
+    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    public OptionalDefaultExpressionParameter getScaleY() {
+        return scaleY;
+    }
+
+    @JIPipeParameter("scale-y")
+    public void setScaleY(OptionalDefaultExpressionParameter scaleY) {
+        this.scaleY = scaleY;
+    }
+
+    @JIPipeDocumentation(name = "Center scale", description = "If true, each ROI is scaled relative to its center. Must evaluate to a boolean.")
+    @JIPipeParameter("center-scale")
+    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    public OptionalDefaultExpressionParameter getCenterScale() {
+        return centerScale;
+    }
+
+    @JIPipeParameter("center-scale")
+    public void setCenterScale(OptionalDefaultExpressionParameter centerScale) {
+        this.centerScale = centerScale;
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {
