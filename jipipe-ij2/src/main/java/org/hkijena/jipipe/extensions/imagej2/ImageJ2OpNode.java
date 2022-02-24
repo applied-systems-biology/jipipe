@@ -16,10 +16,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
-import org.scijava.module.Module;
-import org.scijava.module.ModuleException;
-import org.scijava.module.ModuleItem;
-import org.scijava.module.ModuleService;
+import org.scijava.Initializable;
+import org.scijava.module.*;
 
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -86,6 +84,14 @@ public class ImageJ2OpNode extends JIPipeIteratingAlgorithm {
         // Copy from JIPipe
         for (Map.Entry<ModuleItem<?>, ImageJ2ModuleIO> entry : getModuleNodeInfo().getInputModuleIO().entrySet()) {
             entry.getValue().transferFromJIPipe(this, dataBatch, entry.getKey(), moduleInstance, progressInfo);
+        }
+
+        // Run the initializer function
+        if(moduleInstance.getDelegateObject() instanceof Initializable) {
+            ((Initializable) moduleInstance.getDelegateObject()).initialize();
+        }
+        if(moduleInstance.getDelegateObject() instanceof net.imagej.ops.Initializable) {
+            ((net.imagej.ops.Initializable) moduleInstance.getDelegateObject()).initialize();
         }
 
         // Run operation

@@ -88,7 +88,8 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
             this.name = "IJ2: " + title;
             this.menuPath = "IJ2\n" +  menuPath.stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
         }
-        this.description = new HTMLText("An ImageJ2 function<br/>" + opInfo.getName() + "<br/>" + opInfo.toString());
+        this.description = new HTMLText(StringUtils.orElse(opInfo.cInfo().getDescription(), "The developer provided no description") + "<br/><br/>This node was automatically imported from ImageJ2. " +
+                "Please be aware that JIPipe cannot guarantee that there are no issues.");
 
         initializeParameters(context, progressInfo);
     }
@@ -127,9 +128,9 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
 
     private void initializeParameters(Context context, JIPipeProgressInfo progressInfo) {
         ImageJ2JIPipeModuleIOService service = context.getService(ImageJ2JIPipeModuleIOService.class);
-//        if(opInfo.getType() == Ops.Threshold.Otsu.class) {
-//            System.out.println();
-//        }
+        if(opInfo.getType() == Ops.Threshold.Otsu.class) {
+            System.out.println();
+        }
         for (ModuleItem<?> item : opInfo.outputs()) {
             ImageJ2ModuleIO moduleIO = service.findModuleIO(item, JIPipeSlotType.Output);
             if(moduleIO == null) {

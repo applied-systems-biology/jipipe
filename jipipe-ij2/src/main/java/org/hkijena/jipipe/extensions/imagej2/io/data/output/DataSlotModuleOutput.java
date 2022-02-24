@@ -36,12 +36,7 @@ public abstract class DataSlotModuleOutput<ModuleDataType,JIPipeDataType extends
 
     @Override
     public void install(ImageJ2OpNodeInfo nodeInfo, ModuleItem<?> moduleItem) {
-        if(moduleItem.isInput()) {
-            nodeInfo.addInputSlotForModuleItem(moduleItem, getJIPipeDataType());
-        }
-        if(moduleItem.isOutput()) {
-            nodeInfo.addOutputSlotForModuleItem(moduleItem, getJIPipeDataType());
-        }
+        nodeInfo.addOutputSlotForModuleItem(moduleItem, getJIPipeDataType());
     }
 
     @Override
@@ -54,7 +49,7 @@ public abstract class DataSlotModuleOutput<ModuleDataType,JIPipeDataType extends
         ModuleDataType obj = (ModuleDataType) moduleItem.getValue(module);
         if(obj != null) {
             JIPipeDataType converted = convertModuleToJIPipeData(obj);
-            String slotName = node.getModuleNodeInfo().getInputSlotName(moduleItem);
+            String slotName = node.getModuleNodeInfo().getOutputSlotName(moduleItem);
             dataBatch.addOutputData(slotName, converted, progressInfo);
         }
         else {

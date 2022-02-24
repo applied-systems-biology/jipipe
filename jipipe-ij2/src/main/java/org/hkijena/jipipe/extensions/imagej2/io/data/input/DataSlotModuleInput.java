@@ -36,12 +36,7 @@ public abstract class DataSlotModuleInput<ModuleDataType,JIPipeDataType extends 
 
     @Override
     public void install(ImageJ2OpNodeInfo nodeInfo, ModuleItem<?> moduleItem) {
-        if(moduleItem.isInput()) {
-            nodeInfo.addInputSlotForModuleItem(moduleItem, getJIPipeDataType());
-        }
-        if(moduleItem.isOutput()) {
-            nodeInfo.addOutputSlotForModuleItem(moduleItem, getJIPipeDataType());
-        }
+        nodeInfo.addInputSlotForModuleItem(moduleItem, getJIPipeDataType());
     }
 
     @Override
