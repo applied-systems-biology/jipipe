@@ -11,24 +11,25 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.expressions.functions;
+package org.hkijena.jipipe.extensions.expressions.functions.variables;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 
-import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Get all variables as map", description = "Returns all variables at map.")
-public class GetVariablesAsMapFunction extends ExpressionFunction {
+@JIPipeDocumentation(name = "Get all variable values", description = "Returns all variable values as array. The values are ordered by " +
+        "their name.")
+public class GetVariableValuesFunction extends ExpressionFunction {
 
-    public GetVariablesAsMapFunction() {
-        super("GET_VARIABLES_MAP", 0);
+    public GetVariableValuesFunction() {
+        super("GET_ALL_VARIABLE_VALUES", 0);
     }
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        return new HashMap<>(variables);
+        return variables.keySet().stream().sorted().map(variables::get).collect(Collectors.toList());
     }
 }

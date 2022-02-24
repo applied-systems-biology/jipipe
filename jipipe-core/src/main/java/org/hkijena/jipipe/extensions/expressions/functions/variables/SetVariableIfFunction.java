@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.expressions.functions;
+package org.hkijena.jipipe.extensions.expressions.functions.variables;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
@@ -20,12 +20,13 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Get variable", description = "Returns the variable for given string. Useful if you have variables with spaces or that are equal to operators. " +
-        "This function can also return a default value if a variable is not set.")
-public class GetVariableFunction extends ExpressionFunction {
+@JIPipeDocumentation(name = "Set variable if", description = "Creates a variable with the first parameter as name and sets its value as the second parameter. " +
+        "Will only set the variable if the third parameter is true.. " +
+        "Returns if the variable was set.")
+public class SetVariableIfFunction extends ExpressionFunction {
 
-    public GetVariableFunction() {
-        super("GET_VARIABLE", 1, 2);
+    public SetVariableIfFunction() {
+        super("SET_VARIABLE_IF", 3);
     }
 
     @Override
@@ -33,16 +34,21 @@ public class GetVariableFunction extends ExpressionFunction {
         if (index == 0) {
             return new ParameterInfo("name", "The variable name", String.class);
         } else if (index == 1) {
-            return new ParameterInfo("default_value", "Value to be used if the variable is not set", Object.class);
+            return new ParameterInfo("value", "The variable name", Object.class);
+        } else if (index == 2) {
+            return new ParameterInfo("condition", "If true, the variable will be written", Boolean.class);
         }
         return null;
     }
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        Object defaultValue = null;
-        if (parameters.size() > 1)
-            defaultValue = parameters.get(1);
-        return variables.getOrDefault("" + parameters.get(0), defaultValue);
+        if((boolean) parameters.get(2)) {
+            variables.set("" + parameters.get(0), parameters.get(1));
+            return true;
+        }
+        else {
+            return false;
+        }
     }
 }

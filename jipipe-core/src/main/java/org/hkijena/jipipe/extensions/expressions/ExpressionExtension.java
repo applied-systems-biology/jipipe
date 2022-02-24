@@ -7,6 +7,7 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.expressions.functions.*;
 import org.hkijena.jipipe.extensions.expressions.functions.collections.*;
 import org.hkijena.jipipe.extensions.expressions.functions.color.*;
+import org.hkijena.jipipe.extensions.expressions.functions.control.*;
 import org.hkijena.jipipe.extensions.expressions.functions.convert.ToBooleanFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.convert.ToJsonFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.convert.ToNumberFunction;
@@ -20,6 +21,8 @@ import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityGe
 import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityGetValueFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.statistics.*;
 import org.hkijena.jipipe.extensions.expressions.functions.string.*;
+import org.hkijena.jipipe.extensions.expressions.functions.util.PrintFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.variables.*;
 import org.hkijena.jipipe.extensions.expressions.ui.DefaultExpressionParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -253,5 +256,10 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new HSBToRGBFunction());
         registerExpressionFunction(new FalseColorsFunction());
         registerExpressionFunction(new IsNullFunction());
+        registerExpressionFunction(new PrintFunction());
+        registerExpressionFunction(new HasVariableFunction());
+        registerExpressionFunction(new SetMissingVariableFunction());
+        registerExpressionFunction(new SetVariableFunction());
+        registerExpressionFunction(new SetVariableIfFunction());
     }
 }

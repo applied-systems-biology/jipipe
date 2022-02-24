@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.expressions;
 
 import com.fathzer.soft.javaluator.*;
 import com.google.common.collect.ImmutableList;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -65,6 +66,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final ExpressionOperator OPERATOR_VARIABLE_RESOLVE = new ResolveVariableOperator();
     public static final ExpressionOperator OPERATOR_ELEMENT_ACCESS_TEXT = new ElementAccessOperator("AT");
     public static final ExpressionOperator OPERATOR_ELEMENT_ACCESS_SYMBOL = new ElementAccessOperator("@");
+    public static final ExpressionOperator OPERATOR_STATEMENT = new StatementOperator();
 
     private final Set<String> knownOperatorTokens = new HashSet<>();
     private final List<String> knownNonAlphanumericOperatorTokens = new ArrayList<>();
@@ -84,6 +86,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         Parameters parameters = new Parameters();
         parameters.addFunctionBracket(BracketPair.PARENTHESES);
         parameters.addExpressionBracket(BracketPair.PARENTHESES);
+        parameters.add(OPERATOR_STATEMENT);
 
         parameters.add(CONSTANT_NULL);
         parameters.add(CONSTANT_TRUE);
@@ -320,7 +323,8 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public Object evaluate(String expression, Object evaluationContext) {
         ExpressionVariables expressionVariables = (ExpressionVariables) evaluationContext;
         try {
-            if (expression.trim().isEmpty())
+            expression = StringUtils.stripEnd(expression.trim(), ";");
+            if (expression.isEmpty())
                 return true;
             return super.evaluate(expression, evaluationContext);
         } catch (Exception e) {

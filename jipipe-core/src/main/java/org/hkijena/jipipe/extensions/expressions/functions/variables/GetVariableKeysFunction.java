@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.expressions.functions;
+package org.hkijena.jipipe.extensions.expressions.functions.variables;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
@@ -20,16 +20,15 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import java.util.List;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Get all variable values", description = "Returns all variable values as array. The values are ordered by " +
-        "their name.")
-public class GetVariableValuesFunction extends ExpressionFunction {
+@JIPipeDocumentation(name = "Get all variable names", description = "Returns all variable names as array. The names are ordered.")
+public class GetVariableKeysFunction extends ExpressionFunction {
 
-    public GetVariableValuesFunction() {
-        super("GET_ALL_VARIABLE_VALUES", 0);
+    public GetVariableKeysFunction() {
+        super("GET_ALL_VARIABLE_NAMES", 0);
     }
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        return variables.keySet().stream().sorted().map(variables::get).collect(Collectors.toList());
+        return variables.keySet().stream().sorted().collect(Collectors.toList());
     }
 }

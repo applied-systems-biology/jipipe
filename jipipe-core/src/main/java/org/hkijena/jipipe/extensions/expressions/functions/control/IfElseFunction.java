@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.expressions.functions;
+package org.hkijena.jipipe.extensions.expressions.functions.control;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
