@@ -82,6 +82,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify.ChangeRoiPr
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify.ChangeRoiPropertiesFromAnnotationsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify.ChangeRoiPropertiesFromExpressionsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify.ColorRoiByStatisticsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify.ScaleRoiAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.ClassicWatershedSegmentationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.RidgeDetector2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.SeededWatershedSegmentationAlgorithm;
@@ -721,6 +722,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-roi-color-statistics", ColorRoiByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/fill-color.png"));
         registerNodeType("ij1-roi-sort-and-extract-statistics", SortAndExtractRoiByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
         registerNodeType("ij1-roi-set-properties", ChangeRoiPropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
+        registerNodeType("ij1-roi-scale", ScaleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
         registerNodeType("ij1-roi-set-properties-from-annotation", ChangeRoiPropertiesFromAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
         registerNodeType("ij1-roi-set-properties-from-expressions", ChangeRoiPropertiesFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
         registerNodeType("ij1-roi-to-rgb-unreferenced", UnreferencedRoiToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
