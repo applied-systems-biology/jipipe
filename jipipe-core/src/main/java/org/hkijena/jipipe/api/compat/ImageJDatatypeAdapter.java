@@ -90,6 +90,6 @@ public interface ImageJDatatypeAdapter {
      * @param parameters Parameters of the adapter. Depends entirely on the adapter
      * @return Imported JIPipe data
      */
-    JIPipeData importFromImageJ(String parameters);
+    JIPipeData importDataImageJ(String parameters);
 
 }

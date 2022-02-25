@@ -4,6 +4,7 @@ import net.imglib2.outofbounds.OutOfBoundsFactory;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 
 import java.nio.file.Path;
 
@@ -24,8 +25,8 @@ public class EmptyImageJ2OutOfBoundsFactory extends ImageJ2OutOfBoundsFactoryDat
         return null;
     }
 
-    public static EmptyImageJ2OutOfBoundsFactory importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
-        return (EmptyImageJ2OutOfBoundsFactory) ImageJ2OutOfBoundsFactoryData.importFrom(storagePath, progressInfo);
+    public static EmptyImageJ2OutOfBoundsFactory importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return (EmptyImageJ2OutOfBoundsFactory) ImageJ2OutOfBoundsFactoryData.importData(storage, progressInfo);
     }
 
     @Override

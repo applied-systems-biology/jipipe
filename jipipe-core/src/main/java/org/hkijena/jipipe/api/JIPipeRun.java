@@ -142,11 +142,11 @@ public class JIPipeRun implements JIPipeRunnable {
             // Apply output path to the data slots
             for (JIPipeDataSlot slot : copiedGraph.getSlotNodes()) {
                 if (slot.isOutput()) {
-                    slot.setStoragePath(configuration.getOutputPath().resolve(slot.getNode().getInternalStoragePath().resolve(slot.getName())));
+                    slot.setSlotStoragePath(configuration.getOutputPath().resolve(slot.getNode().getInternalStoragePath().resolve(slot.getName())));
                     try {
-                        Files.createDirectories(slot.getStoragePath());
+                        Files.createDirectories(slot.getSlotStoragePath());
                     } catch (IOException e) {
-                        throw new UserFriendlyRuntimeException(e, "Could not create necessary directory '" + slot.getStoragePath() + "'!",
+                        throw new UserFriendlyRuntimeException(e, "Could not create necessary directory '" + slot.getSlotStoragePath() + "'!",
                                 "Pipeline run", "Either the path is invalid, or you do not have permissions to create the directory",
                                 "Check if the path is valid and the parent directories are writeable by your current user");
                     }

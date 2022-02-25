@@ -7,6 +7,7 @@ import net.imglib2.algorithm.neighborhood.Shape;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.IntegerList;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -63,8 +64,8 @@ public class CenteredRectangleImageJ2ShapeData extends ImageJ2ShapeData {
         return new CenteredRectangleShape(Ints.toArray(span), skipCenter);
     }
 
-    public static CenteredRectangleImageJ2ShapeData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
-        return (CenteredRectangleImageJ2ShapeData) ImageJ2ShapeData.importFrom(storagePath, progressInfo);
+    public static CenteredRectangleImageJ2ShapeData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return (CenteredRectangleImageJ2ShapeData) ImageJ2ShapeData.importData(storage, progressInfo);
     }
 
     @Override

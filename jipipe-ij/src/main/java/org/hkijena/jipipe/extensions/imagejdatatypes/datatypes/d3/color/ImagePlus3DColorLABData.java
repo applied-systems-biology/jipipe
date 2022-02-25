@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.LABColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -63,8 +64,8 @@ public class ImagePlus3DColorLABData extends ImagePlus3DColorData implements Col
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToColorLABIfNeeded));
     }
 
-    public static ImagePlusData importFrom(Path storageFolder, JIPipeProgressInfo progressInfo) {
-        return new ImagePlus3DColorLABData(ImagePlusData.importImagePlusFrom(storageFolder, progressInfo));
+    public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return new ImagePlus3DColorLABData(ImagePlusData.importImagePlusFrom(storage, progressInfo));
     }
 
     /**

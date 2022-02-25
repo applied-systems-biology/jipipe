@@ -21,6 +21,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.texteditor.JIPipeTextEditor;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -49,8 +51,8 @@ public class StringData implements JIPipeData {
         this.data = other.data;
     }
 
-    public static StringData importFrom(Path path, JIPipeProgressInfo progressInfo) {
-        Path file = PathUtils.findFileByExtensionIn(path, ".txt");
+    public static StringData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        Path file = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".txt");
         try {
             return new StringData(new String(Files.readAllBytes(file), Charsets.UTF_8));
         } catch (IOException e) {
@@ -59,8 +61,8 @@ public class StringData implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        try (FileWriter writer = new FileWriter(storageFilePath.resolve(name + getOutputExtension()).toFile())) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+        try (FileWriter writer = new FileWriter(storage.getFileSystemPath().resolve(name + getOutputExtension()).toFile())) {
             writer.write(data);
         } catch (IOException e) {
             throw new RuntimeException(e);

@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
@@ -90,7 +91,7 @@ public class JIPipeDataTableToOutputExporterRun extends JIPipeWorkbenchPanel imp
             try {
                 if (!Files.isDirectory(targetPath))
                     Files.createDirectories(targetPath);
-                dataTable.save(targetPath, slotProgress);
+                dataTable.exportData(new JIPipeFileSystemWriteStorage(targetPath), slotProgress);
             } catch (Exception e) {
                 IJ.handleException(e);
                 progressInfo.log(ExceptionUtils.getStackTrace(e));

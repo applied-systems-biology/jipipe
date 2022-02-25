@@ -24,6 +24,8 @@ import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
@@ -70,7 +72,8 @@ public class ImagePlusFFTData extends ImagePlusData {
         }
     }
 
-    public static ImagePlusFFTData importFrom(Path storageFolder, JIPipeProgressInfo progressInfo) {
+    public static ImagePlusFFTData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        Path storageFolder = storage.getFileSystemPath();
         Path fhtOutputPath = storageFolder.resolve("fht.ome.tif");
         Path powerSpectrumOutputPath = storageFolder.resolve("power_spectrum.ome.tif");
         ImagePlus fhtImage = null;
@@ -117,7 +120,8 @@ public class ImagePlusFFTData extends ImagePlusData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+        Path storageFolder = storage.getFileSystemPath();
         FHT fht = (FHT) getImage().getProperty("FHT");
         ImagePlus fhtImage = new ImagePlus("FHT", fht);
 
@@ -130,19 +134,19 @@ public class ImagePlusFFTData extends ImagePlusData {
         }
 
         if (ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
-            Path powerSpectrumOutputPath = storageFilePath.resolve(powerSpectrumImageName + ".ome.tif");
+            Path powerSpectrumOutputPath = storageFolder.resolve(powerSpectrumImageName + ".ome.tif");
             OMEImageData.simpleOMEExport(getImage(), powerSpectrumOutputPath);
-            Path fhtOutputPath = storageFilePath.resolve(fhtImageName + ".ome.tif");
+            Path fhtOutputPath = storageFolder.resolve(fhtImageName + ".ome.tif");
             OMEImageData.simpleOMEExport(fhtImage, fhtOutputPath);
         } else {
-            Path powerSpectrumOutputPath = storageFilePath.resolve(powerSpectrumImageName + ".tif");
+            Path powerSpectrumOutputPath = storageFolder.resolve(powerSpectrumImageName + ".tif");
             IJ.saveAsTiff(getImage(), powerSpectrumOutputPath.toString());
-            Path fhtOutputPath = storageFilePath.resolve(fhtImageName + ".tif");
+            Path fhtOutputPath = storageFolder.resolve(fhtImageName + ".tif");
             IJ.saveAsTiff(fhtImage, fhtOutputPath.toString());
         }
 
-        Path fhtInfoPath = forceName ? storageFilePath.resolve(name + "_fht_info.json") :
-                storageFilePath.resolve("fht_info.json");
+        Path fhtInfoPath = forceName ? storageFolder.resolve(name + "_fht_info.json") :
+                storageFolder.resolve("fht_info.json");
         try {
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(fhtInfoPath.toFile(), new FFTInfo(fht));
         } catch (IOException e) {

@@ -100,9 +100,9 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
      */
     public static Path getRowStorageFolder(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, JIPipeExportedDataAnnotation dataAnnotation) {
         if (dataAnnotation == null)
-            return slot.getStoragePath().resolve("" + row.getIndex());
+            return slot.getSlotStoragePath().resolve("" + row.getIndex());
         else
-            return slot.getStoragePath().resolve(dataAnnotation.getRowStorageFolder());
+            return slot.getSlotStoragePath().resolve(dataAnnotation.getRowStorageFolder());
     }
 
     /**

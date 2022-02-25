@@ -103,7 +103,7 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
         importPopupMenu.removeAll();
 
         JMenuItem importCSVItem = new JMenuItem("From *.csv", UIUtils.getIconFromResources("actions/document-open-folder.png"));
-        importCSVItem.addActionListener(e -> importFromCSV());
+        importCSVItem.addActionListener(e -> importDataCSV());
         importPopupMenu.add(importCSVItem);
 
         List<DocumentTabPane.DocumentTab> tableAnalyzers = getWorkbench().getDocumentTabPane().getTabsContaining(TableEditor.class);
@@ -112,18 +112,18 @@ public class JIPipePlotAvailableDataManagerUI extends JIPipeWorkbenchPanel {
             for (DocumentTabPane.DocumentTab tab : tableAnalyzers) {
                 JMenuItem importItem = new JMenuItem("Import from '" + tab.getTitle() + "'", UIUtils.getIconFromResources("data-types/results-table.png"));
                 TableEditor tableAnalyzerUI = (TableEditor) tab.getContent();
-                importItem.addActionListener(e -> importFromTableAnalyzer(tableAnalyzerUI, tab.getTitle()));
+                importItem.addActionListener(e -> importDataTableAnalyzer(tableAnalyzerUI, tab.getTitle()));
                 importPopupMenu.add(importItem);
             }
         }
     }
 
-    private void importFromTableAnalyzer(TableEditor tableAnalyzerUI, String title) {
+    private void importDataTableAnalyzer(TableEditor tableAnalyzerUI, String title) {
         ResultsTableData tableModel = tableAnalyzerUI.getTableModel();
         plotEditor.importData(tableModel, title);
     }
 
-    private void importFromCSV() {
+    private void importDataCSV() {
         Path selectedPath = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Import CSV table (*.csv)", UIUtils.EXTENSION_FILTER_CSV);
         if (selectedPath != null) {
             String fileName = selectedPath.getFileName().toString();

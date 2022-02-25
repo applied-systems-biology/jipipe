@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
@@ -57,7 +58,7 @@ public class JIPipeDataSlot extends JIPipeDataTable {
     private JIPipeDataSlotInfo info;
     private String name;
     private JIPipeSlotType slotType;
-    private Path storagePath;
+    private Path slotStoragePath;
 
     /**
      * Creates a new slot
@@ -166,10 +167,10 @@ public class JIPipeDataSlot extends JIPipeDataTable {
     public void flush(JIPipeProgressInfo saveProgress) {
         if (getNode() instanceof JIPipeAlgorithm) {
             if (getInfo().isSaveOutputs()) {
-                saveToStoragePath(saveProgress);
+                exportToSlotStoragePath(saveProgress);
             }
         } else {
-            saveToStoragePath(saveProgress);
+            exportToSlotStoragePath(saveProgress);
         }
         destroy();
     }
@@ -208,17 +209,17 @@ public class JIPipeDataSlot extends JIPipeDataTable {
      *
      * @return Data storage path
      */
-    public Path getStoragePath() {
-        return storagePath;
+    public Path getSlotStoragePath() {
+        return slotStoragePath;
     }
 
     /**
      * Sets storage path that is used during running the algorithm for saving the results
      *
-     * @param storagePath Data storage paths
+     * @param slotStoragePath Data storage paths
      */
-    public void setStoragePath(Path storagePath) {
-        this.storagePath = storagePath;
+    public void setSlotStoragePath(Path slotStoragePath) {
+        this.slotStoragePath = slotStoragePath;
     }
 
     /**
@@ -228,7 +229,7 @@ public class JIPipeDataSlot extends JIPipeDataTable {
      * @return path where the row's data is stored
      */
     public Path getRowStoragePath(int index) {
-        return storagePath.resolve("" + index);
+        return slotStoragePath.resolve("" + index);
     }
 
     /**
@@ -237,9 +238,9 @@ public class JIPipeDataSlot extends JIPipeDataTable {
      *
      * @param saveProgress the progress for saving
      */
-    public void saveToStoragePath(JIPipeProgressInfo saveProgress) {
-        if (isOutput() && storagePath != null) {
-            save(storagePath, saveProgress);
+    public void exportToSlotStoragePath(JIPipeProgressInfo saveProgress) {
+        if (isOutput() && slotStoragePath != null) {
+            exportData(new JIPipeFileSystemWriteStorage(slotStoragePath), saveProgress);
         }
     }
 
@@ -254,7 +255,7 @@ public class JIPipeDataSlot extends JIPipeDataTable {
      * @return the data table path
      */
     public Path getStorageDataTablePath() {
-        return getStoragePath().resolve("data-table.json");
+        return getSlotStoragePath().resolve("data-table.json");
     }
 
     /**

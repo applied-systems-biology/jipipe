@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.filesystem.dataypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 
 import java.nio.file.Path;
 
@@ -32,7 +33,7 @@ public class FileData extends PathData {
         super(path);
     }
 
-    public static FileData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
-        return new FileData(PathData.importFrom(storageFilePath, progressInfo).getPath());
+    public static FileData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return new FileData(PathData.importData(storage, progressInfo).getPath());
     }
 }

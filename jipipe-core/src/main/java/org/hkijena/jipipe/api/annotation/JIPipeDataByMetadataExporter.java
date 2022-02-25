@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -318,7 +319,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         outputPath = PathUtils.resolveAndMakeSubDirectory(outputPath, generateSubFolder(dataSlot, row));
         JIPipeData data = dataSlot.getData(row, JIPipeData.class, progressInfo);
         progressInfo.log("Saving " + data + " as " + metadataString + " into " + outputPath);
-        data.saveTo(outputPath, metadataString, true, progressInfo);
+        data.exportData(new JIPipeFileSystemWriteStorage(outputPath), metadataString, true, progressInfo);
     }
 
     /**

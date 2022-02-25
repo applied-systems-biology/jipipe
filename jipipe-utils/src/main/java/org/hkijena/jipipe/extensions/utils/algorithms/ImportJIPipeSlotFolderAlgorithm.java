@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
@@ -82,7 +83,7 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
                     "Check if the folder contains many numeric subfolders and a data-table.json file.");
         }
 
-        JIPipeDataTable dataTable = JIPipeDataTable.importFrom(dataFolder, progressInfo);
+        JIPipeDataTable dataTable = JIPipeDataTable.importData(new JIPipeFileSystemReadStorage(dataFolder), progressInfo);
         for (int row = 0; row < dataTable.getRowCount(); row++) {
             List<JIPipeTextAnnotation> textAnnotationList = ignoreImportedTextAnnotations ? Collections.emptyList() : dataTable.getTextAnnotations(row);
             List<JIPipeDataAnnotation> dataAnnotationList = ignoreImportedDataAnnotations ? Collections.emptyList() : dataTable.getDataAnnotations(row);

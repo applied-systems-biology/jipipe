@@ -15,6 +15,8 @@ package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteStorage;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -111,7 +113,7 @@ public class JIPipeVirtualData {
                 progressInfo.log("Unloading data of type " + JIPipeDataInfo.getInstance(dataClass).getName());
             } else {
                 progressInfo.log("Saving data of type " + JIPipeDataInfo.getInstance(dataClass).getName() + " to virtual path " + virtualStoragePath.getPath());
-                data.saveTo(virtualStoragePath.getPath(), "virtual", false, progressInfo);
+                data.exportData(new JIPipeFileSystemWriteStorage(virtualStoragePath.getPath()), "virtual", false, progressInfo);
             }
             dataReference = new WeakReference<>(data);
             data = null;
@@ -125,7 +127,7 @@ public class JIPipeVirtualData {
                 throw new UnsupportedOperationException("Tried to load virtual data, but no path is set. This should not be possible.");
             }
             progressInfo.log("Loading data of type " + JIPipeDataInfo.getInstance(dataClass).getName() + " from virtual path " + virtualStoragePath.getPath());
-            data = JIPipe.importData(virtualStoragePath.getPath(), dataClass, progressInfo);
+            data = JIPipe.importData(new JIPipeFileSystemReadStorage(virtualStoragePath.getPath()), dataClass, progressInfo);
             dataReference = null;
             stringRepresentation = "" + data;
 

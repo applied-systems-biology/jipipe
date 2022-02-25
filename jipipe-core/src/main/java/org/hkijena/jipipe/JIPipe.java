@@ -28,6 +28,7 @@ import net.imagej.updater.util.UpdaterUtil;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -110,15 +111,15 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * Generally, the output folder should conform to the data type's saveTo() function without 'forceName' enabled
      *
      * @param <T>          the data type
-     * @param outputFolder the folder that contains the data
+     * @param storage the storage that contains the serialized data
      * @param klass        the data type
      * @param progressInfo the progress info
      * @return imported data
      */
-    public static <T extends JIPipeData> T importData(Path outputFolder, Class<T> klass, JIPipeProgressInfo progressInfo) {
+    public static <T extends JIPipeData> T importData(JIPipeReadDataStorage storage, Class<T> klass, JIPipeProgressInfo progressInfo) {
         try {
-            Method method = klass.getDeclaredMethod("importFrom", Path.class, JIPipeProgressInfo.class);
-            return (T) method.invoke(null, outputFolder, progressInfo);
+            Method method = klass.getDeclaredMethod("importData", JIPipeReadDataStorage.class, JIPipeProgressInfo.class);
+            return (T) method.invoke(null, storage, progressInfo);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }
@@ -517,7 +518,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                 continue;
             // Check if we can find a method "import"
             try {
-                Method method = dataType.getDeclaredMethod("importFrom", Path.class, JIPipeProgressInfo.class);
+                Method method = dataType.getDeclaredMethod("importData", JIPipeReadDataStorage.class, JIPipeProgressInfo.class);
                 if (!Modifier.isStatic(method.getModifiers())) {
                     throw new IllegalArgumentException("Import method is not static!");
                 }
@@ -527,7 +528,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             } catch (NoClassDefFoundError | Exception e) {
                 // Unregister node
                 logService.warn("Data type '" + dataType + "' cannot be instantiated.");
-                logService.warn("Ensure that a method static JIPipeData importFrom(Path, JIPipeProgressInfo) is present!");
+                logService.warn("Ensure that a method static JIPipeData importData(Path, JIPipeProgressInfo) is present!");
                 issues.getErroneousDataTypes().add(dataType);
                 e.printStackTrace();
             }

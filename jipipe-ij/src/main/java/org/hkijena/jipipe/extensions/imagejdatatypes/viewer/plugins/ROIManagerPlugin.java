@@ -68,13 +68,13 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         JButton importROIsButton = new JButton("Import", UIUtils.getIconFromResources("actions/document-import.png"));
         JPopupMenu importMenu = UIUtils.addPopupMenuToComponent(importROIsButton);
 
-        JMenuItem importFromManagerItem = new JMenuItem("Import from ImageJ ROI Manager", UIUtils.getIconFromResources("apps/imagej.png"));
-        importFromManagerItem.addActionListener(e -> importROIsFromManager());
-        importMenu.add(importFromManagerItem);
+        JMenuItem importDataManagerItem = new JMenuItem("Import from ImageJ ROI Manager", UIUtils.getIconFromResources("apps/imagej.png"));
+        importDataManagerItem.addActionListener(e -> importROIsFromManager());
+        importMenu.add(importDataManagerItem);
 
-        JMenuItem importFromFileItem = new JMenuItem("Import from file", UIUtils.getIconFromResources("actions/fileopen.png"));
-        importFromFileItem.addActionListener(e -> importROIsFromFile());
-        importMenu.add(importFromFileItem);
+        JMenuItem importDataFileItem = new JMenuItem("Import from file", UIUtils.getIconFromResources("actions/fileopen.png"));
+        importDataFileItem.addActionListener(e -> importROIsFromFile());
+        importMenu.add(importDataFileItem);
 
         headerPanel.addColumn(importROIsButton);
 

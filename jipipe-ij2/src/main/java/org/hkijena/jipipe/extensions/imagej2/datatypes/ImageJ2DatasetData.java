@@ -14,13 +14,14 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.extensions.imagej2.util.ImageJDataSetDataImageViewerCustomLoader;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.ojalgo.random.Weibull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -45,8 +46,8 @@ public class ImageJ2DatasetData implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        wrap().saveTo(storageFilePath, name, forceName, progressInfo);
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+        wrap().exportData(storage, name, forceName, progressInfo);
     }
 
     @Override
@@ -92,11 +93,11 @@ public class ImageJ2DatasetData implements JIPipeData {
         return dataset.toString();
     }
 
-    public static ImageJ2DatasetData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
+    public static ImageJ2DatasetData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
         if (targetFile == null) {
-            throw new UserFriendlyNullPointerException("Could not find a compatible image file in '" + storageFilePath + "'!",
-                    "Unable to find file in location '" + storageFilePath + "'",
+            throw new UserFriendlyNullPointerException("Could not find a compatible image file in '" + storage + "'!",
+                    "Unable to find file in location '" + storage + "'",
                     "ImagePlusData loading",
                     "JIPipe needs to load the image from a folder, but it could not find any matching file.",
                     "Please contact the JIPipe developers about this issue.");

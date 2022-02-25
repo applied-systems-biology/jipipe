@@ -83,7 +83,7 @@ public class ResultsTableDataImageJAdapter implements ImageJDatatypeAdapter {
     }
 
     @Override
-    public JIPipeData importFromImageJ(String parameters) {
+    public JIPipeData importDataImageJ(String parameters) {
         ResultsTable table = ResultsTable.getResultsTable();
         return new ResultsTableData((ResultsTable) table.clone());
     }

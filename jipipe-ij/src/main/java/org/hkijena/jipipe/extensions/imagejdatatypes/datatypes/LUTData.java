@@ -11,6 +11,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -156,8 +158,8 @@ public class LUTData implements JIPipeData {
         return data;
     }
 
-    public static LUTData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
-        Path path = PathUtils.findFileByExtensionIn(storagePath, ".json");
+    public static LUTData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        Path path = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".json");
         return JsonUtils.readFromFile(path, LUTData.class);
     }
 
@@ -172,12 +174,12 @@ public class LUTData implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         try {
             if (!forceName) {
-                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve("lut.json").toFile(), this);
+                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storage.getFileSystemPath().resolve("lut.json").toFile(), this);
             } else {
-                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve(name + ".json").toFile(), this);
+                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storage.getFileSystemPath().resolve(name + ".json").toFile(), this);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);

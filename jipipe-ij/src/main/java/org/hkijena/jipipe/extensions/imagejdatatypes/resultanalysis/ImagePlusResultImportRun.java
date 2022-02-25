@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
@@ -63,7 +64,7 @@ public class ImagePlusResultImportRun implements JIPipeRunnable {
     public void run() {
         progressInfo.setProgress(1, 3);
         progressInfo.log("Importing image from " + rowStorageFolder);
-        ImagePlusData data = ImagePlusData.importFrom(rowStorageFolder, progressInfo);
+        ImagePlusData data = ImagePlusData.importData(new JIPipeFileSystemReadStorage(rowStorageFolder), progressInfo);
         image = data.getImage();
         progressInfo.setProgress(3, 3);
     }

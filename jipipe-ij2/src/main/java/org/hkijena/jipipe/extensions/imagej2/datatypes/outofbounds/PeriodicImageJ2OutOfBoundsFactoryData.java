@@ -6,6 +6,7 @@ import net.imglib2.outofbounds.OutOfBoundsPeriodicFactory;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
@@ -31,8 +32,8 @@ public class PeriodicImageJ2OutOfBoundsFactoryData extends ImageJ2OutOfBoundsFac
         return new OutOfBoundsPeriodicFactory<>();
     }
 
-    public static PeriodicImageJ2OutOfBoundsFactoryData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
-        return (PeriodicImageJ2OutOfBoundsFactoryData) ImageJ2OutOfBoundsFactoryData.importFrom(storagePath, progressInfo);
+    public static PeriodicImageJ2OutOfBoundsFactoryData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return (PeriodicImageJ2OutOfBoundsFactoryData) ImageJ2OutOfBoundsFactoryData.importData(storage, progressInfo);
     }
 
     @Override

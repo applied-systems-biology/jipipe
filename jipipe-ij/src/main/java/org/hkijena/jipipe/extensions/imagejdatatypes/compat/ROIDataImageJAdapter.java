@@ -95,7 +95,7 @@ public class ROIDataImageJAdapter implements ImageJDatatypeAdapter {
     }
 
     @Override
-    public JIPipeData importFromImageJ(String parameters) {
+    public JIPipeData importDataImageJ(String parameters) {
         return new ROIListData(RoiManager.getRoiManager());
     }
 }

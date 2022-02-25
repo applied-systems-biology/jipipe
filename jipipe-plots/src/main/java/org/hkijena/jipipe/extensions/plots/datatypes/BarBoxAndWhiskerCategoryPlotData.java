@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.plots.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.data.statistics.BoxAndWhiskerCategoryDataset;
@@ -49,8 +50,8 @@ public class BarBoxAndWhiskerCategoryPlotData extends BoxAndWhiskerCategoryPlotD
         super(other);
     }
 
-    public static BarBoxAndWhiskerCategoryPlotData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
-        return PlotData.importFrom(storagePath, BarBoxAndWhiskerCategoryPlotData.class, progressInfo);
+    public static BarBoxAndWhiskerCategoryPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return PlotData.importData(storage, BarBoxAndWhiskerCategoryPlotData.class, progressInfo);
     }
 
     @Override

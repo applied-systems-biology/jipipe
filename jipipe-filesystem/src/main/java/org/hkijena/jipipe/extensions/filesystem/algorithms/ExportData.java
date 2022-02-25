@@ -61,7 +61,7 @@ public class ExportData extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path outputDirectory = dataBatch.getInputData("Path", PathData.class, progressInfo).toPath();
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
-            outputDirectory = getFirstOutputSlot().getStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
+            outputDirectory = getFirstOutputSlot().getSlotStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
         }
         if (!Files.exists(outputDirectory)) {
             try {

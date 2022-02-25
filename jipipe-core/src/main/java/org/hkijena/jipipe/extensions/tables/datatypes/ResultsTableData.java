@@ -37,6 +37,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.TableColumnReference;
@@ -92,7 +94,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * @param columns key is column heading
      */
     public ResultsTableData(Map<String, TableColumn> columns) {
-        importFromColumns(columns);
+        importDataColumns(columns);
     }
 
     /**
@@ -106,7 +108,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
         for (TableColumn column : columns) {
             map.put(column.getLabel(), column);
         }
-        importFromColumns(map);
+        importDataColumns(map);
     }
 
     /**
@@ -128,9 +130,9 @@ public class ResultsTableData implements JIPipeData, TableModel {
         this.table = (ResultsTable) other.table.clone();
     }
 
-    public static ResultsTableData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
+    public static ResultsTableData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         try {
-            return new ResultsTableData(ResultsTable.open(PathUtils.findFileByExtensionIn(storagePath, ".csv").toString()));
+            return new ResultsTableData(ResultsTable.open(PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".csv").toString()));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -311,7 +313,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
         return resultsTableData;
     }
 
-    private void importFromColumns(Map<String, TableColumn> columns) {
+    private void importDataColumns(Map<String, TableColumn> columns) {
         this.table = new ResultsTable();
 
         // Collect map column name -> index
@@ -581,9 +583,9 @@ public class ResultsTableData implements JIPipeData, TableModel {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         try {
-            table.saveAs(storageFilePath.resolve(name + ".csv").toString());
+            table.saveAs(storage.resolve(name + ".csv").toString());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

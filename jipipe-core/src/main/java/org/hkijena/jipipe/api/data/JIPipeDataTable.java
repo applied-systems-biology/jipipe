@@ -8,20 +8,21 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeExtendedDataTableInfoUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.ui.ScreenImage;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -597,10 +598,10 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     /**
      * Saves the data contained in this slot into the storage path.
      *
-     * @param storagePath  the path that contains the data folders and table
+     * @param storage storage that contains the data
      * @param saveProgress save progress
      */
-    public void save(Path storagePath, JIPipeProgressInfo saveProgress) {
+    public void exportData(JIPipeWriteDataStorage storage, JIPipeProgressInfo saveProgress) {
         JIPipeDataTableMetadata dataTableMetadata = new JIPipeDataTableMetadata();
         dataTableMetadata.setAcceptedDataTypeId(JIPipe.getDataTypes().getIdOf(getAcceptedDataType()));
 
@@ -620,13 +621,12 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             rowMetadata.setTrueDataType(JIPipe.getDataTypes().getIdOf(getVirtualData(row).getDataClass()));
             rowMetadata.setTextAnnotations(getTextAnnotations(row));
             JIPipeProgressInfo rowProgress = saveProgress.resolveAndLog("Row", row, getRowCount());
-            saveDataRow(storagePath, row, rowProgress);
+            saveDataRow(storage, row, rowProgress);
             for (JIPipeDataAnnotation dataAnnotation : getDataAnnotations(row)) {
                 JIPipeProgressInfo dataAnnotationProgress = rowProgress.resolveAndLog("Data annotation '" + dataAnnotation.getName() + "'");
-                Path dataAnnotationStore = saveDataAnnotationRow(storagePath, dataAnnotationProgress, row, rowProgress, dataAnnotation, dataAnnotationColumnNameMapping);
-                dataAnnotationStore = storagePath.relativize(dataAnnotationStore);
+                JIPipeWriteDataStorage dataAnnotationStore = saveDataAnnotationRow(storage, dataAnnotationProgress, row, rowProgress, dataAnnotation, dataAnnotationColumnNameMapping);
                 JIPipeExportedDataAnnotation dataAnnotationMetadata = new JIPipeExportedDataAnnotation(dataAnnotation.getName(),
-                        dataAnnotationStore,
+                        dataAnnotationStore.getInternalPath(),
                         JIPipe.getDataTypes().getIdOf(dataAnnotation.getDataClass()),
                         rowMetadata);
                 rowMetadata.getDataAnnotations().add(dataAnnotationMetadata);
@@ -635,43 +635,27 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         }
 
         try {
-            dataTableMetadata.saveAsJson(storagePath.resolve("data-table.json"));
-            dataTableMetadata.saveAsCSV(storagePath.resolve("data-table.csv"));
+            dataTableMetadata.saveAsJson(storage.getFileSystemPath().resolve("data-table.json"));
+            dataTableMetadata.saveAsCSV(storage.getFileSystemPath().resolve("data-table.csv"));
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to save data table!",
-                    "Data slot '" + getDisplayName() + "'", "JIPipe tried to write files into '" + storagePath + "'.",
+                    "Data slot '" + getDisplayName() + "'", "JIPipe tried to write files into '" + storage + "'.",
                     "Check if you have permissions to write into the path, and if there is enough disk space.");
         }
     }
 
-    private Path saveDataAnnotationRow(Path storagePath, JIPipeProgressInfo saveProgress, int row, JIPipeProgressInfo rowProgress, JIPipeDataAnnotation dataAnnotation, Map<String, String> dataAnnotationColumnNameMapping) {
-        Path dataAnnotationsStore = storagePath.resolve("data-annotations").resolve("" + row).resolve(dataAnnotationColumnNameMapping.get(dataAnnotation.getName()));
-        try {
-            Files.createDirectories(dataAnnotationsStore);
-        } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to create directory '" + dataAnnotationsStore + "'!",
-                    "Data slot '" + getDisplayName() + "'", "The path might be invalid, or you might not have the permissions to write in a parent folder.",
-                    "Check if the path is valid, and you have write-access.");
-        }
-        dataAnnotation.getData(JIPipeData.class, saveProgress.resolve("Load virtual data")).saveTo(dataAnnotationsStore,
+    private JIPipeWriteDataStorage saveDataAnnotationRow(JIPipeWriteDataStorage storage, JIPipeProgressInfo saveProgress, int row, JIPipeProgressInfo rowProgress, JIPipeDataAnnotation dataAnnotation, Map<String, String> dataAnnotationColumnNameMapping) {
+        JIPipeWriteDataStorage dataAnnotationsStore = storage.resolve("data-annotations").resolve("" + row).resolve(dataAnnotationColumnNameMapping.get(dataAnnotation.getName()));
+        dataAnnotation.getData(JIPipeData.class, saveProgress.resolve("Load virtual data")).exportData(dataAnnotationsStore,
                 dataAnnotationColumnNameMapping.get(dataAnnotation.getName()),
                 false,
                 rowProgress);
         return dataAnnotationsStore;
     }
 
-    private void saveDataRow(Path storagePath, int row, JIPipeProgressInfo rowProgress) {
-        Path path = storagePath.resolve("" + row);
-        if (!Files.isDirectory(path)) {
-            try {
-                Files.createDirectories(path);
-            } catch (IOException e) {
-                throw new UserFriendlyRuntimeException(e, "Unable to create directory '" + path + "'!",
-                        "Data slot '" + getDisplayName() + "'", "The path might be invalid, or you might not have the permissions to write in a parent folder.",
-                        "Check if the path is valid, and you have write-access.");
-            }
-        }
-        data.get(row).getData(rowProgress.resolve("Load virtual data")).saveTo(path, "data", false, rowProgress);
+    private void saveDataRow(JIPipeWriteDataStorage storage, int row, JIPipeProgressInfo rowProgress) {
+        JIPipeWriteDataStorage rowStorage = storage.resolve("" + row);
+        data.get(row).getData(rowProgress.resolve("Load virtual data")).exportData(rowStorage, "data", false, rowProgress);
     }
 
     /**
@@ -917,10 +901,11 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     /**
      * Imports this data from the path
      *
-     * @param storagePath the storage path
+     * @param storage the storage
      * @return the data
      */
-    public static JIPipeDataTable importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
+    public static JIPipeDataTable importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        Path storagePath = storage.getFileSystemPath();
         JIPipeDataTableMetadata dataTable = JIPipeDataTableMetadata.loadFromJson(storagePath.resolve("data-table.json"));
         Class<? extends JIPipeData> acceptedDataType = JIPipe.getDataTypes().getById(dataTable.getAcceptedDataTypeId());
         JIPipeDataTable slot = new JIPipeDataTable(acceptedDataType);
@@ -929,13 +914,13 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             JIPipeDataTableMetadataRow row = dataTable.getRowList().get(i);
             Path rowStorage = storagePath.resolve("" + row.getIndex());
             Class<? extends JIPipeData> rowDataType = JIPipe.getDataTypes().getById(row.getTrueDataType());
-            JIPipeData data = JIPipe.importData(rowStorage, rowDataType, rowProgress);
+            JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadStorage(rowStorage), rowDataType, rowProgress);
             slot.addData(data, row.getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, rowProgress);
 
             for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
                 Path dataAnnotationRowStorage = storagePath.resolve(dataAnnotation.getRowStorageFolder());
                 Class<? extends JIPipeData> dataAnnotationDataType = JIPipe.getDataTypes().getById(dataAnnotation.getTrueDataType());
-                JIPipeData dataAnnotationData = JIPipe.importData(dataAnnotationRowStorage, dataAnnotationDataType, progressInfo);
+                JIPipeData dataAnnotationData = JIPipe.importData(new JIPipeFileSystemReadStorage(dataAnnotationRowStorage), dataAnnotationDataType, progressInfo);
                 slot.setDataAnnotation(i, dataAnnotation.getName(), dataAnnotationData);
             }
         }
@@ -943,11 +928,11 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         if (forceName) {
-            save(storageFilePath.resolve(name), progressInfo);
+            exportData(storage.resolve(name), progressInfo);
         } else {
-            save(storageFilePath, progressInfo);
+            exportData(storage, progressInfo);
         }
     }
 

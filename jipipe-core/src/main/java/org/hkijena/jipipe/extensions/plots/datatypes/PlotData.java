@@ -28,6 +28,8 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -125,8 +127,9 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         this.customColorMap = new ColorListParameter(other.customColorMap);
     }
 
-    public static <T extends PlotData> T importFrom(Path storageFilePath, Class<T> klass, JIPipeProgressInfo progressInfo) {
+    public static <T extends PlotData> T importData(JIPipeReadDataStorage storage, Class<T> klass, JIPipeProgressInfo progressInfo) {
         try {
+            Path storageFilePath = storage.getFileSystemPath();
             JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
             PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(node);
             ParameterUtils.deserializeParametersFromJson(plotData, node, new JIPipeIssueReport());
@@ -230,18 +233,18 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         // Export metadata
         try {
             if (!forceName) {
-                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve("plot-metadata.json").toFile(), this);
+                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storage.getFileSystemPath().resolve("plot-metadata.json").toFile(), this);
             } else {
-                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storageFilePath.resolve(name + "_plot-metadata.json").toFile(), this);
+                JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(storage.getFileSystemPath().resolve(name + "_plot-metadata.json").toFile(), this);
             }
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to export plot!",
                     "Internal plot-export function",
-                    "A plot should be saved to '" + storageFilePath + "'. There was an error during this export.",
+                    "A plot should be saved to '" + storage + "'. There was an error during this export.",
                     "Please check if you can write to the output folder. Please check if the algorithm inputs are valid. " +
                             "If you cannot solve the issue, please contact the plugin author.");
         }
@@ -249,9 +252,9 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         // Export series
         for (int i = 0; i < series.size(); ++i) {
             if (forceName) {
-                series.get(i).saveTo(storageFilePath, name + "_" + "series" + i, forceName, progressInfo);
+                series.get(i).exportData(storage, name + "_" + "series" + i, forceName, progressInfo);
             } else {
-                series.get(i).saveTo(storageFilePath, "series" + i, forceName, progressInfo);
+                series.get(i).exportData(storage, "series" + i, forceName, progressInfo);
             }
         }
 
@@ -260,7 +263,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
             JFreeChart chart = getChart();
 
             // Save as PNG
-            ChartUtils.saveChartAsPNG(storageFilePath.resolve(name + ".png").toFile(),
+            ChartUtils.saveChartAsPNG(storage.resolve(name + ".png").getFileSystemPath().toFile(),
                     chart,
                     exportWidth,
                     exportHeight);
@@ -269,12 +272,12 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
             SVGGraphics2D g2 = new SVGGraphics2D(exportWidth, exportHeight);
             Rectangle r = new Rectangle(0, 0, exportWidth, exportHeight);
             chart.draw(g2, r);
-            SVGUtils.writeToSVG(storageFilePath.resolve(name + ".svg").toFile(), g2.getSVGElement());
+            SVGUtils.writeToSVG(storage.resolve(name + ".svg").getFileSystemPath().toFile(), g2.getSVGElement());
 
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to export plot!",
                     "Internal plot-export function",
-                    "A plot should be saved to '" + storageFilePath + "'. There was an error during this export.",
+                    "A plot should be saved to '" + storage + "'. There was an error during this export.",
                     "Please check if you can write to the output folder. Please check if the algorithm inputs are valid. " +
                             "If you cannot solve the issue, please contact the plugin author.");
         }

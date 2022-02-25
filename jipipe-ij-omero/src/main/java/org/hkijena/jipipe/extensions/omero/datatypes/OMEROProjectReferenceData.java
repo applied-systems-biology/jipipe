@@ -20,6 +20,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -40,8 +42,8 @@ public class OMEROProjectReferenceData implements JIPipeData {
         this.projectId = projectId;
     }
 
-    public static OMEROProjectReferenceData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
+    public static OMEROProjectReferenceData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".json");
         try {
             return JsonUtils.getObjectMapper().readerFor(OMEROProjectReferenceData.class).readValue(targetFile.toFile());
         } catch (IOException e) {
@@ -60,8 +62,8 @@ public class OMEROProjectReferenceData implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        Path jsonFile = storageFilePath.resolve(name + ".json");
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+        Path jsonFile = storage.getFileSystemPath().resolve(name + ".json");
         try {
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(jsonFile.toFile(), this);
         } catch (IOException e) {

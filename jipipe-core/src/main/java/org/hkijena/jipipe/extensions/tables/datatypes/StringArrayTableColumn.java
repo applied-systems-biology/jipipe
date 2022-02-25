@@ -18,6 +18,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.tables.MutableTableColumn;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
@@ -47,8 +49,8 @@ public class StringArrayTableColumn implements MutableTableColumn {
         this.label = label;
     }
 
-    public static StringArrayTableColumn importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
-        ResultsTableData resultsTableData = ResultsTableData.importFrom(storagePath, progressInfo);
+    public static StringArrayTableColumn importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        ResultsTableData resultsTableData = ResultsTableData.importData(storage, progressInfo);
         TableColumn source = resultsTableData.getColumnReference(0);
         return new StringArrayTableColumn(source.getDataAsString(source.getRows()), source.getLabel());
     }
@@ -121,9 +123,9 @@ public class StringArrayTableColumn implements MutableTableColumn {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         ResultsTableData resultsTableData = new ResultsTableData(Collections.singletonList(this));
-        resultsTableData.saveTo(storageFilePath, name, forceName, progressInfo);
+        resultsTableData.exportData(storage, name, forceName, progressInfo);
     }
 
     @Override

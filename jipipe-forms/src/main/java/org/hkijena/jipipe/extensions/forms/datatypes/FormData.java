@@ -12,6 +12,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -49,17 +51,17 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
     }
 
     /**
-     * Helper method that simplifies the importFrom() method definition
+     * Helper method that simplifies the importData() method definition
      *
      * @param <T>             the form class
-     * @param storageFilePath the storage folder
+     * @param storage the storage folder
      * @param klass           the form class
      * @param progressInfo
      * @return the deserialized form
      */
-    public static <T extends FormData> T importFrom(Path storageFilePath, Class<T> klass, JIPipeProgressInfo progressInfo) {
+    public static <T extends FormData> T importData(JIPipeReadDataStorage storage, Class<T> klass, JIPipeProgressInfo progressInfo) {
         try {
-            FormData formData = JsonUtils.getObjectMapper().readerFor(klass).readValue(storageFilePath.resolve("form.json").toFile());
+            FormData formData = JsonUtils.getObjectMapper().readerFor(klass).readValue(storage.getFileSystemPath().resolve("form.json").toFile());
             return (T) formData;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -67,10 +69,10 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         Path fileName = forceName ? Paths.get(name) : Paths.get("form.json");
         try {
-            JsonUtils.getObjectMapper().writeValue(storageFilePath.resolve(fileName).toFile(), this);
+            JsonUtils.getObjectMapper().writeValue(storage.getFileSystemPath().resolve(fileName).toFile(), this);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

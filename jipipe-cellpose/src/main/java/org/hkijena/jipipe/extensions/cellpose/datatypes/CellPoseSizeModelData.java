@@ -5,6 +5,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -43,8 +45,8 @@ public class CellPoseSizeModelData implements JIPipeData {
         this.name = other.name;
     }
 
-    public static CellPoseSizeModelData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
-        return new CellPoseSizeModelData(PathUtils.findFileByExtensionIn(storagePath, ".npy"));
+    public static CellPoseSizeModelData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return new CellPoseSizeModelData(PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".npy"));
     }
 
     private String extractFileName(Path file) {
@@ -63,11 +65,11 @@ public class CellPoseSizeModelData implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         if (!forceName)
             name = this.name;
         try {
-            Files.write(storageFilePath.resolve(name + ".npy"), data);
+            Files.write(storage.getFileSystemPath().resolve(name + ".npy"), data);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

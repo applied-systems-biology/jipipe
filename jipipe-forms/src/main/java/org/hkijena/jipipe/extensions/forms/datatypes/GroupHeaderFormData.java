@@ -4,6 +4,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -22,8 +23,8 @@ public class GroupHeaderFormData extends ParameterFormData {
         super(other);
     }
 
-    public static GroupHeaderFormData importFrom(Path rowStorage, JIPipeProgressInfo progressInfo) {
-        return FormData.importFrom(rowStorage, GroupHeaderFormData.class, progressInfo);
+    public static GroupHeaderFormData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return FormData.importData(storage, GroupHeaderFormData.class, progressInfo);
     }
 
     @Override

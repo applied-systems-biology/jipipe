@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeSerializedJsonObjectData;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -17,7 +18,6 @@ import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import java.awt.*;
-import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "Data batch status", description = "Structural data indicating the status of a data batch")
 @JIPipeHidden
@@ -70,8 +70,8 @@ public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
         frame.setVisible(true);
     }
 
-    public static DataBatchStatusData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
-        return JIPipeSerializedJsonObjectData.importFrom(storagePath, DataBatchStatusData.class);
+    public static DataBatchStatusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return JIPipeSerializedJsonObjectData.importData(storage, DataBatchStatusData.class);
     }
 
     @JsonGetter("per-slot-status")

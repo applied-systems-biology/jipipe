@@ -79,7 +79,7 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
-            outputPath = getFirstOutputSlot().getStoragePath().resolve(outputDirectory);
+            outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(outputDirectory);
         } else {
             outputPath = outputDirectory;
         }

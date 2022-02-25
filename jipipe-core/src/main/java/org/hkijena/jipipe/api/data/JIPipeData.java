@@ -14,22 +14,22 @@
 package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
-import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
 /**
  * Base class for any JIPipe data wrapper class
- * There must be a static function importFrom(Path, JIPipeProgressInfo) that imports the data from a row storage folder.
- * Additionally, there must be a annotation of type {@link JIPipeDataStorageDocumentation} that describes the structure of a valid row storage folder for humans.
- * The static importFrom(Path) method and the {@link JIPipeDataStorageDocumentation} annotation can be omitted for abstract data types or interfaces.
+ * There must be a static function importData({@link org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage}, JIPipeProgressInfo) that imports the data from a row storage folder.
+ * Additionally, there must be an annotation of type {@link JIPipeDataStorageDocumentation} that describes the structure of a valid row storage folder for humans.
+ * The static importData(Path) method and the {@link JIPipeDataStorageDocumentation} annotation can be omitted for abstract data types or interfaces.
  * {@link JIPipeDataStorageDocumentation} can be inherited from parent classes.
  */
 @JIPipeDocumentation(name = "Data", description = "Generic data")
@@ -186,13 +186,12 @@ public interface JIPipeData {
 
     /**
      * Saves the data to a folder
-     *
-     * @param storageFilePath A folder that already exists
+     *  @param storage The storage where the data should be written
      * @param name            A name reference that can be used to generate filename(s)
      * @param forceName       If enabled, the data is saved potentially destructively. Generated files must always contain the name parameter. This is used to collect results for humans or other algorithms.
      * @param progressInfo    the progress
      */
-    void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo);
+    void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo);
 
     /**
      * Duplicates the data

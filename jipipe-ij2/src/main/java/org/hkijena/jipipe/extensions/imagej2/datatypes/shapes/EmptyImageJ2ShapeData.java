@@ -4,6 +4,7 @@ import net.imglib2.algorithm.neighborhood.Shape;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 
 import java.nio.file.Path;
 
@@ -24,8 +25,8 @@ public class EmptyImageJ2ShapeData extends ImageJ2ShapeData {
         return null;
     }
 
-    public static EmptyImageJ2ShapeData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
-        return (EmptyImageJ2ShapeData) ImageJ2ShapeData.importFrom(storagePath, progressInfo);
+    public static EmptyImageJ2ShapeData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return (EmptyImageJ2ShapeData) ImageJ2ShapeData.importData(storage, progressInfo);
     }
 
     @Override

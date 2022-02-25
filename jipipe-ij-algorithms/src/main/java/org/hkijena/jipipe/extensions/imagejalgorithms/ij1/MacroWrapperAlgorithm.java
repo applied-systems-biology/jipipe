@@ -194,7 +194,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     private void passOutputData(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
             ImageJDatatypeAdapter adapter = JIPipe.getImageJAdapters().getAdapterForJIPipeData(outputSlot.getAcceptedDataType());
-            JIPipeData data = adapter.importFromImageJ(outputSlot.getName());
+            JIPipeData data = adapter.importDataImageJ(outputSlot.getName());
             dataBatch.addOutputData(outputSlot, data, progressInfo);
 
             // Workaround bug: Not closing all outputs

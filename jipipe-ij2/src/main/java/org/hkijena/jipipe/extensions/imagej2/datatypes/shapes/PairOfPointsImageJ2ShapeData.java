@@ -6,6 +6,7 @@ import net.imglib2.algorithm.neighborhood.Shape;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.LongList;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -37,8 +38,8 @@ public class PairOfPointsImageJ2ShapeData extends ImageJ2ShapeData {
         return new PairOfPointsShape(Longs.toArray(offset));
     }
 
-    public static PairOfPointsImageJ2ShapeData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
-        return (PairOfPointsImageJ2ShapeData) ImageJ2ShapeData.importFrom(storagePath, progressInfo);
+    public static PairOfPointsImageJ2ShapeData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return (PairOfPointsImageJ2ShapeData) ImageJ2ShapeData.importData(storage, progressInfo);
     }
 
     @Override

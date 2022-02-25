@@ -186,9 +186,9 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
 
     private void openResultsFolder() {
         if (slots.size() == 1) {
-            UIUtils.openFileInNative(slots.get(0).getStoragePath());
+            UIUtils.openFileInNative(slots.get(0).getSlotStoragePath());
         } else if (slots.stream().map(JIPipeDataSlot::getNode).distinct().count() == 1) {
-            UIUtils.openFileInNative(slots.get(0).getStoragePath().getParent());
+            UIUtils.openFileInNative(slots.get(0).getSlotStoragePath().getParent());
         } else {
             UIUtils.openFileInNative(run.getConfiguration().getOutputPath());
         }
@@ -250,7 +250,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
     private void reloadTable() {
         mergedDataTable = new JIPipeMergedExportedDataTable();
         for (JIPipeDataSlot slot : this.slots) {
-            JIPipeDataTableMetadata dataTable = JIPipeDataTableMetadata.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
+            JIPipeDataTableMetadata dataTable = JIPipeDataTableMetadata.loadFromJson(slot.getSlotStoragePath().resolve("data-table.json"));
             mergedDataTable.add(getProject(), slot, dataTable);
         }
         if (GeneralDataSettings.getInstance().isGenerateResultPreviews())

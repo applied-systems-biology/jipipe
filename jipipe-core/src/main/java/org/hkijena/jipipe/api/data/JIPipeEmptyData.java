@@ -3,6 +3,8 @@ package org.hkijena.jipipe.api.data;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.nio.file.Path;
@@ -12,12 +14,12 @@ import java.nio.file.Path;
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
 @JIPipeHidden
 public class JIPipeEmptyData implements JIPipeData {
-    public static JIPipeEmptyData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
+    public static JIPipeEmptyData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new JIPipeEmptyData();
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
 
     }
 

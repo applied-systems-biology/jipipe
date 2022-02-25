@@ -47,6 +47,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
@@ -89,11 +91,11 @@ public class OMEImageData implements JIPipeData {
         this.metadata = metadata;
     }
 
-    public static OMEImageData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif");
+    public static OMEImageData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".tif");
         if (targetFile == null) {
-            throw new UserFriendlyNullPointerException("Could not find TIFF file in '" + storageFilePath + "'!",
-                    "Unable to find file in location '" + storageFilePath + "'",
+            throw new UserFriendlyNullPointerException("Could not find TIFF file in '" + storage + "'!",
+                    "Unable to find file in location '" + storage + "'",
                     "ImagePlusData loading",
                     "JIPipe needs to load the image from a folder, but it could not find any matching file.",
                     "Please contact the JIPipe developers about this issue.");
@@ -1024,8 +1026,8 @@ public class OMEImageData implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        OMEExport(this, storageFilePath.resolve(name + ".ome.tif"), exporterSettings);
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+        OMEExport(this, storage.getFileSystemPath().resolve(name + ".ome.tif"), exporterSettings);
     }
 
     @Override

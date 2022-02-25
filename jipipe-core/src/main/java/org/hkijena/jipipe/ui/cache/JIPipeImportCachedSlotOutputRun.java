@@ -5,6 +5,7 @@ import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
@@ -105,13 +106,15 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
             Path storageFolder = dataFolder.resolve("" + row.getIndex());
             List<JIPipeTextAnnotation> annotationList = row.getTextAnnotations();
             JIPipeDataInfo trueDataType = exportedDataTable.getDataTypeOf(row.getIndex());
-            JIPipeData data = JIPipe.importData(storageFolder, trueDataType.getDataClass(), progressInfo);
+            JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadStorage(storageFolder), trueDataType.getDataClass(), progressInfo);
             tempSlot.addData(data, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, slotProgressInfo);
 
             for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
                 try {
                     JIPipeDataInfo dataAnnotationDataTypeInfo = JIPipeDataInfo.getInstance(dataAnnotation.getTrueDataType());
-                    JIPipeData dataAnnotationData = JIPipe.importData(dataFolder.resolve(dataAnnotation.getRowStorageFolder()), dataAnnotationDataTypeInfo.getDataClass(), progressInfo);
+                    JIPipeData dataAnnotationData = JIPipe.importData(new JIPipeFileSystemReadStorage(dataFolder.resolve(dataAnnotation.getRowStorageFolder())),
+                            dataAnnotationDataTypeInfo.getDataClass(),
+                            progressInfo);
                     tempSlot.setDataAnnotation(tempSlot.getRowCount() - 1, dataAnnotation.getName(), dataAnnotationData);
                 } catch (Exception e) {
                     slotProgressInfo.log("Error: " + e);

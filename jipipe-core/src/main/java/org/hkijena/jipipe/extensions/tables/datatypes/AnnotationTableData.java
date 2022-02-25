@@ -17,6 +17,7 @@ import ij.measure.ResultsTable;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
@@ -65,8 +66,8 @@ public class AnnotationTableData extends ResultsTableData {
         super(other);
     }
 
-    public static AnnotationTableData importFrom(Path storageFolder, JIPipeProgressInfo progressInfo) {
-        return new AnnotationTableData(ResultsTableData.importFrom(storageFolder, progressInfo));
+    public static AnnotationTableData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return new AnnotationTableData(ResultsTableData.importData(storage, progressInfo));
     }
 
     /**

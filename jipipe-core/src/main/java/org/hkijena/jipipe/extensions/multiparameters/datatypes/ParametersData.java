@@ -27,6 +27,8 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
@@ -54,8 +56,8 @@ public class ParametersData implements JIPipeData {
 
     private Map<String, Object> parameterData = new HashMap<>();
 
-    public static ParametersData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".json");
+    public static ParametersData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".json");
         try {
             return JsonUtils.getObjectMapper().readerFor(ParametersData.class).readValue(targetFile.toFile());
         } catch (IOException e) {
@@ -64,10 +66,10 @@ public class ParametersData implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         try {
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter()
-                    .writeValue(storageFilePath.resolve(name + ".json").toFile(), this);
+                    .writeValue(storage.resolve(name + ".json").getFileSystemPath().toFile(), this);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

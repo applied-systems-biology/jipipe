@@ -103,6 +103,6 @@ public abstract class JIPipeResultDataSlotRowUI extends JIPipeProjectWorkbenchPa
      * @return the folder where the data is stored
      */
     public Path getRowStorageFolder() {
-        return slot.getStoragePath().resolve("" + getRow().getIndex());
+        return slot.getSlotStoragePath().resolve("" + getRow().getIndex());
     }
 }

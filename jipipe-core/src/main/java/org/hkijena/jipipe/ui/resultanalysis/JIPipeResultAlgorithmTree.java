@@ -73,7 +73,7 @@ public class JIPipeResultAlgorithmTree extends JIPipeProjectWorkbenchPanel {
                     compartmentHasMatchedChildren |= algorithmMatches;
 
                     for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
-                        if (!Files.exists(outputSlot.getStoragePath().resolve("data-table.json")))
+                        if (!Files.exists(outputSlot.getSlotStoragePath().resolve("data-table.json")))
                             continue;
                         DefaultMutableTreeNode slotNode = new DefaultMutableTreeNode(outputSlot);
 

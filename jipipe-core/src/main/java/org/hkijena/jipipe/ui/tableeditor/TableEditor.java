@@ -133,13 +133,13 @@ public class TableEditor extends JIPipeWorkbenchPanel {
         {
             JPopupMenu exportPopup = UIUtils.addPopupMenuToComponent(openButton);
 
-            JMenuItem importFromCSV = new JMenuItem("from CSV table (*.csv)", UIUtils.getIconFromResources("data-types/results-table.png"));
-            importFromCSV.addActionListener(e -> importFromCSV());
-            exportPopup.add(importFromCSV);
+            JMenuItem importDataCSV = new JMenuItem("from CSV table (*.csv)", UIUtils.getIconFromResources("data-types/results-table.png"));
+            importDataCSV.addActionListener(e -> importDataCSV());
+            exportPopup.add(importDataCSV);
 
-            JMenuItem importFromImageJ = new JMenuItem("from ImageJ", UIUtils.getIconFromResources("apps/imagej.png"));
-            importFromImageJ.addActionListener(e -> importFromImageJ());
-            exportPopup.add(importFromImageJ);
+            JMenuItem importDataImageJ = new JMenuItem("from ImageJ", UIUtils.getIconFromResources("apps/imagej.png"));
+            importDataImageJ.addActionListener(e -> importDataImageJ());
+            exportPopup.add(importDataImageJ);
         }
         toolBar.add(openButton);
 
@@ -342,7 +342,7 @@ public class TableEditor extends JIPipeWorkbenchPanel {
         );
     }
 
-    private void importFromImageJ() {
+    private void importDataImageJ() {
         JIPipeOpenTableFromImageJDialogUI dialog = new JIPipeOpenTableFromImageJDialogUI(getWorkbench());
         dialog.setSize(640, 480);
         dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
@@ -389,7 +389,7 @@ public class TableEditor extends JIPipeWorkbenchPanel {
         }
     }
 
-    private void importFromCSV() {
+    private void importDataCSV() {
         Path fileName = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Open CSV table (*.csv)", UIUtils.EXTENSION_FILTER_CSV);
         if (fileName != null) {
             ResultsTableData tableData = ResultsTableData.fromCSV(fileName);

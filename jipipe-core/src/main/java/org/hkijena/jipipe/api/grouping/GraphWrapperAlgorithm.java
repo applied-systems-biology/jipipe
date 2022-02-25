@@ -357,7 +357,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
         }
         for (JIPipeDataSlot slot : getWrappedGraph().getSlotNodes()) {
             if (slot.isOutput()) {
-                slot.setStoragePath(slot.getNode().getInternalStoragePath().resolve(slot.getName()));
+                slot.setSlotStoragePath(slot.getNode().getInternalStoragePath().resolve(slot.getName()));
             }
         }
     }

@@ -5,6 +5,7 @@ import net.imglib2.algorithm.neighborhood.Shape;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
 import java.nio.file.Path;
@@ -33,8 +34,8 @@ public class DiamondImageJ2ShapeData extends ImageJ2ShapeData {
         return new DiamondShape(radius);
     }
 
-    public static DiamondImageJ2ShapeData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
-        return (DiamondImageJ2ShapeData) ImageJ2ShapeData.importFrom(storagePath, progressInfo);
+    public static DiamondImageJ2ShapeData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return (DiamondImageJ2ShapeData) ImageJ2ShapeData.importData(storage, progressInfo);
     }
 
     @Override

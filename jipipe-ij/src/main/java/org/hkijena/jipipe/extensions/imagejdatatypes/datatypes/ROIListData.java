@@ -36,6 +36,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedROIListDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -121,18 +123,18 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     /**
      * Loads {@link Roi} from a path that contains a zip/roi file
      *
-     * @param storageFilePath path that contains a zip/roi file
+     * @param storage path that contains a zip/roi file
      */
-    public static ROIListData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
+    public static ROIListData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         ROIListData result = new ROIListData();
-        Path zipFile = PathUtils.findFileByExtensionIn(storageFilePath, ".zip");
-        Path roiFile = PathUtils.findFileByExtensionIn(storageFilePath, ".roi");
+        Path zipFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".zip");
+        Path roiFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".roi");
         if (zipFile != null) {
             result.addAll(loadRoiListFromFile(zipFile));
         } else if (roiFile != null) {
             result.addAll(loadRoiListFromFile(roiFile));
         } else {
-            throw new RuntimeException(new FileNotFoundException("Could not find a .roi or .zip file in " + storageFilePath));
+            throw new RuntimeException(new FileNotFoundException("Could not find a .roi or .zip file in " + storage));
         }
         return result;
     }
@@ -315,11 +317,11 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         // Code adapted from ImageJ RoiManager class
         if (size() == 1) {
             try {
-                FileOutputStream out = new FileOutputStream(storageFilePath.resolve(name + ".roi").toFile());
+                FileOutputStream out = new FileOutputStream(storage.getFileSystemPath().resolve(name + ".roi").toFile());
                 RoiEncoder re = new RoiEncoder(out);
                 Roi roi = this.get(0);
                 re.write(roi);
@@ -330,7 +332,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             }
         } else {
             try {
-                ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(storageFilePath.resolve(name + ".zip").toFile())));
+                ZipOutputStream zos = new ZipOutputStream(new BufferedOutputStream(new FileOutputStream(storage.getFileSystemPath().resolve(name + ".zip").toFile())));
                 DataOutputStream out = new DataOutputStream(new BufferedOutputStream(zos));
                 RoiEncoder re = new RoiEncoder(out);
                 Set<String> existing = new HashSet<>();

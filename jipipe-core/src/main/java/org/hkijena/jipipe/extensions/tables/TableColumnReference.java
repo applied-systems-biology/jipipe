@@ -16,11 +16,11 @@ package org.hkijena.jipipe.extensions.tables;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
-import java.nio.file.Path;
 import java.util.Collections;
 
 /**
@@ -93,9 +93,9 @@ public class TableColumnReference implements TableColumn {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         ResultsTableData resultsTableData = new ResultsTableData(Collections.singletonList(this));
-        resultsTableData.saveTo(storageFilePath, name, forceName, progressInfo);
+        resultsTableData.exportData(storage, name, forceName, progressInfo);
     }
 
     @Override

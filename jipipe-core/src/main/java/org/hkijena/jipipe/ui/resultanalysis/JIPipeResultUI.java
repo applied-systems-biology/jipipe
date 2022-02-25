@@ -93,7 +93,7 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
         List<JIPipeDataSlot> result = new ArrayList<>();
         for (JIPipeGraphNode algorithm : run.getGraph().getGraphNodes()) {
             for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
-                if (Files.exists(outputSlot.getStoragePath().resolve("data-table.json"))) {
+                if (Files.exists(outputSlot.getSlotStoragePath().resolve("data-table.json"))) {
                     result.add(outputSlot);
                 }
             }
@@ -104,7 +104,7 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
     private List<JIPipeDataSlot> listDataSlotsOfAlgorithm(JIPipeGraphNode algorithm) {
         List<JIPipeDataSlot> result = new ArrayList<>();
         for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
-            if (Files.exists(outputSlot.getStoragePath().resolve("data-table.json"))) {
+            if (Files.exists(outputSlot.getSlotStoragePath().resolve("data-table.json"))) {
                 result.add(outputSlot);
             }
         }
@@ -117,7 +117,7 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
         for (JIPipeGraphNode algorithm : run.getGraph().getGraphNodes()) {
             if (Objects.equals(algorithm.getCompartmentUUIDInGraph(), projectCompartmentUUID)) {
                 for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
-                    if (Files.exists(outputSlot.getStoragePath().resolve("data-table.json"))) {
+                    if (Files.exists(outputSlot.getSlotStoragePath().resolve("data-table.json"))) {
                         result.add(outputSlot);
                     }
                 }

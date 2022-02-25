@@ -21,6 +21,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
@@ -110,18 +112,18 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
         this.colorSpace = colorSpace;
     }
 
-    public static ImagePlus importImagePlusFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storageFilePath, ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
+    public static ImagePlus importImagePlusFrom(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
         if (targetFile == null) {
-            throw new UserFriendlyNullPointerException("Could not find a compatible image file in '" + storageFilePath + "'!",
-                    "Unable to find file in location '" + storageFilePath + "'",
+            throw new UserFriendlyNullPointerException("Could not find a compatible image file in '" + storage + "'!",
+                    "Unable to find file in location '" + storage + "'",
                     "ImagePlusData loading",
                     "JIPipe needs to load the image from a folder, but it could not find any matching file.",
                     "Please contact the JIPipe developers about this issue.");
         }
         String fileName = targetFile.toString().toLowerCase();
         if ((fileName.endsWith(".tiff") || fileName.endsWith(".tif")) && ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
-            OMEImageData omeImageData = OMEImageData.importFrom(storageFilePath, progressInfo);
+            OMEImageData omeImageData = OMEImageData.importData(storage, progressInfo);
             return omeImageData.getImage();
         } else {
             progressInfo.log("ImageJ import " + targetFile);
@@ -129,8 +131,8 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
         }
     }
 
-    public static ImagePlusData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
-        return new ImagePlusData(importImagePlusFrom(storageFilePath, progressInfo));
+    public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return new ImagePlusData(importImagePlusFrom(storage, progressInfo));
     }
 
     /**
@@ -187,17 +189,17 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         if (image != null) {
             if (ImageJDataTypesSettings.getInstance().isUseBioFormats() && !(image.getType() == ImagePlus.COLOR_RGB && ImageJDataTypesSettings.getInstance().isSaveRGBWithImageJ())) {
-                Path outputPath = storageFilePath.resolve(name + ".ome.tif");
+                Path outputPath = storage.getFileSystemPath().resolve(name + ".ome.tif");
                 OMEImageData.simpleOMEExport(image, outputPath);
             } else {
-                Path outputPath = storageFilePath.resolve(name + ".tif");
+                Path outputPath = storage.getFileSystemPath().resolve(name + ".tif");
                 IJ.saveAsTiff(image, outputPath.toString());
             }
         } else {
-            imageSource.saveTo(storageFilePath, name, forceName, progressInfo);
+            imageSource.saveTo(storage.getFileSystemPath(), name, forceName, progressInfo);
         }
     }
 

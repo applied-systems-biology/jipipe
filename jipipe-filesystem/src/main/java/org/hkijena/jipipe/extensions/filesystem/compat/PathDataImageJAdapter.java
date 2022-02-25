@@ -111,7 +111,7 @@ public class PathDataImageJAdapter implements ImageJDatatypeAdapter {
     }
 
     @Override
-    public JIPipeData importFromImageJ(String parameters) {
+    public JIPipeData importDataImageJ(String parameters) {
         return (JIPipeData) ReflectionUtils.newInstance(jipipeDataClass, Paths.get(parameters));
     }
 }

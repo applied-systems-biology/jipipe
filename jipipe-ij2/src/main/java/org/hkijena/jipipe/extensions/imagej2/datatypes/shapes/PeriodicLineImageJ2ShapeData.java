@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.IntegerList;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -43,8 +44,8 @@ public class PeriodicLineImageJ2ShapeData extends ImageJ2ShapeData {
         return new PeriodicLineShape(span, Ints.toArray(increments));
     }
 
-    public static PeriodicLineImageJ2ShapeData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
-        return (PeriodicLineImageJ2ShapeData) ImageJ2ShapeData.importFrom(storagePath, progressInfo);
+    public static PeriodicLineImageJ2ShapeData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return (PeriodicLineImageJ2ShapeData) ImageJ2ShapeData.importData(storage, progressInfo);
     }
 
     @Override

@@ -18,6 +18,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.nio.file.Path;
@@ -29,7 +31,7 @@ import java.nio.file.Path;
 @JIPipeDataStorageDocumentation(humanReadableDescription = "This is a structural data type. The storage folder is empty.",
 jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
 public class RowIndexTableColumn implements TableColumn {
-    public static RowIndexTableColumn importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
+    public static RowIndexTableColumn importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new RowIndexTableColumn();
     }
 
@@ -82,7 +84,7 @@ public class RowIndexTableColumn implements TableColumn {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
 
     }
 

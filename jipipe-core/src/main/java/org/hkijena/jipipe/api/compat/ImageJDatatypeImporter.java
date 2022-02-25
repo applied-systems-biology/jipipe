@@ -53,6 +53,6 @@ public class ImageJDatatypeImporter implements Supplier<JIPipeData> {
 
     @Override
     public JIPipeData get() {
-        return adapter.importFromImageJ(parameters);
+        return adapter.importDataImageJ(parameters);
     }
 }

@@ -5,6 +5,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 
@@ -44,8 +46,8 @@ public class CellPoseModelData implements JIPipeData {
         this.name = other.name;
     }
 
-    public static CellPoseModelData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
-        List<Path> files = PathUtils.findFilesByExtensionIn(storagePath);
+    public static CellPoseModelData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        List<Path> files = PathUtils.findFilesByExtensionIn(storage.getFileSystemPath());
         Path file = null;
 
         for (Path path : files) {
@@ -72,11 +74,11 @@ public class CellPoseModelData implements JIPipeData {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         if (!forceName)
             name = this.name;
         try {
-            Files.write(storageFilePath.resolve(name), data);
+            Files.write(storage.getFileSystemPath().resolve(name), data);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

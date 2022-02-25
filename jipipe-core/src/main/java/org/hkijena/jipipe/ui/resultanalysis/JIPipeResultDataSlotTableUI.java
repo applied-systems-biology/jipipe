@@ -185,7 +185,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void openResultsFolder() {
-        UIUtils.openFileInNative(slot.getStoragePath());
+        UIUtils.openFileInNative(slot.getSlotStoragePath());
     }
 
     private void exportFilesByMetadata() {
@@ -229,7 +229,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void reloadTable() {
-        dataTable = JIPipeDataTableMetadata.loadFromJson(slot.getStoragePath().resolve("data-table.json"));
+        dataTable = JIPipeDataTableMetadata.loadFromJson(slot.getSlotStoragePath().resolve("data-table.json"));
         if (GeneralDataSettings.getInstance().isGenerateResultPreviews())
             table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
         else

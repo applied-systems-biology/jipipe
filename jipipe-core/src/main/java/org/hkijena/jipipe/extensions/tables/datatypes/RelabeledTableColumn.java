@@ -16,9 +16,8 @@ package org.hkijena.jipipe.extensions.tables.datatypes;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-
-import java.nio.file.Path;
 
 public class RelabeledTableColumn implements TableColumn {
     private final TableColumn tableColumn;
@@ -30,8 +29,8 @@ public class RelabeledTableColumn implements TableColumn {
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        tableColumn.saveTo(storageFilePath, name, forceName, progressInfo);
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+        tableColumn.exportData(storage, name, forceName, progressInfo);
     }
 
     @Override

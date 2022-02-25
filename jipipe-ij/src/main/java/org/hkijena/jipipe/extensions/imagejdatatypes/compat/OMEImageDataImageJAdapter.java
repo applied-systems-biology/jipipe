@@ -104,7 +104,7 @@ public class OMEImageDataImageJAdapter implements ImageJDatatypeAdapter {
     }
 
     @Override
-    public JIPipeData importFromImageJ(String parameters) {
+    public JIPipeData importDataImageJ(String parameters) {
         if (StringUtils.isNullOrEmpty(parameters))
             return convertImageJToJIPipe(IJ.getImage());
         ImagePlus image = WindowManager.getImage(parameters);

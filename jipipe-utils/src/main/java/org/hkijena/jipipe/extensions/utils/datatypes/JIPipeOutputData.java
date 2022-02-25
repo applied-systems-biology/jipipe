@@ -15,6 +15,8 @@ package org.hkijena.jipipe.extensions.utils.datatypes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -39,15 +41,15 @@ public class JIPipeOutputData extends FolderData {
         super(path);
     }
 
-    public static JIPipeOutputData importFrom(Path folder, JIPipeProgressInfo progressInfo) {
-        return new JIPipeOutputData(FolderData.importFrom(folder, progressInfo).getPath());
+    public static JIPipeOutputData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return new JIPipeOutputData(FolderData.importData(storage, progressInfo).getPath());
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         // Copy if we copy it to a different folder
-        if (getPath() != null && !storageFilePath.equals(toPath()) && Files.isDirectory(toPath()) && Files.exists(toPath().resolve("project.jip"))) {
-            Path outputPath = storageFilePath;
+        if (getPath() != null && !storage.equals(toPath()) && Files.isDirectory(toPath()) && Files.exists(toPath().resolve("project.jip"))) {
+            Path outputPath = storage.getFileSystemPath();
             if (forceName)
                 outputPath = outputPath.resolve(StringUtils.makeFilesystemCompatible(name));
             try {
@@ -100,6 +102,6 @@ public class JIPipeOutputData extends FolderData {
             }
             this.setPath(outputPath);
         }
-        super.saveTo(storageFilePath, name, forceName, progressInfo);
+        super.exportData(storage, name, forceName, progressInfo);
     }
 }

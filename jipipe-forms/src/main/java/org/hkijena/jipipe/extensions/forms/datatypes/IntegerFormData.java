@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -39,8 +40,8 @@ public class IntegerFormData extends ParameterFormData {
         annotationIOSettings.getEventBus().register(this);
     }
 
-    public static IntegerFormData importFrom(Path rowStorage, JIPipeProgressInfo progressInfo) {
-        return FormData.importFrom(rowStorage, IntegerFormData.class, progressInfo);
+    public static IntegerFormData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return FormData.importData(storage, IntegerFormData.class, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Initial value", description = "The initial value")

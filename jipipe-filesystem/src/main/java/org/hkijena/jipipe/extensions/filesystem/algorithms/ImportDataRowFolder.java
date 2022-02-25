@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadStorage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -58,7 +59,7 @@ public class ImportDataRowFolder extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path folder = dataBatch.getInputData("Data row folder", FolderData.class, progressInfo).toPath();
-        JIPipeData data = JIPipe.importData(folder, dataType.getInfo().getDataClass(), progressInfo);
+        JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadStorage(folder), dataType.getInfo().getDataClass(), progressInfo);
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
         for (StringAndStringPairParameter item : this.annotations) {
             annotations.add(new JIPipeTextAnnotation(item.getKey(), item.getValue()));

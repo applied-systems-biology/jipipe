@@ -9,6 +9,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.clij2.CLIJSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -58,14 +60,14 @@ public class CLIJImageData implements JIPipeData {
         other.image.copyTo(this.image, true);
     }
 
-    public static CLIJImageData importFrom(Path storageFilePath, JIPipeProgressInfo progressInfo) {
-        return new CLIJImageData(ImagePlusData.importFrom(storageFilePath, progressInfo));
+    public static CLIJImageData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return new CLIJImageData(ImagePlusData.importData(storage, progressInfo));
     }
 
     @Override
-    public void saveTo(Path storageFilePath, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+    public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         ImagePlusData data = pull();
-        data.saveTo(storageFilePath, name, forceName, progressInfo);
+        data.exportData(storage, name, forceName, progressInfo);
     }
 
     @Override
