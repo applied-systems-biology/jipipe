@@ -2,13 +2,16 @@ package org.hkijena.jipipe.api.data.storage;
 
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * Storage on a file system
+ * Storage on a file system. This is the simplest {@link JIPipeWriteDataStorage}.
  */
 public class JIPipeFileSystemWriteStorage implements JIPipeWriteDataStorage {
     private final Path fileSystemPath;
@@ -30,6 +33,11 @@ public class JIPipeFileSystemWriteStorage implements JIPipeWriteDataStorage {
     }
 
     @Override
+    public boolean isFileSystemPathInitialized() {
+        return true;
+    }
+
+    @Override
     public Path getFileSystemPath() {
         return fileSystemPath;
     }
@@ -45,6 +53,37 @@ public class JIPipeFileSystemWriteStorage implements JIPipeWriteDataStorage {
                     "Check if the path is valid, and you have write-access.");
         }
         return new JIPipeFileSystemWriteStorage(path, getInternalPath().resolve(name));
+    }
+
+    @Override
+    public JIPipeWriteDataStorage resolve(Path path) {
+        Path newPath = getFileSystemPath().resolve(path);
+        try {
+            Files.createDirectories(newPath);
+        } catch (IOException e) {
+            throw new UserFriendlyRuntimeException(e, "Unable to create directory '" + newPath + "'!",
+                    toString(), "The path might be invalid, or you might not have the permissions to write in a parent folder.",
+                    "Check if the path is valid, and you have write-access.");
+        }
+        return new JIPipeFileSystemWriteStorage(newPath, getInternalPath().resolve(path));
+    }
+
+    @Override
+    public OutputStream write(String name) {
+        try {
+            return new FileOutputStream(getFileSystemPath().resolve(name).toFile(), false);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public OutputStream write(Path path) {
+        try {
+            return new FileOutputStream(getFileSystemPath().resolve(path).toFile(), false);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
