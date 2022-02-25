@@ -112,7 +112,7 @@ public class ParameterUtils {
         while (!stack.isEmpty()) {
             JIPipeParameterTree.Node top = stack.pop();
 
-            if (top.getPersistence() == JIPipeParameterPersistence.Object) {
+            if (top.getPersistence() == JIPipeParameterPersistence.NestedCollection) {
                 JsonNode objectNode = node.path(String.join("/", top.getPath()));
                 if (!objectNode.isMissingNode()) {
                     JIPipeParameterCollection collection = top.getCollection();
@@ -155,7 +155,7 @@ public class ParameterUtils {
         while (!stack.isEmpty()) {
             JIPipeParameterTree.Node top = stack.pop();
 
-            if (top.getPersistence() == JIPipeParameterPersistence.Object) {
+            if (top.getPersistence() == JIPipeParameterPersistence.NestedCollection) {
                 jsonGenerator.writeObjectField(String.join("/", top.getPath()), top.getCollection());
             } else if (top.getPersistence() == JIPipeParameterPersistence.Collection) {
                 for (Map.Entry<String, JIPipeParameterAccess> entry : top.getParameters().entrySet()) {

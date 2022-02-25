@@ -139,7 +139,7 @@ public class SplitByAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Script parameters", description = "The following parameters will be passed to the Python script. The variable name is equal to the unique parameter identifier.")
-    @JIPipeParameter(value = "script-parameters", persistence = JIPipeParameterPersistence.Object)
+    @JIPipeParameter(value = "script-parameters", persistence = JIPipeParameterPersistence.NestedCollection)
     public JIPipeDynamicParameterCollection getScriptParameters() {
         return scriptParameters;
     }

@@ -19,13 +19,16 @@ package org.hkijena.jipipe.api.parameters;
 public enum JIPipeParameterPersistence {
     /**
      * The parameter is serialized as collection, meaning that sub-parameters are
-     * exploded. This is equal to the beahvior of 'Object' for non {@link JIPipeParameterCollection} objects.
+     * exploded. This is equal to the behavior of 'Object' for non {@link JIPipeParameterCollection} objects.
+     * This is the default and most robust method, as the minimal amount of information is lost on API changes.
      */
     Collection,
     /**
-     * The parameter is serialized as-is.
+     * The parameter is serialized into an object instead of exploded into the root object.
+     * Requires that the parameter inherits from {@link org.hkijena.jipipe.utils.json.JsonDeserializable}.
+     * This is less robust than the Collection method.
      */
-    Object,
+    NestedCollection,
     /**
      * The parameter is not serialized
      */

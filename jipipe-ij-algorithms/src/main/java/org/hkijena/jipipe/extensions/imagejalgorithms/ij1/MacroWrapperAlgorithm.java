@@ -367,7 +367,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         this.strictMode = strictMode;
     }
 
-    @JIPipeParameter(value = "macro-parameters", persistence = JIPipeParameterPersistence.Object)
+    @JIPipeParameter(value = "macro-parameters", persistence = JIPipeParameterPersistence.NestedCollection)
     @JIPipeDocumentation(name = "Macro parameters", description = "The parameters are passed as variables to the macro.")
     public JIPipeDynamicParameterCollection getMacroParameters() {
         return macroParameters;

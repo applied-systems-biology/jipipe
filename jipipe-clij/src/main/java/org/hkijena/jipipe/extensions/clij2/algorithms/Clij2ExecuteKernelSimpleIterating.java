@@ -232,7 +232,7 @@ public class Clij2ExecuteKernelSimpleIterating extends JIPipeSimpleIteratingAlgo
     }
 
     @JIPipeDocumentation(name = "Program parameters", description = "Following parameters will be available from within the OpenCL program:")
-    @JIPipeParameter(value = "program-parameters", persistence = JIPipeParameterPersistence.Object)
+    @JIPipeParameter(value = "program-parameters", persistence = JIPipeParameterPersistence.NestedCollection)
     public JIPipeDynamicParameterCollection getScriptParameters() {
         return scriptParameters;
     }

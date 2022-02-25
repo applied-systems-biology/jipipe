@@ -76,7 +76,7 @@ public class ParametersDataDefinition extends JIPipeAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Parameters", description = "Following parameters are generated:")
-    @JIPipeParameter(value = "parameters", persistence = JIPipeParameterPersistence.Object)
+    @JIPipeParameter(value = "parameters", persistence = JIPipeParameterPersistence.NestedCollection)
     public GeneratedParameters getParameters() {
         return parameters;
     }

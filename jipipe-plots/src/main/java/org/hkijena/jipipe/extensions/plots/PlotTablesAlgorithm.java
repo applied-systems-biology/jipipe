@@ -202,7 +202,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
 
     @JIPipeDocumentation(name = "Input columns", description = "Please define which input table columns are copied into the plot. " +
             "To find out which columns are available, run the quick run on input data. You can also generate missing columns.")
-    @JIPipeParameter(value = "input-columns", persistence = JIPipeParameterPersistence.Object)
+    @JIPipeParameter(value = "input-columns", persistence = JIPipeParameterPersistence.NestedCollection)
     public JIPipeDynamicParameterCollection getInputColumns() {
         return inputColumns;
     }

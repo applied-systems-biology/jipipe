@@ -37,8 +37,8 @@ import java.util.function.Function;
  */
 public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCollection, JIPipeValidatable, JsonDeserializable {
 
-    private EventBus eventBus = new EventBus();
-    private BiMap<String, JIPipeMutableParameterAccess> dynamicParameters = HashBiMap.create();
+    private final EventBus eventBus = new EventBus();
+    private final BiMap<String, JIPipeMutableParameterAccess> dynamicParameters = HashBiMap.create();
     private Set<Class<?>> allowedTypes = new HashSet<>();
     private Function<UserParameterDefinition, JIPipeMutableParameterAccess> instanceGenerator;
     private boolean allowUserModification = true;
