@@ -142,8 +142,7 @@ public class JIPipeDataInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
     public void onDataInfoSelected(JIPipeDataTypePicker.SelectedDataTypesChangedEvent event) {
         if (pickerDialog.isVisible()) {
             pickerDialog.setVisible(false);
-            JIPipeDataInfoRef infoRef = getParameter(JIPipeDataInfoRef.class);
-            infoRef.setInfo(picker.getSelectedDataTypes().isEmpty() ? null : picker.getSelectedDataTypes().iterator().next());
+            JIPipeDataInfoRef infoRef = new JIPipeDataInfoRef(picker.getSelectedDataTypes().isEmpty() ? null : picker.getSelectedDataTypes().iterator().next());
             setParameter(infoRef, true);
         }
     }

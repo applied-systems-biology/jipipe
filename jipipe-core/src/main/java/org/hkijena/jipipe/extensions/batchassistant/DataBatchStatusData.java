@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeJsonData;
+import org.hkijena.jipipe.api.data.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -23,7 +23,7 @@ import java.nio.file.Path;
 @JIPipeHidden
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
-public class DataBatchStatusData extends JIPipeJsonData {
+public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
 
     private ResultsTableData perSlotStatus = new ResultsTableData();
     private boolean statusValid = false;
@@ -71,7 +71,7 @@ public class DataBatchStatusData extends JIPipeJsonData {
     }
 
     public static DataBatchStatusData importFrom(Path storagePath, JIPipeProgressInfo progressInfo) {
-        return JIPipeJsonData.importFrom(storagePath, DataBatchStatusData.class);
+        return JIPipeSerializedJsonObjectData.importFrom(storagePath, DataBatchStatusData.class);
     }
 
     @JsonGetter("per-slot-status")

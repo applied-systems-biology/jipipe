@@ -15,23 +15,25 @@ package org.hkijena.jipipe.extensions.imagej2;
 
 import net.imagej.ops.OpInfo;
 import net.imagej.ops.OpService;
-import net.imagej.ops.OpUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.imagej2.algorithms.CreateIJ2ShapeAlgorithm;
 import org.hkijena.jipipe.extensions.imagej2.compat.ImageJ2DataSetDataImageJAdapter;
 import org.hkijena.jipipe.extensions.imagej2.converters.ImageJ1ToImageJ2Converter;
 import org.hkijena.jipipe.extensions.imagej2.converters.ImageJ2ToImageJ1Converter;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.ImageJ2DatasetData;
+import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.ImageJ2ShapeData;
+import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.EmptyImageJ2ShapeData;
+import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.RectangleImageJ2ShapeData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusDataImporterUI;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.Priority;
-import org.scijava.module.ModuleService;
 import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
@@ -69,10 +71,18 @@ public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+        // Images
         registerDatatype("ij2-dataset", ImageJ2DatasetData.class, UIUtils.getIconURLFromResources("apps/imglib2.png"));
         registerDatatypeConversion(new ImageJ1ToImageJ2Converter());
         registerDatatypeConversion(new ImageJ2ToImageJ1Converter());
         registerImageJDataAdapter(new ImageJ2DataSetDataImageJAdapter(), ImagePlusDataImporterUI.class);
+
+        // Shapes
+        registerDatatype("ij2-shape", ImageJ2ShapeData.class, UIUtils.getIconURLFromResources("apps/imglib2.png"));
+        registerDatatype("ij2-shape-empty", EmptyImageJ2ShapeData.class, UIUtils.getIconURLFromResources("apps/imglib2.png"));
+        registerDatatype("ij2-shape-rectangle", RectangleImageJ2ShapeData.class, UIUtils.getIconURLFromResources("apps/imglib2.png"));
+
+        registerNodeType("ij2-create-shape", CreateIJ2ShapeAlgorithm.class);
 
         OpService opService = context.getService(OpService.class);
         for (OpInfo info : opService.infos()) {

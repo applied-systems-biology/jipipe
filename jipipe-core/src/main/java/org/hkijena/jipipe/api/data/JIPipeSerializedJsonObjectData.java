@@ -16,13 +16,13 @@ import java.nio.file.Path;
  */
 @JIPipeDataStorageDocumentation(humanReadableDescription = "A JSON file that contains the serialized data",
 jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
-public abstract class JIPipeJsonData implements JIPipeData {
+public abstract class JIPipeSerializedJsonObjectData implements JIPipeData {
 
-    public JIPipeJsonData() {
+    public JIPipeSerializedJsonObjectData() {
 
     }
 
-    public JIPipeJsonData(JIPipeJsonData other) {
+    public JIPipeSerializedJsonObjectData(JIPipeSerializedJsonObjectData other) {
 
     }
 
