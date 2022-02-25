@@ -43,18 +43,8 @@ public class JIPipeFileSystemReadStorage implements JIPipeReadDataStorage {
     }
 
     @Override
-    public JIPipeReadDataStorage resolve(String name) {
-        return new JIPipeFileSystemReadStorage(getFileSystemPath().resolve(name), getInternalPath().resolve(name));
-    }
-
-    @Override
     public JIPipeReadDataStorage resolve(Path path) {
         return new JIPipeFileSystemReadStorage(getFileSystemPath().resolve(path), getInternalPath().resolve(path));
-    }
-
-    @Override
-    public boolean isFile(String name) {
-        return Files.isRegularFile(getFileSystemPath().resolve(name));
     }
 
     @Override
@@ -62,19 +52,10 @@ public class JIPipeFileSystemReadStorage implements JIPipeReadDataStorage {
         return Files.isRegularFile(getFileSystemPath().resolve(path));
     }
 
-    @Override
-    public boolean exists(String name) {
-        return Files.exists(getFileSystemPath().resolve(name));
-    }
 
     @Override
     public boolean exists(Path path) {
         return Files.exists(getFileSystemPath().resolve(path));
-    }
-
-    @Override
-    public boolean isDirectory(String name) {
-        return Files.isDirectory(getFileSystemPath().resolve(name));
     }
 
     @Override
@@ -87,15 +68,6 @@ public class JIPipeFileSystemReadStorage implements JIPipeReadDataStorage {
         try {
             return Files.list(getFileSystemPath()).collect(Collectors.toList());
         } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    @Override
-    public InputStream open(String name) {
-        try {
-            return new FileInputStream(getFileSystemPath().resolve(name).toFile());
-        } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
     }

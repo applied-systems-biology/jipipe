@@ -1,7 +1,13 @@
 package org.hkijena.jipipe.api.data.storage;
 
+import org.apache.commons.io.IOUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
+
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -14,7 +20,9 @@ public interface JIPipeReadDataStorage extends JIPipeDataStorage {
      * @param name the path name
      * @return the sub-storage
      */
-    JIPipeReadDataStorage resolve(String name);
+    default JIPipeReadDataStorage resolve(String name) {
+        return resolve(Paths.get(name));
+    }
 
     /**
      * Returns a new storage that resolves to a path inside this storage
@@ -28,7 +36,9 @@ public interface JIPipeReadDataStorage extends JIPipeDataStorage {
      * @param name the element name
      * @return if the element is a file
      */
-    boolean isFile(String name);
+    default boolean isFile(String name) {
+        return isFile(Paths.get(name));
+    }
 
     /**
      * Returns true if the element with given name is a file
@@ -60,7 +70,9 @@ public interface JIPipeReadDataStorage extends JIPipeDataStorage {
      * @param name the element name
      * @return if the storage contains the element
      */
-    boolean exists(String name);
+    default boolean exists(String name) {
+        return exists(Paths.get(name));
+    }
 
     /**
      * Returns true if the storage contains given element
@@ -131,7 +143,9 @@ public interface JIPipeReadDataStorage extends JIPipeDataStorage {
      * @param name the file name
      * @return the file stream
      */
-    InputStream open(String name);
+    default InputStream open(String name) {
+        return open(Paths.get(name));
+    }
 
     /**
      * Opens the specified file element as stream.
@@ -140,4 +154,45 @@ public interface JIPipeReadDataStorage extends JIPipeDataStorage {
      * @return the file stream
      */
     InputStream open(Path path);
+
+    /**
+     * Read data from a JSON file
+     * @param path the relative path to the JSON file
+     * @param klass the type to read
+     * @param <T> the type to read
+     * @return the deserialized object
+     */
+    default <T> T readJSON(Path path, Class<?> klass) {
+        try(InputStream stream = open(path)) {
+            return JsonUtils.getObjectMapper().readerFor(klass).readValue(stream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Reads a text from a file
+     * @param path the relative path to the file
+     * @return the text
+     */
+    default String readText(Path path) {
+        try(InputStream stream = open(path)) {
+            return IOUtils.toString(stream, StandardCharsets.UTF_8);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Reads a file as byte array
+     * @param path the relative path to the file
+     * @return the text
+     */
+    default byte[] readBytes(Path path) {
+        try(InputStream stream = open(path)) {
+            return IOUtils.toByteArray(stream);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

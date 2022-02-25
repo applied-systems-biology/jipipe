@@ -43,19 +43,6 @@ public class JIPipeFileSystemWriteStorage implements JIPipeWriteDataStorage {
     }
 
     @Override
-    public JIPipeFileSystemWriteStorage resolve(String name) {
-        Path path = getFileSystemPath().resolve(name);
-        try {
-            Files.createDirectories(path);
-        } catch (IOException e) {
-            throw new UserFriendlyRuntimeException(e, "Unable to create directory '" + path + "'!",
-                    toString(), "The path might be invalid, or you might not have the permissions to write in a parent folder.",
-                    "Check if the path is valid, and you have write-access.");
-        }
-        return new JIPipeFileSystemWriteStorage(path, getInternalPath().resolve(name));
-    }
-
-    @Override
     public JIPipeWriteDataStorage resolve(Path path) {
         Path newPath = getFileSystemPath().resolve(path);
         try {
@@ -66,15 +53,6 @@ public class JIPipeFileSystemWriteStorage implements JIPipeWriteDataStorage {
                     "Check if the path is valid, and you have write-access.");
         }
         return new JIPipeFileSystemWriteStorage(newPath, getInternalPath().resolve(path));
-    }
-
-    @Override
-    public OutputStream write(String name) {
-        try {
-            return new FileOutputStream(getFileSystemPath().resolve(name).toFile(), false);
-        } catch (FileNotFoundException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     @Override
@@ -90,4 +68,5 @@ public class JIPipeFileSystemWriteStorage implements JIPipeWriteDataStorage {
     public String toString() {
         return "{Filesystem Write} /" + getInternalPath() + " @ " + getFileSystemPath();
     }
+
 }
