@@ -263,7 +263,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
             JFreeChart chart = getChart();
 
             // Save as PNG
-            ChartUtils.saveChartAsPNG(storage.resolve(name + ".png").getFileSystemPath().toFile(),
+            ChartUtils.saveChartAsPNG(storage.getFileSystemPath().resolve(name + ".png").toFile(),
                     chart,
                     exportWidth,
                     exportHeight);
@@ -272,7 +272,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
             SVGGraphics2D g2 = new SVGGraphics2D(exportWidth, exportHeight);
             Rectangle r = new Rectangle(0, 0, exportWidth, exportHeight);
             chart.draw(g2, r);
-            SVGUtils.writeToSVG(storage.resolve(name + ".svg").getFileSystemPath().toFile(), g2.getSVGElement());
+            SVGUtils.writeToSVG(storage.getFileSystemPath().resolve(name + ".svg").toFile(), g2.getSVGElement());
 
         } catch (IOException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to export plot!",

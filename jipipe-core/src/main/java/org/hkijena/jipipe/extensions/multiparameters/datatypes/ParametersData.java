@@ -69,7 +69,7 @@ public class ParametersData implements JIPipeData {
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         try {
             JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter()
-                    .writeValue(storage.resolve(name + ".json").getFileSystemPath().toFile(), this);
+                    .writeValue(storage.getFileSystemPath().resolve(name + ".json").toFile(), this);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
