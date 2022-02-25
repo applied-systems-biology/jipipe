@@ -2,10 +2,7 @@ package org.hkijena.jipipe.api.data.storage;
 
 import java.io.InputStream;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -106,6 +103,26 @@ public interface JIPipeReadDataStorage extends JIPipeDataStorage {
             }
         }
         return result;
+    }
+
+    /**
+     * Finds the first matching file by extension.
+     * Extension matching is case-insensitive.
+     * @param extensions extensions
+     * @return the fist file that matches or an empty {@link Optional}
+     */
+    default Optional<Path> findFileByExtension(String... extensions) {
+        for (Path path : list()) {
+            if(isFile(path)) {
+                String fileName = path.toString().toLowerCase(Locale.ROOT);
+                for (String extension : extensions) {
+                    if(fileName.endsWith(extension.toLowerCase(Locale.ROOT))) {
+                        return Optional.of(path);
+                    }
+                }
+            }
+        }
+        return Optional.empty();
     }
 
     /**
