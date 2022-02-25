@@ -1,54 +1,52 @@
 package org.hkijena.jipipe.extensions.imagej2.io.data.input;
 
-import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.algorithm.neighborhood.Shape;
+import net.imglib2.outofbounds.OutOfBoundsFactory;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.ImageJ2OutOfBoundsFactoryData;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.ImageJ2ShapeData;
-import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.RectangleImageJ2ShapeData;
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.scijava.plugin.Plugin;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
- * Handling of {@link Shape}
+ * Handling of {@link net.imglib2.outofbounds.OutOfBoundsFactory}
  */
 @Plugin(type = ImageJ2ModuleIO.class)
-public class ShapeImageJ2ModuleInput extends DataSlotModuleInput<Shape, ImageJ2ShapeData> {
+public class OutOfBoundsFactoryImageJ2ModuleInput extends DataSlotModuleInput<OutOfBoundsFactory, ImageJ2OutOfBoundsFactoryData> {
     @Override
-    public Shape convertJIPipeToModuleData(ImageJ2ShapeData obj) {
-        return obj.createShape();
+    public OutOfBoundsFactory convertJIPipeToModuleData(ImageJ2OutOfBoundsFactoryData obj) {
+        return obj.createFactory();
     }
 
     @Override
-    public ImageJ2ShapeData convertModuleToJIPipeData(Shape obj) {
+    public ImageJ2OutOfBoundsFactoryData convertModuleToJIPipeData(OutOfBoundsFactory obj) {
         for (Class<? extends JIPipeData> dataClass : JIPipe.getDataTypes().getRegisteredDataTypes().values()) {
-            if(!ImageJ2ShapeData.class.isAssignableFrom(dataClass))
+            if(!ImageJ2OutOfBoundsFactoryData.class.isAssignableFrom(dataClass))
                 continue;
             Constructor<? extends JIPipeData> constructor = ConstructorUtils.getMatchingAccessibleConstructor(dataClass, obj.getClass());
             if(constructor != null) {
                 try {
-                    return (ImageJ2ShapeData) constructor.newInstance(obj);
+                    return (ImageJ2OutOfBoundsFactoryData) constructor.newInstance(obj);
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
                     throw new RuntimeException(e);
                 }
             }
         }
-        throw new RuntimeException("Unknown shape type: " + obj);
+        throw new RuntimeException("Unknown factory type: " + obj);
     }
 
     @Override
-    public Class<Shape> getModuleDataType() {
-        return Shape.class;
+    public Class<OutOfBoundsFactory> getModuleDataType() {
+        return OutOfBoundsFactory.class;
     }
 
     @Override
-    public Class<ImageJ2ShapeData> getJIPipeDataType() {
-        return ImageJ2ShapeData.class;
+    public Class<ImageJ2OutOfBoundsFactoryData> getJIPipeDataType() {
+        return ImageJ2OutOfBoundsFactoryData.class;
     }
 }

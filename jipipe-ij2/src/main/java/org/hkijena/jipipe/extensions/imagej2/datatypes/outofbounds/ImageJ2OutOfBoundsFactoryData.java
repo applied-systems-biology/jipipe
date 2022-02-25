@@ -1,19 +1,17 @@
-package org.hkijena.jipipe.extensions.imagej2.datatypes.shapes;
+package org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds;
 
-import com.google.common.eventbus.EventBus;
 import net.imglib2.algorithm.neighborhood.Shape;
+import net.imglib2.outofbounds.OutOfBoundsFactory;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.api.data.JIPipeSerializedParameterCollectionData;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
-@JIPipeDocumentation(name = "IJ2 Shape", description = "An ImageJ2 shape generator")
+@JIPipeDocumentation(name = "IJ2 Out Of Bounds factory", description = "An ImageJ2 generator for values outside the image bounds")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "This is a generic data type. The storage folder is empty.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
-public abstract class ImageJ2ShapeData extends JIPipeSerializedParameterCollectionData {
+public abstract class ImageJ2OutOfBoundsFactoryData extends JIPipeSerializedParameterCollectionData {
 
 
     @Override
@@ -21,5 +19,5 @@ public abstract class ImageJ2ShapeData extends JIPipeSerializedParameterCollecti
         // TODO implement
     }
 
-    public abstract Shape createShape();
+    public abstract OutOfBoundsFactory<?, ?> createFactory();
 }

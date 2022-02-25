@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
 import java.nio.file.Path;
 
-@JIPipeDocumentation(name = "ImageJ2 Rectangle Shape", description = "A 2D rectangle shape")
+@JIPipeDocumentation(name = "IJ2 Rectangle Shape", description = "A 2D rectangle shape")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 public class RectangleImageJ2ShapeData extends ImageJ2ShapeData {
@@ -19,6 +19,11 @@ public class RectangleImageJ2ShapeData extends ImageJ2ShapeData {
 
     public RectangleImageJ2ShapeData() {
 
+    }
+
+    public RectangleImageJ2ShapeData(RectangleShape shape) {
+        this.span = shape.getSpan();
+        this.skipCenter = shape.isSkippingCenter();
     }
 
     public RectangleImageJ2ShapeData(RectangleImageJ2ShapeData other) {
@@ -59,6 +64,6 @@ public class RectangleImageJ2ShapeData extends ImageJ2ShapeData {
 
     @Override
     public String toString() {
-        return "IJ2 Rectangle Shape (" + span + ")" + (skipCenter ? " SC" : "");
+        return "IJ2 Rectangle Shape (span=" + span + ", skipCenter=" + skipCenter + ")";
     }
 }

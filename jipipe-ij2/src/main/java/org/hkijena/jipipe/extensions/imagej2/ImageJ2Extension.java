@@ -15,19 +15,22 @@ package org.hkijena.jipipe.extensions.imagej2;
 
 import net.imagej.ops.OpInfo;
 import net.imagej.ops.OpService;
+import net.imglib2.outofbounds.OutOfBoundsMirrorFactory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.imagej2.algorithms.CreateIJ2OutOfBoundsFactoryAlgorithm;
 import org.hkijena.jipipe.extensions.imagej2.algorithms.CreateIJ2ShapeAlgorithm;
 import org.hkijena.jipipe.extensions.imagej2.compat.ImageJ2DataSetDataImageJAdapter;
 import org.hkijena.jipipe.extensions.imagej2.converters.ImageJ1ToImageJ2Converter;
 import org.hkijena.jipipe.extensions.imagej2.converters.ImageJ2ToImageJ1Converter;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.ImageJ2DatasetData;
-import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.ImageJ2ShapeData;
-import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.EmptyImageJ2ShapeData;
-import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.RectangleImageJ2ShapeData;
+import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.EmptyImageJ2OutOfBoundsFactory;
+import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.ImageJ2OutOfBoundsFactoryData;
+import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.MirrorImageJ2OutOfBoundsFactoryData;
+import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusDataImporterUI;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -72,18 +75,37 @@ public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         // Images
-        registerDatatype("ij2-dataset", ImageJ2DatasetData.class, UIUtils.getIconURLFromResources("apps/imglib2.png"));
+        registerDatatype("ij2-dataset", ImageJ2DatasetData.class, UIUtils.getIconURLFromResources("data-types/ij2-image.png"));
         registerDatatypeConversion(new ImageJ1ToImageJ2Converter());
         registerDatatypeConversion(new ImageJ2ToImageJ1Converter());
         registerImageJDataAdapter(new ImageJ2DataSetDataImageJAdapter(), ImagePlusDataImporterUI.class);
 
         // Shapes
-        registerDatatype("ij2-shape", ImageJ2ShapeData.class, UIUtils.getIconURLFromResources("apps/imglib2.png"));
-        registerDatatype("ij2-shape-empty", EmptyImageJ2ShapeData.class, UIUtils.getIconURLFromResources("apps/imglib2.png"));
-        registerDatatype("ij2-shape-rectangle", RectangleImageJ2ShapeData.class, UIUtils.getIconURLFromResources("apps/imglib2.png"));
+        registerDatatype("ij2-shape", ImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-empty", EmptyImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-rectangle", RectangleImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-centered-rectangle", CenteredRectangleImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-periodic-line", PeriodicLineImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-pair-of-points", PairOfPointsImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-hypersphere", HyperSphereImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-horizontal-line", HorizontalLineImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-diamond-tips", DiamondTipsImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
+        registerDatatype("ij2-shape-diamond", DiamondImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
 
         registerNodeType("ij2-create-shape", CreateIJ2ShapeAlgorithm.class);
 
+        // Out of bounds factory
+        registerDatatype("ij2-out-of-bounds-factory", ImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-empty", EmptyImageJ2OutOfBoundsFactory.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-mirror", MirrorImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
+        registerEnumParameterType("ij2-out-of-bounds-mirror-factory:boundary",
+                OutOfBoundsMirrorFactory.Boundary.class,
+                "Mirror boundary",
+                "Boundary pixels are either duplicated or not");
+
+        registerNodeType("ij2-create-out-of-bounds-factory", CreateIJ2OutOfBoundsFactoryAlgorithm.class);
+
+        // ImageJ2 ops
         OpService opService = context.getService(OpService.class);
         for (OpInfo info : opService.infos()) {
             JIPipeProgressInfo moduleProgress = progressInfo.resolve(info.cInfo().getTitle() + " @ " + info.cInfo().getDelegateClassName());

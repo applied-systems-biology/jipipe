@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imagej2.algorithms;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -52,7 +53,12 @@ public class CreateIJ2ShapeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void setShapeType(JIPipeDataInfoRef shapeType) {
         if(shapeType.getInfo() != this.shapeType.getInfo()) {
             this.shapeType = shapeType;
-            this.shapeData = (ImageJ2ShapeData) ReflectionUtils.newInstance(shapeType.getInfo().getDataClass());
+            if(shapeType.getInfo() != null) {
+                this.shapeData = (ImageJ2ShapeData) JIPipe.createData(shapeType.getInfo().getDataClass());
+            }
+            else {
+                this.shapeData = new EmptyImageJ2ShapeData();
+            }
             triggerParameterStructureChange();
         }
     }
@@ -61,5 +67,5 @@ public class CreateIJ2ShapeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter(value = "shape-parameters")
     public ImageJ2ShapeData getShapeData() {
         return shapeData;
-    } TODO FIX
+    }
 }
