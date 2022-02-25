@@ -58,8 +58,12 @@ public class JIPipeFileSystemWriteDataStorage implements JIPipeWriteDataStorage 
     @Override
     public OutputStream write(Path path) {
         try {
-            return new FileOutputStream(getFileSystemPath().resolve(path).toFile(), false);
-        } catch (FileNotFoundException e) {
+            Path outputPath = getFileSystemPath().resolve(path);
+            if(outputPath.getParent() != null) {
+                Files.createDirectories(outputPath.getParent());
+            }
+            return new FileOutputStream(outputPath.toFile(), false);
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
