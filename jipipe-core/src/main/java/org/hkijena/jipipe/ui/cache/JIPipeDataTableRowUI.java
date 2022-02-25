@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
@@ -189,7 +189,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
                     @Override
                     public void run() {
                         JIPipeData data = dataTable.getData(row, JIPipeData.class, progressInfo);
-                        data.exportData(new JIPipeFileSystemWriteStorage(path), "data", false, progressInfo);
+                        data.exportData(new JIPipeFileSystemWriteDataStorage(path), "data", false, progressInfo);
                     }
 
                     @Override
@@ -228,7 +228,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
                 @Override
                 public void run() {
                     JIPipeData data = dataTable.getData(row, JIPipeData.class, progressInfo);
-                    data.exportData(new JIPipeFileSystemWriteStorage(path.getParent()), path.getFileName().toString(), true, progressInfo);
+                    data.exportData(new JIPipeFileSystemWriteDataStorage(path.getParent()), path.getFileName().toString(), true, progressInfo);
                 }
 
                 @Override

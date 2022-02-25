@@ -13,16 +13,16 @@ import java.nio.file.Paths;
 /**
  * Storage on a file system. This is the simplest {@link JIPipeWriteDataStorage}.
  */
-public class JIPipeFileSystemWriteStorage implements JIPipeWriteDataStorage {
+public class JIPipeFileSystemWriteDataStorage implements JIPipeWriteDataStorage {
     private final Path fileSystemPath;
     private final Path internalPath;
 
-    public JIPipeFileSystemWriteStorage(Path fileSystemPath) {
+    public JIPipeFileSystemWriteDataStorage(Path fileSystemPath) {
         this.fileSystemPath = fileSystemPath;
         this.internalPath = Paths.get("");
     }
 
-    public JIPipeFileSystemWriteStorage(Path fileSystemPath, Path internalPath) {
+    public JIPipeFileSystemWriteDataStorage(Path fileSystemPath, Path internalPath) {
         this.fileSystemPath = fileSystemPath;
         this.internalPath = internalPath;
     }
@@ -52,7 +52,7 @@ public class JIPipeFileSystemWriteStorage implements JIPipeWriteDataStorage {
                     toString(), "The path might be invalid, or you might not have the permissions to write in a parent folder.",
                     "Check if the path is valid, and you have write-access.");
         }
-        return new JIPipeFileSystemWriteStorage(newPath, getInternalPath().resolve(path));
+        return new JIPipeFileSystemWriteDataStorage(newPath, getInternalPath().resolve(path));
     }
 
     @Override

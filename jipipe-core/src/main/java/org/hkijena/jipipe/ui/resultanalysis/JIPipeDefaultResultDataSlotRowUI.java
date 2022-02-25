@@ -18,8 +18,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadStorage;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -169,9 +169,9 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                     @Override
                     public void run() {
                         progressInfo.log("Importing data from " + getRowStorageFolder() + " ...");
-                        JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadStorage(getRowStorageFolder()),
+                        JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(getRowStorageFolder()),
                                 JIPipe.getDataTypes().getById(getRow().getTrueDataType()), progressInfo);
-                        data.exportData(new JIPipeFileSystemWriteStorage(path), "data", false, progressInfo.resolveAndLog("Saving data"));
+                        data.exportData(new JIPipeFileSystemWriteDataStorage(path), "data", false, progressInfo.resolveAndLog("Saving data"));
                     }
 
                     @Override
@@ -207,8 +207,8 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                 @Override
                 public void run() {
                     progressInfo.log("Importing data from " + getRowStorageFolder() + " ...");
-                    JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadStorage(getRowStorageFolder()), JIPipe.getDataTypes().getById(getRow().getTrueDataType()), progressInfo);
-                    data.exportData(new JIPipeFileSystemWriteStorage(path.getParent()), path.getFileName().toString(), true, progressInfo.resolveAndLog("Exporting data"));
+                    JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(getRowStorageFolder()), JIPipe.getDataTypes().getById(getRow().getTrueDataType()), progressInfo);
+                    data.exportData(new JIPipeFileSystemWriteDataStorage(path.getParent()), path.getFileName().toString(), true, progressInfo.resolveAndLog("Exporting data"));
                 }
 
                 @Override

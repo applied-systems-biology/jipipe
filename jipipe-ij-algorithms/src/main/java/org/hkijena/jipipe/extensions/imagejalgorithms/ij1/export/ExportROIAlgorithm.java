@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -92,11 +92,11 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
                 } else {
                     roiName = StringUtils.makeUniqueString(baseName, "_", existing);
                 }
-                singleton.exportData(new JIPipeFileSystemWriteStorage(outputPath), roiName, true, progressInfo);
+                singleton.exportData(new JIPipeFileSystemWriteDataStorage(outputPath), roiName, true, progressInfo);
                 dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath.resolve(roiName + ".roi")), progressInfo);
             }
         } else {
-            rois.exportData(new JIPipeFileSystemWriteStorage(outputPath), baseName, true, progressInfo);
+            rois.exportData(new JIPipeFileSystemWriteDataStorage(outputPath), baseName, true, progressInfo);
             if (rois.size() == 1) {
                 dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath.resolve(baseName + ".roi")), progressInfo);
             } else {

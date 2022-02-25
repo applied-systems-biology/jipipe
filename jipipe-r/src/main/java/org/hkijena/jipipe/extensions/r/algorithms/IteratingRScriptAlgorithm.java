@@ -7,8 +7,8 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadStorage;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
@@ -143,7 +143,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
             JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), this, slot);
-            dummy.exportData(new JIPipeFileSystemWriteStorage(tempPath), progressInfo);
+            dummy.exportData(new JIPipeFileSystemWriteDataStorage(tempPath), progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
             dummySlots.add(dummy);
         }
@@ -181,7 +181,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
-                JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadStorage(rowStoragePath), dataInfo.getDataClass(), progressInfo);
+                JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(rowStoragePath), dataInfo.getDataClass(), progressInfo);
                 dataBatch.addOutputData(outputSlot, data, table.getRowList().get(row).getTextAnnotations(), annotationMergeStrategy, progressInfo);
             }
         }

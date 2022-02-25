@@ -26,8 +26,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadStorage;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeDataParameterSettings;
@@ -126,7 +126,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         Path path = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Save plot");
         if (path != null) {
             if (PathUtils.ensureEmptyFolder(this, path)) {
-                getCurrentPlot().exportData(new JIPipeFileSystemWriteStorage(path), path.getFileName().toString(), false, new JIPipeProgressInfo());
+                getCurrentPlot().exportData(new JIPipeFileSystemWriteDataStorage(path), path.getFileName().toString(), false, new JIPipeProgressInfo());
             }
         }
     }
@@ -134,7 +134,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     private void openPlot() {
         Path path = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Open plot");
         if (path != null) {
-            PlotData plotData = PlotData.importData(new JIPipeFileSystemReadStorage(path), PlotData.class, new JIPipeProgressInfo());
+            PlotData plotData = PlotData.importData(new JIPipeFileSystemReadDataStorage(path), PlotData.class, new JIPipeProgressInfo());
             importExistingPlot(plotData);
         }
     }

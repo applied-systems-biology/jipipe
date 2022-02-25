@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -24,7 +24,6 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.List;
@@ -914,13 +913,13 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             JIPipeDataTableMetadataRow row = dataTable.getRowList().get(i);
             Path rowStorage = storagePath.resolve("" + row.getIndex());
             Class<? extends JIPipeData> rowDataType = JIPipe.getDataTypes().getById(row.getTrueDataType());
-            JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadStorage(rowStorage), rowDataType, rowProgress);
+            JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(rowStorage), rowDataType, rowProgress);
             slot.addData(data, row.getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, rowProgress);
 
             for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
                 Path dataAnnotationRowStorage = storagePath.resolve(dataAnnotation.getRowStorageFolder());
                 Class<? extends JIPipeData> dataAnnotationDataType = JIPipe.getDataTypes().getById(dataAnnotation.getTrueDataType());
-                JIPipeData dataAnnotationData = JIPipe.importData(new JIPipeFileSystemReadStorage(dataAnnotationRowStorage), dataAnnotationDataType, progressInfo);
+                JIPipeData dataAnnotationData = JIPipe.importData(new JIPipeFileSystemReadDataStorage(dataAnnotationRowStorage), dataAnnotationDataType, progressInfo);
                 slot.setDataAnnotation(i, dataAnnotation.getName(), dataAnnotationData);
             }
         }

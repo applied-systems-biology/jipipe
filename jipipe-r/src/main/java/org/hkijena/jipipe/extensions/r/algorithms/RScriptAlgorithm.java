@@ -8,8 +8,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadStorage;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
@@ -125,7 +125,7 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
                 throw new RuntimeException(e);
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
-            slot.exportData(new JIPipeFileSystemWriteStorage(tempPath), progressInfo);
+            slot.exportData(new JIPipeFileSystemWriteDataStorage(tempPath), progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
         }
 
@@ -162,7 +162,7 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
-                JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadStorage(rowStoragePath), dataInfo.getDataClass(), progressInfo);
+                JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(rowStoragePath), dataInfo.getDataClass(), progressInfo);
                 outputSlot.addData(data, table.getRowList().get(row).getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
             }
         }

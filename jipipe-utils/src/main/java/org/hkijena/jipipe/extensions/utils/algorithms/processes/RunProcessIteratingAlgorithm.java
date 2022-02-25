@@ -7,8 +7,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadStorage;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -58,7 +58,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
         // Save all inputs
         for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
             JIPipeDataTable dummy = slot.slice(Collections.singletonList(dataBatch.getInputRow(slot)));
-            dummy.exportData(new JIPipeFileSystemWriteStorage(inputPath.resolve(slot.getName())), progressInfo.resolve("Save inputs"));
+            dummy.exportData(new JIPipeFileSystemWriteDataStorage(inputPath.resolve(slot.getName())), progressInfo.resolve("Save inputs"));
         }
 
         // Run process
@@ -86,7 +86,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
                 continue;
             Path slotPath = outputPath.resolve(slot.getName());
             if (Files.exists(slotPath.resolve("data-table.json"))) {
-                JIPipeDataTable loaded = JIPipeDataTable.importData(new JIPipeFileSystemReadStorage(slotPath), progressInfo.resolve("Extracting output '" + slot.getName() + "'"));
+                JIPipeDataTable loaded = JIPipeDataTable.importData(new JIPipeFileSystemReadDataStorage(slotPath), progressInfo.resolve("Extracting output '" + slot.getName() + "'"));
                 for (int i = 0; i < loaded.getRowCount(); i++) {
                     dataBatch.addOutputData(slot.getName(), loaded.getData(i, slot.getAcceptedDataType(), progressInfo), progressInfo);
                 }

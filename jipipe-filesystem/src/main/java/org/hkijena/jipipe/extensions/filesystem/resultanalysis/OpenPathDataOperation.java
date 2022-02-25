@@ -2,7 +2,7 @@ package org.hkijena.jipipe.extensions.filesystem.resultanalysis;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -43,7 +43,7 @@ public class OpenPathDataOperation implements JIPipeDataImportOperation, JIPipeD
 
     @Override
     public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
-        PathData pathData = PathData.importData(new JIPipeFileSystemReadStorage(rowStorageFolder), new JIPipeProgressInfo());
+        PathData pathData = PathData.importData(new JIPipeFileSystemReadDataStorage(rowStorageFolder), new JIPipeProgressInfo());
         UIUtils.openFileInNative(pathData.toPath());
         return null;
     }

@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -83,10 +83,10 @@ public abstract class JIPipeAsyncResultDataPlotPreview extends JIPipeResultDataS
      */
     protected JIPipeData loadData(Path storageFolder) {
         if (getDataAnnotation() == null)
-            return JIPipe.importData(new JIPipeFileSystemReadStorage(storageFolder), getSlot().getAcceptedDataType(), new JIPipeProgressInfo());
+            return JIPipe.importData(new JIPipeFileSystemReadDataStorage(storageFolder), getSlot().getAcceptedDataType(), new JIPipeProgressInfo());
         else {
             if (Files.exists(storageFolder))
-                return JIPipe.importData(new JIPipeFileSystemReadStorage(storageFolder), JIPipe.getDataTypes().getById(getDataAnnotation().getTrueDataType()), new JIPipeProgressInfo());
+                return JIPipe.importData(new JIPipeFileSystemReadDataStorage(storageFolder), JIPipe.getDataTypes().getById(getDataAnnotation().getTrueDataType()), new JIPipeProgressInfo());
             else
                 return new JIPipeEmptyData();
         }

@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataTableMetadataRow;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
@@ -72,7 +72,7 @@ public class FilesystemDataSlotPreview extends JIPipeResultDataSlotPreview {
         label.setIcon(JIPipe.getDataTypes().getIconFor(getSlot().getAcceptedDataType()));
         Path listFile = findListFile(getSlot(), getRow());
         if (listFile != null) {
-            PathData pathData = PathData.importData(new JIPipeFileSystemReadStorage(getRowStorageFolder(getSlot(), getRow(), getDataAnnotation())), new JIPipeProgressInfo());
+            PathData pathData = PathData.importData(new JIPipeFileSystemReadDataStorage(getRowStorageFolder(getSlot(), getRow(), getDataAnnotation())), new JIPipeProgressInfo());
             label.setText(pathData.getPath() + "");
         } else {
             label.setText("<Not found>");

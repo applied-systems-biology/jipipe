@@ -13,16 +13,16 @@ import java.util.stream.Collectors;
 /**
  * Storage on a file system
  */
-public class JIPipeFileSystemReadStorage implements JIPipeReadDataStorage {
+public class JIPipeFileSystemReadDataStorage implements JIPipeReadDataStorage {
     private final Path fileSystemPath;
     private final Path internalPath;
 
-    public JIPipeFileSystemReadStorage(Path fileSystemPath) {
+    public JIPipeFileSystemReadDataStorage(Path fileSystemPath) {
         this.fileSystemPath = fileSystemPath;
         this.internalPath = Paths.get("");
     }
 
-    public JIPipeFileSystemReadStorage(Path fileSystemPath, Path internalPath) {
+    public JIPipeFileSystemReadDataStorage(Path fileSystemPath, Path internalPath) {
         this.fileSystemPath = fileSystemPath;
         this.internalPath = internalPath;
     }
@@ -44,7 +44,7 @@ public class JIPipeFileSystemReadStorage implements JIPipeReadDataStorage {
 
     @Override
     public JIPipeReadDataStorage resolve(Path path) {
-        return new JIPipeFileSystemReadStorage(getFileSystemPath().resolve(path), getInternalPath().resolve(path));
+        return new JIPipeFileSystemReadDataStorage(getFileSystemPath().resolve(path), getInternalPath().resolve(path));
     }
 
     @Override

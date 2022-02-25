@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
@@ -240,7 +240,7 @@ public class JIPipeDataSlot extends JIPipeDataTable {
      */
     public void exportToSlotStoragePath(JIPipeProgressInfo saveProgress) {
         if (isOutput() && slotStoragePath != null) {
-            exportData(new JIPipeFileSystemWriteStorage(slotStoragePath), saveProgress);
+            exportData(new JIPipeFileSystemWriteDataStorage(slotStoragePath), saveProgress);
         }
     }
 
