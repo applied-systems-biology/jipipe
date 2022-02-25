@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-02-20T20:40:26 CET">
+<meta name="revised" content="2022-02-25T22:45:26 CET">
 <title>Expression parameters :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -794,6 +794,26 @@ automatically applied to ally <code>x</code> and <code>y</code> values:</p>
 <div class="notices info" ><p><p>The expression builder shows a list of all variables. This list might be incomplete if variables are generated during the runtime (e.g., extracted from a table).</p>
 </p></div>
 
+<p>You can also set variables to re-use them in more complicated calculations by introducing multiple statements:</p>
+<pre><code>SET_VARIABLE(&quot;x&quot;, 5); PRINT(&quot;x=&quot;, x); SET_VARIABLE(&quot;y&quot;, x + 5); PRINT(&quot;y=&quot;, y); y + 15
+</code></pre><p>The code above will run the operations from left to right and print into your console:</p>
+<pre><code>x=5
+y=10
+</code></pre><p>The return value will always be the right-most operation (here <code>15</code>)</p>
+
+<div class="notices info" ><p><p>Statements are technically operators and therefore are affected by brackets.
+We recommend to not put statement operators into brackets and only use them to make multiple lines of code.</p>
+</p></div>
+
+<p>As you can use new-lines in expression editors, we recommend to put each statement into a new line:</p>
+<pre><code>SET_VARIABLE(&quot;x&quot;, 5); 
+PRINT(&quot;x=&quot;, x); 
+SET_VARIABLE(&quot;y&quot;, x + 5); 
+PRINT(&quot;y=&quot;, y); y + 15
+</code></pre>
+<div class="notices info" ><p><p>You can end the code with semi-colons, e.g. PRINT(5);;;;;. These will be ignored.</p>
+</p></div>
+
 <h2 id="operators">Operators</h2>
 <p>The expressions understand a wide range of common operators for numeric, string, and boolean data:</p>
 <ul>
@@ -843,6 +863,11 @@ Textual operators require spaces to be separated. For example you cannot write <
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>Statement</td>
+<td>Returns the last value of the statement chain.</td>
+<td><code>SET_VARIABLE(&quot;x&quot;, 5); PRINT(x)</code></td>
+</tr>
 <tr>
 <td>Logical AND</td>
 <td>Returns TRUE if both operands are TRUE</td>
@@ -956,6 +981,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <table>
 <thead>
 <tr>
+<th>-99999</th>
 <th>1</th>
 <th>2</th>
 <th>3</th>
@@ -970,6 +996,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 </thead>
 <tbody>
 <tr>
+<td>Statement (;)</td>
 <td>OR</td>
 <td>AND</td>
 <td>NOT</td>
@@ -983,6 +1010,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 </tr>
 <tr>
 <td></td>
+<td></td>
 <td>XOR</td>
 <td></td>
 <td></td>
@@ -994,6 +1022,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td></td>
 </tr>
 <tr>
+<td></td>
 <td></td>
 <td></td>
 <td></td>
@@ -1012,12 +1041,14 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td></td>
 <td></td>
 <td></td>
+<td></td>
 <td>Modulo (x % y)</td>
 <td></td>
 <td></td>
 <td></td>
 </tr>
 <tr>
+<td></td>
 <td></td>
 <td></td>
 <td></td>
@@ -1034,6 +1065,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td></td>
 <td></td>
 <td></td>
+<td></td>
 <td>Greater than or equal (x &gt;= y)</td>
 <td></td>
 <td></td>
@@ -1042,6 +1074,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td></td>
 </tr>
 <tr>
+<td></td>
 <td></td>
 <td></td>
 <td></td>
@@ -1058,6 +1091,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td></td>
 <td></td>
 <td></td>
+<td></td>
 <td>Less than or equal (x &lt;= y)</td>
 <td></td>
 <td></td>
@@ -1066,6 +1100,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td></td>
 </tr>
 <tr>
+<td></td>
 <td></td>
 <td></td>
 <td></td>
@@ -1082,6 +1117,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td></td>
 <td></td>
 <td></td>
+<td></td>
 <td>Equal (x == y)</td>
 <td></td>
 <td></td>
@@ -1090,6 +1126,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td></td>
 </tr>
 <tr>
+<td></td>
 <td></td>
 <td></td>
 <td></td>
@@ -1107,6 +1144,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td></td>
 <td></td>
 <td></td>
+<td></td>
 <td>String contains (x IN y)</td>
 <td></td>
 <td></td>
@@ -1119,6 +1157,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td></td>
 <td></td>
 <td></td>
+<td></td>
 <td>Addition (x + y)</td>
 <td></td>
 <td></td>
@@ -1126,6 +1165,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td></td>
 </tr>
 <tr>
+<td></td>
 <td></td>
 <td></td>
 <td></td>
@@ -1144,12 +1184,14 @@ Textual operators require spaces to be separated. For example you cannot write <
 <td></td>
 <td></td>
 <td></td>
+<td></td>
 <td>Variable exists (x EXISTS)</td>
 <td></td>
 <td></td>
 <td></td>
 </tr>
 <tr>
+<td></td>
 <td></td>
 <td></td>
 <td></td>
@@ -1177,6 +1219,14 @@ Textual operators require spaces to be separated. For example you cannot write <
 </tr>
 </thead>
 <tbody>
+<tr>
+<td>Statement (;)</td>
+<td>OK</td>
+<td>OK</td>
+<td>OK</td>
+<td>OK</td>
+<td>OK</td>
+</tr>
 <tr>
 <td>AND</td>
 <td>Error</td>
@@ -1331,6 +1381,7 @@ Textual operators require spaces to be separated. For example you cannot write <
 </tr>
 </tbody>
 </table>
+<p>Note that statements are compatible to any type, as they are structural parameters.</p>
 
 
     

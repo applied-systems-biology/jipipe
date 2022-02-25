@@ -7,6 +7,7 @@ org.hkijena.jipipe.api.compartments.algorithms
 org.hkijena.jipipe.api.compartments.datatypes
 org.hkijena.jipipe.api.compat
 org.hkijena.jipipe.api.data
+org.hkijena.jipipe.api.data.storage
 org.hkijena.jipipe.api.environments
 org.hkijena.jipipe.api.exceptions
 org.hkijena.jipipe.api.grouping
@@ -23,6 +24,7 @@ org.hkijena.jipipe.extensions
 org.hkijena.jipipe.extensions.annotation
 org.hkijena.jipipe.extensions.annotation.algorithms
 org.hkijena.jipipe.extensions.annotation.datasources
+org.hkijena.jipipe.extensions.batchassistant
 org.hkijena.jipipe.extensions.cellpose
 org.hkijena.jipipe.extensions.cellpose.algorithms
 org.hkijena.jipipe.extensions.cellpose.datatypes
@@ -40,6 +42,7 @@ org.hkijena.jipipe.extensions.expressions.constants
 org.hkijena.jipipe.extensions.expressions.functions
 org.hkijena.jipipe.extensions.expressions.functions.collections
 org.hkijena.jipipe.extensions.expressions.functions.color
+org.hkijena.jipipe.extensions.expressions.functions.control
 org.hkijena.jipipe.extensions.expressions.functions.convert
 org.hkijena.jipipe.extensions.expressions.functions.datetime
 org.hkijena.jipipe.extensions.expressions.functions.filesystem
@@ -47,6 +50,8 @@ org.hkijena.jipipe.extensions.expressions.functions.math
 org.hkijena.jipipe.extensions.expressions.functions.quantities
 org.hkijena.jipipe.extensions.expressions.functions.statistics
 org.hkijena.jipipe.extensions.expressions.functions.string
+org.hkijena.jipipe.extensions.expressions.functions.util
+org.hkijena.jipipe.extensions.expressions.functions.variables
 org.hkijena.jipipe.extensions.expressions.operators
 org.hkijena.jipipe.extensions.expressions.ui
 org.hkijena.jipipe.extensions.expressions.variables
@@ -63,6 +68,24 @@ org.hkijena.jipipe.extensions.forms.ui
 org.hkijena.jipipe.extensions.forms.utils
 org.hkijena.jipipe.extensions.ijmultitemplatematching
 org.hkijena.jipipe.extensions.imagej2
+org.hkijena.jipipe.extensions.imagej2.algorithms
+org.hkijena.jipipe.extensions.imagej2.compat
+org.hkijena.jipipe.extensions.imagej2.converters
+org.hkijena.jipipe.extensions.imagej2.datatypes
+org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds
+org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.constant
+org.hkijena.jipipe.extensions.imagej2.datatypes.shapes
+org.hkijena.jipipe.extensions.imagej2.io
+org.hkijena.jipipe.extensions.imagej2.io.data
+org.hkijena.jipipe.extensions.imagej2.io.data.input
+org.hkijena.jipipe.extensions.imagej2.io.data.output
+org.hkijena.jipipe.extensions.imagej2.io.parameters
+org.hkijena.jipipe.extensions.imagej2.io.parameters.input
+org.hkijena.jipipe.extensions.imagej2.io.parameters.input.arrays
+org.hkijena.jipipe.extensions.imagej2.io.parameters.input.primitives
+org.hkijena.jipipe.extensions.imagej2.io.parameters.output
+org.hkijena.jipipe.extensions.imagej2.io.parameters.output.primitives
+org.hkijena.jipipe.extensions.imagej2.util
 org.hkijena.jipipe.extensions.imagejalgorithms
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze
@@ -93,6 +116,8 @@ org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.opticalflow
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi
+org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.filter
+org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.sharpen
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics
@@ -135,6 +160,7 @@ org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer
 org.hkijena.jipipe.extensions.jsonextensionloader
 org.hkijena.jipipe.extensions.multiparameters
 org.hkijena.jipipe.extensions.multiparameters.algorithms
+org.hkijena.jipipe.extensions.multiparameters.converters
 org.hkijena.jipipe.extensions.multiparameters.datasources
 org.hkijena.jipipe.extensions.multiparameters.datatypes
 org.hkijena.jipipe.extensions.nodetemplate

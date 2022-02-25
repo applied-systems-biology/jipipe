@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-02-20T20:40:26 CET">
+<meta name="revised" content="2022-02-25T22:45:26 CET">
 <title>Creating a data type :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -751,12 +751,14 @@
     
     
 
-<p>Custom JIPipe data types must inherit from <a href="../../apidocs/org/hkijena/jipipe/api/data/JIPipeData.html">JIPipeData</a>. It is required to add an <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeDocumentation.html">@JIPipeDocumentation</a> annotation that provides a name and brief description of the data type.</p>
-<p>JIPipe requires that data can be saved to a folder within the output directory. We also
-recommend that you include code that can load the data back into JIPipe or ImageJ in some form.</p>
-<p>There are no requirements on the constructor of the data type.
-The only requirements are that there is a function <code>importFrom(Path, JIPipeProgressInfo)</code> that imports <code>JIPipeData</code> from a row storage folder, and an annotation of type
-<a href="../../apidocs/org/hkijena/jipipe/core/api/data/JIPipeDataStorageDocumentation.html">@JIPipeStorageDocumentation</a> that explains the structure of the storage folder. This documentation must include a human-readable description of the items contained in the storage directory, as well as a URL to a <a href="https://www.json-schema.org/">JSON Schema</a> that describes the structure of the directory, including any nested JSON data (if possible). You can build your schema based on following examples:</p>
+<h1 id="data-class">Data class</h1>
+<p>Custom JIPipe data types must inherit from <a href="../../apidocs/org/hkijena/jipipe/api/data/JIPipeData.html">JIPipeData</a>. Please implement all required functions as suggested by the interface if it is a non-abstract or interface data type.</p>
+<h2 id="required-annotations">Required annotations</h2>
+<ul>
+<li><a href="../../apidocs/org/hkijena/jipipe/api/JIPipeDocumentation.html">@JIPipeDocumentation</a> provides a name and description</li>
+<li><a href="../../apidocs/org/hkijena/jipipe/core/api/data/JIPipeDataStorageDocumentation.html">@JIPipeStorageDocumentation</a> explains the structure of the storage folder. This documentation must include a human-readable description of the items contained in the storage directory, as well as a URL to a <a href="https://www.json-schema.org/">JSON Schema</a> that describes the structure of the directory, including any nested JSON data (if possible)</li>
+</ul>
+<h3 id="examples-for-storage-documentations">Examples for storage documentations</h3>
 <ul>
 <li>Single text file (<code>*.txt</code>): <a href="https://jipipe.org/schemas/datatypes/string-data.schema.json">https://jipipe.org/schemas/datatypes/string-data.schema.json</a></li>
 <li>One of multiple image files: <a href="https://jipipe.org/schemas/datatypes/imageplus-data.schema.json">https://jipipe.org/schemas/datatypes/imageplus-data.schema.json</a></li>
@@ -768,15 +770,53 @@ The only requirements are that there is a function <code>importFrom(Path, JIPipe
 <div class="notices tip" ><p><p>Feel free to re-use schemata for different types if the structure matches.</p>
 </p></div>
 
-<p>The folder that is provided in <code>storageFilePath</code> is unique to the data and empty.
-The name parameter in <code>storageFilePath</code> is usually the data slot name and can be used as template for file names. It can be ignored <strong>unless</strong> <code>forceName</code> is true.
-The reason behind this is that then the name is pre-generated in a unique way for saving the data at a non-standard location (e.g. exporting the data).
-In such cases <strong>all file or folder names</strong> within the storage path should contain the name in some way, <strong>even if the import function cannot load the exported data anymore</strong>.</p>
+<h2 id="constructor">Constructor</h2>
+<p>A data type has no suggested constrains for constructors.</p>
+<h2 id="reading-data">Reading data</h2>
+<p>JIPipe reads the data type by calling a static function <code>importData(JIPipeReadDataStorage, JIPipeProgressInfo)</code>, which must <strong>be always present in any data type class</strong>.</p>
+<p>To allow future abstraction of data storage, JIPipe provides a <a href="../../apidocs/org/hkijena/jipipe/api/data/storage/JIPipeReadDataStorage.html">JIPipeReadDataStorage</a> instance that contains methods for storing data into arbitrary locations. The current only implementation is <a href="../../apidocs/org/hkijena/jipipe/api/data/storage/JIPipeFileSystemReadDataStorage.html">JIPipeFileSystemReadDataStorage</a> that encapsulates an empty and unique directory where data can be written.</p>
+<p>You can use the <a href="../../apidocs/org/hkijena/jipipe/api/data/storage/JIPipeFileSystemReadDataStorage.html#getFileSystemPath--">getFileSystemPath()</a> function to get the absolute path to this directory. As a file system mapping is already present, this has no additional cost.</p>
+<p>We recommend to not make use of this function, as non-filesystem backends might create a full copy of all data in a temporary file cache for reading, slowing down the data transfer. We recommend to utilize the provided methods of the interface:</p>
+<ul>
+<li><code>resolve</code> for navigating to sub directories</li>
+<li><code>list</code> for listing items</li>
+<li><code>isFile</code> / <code>isDirectory</code></li>
+<li><code>findFilesByExtension</code> to find files of interest</li>
+<li><code>readJSON</code> / <code>readText</code> / <code>readBytes</code> to read data</li>
+<li><code>open</code> to create an InputStream for reading the data</li>
+</ul>
+<h2 id="writing-data">Writing data</h2>
+<p>On implementing JIPipeData interface, you will implement a method <code>exportData(JIPipeWriteDataStorage, String name, boolean forceName, JIPipeProgressInfo)</code></p>
+<p>As with reading data, the storage is encapsulated into a dedicated interface, here <a href="../../apidocs/org/hkijena/jipipe/api/data/storage/JIPipeWriteDataStorage.html">JIPipeWriteDataStorage</a>. Here, you can again access the file system path via <a href="../../apidocs/org/hkijena/jipipe/api/data/storage/JIPipeFileSystemWriteDataStorage.html#getFileSystemPath--">getFileSystemPath()</a>.</p>
+<p>We again recommend to utilize non-filesystem functions to improve the performance of other backends:</p>
+<ul>
+<li><code>resolve</code> for navigating to sub directories</li>
+<li><code>list</code> for listing items</li>
+<li><code>writeJSON</code> / <code>writeText</code> / <code>writeBytes</code> to write data</li>
+<li><code>write</code> to create an Output for writing the data</li>
+</ul>
+<p>Additionally, a name parameter is present and contains information about possible file names. It can be ignored <strong>unless</strong> <code>forceName</code> is true. The reason behind this is that then the name is pre-generated in a unique way for saving the data at a non-standard location (e.g. exporting the data). In such cases <strong>all file or folder names</strong> within the storage path should contain the name in some way, <strong>even if the import function cannot load the exported data anymore</strong>.</p>
+<h2 id="additional-methods">Additional methods</h2>
 <p>There are two optional functions that you can override:</p>
 <ul>
 <li><code>display()</code> shows the data in ImageJ, JIPipe, or any other GUI</li>
 <li><code>preview()</code> generates a GUI component that acts as thumbnail/preview of the contained data</li>
 </ul>
+<h2 id="registering-the-data-type">Registering the data type</h2>
+<p>To register the data type and provide it with an id, and icon, use <a href="../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a>:</p>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
+<span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#75715e">// ... See previous tutorial for other methods
+</span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">register</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// The two null parameters will be handled in the next tutorials
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// You can leave them null if you want. This is valid.
+</span><span style="color:#75715e"></span>        <span style="color:#111">registerDataType</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-data&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">MyData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">ResourceUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">getPluginResource</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/icons/data-types/data-type.png&#34;</span><span style="color:#f92672">),</span> <span style="color:#00a8c8">null</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">null</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+<span style="color:#f92672">}</span>
+</code></pre></div><h1 id="example">Example</h1>
 <div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// Documentation for this data type (for the GUI)
 </span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;My data&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;This is some data&#34;</span><span style="color:#f92672">)</span>
 
@@ -836,31 +876,28 @@ In such cases <strong>all file or folder names</strong> within the storage path 
    <span style="color:#f92672">}</span>
 
     <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">saveTo</span><span style="color:#f92672">(</span><span style="color:#111">Path</span> <span style="color:#111">storageFilePath</span><span style="color:#f92672">,</span> <span style="color:#111">String</span> <span style="color:#111">name</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">boolean</span> <span style="color:#111">forceName</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#00a8c8">try</span> <span style="color:#f92672">{</span>
-            <span style="color:#111">JsonUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">getObjectMapper</span><span style="color:#f92672">().</span><span style="color:#75af00">writeValue</span><span style="color:#f92672">(</span><span style="color:#111">storageFilePath</span><span style="color:#f92672">.</span><span style="color:#75af00">resolve</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">+</span> <span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">).</span><span style="color:#75af00">toFile</span><span style="color:#f92672">(),</span> <span style="color:#00a8c8">this</span><span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span>
-        <span style="color:#00a8c8">catch</span><span style="color:#f92672">(</span><span style="color:#111">Exception</span> <span style="color:#111">e</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-            <span style="color:#00a8c8">throw</span> <span style="color:#00a8c8">new</span> <span style="color:#111">RuntimeException</span><span style="color:#f92672">(</span><span style="color:#111">e</span><span style="color:#f92672">);</span>
-        <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">exportData</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeWriteDataStorage</span> <span style="color:#111">storage</span><span style="color:#f92672">,</span> <span style="color:#111">String</span> <span style="color:#111">name</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">boolean</span> <span style="color:#111">forceName</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// This uses the helper function of JIPipeWriteDataStorage
+</span><span style="color:#75715e"></span>        <span style="color:#111">storage</span><span style="color:#f92672">.</span><span style="color:#75af00">writeJSON</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">+</span> <span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">this</span><span style="color:#f92672">);</span>
 
-    <span style="color:#75715e">// We will use this method later to load the data back from disk
-</span><span style="color:#75715e"></span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#111">MyData</span> <span style="color:#75af00">fromJson</span><span style="color:#f92672">(</span><span style="color:#111">Path</span> <span style="color:#111">jsonFile</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-      <span style="color:#00a8c8">try</span> <span style="color:#f92672">{</span>
-          <span style="color:#00a8c8">return</span> <span style="color:#111">JsonUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">getObjectMapper</span><span style="color:#f92672">().</span><span style="color:#75af00">readValue</span><span style="color:#f92672">(</span><span style="color:#111">jsonFile</span><span style="color:#f92672">.</span><span style="color:#75af00">toFile</span><span style="color:#f92672">(),</span> <span style="color:#111">MyData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
-      <span style="color:#f92672">}</span>
-      <span style="color:#00a8c8">catch</span><span style="color:#f92672">(</span><span style="color:#111">Exception</span> <span style="color:#111">e</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-          <span style="color:#00a8c8">throw</span> <span style="color:#00a8c8">new</span> <span style="color:#111">RuntimeException</span><span style="color:#f92672">(</span><span style="color:#111">e</span><span style="color:#f92672">);</span>
-      <span style="color:#f92672">}</span>
-    <span style="color:#f92672">}</span>
+        <span style="color:#75715e">// Alternative 1: If you require an OutputStream
+</span><span style="color:#75715e"></span>        <span style="color:#00a8c8">try</span><span style="color:#f92672">(</span><span style="color:#111">OutputStream</span> <span style="color:#111">stream</span> <span style="color:#f92672">=</span> <span style="color:#111">storage</span><span style="color:#f92672">.</span><span style="color:#75af00">write</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">+</span> <span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// Write to OutputStream [...]
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">}</span>
+
+        <span style="color:#75715e">// Alternative 2: You can generate an absolute file path that can be used if no stream-based writing is available:
+</span><span style="color:#75715e"></span>        <span style="color:#111">Path</span> <span style="color:#111">outputPath</span> <span style="color:#f92672">=</span> <span style="color:#111">storage</span><span style="color:#f92672">.</span><span style="color:#75af00">getFileSystemPath</span><span style="color:#f92672">().</span><span style="color:#75af00">resolve</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">+</span> <span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#75715e">// write to output path [...]
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// The storage backend will automatically ensure that the file is included
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
 
     <span style="color:#75715e">// Do not forget to add this method or JIPipe will refuse to start
-</span><span style="color:#75715e"></span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#111">MyData</span> <span style="color:#75af00">importFrom</span><span style="color:#f92672">(</span><span style="color:#111">Path</span> <span style="color:#111">rowStorageFolder</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// You can use the PathUtils
-</span><span style="color:#75715e"></span>        <span style="color:#111">Path</span> <span style="color:#111">targetFile</span> <span style="color:#f92672">=</span> <span style="color:#111">PathUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">findFileByExtensionIn</span><span style="color:#f92672">(</span><span style="color:#111">storageFilePath</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">);</span>
-        <span style="color:#00a8c8">return</span> <span style="color:#111">fromJson</span><span style="color:#f92672">(</span><span style="color:#111">targetFile</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
+</span><span style="color:#75715e"></span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#111">MyData</span> <span style="color:#75af00">importData</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeReadDataStorage</span> <span style="color:#111">storage</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#111">Path</span> <span style="color:#111">path</span> <span style="color:#f92672">=</span> <span style="color:#111">storage</span><span style="color:#f92672">.</span><span style="color:#75af00">findFileByExtension</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">).</span><span style="color:#75af00">get</span><span style="color:#f92672">();</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#111">storage</span><span style="color:#f92672">.</span><span style="color:#75af00">readJSON</span><span style="color:#f92672">(</span><span style="color:#111">path</span><span style="color:#f92672">,</span> <span style="color:#111">MyData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
+
+        <span style="color:#75715e">// Alternative options are equivalent to exportData()
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 </code></pre></div>
 <div class="notices tip" ><p><p>You can use JIPipe&rsquo;s JsonUtils class to get access to a Jackson JSON ObjectMapper.</p>
@@ -870,20 +907,7 @@ In such cases <strong>all file or folder names</strong> within the storage path 
 <div class="notices info" ><p><p>Do not forget to override toString(), as the string representation will be displayed in the cache browser.</p>
 </p></div>
 
-<p>To register the data type and provide it with an id, and icon, use <a href="../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a>:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
-<span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
 
-    <span style="color:#75715e">// ... See previous tutorial for other methods
-</span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">register</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// The two null parameters will be handled in the next tutorials
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// You can leave them null if you want. This is valid.
-</span><span style="color:#75715e"></span>        <span style="color:#111">registerDataType</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-data&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">MyData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">ResourceUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">getPluginResource</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/icons/data-types/data-type.png&#34;</span><span style="color:#f92672">),</span> <span style="color:#00a8c8">null</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">null</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-
-<span style="color:#f92672">}</span>
-</code></pre></div>
 
 
     
