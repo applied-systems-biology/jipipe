@@ -1,5 +1,5 @@
 #!/bin/bash
-JIPIPE_VERSION=1.64.0
+JIPIPE_VERSION=1.65.0
 APPIMAGE_TOOL_URL="https://github.com/AppImage/AppImageKit/releases/download/12/appimagetool-x86_64.AppImage"
 
 rm -rf AppDir
@@ -7,7 +7,7 @@ mkdir AppDir
 
 # Copy JIPipe components
 mkdir -p AppDir/usr/share/jipipe-installer/jipipe-bin
-for component in jipipe-core jipipe-clij jipipe-multiparameters jipipe-filesystem jipipe-ij jipipe-ij-algorithms jipipe-ij-omero jipipe-ij-multi-template-matching jipipe-python jipipe-plots jipipe-tables jipipe-annotation jipipe-utils jipipe-strings jipipe-forms jipipe-r jipipe-cellpose jipipe-launcher ij-updater-cli; do
+for component in jipipe-core jipipe-clij jipipe-multiparameters jipipe-filesystem jipipe-ij jipipe-ij2 jipipe-ij-algorithms jipipe-ij-omero jipipe-ij-multi-template-matching jipipe-python jipipe-plots jipipe-tables jipipe-annotation jipipe-utils jipipe-strings jipipe-forms jipipe-r jipipe-cellpose jipipe-launcher ij-updater-cli; do
     cp -v ../../$component/target/$component-$JIPIPE_VERSION.jar AppDir/usr/share/jipipe-installer/jipipe-bin
 done
 

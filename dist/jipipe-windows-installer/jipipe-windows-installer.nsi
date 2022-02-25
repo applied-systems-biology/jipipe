@@ -3,7 +3,7 @@ RequestExecutionLevel user
 
 ; HM NIS Edit Wizard helper defines
 !define PRODUCT_NAME "JIPipe"
-!define PRODUCT_VERSION "1.64.0"
+!define PRODUCT_VERSION "1.65.0"
 !define PRODUCT_PUBLISHER "Applied Systems Biology - HKI Jena, Germany"
 !define PRODUCT_WEB_SITE "https://www.jipipe.org/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\JIPipe"
@@ -70,6 +70,7 @@ Section "Common files (Required)" SEC01
   File "..\..\jipipe-core\target\jipipe-core-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-filesystem\target\jipipe-filesystem-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-ij\target\jipipe-ij-${PRODUCT_VERSION}.jar"
+  File "..\..\jipipe-ij\target\jipipe-ij2-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-ij-algorithms\target\jipipe-ij-algorithms-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-ij-omero\target\jipipe-ij-omero-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-ij-multi-template-matching\target\jipipe-ij-multi-template-matching-${PRODUCT_VERSION}.jar"
