@@ -27,9 +27,8 @@ import org.hkijena.jipipe.extensions.imagej2.compat.ImageJ2DataSetDataImageJAdap
 import org.hkijena.jipipe.extensions.imagej2.converters.ImageJ1ToImageJ2Converter;
 import org.hkijena.jipipe.extensions.imagej2.converters.ImageJ2ToImageJ1Converter;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.ImageJ2DatasetData;
-import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.EmptyImageJ2OutOfBoundsFactory;
-import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.ImageJ2OutOfBoundsFactoryData;
-import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.MirrorImageJ2OutOfBoundsFactoryData;
+import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.*;
+import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.constant.*;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusDataImporterUI;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -98,6 +97,14 @@ public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("ij2-out-of-bounds-factory", ImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
         registerDatatype("ij2-out-of-bounds-factory-empty", EmptyImageJ2OutOfBoundsFactory.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
         registerDatatype("ij2-out-of-bounds-factory-mirror", MirrorImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-periodic", PeriodicImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-border", BorderImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-constant-byte", ByteConstantValueImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-constant-short", ShortConstantValueImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-constant-int", IntegerConstantValueImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-constant-long", LongConstantValueImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-constant-float", FloatConstantValueImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
+        registerDatatype("ij2-out-of-bounds-factory-constant-double", DoubleConstantValueImageJ2OutOfBoundsFactoryData.class, UIUtils.getIconURLFromResources("data-types/ij2-out-of-bounds-factory.png"));
         registerEnumParameterType("ij2-out-of-bounds-mirror-factory:boundary",
                 OutOfBoundsMirrorFactory.Boundary.class,
                 "Mirror boundary",
