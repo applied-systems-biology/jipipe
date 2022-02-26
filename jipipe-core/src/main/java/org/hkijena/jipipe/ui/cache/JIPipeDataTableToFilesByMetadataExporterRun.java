@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;

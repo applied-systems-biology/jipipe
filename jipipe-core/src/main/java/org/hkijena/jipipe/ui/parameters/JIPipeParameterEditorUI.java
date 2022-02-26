@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.scijava.Context;
 import org.scijava.Contextual;

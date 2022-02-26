@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.extensions.jsonextensionloader.JsonExtensionLoaderExtension;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;

@@ -22,6 +22,7 @@ import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.BackgroundPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;

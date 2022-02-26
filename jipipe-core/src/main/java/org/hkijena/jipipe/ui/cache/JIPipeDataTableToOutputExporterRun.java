@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;

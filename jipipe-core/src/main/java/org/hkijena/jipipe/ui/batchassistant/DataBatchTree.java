@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.batchassistant;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheStateTreeCellRenderer;
 import org.hkijena.jipipe.ui.theme.ArrowLessScrollBarUI;

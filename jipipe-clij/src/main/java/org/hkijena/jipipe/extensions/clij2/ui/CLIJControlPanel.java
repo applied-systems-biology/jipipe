@@ -4,6 +4,7 @@ import net.haesleinhuepf.clij.converters.CLIJConverterService;
 import net.haesleinhuepf.clij2.CLIJ2;
 import org.hkijena.jipipe.extensions.clij2.CLIJSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.BackgroundPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;

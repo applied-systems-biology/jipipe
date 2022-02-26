@@ -5,6 +5,7 @@ import net.imagej.updater.FileObject;
 import net.imagej.updater.GroupAction;
 import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;

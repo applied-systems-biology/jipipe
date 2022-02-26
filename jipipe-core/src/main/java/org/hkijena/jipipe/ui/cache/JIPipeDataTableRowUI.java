@@ -26,6 +26,7 @@ import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.StringUtils;

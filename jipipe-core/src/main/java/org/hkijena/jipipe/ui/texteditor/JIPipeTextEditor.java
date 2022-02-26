@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.texteditor;
 
 import org.fife.ui.rtextarea.RTextScrollPane;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.utils.UIUtils;

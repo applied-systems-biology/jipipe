@@ -16,7 +16,8 @@ package org.hkijena.jipipe.ui.settings;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParametersUI;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
@@ -34,15 +35,16 @@ import java.util.HashMap;
 /**
  * UI around the metadata of an {@link org.hkijena.jipipe.api.JIPipeProject}
  */
-public class JIPipeProjectSettingsUI extends JIPipeProjectWorkbenchPanel {
+public class JIPipeProjectSettingsUI extends JPanel implements JIPipeProjectWorkbenchAccess {
 
+    private final JIPipeWorkbench workbench;
     private JSplitPane splitPane;
 
     /**
      * @param workbenchUI The workbench UI
      */
     public JIPipeProjectSettingsUI(JIPipeProjectWorkbench workbenchUI) {
-        super(workbenchUI);
+        this.workbench = workbenchUI;
         initialize();
     }
 
@@ -128,6 +130,11 @@ public class JIPipeProjectSettingsUI extends JIPipeProjectWorkbenchPanel {
         }
         result.setProject(getProject());
         return result;
+    }
+
+    @Override
+    public JIPipeWorkbench getWorkbench() {
+        return workbench;
     }
 
     private static class SettingsCategoryNode extends DefaultMutableTreeNode {

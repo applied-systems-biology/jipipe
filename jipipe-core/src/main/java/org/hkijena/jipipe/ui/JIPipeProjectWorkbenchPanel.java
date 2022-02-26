@@ -1,46 +1,19 @@
-/*
- * Copyright by Zoltán Cseresnyés, Ruman Gerst
- *
- * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
- * https://www.leibniz-hki.de/en/applied-systems-biology.html
- * HKI-Center for Systems Biology of Infection
- * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
- * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
- *
- * The project code is licensed under BSD 2-Clause.
- * See the LICENSE file provided with the code for the full license.
- */
-
 package org.hkijena.jipipe.ui;
 
-import org.hkijena.jipipe.api.JIPipeProject;
+import javax.swing.*;
 
 /**
- * Panel that holds a reference to {@link JIPipeProjectWorkbench}
+ * A {@link JPanel} that implements {@link JIPipeProjectWorkbenchAccess}
  */
-public class JIPipeProjectWorkbenchPanel extends JIPipeWorkbenchPanel {
+public class JIPipeProjectWorkbenchPanel extends JPanel implements JIPipeProjectWorkbenchAccess {
+    private final JIPipeWorkbench workbench;
 
-    private final JIPipeProjectWorkbench workbenchUI;
-
-    /**
-     * @param workbenchUI The workbench UI
-     */
-    public JIPipeProjectWorkbenchPanel(JIPipeProjectWorkbench workbenchUI) {
-        super(workbenchUI);
-        this.workbenchUI = workbenchUI;
+    public JIPipeProjectWorkbenchPanel(JIPipeProjectWorkbench workbench) {
+        this.workbench = workbench;
     }
 
-    /**
-     * @return The workbench UI
-     */
-    public JIPipeProjectWorkbench getProjectWorkbench() {
-        return workbenchUI;
-    }
-
-    /**
-     * @return The project
-     */
-    public JIPipeProject getProject() {
-        return workbenchUI.getProject();
+    @Override
+    public JIPipeWorkbench getWorkbench() {
+        return workbench;
     }
 }

@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui;
 
 import com.google.common.eventbus.Subscribe;
-import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
@@ -22,7 +21,6 @@ import org.hkijena.jipipe.ui.components.BackgroundPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.html.ExtendedHTMLEditorKit;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;

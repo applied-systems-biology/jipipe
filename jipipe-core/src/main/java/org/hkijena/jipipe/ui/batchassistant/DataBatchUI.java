@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeExtendedDataTableInfoUI;
 import org.hkijena.jipipe.ui.components.FormPanel;
