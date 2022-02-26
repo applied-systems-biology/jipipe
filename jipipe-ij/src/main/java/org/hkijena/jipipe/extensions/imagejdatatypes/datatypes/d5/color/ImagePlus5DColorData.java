@@ -14,21 +14,23 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.color;
 
 import ij.ImagePlus;
+import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColorImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.ImagePlus5DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.awt.*;
-import java.nio.file.Path;
 
 /**
  * A colored image without dimension.
@@ -38,13 +40,8 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "5D Image (Color)")
 @JIPipeNode(menuPath = "Images\n5D\nColor")
 @JIPipeHeavyData
-public class ImagePlus5DColorData extends ImagePlus5DData implements ColoredImagePlusData {
-
-    /**
-     * The dimensionality of this data.
-     * -1 means that we do not have information about the dimensionality
-     */
-    public static final int DIMENSIONALITY = 5;
+@ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = RGBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 5)
+public class ImagePlus5DColorData extends ImagePlus5DData implements ColorImageData {
 
     /**
      * @param image wrapped image
@@ -71,7 +68,6 @@ public class ImagePlus5DColorData extends ImagePlus5DData implements ColoredImag
 
     /**
      * Converts the incoming image data into the current format.
-     * Copies the color space if provided with an {@link ColoredImagePlusData}
      *
      * @param data the data
      * @return the converted data
@@ -83,7 +79,7 @@ public class ImagePlus5DColorData extends ImagePlus5DData implements ColoredImag
                 // This will go through the standard method (greyscale -> RGB -> HSB)
                 return new ImagePlus5DColorData(image);
             } else {
-                return new ImagePlus5DColorData(image, ((ColoredImagePlusData) data).getColorSpace());
+                return new ImagePlus5DColorData(image, data.getColorSpace());
             }
         } else {
             return new ImagePlus5DColorData(data.getImageSource(), data.getColorSpace());

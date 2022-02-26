@@ -14,20 +14,22 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color;
 
 import ij.ImagePlus;
+import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.HSBColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.HSBColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.awt.*;
-import java.nio.file.Path;
 
 /**
  * HSV colored image without dimension.
@@ -37,18 +39,8 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "Image (HSB)")
 @JIPipeNode(menuPath = "Images\nColor")
 @JIPipeHeavyData
-public class ImagePlusColorHSBData extends ImagePlusColorData implements ColoredImagePlusData {
-
-    /**
-     * The dimensionality of this data.
-     * -1 means that we do not have information about the dimensionality
-     */
-    public static final int DIMENSIONALITY = -1;
-
-    /**
-     * The color space of this image
-     */
-    public static final ColorSpace COLOR_SPACE = new HSBColorSpace();
+@ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = HSBColorSpace.class, pixelType = Integer.class, bitDepth = 24)
+public class ImagePlusColorHSBData extends ImagePlusColorData {
 
     public ImagePlusColorHSBData(ImagePlus image) {
         super(ImageJUtils.convertToColorHSBIfNeeded(image));
@@ -85,7 +77,7 @@ public class ImagePlusColorHSBData extends ImagePlusColorData implements Colored
                 }
                 else {
                     ImagePlus copy = data.getDuplicateImage();
-                    COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
+                    HSBColorSpace.INSTANCE.convert(copy, data.getColorSpace(), new JIPipeProgressInfo());
                     return new ImagePlusColorHSBData(copy);
                 }
             }
@@ -96,7 +88,7 @@ public class ImagePlusColorHSBData extends ImagePlusColorData implements Colored
 
     @Override
     public ColorSpace getColorSpace() {
-        return COLOR_SPACE;
+        return HSBColorSpace.INSTANCE;
     }
 
     @Override

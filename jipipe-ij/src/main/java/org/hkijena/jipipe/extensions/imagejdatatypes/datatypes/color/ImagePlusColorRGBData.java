@@ -14,19 +14,19 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color;
 
 import ij.ImagePlus;
+import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
-
-import java.nio.file.Path;
 
 /**
  * RGB colored image without dimension.
@@ -36,18 +36,8 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "Image (RGB)")
 @JIPipeNode(menuPath = "Images\nColor")
 @JIPipeHeavyData
-public class ImagePlusColorRGBData extends ImagePlusColorData implements ColoredImagePlusData {
-
-    /**
-     * The dimensionality of this data.
-     * -1 means that we do not have information about the dimensionality
-     */
-    public static final int DIMENSIONALITY = -1;
-
-    /**
-     * The color space of this image
-     */
-    public static final ColorSpace COLOR_SPACE = new RGBColorSpace();
+@ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = RGBColorSpace.class, pixelType = Integer.class, bitDepth = 24)
+public class ImagePlusColorRGBData extends ImagePlusColorData {
 
     public ImagePlusColorRGBData(ImagePlus image) {
         super(ImageJUtils.convertToColorRGBIfNeeded(image));
@@ -84,7 +74,7 @@ public class ImagePlusColorRGBData extends ImagePlusColorData implements Colored
                 }
                 else {
                     ImagePlus copy = data.getDuplicateImage();
-                    COLOR_SPACE.convert(copy, ((ColoredImagePlusData) data).getColorSpace(), new JIPipeProgressInfo());
+                    RGBColorSpace.INSTANCE.convert(copy, data.getColorSpace(), new JIPipeProgressInfo());
                     return new ImagePlusColorRGBData(copy);
                 }
             }
@@ -95,6 +85,6 @@ public class ImagePlusColorRGBData extends ImagePlusColorData implements Colored
 
     @Override
     public ColorSpace getColorSpace() {
-        return COLOR_SPACE;
+        return RGBColorSpace.INSTANCE;
     }
 }

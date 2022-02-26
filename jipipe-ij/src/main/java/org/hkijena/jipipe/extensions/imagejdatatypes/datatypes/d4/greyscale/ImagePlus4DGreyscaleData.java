@@ -14,19 +14,22 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.greyscale;
 
 import ij.ImagePlus;
+import ij.process.FloatProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.GreyscaleColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.GreyscaleImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
-
-import java.nio.file.Path;
 
 /**
  * Greyscale 4D image
@@ -34,12 +37,8 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "4D image (greyscale)")
 @JIPipeNode(menuPath = "Images\n4D\nGreyscale")
 @JIPipeHeavyData
-public class ImagePlus4DGreyscaleData extends ImagePlus4DData {
-
-    /**
-     * The dimensionality of this data
-     */
-    public static final int DIMENSIONALITY = 4;
+@ImageTypeInfo(imageProcessorType = FloatProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Float.class, bitDepth = 32, numDimensions = 4)
+public class ImagePlus4DGreyscaleData extends ImagePlus4DData implements GreyscaleImageData {
 
     public ImagePlus4DGreyscaleData(ImagePlus image) {
         super(ImageJUtils.convertToGreyscaleIfNeeded(image));
@@ -59,6 +58,11 @@ public class ImagePlus4DGreyscaleData extends ImagePlus4DData {
 
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new ImagePlus4DGreyscaleData(ImagePlusData.importImagePlusFrom(storage, progressInfo));
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return GreyscaleColorSpace.INSTANCE;
     }
 
     /**

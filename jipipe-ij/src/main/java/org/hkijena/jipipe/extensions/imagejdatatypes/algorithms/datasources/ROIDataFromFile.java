@@ -11,32 +11,32 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejdatatypes.datasources;
+package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.datasources;
 
-import ij.measure.ResultsTable;
+import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 
-import java.io.IOException;
+import java.util.List;
 
 /**
- * Imports {@link ResultsTableData} from a file
+ * Loads ROI data from a file via IJ.openFile()
  */
-@JIPipeDocumentation(name = "Results table from file")
+@JIPipeDocumentation(name = "Import ROI", description = "Loads a ROI list from a file. The file can be either a single ROI (.roi extension) or a list of ROI (.zip extension).")
 @JIPipeInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Results table", autoCreate = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
+public class ROIDataFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     /**
-     * @param info algorithm info
+     * @param info the algorithm info
      */
-    public ResultsTableFromFile(JIPipeNodeInfo info) {
+    public ROIDataFromFile(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -45,18 +45,14 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public ResultsTableFromFile(ResultsTableFromFile other) {
+    public ROIDataFromFile(ROIDataFromFile other) {
         super(other);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
-        try {
-            ResultsTable resultsTable = ResultsTable.open(fileData.getPath().toString());
-            dataBatch.addOutputData(getFirstOutputSlot(), new ResultsTableData(resultsTable), progressInfo);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        List<Roi> rois = ROIListData.loadRoiListFromFile(fileData.toPath());
+        dataBatch.addOutputData(getFirstOutputSlot(), new ROIListData(rois), progressInfo);
     }
 }

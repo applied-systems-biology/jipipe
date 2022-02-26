@@ -30,6 +30,7 @@ import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.classfilters.ClassFilter;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -40,23 +41,24 @@ import javax.swing.*;
 import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.*;
+import java.util.function.Predicate;
 
 /**
  * Contains known {@link JIPipeData} types, and associates them to their respective {@link JIPipeDataSlot}.
  */
 public class JIPipeDatatypeRegistry {
-    private BiMap<String, Class<? extends JIPipeData>> registeredDataTypes = HashBiMap.create();
-    private Map<String, Map<String, JIPipeDataDisplayOperation>> registeredDisplayOperations = new HashMap<>();
-    private Map<String, Map<String, JIPipeDataImportOperation>> registeredImportOperations = new HashMap<>();
-    private Map<Class<? extends JIPipeData>, URL> iconsURLs = new HashMap<>();
-    private Map<Class<? extends JIPipeData>, ImageIcon> iconInstances = new HashMap<>();
-    private Map<Class<? extends JIPipeData>, Class<? extends JIPipeResultDataSlotRowUI>> resultUIs = new HashMap<>();
-    private Map<Class<? extends JIPipeData>, Class<? extends JIPipeResultDataSlotPreview>> resultTableCellUIs = new HashMap<>();
-    private Set<String> hiddenDataTypeIds = new HashSet<>();
-    private Map<String, JIPipeDependency> registeredDatatypeSources = new HashMap<>();
-    private Graph<JIPipeDataInfo, DataConverterEdge> conversionGraph = new DefaultDirectedGraph<>(DataConverterEdge.class);
-    private DijkstraShortestPath<JIPipeDataInfo, DataConverterEdge> shortestPath = new DijkstraShortestPath<>(conversionGraph);
-    private EventBus eventBus = new EventBus();
+    private final BiMap<String, Class<? extends JIPipeData>> registeredDataTypes = HashBiMap.create();
+    private final Map<String, Map<String, JIPipeDataDisplayOperation>> registeredDisplayOperations = new HashMap<>();
+    private final Map<String, Map<String, JIPipeDataImportOperation>> registeredImportOperations = new HashMap<>();
+    private final Map<Class<? extends JIPipeData>, URL> iconsURLs = new HashMap<>();
+    private final Map<Class<? extends JIPipeData>, ImageIcon> iconInstances = new HashMap<>();
+    private final Map<Class<? extends JIPipeData>, Class<? extends JIPipeResultDataSlotRowUI>> resultUIs = new HashMap<>();
+    private final Map<Class<? extends JIPipeData>, Class<? extends JIPipeResultDataSlotPreview>> resultTableCellUIs = new HashMap<>();
+    private final Set<String> hiddenDataTypeIds = new HashSet<>();
+    private final Map<String, JIPipeDependency> registeredDatatypeSources = new HashMap<>();
+    private final Graph<JIPipeDataInfo, DataConverterEdge> conversionGraph = new DefaultDirectedGraph<>(DataConverterEdge.class);
+    private final DijkstraShortestPath<JIPipeDataInfo, DataConverterEdge> shortestPath = new DijkstraShortestPath<>(conversionGraph);
+    private final EventBus eventBus = new EventBus();
 
     /**
      * Creates a new instance
@@ -64,6 +66,44 @@ public class JIPipeDatatypeRegistry {
     public JIPipeDatatypeRegistry() {
 
     }
+
+    /**
+     * Returns all {@link JIPipeData} classes that satisfy the provided interfaces
+     * @param interfaces the list of interfaces. if empty, all data types are returned
+     * @return list of data types
+     */
+    public List<Class<? extends JIPipeData>> findDataTypesByInterfaces(Class<?>... interfaces) {
+        List<Class<? extends JIPipeData>> result = new ArrayList<>();
+        for (Class<? extends JIPipeData> value : this.registeredDataTypes.values()) {
+            boolean success = true;
+            for (Class<?> aClass : interfaces) {
+                if(!aClass.isAssignableFrom(value)) {
+                    success = false;
+                    break;
+                }
+            }
+            if(success) {
+                result.add(value);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns all {@link JIPipeData} classes that satisfy the provided predicate
+     * @param predicate the predicate
+     * @return list of data types
+     */
+    public List<Class<? extends JIPipeData>> findDataTypes(Predicate<Class<?>> predicate) {
+        List<Class<? extends JIPipeData>> result = new ArrayList<>();
+        for (Class<? extends JIPipeData> value : this.registeredDataTypes.values()) {
+            if(predicate.test(value)) {
+                result.add(value);
+            }
+        }
+        return result;
+    }
+
 
     /**
      * Returns true if the input data type can be trivially converted into the output data type.

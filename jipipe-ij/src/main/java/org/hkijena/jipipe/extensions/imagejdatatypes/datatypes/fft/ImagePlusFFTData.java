@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -45,12 +46,8 @@ import java.nio.file.Path;
         "must be present. fht.ome.tif / fht.tif contains the FHT (float32). power_spectrum.ome.tif / power_spectrum.tif contains the power spectrum (float32). " +
         "fht_info.json contains a JSON object that defines following properties: quadrant-swap-needed (boolean), original-width (integer), original-height (integer), " +
         "original-bit-depth (integer; 8, 16, or 32 are valid values), power-spectrum-mean (double).", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/imageplus-fft-data.schema.json")
-public class ImagePlusFFTData extends ImagePlusData {
-
-    /**
-     * The dimensionality of this data
-     */
-    public static final int DIMENSIONALITY = -1;
+@ImageTypeInfo
+public class ImagePlusFFTData extends ImagePlusData implements FFTImageData {
 
     /**
      * Creates a new instance

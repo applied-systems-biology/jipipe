@@ -53,8 +53,8 @@ import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_AL
         "This node has similar functionality to the 'Combine stacks' node." +
         "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
 @JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
 
     private HyperstackDimension createdDimension = HyperstackDimension.Channel;
@@ -65,11 +65,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
      * @param info the info
      */
     public StackToDimensionMergerAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .restrictInputTo(ImageJDataTypesExtension.IMAGE_TYPES_DIMENSIONLESS)
-                .addOutputSlot("Output", "", ImagePlusData.class, "*")
-                .sealOutput()
-                .build());
+        super(info);
     }
 
     /**

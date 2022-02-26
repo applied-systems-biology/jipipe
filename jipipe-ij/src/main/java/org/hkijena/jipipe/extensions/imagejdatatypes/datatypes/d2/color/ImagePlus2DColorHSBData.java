@@ -14,22 +14,22 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color;
 
 import ij.ImagePlus;
+import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.HSBColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.HSBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.awt.*;
-import java.nio.file.Path;
 
 /**
  * RGB colored 2D image
@@ -37,18 +37,8 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "2D image (HSB)")
 @JIPipeNode(menuPath = "Images\n2D\nColor")
 @JIPipeHeavyData
-public class ImagePlus2DColorHSBData extends ImagePlus2DColorData implements ColoredImagePlusData {
-
-    /**
-     * The dimensionality of this data
-     */
-    public static final int DIMENSIONALITY = 2;
-
-    /**
-     * The color space of this image
-     */
-    public static final ColorSpace COLOR_SPACE = new HSBColorSpace();
-
+@ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = HSBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 2)
+public class ImagePlus2DColorHSBData extends ImagePlus2DColorData {
 
     public ImagePlus2DColorHSBData(ImagePlus image) {
         super(ImageJUtils.convertToColorHSBIfNeeded(image));
@@ -82,7 +72,7 @@ public class ImagePlus2DColorHSBData extends ImagePlus2DColorData implements Col
 
     @Override
     public ColorSpace getColorSpace() {
-        return COLOR_SPACE;
+        return HSBColorSpace.INSTANCE;
     }
 
     @Override

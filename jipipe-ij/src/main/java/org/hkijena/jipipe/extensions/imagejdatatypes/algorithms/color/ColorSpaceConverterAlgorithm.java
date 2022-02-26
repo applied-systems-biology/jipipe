@@ -9,18 +9,16 @@ import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 
 public abstract class ColorSpaceConverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private final Class<? extends ColoredImagePlusData> outputDataType;
+    private final Class<? extends ImagePlusData> outputDataType;
     private final ColorSpace outputColorSpace;
     private boolean reinterpret = false;
 
-    public ColorSpaceConverterAlgorithm(JIPipeNodeInfo info, Class<? extends ColoredImagePlusData> outputDataType) {
+    public ColorSpaceConverterAlgorithm(JIPipeNodeInfo info, Class<? extends ImagePlusData> outputDataType) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", "", ImagePlusData.class)
                 .addOutputSlot("Output", "", outputDataType, null)
@@ -63,14 +61,7 @@ public abstract class ColorSpaceConverterAlgorithm extends JIPipeSimpleIterating
             return;
         }
 
-        ColorSpace inputColorSpace;
-
-        if (input instanceof ColoredImagePlusData) {
-            inputColorSpace = ((ColoredImagePlusData) input).getColorSpace();
-        } else {
-            // Fallback to RGB (default)
-            inputColorSpace = new RGBColorSpace();
-        }
+        ColorSpace inputColorSpace = input.getColorSpace();
 
         // Use color space to convert
         image = input.getDuplicateImage();

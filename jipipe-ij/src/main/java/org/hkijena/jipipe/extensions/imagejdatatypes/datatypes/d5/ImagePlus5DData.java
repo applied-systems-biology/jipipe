@@ -19,14 +19,13 @@ import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AsserterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
-
-import java.nio.file.Path;
 
 /**
  * 5D image
@@ -34,12 +33,8 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "5D image")
 @JIPipeNode(menuPath = "Images\n5D")
 @JIPipeHeavyData
+@ImageTypeInfo(numDimensions = 5)
 public class ImagePlus5DData extends ImagePlusData {
-
-    /**
-     * The dimensionality of this data
-     */
-    public static final int DIMENSIONALITY = 5;
 
     /**
      * @param image wrapped image

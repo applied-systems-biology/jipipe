@@ -19,6 +19,7 @@ import ij.plugin.ChannelArranger;
 import ij.plugin.ChannelSplitter;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -58,7 +59,7 @@ import java.util.*;
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output")
 public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private OutputSlotMapParameterCollection channelToSlotAssignment;
+    private final OutputSlotMapParameterCollection channelToSlotAssignment;
     private boolean ignoreMissingChannels = false;
     private String annotationColumnSlotName = "Channel";
     private String annotationColumnChannelIndex = "Channel index";
@@ -73,7 +74,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public SplitChannelsAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", "", ImagePlusData.class)
-                .restrictOutputTo(ImageJDataTypesExtension.IMAGE_TYPES_GREYSCALE)
+                .restrictOutputTo(JIPipe.getDataTypes().findDataTypesByInterfaces(ImagePlusData.class))
                 .allowOutputSlotInheritance(false)
                 .sealInput()
                 .build());

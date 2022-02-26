@@ -13,11 +13,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.HSBColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.LABColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.HSBColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.LABColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ColorPixel5DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -59,7 +59,7 @@ public class ApplyColorMathExpression2DExpression extends JIPipeSimpleIteratingA
     @JIPipeDocumentation(name = "Output type", description = "Determines which data type is generated. Please note that channels are " +
             "re-interpreted, instead of converted.")
     @JIPipeParameter("output-type")
-    @JIPipeDataParameterSettings(dataBaseClass = ColoredImagePlusData.class)
+    @JIPipeDataParameterSettings(dataBaseClass = ImagePlusData.class)
     public JIPipeDataInfoRef getOutputType() {
         return outputType;
     }

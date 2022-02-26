@@ -854,7 +854,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
                 Class<? extends JIPipeData> expectedSlotDataType = getExpectedSlotDataType(entry.getValue(), slotInstance);
                 if (slotInstance.getAcceptedDataType() != expectedSlotDataType) {
                     slotInstance.setAcceptedDataType(expectedSlotDataType);
-                    eventBus.post(new JIPipeGraph.NodeSlotsChangedEvent(this));
+                    triggerSlotsChangedEvent();
                     modified = true;
                 }
             }
@@ -870,6 +870,13 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
                 }
             }
         }
+    }
+
+    /**
+     * Triggers an event that indicates that the slots have changed
+     */
+    public void triggerSlotsChangedEvent() {
+        eventBus.post(new JIPipeGraph.NodeSlotsChangedEvent(this));
     }
 
     /**

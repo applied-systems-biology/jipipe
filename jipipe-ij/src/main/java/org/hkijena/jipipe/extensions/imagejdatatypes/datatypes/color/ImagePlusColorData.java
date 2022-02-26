@@ -14,19 +14,21 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color;
 
 import ij.ImagePlus;
+import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.awt.*;
-import java.nio.file.Path;
 
 /**
  * A colored image without dimension.
@@ -37,13 +39,8 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "Image (Color)")
 @JIPipeNode(menuPath = "Images\nColor")
 @JIPipeHeavyData
-public class ImagePlusColorData extends ImagePlusData implements ColoredImagePlusData {
-
-    /**
-     * The dimensionality of this data.
-     * -1 means that we do not have information about the dimensionality
-     */
-    public static final int DIMENSIONALITY = -1;
+@ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = RGBColorSpace.class, pixelType = Integer.class, bitDepth = 24)
+public class ImagePlusColorData extends ImagePlusData implements ColorImageData {
 
     /**
      * @param image wrapped image
@@ -70,7 +67,6 @@ public class ImagePlusColorData extends ImagePlusData implements ColoredImagePlu
 
     /**
      * Converts the incoming image data into the current format.
-     * Copies the color space if provided with an {@link ColoredImagePlusData}
      *
      * @param data the data
      * @return the converted data
@@ -82,7 +78,7 @@ public class ImagePlusColorData extends ImagePlusData implements ColoredImagePlu
                 // This will go through the standard method (greyscale -> RGB -> HSB)
                 return new ImagePlusColorData(image);
             } else {
-                return new ImagePlusColorData(image, ((ColoredImagePlusData) data).getColorSpace());
+                return new ImagePlusColorData(image, data.getColorSpace());
             }
         } else {
             return new ImagePlusColorData(data.getImageSource(), data.getColorSpace());

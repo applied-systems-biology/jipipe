@@ -11,12 +11,10 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert;
 
 import gnu.trove.list.TDoubleList;
-import gnu.trove.list.array.TDoubleArrayList;
 import ij.measure.ResultsTable;
-import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -26,9 +24,10 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -37,12 +36,13 @@ import java.util.Collections;
 /**
  * Algorithm that generates {@link ResultsTableData} as histogram
  */
-@JIPipeDocumentation(name = "Get pixel values (Greyscale)", description = "Extracts the greyscale values of an image and puts them into a table. " +
-        "It generates following output columns: <pre>value</pre>")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
+@JIPipeDocumentation(name = "Get pixels as table", description = "Extracts the pixel values of an image and puts them into a table. " +
+        "The table always includes columns <code>x</code>, <code>y</code>, <code>z</code>, <code>c</code>, and <code>t</code>. For greyscale images, the value is stored into a column <code>value</code>. " +
+        "For color images, column names depend on the color space.")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-public class GreyscalePixelsGenerator extends JIPipeSimpleIteratingAlgorithm {
+public class ImageToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean applyPerSlice = false;
     private String sliceAnnotation = "Image index";
@@ -52,7 +52,7 @@ public class GreyscalePixelsGenerator extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param info the algorithm info
      */
-    public GreyscalePixelsGenerator(JIPipeNodeInfo info) {
+    public ImageToTableAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -61,7 +61,7 @@ public class GreyscalePixelsGenerator extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public GreyscalePixelsGenerator(GreyscalePixelsGenerator other) {
+    public ImageToTableAlgorithm(ImageToTableAlgorithm other) {
         super(other);
         this.applyPerSlice = other.applyPerSlice;
         this.sliceAnnotation = other.sliceAnnotation;
@@ -71,10 +71,11 @@ public class GreyscalePixelsGenerator extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         if (applyPerSlice) {
             ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
-            ImageJUtils.forEachIndexedSlice(inputData.getImage(), (imp, index) -> {
-                TDoubleList pixels = new TDoubleArrayList(imp.getPixelCount());
-                getPixels(imp, pixels);
-                ResultsTableData resultsTable = toResultsTable(pixels);
+            ImageJUtils.forEachIndexedZCTSlice(inputData.getImage(), (imp, index) -> {
+                ResultsTableData resultsTable = new ResultsTableData();
+                prepareResultsTable(inputData, resultsTable);
+                resultsTable.addRows(imp.getWidth() * imp.getHeight());
+                writePixelsToTable(resultsTable, imp, inputData.getColorSpace(), index, 0);
                 if (!StringUtils.isNullOrEmpty(sliceAnnotation)) {
                     dataBatch.addOutputData(getFirstOutputSlot(), resultsTable,
                             Collections.singletonList(new JIPipeTextAnnotation(sliceAnnotation, "slice=" + index)), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
@@ -84,10 +85,63 @@ public class GreyscalePixelsGenerator extends JIPipeSimpleIteratingAlgorithm {
             }, progressInfo);
         } else {
             ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
-            final TDoubleList pixels = new TDoubleArrayList();
-            ImageJUtils.forEachSlice(inputData.getImage(), imp -> getPixels(imp, pixels), progressInfo);
-            ResultsTableData resultsTable = toResultsTable(pixels);
+            ResultsTableData resultsTable = new ResultsTableData();
+            prepareResultsTable(inputData, resultsTable);
+            resultsTable.addRows(inputData.getWidth() * inputData.getHeight() * inputData.getNFrames() * inputData.getNChannels() * inputData.getNSlices());
+
+            int[] counter = new int[1];
+            ImageJUtils.forEachIndexedZCTSlice(inputData.getImage(), (imp, index) -> {
+                writePixelsToTable(resultsTable, imp, inputData.getColorSpace(), index, counter[0]);
+                counter[0] += imp.getWidth() * imp.getHeight();
+            }, progressInfo);
+
             dataBatch.addOutputData(getFirstOutputSlot(), resultsTable, progressInfo);
+        }
+    }
+
+    private void writePixelsToTable(ResultsTableData target, ImageProcessor imp, ColorSpace colorSpace, ImageSliceIndex sliceIndex, int startIndex) {
+        final int nPixels = imp.getWidth() * imp.getHeight();
+        final boolean isGreyscale = imp.isGrayscale();
+        final int[] channelBuffer = imp.isGrayscale() ? new int[0] : new int[colorSpace.getNChannels()];
+        for (int i = 0; i < nPixels; i++) {
+            final int row = i + startIndex;
+            final int x = i % imp.getWidth();
+            final int y = i / imp.getWidth();
+            final int z = sliceIndex.getZ();
+            final int c = sliceIndex.getC();
+            final int t = sliceIndex.getT();
+
+            // For performance reasons, use predefined order
+            target.setValueAt(x, row, 0);
+            target.setValueAt(y, row, 1);
+            target.setValueAt(z, row, 2);
+            target.setValueAt(c, row, 3);
+            target.setValueAt(t, row, 4);
+            if(isGreyscale) {
+                target.setValueAt(imp.getf(i), row, 5);
+            }
+            else {
+                colorSpace.decomposePixel(imp.get(i), channelBuffer);
+                for (int channel = 0; channel < channelBuffer.length; channel++) {
+                    target.setValueAt(channelBuffer[channel], row, 5 + channel);
+                }
+            }
+        }
+    }
+
+    private void prepareResultsTable(ImagePlusData inputData, ResultsTableData resultsTable) {
+        resultsTable.addNumericColumn("x");
+        resultsTable.addNumericColumn("y");
+        resultsTable.addNumericColumn("z");
+        resultsTable.addNumericColumn("c");
+        resultsTable.addNumericColumn("t");
+        if(inputData.isGrayscale()) {
+            resultsTable.addNumericColumn("value");
+        }
+        else {
+            for (int c = 0; c < inputData.getColorSpace().getNChannels(); c++) {
+                resultsTable.addNumericColumn(inputData.getColorSpace().getChannelShortName(c));
+            }
         }
     }
 
@@ -109,18 +163,6 @@ public class GreyscalePixelsGenerator extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("apply-per-slice")
     public void setApplyPerSlice(boolean applyPerSlice) {
         this.applyPerSlice = applyPerSlice;
-    }
-
-    private void getPixels(ImageProcessor processor, TDoubleList result) {
-        if (processor instanceof FloatProcessor) {
-            for (int i = 0; i < processor.getPixelCount(); ++i) {
-                result.add(processor.getf(i));
-            }
-        } else {
-            for (int i = 0; i < processor.getPixelCount(); ++i) {
-                result.add(processor.get(i));
-            }
-        }
     }
 
     @JIPipeDocumentation(name = "Apply per slice annotation", description = "Optional annotation type that generated for each slice output. " +

@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.imagejdatatypes.color;
+package org.hkijena.jipipe.extensions.imagejdatatypes.colorspace;
 
 import ij.ImagePlus;
 import ij.process.ColorSpaceConverter;
@@ -7,6 +7,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 public class LABColorSpace implements ColorSpace {
 
+    public static final LABColorSpace INSTANCE = new LABColorSpace();
     private static final ColorSpaceConverter CONVERTER = new ColorSpaceConverter();
 
     @Override
@@ -46,6 +47,55 @@ public class LABColorSpace implements ColorSpace {
         lab[2] = b;
         int[] rgb = CONVERTER.LABtoRGB(lab);
         return (rgb[0] << 16) + (rgb[1] << 8) + rgb[2];
+    }
+
+    @Override
+    public int getNChannels() {
+        return 3;
+    }
+
+    @Override
+    public String getChannelName(int channelIndex) {
+        switch (channelIndex) {
+            case 0:
+                return "L*";
+            case 1:
+                return "a*";
+            case 2:
+                return "b*";
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    @Override
+    public String getChannelShortName(int channelIndex) {
+        switch (channelIndex) {
+            case 0:
+                return "L*";
+            case 1:
+                return "a*";
+            case 2:
+                return "b*";
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    @Override
+    public int composePixel(int... channelValues) {
+        return (channelValues[0] << 16) + (channelValues[1] << 8) + channelValues[2];
+    }
+
+    @Override
+    public void decomposePixel(int pixel, int[] channelValues) {
+        int x1 = (pixel & 0xff0000) >> 16;
+        int x2 = (pixel & 0xff00) >> 8;
+        int x3 = pixel & 0xff;
+
+        channelValues[0] = x1;
+        channelValues[1] = x2;
+        channelValues[2] = x3;
     }
 
     @Override

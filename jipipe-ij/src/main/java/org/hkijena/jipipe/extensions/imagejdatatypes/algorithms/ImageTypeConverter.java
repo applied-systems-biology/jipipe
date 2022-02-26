@@ -27,8 +27,11 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeDataParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 
 /**
  * Converts ImageJ data type into each other
@@ -39,18 +42,15 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 public class ImageTypeConverter extends JIPipeAlgorithm {
 
+    private JIPipeDataInfoRef outputType = new JIPipeDataInfoRef(ImagePlusData.class);
+
     /**
      * Creates a new instance
      *
      * @param info Algorithm info
      */
     public ImageTypeConverter(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", "", ImagePlusData.class)
-                .restrictOutputTo(ImageJDataTypesExtension.IMAGE_TYPES)
-                .restrictOutputSlotCount(1)
-                .sealInput()
-                .build());
+        super(info);
     }
 
     /**
@@ -60,6 +60,26 @@ public class ImageTypeConverter extends JIPipeAlgorithm {
      */
     public ImageTypeConverter(ImageTypeConverter other) {
         super(other);
+        this.outputType = other.outputType;
+    }
+
+    @JIPipeDocumentation(name = "Output image type", description = "Determines the output image type")
+    @JIPipeParameter(value = "output-type", important = true)
+    @JIPipeDataParameterSettings(dataBaseClass = ImagePlusData.class)
+    public JIPipeDataInfoRef getOutputType() {
+        return outputType;
+    }
+
+    @JIPipeParameter("output-type")
+    public void setOutputType(JIPipeDataInfoRef outputType) {
+        if(outputType == null || outputType.getInfo() == null) {
+            outputType = new JIPipeDataInfoRef(ImagePlusData.class);
+        }
+        if(outputType.getInfo() != this.outputType.getInfo()) {
+            this.outputType = outputType;
+            getFirstOutputSlot().setAcceptedDataType(outputType.getInfo().getDataClass());
+            triggerSlotsChangedEvent();
+        }
     }
 
     @Override
@@ -68,7 +88,7 @@ public class ImageTypeConverter extends JIPipeAlgorithm {
         JIPipeDataSlot outputSlot = getFirstOutputSlot();
         for (int i = 0; i < inputSlot.getRowCount(); ++i) {
             ImagePlusData data = inputSlot.getData(i, ImagePlusData.class, progressInfo);
-            JIPipeData converted = JIPipe.createData(outputSlot.getAcceptedDataType(), data.getImage());
+            JIPipeData converted = JIPipe.createData(outputType.getInfo().getDataClass(), data.getImage());
             outputSlot.addData(converted, outputSlot.getTextAnnotations(i), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }
     }

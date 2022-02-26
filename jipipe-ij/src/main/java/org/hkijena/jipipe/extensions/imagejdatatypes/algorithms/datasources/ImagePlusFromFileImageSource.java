@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejdatatypes.datasources;
+package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.datasources;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;

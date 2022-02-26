@@ -14,18 +14,20 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale;
 
 import ij.ImagePlus;
+import ij.process.FloatProcessor;
+import ij.process.ShortProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.GreyscaleColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
-
-import java.nio.file.Path;
 
 /**
  * 32 bit float greyscale image without dimension.
@@ -35,13 +37,8 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "Image (float)")
 @JIPipeNode(menuPath = "Images\nGreyscale")
 @JIPipeHeavyData
+@ImageTypeInfo(imageProcessorType = FloatProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Float.class, bitDepth = 32)
 public class ImagePlusGreyscale32FData extends ImagePlusGreyscaleData {
-
-    /**
-     * The dimensionality of this data.
-     * -1 means that we do not have information about the dimensionality
-     */
-    public static final int DIMENSIONALITY = -1;
 
     public ImagePlusGreyscale32FData(ImagePlus image) {
         super(ImageJUtils.convertToGrayscale32FIfNeeded(image));

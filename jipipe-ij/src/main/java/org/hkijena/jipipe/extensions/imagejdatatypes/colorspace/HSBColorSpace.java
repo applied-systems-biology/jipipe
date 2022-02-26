@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.imagejdatatypes.color;
+package org.hkijena.jipipe.extensions.imagejdatatypes.colorspace;
 
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -7,6 +7,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import java.awt.*;
 
 public class HSBColorSpace implements ColorSpace {
+
+    public static final HSBColorSpace INSTANCE = new HSBColorSpace();
+
     @Override
     public void convertToRGB(ImagePlus img, JIPipeProgressInfo progressInfo) {
         ImageJUtils.convertHSBToRGB(img, progressInfo);
@@ -47,5 +50,54 @@ public class HSBColorSpace implements ColorSpace {
     @Override
     public String toString() {
         return "HSB";
+    }
+
+    @Override
+    public int getNChannels() {
+        return 3;
+    }
+
+    @Override
+    public String getChannelName(int channelIndex) {
+        switch (channelIndex) {
+            case 0:
+                return "Hue";
+            case 1:
+                return "Saturation";
+            case 2:
+                return "Brightness";
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    @Override
+    public String getChannelShortName(int channelIndex) {
+        switch (channelIndex) {
+            case 0:
+                return "H";
+            case 1:
+                return "S";
+            case 2:
+                return "B";
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    @Override
+    public int composePixel(int... channelValues) {
+        return (channelValues[0] << 16) + (channelValues[1] << 8) + channelValues[2];
+    }
+
+    @Override
+    public void decomposePixel(int pixel, int[] channelValues) {
+        int x1 = (pixel & 0xff0000) >> 16;
+        int x2 = (pixel & 0xff00) >> 8;
+        int x3 = pixel & 0xff;
+
+        channelValues[0] = x1;
+        channelValues[1] = x2;
+        channelValues[2] = x3;
     }
 }

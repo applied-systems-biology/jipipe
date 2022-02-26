@@ -14,22 +14,23 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color;
 
 import ij.ImagePlus;
+import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.LABColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.LABColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorLABData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
 import java.awt.*;
-import java.nio.file.Path;
 
 /**
  * RGB color 3D image
@@ -37,17 +38,8 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "3D image (LAB)")
 @JIPipeNode(menuPath = "Images\n3D\nColor")
 @JIPipeHeavyData
-public class ImagePlus3DColorLABData extends ImagePlus3DColorData implements ColoredImagePlusData {
-
-    /**
-     * The dimensionality of this data
-     */
-    public static final int DIMENSIONALITY = 3;
-
-    /**
-     * The color space of this image
-     */
-    public static final ColorSpace COLOR_SPACE = new LABColorSpace();
+@ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = LABColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 3)
+public class ImagePlus3DColorLABData extends ImagePlus3DColorData  {
 
     /**
      * @param image wrapped image
@@ -84,7 +76,7 @@ public class ImagePlus3DColorLABData extends ImagePlus3DColorData implements Col
 
     @Override
     public ColorSpace getColorSpace() {
-        return COLOR_SPACE;
+        return LABColorSpace.INSTANCE;
     }
 
     @Override

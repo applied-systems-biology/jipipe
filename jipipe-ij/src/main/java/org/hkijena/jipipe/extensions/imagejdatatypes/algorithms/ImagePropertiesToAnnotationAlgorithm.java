@@ -25,7 +25,6 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 
 import java.util.ArrayList;
@@ -232,12 +231,11 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
         }
         if (getColorSpaceAnnotation().isEnabled()) {
             String colorSpace;
-            if (inputData instanceof ColoredImagePlusData) {
-                colorSpace = ((ColoredImagePlusData) inputData).getColorSpace().toString();
-            } else if (inputData.getImage().getType() == ImagePlus.COLOR_RGB) {
-                colorSpace = "RGB";
-            } else {
+            if(inputData.isGrayscale()) {
                 colorSpace = "Greyscale";
+            }
+            else {
+                colorSpace = inputData.getColorSpace().toString();
             }
             annotations.add(new JIPipeTextAnnotation(getBitDepthAnnotation().getContent(), colorSpace));
         }

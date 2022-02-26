@@ -31,7 +31,7 @@ import ij.plugin.filter.AVI_Writer;
 import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
@@ -1629,54 +1629,12 @@ public class ImageJUtils {
         return image;
     }
 
-    public static void assert2DImage(ImagePlus image) {
-        if (image.getNDimensions() > 2) {
-            throw new UserFriendlyRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + ImagePlus2DData.DIMENSIONALITY + "D data!"),
-                    "Trying to fit higher-dimensional data into " + ImagePlus2DData.DIMENSIONALITY + "D data!",
+    public static void assertImageDimensions(ImagePlus image, int maxDimensions) {
+        if (image.getNDimensions() > maxDimensions) {
+            throw new UserFriendlyRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + maxDimensions + "D data!"),
+                    "Trying to fit higher-dimensional data into " + maxDimensions + "D data!",
                     "ImageJ integration internals",
-                    image.getNDimensions() + "D data was supplied, but it was requested that it should fit into " + ImagePlus2DData.DIMENSIONALITY + "D data. " +
-                            "This is not trivial. This can be caused by selecting the wrong data slot type or applying a conversion" +
-                            " from N-dimensional data into data with a defined dimensionality.",
-                    "Try to check if the data slots have the correct data types. You can also check the input of the offending algorithm via " +
-                            "the quick run to see if they fit the assumptions. If you cannot find the reason behind this error," +
-                            " try to contact the JIPipe or plugin developers.");
-        }
-    }
-
-    public static void assert3DImage(ImagePlus image) {
-        if (image.getNDimensions() > 3) {
-            throw new UserFriendlyRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + ImagePlus3DData.DIMENSIONALITY + "D data!"),
-                    "Trying to fit higher-dimensional data into " + ImagePlus3DData.DIMENSIONALITY + "D data!",
-                    "ImageJ integration internals",
-                    image.getNDimensions() + "D data was supplied, but it was requested that it should fit into " + ImagePlus3DData.DIMENSIONALITY + "D data. " +
-                            "This is not trivial. This can be caused by selecting the wrong data slot type or applying a conversion" +
-                            " from N-dimensional data into data with a defined dimensionality.",
-                    "Try to check if the data slots have the correct data types. You can also check the input of the offending algorithm via " +
-                            "the quick run to see if they fit the assumptions. If you cannot find the reason behind this error," +
-                            " try to contact the JIPipe or plugin developers.");
-        }
-    }
-
-    public static void assert4DImage(ImagePlus image) {
-        if (image.getNDimensions() > 4) {
-            throw new UserFriendlyRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + ImagePlus4DData.DIMENSIONALITY + "D data!"),
-                    "Trying to fit higher-dimensional data into " + ImagePlus4DData.DIMENSIONALITY + "D data!",
-                    "ImageJ integration internals",
-                    image.getNDimensions() + "D data was supplied, but it was requested that it should fit into " + ImagePlus4DData.DIMENSIONALITY + "D data. " +
-                            "This is not trivial. This can be caused by selecting the wrong data slot type or applying a conversion" +
-                            " from N-dimensional data into data with a defined dimensionality.",
-                    "Try to check if the data slots have the correct data types. You can also check the input of the offending algorithm via " +
-                            "the quick run to see if they fit the assumptions. If you cannot find the reason behind this error," +
-                            " try to contact the JIPipe or plugin developers.");
-        }
-    }
-
-    public static void assert5DImage(ImagePlus image) {
-        if (image.getNDimensions() > 5) {
-            throw new UserFriendlyRuntimeException(new IllegalArgumentException("Trying to fit higher-dimensional data into " + ImagePlus5DData.DIMENSIONALITY + "D data!"),
-                    "Trying to fit higher-dimensional data into " + ImagePlus5DData.DIMENSIONALITY + "D data!",
-                    "ImageJ integration internals",
-                    image.getNDimensions() + "D data was supplied, but it was requested that it should fit into " + ImagePlus5DData.DIMENSIONALITY + "D data. " +
+                    image.getNDimensions() + "D data was supplied, but it was requested that it should fit into " + maxDimensions + "D data. " +
                             "This is not trivial. This can be caused by selecting the wrong data slot type or applying a conversion" +
                             " from N-dimensional data into data with a defined dimensionality.",
                     "Try to check if the data slots have the correct data types. You can also check the input of the offending algorithm via " +
@@ -1743,6 +1701,22 @@ public class ImageJUtils {
         int c = Math.min(index.getZ(), image.getNChannels() - 1);
         int t = Math.min(index.getZ(), image.getNFrames() - 1);
         return getSliceZero(image, c, z, t);
+    }
+
+    public static void assert4DImage(ImagePlus image) {
+        assertImageDimensions(image, 4);
+    }
+
+    public static void assert3DImage(ImagePlus image) {
+        assertImageDimensions(image, 3);
+    }
+
+    public static void assert2DImage(ImagePlus image) {
+        assertImageDimensions(image, 2);
+    }
+
+    public static void assert5DImage(ImagePlus image) {
+        assertImageDimensions(image, 5);
     }
 
     public static class GradientStop implements Comparable<GradientStop> {

@@ -25,12 +25,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.color.ToHSBColorSpaceConverterAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.color.ToLABColorSpaceConverterAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.color.ToRGBColorSpaceConverterAlgorithm;
+import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.datasources.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.*;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datasources.*;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.LUTData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorLABData;
@@ -97,99 +94,6 @@ import java.util.stream.Collectors;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtension {
-
-    /**
-     * All image data types known to this library
-     */
-    public static final List<Class<? extends JIPipeData>> IMAGE_TYPES = Arrays.asList(
-            ImagePlusData.class, ImagePlus2DData.class, ImagePlus3DData.class, ImagePlus4DData.class, ImagePlus5DData.class,
-            ImagePlusColorHSBData.class, ImagePlusColorRGBData.class, ImagePlusColorData.class, ImagePlusColorLABData.class,
-            ImagePlus2DColorHSBData.class, ImagePlus2DColorRGBData.class, ImagePlus2DColorData.class, ImagePlus2DColorLABData.class,
-            ImagePlus3DColorHSBData.class, ImagePlus3DColorRGBData.class, ImagePlus3DColorData.class, ImagePlus3DColorLABData.class,
-            ImagePlus4DColorHSBData.class, ImagePlus4DColorRGBData.class, ImagePlus4DColorData.class, ImagePlus4DColorLABData.class,
-            ImagePlus5DColorHSBData.class, ImagePlus5DColorRGBData.class, ImagePlus5DColorData.class, ImagePlus5DColorLABData.class,
-            ImagePlusGreyscaleData.class, ImagePlusGreyscale32FData.class, ImagePlusGreyscaleMaskData.class, ImagePlusGreyscale8UData.class, ImagePlusGreyscale8UData.class, ImagePlusGreyscale16UData.class,
-            ImagePlus2DGreyscaleData.class, ImagePlus2DGreyscale32FData.class, ImagePlus2DGreyscaleMaskData.class, ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale16UData.class,
-            ImagePlus3DGreyscaleData.class, ImagePlus3DGreyscale32FData.class, ImagePlus3DGreyscaleMaskData.class, ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscale16UData.class,
-            ImagePlus4DGreyscaleData.class, ImagePlus4DGreyscale32FData.class, ImagePlus4DGreyscaleMaskData.class, ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscale16UData.class,
-            ImagePlus5DGreyscaleData.class, ImagePlus5DGreyscale32FData.class, ImagePlus5DGreyscaleMaskData.class, ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscale16UData.class);
-
-    /**
-     * All dimension-less image data types
-     */
-    public static final List<Class<? extends JIPipeData>> IMAGE_TYPES_DIMENSIONLESS = Arrays.asList(
-            ImagePlusData.class,
-            ImagePlusColorHSBData.class, ImagePlusColorRGBData.class,
-            ImagePlusColorData.class, ImagePlusColorLABData.class,
-            ImagePlusGreyscaleData.class, ImagePlusGreyscale32FData.class,
-            ImagePlusGreyscaleMaskData.class, ImagePlusGreyscale8UData.class,
-            ImagePlusGreyscale8UData.class, ImagePlusGreyscale16UData.class);
-
-    /**
-     * All greyscale image data types
-     */
-    public static final List<Class<? extends JIPipeData>> IMAGE_TYPES_GREYSCALE = Arrays.asList(
-            ImagePlusGreyscaleData.class, ImagePlusGreyscale32FData.class, ImagePlusGreyscaleMaskData.class, ImagePlusGreyscale8UData.class, ImagePlusGreyscale8UData.class, ImagePlusGreyscale16UData.class,
-            ImagePlus2DGreyscaleData.class, ImagePlus2DGreyscale32FData.class, ImagePlus2DGreyscaleMaskData.class, ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale8UData.class, ImagePlus2DGreyscale16UData.class,
-            ImagePlus3DGreyscaleData.class, ImagePlus3DGreyscale32FData.class, ImagePlus3DGreyscaleMaskData.class, ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscale8UData.class, ImagePlus3DGreyscale16UData.class,
-            ImagePlus4DGreyscaleData.class, ImagePlus4DGreyscale32FData.class, ImagePlus4DGreyscaleMaskData.class, ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscale8UData.class, ImagePlus4DGreyscale16UData.class,
-            ImagePlus5DGreyscaleData.class, ImagePlus5DGreyscale32FData.class, ImagePlus5DGreyscaleMaskData.class, ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscale8UData.class, ImagePlus5DGreyscale16UData.class);
-
-    public static final List<Class<? extends JIPipeData>> IMAGE_TYPES_GREYSCALE_8U = Arrays.asList(
-            ImagePlusGreyscale8UData.class,
-            ImagePlus2DGreyscale8UData.class,
-            ImagePlus3DGreyscale8UData.class,
-            ImagePlus4DGreyscale8UData.class,
-            ImagePlus5DGreyscale8UData.class);
-
-    public static final List<Class<? extends JIPipeData>> IMAGE_TYPES_GREYSCALE_16U = Arrays.asList(
-            ImagePlusGreyscale16UData.class,
-            ImagePlus2DGreyscale16UData.class,
-            ImagePlus3DGreyscale16UData.class,
-            ImagePlus4DGreyscale16UData.class,
-            ImagePlus5DGreyscale16UData.class);
-
-    public static final List<Class<? extends JIPipeData>> IMAGE_TYPES_GREYSCALE_MASK = Arrays.asList(
-            ImagePlusGreyscaleMaskData.class,
-            ImagePlus2DGreyscaleMaskData.class,
-            ImagePlus3DGreyscaleMaskData.class,
-            ImagePlus4DGreyscaleMaskData.class,
-            ImagePlus5DGreyscaleMaskData.class);
-
-    public static final List<Class<? extends JIPipeData>> IMAGE_TYPES_GREYSCALE_32F = Arrays.asList(
-            ImagePlusGreyscale32FData.class,
-            ImagePlus2DGreyscale32FData.class,
-            ImagePlus3DGreyscale32FData.class,
-            ImagePlus4DGreyscale32FData.class,
-            ImagePlus5DGreyscale32FData.class);
-
-    public static final List<Class<? extends JIPipeData>> IMAGE_TYPES_COLOR = Arrays.asList(
-            ImagePlusColorHSBData.class, ImagePlusColorRGBData.class, ImagePlusColorData.class, ImagePlusColorLABData.class,
-            ImagePlus2DColorHSBData.class, ImagePlus2DColorRGBData.class, ImagePlus2DColorData.class, ImagePlus2DColorLABData.class,
-            ImagePlus3DColorHSBData.class, ImagePlus3DColorRGBData.class, ImagePlus3DColorData.class, ImagePlus3DColorLABData.class,
-            ImagePlus4DColorHSBData.class, ImagePlus4DColorRGBData.class, ImagePlus4DColorData.class, ImagePlus4DColorLABData.class,
-            ImagePlus5DColorHSBData.class, ImagePlus5DColorRGBData.class, ImagePlus5DColorData.class, ImagePlus5DColorLABData.class);
-
-    public static final List<Class<? extends JIPipeData>> IMAGE_TYPES_COLOR_HSB = Arrays.asList(
-            ImagePlusColorHSBData.class,
-            ImagePlus2DColorHSBData.class,
-            ImagePlus3DColorHSBData.class,
-            ImagePlus4DColorHSBData.class,
-            ImagePlus5DColorHSBData.class);
-
-    public static final List<Class<? extends JIPipeData>> IMAGE_TYPES_COLOR_LAB = Arrays.asList(
-            ImagePlusColorLABData.class,
-            ImagePlus2DColorLABData.class,
-            ImagePlus3DColorLABData.class,
-            ImagePlus4DColorLABData.class,
-            ImagePlus5DColorLABData.class);
-
-    public static final List<Class<? extends JIPipeData>> IMAGE_TYPES_COLOR_RGB = Arrays.asList(
-            ImagePlusColorRGBData.class,
-            ImagePlus2DColorRGBData.class,
-            ImagePlus3DColorRGBData.class,
-            ImagePlus4DColorRGBData.class,
-            ImagePlus5DColorRGBData.class);
 
     @Override
     public StringList getDependencyCitations() {
@@ -417,6 +321,9 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
     }
 
     private void registerImageDataType(String id, Class<? extends ImagePlusData> dataClass, String iconResource) {
+        if(dataClass.getAnnotation(ImageTypeInfo.class) == null) {
+            throw new IllegalArgumentException("Cannot register image data type '" + id + "' (" + dataClass + ") without ImageTypeInfo annotation!");
+        }
         registerDatatype(id,
                 dataClass,
                 ResourceUtils.getPluginResource(iconResource),

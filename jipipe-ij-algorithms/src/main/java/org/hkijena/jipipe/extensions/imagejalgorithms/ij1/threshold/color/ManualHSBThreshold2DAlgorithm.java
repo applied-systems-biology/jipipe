@@ -15,7 +15,6 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.BlackToWhiteTrackBac
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.HSBHueTrackBackground;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.WhiteToRedTrackBackground;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -65,9 +64,6 @@ public class ManualHSBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        if (!(dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo) instanceof ColoredImagePlusData)) {
-            progressInfo.log("Info: Received an image without color space information! Its channels will be interpreted as HSB.");
-        }
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorHSBData.class, progressInfo).getImage();
         ImagePlus result = IJ.createHyperStack(img.getTitle() + " thresholded",
                 img.getWidth(),

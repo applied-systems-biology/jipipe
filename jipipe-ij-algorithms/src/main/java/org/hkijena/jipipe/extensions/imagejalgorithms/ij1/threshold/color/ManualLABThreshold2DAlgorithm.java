@@ -15,7 +15,6 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.LABBlueYellowTrackBa
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.LABGreenRedTrackBackground;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.LABLightnessTrackBackground;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorLABData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -65,9 +64,6 @@ public class ManualLABThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        if (!(dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo) instanceof ColoredImagePlusData)) {
-            progressInfo.log("Info: Received an image without color space information! Its channels will be interpreted as LAB.");
-        }
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorLABData.class, progressInfo).getImage();
         ImagePlus result = IJ.createHyperStack(img.getTitle() + " thresholded",
                 img.getWidth(),

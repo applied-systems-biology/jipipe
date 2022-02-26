@@ -15,7 +15,6 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.RGBBlueTrackBackgrou
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.RGBGreenTrackBackground;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.RGBRedTrackBackground;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -65,9 +64,6 @@ public class ManualRGBThreshold2DAlgorithm extends JIPipeSimpleIteratingAlgorith
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        if (!(dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo) instanceof ColoredImagePlusData)) {
-            progressInfo.log("Info: Received an image without color space information! Its channels will be interpreted as RGB.");
-        }
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusColorRGBData.class, progressInfo).getImage();
         ImagePlus result = IJ.createHyperStack(img.getTitle() + " thresholded",
                 img.getWidth(),

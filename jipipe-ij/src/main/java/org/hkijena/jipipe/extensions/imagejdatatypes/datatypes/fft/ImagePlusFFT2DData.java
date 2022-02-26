@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 
 import java.nio.file.Path;
 
@@ -29,12 +30,8 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "2D FFT Image")
 @JIPipeNode(menuPath = "Images\nFFT")
 @JIPipeHeavyData
+@ImageTypeInfo(numDimensions = 2)
 public class ImagePlusFFT2DData extends ImagePlusFFTData {
-
-    /**
-     * The dimensionality of this data
-     */
-    public static final int DIMENSIONALITY = 2;
 
     /**
      * Creates a new instance

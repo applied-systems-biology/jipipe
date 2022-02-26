@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.process.ImageProcessor;
+import ij.process.*;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
@@ -25,9 +25,8 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesSettings;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.RGBColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ColoredImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
@@ -48,13 +47,8 @@ import java.util.Collections;
 @JIPipeHeavyData
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpg, *.png. " +
         "We recommend the usage of TIFF.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/imageplus-data.schema.json")
-public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
-
-    /**
-     * The dimensionality of this data.
-     * -1 means that we do not have information about the dimensionality
-     */
-    public static final int DIMENSIONALITY = -1;
+@ImageTypeInfo
+public class ImagePlusData implements JIPipeData {
 
     private ImagePlus image;
     private ImageSource imageSource;
@@ -135,6 +129,85 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
         return new ImagePlusData(importImagePlusFrom(storage, progressInfo));
     }
 
+    public int getWidth() {
+        return getImage().getWidth();
+    }
+
+    public int getHeight() {
+        return getImage().getHeight();
+    }
+
+    public int getNChannels() {
+        return getImage().getNChannels();
+    }
+
+    public int getNSlices() {
+        return getImage().getNSlices();
+    }
+
+    public int getNFrames() {
+        return getImage().getNFrames();
+    }
+
+    /**
+     * Returns true if the image is grayscale
+     * @return if the image is grayscale
+     */
+    public boolean isGrayscale() {
+        switch (getImage().getType()) {
+            case ImagePlus.GRAY8:
+            case ImagePlus.GRAY16:
+            case ImagePlus.GRAY32:
+                return true;
+            case ImagePlus.COLOR_RGB:
+            case ImagePlus.COLOR_256:
+                return false;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    /**
+     * Returns the appropriate Java type that stores the pixel data.
+     * Does not return Java primitives, but instead their wrapper classes.
+     * @return the pixel type
+     */
+    public Class<?> getPixelType() {
+        switch (getImage().getType()) {
+            case ImagePlus.GRAY8:
+            case ImagePlus.COLOR_256:
+                return Byte.class;
+            case ImagePlus.GRAY16:
+                return Short.class;
+            case ImagePlus.GRAY32:
+                return Float.class;
+            case ImagePlus.COLOR_RGB:
+                return Integer.class;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
+    /**
+     * Returns the appropriate {@link ImageProcessor} that stores the pixel data.
+     * @return the {@link ImageProcessor} type
+     */
+    public Class<? extends ImageProcessor> getImageProcessorType() {
+        switch (getImage().getType()) {
+            case ImagePlus.GRAY8:
+            case ImagePlus.COLOR_256:
+                return ByteProcessor.class;
+            case ImagePlus.GRAY16:
+                return ShortProcessor.class;
+            case ImagePlus.GRAY32:
+                return FloatProcessor.class;
+            case ImagePlus.COLOR_RGB:
+                return ColorProcessor.class;
+            default:
+                throw new IllegalArgumentException();
+        }
+    }
+
     /**
      * Gets the dimensionality of {@link ImagePlusData}
      *
@@ -142,11 +215,7 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
      * @return the dimensionality
      */
     public static int getDimensionalityOf(Class<? extends ImagePlusData> klass) {
-        try {
-            return klass.getDeclaredField("DIMENSIONALITY").getInt(null);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
+        return klass.getAnnotation(ImageTypeInfo.class).numDimensions();
     }
 
     /**
@@ -291,7 +360,6 @@ public class ImagePlusData implements JIPipeData, ColoredImagePlusData {
             return JIPipeDataInfo.getInstance(getClass()).getName() + " (" + imageSource.getLabel() + ")";
     }
 
-    @Override
     public ColorSpace getColorSpace() {
         return colorSpace;
     }

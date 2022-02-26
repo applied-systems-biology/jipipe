@@ -14,18 +14,21 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale;
 
 import ij.ImagePlus;
+import ij.process.ByteProcessor;
+import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
-import org.hkijena.jipipe.extensions.imagejdatatypes.color.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.GreyscaleColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
-
-import java.nio.file.Path;
 
 /**
  * 8-bit greyscale 3D image
@@ -33,12 +36,8 @@ import java.nio.file.Path;
 @JIPipeDocumentation(name = "3D image (8 bit)")
 @JIPipeNode(menuPath = "Images\n3D\nGreyscale")
 @JIPipeHeavyData
+@ImageTypeInfo(imageProcessorType = ByteProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Byte.class, bitDepth = 8, numDimensions = 3)
 public class ImagePlus3DGreyscale8UData extends ImagePlus3DGreyscaleData {
-
-    /**
-     * The dimensionality of this data
-     */
-    public static final int DIMENSIONALITY = 3;
 
     public ImagePlus3DGreyscale8UData(ImagePlus image) {
         super(ImageJUtils.convertToGreyscale8UIfNeeded(image));

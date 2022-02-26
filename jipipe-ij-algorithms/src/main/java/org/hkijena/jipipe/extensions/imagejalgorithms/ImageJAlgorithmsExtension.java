@@ -87,7 +87,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.ClassicWatersh
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.RidgeDetector2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.segment.SeededWatershedSegmentationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.sharpen.LaplacianSharpen2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.GreyscalePixelsGenerator;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ImageToTableAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics.HistogramGenerator;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.color.ColorThresholdExpression2D;
@@ -810,7 +810,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-analyze-image-statistics-expression", ImageStatisticsExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("ij1-analyze-annotate-by-image-statistics-expression", AnnotateByImageStatisticsExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("ij1-analyze-statistics-histogram", HistogramGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
-        registerNodeType("ij1-analyze-statistics-pixels-greyscale", GreyscalePixelsGenerator.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
+        registerNodeType("ij1-analyze-statistics-get-pixels", ImageToTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
 
         registerEnumParameterType("ij1-analyze-statistics-histogram:multi-channel-mode", HistogramGenerator.MultiChannelMode.class,
                 "Multichannel mode", "Available modes");
