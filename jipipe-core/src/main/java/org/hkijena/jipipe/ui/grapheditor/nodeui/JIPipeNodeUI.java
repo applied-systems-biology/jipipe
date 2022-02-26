@@ -257,6 +257,10 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         return true;
     }
 
+    public Point getStoredGridLocation() {
+        return node.getLocationWithin(StringUtils.nullToEmpty(graphUI.getCompartment()), graphUI.getViewMode().name());
+    }
+
     /**
      * Moves the UI back to the stored grid location
      *

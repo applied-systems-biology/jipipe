@@ -614,12 +614,13 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
                 int yu = currentlyDraggedOffset.y + mouseEvent.getY();
                 if (xu < 0 || yu < 0) {
                     long currentTimeMillis = System.currentTimeMillis();
-                    int ex = xu < 0 ? viewMode.getGridWidth() : 0;
-                    int ey = yu < 0 ? viewMode.getGridHeight() : 0;
+                    int dx = xu < 0 ? 1 : 0;
+                    int dy = yu < 0 ? 1 : 0;
                     if (currentTimeMillis - lastTimeExpandedNegative > 100) {
                         for (JIPipeNodeUI value : nodeUIs.values()) {
                             if (value != currentlyDragged) {
-                                value.moveToClosestGridPoint(new Point(value.getX() + ex, value.getY() + ey), false, true);
+                                Point storedGridLocation = value.getStoredGridLocation();
+                                value.moveToGridLocation(new Point(storedGridLocation.x + dx, storedGridLocation.y + dy), true, true);
                             }
                         }
                         lastTimeExpandedNegative = currentTimeMillis;
