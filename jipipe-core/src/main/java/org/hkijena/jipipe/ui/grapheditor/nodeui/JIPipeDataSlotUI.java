@@ -116,7 +116,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 getGraphUI().setCurrentConnectionDragSource(null);
                 getGraphUI().setCurrentConnectionDragTarget(null);
                 getGraphUI().setCurrentHighlightedForDisconnect(null, Collections.emptySet());
-                getGraphUI().repaint();
+                getGraphUI().repaint(50);
             }
 
             @Override
@@ -124,7 +124,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 getGraphUI().setCurrentConnectionDragSource(null);
                 getGraphUI().setCurrentConnectionDragTarget(null);
                 getGraphUI().setCurrentHighlightedForDisconnect(null, Collections.emptySet());
-                getGraphUI().repaint();
+                getGraphUI().repaint(50);
             }
         });
 
@@ -200,7 +200,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                         for (JIPipeGraphEdge target : hiddenEdges) {
                             target.setUiHidden(false);
                         }
-                        nodeUI.getGraphUI().repaint();
+                        nodeUI.getGraphUI().repaint(50);
                     });
                     assignButtonMenu.add(showButton);
                 }
@@ -217,7 +217,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                         for (JIPipeGraphEdge target : visibleEdges) {
                             target.setUiHidden(true);
                         }
-                        nodeUI.getGraphUI().repaint();
+                        nodeUI.getGraphUI().repaint(50);
                     });
                     assignButtonMenu.add(showButton);
                 }
@@ -388,14 +388,14 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                             }
                         }
                     }
-                    getGraphUI().repaint();
+                    getGraphUI().repaint(50);
                 }
 
                 @Override
                 public void mouseExited(MouseEvent e) {
                     getGraphUI().setCurrentConnectionDragSource(null);
                     getGraphUI().setCurrentConnectionDragTarget(null);
-                    getGraphUI().repaint();
+                    getGraphUI().repaint(50);
                 }
             });
             if (currentMenu instanceof JMenu)
@@ -429,7 +429,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                                 UIUtils.getIconFromResources("actions/eye.png"));
                     }
                     edge.setUiHidden(false);
-                    nodeUI.getGraphUI().repaint();
+                    nodeUI.getGraphUI().repaint(50);
                 });
                 installHighlightForConnect(sourceSlot, showButton);
                 sourceSlotMenu.add(showButton);
@@ -444,7 +444,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                                 UIUtils.getIconFromResources("actions/eye-slash.png"));
                     }
                     edge.setUiHidden(true);
-                    nodeUI.getGraphUI().repaint();
+                    nodeUI.getGraphUI().repaint(50);
                 });
                 installHighlightForDisconnect(hideButton, Collections.singleton(sourceSlot));
                 sourceSlotMenu.add(hideButton);
@@ -477,7 +477,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                                 UIUtils.getIconFromResources("actions/eye.png"));
                     }
                     edge.setUiHidden(false);
-                    nodeUI.getGraphUI().repaint();
+                    nodeUI.getGraphUI().repaint(50);
                 });
                 installHighlightForConnect(targetSlot, showButton);
                 targetSlotMenu.add(showButton);
@@ -492,7 +492,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                                 UIUtils.getIconFromResources("actions/eye-slash.png"));
                     }
                     edge.setUiHidden(true);
-                    nodeUI.getGraphUI().repaint();
+                    nodeUI.getGraphUI().repaint(50);
                 });
                 installHighlightForDisconnect(hideButton, Collections.singleton(targetSlot));
                 targetSlotMenu.add(hideButton);
@@ -514,7 +514,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                             UIUtils.getIconFromResources("actions/standard-connector.png"));
                 }
                 edge.setUiShape(JIPipeGraphEdge.Shape.Elbow);
-                nodeUI.getGraphUI().repaint();
+                nodeUI.getGraphUI().repaint(50);
             });
             menu.add(setShapeItem);
         }
@@ -528,7 +528,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                             UIUtils.getIconFromResources("actions/draw-line.png"));
                 }
                 edge.setUiShape(JIPipeGraphEdge.Shape.Line);
-                nodeUI.getGraphUI().repaint();
+                nodeUI.getGraphUI().repaint(50);
             });
             menu.add(setShapeItem);
         }
@@ -591,14 +591,14 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                         }
                     }
                 }
-                getGraphUI().repaint();
+                getGraphUI().repaint(50);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 getGraphUI().setCurrentConnectionDragSource(null);
                 getGraphUI().setCurrentConnectionDragTarget(null);
-                getGraphUI().repaint();
+                getGraphUI().repaint(50);
             }
         });
     }
@@ -608,13 +608,13 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             @Override
             public void mouseEntered(MouseEvent e) {
                 getGraphUI().setCurrentHighlightedForDisconnect(JIPipeDataSlotUI.this, sourceSlots);
-                getGraphUI().repaint();
+                getGraphUI().repaint(50);
             }
 
             @Override
             public void mouseExited(MouseEvent e) {
                 getGraphUI().setCurrentHighlightedForDisconnect(null, Collections.emptySet());
-                getGraphUI().repaint();
+                getGraphUI().repaint(50);
             }
         });
     }
@@ -657,7 +657,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 getGraphUI().getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInGraph());
             }
             ((JIPipeMutableSlotConfiguration) nodeUI.getNode().getSlotConfiguration()).moveDown(slot.getName(), slot.getSlotType());
-            getGraphUI().repaint();
+            getGraphUI().repaint(50);
         }
     }
 
@@ -667,7 +667,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 getGraphUI().getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInGraph());
             }
             ((JIPipeMutableSlotConfiguration) nodeUI.getNode().getSlotConfiguration()).moveUp(slot.getName(), slot.getSlotType());
-            getGraphUI().repaint();
+            getGraphUI().repaint(50);
         }
     }
 
@@ -699,7 +699,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 cursorLocation.y = getNodeUI().getBottomY() + getNodeUI().getGraphUI().getViewMode().getGridHeight();
             }
             getNodeUI().getGraphUI().setGraphEditCursor(cursorLocation);
-            getNodeUI().getGraphUI().repaint();
+            getNodeUI().getGraphUI().repaint(50);
         }
 
         dialog.setVisible(true);

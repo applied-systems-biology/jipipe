@@ -55,7 +55,7 @@ public class JIPipeGraphCompartmentDragAndDropBehavior implements JIPipeGraphDra
         Point gridLocation = canvas.getViewMode().realLocationToGrid(mousePosition, canvas.getZoom());
         Point realLocation = canvas.getViewMode().gridToRealLocation(gridLocation, canvas.getZoom());
         canvas.setGraphEditCursor(realLocation);
-        canvas.repaint();
+        canvas.repaint(50);
     }
 
     @Override

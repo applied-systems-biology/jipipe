@@ -51,7 +51,7 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
     @Override
     public void dragEnter(DropTargetDragEvent dtde) {
         slotUI.getGraphUI().setCurrentConnectionDragTarget(slotUI);
-        slotUI.getGraphUI().repaint();
+        slotUI.getGraphUI().repaint(50);
     }
 
     @Override
@@ -67,7 +67,7 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
     @Override
     public void dragExit(DropTargetEvent dte) {
         slotUI.getGraphUI().setCurrentConnectionDragTarget(null);
-        slotUI.getGraphUI().repaint();
+        slotUI.getGraphUI().repaint(50);
     }
 
     @Override
@@ -164,7 +164,7 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
 
     @Override
     public void dragOver(DragSourceDragEvent dsde) {
-        slotUI.getGraphUI().repaint();
+        slotUI.getGraphUI().repaint(50);
     }
 
     @Override
@@ -181,6 +181,6 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
     public void dragDropEnd(DragSourceDropEvent dsde) {
         slotUI.getGraphUI().setCurrentConnectionDragSource(null);
         slotUI.getGraphUI().setCurrentConnectionDragTarget(null);
-        slotUI.getGraphUI().repaint();
+        slotUI.getGraphUI().repaint(50);
     }
 }

@@ -485,7 +485,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         if (!Objects.equals(getSize(), realSize)) {
             setSize(realSize);
             revalidate();
-            getGraphUI().repaint();
+            getGraphUI().repaint(50);
         }
     }
 

@@ -472,7 +472,7 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
 
         if (!Objects.equals(getSize(), realSize)) {
             setSize(realSize);
-            getGraphUI().repaint();
+            getGraphUI().repaint(50);
         }
     }
 

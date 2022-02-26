@@ -197,7 +197,7 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         } else if (event.getSource() == node && "jipipe:algorithm:pass-through".equals(event.getKey())) {
             updateActivationStatus();
         } else if (event.getSource() == node && "jipipe:node:bookmarked".equals(event.getKey())) {
-            getGraphUI().repaint();
+            getGraphUI().repaint(50);
         }
     }
 

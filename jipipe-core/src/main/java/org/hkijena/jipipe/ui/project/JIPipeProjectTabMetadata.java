@@ -24,9 +24,9 @@ import org.hkijena.jipipe.utils.StringUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Metadata that allows the restoration of tabs
@@ -65,40 +65,38 @@ public class JIPipeProjectTabMetadata {
     }
 
     public void restore(JIPipeProjectWorkbench workbench) {
-        DocumentTabPane documentTabPane = workbench.getDocumentTabPane();
 //        documentTabPane.closeAllTabs();
-        Map<String, DocumentTabPane.DocumentTab> tabIds = new HashMap<>();
+        Map<String, DocumentTabPane.DocumentTab> tabIds = new ConcurrentHashMap<>();
         for (String id : openTabs) {
-            if (id.startsWith("singleton:")) {
-                String singletonId = id.substring("singleton:".length());
-                DocumentTabPane.DocumentTab tab = documentTabPane.selectSingletonTab(singletonId);
-                tabIds.put(id, tab);
-            } else if (id.startsWith("graph-compartment:")) {
-                String compartmentId = id.substring("graph-compartment:".length());
-                try {
-                    JIPipeProjectCompartment compartment = workbench.getProject().findCompartment(compartmentId);
-                    if (compartment != null) {
-                        DocumentTabPane.DocumentTab tab = workbench.getOrOpenPipelineEditorTab(compartment, false);
-                        if (tab != null) {
-                            tabIds.put(id, tab);
-                        }
-                    }
-                } catch (IllegalArgumentException e) {
-                }
-            }
+            restoreTab(id, tabIds, workbench);
         }
-        if (!StringUtils.isNullOrEmpty(selectedTab)) {
-            DocumentTabPane.DocumentTab tab = tabIds.getOrDefault(selectedTab, null);
-            if (tab != null) {
-                documentTabPane.switchToContent(tab.getContent());
-            }
-        }
+        workbench.documentTabPane.revalidate();
+        workbench.documentTabPane.repaint();
+    }
 
-        // Workaround slow computers not loading properly
-        SwingUtilities.invokeLater(() -> {
-            documentTabPane.revalidate();
-            documentTabPane.repaint();
-        });
+    private void restoreTab(String id, Map<String, DocumentTabPane.DocumentTab> tabIds, JIPipeProjectWorkbench workbench) {
+        DocumentTabPane documentTabPane = workbench.getDocumentTabPane();
+        DocumentTabPane.DocumentTab tab = null;
+        if (id.startsWith("singleton:")) {
+            String singletonId = id.substring("singleton:".length());
+            tab = documentTabPane.selectSingletonTab(singletonId);
+            tabIds.put(id, tab);
+        } else if (id.startsWith("graph-compartment:")) {
+            String compartmentId = id.substring("graph-compartment:".length());
+            try {
+                JIPipeProjectCompartment compartment = workbench.getProject().findCompartment(compartmentId);
+                if (compartment != null) {
+                    tab = workbench.getOrOpenPipelineEditorTab(compartment, false);
+                    if (tab != null) {
+                        tabIds.put(id, tab);
+                    }
+                }
+            } catch (IllegalArgumentException e) {
+            }
+        }
+        if (!StringUtils.isNullOrEmpty(selectedTab) && id.equals(selectedTab) && tab != null) {
+            documentTabPane.switchToContent(tab.getContent());
+        }
     }
 
     @JsonGetter("open-tabs")

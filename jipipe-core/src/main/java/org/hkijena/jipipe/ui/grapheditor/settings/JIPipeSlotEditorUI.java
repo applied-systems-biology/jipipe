@@ -171,7 +171,7 @@ public class JIPipeSlotEditorUI extends JPanel {
                 editorUI.getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInGraph());
             }
             ((JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveDown(slot.getName(), slot.getSlotType());
-            editorUI.getCanvasUI().repaint();
+            editorUI.getCanvasUI().repaint(50);
         }
     }
 
@@ -182,7 +182,7 @@ public class JIPipeSlotEditorUI extends JPanel {
                 editorUI.getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInGraph());
             }
             ((JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveUp(slot.getName(), slot.getSlotType());
-            editorUI.getCanvasUI().repaint();
+            editorUI.getCanvasUI().repaint(50);
         }
     }
 
