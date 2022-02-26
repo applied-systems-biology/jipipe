@@ -230,14 +230,8 @@ public class ImagePropertiesToAnnotationAlgorithm extends JIPipeSimpleIteratingA
             annotations.add(new JIPipeTextAnnotation(getBitDepthAnnotation().getContent(), "" + inputData.getImage().getBitDepth()));
         }
         if (getColorSpaceAnnotation().isEnabled()) {
-            String colorSpace;
-            if(inputData.isGrayscale()) {
-                colorSpace = "Greyscale";
-            }
-            else {
-                colorSpace = inputData.getColorSpace().toString();
-            }
-            annotations.add(new JIPipeTextAnnotation(getBitDepthAnnotation().getContent(), colorSpace));
+            String colorSpace = inputData.getColorSpace().toString();
+            annotations.add(new JIPipeTextAnnotation(getColorSpaceAnnotation().getContent(), colorSpace));
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), inputData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);

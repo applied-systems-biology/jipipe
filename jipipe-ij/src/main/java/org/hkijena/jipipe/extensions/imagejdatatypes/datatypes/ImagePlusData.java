@@ -33,6 +33,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -127,6 +128,10 @@ public class ImagePlusData implements JIPipeData {
 
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new ImagePlusData(importImagePlusFrom(storage, progressInfo));
+    }
+
+    public static ColorSpace getColorSpaceOf(Class<? extends ImagePlusData> dataType) {
+        return (ColorSpace) ReflectionUtils.newInstance(dataType.getAnnotation(ImageTypeInfo.class).colorSpace());
     }
 
     public int getWidth() {

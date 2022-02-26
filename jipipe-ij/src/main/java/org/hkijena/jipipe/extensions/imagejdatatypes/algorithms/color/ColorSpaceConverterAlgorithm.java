@@ -25,11 +25,7 @@ public abstract class ColorSpaceConverterAlgorithm extends JIPipeSimpleIterating
                 .seal()
                 .build());
         this.outputDataType = outputDataType;
-        try {
-            this.outputColorSpace = (ColorSpace) outputDataType.getDeclaredField("COLOR_SPACE").get(null);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
+        this.outputColorSpace = ImagePlusData.getColorSpaceOf(outputDataType);
     }
 
     public ColorSpaceConverterAlgorithm(ColorSpaceConverterAlgorithm other) {
