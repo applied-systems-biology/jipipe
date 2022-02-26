@@ -60,7 +60,7 @@ import java.util.stream.Collectors;
 /**
  * UI that displays an {@link JIPipeGraph}
  */
-public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMotionListener, MouseListener, MouseWheelListener, ZoomViewPort {
+public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbenchAccess, MouseMotionListener, MouseListener, MouseWheelListener, ZoomViewPort {
 
     public static final DropShadowRenderer DROP_SHADOW_BORDER = new DropShadowRenderer(Color.BLACK,
             5,
@@ -94,6 +94,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
 //    public static final int SHADOW_WIDTH = 5;
 //    public static final int SHADOW_SHIFT = 2;
 
+    private final JIPipeWorkbench workbench;
     private final JIPipeGraphEditorUI graphEditorUI;
     private final ImageIcon cursorImage = UIUtils.getIconFromResources("actions/target.png");
     private final JIPipeGraph graph;
@@ -122,6 +123,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     private JScrollPane scrollPane;
     private Set<JIPipeGraphNode> scheduledSelection = new HashSet<>();
     private boolean hasDragSnapshot = false;
+    private int currentNodeLayer = Integer.MIN_VALUE;
 
     /**
      * Used to store the minimum dimensions of the canvas to reduce user disruption
@@ -138,7 +140,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
      */
     public JIPipeGraphCanvasUI(JIPipeWorkbench workbench, JIPipeGraphEditorUI graphEditorUI, JIPipeGraph graph, UUID compartment, JIPipeHistoryJournal historyJournal) {
-        super(workbench);
+        this.workbench = workbench;
         this.graphEditorUI = graphEditorUI;
         this.historyJournal = historyJournal;
         setLayout(null);
@@ -157,6 +159,11 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
         addNewNodes();
         graph.getEventBus().register(this);
         initializeHotkeys();
+    }
+
+    @Override
+    public JIPipeWorkbench getWorkbench() {
+        return workbench;
     }
 
     public JIPipeGraphEditorUI getGraphEditorUI() {
@@ -210,6 +217,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
     }
 
     private void initialize() {
+        setOpaque(true);
         setBackground(UIManager.getColor("EditorPane.background"));
         addMouseListener(this);
         addMouseMotionListener(this);
@@ -287,7 +295,7 @@ public class JIPipeGraphCanvasUI extends JIPipeWorkbenchPanel implements MouseMo
             }
 
             ui.getEventBus().register(this);
-            add(ui);
+            add(ui, new Integer(currentNodeLayer++)); // Layered pane
             nodeUIs.put(algorithm, ui);
             if (!ui.moveToStoredGridLocation(true)) {
                 autoPlaceCloseToCursor(ui);
