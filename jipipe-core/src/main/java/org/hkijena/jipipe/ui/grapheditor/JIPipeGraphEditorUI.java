@@ -152,7 +152,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 menu.addSeparator();
                 continue;
             }
-
+            if(action.isHidden())
+                continue;
             boolean matches = action.matches(selection);
             if (!matches && !action.disableOnNonMatch())
                 continue;

@@ -27,6 +27,10 @@ import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCopyNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCutNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.navigation.MoveNodeUIDownContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.navigation.MoveNodeUILeftContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.navigation.MoveNodeUIRightContextAction;
+import org.hkijena.jipipe.ui.grapheditor.contextmenu.navigation.MoveNodeUIUpContextAction;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 

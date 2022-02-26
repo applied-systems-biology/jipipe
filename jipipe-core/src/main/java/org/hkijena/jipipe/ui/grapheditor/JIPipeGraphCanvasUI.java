@@ -335,30 +335,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     }
 
     /**
-     * Detects components overlapping each other.
-     * Auto-places components when an overlap was detected
-     */
-    private void removeComponentOverlaps() {
-        List<JIPipeGraphNode> traversed = graph.traverse();
-        boolean detected = false;
-        for (int i = traversed.size() - 1; i >= 0; --i) {
-            JIPipeGraphNode algorithm = traversed.get(i);
-            if (!algorithm.isVisibleIn(getCompartment()))
-                continue;
-            JIPipeNodeUI ui = nodeUIs.getOrDefault(algorithm, null);
-            if (ui != null) {
-                if (ui.isOverlapping()) {
-                    autoPlaceCloseToCursor(ui);
-                    detected = true;
-                }
-            }
-        }
-        if (detected) {
-            repaint();
-        }
-    }
-
-    /**
      * Auto-layouts all UIs
      */
     public void autoLayoutAll() {
@@ -499,17 +475,27 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     public void autoPlaceCloseToCursor(JIPipeNodeUI ui) {
 //        System.out.println("GE: " + getGraphEditorCursor());
+//        int minX = 0;
+//        int minY = 0;
+//        if (getGraphEditorCursor() != null) {
+//            minX = getGraphEditorCursor().x;
+//            minY = getGraphEditorCursor().y;
+//        } else if (getVisibleRect() != null) {
+//            Rectangle rect = getVisibleRect();
+//            minX = rect.x;
+//            minY = rect.y;
+//        }
+//        autoPlaceCloseToLocation(ui, new Point(minX, minY));
         int minX = 0;
         int minY = 0;
-        if (getGraphEditorCursor() != null) {
+        if(getGraphEditorCursor() != null) {
             minX = getGraphEditorCursor().x;
             minY = getGraphEditorCursor().y;
-        } else if (getVisibleRect() != null) {
-            Rectangle rect = getVisibleRect();
-            minX = rect.x;
-            minY = rect.y;
         }
-        autoPlaceCloseToLocation(ui, new Point(minX, minY));
+        ui.moveToClosestGridPoint(new Point(minX, minY), true, true);
+        if(graphEditorUI != null) {
+            graphEditorUI.scrollToAlgorithm(ui);
+        }
     }
 
     public Set<JIPipeNodeUI> getNodesAfter(int x, int y) {
@@ -689,12 +675,15 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     }
 
     /**
-     * Expands the canvas by moving all algorithms
+     * Expands the canvas by moving all algorithms.
+     * Has no effect if the coordinates are both zero
      *
      * @param gridLeft expand left (in grid coordinates)
      * @param gridTop  expand top (in grid coordinates)
      */
     public void expandLeftTop(int gridLeft, int gridTop) {
+        if(gridLeft == 0 && gridTop == 0)
+            return;
         for (JIPipeNodeUI value : nodeUIs.values()) {
             if (!currentlyDraggedOffsets.containsKey(value)) {
                 Point gridLocation = viewMode.realLocationToGrid(value.getLocation(), zoom);
@@ -775,6 +764,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 scheduleSeparator = true;
                 continue;
             }
+            if(action.isHidden())
+                continue;
             boolean matches = action.matches(selection);
             if (!matches && !action.disableOnNonMatch())
                 continue;

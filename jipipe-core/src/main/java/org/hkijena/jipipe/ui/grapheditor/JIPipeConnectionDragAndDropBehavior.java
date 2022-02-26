@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeDataSlotUI;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
@@ -142,6 +143,7 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
 //                return;
 //            }
         }
+
         ObjectNode node = JsonUtils.getObjectMapper().getNodeFactory().objectNode();
         node.put("node", slotUI.getSlot().getNode().getUUIDInGraph().toString());
         node.put("slot", slotUI.getSlot().getName());
