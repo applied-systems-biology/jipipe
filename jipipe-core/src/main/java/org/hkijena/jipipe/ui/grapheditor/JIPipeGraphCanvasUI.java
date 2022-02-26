@@ -1749,6 +1749,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      */
     public void addToSelection(JIPipeNodeUI ui) {
         selection.add(ui);
+        if(getLayer(ui) < currentNodeLayer) {
+            setLayer(ui, ++currentNodeLayer);
+        }
         updateSelection();
     }
 
