@@ -195,7 +195,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Output image type", description = "The image type that is generated.")
-    @JIPipeParameter("output-image-type")
+    @JIPipeParameter(value = "output-image-type", important = true)
     @JIPipeDataParameterSettings(dataBaseClass = ImagePlusData.class, dataClassFilter = NonGenericImagePlusDataClassFilter.class)
     public JIPipeDataInfoRef getOutputImageType() {
         return outputImageType;
