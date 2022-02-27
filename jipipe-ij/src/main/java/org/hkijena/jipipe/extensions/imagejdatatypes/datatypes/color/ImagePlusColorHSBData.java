@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -26,6 +27,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
@@ -48,6 +50,20 @@ public class ImagePlusColorHSBData extends ImagePlusColorData {
 
     public ImagePlusColorHSBData(ImagePlus image, ColorSpace ignored) {
         super(ImageJUtils.convertToColorHSBIfNeeded(image));
+    }
+
+    /**
+     * Creates an empty image with given dimensions
+     * @param dimensions the dimensions
+     */
+    public ImagePlusColorHSBData(ImageDimensions dimensions) {
+        this(IJ.createHyperStack("Image",
+                dimensions.getWidth(),
+                dimensions.getHeight(),
+                dimensions.getSizeC(),
+                dimensions.getSizeZ(),
+                dimensions.getSizeT(),
+                24));
     }
 
     public ImagePlusColorHSBData(ImageSource source) {

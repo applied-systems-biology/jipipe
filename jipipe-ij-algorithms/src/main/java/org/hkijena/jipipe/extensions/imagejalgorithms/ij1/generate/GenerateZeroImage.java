@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate;
 
 import ij.IJ;
 import ij.ImagePlus;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -25,7 +26,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.filters.NonGenericImagePlusDataClassFilter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
+import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeDataParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
@@ -40,7 +46,7 @@ public class GenerateZeroImage extends JIPipeSimpleIteratingAlgorithm {
     private int sizeZ = 1;
     private int sizeC = 1;
     private int sizeT = 1;
-    private BitDepth bitDepth = BitDepth.Grayscale8u;
+    private JIPipeDataInfoRef dataType = new JIPipeDataInfoRef(ImagePlusGreyscale8UData.class);
 
     /**
      * Instantiates a new node type.
@@ -58,7 +64,7 @@ public class GenerateZeroImage extends JIPipeSimpleIteratingAlgorithm {
      */
     public GenerateZeroImage(GenerateZeroImage other) {
         super(other);
-        this.bitDepth = other.bitDepth;
+        this.dataType = new JIPipeDataInfoRef(other.dataType);
         this.width = other.width;
         this.height = other.height;
         this.sizeZ = other.sizeZ;
@@ -73,19 +79,24 @@ public class GenerateZeroImage extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = IJ.createHyperStack("Generated", width, height, sizeC, sizeZ, sizeT, bitDepth.getBitDepth());
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(),
+                JIPipe.createData(dataType.getInfo().getDataClass(), new ImageDimensions(width, height, sizeZ, sizeC, sizeT)),
+                progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Bit depth", description = "Determines the bit depth of the image")
-    @JIPipeParameter("bit-depth")
-    public BitDepth getBitDepth() {
-        return bitDepth;
+    @JIPipeDocumentation(name = "Data type", description = "The data type that should be created.")
+    @JIPipeParameter("data-type")
+    @JIPipeDataParameterSettings(dataBaseClass = ImagePlusData.class, dataClassFilter = NonGenericImagePlusDataClassFilter.class)
+    public JIPipeDataInfoRef getDataType() {
+        return dataType;
     }
 
-    @JIPipeParameter("bit-depth")
-    public void setBitDepth(BitDepth bitDepth) {
-        this.bitDepth = bitDepth;
+    @JIPipeParameter("data-type")
+    public void setDataType(JIPipeDataInfoRef dataType) {
+        this.dataType = dataType;
+        if(dataType.getInfo() != null) {
+            getFirstOutputSlot().setAcceptedDataType(dataType.getInfo().getDataClass());
+        }
     }
 
     @JIPipeDocumentation(name = "Width", description = "The width of the generated image")

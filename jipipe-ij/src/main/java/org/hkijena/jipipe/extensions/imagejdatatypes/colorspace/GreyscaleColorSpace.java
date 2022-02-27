@@ -58,7 +58,7 @@ public class GreyscaleColorSpace implements ColorSpace {
 
     @Override
     public String getChannelShortName(int channelIndex) {
-        return "V";
+        return "v";
     }
 
     @Override

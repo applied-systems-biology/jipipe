@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -25,6 +26,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.GreyscaleColorSp
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
@@ -43,6 +45,20 @@ public class ImagePlus2DGreyscaleMaskData extends ImagePlus2DGreyscale8UData {
 
     public ImagePlus2DGreyscaleMaskData(ImageSource source) {
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGreyscale8UIfNeeded));
+    }
+
+    /**
+     * Creates an empty image with given dimensions
+     * @param dimensions the dimensions
+     */
+    public ImagePlus2DGreyscaleMaskData(ImageDimensions dimensions) {
+        this(IJ.createHyperStack("Image",
+                dimensions.getWidth(),
+                dimensions.getHeight(),
+                dimensions.getSizeC(),
+                dimensions.getSizeZ(),
+                dimensions.getSizeT(),
+                8));
     }
 
     public ImagePlus2DGreyscaleMaskData(ImagePlus image, ColorSpace colorSpace) {

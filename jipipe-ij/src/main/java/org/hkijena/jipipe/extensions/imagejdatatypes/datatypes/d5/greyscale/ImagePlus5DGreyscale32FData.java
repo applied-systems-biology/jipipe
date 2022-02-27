@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
@@ -26,6 +27,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.GreyscaleColorSp
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
@@ -44,6 +46,20 @@ public class ImagePlus5DGreyscale32FData extends ImagePlus5DGreyscaleData {
 
     public ImagePlus5DGreyscale32FData(ImageSource source) {
         super(new ConverterWrapperImageSource(source, ImageJUtils::convertToGrayscale32FIfNeeded));
+    }
+
+    /**
+     * Creates an empty image with given dimensions
+     * @param dimensions the dimensions
+     */
+    public ImagePlus5DGreyscale32FData(ImageDimensions dimensions) {
+        this(IJ.createHyperStack("Image",
+                dimensions.getWidth(),
+                dimensions.getHeight(),
+                dimensions.getSizeC(),
+                dimensions.getSizeZ(),
+                dimensions.getSizeT(),
+                32));
     }
 
     public ImagePlus5DGreyscale32FData(ImagePlus image, ColorSpace colorSpace) {
