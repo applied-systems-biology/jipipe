@@ -1071,18 +1071,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if (!selection.isEmpty())
             paintEdges(g, STROKE_HIGHLIGHT, null, STROKE_COMMENT_HIGHLIGHT, true, true, settings.isColorSelectedNodeEdges(), 1, 0, 0);
 
-        // Draw selections
-        g.setStroke(STROKE_SELECTION);
-        for (JIPipeNodeUI ui : selection) {
-            Rectangle bounds = ui.getBounds();
-            bounds.x -= 4;
-            bounds.y -= 4;
-            bounds.width += 8;
-            bounds.height += 8;
-            g.setColor(ui.getBorderColor());
-            g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
-        }
-
         // Draw currently dragged connection
         if (currentConnectionDragSource != null) {
             g.setStroke(STROKE_HIGHLIGHT);
@@ -1190,6 +1178,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     @Override
     public void paint(Graphics g) {
         super.paint(g);
+        Graphics2D graphics2D = (Graphics2D) g;
 
         // Draw cursor over the components
         if (graphEditCursor != null) {
@@ -1198,8 +1187,20 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     graphEditCursor.y - cursorImage.getIconHeight() / 2,
                     null);
         }
+        // Draw node selections
+        graphics2D.setStroke(STROKE_SELECTION);
+        for (JIPipeNodeUI ui : selection) {
+            Rectangle bounds = ui.getBounds();
+            bounds.x -= 4;
+            bounds.y -= 4;
+            bounds.width += 8;
+            bounds.height += 8;
+            g.setColor(ui.getBorderColor());
+            g.drawRect(bounds.x, bounds.y, bounds.width, bounds.height);
+        }
+
+        // Draw marquee rectangle
         if (selectionFirst != null && selectionSecond != null) {
-            Graphics2D graphics2D = (Graphics2D) g;
             graphics2D.setStroke(STROKE_MARQUEE);
             graphics2D.setColor(Color.GRAY);
             int x0 = selectionFirst.x;
