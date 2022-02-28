@@ -32,7 +32,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
     private final JIPipeGraphNode targetNode;
     private final QuickRunSettings settings;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-    private JIPipeRun run;
+    private JIPipeProjectRun run;
     private JIPipeGraphNode targetNodeCopy;
 
     /**
@@ -61,7 +61,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
         // The test bench will handle this!
         configuration.setIgnoreDeactivatedInputs(true);
 
-        run = new JIPipeRun(project, configuration);
+        run = new JIPipeProjectRun(project, configuration);
         run.setProgressInfo(progressInfo);
         targetNodeCopy = run.getGraph().getEquivalentAlgorithm(targetNode);
         ((JIPipeAlgorithm) targetNodeCopy).setEnabled(true);
@@ -207,7 +207,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
      *
      * @return the pipeline run
      */
-    public JIPipeRun getRun() {
+    public JIPipeProjectRun getRun() {
         return run;
     }
 

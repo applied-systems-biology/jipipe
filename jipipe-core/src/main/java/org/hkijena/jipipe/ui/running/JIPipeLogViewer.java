@@ -14,12 +14,11 @@
 package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.JIPipeRun;
+import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -138,7 +137,7 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
     }
 
     private void pushToLog(JIPipeRunnable run, boolean success) {
-        if (run instanceof JIPipeRun && ((JIPipeRun) run).getProject() != getProject())
+        if (run instanceof JIPipeProjectRun && ((JIPipeProjectRun) run).getProject() != getProject())
             return;
         StringBuilder log = run.getProgressInfo().getLog();
         if (log != null && log.length() > 0) {

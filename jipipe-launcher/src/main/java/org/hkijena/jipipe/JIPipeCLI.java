@@ -6,7 +6,7 @@ import com.google.common.collect.ImmutableList;
 import net.imagej.ImageJ;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeRun;
+import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -148,7 +148,7 @@ public class JIPipeCLI {
             settings.setSaveToDisk(true);
             settings.setStoreToCache(false);
 
-            JIPipeRun run = new JIPipeRun(project, settings);
+            JIPipeProjectRun run = new JIPipeProjectRun(project, settings);
             run.getProgressInfo().setLogToStdOut(true);
             run.run();
         } else {

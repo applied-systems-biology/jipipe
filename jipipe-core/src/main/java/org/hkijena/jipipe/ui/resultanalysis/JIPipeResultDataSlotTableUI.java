@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeRun;
+import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -25,7 +25,6 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -56,7 +55,7 @@ import java.util.Set;
  */
 public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
-    private JIPipeRun run;
+    private JIPipeProjectRun run;
     private JIPipeDataSlot slot;
     private JXTable table;
     private JIPipeDataTableMetadata dataTable;
@@ -70,7 +69,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
      * @param run         The run
      * @param slot        The slot
      */
-    public JIPipeResultDataSlotTableUI(JIPipeProjectWorkbench workbenchUI, JIPipeRun run, JIPipeDataSlot slot) {
+    public JIPipeResultDataSlotTableUI(JIPipeProjectWorkbench workbenchUI, JIPipeProjectRun run, JIPipeDataSlot slot) {
         super(workbenchUI);
         this.run = run;
         this.slot = slot;

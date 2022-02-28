@@ -27,7 +27,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Settings for an {@link JIPipeRun}
+ * Settings for an {@link JIPipeProjectRun}
  */
 public class JIPipeRunSettings implements JIPipeParameterCollection {
     private EventBus eventBus = new EventBus();

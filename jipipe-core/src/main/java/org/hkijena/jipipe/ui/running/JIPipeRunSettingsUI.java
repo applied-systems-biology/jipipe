@@ -16,14 +16,13 @@ package org.hkijena.jipipe.ui.running;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeRun;
+import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
@@ -52,7 +51,7 @@ import java.util.stream.Collectors;
  */
 public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
 
-    private JIPipeRun run;
+    private JIPipeProjectRun run;
 
     /**
      * @param workbenchUI workbench UI
@@ -115,7 +114,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
         try {
             JIPipeRunSettings settings = new JIPipeRunSettings();
             settings.setOutputPath(RuntimeSettings.generateTempDirectory(""));
-            run = new JIPipeRun(getProjectWorkbench().getProject(), settings);
+            run = new JIPipeProjectRun(getProjectWorkbench().getProject(), settings);
         } catch (Exception e) {
             openError(e);
             return;

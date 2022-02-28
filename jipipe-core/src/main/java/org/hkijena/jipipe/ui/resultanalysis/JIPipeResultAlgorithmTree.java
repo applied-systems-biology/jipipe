@@ -13,12 +13,11 @@
 
 package org.hkijena.jipipe.ui.resultanalysis;
 
-import org.hkijena.jipipe.api.JIPipeRun;
+import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -37,7 +36,7 @@ import java.util.stream.Collectors;
  * Displays a tree where the user can select data slots
  */
 public class JIPipeResultAlgorithmTree extends JIPipeProjectWorkbenchPanel {
-    private JIPipeRun run;
+    private JIPipeProjectRun run;
     private JScrollPane treeScrollPane;
     private JTree tree;
     private SearchTextField searchTextField;
@@ -46,7 +45,7 @@ public class JIPipeResultAlgorithmTree extends JIPipeProjectWorkbenchPanel {
      * @param workbenchUI Workbench ui
      * @param run         The run
      */
-    public JIPipeResultAlgorithmTree(JIPipeProjectWorkbench workbenchUI, JIPipeRun run) {
+    public JIPipeResultAlgorithmTree(JIPipeProjectWorkbench workbenchUI, JIPipeProjectRun run) {
         super(workbenchUI);
         this.run = run;
         initialize();

@@ -426,7 +426,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Returns the location within the specified compartment or null if none is set
      *
-     * @param compartment The compartment ID
+     * @param compartment The compartment ID. Set to empty string for no compartment.
      * @param visualMode  Used to differentiate between different visual modes
      * @return The UI location or null if unset
      */
@@ -441,7 +441,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Sets the UI location of this algorithm within the specified compartment
      *
-     * @param compartment The compartment ID
+     * @param compartment The compartment ID. Set to empty string for no compartment.
      * @param location    The UI location. Can be null to reset the location
      * @param visualMode  Used to differentiate between different visual modes
      */
@@ -530,7 +530,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     }
 
     /**
-     * The storage path is used in {@link JIPipeRun} to indicate where output data is written
+     * The storage path is used in {@link JIPipeProjectRun} to indicate where output data is written
      * This is only used internally
      *
      * @return Storage path
@@ -540,7 +540,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     }
 
     /**
-     * Sets the storage path. Used by {@link JIPipeRun}
+     * Sets the storage path. Used by {@link JIPipeProjectRun}
      *
      * @param storagePath Storage path
      */
@@ -550,7 +550,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Returns the internal storage path relative to the output folder.
-     * Used internally by {@link JIPipeRun}
+     * Used internally by {@link JIPipeProjectRun}
      *
      * @return Storage path relative to the output folder
      */
@@ -560,7 +560,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Sets the internal storage path relative to the output folder.
-     * Used internally by {@link JIPipeRun}
+     * Used internally by {@link JIPipeProjectRun}
      *
      * @param internalStoragePath Path relative to the output folder
      */

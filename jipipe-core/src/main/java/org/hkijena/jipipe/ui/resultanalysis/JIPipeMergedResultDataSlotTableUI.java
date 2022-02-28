@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.resultanalysis;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeRun;
+import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
@@ -27,7 +27,6 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -59,7 +58,7 @@ import java.util.Set;
 public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
     private final List<JIPipeDataSlot> slots;
-    private JIPipeRun run;
+    private JIPipeProjectRun run;
     private JXTable table;
     private JIPipeMergedExportedDataTable mergedDataTable;
     private FormPanel rowUIList;
@@ -73,7 +72,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
      * @param run         The algorithm run
      * @param slots       The displayed slots
      */
-    public JIPipeMergedResultDataSlotTableUI(JIPipeProjectWorkbench workbenchUI, JIPipeRun run, List<JIPipeDataSlot> slots) {
+    public JIPipeMergedResultDataSlotTableUI(JIPipeProjectWorkbench workbenchUI, JIPipeProjectRun run, List<JIPipeDataSlot> slots) {
         super(workbenchUI);
         this.run = run;
         this.slots = slots;

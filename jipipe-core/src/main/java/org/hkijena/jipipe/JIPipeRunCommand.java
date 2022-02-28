@@ -15,7 +15,7 @@ package org.hkijena.jipipe;
 
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeRun;
+import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
@@ -97,7 +97,7 @@ public class JIPipeRunCommand implements Command {
         configuration.setOutputPath(outputDirectory.toPath());
         configuration.setNumThreads(threads);
         RuntimeSettings.getInstance().setDefaultRunThreads(threads);
-        JIPipeRun run = new JIPipeRun(project, configuration);
+        JIPipeProjectRun run = new JIPipeProjectRun(project, configuration);
         run.run();
         logService.info("JIPipe run finished. Outputs are stored in: " + outputDirectory);
         status.showProgress(0, 0);

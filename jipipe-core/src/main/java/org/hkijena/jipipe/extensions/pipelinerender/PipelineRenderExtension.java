@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.tools;
+package org.hkijena.jipipe.extensions.pipelinerender;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.pipelinerender.PipelineRenderTool;
+import org.hkijena.jipipe.extensions.tools.*;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -27,7 +27,7 @@ import org.scijava.plugin.Plugin;
  * Extension containing some additional tools
  */
 @Plugin(type = JIPipeJavaExtension.class)
-public class ToolsExtension extends JIPipePrepackagedDefaultJavaExtension {
+public class PipelineRenderExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public StringList getDependencyCitations() {
         return new StringList();
@@ -35,26 +35,22 @@ public class ToolsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getName() {
-        return "Standard tools";
+        return "Render pipeline tool";
     }
 
     @Override
     public HTMLText getDescription() {
-        return new HTMLText("Provides some additional tools.");
+        return new HTMLText("A tool to generate a high-resolution render of the fulll pipeline.");
     }
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerMenuExtension(OpenImageJTool.class);
-        registerMenuExtension(CreateLaunchersTool.class);
-        registerMenuExtension(CloseAllImageJWindowsTool.class);
-        registerMenuExtension(RebuildAliasIdsTool.class);
-        registerMenuExtension(DissolveCompartmentsTool.class);
+        registerMenuExtension(PipelineRenderTool.class);
     }
 
     @Override
     public String getDependencyId() {
-        return "org.hkijena.jipipe:tools";
+        return "org.hkijena.jipipe:pipeline-render";
     }
 
     @Override

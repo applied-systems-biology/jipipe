@@ -31,7 +31,7 @@ import java.util.*;
  * Executes an {@link JIPipeGraph}.
  * This does not do any data storage or caching.
  * Use this class for nested algorithm graph runs (like {@link org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm})
- * Use {@link JIPipeRun} for full project runs.
+ * Use {@link JIPipeProjectRun} for full project runs.
  */
 public class JIPipeGraphRunner implements JIPipeRunnable {
 

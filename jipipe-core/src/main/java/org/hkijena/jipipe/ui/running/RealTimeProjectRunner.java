@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeRun;
+import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -35,7 +34,7 @@ import javax.swing.*;
 public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
 
     private final RuntimeSettings runtimeSettings = RuntimeSettings.getInstance();
-    private JIPipeRun currentRun;
+    private JIPipeProjectRun currentRun;
     private Timer timer = new Timer(RuntimeSettings.getInstance().getRealTimeRunDelay(), e -> scheduleRun());
 
     /**
@@ -116,7 +115,7 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
         settings.setStoreToCache(true);
         settings.setSaveToDisk(false);
         settings.setSilent(true);
-        currentRun = new JIPipeRun(getProject(), settings);
+        currentRun = new JIPipeProjectRun(getProject(), settings);
         JIPipeRunnerQueue.getInstance().enqueue(currentRun);
     }
 

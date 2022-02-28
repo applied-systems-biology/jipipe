@@ -124,6 +124,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private Set<JIPipeGraphNode> scheduledSelection = new HashSet<>();
     private boolean hasDragSnapshot = false;
     private int currentNodeLayer = Integer.MIN_VALUE;
+    private boolean renderCursor = true;
 
     /**
      * Used to store the minimum dimensions of the canvas to reduce user disruption
@@ -229,6 +230,14 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      */
     public JIPipeGraph getGraph() {
         return graph;
+    }
+
+    public boolean isRenderCursor() {
+        return renderCursor;
+    }
+
+    public void setRenderCursor(boolean renderCursor) {
+        this.renderCursor = renderCursor;
     }
 
     /**
@@ -1181,7 +1190,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         Graphics2D graphics2D = (Graphics2D) g;
 
         // Draw cursor over the components
-        if (graphEditCursor != null) {
+        if (graphEditCursor != null && renderCursor) {
             g.drawImage(cursorImage.getImage(),
                     graphEditCursor.x - cursorImage.getIconWidth() / 2,
                     graphEditCursor.y - cursorImage.getIconHeight() / 2,

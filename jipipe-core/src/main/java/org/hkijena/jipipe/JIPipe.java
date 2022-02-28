@@ -255,12 +255,12 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * @param threads      the number of threads (set to zero for using the default value)
      * @return the result
      */
-    public static JIPipeRun runProject(JIPipeProject project, Path outputFolder, int threads) {
+    public static JIPipeProjectRun runProject(JIPipeProject project, Path outputFolder, int threads) {
         JIPipeRunSettings settings = new JIPipeRunSettings();
         settings.setOutputPath(outputFolder);
         if (threads > 0)
             settings.setNumThreads(threads);
-        JIPipeRun run = new JIPipeRun(project, settings);
+        JIPipeProjectRun run = new JIPipeProjectRun(project, settings);
         run.run();
         return run;
     }
@@ -274,8 +274,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * @param settings settings for the run
      * @return the result
      */
-    public static JIPipeRun runProject(JIPipeProject project, JIPipeRunSettings settings) {
-        JIPipeRun run = new JIPipeRun(project, settings);
+    public static JIPipeProjectRun runProject(JIPipeProject project, JIPipeRunSettings settings) {
+        JIPipeProjectRun run = new JIPipeProjectRun(project, settings);
         run.run();
         return run;
     }
@@ -289,12 +289,12 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * @param threads      the number of threads (set to zero for using the default value)
      * @return the future result. You have to check the {@link JIPipeRunnerQueue} to see if the run is finished.
      */
-    public static JIPipeRun enqueueProject(JIPipeProject project, Path outputFolder, int threads) {
+    public static JIPipeProjectRun enqueueProject(JIPipeProject project, Path outputFolder, int threads) {
         JIPipeRunSettings settings = new JIPipeRunSettings();
         settings.setOutputPath(outputFolder);
         if (threads > 0)
             settings.setNumThreads(threads);
-        JIPipeRun run = new JIPipeRun(project, settings);
+        JIPipeProjectRun run = new JIPipeProjectRun(project, settings);
         JIPipeRunnerQueue.getInstance().enqueue(run);
         return run;
     }
@@ -307,8 +307,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * @param settings settings for the run
      * @return the future result. You have to check the {@link JIPipeRunnerQueue} to see if the run is finished.
      */
-    public static JIPipeRun enqueueProject(JIPipeProject project, JIPipeRunSettings settings) {
-        JIPipeRun run = new JIPipeRun(project, settings);
+    public static JIPipeProjectRun enqueueProject(JIPipeProject project, JIPipeRunSettings settings) {
+        JIPipeProjectRun run = new JIPipeProjectRun(project, settings);
         JIPipeRunnerQueue.getInstance().enqueue(run);
         return run;
     }

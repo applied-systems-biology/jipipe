@@ -43,7 +43,7 @@ import java.util.*;
 /**
  * Runnable instance of an {@link JIPipeProject}
  */
-public class JIPipeRun implements JIPipeRunnable {
+public class JIPipeProjectRun implements JIPipeRunnable {
     private final JIPipeProject project;
     private final JIPipeRunSettings configuration;
     JIPipeGraph copiedGraph;
@@ -55,7 +55,7 @@ public class JIPipeRun implements JIPipeRunnable {
      * @param project       The project
      * @param configuration Run configuration
      */
-    public JIPipeRun(JIPipeProject project, JIPipeRunSettings configuration) {
+    public JIPipeProjectRun(JIPipeProject project, JIPipeRunSettings configuration) {
         // First clean up the graph
         project.rebuildAliasIds(false);
         this.project = project;
@@ -69,18 +69,18 @@ public class JIPipeRun implements JIPipeRunnable {
     }
 
     /**
-     * Loads a JIPipeRun from a folder
+     * Loads a JIPipeProjectRun from a folder
      *
      * @param folder Folder containing the run
      * @return The loaded run
      * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
      */
-    public static JIPipeRun loadFromFolder(Path folder, JIPipeIssueReport report) throws IOException {
+    public static JIPipeProjectRun loadFromFolder(Path folder, JIPipeIssueReport report) throws IOException {
         Path parameterFile = folder.resolve("project.jip");
         JIPipeProject project = JIPipeProject.loadProject(parameterFile, report);
         JIPipeRunSettings configuration = new JIPipeRunSettings();
         configuration.setOutputPath(folder);
-        JIPipeRun run = new JIPipeRun(project, configuration);
+        JIPipeProjectRun run = new JIPipeProjectRun(project, configuration);
         run.prepare();
         return run;
     }

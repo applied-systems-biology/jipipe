@@ -306,7 +306,7 @@ public class JIPipeProjectWindow extends JFrame {
                         return;
                 }
 
-                JIPipeRun run = JIPipeRun.loadFromFolder(path, report);
+                JIPipeProjectRun run = JIPipeProjectRun.loadFromFolder(path, report);
                 run.getProject().setWorkDirectory(path);
                 JIPipeProjectWindow window = openProjectInThisOrNewWindow("Open JIPipe output", run.getProject(), false, false);
                 if (window == null)

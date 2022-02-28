@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 
 import java.util.ArrayDeque;
@@ -71,7 +72,7 @@ public class JIPipeRunnerQueue {
     }
 
     /**
-     * The size of the queue (includes the currently running {@link org.hkijena.jipipe.api.JIPipeRun}
+     * The size of the queue (includes the currently running {@link JIPipeProjectRun}
      *
      * @return the size
      */

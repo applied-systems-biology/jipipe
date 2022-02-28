@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.actions.UpdateCacheAction;
@@ -47,7 +46,7 @@ import java.util.List;
 import java.util.*;
 
 /**
- * UI around an {@link JIPipeRun} result
+ * UI around an {@link JIPipeProjectRun} result
  */
 public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     private final JIPipeGraphNode graphNode;
