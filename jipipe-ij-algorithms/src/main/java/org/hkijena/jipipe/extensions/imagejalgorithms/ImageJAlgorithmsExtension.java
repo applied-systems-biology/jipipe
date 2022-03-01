@@ -69,6 +69,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.local.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.DataToPreviewAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.RenderJIPipeProjectAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.AddNoise2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.noise.AddSaltAndPepperNoise2DAlgorithm;
@@ -546,6 +547,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-generate-filter-kernel", GenerateStructureElement2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
         registerNodeType("ij1-generate-filter-kernel-3d", GenerateStructureElement3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
         registerNodeType("ij1-data-to-preview", DataToPreviewAlgorithm.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
+        registerNodeType("render-jipipe-project", RenderJIPipeProjectAlgorithm.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));
         registerNodeType("external-imagej-macro", MacroWrapperAlgorithm.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
 
         registerNodeType("ome-image-from-image-plus", OMEImageFromImagePlus.class);

@@ -13,6 +13,16 @@ public class RenderPipelineRunSettings implements JIPipeParameterCollection {
     private int labelFontSize = 40;
     private OptionalIntegerParameter maxEdgeWidth = new OptionalIntegerParameter(false, 80);
 
+    public RenderPipelineRunSettings() {
+    }
+
+    public RenderPipelineRunSettings(RenderPipelineRunSettings other) {
+        this.renderLabel = other.renderLabel;
+        this.renderShadow = other.renderShadow;
+        this.labelFontSize = other.labelFontSize;
+        this.maxEdgeWidth = new OptionalIntegerParameter(other.maxEdgeWidth);
+    }
+
     @Override
     public EventBus getEventBus() {
         return eventBus;

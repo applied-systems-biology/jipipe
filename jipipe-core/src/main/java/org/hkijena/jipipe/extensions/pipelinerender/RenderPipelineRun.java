@@ -33,6 +33,7 @@ public class RenderPipelineRun implements JIPipeRunnable {
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private final JIPipeProject project;
     private final Path outputPath;
+    private BufferedImage outputImage;
     private final RenderPipelineRunSettings settings;
 
     public RenderPipelineRun(JIPipeProject project, Path outputPath, RenderPipelineRunSettings settings) {
@@ -254,12 +255,25 @@ public class RenderPipelineRun implements JIPipeRunnable {
         graphics.dispose();
 
         // Save image
-        progressInfo.log("Saving to " + outputPath);
-        try {
-            ImageIO.write(finalImage, "PNG", outputPath.toFile());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        if(outputPath != null) {
+            progressInfo.log("Saving to " + outputPath);
+            try {
+                ImageIO.write(finalImage, "PNG", outputPath.toFile());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
+        else {
+            this.outputImage = finalImage;
+        }
+    }
+
+    /**
+     * The generated image. Only set if outputPath is null.
+     * @return the generated image or null
+     */
+    public BufferedImage getOutputImage() {
+        return outputImage;
     }
 
     private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, JIPipeGraphViewMode viewMode, int scaleFactor) {

@@ -32,6 +32,7 @@ public class JIPipeProgressInfo {
     private StringBuilder log = new StringBuilder();
     private String logPrepend = "";
     private AtomicBoolean logToStdOut = new AtomicBoolean(false);
+    private boolean detachedProgress = false;
 
     public JIPipeProgressInfo() {
     }
@@ -44,6 +45,7 @@ public class JIPipeProgressInfo {
         this.log = other.log;
         this.logPrepend = other.logPrepend;
         this.logToStdOut = other.logToStdOut;
+        this.detachedProgress = other.detachedProgress;
     }
 
     public synchronized void clearLog() {
@@ -96,6 +98,8 @@ public class JIPipeProgressInfo {
      * @param message the message
      */
     public synchronized void log(String message) {
+        if(detachedProgress)
+            log.append("SUB ");
         log.append("<").append(progress).append("/").append(maxProgress).append("> ").append(logPrepend);
         boolean needsSeparator = !StringUtils.isNullOrEmpty(logPrepend) && !StringUtils.isNullOrEmpty(message);
         if (needsSeparator)
@@ -103,9 +107,29 @@ public class JIPipeProgressInfo {
         log.append(" ").append(message);
         log.append("\n");
         if (logToStdOut.get()) {
-            System.out.println("<" + progress + "/" + maxProgress + "> " + logPrepend + (needsSeparator ? " | " : "") + message);
+            System.out.println((detachedProgress ? "SUB " : "") + "<" + progress + "/" + maxProgress + "> " + logPrepend + (needsSeparator ? " | " : "") + message);
         }
         eventBus.post(new StatusUpdatedEvent(this, progress.get(), maxProgress.get(), logPrepend + (needsSeparator ? " | " : " ") + message));
+    }
+
+    /**
+     * Returns true if the progress was detached from the root {@link JIPipeProgressInfo}
+     * @return if the progress was detached
+     */
+    public boolean isDetachedProgress() {
+        return detachedProgress;
+    }
+
+    /**
+     * Creates a sub-progress that detaches the references to the global process counters.
+     *
+     * @return progress info with the same properties as the current one, but with a detached progress
+     */
+    public synchronized JIPipeProgressInfo detachProgress() {
+        JIPipeProgressInfo result = new JIPipeProgressInfo(this);
+        result.progress = new AtomicInteger(this.progress.get());
+        result.maxProgress = new AtomicInteger(this.maxProgress.get());
+        return result;
     }
 
     /**
