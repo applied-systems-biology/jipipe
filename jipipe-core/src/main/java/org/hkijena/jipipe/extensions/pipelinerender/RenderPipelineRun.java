@@ -20,6 +20,7 @@ import org.hkijena.jipipe.utils.ui.ScreenImage;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.awt.font.LineMetrics;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -228,7 +229,9 @@ public class RenderPipelineRun implements JIPipeRunnable {
                 graphics2D.setColor(UIManager.getColor("Label.foreground"));
                 graphics2D.setFont(labelFont);
                 FontMetrics fontMetrics = graphics2D.getFontMetrics(labelFont);
-                int labelTextHeight = fontMetrics.getHeight();
+                String text = project.getCompartments().get(compartmentUUID).getName();
+                LineMetrics lineMetrics = fontMetrics.getLineMetrics(text, graphics);
+                int labelTextHeight = (int) (lineMetrics.getAscent() - lineMetrics.getDescent());
                 graphics2D.drawString(project.getCompartments().get(compartmentUUID).getName(), bx + labelBoxHeight, by + labelTextHeight + labelBoxHeight / 2 - labelTextHeight / 2);
             }
         }
