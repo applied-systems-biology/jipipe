@@ -1,13 +1,16 @@
 package org.hkijena.jipipe.extensions.pipelinerender;
 
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.nio.file.Path;
 
 public class PipelineRenderTool extends JIPipeMenuExtension {
     /**
@@ -25,9 +28,13 @@ public class PipelineRenderTool extends JIPipeMenuExtension {
     }
 
     private void runRenderTool() {
-        if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "This will create a high-resolution render of the whole pipeline, organized by their compartment.\n" +
-                "This might take a while.\nContinue?", getText(), JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            JIPipeRunnerQueue.getInstance().enqueue(new RenderPipelineRun(((JIPipeProjectWorkbench)getWorkbench()).getProject()));
+        JOptionPane.showMessageDialog(getWorkbench().getWindow(),
+                "Please check if you organized your compartments as compact as possible, to minimize computational load of generating a full resolution pipeline.",
+                getText(),
+                JOptionPane.WARNING_MESSAGE);
+        Path path = FileChooserSettings.saveFile(getWorkbench().getWindow(), FileChooserSettings.LastDirectoryKey.External, getText(), UIUtils.EXTENSION_FILTER_PNG);
+        if(path != null) {
+            JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), new RenderPipelineRun(((JIPipeProjectWorkbench)getWorkbench()).getProject(), path));
         }
     }
 

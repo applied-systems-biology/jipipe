@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.pipelinerender;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.history.JIPipeDummyGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -14,9 +15,9 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -24,9 +25,11 @@ import java.util.UUID;
 public class RenderPipelineRun implements JIPipeRunnable {
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private final JIPipeProject project;
+    private final Path outputPath;
 
-    public RenderPipelineRun(JIPipeProject project) {
+    public RenderPipelineRun(JIPipeProject project, Path outputPath) {
         this.project = project;
+        this.outputPath = outputPath;
     }
 
     @Override
@@ -71,8 +74,8 @@ public class RenderPipelineRun implements JIPipeRunnable {
         progressInfo.setProgress(compartmentUUIDs.size() + 1);
 
         // Measure out the size of the compartment graph in grids
-        int compartmentGraphGridsX = 0;
-        int compartmentGraphGridsY = 0;
+        int compartmentMaxGraphGridsX = 0;
+        int compartmentMaxGraphGridsY = 0;
 
         Map<UUID, Point> compartmentGridLocations = new HashMap<>();
         JIPipeGraphViewMode compartmentGraphViewMode = project.getCompartmentGraph().getAdditionalMetadata(JIPipeGraphViewMode.class, "jipipe:graph:view-mode");
@@ -80,24 +83,28 @@ public class RenderPipelineRun implements JIPipeRunnable {
             compartmentGraphViewMode = JIPipeGraphViewMode.VerticalCompact;
         }
 
-        int maxCompartmentGraphRealSizeY = 0; // Grid size in real coordinates
+        int maxCompartmentGraphRealSizeY; // Grid size in real coordinates
         switch (compartmentGraphViewMode) {
             case Vertical:
             case VerticalCompact: {
                 // Verticals are always 3 tall
                 maxCompartmentGraphRealSizeY = compartmentGraphViewMode.getGridHeight() * 3;
             }
+            break;
+            default:
+                throw new UnsupportedOperationException("Currently only vertical compartment graphs are supported. " +
+                        "Please set the compartment graph to a vertical view.");
         }
 
         for (JIPipeGraphNode graphNode : project.getCompartmentGraph().getGraphNodes()) {
             Point location = graphNode.getLocationWithin("", compartmentGraphViewMode.name());
-            compartmentGraphGridsX = Math.max(compartmentGraphGridsX, location.x);
-            compartmentGraphGridsY = Math.max(compartmentGraphGridsY, location.y);
+            compartmentMaxGraphGridsX = Math.max(compartmentMaxGraphGridsX, location.x);
+            compartmentMaxGraphGridsY = Math.max(compartmentMaxGraphGridsY, location.y);
             compartmentGridLocations.put(graphNode.getUUIDInGraph(), location);
 
-            if(compartmentGraphViewMode == JIPipeGraphViewMode.Horizontal) {
-                maxCompartmentGraphRealSizeY = Math.max(maxCompartmentGraphRealSizeY, compartmentGraphViewMode.getGridHeight() * (graphNode.getOutputSlots().size() + 1));
-            }
+//            if(compartmentGraphViewMode == JIPipeGraphViewMode.Horizontal) {
+//                maxCompartmentGraphRealSizeY = Math.max(maxCompartmentGraphRealSizeY, compartmentGraphViewMode.getGridHeight() * (graphNode.getOutputSlots().size() + 1));
+//            }
         }
 
         // Convert from grid into real coordinates by using the known constrains of the view modes
@@ -109,6 +116,43 @@ public class RenderPipelineRun implements JIPipeRunnable {
             compartmentGridWidth = (int)(compartmentGraphViewMode.getGridWidth() * factor);
         }
 
+        // Calculate final target points for inside
+        Map<UUID, Point> finalInsideLocations = new HashMap<>();
+        int finalInsideMaxXRight = 0;
+        for (UUID compartmentUUID : compartmentUUIDs) {
+            JIPipeProjectCompartment compartmentNode = project.getCompartments().get(compartmentUUID);
+            Point compartmentGridLocation = compartmentNode.getLocationWithin("", compartmentGraphViewMode.name());
+            int x = compartmentGridWidth * (compartmentGridLocation.x + 1);
+            int y = compartmentGridHeight * (compartmentGridLocation.y + 1);
+            finalInsideLocations.put(compartmentUUID, new Point(x,y));
+            finalInsideMaxXRight = x + compartmentRenders.get(compartmentUUID).getWidth();
+        }
+
+        // calculate final image size (includes a border)
+        // The y + its own height (3) + border
+        int finalHeight = (compartmentMaxGraphGridsY + 3 + 2) * compartmentGridHeight;
+        int finalWidth = finalInsideMaxXRight + compartmentGridWidth; // Add a border
+
+        progressInfo.log("Final render will have a size of " + finalWidth + "x" + finalHeight + " pixels");
+
+        // Create image
+        BufferedImage finalImage = new BufferedImage(finalWidth, finalHeight, BufferedImage.TYPE_INT_RGB);
+        Graphics graphics = finalImage.getGraphics();
+
+        for (UUID compartmentUUID : compartmentUUIDs) {
+            Point point = finalInsideLocations.get(compartmentUUID);
+            graphics.drawImage(compartmentRenders.get(compartmentUUID), point.x, point.y, null);
+        }
+
+        graphics.dispose();
+
+        // Save image
+        progressInfo.log("Saving to " + outputPath);
+        try {
+            ImageIO.write(finalImage, "PNG", outputPath.toFile());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private BufferedImage renderCompartment(JIPipeGraph copyGraph, UUID compartment) {
@@ -116,6 +160,7 @@ public class RenderPipelineRun implements JIPipeRunnable {
         try {
             SwingUtilities.invokeAndWait(() -> {
                 JIPipeGraphCanvasUI canvasUI = new JIPipeGraphCanvasUI(new JIPipeDummyWorkbench(), null, copyGraph, compartment, new JIPipeDummyGraphHistoryJournal());
+                canvasUI.setRenderCursor(false);
                 canvasUI.revalidate();
                 canvasUI.crop();
                 canvasUI.revalidate();
