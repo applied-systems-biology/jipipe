@@ -127,6 +127,7 @@ public class JIPipeProgressInfo {
      */
     public synchronized JIPipeProgressInfo detachProgress() {
         JIPipeProgressInfo result = new JIPipeProgressInfo(this);
+        result.detachedProgress = true;
         result.progress = new AtomicInteger(this.progress.get());
         result.maxProgress = new AtomicInteger(this.maxProgress.get());
         return result;
