@@ -232,7 +232,7 @@ public class RenderPipelineRun implements JIPipeRunnable {
                 String text = project.getCompartments().get(compartmentUUID).getName();
                 LineMetrics lineMetrics = fontMetrics.getLineMetrics(text, graphics);
                 int labelTextHeight = (int) (lineMetrics.getAscent() - lineMetrics.getDescent());
-                graphics2D.drawString(project.getCompartments().get(compartmentUUID).getName(), bx + labelBoxHeight, by + labelTextHeight + labelBoxHeight / 2 - labelTextHeight / 2);
+                graphics2D.drawString(project.getCompartments().get(compartmentUUID).getName(), bx + labelBoxHeight / 2, by + labelTextHeight + labelBoxHeight / 2 - labelTextHeight / 2);
             }
         }
 
