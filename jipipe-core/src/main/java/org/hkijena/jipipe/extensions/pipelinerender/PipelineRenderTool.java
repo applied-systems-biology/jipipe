@@ -1,12 +1,14 @@
 package org.hkijena.jipipe.extensions.pipelinerender;
 
+import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -28,13 +30,20 @@ public class PipelineRenderTool extends JIPipeMenuExtension {
     }
 
     private void runRenderTool() {
-        JOptionPane.showMessageDialog(getWorkbench().getWindow(),
-                "Please check if you organized your compartments as compact as possible, to minimize computational load of generating a full resolution pipeline.",
+        JIPipeProject project = ((JIPipeProjectWorkbench) getWorkbench()).getProject();
+        MarkdownDocument document = new MarkdownDocument("# " + getText() + "\n\n" +
+                "Please check if you organized your compartments as compact as possible, to minimize computational load of generating a full resolution pipeline.");
+        RenderPipelineRunSettings settings = new RenderPipelineRunSettings();
+
+        if(ParameterPanel.showDialog(getWorkbench(),
+                settings,
+                document,
                 getText(),
-                JOptionPane.WARNING_MESSAGE);
-        Path path = FileChooserSettings.saveFile(getWorkbench().getWindow(), FileChooserSettings.LastDirectoryKey.External, getText(), UIUtils.EXTENSION_FILTER_PNG);
-        if(path != null) {
-            JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), new RenderPipelineRun(((JIPipeProjectWorkbench)getWorkbench()).getProject(), path));
+                ParameterPanel.WITH_SEARCH_BAR  | ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION)) {
+            Path path = FileChooserSettings.saveFile(getWorkbench().getWindow(), FileChooserSettings.LastDirectoryKey.External, getText(), UIUtils.EXTENSION_FILTER_PNG);
+            if (path != null) {
+                JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), new RenderPipelineRun(project, path, settings));
+            }
         }
     }
 

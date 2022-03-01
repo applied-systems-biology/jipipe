@@ -45,6 +45,7 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
     private final ImageViewerPanel imageViewerPanel;
     private final int targetChannel;
     private final SolidColorIcon changeColorButtonDisplayedColor = new SolidColorIcon(16, 16);
+    private ColorMap lastColorMap = ColorMap.viridis;
     /**
      * The multi-thumb slider to use for the gradient stops
      */
@@ -246,8 +247,9 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
     }
 
     private void pickColorsFromColorMap() {
-        Object selected = PickEnumValueDialog.showDialog(this, Arrays.asList(ColorMap.values()), new ColorMapEnumItemInfo(), ColorMap.viridis, "Select LUT");
+        Object selected = PickEnumValueDialog.showDialog(this, Arrays.asList(ColorMap.values()), new ColorMapEnumItemInfo(), lastColorMap, "Select LUT");
         if (selected instanceof ColorMap) {
+            lastColorMap = (ColorMap) selected;
             importLUT(((ColorMap) selected).toLUT(), true);
             SwingUtilities.invokeLater(this::applyLUT);
         }

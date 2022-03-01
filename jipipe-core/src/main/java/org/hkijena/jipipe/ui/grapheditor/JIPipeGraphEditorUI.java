@@ -24,7 +24,6 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
@@ -95,7 +94,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         algorithmGraph.getEventBus().register(this);
         updateNavigation();
         initializeHotkeys();
-        SwingUtilities.invokeLater(canvasUI::crop);
+        SwingUtilities.invokeLater(() -> canvasUI.crop(true));
         canvasUI.setLayoutHelperEnabled(graphUISettings.isEnableLayoutHelper());
     }
 
@@ -365,7 +364,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             if (getHistoryJournal() != null) {
                 getHistoryJournal().snapshot("Center view to nodes", "Apply center view to nodes", getCompartment(), UIUtils.getIconFromResources("actions/view-restore.png"));
             }
-            canvasUI.crop();
+            canvasUI.crop(true);
         });
         menuBar.add(centerViewButton);
 

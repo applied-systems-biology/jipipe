@@ -29,7 +29,6 @@ import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.components.renderers.DropShadowRenderer;
 import org.hkijena.jipipe.ui.grapheditor.actions.JIPipeNodeUIAction;
@@ -125,6 +124,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private boolean hasDragSnapshot = false;
     private int currentNodeLayer = Integer.MIN_VALUE;
     private boolean renderCursor = true;
+    private boolean renderOutsideEdges = true;
 
     /**
      * Used to store the minimum dimensions of the canvas to reduce user disruption
@@ -160,6 +160,14 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         addNewNodes();
         graph.getEventBus().register(this);
         initializeHotkeys();
+    }
+
+    public boolean isRenderOutsideEdges() {
+        return renderOutsideEdges;
+    }
+
+    public void setRenderOutsideEdges(boolean renderOutsideEdges) {
+        this.renderOutsideEdges = renderOutsideEdges;
     }
 
     @Override
@@ -1071,11 +1079,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             }
         }
 
-        if (getCompartment() != null && settings.isDrawOutsideEdges())
+        if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges())
             paintOutsideEdges(g, false, Color.DARK_GRAY, STROKE_DEFAULT, STROKE_DEFAULT_BORDER);
         paintEdges(g, STROKE_DEFAULT, STROKE_DEFAULT_BORDER, STROKE_COMMENT, false, false, false, 1, 0, 0);
 
-        if (getCompartment() != null && settings.isDrawOutsideEdges())
+        if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges())
             paintOutsideEdges(g, true, Color.DARK_GRAY, STROKE_HIGHLIGHT, null);
         if (!selection.isEmpty())
             paintEdges(g, STROKE_HIGHLIGHT, null, STROKE_COMMENT_HIGHLIGHT, true, true, settings.isColorSelectedNodeEdges(), 1, 0, 0);
@@ -1662,7 +1670,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             this.viewMode = viewMode;
             removeAllNodes();
             addNewNodes();
-            crop();
+            crop(true);
         }
     }
 
@@ -1758,8 +1766,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     /**
      * Sets node positions to make the top left to 0, 0
+     * @param save if the locations should be saved
      */
-    public void crop() {
+    public void crop(boolean save) {
         int minX = Integer.MAX_VALUE;
         int minY = Integer.MAX_VALUE;
         for (JIPipeNodeUI ui : nodeUIs.values()) {
@@ -1769,7 +1778,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         boolean oldModified = getWorkbench().isProjectModified();
         for (JIPipeNodeUI ui : nodeUIs.values()) {
             ui.moveToClosestGridPoint(new Point(ui.getX() - minX + viewMode.getGridWidth(),
-                    ui.getY() - minY + viewMode.getGridHeight()), true, true);
+                    ui.getY() - minY + viewMode.getGridHeight()), true, save);
         }
         getWorkbench().setProjectModified(oldModified);
         setGraphEditCursor(viewMode.gridToRealLocation(new Point(1, 1), zoom));
