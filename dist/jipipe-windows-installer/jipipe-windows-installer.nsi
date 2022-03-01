@@ -70,7 +70,7 @@ Section "Common files (Required)" SEC01
   File "..\..\jipipe-core\target\jipipe-core-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-filesystem\target\jipipe-filesystem-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-ij\target\jipipe-ij-${PRODUCT_VERSION}.jar"
-  File "..\..\jipipe-ij\target\jipipe-ij2-${PRODUCT_VERSION}.jar"
+  File "..\..\jipipe-ij2\target\jipipe-ij2-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-ij-algorithms\target\jipipe-ij-algorithms-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-ij-omero\target\jipipe-ij-omero-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-ij-multi-template-matching\target\jipipe-ij-multi-template-matching-${PRODUCT_VERSION}.jar"
