@@ -15,6 +15,9 @@ import javax.swing.*;
 import java.nio.file.Path;
 
 public class PipelineRenderTool extends JIPipeMenuExtension {
+
+    private static final RenderPipelineRunSettings LAST_SETTINGS = new RenderPipelineRunSettings();
+
     /**
      * Creates a new instance
      *
@@ -33,7 +36,7 @@ public class PipelineRenderTool extends JIPipeMenuExtension {
         JIPipeProject project = ((JIPipeProjectWorkbench) getWorkbench()).getProject();
         MarkdownDocument document = new MarkdownDocument("# " + getText() + "\n\n" +
                 "Please check if you organized your compartments as compact as possible, to minimize computational load of generating a full resolution pipeline.");
-        RenderPipelineRunSettings settings = new RenderPipelineRunSettings();
+        RenderPipelineRunSettings settings = LAST_SETTINGS;
 
         if(ParameterPanel.showDialog(getWorkbench(),
                 settings,

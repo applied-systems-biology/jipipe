@@ -135,7 +135,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      * Creates a new UI
      *
      * @param workbench      the workbench
-     * @param graphEditorUI
+     * @param graphEditorUI the graph editor UI that contains this canvas. can be null.
      * @param graph          The algorithm graph
      * @param compartment    The compartment to show
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
