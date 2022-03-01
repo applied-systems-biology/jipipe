@@ -183,7 +183,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
                 }
                 JIPipeGraphRunner runner = new JIPipeGraphRunner(wrappedGraph);
                 runner.setThreadPool(getThreadPool());
-                runner.setProgressInfo(batchProgress.resolve("Sub-graph"));
+                runner.setProgressInfo(batchProgress.detachProgress().resolve("Sub-graph"));
                 runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
                 runner.getPersistentDataNodes().add(getGroupOutput());
                 runner.run();
@@ -222,7 +222,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             }
             JIPipeGraphRunner runner = new JIPipeGraphRunner(wrappedGraph);
             runner.setThreadPool(getThreadPool());
-            runner.setProgressInfo(progressInfo.resolve("Sub-graph"));
+            runner.setProgressInfo(progressInfo.detachProgress().resolve("Sub-graph"));
             runner.setAlgorithmsWithExternalInput(Collections.singleton(getGroupInput()));
             runner.getPersistentDataNodes().add(getGroupOutput());
             runner.run();
