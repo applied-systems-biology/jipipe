@@ -133,7 +133,8 @@ class DataSlot:
                         "name": name,
                         "value": value
                     } for name, value in self.annotations[row].items()
-                ]
+                ],
+                "data-annotations": [] # TODO: Support for data annotations
             } for row in range(self.rows)]
         }
 
