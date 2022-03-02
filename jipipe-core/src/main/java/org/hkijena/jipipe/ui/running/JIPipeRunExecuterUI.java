@@ -156,6 +156,7 @@ public class JIPipeRunExecuterUI extends JPanel {
     @Subscribe
     public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
         if (event.getRun() == run) {
+            throbberIcon.stop();
             switchToCloseButtonIfPossible();
             progressBar.setString("Finished");
         }
