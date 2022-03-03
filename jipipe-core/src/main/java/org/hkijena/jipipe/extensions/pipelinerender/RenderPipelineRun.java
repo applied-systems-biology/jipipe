@@ -89,7 +89,7 @@ public class RenderPipelineRun implements JIPipeRunnable {
 
             int expectedWidth = bufferedImage.getWidth() + 16;
             int expectedHeight = bufferedImage.getHeight() + 16;
-            expectedHeight += labelBoxHeight * 2;
+            expectedHeight += labelBoxHeight + 16;
 
             scaleFactor = (int)Math.round(Math.max(scaleFactor, Math.max(expectedWidth / bounds.getWidth(), expectedHeight / bounds.getHeight())));
         }
