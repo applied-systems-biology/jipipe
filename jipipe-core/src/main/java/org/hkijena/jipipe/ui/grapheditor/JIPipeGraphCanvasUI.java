@@ -119,7 +119,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private JIPipeDataSlotUI currentHighlightedForDisconnect;
     private Set<JIPipeDataSlot> currentHighlightedForDisconnectSourceSlots;
     private double zoom = 1.0;
-    private JScrollPane scrollPane;
     private Set<JIPipeGraphNode> scheduledSelection = new HashSet<>();
     private boolean hasDragSnapshot = false;
     private int currentNodeLayer = Integer.MIN_VALUE;
@@ -423,6 +422,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
 
         Rectangle viewRectangle = null;
+        JScrollPane scrollPane = getScrollPane();
         if (scrollPane != null) {
             int hValue = scrollPane.getHorizontalScrollBar().getValue();
             int vValue = scrollPane.getVerticalScrollBar().getValue();
@@ -1908,6 +1908,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             double dX = afterZoomX - beforeZoomX;
             double dY = afterZoomY - beforeZoomY;
 
+            JScrollPane scrollPane = getScrollPane();
             if (scrollPane != null) {
                 scrollPane.getHorizontalScrollBar().setValue(scrollPane.getHorizontalScrollBar().getValue() + (int) dX);
                 scrollPane.getVerticalScrollBar().setValue(scrollPane.getVerticalScrollBar().getValue() + (int) dY);
@@ -1931,11 +1932,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     }
 
     public JScrollPane getScrollPane() {
-        return scrollPane;
-    }
-
-    public void setScrollPane(JScrollPane scrollPane) {
-        this.scrollPane = scrollPane;
+        return graphEditorUI != null ? graphEditorUI.getScrollPane() : null;
     }
 
     public NodeHotKeyStorage getNodeHotKeyStorage() {

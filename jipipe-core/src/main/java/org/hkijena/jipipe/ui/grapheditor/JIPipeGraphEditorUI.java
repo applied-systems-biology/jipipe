@@ -231,7 +231,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         scrollPane.getHorizontalScrollBar().setUnitIncrement(25);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        canvasUI.setScrollPane(scrollPane);
         splitPane.setLeftComponent(scrollPane);
         splitPane.setRightComponent(new JPanel());
         add(splitPane, BorderLayout.CENTER);
@@ -626,6 +625,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * @param ui the algorithm
      */
     public void scrollToAlgorithm(JIPipeNodeUI ui) {
+        if(scrollPane == null)
+            return;
         int minViewX = scrollPane.getHorizontalScrollBar().getValue();
         int maxViewX = minViewX + scrollPane.getHorizontalScrollBar().getVisibleAmount();
         int minViewY = scrollPane.getVerticalScrollBar().getValue();
