@@ -291,7 +291,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private void addNewNodes(boolean force) {
         int newlyPlacedAlgorithms = 0;
         JIPipeNodeUI ui = null;
-        for (JIPipeGraphNode algorithm : graph.traverse()) {
+        for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
             if (!algorithm.isVisibleIn(getCompartment()))
                 continue;
             if (nodeUIs.containsKey(algorithm))

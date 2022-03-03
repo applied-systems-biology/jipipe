@@ -70,7 +70,6 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
 
     private JPanel defaultPanel;
     private boolean disableUpdateOnSelection = false;
-    private JIPipeProjectCompartment compartmentInstance;
 
     /**
      * Creates a project graph compartment editor
@@ -83,11 +82,6 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
         super(workbenchUI, algorithmGraph, compartment, algorithmGraph.getProject() != null ? algorithmGraph.getProject().getHistoryJournal() : new JIPipeDedicatedGraphHistoryJournal(algorithmGraph));
         initializeDefaultPanel();
         setPropertyPanel(defaultPanel);
-
-        JIPipeProject project = algorithmGraph.getAttachment(JIPipeProject.class);
-        if (project != null) {
-            compartmentInstance = project.getCompartments().getOrDefault(compartment, null);
-        }
 
         // Set D&D and Copy&Paste behavior
         initializeContextActions();
@@ -255,15 +249,6 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
 //                new DeleteAlgorithmContextMenuFeature()
 //        ));
 //    }
-
-    @Override
-    public UUID getCompartment() {
-        if (compartmentInstance == null) {
-            return super.getCompartment();
-        } else {
-            return compartmentInstance.getProjectCompartmentUUID();
-        }
-    }
 
     private void initializeContextActions() {
         getCanvasUI().setDragAndDropBehavior(new JIPipeGraphCompartmentDragAndDropBehavior());
