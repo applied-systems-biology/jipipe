@@ -26,6 +26,21 @@ public class JIPipeProjectMetadata extends JIPipeMetadata {
     private String templateDescription = "";
     private JIPipeProjectPermissions permissions = new JIPipeProjectPermissions();
     private JIPipeNodeTemplate.List nodeTemplates = new JIPipeNodeTemplate.List();
+    private boolean restoreTabs = true;
+
+    @JIPipeDocumentation(name = "Restore tabs", description = "If enabled, all tabs are restored on loading the project. Otherwise, the Project overview and Compartments " +
+            "tab are opened.")
+    @JIPipeParameter(value = "restore-tabs", uiOrder = -1)
+    @JsonGetter("restore-tabs")
+    public boolean isRestoreTabs() {
+        return restoreTabs;
+    }
+
+    @JIPipeParameter("restore-tabs")
+    @JsonSetter("restore-tabs")
+    public void setRestoreTabs(boolean restoreTabs) {
+        this.restoreTabs = restoreTabs;
+    }
 
     @JIPipeDocumentation(name = "ImageJ update site dependencies", description = "ImageJ update sites that should be enabled for the project to work. Use this if you rely on " +
             "third-party methods that are not referenced in a JIPipe extension (e.g. within a script or macro node). " +

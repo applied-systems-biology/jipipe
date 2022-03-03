@@ -34,7 +34,7 @@ public class ProjectsSettings implements JIPipeParameterCollection {
 
     public static String ID = "projects";
 
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private PathList recentProjects = new PathList();
     private PathList recentJsonExtensionProjects = new PathList();
     private ProjectTemplateEnum projectTemplate = new ProjectTemplateEnum();

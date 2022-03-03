@@ -188,13 +188,19 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     }
 
     private void restoreTabs() {
-        try {
-            Object metadata = project.getAdditionalMetadata().getOrDefault(JIPipeProjectTabMetadata.METADATA_KEY, null);
-            if (metadata instanceof JIPipeProjectTabMetadata) {
-                ((JIPipeProjectTabMetadata) metadata).restore(this);
+        if(project.getMetadata().isRestoreTabs()) {
+            try {
+                Object metadata = project.getAdditionalMetadata().getOrDefault(JIPipeProjectTabMetadata.METADATA_KEY, null);
+                if (metadata instanceof JIPipeProjectTabMetadata) {
+                    ((JIPipeProjectTabMetadata) metadata).restore(this);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }
+        else {
+            documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR);
+            documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW);
         }
     }
 

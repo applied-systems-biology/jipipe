@@ -113,6 +113,8 @@ public class JIPipeProjectSettingsUI extends JPanel implements JIPipeProjectWork
                     return true;
                 if (parameter.getKey().equals("update-site-dependencies"))
                     return true;
+                if(parameter.getKey().equals("restore-tabs"))
+                    return true;
                 return false;
             });
             splitPane.setRightComponent(parameterPanel);
