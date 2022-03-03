@@ -156,7 +156,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
         graph.attachAdditionalMetadata("jipipe:graph:view-mode", this.viewMode);
         initialize();
-        addNewNodes();
+        addNewNodes(false);
         graph.getEventBus().register(this);
         initializeHotkeys();
     }
@@ -286,8 +286,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     /**
      * Adds node UIs that are not in the canvas yet
+     * @param force if the positioning is forced
      */
-    private void addNewNodes() {
+    private void addNewNodes(boolean force) {
         int newlyPlacedAlgorithms = 0;
         JIPipeNodeUI ui = null;
         for (JIPipeGraphNode algorithm : graph.traverse()) {
@@ -313,8 +314,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             ui.getEventBus().register(this);
             add(ui, new Integer(currentNodeLayer++)); // Layered pane
             nodeUIs.put(algorithm, ui);
-            if (!ui.moveToStoredGridLocation(true)) {
-                autoPlaceCloseToCursor(ui);
+            if (!ui.moveToStoredGridLocation(force)) {
+                autoPlaceCloseToCursor(ui, force);
                 ++newlyPlacedAlgorithms;
             }
 //            ui.addComponentListener(new ComponentAdapter() {
@@ -490,7 +491,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         ui.moveToClosestGridPoint(new Point(currentShape.x, currentShape.y), true, true);
     }
 
-    public void autoPlaceCloseToCursor(JIPipeNodeUI ui) {
+    public void autoPlaceCloseToCursor(JIPipeNodeUI ui, boolean force) {
 //        System.out.println("GE: " + getGraphEditorCursor());
 //        int minX = 0;
 //        int minY = 0;
@@ -509,7 +510,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             minX = getGraphEditorCursor().x;
             minY = getGraphEditorCursor().y;
         }
-        ui.moveToClosestGridPoint(new Point(minX, minY), true, true);
+        ui.moveToClosestGridPoint(new Point(minX, minY), force, true);
         if(graphEditorUI != null) {
             graphEditorUI.scrollToAlgorithm(ui);
         }
@@ -535,7 +536,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         int sourceSlotIndex = source.getNode().getOutputSlots().indexOf(source);
         int targetSlotIndex = target.getNode().getInputSlots().indexOf(target);
         if (sourceSlotIndex < 0 || targetSlotIndex < 0) {
-            autoPlaceCloseToCursor(targetAlgorithmUI);
+            autoPlaceCloseToCursor(targetAlgorithmUI, true);
             return;
         }
 
@@ -567,7 +568,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                         ui.moveToClosestGridPoint(new Point(ui.getX() + translateX, ui.getY()), true, true);
                     }
                     if (!targetAlgorithmUI.moveToClosestGridPoint(targetPoint, false, true)) {
-                        autoPlaceCloseToCursor(targetAlgorithmUI);
+                        autoPlaceCloseToCursor(targetAlgorithmUI, true);
                     }
                 }
             } else {
@@ -597,7 +598,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                         ui.moveToClosestGridPoint(new Point(ui.getX(), ui.getY() + translateY), true, true);
                     }
                     if (!targetAlgorithmUI.moveToClosestGridPoint(targetPoint, false, true)) {
-                        autoPlaceCloseToCursor(targetAlgorithmUI);
+                        autoPlaceCloseToCursor(targetAlgorithmUI, true);
                     }
                 }
             } else {
@@ -937,7 +938,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             ui.moveToStoredGridLocation(true);
         }
         removeOldNodes();
-        addNewNodes();
+        addNewNodes(true);
         requestFocusInWindow();
     }
 
@@ -1669,7 +1670,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if (viewMode != this.viewMode) {
             this.viewMode = viewMode;
             removeAllNodes();
-            addNewNodes();
+            addNewNodes(true);
             crop(true);
         }
     }
@@ -1798,7 +1799,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      */
     public void fullRedraw() {
         removeAllNodes();
-        addNewNodes();
+        addNewNodes(true);
     }
 
     public List<NodeUIContextAction> getContextActions() {

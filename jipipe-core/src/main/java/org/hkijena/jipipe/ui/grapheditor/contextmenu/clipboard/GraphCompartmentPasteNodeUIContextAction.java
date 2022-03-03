@@ -58,7 +58,7 @@ public class GraphCompartmentPasteNodeUIContextAction implements NodeUIContextAc
                     JIPipeProjectCompartment compartmentNode = compartment.addTo(project, newId);
                     JIPipeNodeUI ui = canvasUI.getNodeUIs().getOrDefault(compartmentNode, null);
                     if (ui != null) {
-                        canvasUI.autoPlaceCloseToCursor(ui);
+                        canvasUI.autoPlaceCloseToCursor(ui, true);
                     }
                 }
             }
