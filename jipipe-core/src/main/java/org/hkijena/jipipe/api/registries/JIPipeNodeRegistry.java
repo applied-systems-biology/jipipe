@@ -38,22 +38,23 @@ import java.util.stream.Collectors;
  * Manages known algorithms and their annotations
  */
 public class JIPipeNodeRegistry implements JIPipeValidatable {
-    private Map<String, JIPipeNodeInfo> registeredNodeInfos = new HashMap<>();
-    private Multimap<Class<? extends JIPipeGraphNode>, JIPipeNodeInfo> registeredNodeClasses = HashMultimap.create();
-    private Set<JIPipeNodeRegistrationTask> registrationTasks = new HashSet<>();
-    private Map<String, JIPipeDependency> registeredNodeInfoSources = new HashMap<>();
-    private BiMap<String, JIPipeNodeTypeCategory> registeredCategories = HashBiMap.create();
-    private Map<JIPipeNodeInfo, URL> iconURLs = new HashMap<>();
-    private Map<JIPipeNodeInfo, ImageIcon> iconInstances = new HashMap<>();
+    private final Map<String, JIPipeNodeInfo> registeredNodeInfos = new HashMap<>();
+    private final Multimap<Class<? extends JIPipeGraphNode>, JIPipeNodeInfo> registeredNodeClasses = HashMultimap.create();
+    private final Set<JIPipeNodeRegistrationTask> registrationTasks = new HashSet<>();
+    private final Map<String, JIPipeDependency> registeredNodeInfoSources = new HashMap<>();
+    private final BiMap<String, JIPipeNodeTypeCategory> registeredCategories = HashBiMap.create();
+    private final Map<JIPipeNodeInfo, URL> iconURLs = new HashMap<>();
+    private final Map<JIPipeNodeInfo, ImageIcon> iconInstances = new HashMap<>();
     private boolean stateChanged;
     private boolean isRunning;
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
+    private final URL defaultIconURL;
 
     /**
      * Creates a new registry
      */
     public JIPipeNodeRegistry() {
-
+        this.defaultIconURL = ResourceUtils.getPluginResource("icons/actions/configure.png");
     }
 
     /**
@@ -279,7 +280,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      * @return icon url
      */
     public URL getIconURLFor(JIPipeNodeInfo info) {
-        return iconURLs.getOrDefault(info, ResourceUtils.getPluginResource("icons/actions/configure.png"));
+        return iconURLs.getOrDefault(info, defaultIconURL);
     }
 
     /**

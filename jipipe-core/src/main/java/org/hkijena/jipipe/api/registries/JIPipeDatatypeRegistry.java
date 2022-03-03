@@ -59,12 +59,15 @@ public class JIPipeDatatypeRegistry {
     private final Graph<JIPipeDataInfo, DataConverterEdge> conversionGraph = new DefaultDirectedGraph<>(DataConverterEdge.class);
     private final DijkstraShortestPath<JIPipeDataInfo, DataConverterEdge> shortestPath = new DijkstraShortestPath<>(conversionGraph);
     private final EventBus eventBus = new EventBus();
+    private final URL defaultIconURL;
+    private final ImageIcon defaultIcon;
 
     /**
      * Creates a new instance
      */
     public JIPipeDatatypeRegistry() {
-
+        this.defaultIconURL = UIUtils.getIconURLFromResources("data-types/data-type.png");
+        this.defaultIcon = UIUtils.getIconFromResources("data-types/data-type.png");
     }
 
     /**
@@ -467,7 +470,7 @@ public class JIPipeDatatypeRegistry {
      * @return icon instance
      */
     public ImageIcon getIconFor(Class<? extends JIPipeData> klass) {
-        return iconInstances.getOrDefault(klass, UIUtils.getIconFromResources("data-types/data-type.png"));
+        return iconInstances.getOrDefault(klass, defaultIcon);
     }
 
     /**
@@ -527,7 +530,7 @@ public class JIPipeDatatypeRegistry {
      * @return icon resource
      */
     public URL getIconURLFor(Class<? extends JIPipeData> klass) {
-        return iconsURLs.getOrDefault(klass, ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
+        return iconsURLs.getOrDefault(klass, defaultIconURL);
     }
 
     /**
