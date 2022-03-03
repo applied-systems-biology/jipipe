@@ -26,10 +26,7 @@ import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class CleanBackupsRun implements JIPipeRunnable {
     private JIPipeWorkbench workbench;
@@ -69,7 +66,7 @@ public class CleanBackupsRun implements JIPipeRunnable {
         }
 
         try {
-            PathList lastSaves = settings.getLastSaves();
+            List<Path> lastSaves = settings.getLastBackups();
             getProgressInfo().setProgress(0, lastSaves.size());
 
             for (Path lastSave : lastSaves) {
@@ -120,7 +117,6 @@ public class CleanBackupsRun implements JIPipeRunnable {
                 try {
                     if (Files.exists(path))
                         Files.delete(path);
-                    lastSaves.remove(path);
                 } catch (IOException e) {
                     progressInfo.log("Unable to delete: " + e);
                 }

@@ -21,7 +21,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalPathParameter;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -37,7 +36,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -48,8 +49,7 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
     private final Timer autoSaveTimer;
     private boolean enableAutoSave = true;
     private int autoSaveDelay = 3;
-    private PathList lastSaves = new PathList();
-    private OptionalPathParameter savePath = new OptionalPathParameter();
+    private OptionalPathParameter customSavePath = new OptionalPathParameter();
     private Set<String> savedBackupHashes = new HashSet<>();
 
     public AutoSaveSettings() {
@@ -87,21 +87,7 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
         if (window.getProjectSavePath() != null) {
             name = window.getProjectSavePath().getFileName().toString();
         }
-        Path directory;
-        if (savePath.isEnabled()) {
-            if (!Files.isDirectory(savePath.getContent())) {
-                directory = savePath.getContent();
-                try {
-                    Files.createDirectories(savePath.getContent());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            } else {
-                directory = savePath.getContent();
-            }
-        } else {
-            directory = getDefaultSavePath();
-        }
+        Path directory = getCurrentSavePath();
         try {
             Set<String> existing = Files.list(directory).map(p -> p.getFileName().toString().replace(".jip", "")).collect(Collectors.toSet());
             String baseName = name + "_" + LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME).replace(':', '-');
@@ -118,12 +104,30 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
 
             savedBackupHashes.add(sha1);
             window.getProjectUI().sendStatusBarText("Saved backup to " + targetFile);
-            lastSaves.add(0, targetFile);
             getEventBus().post(new ParameterChangedEvent(this, "last-saves"));
         } catch (IOException e) {
             window.getProjectUI().sendStatusBarText("Failed to save backup: " + e.getMessage());
             e.printStackTrace();
         }
+    }
+
+    public Path getCurrentSavePath() {
+        Path directory;
+        if (customSavePath.isEnabled()) {
+            if (!Files.isDirectory(customSavePath.getContent())) {
+                directory = customSavePath.getContent();
+                try {
+                    Files.createDirectories(customSavePath.getContent());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                directory = customSavePath.getContent();
+            }
+        } else {
+            directory = getDefaultSavePath();
+        }
+        return directory;
     }
 
     public void autoSaveAll() {
@@ -169,27 +173,15 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Backups", description = "List of all last known auto-saves.")
-    @JIPipeParameter(value = "last-saves", uiOrder = 100)
-    public PathList getLastSaves() {
-        lastSaves.removeIf(s -> !Files.exists(s));
-        return lastSaves;
-    }
-
-    @JIPipeParameter("last-saves")
-    public void setLastSaves(PathList lastSaves) {
-        this.lastSaves = lastSaves;
-    }
-
     @JIPipeDocumentation(name = "Custom auto-save path", description = "Allows to change the path where the auto-saves are placed. By default, they are put into a temporary directory.")
-    @JIPipeParameter("save-path")
-    public OptionalPathParameter getSavePath() {
-        return savePath;
+    @JIPipeParameter("custom-save-path")
+    public OptionalPathParameter getCustomSavePath() {
+        return customSavePath;
     }
 
-    @JIPipeParameter("save-path")
-    public void setSavePath(OptionalPathParameter savePath) {
-        this.savePath = savePath;
+    @JIPipeParameter("custom-save-path")
+    public void setCustomSavePath(OptionalPathParameter customSavePath) {
+        this.customSavePath = customSavePath;
     }
 
     @JIPipeDocumentation(name = "Remove duplicate backups", description = "Removes all duplicate backups")
@@ -202,13 +194,22 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
             JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), new CleanBackupsRun(workbench));
         }
     }
+    
+    public List<Path> getLastBackups() {
+        try {
+            return Files.list(getCurrentSavePath()).filter(path -> path.getFileName().toString().endsWith(".jip")).collect(Collectors.toList());
+        } catch (IOException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+    }
 
     @JIPipeDocumentation(name = "Restore backup", description = "Restores a backup from the list below")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/reload.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/reload.png")
     public void openRestoreMenu(JIPipeWorkbench workbench) {
         JList<Path> listControl = new JList<>();
         DefaultListModel<Path> model = new DefaultListModel<>();
-        for (Path lastSave : getLastSaves()) {
+        for (Path lastSave : getLastBackups()) {
             model.addElement(lastSave);
         }
         listControl.setModel(model);

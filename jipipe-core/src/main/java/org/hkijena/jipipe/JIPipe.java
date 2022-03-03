@@ -498,9 +498,9 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         // Check the backups
         logService.info("Checking backups ...");
         AutoSaveSettings autoSaveSettings = AutoSaveSettings.getInstance();
-        List<Path> invalidBackups = autoSaveSettings.getLastSaves().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
+        List<Path> invalidBackups = autoSaveSettings.getLastBackups().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
         if (!invalidBackups.isEmpty()) {
-            autoSaveSettings.getLastSaves().removeAll(invalidBackups);
+            autoSaveSettings.getLastBackups().removeAll(invalidBackups);
         }
 
         logService.info("JIPipe loading finished");
