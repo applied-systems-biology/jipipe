@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
@@ -29,6 +30,9 @@ import org.jdesktop.swingx.multislider.ThumbListener;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Optional;
 
 public class ImageViewerPanelDisplayRangeControl extends JPanel implements ThumbListener {
     private final CalibrationPlugin calibrationPlugin;
@@ -73,15 +77,15 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
         setMinButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         setMinButton.addActionListener(e -> {
             if (calibrationPlugin.getCurrentImage().getImage() != null) {
-                int value = (int) (minSelectableValue + slider.getModel().getThumbAt(0).getPosition() * (maxSelectableValue - minSelectableValue));
-                Integer newValue = UIUtils.getIntegerByDialog(getCalibrationPlugin().getViewerPanel(),
+                double value = (minSelectableValue + slider.getModel().getThumbAt(0).getPosition() * (maxSelectableValue - minSelectableValue));
+                Optional<Double> newValue = UIUtils.getDoubleByDialog(getCalibrationPlugin().getViewerPanel(),
                         "Set min display value",
                         "Please enter the new value:",
                         value,
-                        (int) Math.floor(minSelectableValue),
-                        (int) Math.ceil(maxSelectableValue));
-                if (newValue != null) {
-                    float position = (float) ((newValue.floatValue() - minSelectableValue) / (maxSelectableValue - minSelectableValue));
+                        minSelectableValue,
+                        maxSelectableValue);
+                if (newValue.isPresent()) {
+                    float position = (float) ((newValue.get() - minSelectableValue) / (maxSelectableValue - minSelectableValue));
                     slider.getModel().getThumbAt(0).setPosition(Math.max(0, Math.min(position, 1)));
                     applyCustomCalibration();
                 }
@@ -94,15 +98,15 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
         setMaxButton.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
         setMaxButton.addActionListener(e -> {
             if (calibrationPlugin.getCurrentImage().getImage() != null) {
-                int value = (int) (minSelectableValue + slider.getModel().getThumbAt(1).getPosition() * (maxSelectableValue - minSelectableValue));
-                Integer newValue = UIUtils.getIntegerByDialog(getCalibrationPlugin().getViewerPanel(),
+                double value = (minSelectableValue + slider.getModel().getThumbAt(1).getPosition() * (maxSelectableValue - minSelectableValue));
+                Optional<Double> newValue = UIUtils.getDoubleByDialog(getCalibrationPlugin().getViewerPanel(),
                         "Set max display value",
                         "Please enter the new value:",
                         value,
-                        (int) Math.floor(minSelectableValue),
-                        (int) Math.ceil(maxSelectableValue));
-                if (newValue != null) {
-                    float position = (float) ((newValue.floatValue() - minSelectableValue) / (maxSelectableValue - minSelectableValue));
+                        minSelectableValue,
+                        maxSelectableValue);
+                if (newValue.isPresent()) {
+                    float position = (float) ((newValue.get() - minSelectableValue) / (maxSelectableValue - minSelectableValue));
                     slider.getModel().getThumbAt(1).setPosition(Math.max(0, Math.min(position, 1)));
                     applyCustomCalibration();
                 }
@@ -307,13 +311,15 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
                 }
             }
             g.setColor(UIManager.getColor("Label.foreground"));
+            DecimalFormat format = new DecimalFormat("0.###");
             for (int i = 0; i < 2; i++) {
                 Thumb<DisplayRangeStop> thumb = slider.getModel().getThumbAt(i);
                 float position = Math.max(0, Math.min(thumb.getPosition(), 1));
                 int x = ThumbRenderer.SIZE - 1 + (int) (w * position);
                 g.fillRect(x, 4, 2, h + 4);
                 if (statistics != null) {
-                    int value = (int) (imageViewerPanelDisplayRangeControl.minSelectableValue + thumb.getPosition() *
+
+                    String value = format.format (imageViewerPanelDisplayRangeControl.minSelectableValue + thumb.getPosition() *
                             (imageViewerPanelDisplayRangeControl.maxSelectableValue - imageViewerPanelDisplayRangeControl.minSelectableValue));
                     int stringWidth = g.getFontMetrics().stringWidth(value + "");
                     g.drawString("" + value, Math.max(0, Math.min(w - stringWidth, x - (stringWidth / 2))), h + 18);

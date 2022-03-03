@@ -963,7 +963,7 @@ public class UIUtils {
      * @param max          maximum value
      * @return the selected integer or null if cancelled
      */
-    public static Integer getIntegerByDialog(Component parent, String title, String message, int initialValue, int min, int max) {
+    public static Optional<Integer> getIntegerByDialog(Component parent, String title, String message, int initialValue, int min, int max) {
         JSpinner spinner = new JSpinner(new SpinnerNumberModel(initialValue, min, max, 1));
         int result = JOptionPane.showOptionDialog(
                 parent,
@@ -974,9 +974,36 @@ public class UIUtils {
                 null, null, null);
 
         if (result == JOptionPane.OK_OPTION) {
-            return ((SpinnerNumberModel) spinner.getModel()).getNumber().intValue();
+            return Optional.of (((SpinnerNumberModel) spinner.getModel()).getNumber().intValue());
         }
-        return null;
+        return Optional.empty();
+    }
+
+    /**
+     * Gets an integer by dialog
+     *
+     * @param parent       parent component
+     * @param title        title
+     * @param message      message
+     * @param initialValue initial value
+     * @param min          minimum value
+     * @param max          maximum value
+     * @return the selected double or null if cancelled
+     */
+    public static Optional<Double> getDoubleByDialog(Component parent, String title, String message, double initialValue, double min, double max) {
+        JSpinner spinner = new JSpinner(new SpinnerNumberModel(initialValue, min, max, 1));
+        int result = JOptionPane.showOptionDialog(
+                parent,
+                new Object[]{message, spinner},
+                title,
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null, null, null);
+
+        if (result == JOptionPane.OK_OPTION) {
+            return Optional.of (((SpinnerNumberModel) spinner.getModel()).getNumber().doubleValue());
+        }
+        return Optional.empty();
     }
 
     /**

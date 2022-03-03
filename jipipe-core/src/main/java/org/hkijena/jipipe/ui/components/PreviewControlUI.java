@@ -20,6 +20,7 @@ import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.util.Optional;
 
 public class PreviewControlUI extends JPanel {
 
@@ -56,9 +57,9 @@ public class PreviewControlUI extends JPanel {
 
     private void setSizeManually() {
         int current = dataSettings.getPreviewSize();
-        Integer selected = UIUtils.getIntegerByDialog(this, "Set preview size", "Set the preview size in pixels:", current, 40, Integer.MAX_VALUE);
-        if (selected != null) {
-            int newSize = selected;
+        Optional<Integer> selected = UIUtils.getIntegerByDialog(this, "Set preview size", "Set the preview size in pixels:", current, 40, Integer.MAX_VALUE);
+        if (selected.isPresent()) {
+            int newSize = selected.get();
             if (newSize != current) {
                 ParameterUtils.setParameter(dataSettings, "preview-size", newSize);
             }

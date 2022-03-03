@@ -326,10 +326,10 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         int currentStrokeThickness = Math.max(1, selectedRois.stream().map(Roi::getStrokeWidth).min(Comparator.naturalOrder()).get().intValue());
         JMenuItem setStrokeThicknessItem = new JMenuItem("Set line width ...", UIUtils.getIconFromResources("actions/transform-affect-stroke.png"));
         setStrokeThicknessItem.addActionListener(e -> {
-            Integer value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set line width", "Please put the line width here:", currentStrokeThickness, 1, Integer.MAX_VALUE);
-            if (value != null) {
+            Optional<Integer> value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set line width", "Please put the line width here:", currentStrokeThickness, 1, Integer.MAX_VALUE);
+            if (value.isPresent()) {
                 for (Roi roi : selectedRois) {
-                    roi.setStrokeWidth(value);
+                    roi.setStrokeWidth(value.get());
                 }
                 roiJList.repaint();
                 uploadSliceToCanvas();
@@ -356,10 +356,10 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         int currentZPosition = Math.max(0, selectedRois.stream().map(Roi::getZPosition).min(Comparator.naturalOrder()).get());
         JMenuItem setZPositionItem = new JMenuItem("Set Z position ...", UIUtils.getIconFromResources("actions/mark-location.png"));
         setZPositionItem.addActionListener(e -> {
-            Integer value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set Z position", "The first index is 1. Set it to zero to make the ROI appear on all Z planes.", currentZPosition, 0, Integer.MAX_VALUE);
-            if (value != null) {
+            Optional<Integer> value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set Z position", "The first index is 1. Set it to zero to make the ROI appear on all Z planes.", currentZPosition, 0, Integer.MAX_VALUE);
+            if (value.isPresent()) {
                 for (Roi roi : selectedRois) {
-                    roi.setPosition(roi.getCPosition(), value, roi.getTPosition());
+                    roi.setPosition(roi.getCPosition(), value.get(), roi.getTPosition());
                 }
                 roiJList.repaint();
                 uploadSliceToCanvas();
@@ -370,10 +370,10 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         int currentCPosition = Math.max(0, selectedRois.stream().map(Roi::getZPosition).min(Comparator.naturalOrder()).get());
         JMenuItem setCPositionItem = new JMenuItem("Set C position ...", UIUtils.getIconFromResources("actions/mark-location.png"));
         setCPositionItem.addActionListener(e -> {
-            Integer value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set C position", "The first index is 1. Set it to zero to make the ROI appear on all channel planes.", currentCPosition, 0, Integer.MAX_VALUE);
-            if (value != null) {
+            Optional<Integer> value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set C position", "The first index is 1. Set it to zero to make the ROI appear on all channel planes.", currentCPosition, 0, Integer.MAX_VALUE);
+            if (value.isPresent()) {
                 for (Roi roi : selectedRois) {
-                    roi.setPosition(value, roi.getZPosition(), roi.getTPosition());
+                    roi.setPosition(value.get(), roi.getZPosition(), roi.getTPosition());
                 }
                 roiJList.repaint();
                 uploadSliceToCanvas();
@@ -384,10 +384,10 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         int currentTPosition = Math.max(0, selectedRois.stream().map(Roi::getZPosition).min(Comparator.naturalOrder()).get());
         JMenuItem setTPositionItem = new JMenuItem("Set T position ...", UIUtils.getIconFromResources("actions/mark-location.png"));
         setTPositionItem.addActionListener(e -> {
-            Integer value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set T position", "The first index is 1. Set it to zero to make the ROI appear on all frame planes.", currentTPosition, 0, Integer.MAX_VALUE);
-            if (value != null) {
+            Optional<Integer> value = UIUtils.getIntegerByDialog(getViewerPanel(), "Set T position", "The first index is 1. Set it to zero to make the ROI appear on all frame planes.", currentTPosition, 0, Integer.MAX_VALUE);
+            if (value.isPresent()) {
                 for (Roi roi : selectedRois) {
-                    roi.setPosition(roi.getCPosition(), roi.getZPosition(), value);
+                    roi.setPosition(roi.getCPosition(), roi.getZPosition(), value.get());
                 }
                 roiJList.repaint();
                 uploadSliceToCanvas();
