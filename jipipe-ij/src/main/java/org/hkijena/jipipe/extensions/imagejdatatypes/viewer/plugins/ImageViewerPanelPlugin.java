@@ -26,7 +26,7 @@ public abstract class ImageViewerPanelPlugin {
     }
 
     public ImageSliceIndex getCurrentSlicePosition() {
-        return viewerPanel.getCurrentSlicePosition();
+        return viewerPanel.getCurrentSliceIndex();
     }
 
     public ImagePlus getCurrentImage() {

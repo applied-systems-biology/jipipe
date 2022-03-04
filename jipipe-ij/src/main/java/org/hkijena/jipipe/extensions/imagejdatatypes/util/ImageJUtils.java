@@ -32,11 +32,6 @@ import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d4.ImagePlus4DData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.ImagePlus5DData;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
@@ -1092,14 +1087,13 @@ public class ImageJUtils {
         return new LUT(reds, greens, blues);
     }
 
-    public static void calibrate(ImageProcessor imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax) {
+    public static void calibrate(ImageProcessor imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax, ImageStatistics stats) {
         double min = calibrationMode.getMin();
         double max = calibrationMode.getMax();
         if (calibrationMode == ImageJCalibrationMode.Custom) {
             min = customMin;
             max = customMax;
         } else if (calibrationMode == ImageJCalibrationMode.AutomaticImageJ) {
-            ImageStatistics stats = imp.getStats();
             int limit = stats.pixelCount / 10;
             int[] histogram = stats.histogram;
             int threshold = stats.pixelCount / 5000;
@@ -1136,21 +1130,19 @@ public class ImageJUtils {
                 }
             }
         } else if (calibrationMode == ImageJCalibrationMode.MinMax) {
-            ImageStatistics stats = imp.getStats();
             min = stats.min;
             max = stats.max;
         }
         imp.setMinAndMax(min, max);
     }
 
-    public static double[] calculateCalibration(ImageProcessor imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax) {
+    public static double[] calculateCalibration(ImageProcessor imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax, ImageStatistics stats) {
         double min = calibrationMode.getMin();
         double max = calibrationMode.getMax();
         if (calibrationMode == ImageJCalibrationMode.Custom) {
             min = customMin;
             max = customMax;
         } else if (calibrationMode == ImageJCalibrationMode.AutomaticImageJ) {
-            ImageStatistics stats = imp.getStats();
             int limit = stats.pixelCount / 10;
             int[] histogram = stats.histogram;
             int threshold = stats.pixelCount / 5000;
@@ -1187,7 +1179,6 @@ public class ImageJUtils {
                 }
             }
         } else if (calibrationMode == ImageJCalibrationMode.MinMax) {
-            ImageStatistics stats = imp.getStats();
             min = stats.min;
             max = stats.max;
         }

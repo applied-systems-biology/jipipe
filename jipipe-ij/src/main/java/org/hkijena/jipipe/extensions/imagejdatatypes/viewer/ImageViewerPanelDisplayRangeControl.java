@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
@@ -31,7 +30,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.text.DecimalFormat;
-import java.text.NumberFormat;
 import java.util.Optional;
 
 public class ImageViewerPanelDisplayRangeControl extends JPanel implements ThumbListener {
@@ -147,7 +145,11 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
                 }
                 minSelectableValue = min;
                 maxSelectableValue = max;
-                double[] calibration = ImageJUtils.calculateCalibration(currentSlice, getCalibrationPlugin().getSelectedCalibration(), minSelectableValue, maxSelectableValue);
+                double[] calibration = ImageJUtils.calculateCalibration(currentSlice,
+                        getCalibrationPlugin().getSelectedCalibration(),
+                        minSelectableValue,
+                        maxSelectableValue,
+                        getCalibrationPlugin().getViewerPanel().getCurrentSliceStats());
                 customMin = calibration[0];
                 customMax = calibration[1];
                 double displayRangeMin = customMin;
@@ -274,7 +276,7 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
             g.drawLine(0, h, w + 2 * ThumbRenderer.SIZE, h);
             g.setColor(COLOR_SELECTED);
             ImageProcessor slice = imageViewerPanelDisplayRangeControl.getCalibrationPlugin().getViewerPanel().getCurrentSlice();
-            ImageStatistics statistics = imageViewerPanelDisplayRangeControl.getCalibrationPlugin().getViewerPanel().getStatistics();
+            ImageStatistics statistics = imageViewerPanelDisplayRangeControl.getCalibrationPlugin().getViewerPanel().getCurrentSliceStats();
             if (statistics != null && slice != null) {
                 long[] histogram = statistics.getHistogram();
                 if (histogram.length > 0) {

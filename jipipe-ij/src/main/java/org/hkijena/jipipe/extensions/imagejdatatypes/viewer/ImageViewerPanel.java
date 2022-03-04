@@ -55,33 +55,34 @@ public class ImageViewerPanel extends JPanel {
     private final ImageViewerUISettings settings;
     private ImagePlus image;
     private ImageProcessor currentSlice;
-    private ImageStatistics statistics;
     private ImageViewerPanelCanvas canvas;
-    private JLabel stackSliderLabel = new JLabel("Slice (Z)");
-    private JLabel channelSliderLabel = new JLabel("Channel (C)");
-    private JLabel frameSliderLabel = new JLabel("Frame (T)");
-    private JScrollBar stackSlider = new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, 100);
-    private JScrollBar channelSlider = new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, 100);
-    private JScrollBar frameSlider = new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, 100);
-    private JToggleButton animationStackToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
-    private JToggleButton animationChannelToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
-    private JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
+    private Map<ImageSliceIndex, ImageStatistics> statisticsMap = new HashMap<>();
+    private final JLabel stackSliderLabel = new JLabel("Slice (Z)");
+    private final JLabel channelSliderLabel = new JLabel("Channel (C)");
+    private final JLabel frameSliderLabel = new JLabel("Frame (T)");
+    private final JScrollBar stackSlider = new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, 100);
+    private final JScrollBar channelSlider = new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, 100);
+    private final JScrollBar frameSlider = new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, 100);
+    private final JToggleButton animationStackToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
+    private final JToggleButton animationChannelToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
+    private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private FormPanel bottomPanel;
     private long lastTimeZoomed;
-    private JLabel imageInfoLabel = new JLabel();
+    private final JLabel imageInfoLabel = new JLabel();
     private JScrollPane scrollPane;
-    private JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(250, 5, 10000, 1));
+    private final JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(250, 5, 10000, 1));
     private int rotation = 0;
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
-    private JToolBar toolBar = new JToolBar();
+    private final JToolBar toolBar = new JToolBar();
     private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
-    private JButton rotateLeftButton;    private Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    private JButton rotateLeftButton;
+    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private JButton rotateRightButton;
-    private JToggleButton enableSideBarButton = new JToggleButton();
+    private final JToggleButton enableSideBarButton = new JToggleButton();
     private Component currentContentPanel;
-    private DocumentTabPane tabPane = new DocumentTabPane();
-    private Map<String, FormPanel> formPanels = new HashMap<>();
+    private final DocumentTabPane tabPane = new DocumentTabPane();
+    private final Map<String, FormPanel> formPanels = new HashMap<>();
     private boolean isUpdatingSliders = false;
     public ImageViewerPanel() {
         if (JIPipe.getInstance() != null) {
@@ -438,7 +439,7 @@ public class ImageViewerPanel extends JPanel {
             try {
                 BufferedImage image = ImageJUtils.copyBufferedImage(getCanvas().getImage());
                 for (ImageViewerPanelPlugin plugin : getPlugins()) {
-                    plugin.postprocessDrawForExport(image, getCurrentSlicePosition());
+                    plugin.postprocessDrawForExport(image, getCurrentSliceIndex());
                 }
                 ImageIO.write(image, format, targetFile.toFile());
             } catch (IOException e) {
@@ -454,7 +455,7 @@ public class ImageViewerPanel extends JPanel {
         }
         BufferedImage image = ImageJUtils.copyBufferedImageToARGB(getCanvas().getImage());
         for (ImageViewerPanelPlugin plugin : getPlugins()) {
-            plugin.postprocessDrawForExport(image, getCurrentSlicePosition());
+            plugin.postprocessDrawForExport(image, getCurrentSliceIndex());
         }
         CopyImageToClipboard copyImageToClipboard = new CopyImageToClipboard();
         copyImageToClipboard.copyImage(image);
@@ -529,7 +530,7 @@ public class ImageViewerPanel extends JPanel {
             ImageViewerVideoExporterRun run = new ImageViewerVideoExporterRun(
                     this,
                     path,
-                    getCurrentSlicePosition(),
+                    getCurrentSliceIndex(),
                     (HyperstackDimension) dimensionEditor.getSelectedItem(),
                     animationTimer.getDelay(),
                     (AVICompression) compressionEditor.getSelectedItem(),
@@ -619,11 +620,7 @@ public class ImageViewerPanel extends JPanel {
     public void setImage(ImagePlus image) {
         this.image = image;
         this.currentSlice = null;
-        if (image != null) {
-            this.statistics = image.getStatistics();
-        } else {
-            this.statistics = null;
-        }
+        this.statisticsMap.clear();
         refreshSliders();
         refreshSlice();
         refreshImageInfo();
@@ -681,7 +678,7 @@ public class ImageViewerPanel extends JPanel {
      *
      * @return the slice position. Zero-based indices
      */
-    public ImageSliceIndex getCurrentSlicePosition() {
+    public ImageSliceIndex getCurrentSliceIndex() {
         return new ImageSliceIndex(channelSlider.getValue() - 1, stackSlider.getValue() - 1, frameSlider.getValue() - 1);
     }
 
@@ -763,7 +760,6 @@ public class ImageViewerPanel extends JPanel {
 //            System.out.println("bps: " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
             image.setPosition(channel, stack, frame);
             this.currentSlice = image.getProcessor();
-            this.statistics = currentSlice.getStatistics();
             for (ImageViewerPanelPlugin plugin : plugins) {
 //                System.out.println(plugin + ": " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
                 plugin.onSliceChanged();
@@ -837,11 +833,26 @@ public class ImageViewerPanel extends JPanel {
         return currentSlice;
     }
 
-    public ImageStatistics getStatistics() {
-        return statistics;
+    public ImageStatistics getCurrentSliceStats() {
+        if(getImage() != null && getCurrentSliceIndex() != null) {
+            return getSliceStats(getCurrentSliceIndex());
+        }
+        else {
+            return null;
+        }
     }
 
-
-
+    public ImageStatistics getSliceStats(ImageSliceIndex sliceIndex) {
+        if(getImage() != null) {
+            ImageStatistics stats = statisticsMap.getOrDefault(sliceIndex, null);
+            if(stats == null) {
+                ImageProcessor processor = ImageJUtils.getSliceZero(image, sliceIndex);
+                stats = processor.getStats();
+                statisticsMap.put(sliceIndex, stats);
+            }
+            return stats;
+        }
+        return null;
+    }
 
 }

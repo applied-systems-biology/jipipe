@@ -190,7 +190,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
             return;
         if (mask == null)
             return;
-        ImageSliceIndex index = getViewerPanel().getCurrentSlicePosition();
+        ImageSliceIndex index = getViewerPanel().getCurrentSliceIndex();
         int z = Math.min(index.getZ(), mask.getNSlices() - 1);
         int c = Math.min(index.getC(), mask.getNChannels() - 1);
         int t = Math.min(index.getT(), mask.getNFrames() - 1);
@@ -401,7 +401,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         IntNumberRangeParameter zRange = parameterCollection.get("z").get(IntNumberRangeParameter.class);
         IntNumberRangeParameter cRange = parameterCollection.get("c").get(IntNumberRangeParameter.class);
         IntNumberRangeParameter tRange = parameterCollection.get("t").get(IntNumberRangeParameter.class);
-        ImageSliceIndex currentIndex = getViewerPanel().getCurrentSlicePosition();
+        ImageSliceIndex currentIndex = getViewerPanel().getCurrentSliceIndex();
 
         try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
             ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {

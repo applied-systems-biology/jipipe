@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanelDisplayRangeControl;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -60,7 +61,11 @@ public class CalibrationPlugin extends GeneralImageViewerPanelPlugin {
 
     @Override
     public ImageProcessor draw(int c, int z, int t, ImageProcessor processor) {
-        ImageJUtils.calibrate(processor, getSelectedCalibration(), displayRangeCalibrationControl.getCustomMin(), displayRangeCalibrationControl.getCustomMax());
+        ImageJUtils.calibrate(processor,
+                getSelectedCalibration(),
+                displayRangeCalibrationControl.getCustomMin(),
+                displayRangeCalibrationControl.getCustomMax(),
+                getViewerPanel().getSliceStats(new ImageSliceIndex(c,z,t)));
         return processor;
     }
 
