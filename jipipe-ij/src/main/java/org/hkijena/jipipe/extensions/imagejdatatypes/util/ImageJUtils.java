@@ -330,17 +330,18 @@ public class ImageJUtils {
             return new ImagePlus(target.getTitle(), target.getProcessor());
         } else {
             ImageStack stack = new ImageStack(target.getWidth(), target.getHeight(), reference.getNChannels() * reference.getNFrames() * reference.getNSlices());
-            forEachIndexedZCTSlice(reference, (ip, index) -> {
+            forEachIndexedZCTSlice(reference, (referenceProcessor, referenceIndex) -> {
                 if (copySlices) {
-                    int z = Math.min(target.getNSlices() - 1, index.getZ());
-                    int c = Math.min(target.getNChannels() - 1, index.getC());
-                    int t = Math.min(target.getNFrames() - 1, index.getT());
+                    int z = Math.min(target.getNSlices() - 1, referenceIndex.getZ());
+                    int c = Math.min(target.getNChannels() - 1, referenceIndex.getC());
+                    int t = Math.min(target.getNFrames() - 1, referenceIndex.getT());
                     ImageProcessor processor = ImageJUtils.getSliceZero(target, c, z, t);
-                    stack.setProcessor(processor, zeroSliceIndexToOneStackIndex(z, c, t, reference));
+                    int stackIndex = referenceIndex.zeroSliceIndexToOneStackIndex(reference);
+                    stack.setProcessor(processor, stackIndex);
                 } else {
-                    if (index.getZ() < target.getNSlices() && index.getC() < target.getNChannels() && index.getT() < target.getNFrames()) {
-                        ImageProcessor processor = ImageJUtils.getSliceZero(target, index);
-                        stack.setProcessor(processor, index.zeroSliceIndexToOneStackIndex(reference));
+                    if (referenceIndex.getZ() < target.getNSlices() && referenceIndex.getC() < target.getNChannels() && referenceIndex.getT() < target.getNFrames()) {
+                        ImageProcessor processor = ImageJUtils.getSliceZero(target, referenceIndex);
+                        stack.setProcessor(processor, referenceIndex.zeroSliceIndexToOneStackIndex(reference));
                     } else {
                         ImageProcessor processor;
                         switch (target.getBitDepth()) {
@@ -359,7 +360,7 @@ public class ImageJUtils {
                             default:
                                 throw new UnsupportedOperationException();
                         }
-                        stack.setProcessor(processor, index.zeroSliceIndexToOneStackIndex(reference));
+                        stack.setProcessor(processor, referenceIndex.zeroSliceIndexToOneStackIndex(reference));
                     }
                 }
             }, new JIPipeProgressInfo());
@@ -578,7 +579,7 @@ public class ImageJUtils {
      * @return one-based stack index
      */
     public static int zeroSliceIndexToOneStackIndex(int channel, int slice, int frame, ImagePlus imagePlus) {
-        return oneSliceIndexToOneStackIndex(channel, slice, frame, imagePlus.getNChannels(), imagePlus.getNSlices(), imagePlus.getNFrames());
+        return oneSliceIndexToOneStackIndex(channel + 1, slice + 1, frame + 1, imagePlus.getNChannels(), imagePlus.getNSlices(), imagePlus.getNFrames());
     }
 
     /**
