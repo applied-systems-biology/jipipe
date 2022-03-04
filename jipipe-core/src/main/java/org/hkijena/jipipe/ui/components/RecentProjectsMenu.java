@@ -17,8 +17,12 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
+import org.hkijena.jipipe.ui.components.search.SearchTextField;
+import org.hkijena.jipipe.ui.documentation.RecentProjectsListPanel;
+import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.BorderLayout;
 import java.nio.file.Path;
 
 /**
@@ -26,7 +30,7 @@ import java.nio.file.Path;
  */
 public class RecentProjectsMenu extends JMenu {
 
-    private JIPipeProjectWindow workbenchWindow;
+    private final JIPipeProjectWindow workbenchWindow;
 
     /**
      * @param text            item text
@@ -48,12 +52,34 @@ public class RecentProjectsMenu extends JMenu {
             noProject.setEnabled(false);
             add(noProject);
         } else {
+            JMenuItem searchItem = new JMenuItem("Search ...", UIUtils.getIconFromResources("actions/search.png"));
+            searchItem.addActionListener(e -> openProjectSearch());
+            add(searchItem);
             for (Path path : ProjectsSettings.getInstance().getRecentProjects()) {
                 JMenuItem openProjectItem = new JMenuItem(path.toString());
                 openProjectItem.addActionListener(e -> openProject(path));
                 add(openProjectItem);
             }
         }
+    }
+
+    private void openProjectSearch() {
+        JDialog dialog = new JDialog(workbenchWindow);
+        RecentProjectsListPanel panel = new RecentProjectsListPanel(workbenchWindow.getProjectUI());
+        panel.getEventBus().register(new Object() {
+            @Subscribe
+            public void onProjectOpened(RecentProjectsListPanel.ProjectOpenedEvent event) {
+                dialog.setVisible(false);
+            }
+        });
+        dialog.setContentPane(panel);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        dialog.pack();
+        dialog.setSize(800, 600);
+        dialog.setLocationRelativeTo(workbenchWindow);
+        dialog.setModal(true);
+        dialog.setVisible(true);
     }
 
     private void openProject(Path path) {
