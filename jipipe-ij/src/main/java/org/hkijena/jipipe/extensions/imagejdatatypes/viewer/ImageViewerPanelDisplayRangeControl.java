@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
+import ij.ImagePlus;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
@@ -33,6 +34,10 @@ import java.text.DecimalFormat;
 import java.util.Optional;
 
 public class ImageViewerPanelDisplayRangeControl extends JPanel implements ThumbListener {
+
+    public static final DecimalFormat DECIMAL_FORMAT_FLOAT = new DecimalFormat("0.###");
+    public static final DecimalFormat DECIMAL_FORMAT_INT = new DecimalFormat("0");
+
     private final CalibrationPlugin calibrationPlugin;
     private JXMultiThumbSlider<DisplayRangeStop> slider;
     private TrackRenderer trackRenderer;
@@ -313,20 +318,72 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
                 }
             }
             g.setColor(UIManager.getColor("Label.foreground"));
-            DecimalFormat format = new DecimalFormat("0.###");
+
+            DecimalFormat format;
+            if(imageViewerPanelDisplayRangeControl.calibrationPlugin.getCurrentImage().getType() == ImagePlus.GRAY32) {
+                 format = DECIMAL_FORMAT_FLOAT;
+            }
+            else {
+                 format = DECIMAL_FORMAT_INT;
+            }
+
+            // Draw the position bar
             for (int i = 0; i < 2; i++) {
                 Thumb<DisplayRangeStop> thumb = slider.getModel().getThumbAt(i);
                 float position = Math.max(0, Math.min(thumb.getPosition(), 1));
                 int x = ThumbRenderer.SIZE - 1 + (int) (w * position);
                 g.fillRect(x, 4, 2, h + 4);
-                if (statistics != null) {
+            }
 
-                    String value = format.format (imageViewerPanelDisplayRangeControl.minSelectableValue + thumb.getPosition() *
-                            (imageViewerPanelDisplayRangeControl.maxSelectableValue - imageViewerPanelDisplayRangeControl.minSelectableValue));
-                    int stringWidth = g.getFontMetrics().stringWidth(value + "");
-                    g.drawString("" + value, Math.max(0, Math.min(w - stringWidth, x - (stringWidth / 2))), h + 18);
+            // Draw the label text (requires statistics)
+            if(statistics != null) {
+                String valueMin = format.format(imageViewerPanelDisplayRangeControl.minSelectableValue + slider.getModel().getThumbAt(0).getPosition() *
+                        (imageViewerPanelDisplayRangeControl.maxSelectableValue - imageViewerPanelDisplayRangeControl.minSelectableValue));
+                String valueMax = format.format(imageViewerPanelDisplayRangeControl.minSelectableValue + slider.getModel().getThumbAt(1).getPosition() *
+                        (imageViewerPanelDisplayRangeControl.maxSelectableValue - imageViewerPanelDisplayRangeControl.minSelectableValue));
+                int valueMinWidth = g.getFontMetrics().stringWidth(valueMin);
+                int valueMaxWidth = g.getFontMetrics().stringWidth(valueMax);
+                float positionMin = Math.max(0, Math.min(slider.getModel().getThumbAt(0).getPosition(), 1));
+                float positionMax = Math.max(0, Math.min(slider.getModel().getThumbAt(1).getPosition(), 1));
+
+                if (positionMin < positionMax) {
+                    // First
+                    int valuePositionMinX = ThumbRenderer.SIZE - 1 + (int) (w * positionMin);
+                    valuePositionMinX = Math.max(0, Math.min(w - valueMinWidth, valuePositionMinX - (valueMinWidth / 2)));
+                    g.drawString(valueMin, valuePositionMinX, h + 18);
+
+                    // Second
+                    int valuePositionMaxX = ThumbRenderer.SIZE - 1 + (int) (w * positionMax);
+                    valuePositionMaxX = Math.max(0, Math.min(w - valueMaxWidth, valuePositionMaxX - (valueMaxWidth / 2)));
+                    valuePositionMaxX = Math.max(valuePositionMaxX, valuePositionMinX + valueMinWidth + 8);
+                    g.drawString(valueMax, valuePositionMaxX, h + 18);
+
+                } else {
+                    // First
+                    int valuePositionMaxX = ThumbRenderer.SIZE - 1 + (int) (w * positionMax);
+                    valuePositionMaxX = Math.max(0, Math.min(w - valueMaxWidth, valuePositionMaxX - (valueMaxWidth / 2)));
+                    g.drawString(valueMax, valuePositionMaxX, h + 18);
+
+                    // Second
+                    int valuePositionMinX = ThumbRenderer.SIZE - 1 + (int) (w * positionMin);
+                    valuePositionMinX = Math.max(0, Math.min(w - valueMinWidth, valuePositionMinX - (valueMinWidth / 2)));
+                    valuePositionMinX = Math.max(valuePositionMinX, valuePositionMaxX + valueMaxWidth + 8);
+                    g.drawString(valueMin, valuePositionMinX, h + 18);
                 }
             }
+
+//            for (int i = 0; i < 2; i++) {
+//                Thumb<DisplayRangeStop> thumb = slider.getModel().getThumbAt(i);
+//                float position = Math.max(0, Math.min(thumb.getPosition(), 1));
+//                int x = ThumbRenderer.SIZE - 1 + (int) (w * position);
+//                g.fillRect(x, 4, 2, h + 4);
+//                if (statistics != null) {
+//
+//                    String value =
+//                    int stringWidth = g.getFontMetrics().stringWidth(value + "");
+//                    g.drawString("" + value, Math.max(0, Math.min(w - stringWidth, x - (stringWidth / 2))), h + 18);
+//                }
+//            }
         }
 
         @Override
