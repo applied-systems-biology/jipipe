@@ -34,7 +34,6 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
 
@@ -140,11 +139,11 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
         }
         image.setTitle(image.getTitle());
         boolean fitImage = imageViewerPanel.getImage() == null;
-        imageViewerPanel.setImage(image);
         if (!rois.isEmpty() || ImageViewerUISettings.getInstance().isAlwaysClearROIs()) {
-            imageViewerPanel.getPlugin(ROIManagerPlugin.class).clearROIs();
-            imageViewerPanel.getPlugin(ROIManagerPlugin.class).importROIs(rois);
+            imageViewerPanel.getPlugin(ROIManagerPlugin.class).clearROIs(true);
+            imageViewerPanel.getPlugin(ROIManagerPlugin.class).importROIs(rois, true);
         }
+        imageViewerPanel.setImage(image);
         if (fitImage)
             SwingUtilities.invokeLater(imageViewerPanel::fitImageToScreen);
     }

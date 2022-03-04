@@ -55,8 +55,8 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     private ColorChooserButton maskColorButton;
     private Color highlightColor = new Color(255, 255, 0, 128);
     private Color maskColor = new Color(255, 0, 0, 128);
-    private JCheckBox showGuidesToggle = new JCheckBox("Show guide lines", true);
-    private ButtonGroup toolButtonGroup = new ButtonGroup();
+    private final JCheckBox showGuidesToggle = new JCheckBox("Show guide lines", true);
+    private final ButtonGroup toolButtonGroup = new ButtonGroup();
     private Function<ImagePlus, ImagePlus> maskGenerator;
     private FormPanel.GroupHeaderPanel currentGroupHeader;
 
@@ -75,22 +75,6 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
         viewerPanel.getCanvas().getEventBus().register(this);
         setCurrentTool(currentTool);
-    }
-
-    public static void main(String[] args) {
-//        ImagePlus img = IJ.openImage("E:\\Projects\\JIPipe\\testdata\\ATTC_IµL_3rdReplicate-Experiment-5516\\in\\data.tif");
-        ImagePlus img = IJ.openImage("E:\\Projects\\Mitochondria\\data_21.12.20\\1 Deconv.lif - 1_Series047_5_cmle_converted.tif");
-        JIPipeUITheme.ModernLight.install();
-        JFrame frame = new JFrame();
-        ImageViewerPanel panel = new ImageViewerPanel();
-        MaskDrawerPlugin maskDrawerPlugin = new MaskDrawerPlugin(panel);
-        panel.setPlugins(Collections.singletonList(maskDrawerPlugin));
-        panel.setImage(img);
-//        maskDrawerPlugin.setMask(IJ.createImage("Mask", img.getWidth(), img.getHeight(), 1, 8));
-        frame.setContentPane(panel);
-        frame.pack();
-        frame.setSize(1280, 1024);
-        frame.setVisible(true);
     }
 
     public void installTool(MaskDrawerTool tool) {
@@ -194,8 +178,11 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         int z = Math.min(index.getZ(), mask.getNSlices() - 1);
         int c = Math.min(index.getC(), mask.getNChannels() - 1);
         int t = Math.min(index.getT(), mask.getNFrames() - 1);
+        ImageProcessor lastMaskSlice = currentMaskSlice;
         currentMaskSlice = ImageJUtils.getSliceZero(mask, c, z, t);
-        recalculateMaskPreview();
+        if(lastMaskSlice != currentMaskSlice) {
+            recalculateMaskPreview();
+        }
     }
 
     @Override
@@ -228,9 +215,9 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     }
 
     @Override
-    public void onSliceChanged() {
+    public void onSliceChanged(boolean deferUploadSlice) {
         updateCurrentMaskSlice();
-        currentTool.onSliceChanged();
+        currentTool.onSliceChanged(true);
     }
 
     @Override

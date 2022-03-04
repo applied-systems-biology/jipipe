@@ -62,7 +62,7 @@ public class JIPipeProjectCache {
             return;
         if (!project.getGraph().containsNode(source))
             throw new IllegalArgumentException("The cache only can hold project graph nodes!");
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source.getUUIDInGraph(), null);
         if (stateMap == null) {
             stateMap = new HashMap<>();
             cacheEntries.put(source.getUUIDInGraph(), stateMap);

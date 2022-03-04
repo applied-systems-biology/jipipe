@@ -129,9 +129,9 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow i
             ip.fill();
         }, new JIPipeProgressInfo());
         boolean fitImage = imageViewerPanel.getImage() == null;
-        plugin.clearROIs();
+        plugin.clearROIs(true);
+        plugin.importROIs(data, true);
         imageViewerPanel.setImage(image);
-        plugin.importROIs(data);
         if (fitImage)
             SwingUtilities.invokeLater(imageViewerPanel::fitImageToScreen);
     }

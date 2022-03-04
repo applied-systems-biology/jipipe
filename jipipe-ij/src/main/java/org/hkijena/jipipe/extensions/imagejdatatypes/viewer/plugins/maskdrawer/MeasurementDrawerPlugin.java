@@ -82,7 +82,7 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
         analyzer.analyze(new ImagePlus("mask", getCurrentMaskSlice()));
         ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
         ROIManagerPlugin roiManager = getViewerPanel().getPlugin(ROIManagerPlugin.class);
-        roiManager.importROIs(rois);
+        roiManager.importROIs(rois, false);
         clearCurrentMask();
     }
 

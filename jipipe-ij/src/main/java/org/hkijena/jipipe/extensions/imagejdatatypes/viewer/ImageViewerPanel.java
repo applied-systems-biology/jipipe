@@ -762,7 +762,7 @@ public class ImageViewerPanel extends JPanel {
             this.currentSlice = image.getProcessor();
             for (ImageViewerPanelPlugin plugin : plugins) {
 //                System.out.println(plugin + ": " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
-                plugin.onSliceChanged();
+                plugin.onSliceChanged(true);
 //                System.out.println(plugin + "(A): " + image.getDisplayRangeMin() + ", " + image.getDisplayRangeMax());
             }
             uploadSliceToCanvas();

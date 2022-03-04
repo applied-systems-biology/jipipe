@@ -36,7 +36,7 @@ public class AddROIToActiveJIPipeImageViewerDataDisplay implements JIPipeDataDis
         } else {
             for (ImageViewerPanelPlugin plugin : viewerPanel.getPlugins().stream()
                     .filter(plugin -> plugin instanceof ROIManagerPlugin).collect(Collectors.toList())) {
-                ((ROIManagerPlugin) plugin).importROIs((ROIListData) data);
+                ((ROIManagerPlugin) plugin).importROIs((ROIListData) data, false);
             }
         }
     }

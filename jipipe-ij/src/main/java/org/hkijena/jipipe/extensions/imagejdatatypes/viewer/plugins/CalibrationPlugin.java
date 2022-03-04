@@ -70,7 +70,7 @@ public class CalibrationPlugin extends GeneralImageViewerPanelPlugin {
     }
 
     @Override
-    public void onSliceChanged() {
+    public void onSliceChanged(boolean deferUploadSlice) {
         displayRangeCalibrationControl.updateFromCurrentSlice(false);
 //        displayRangeCalibrationControl.applyCalibration(false);
 //        displayRangeCalibrationControl.updateSliders();

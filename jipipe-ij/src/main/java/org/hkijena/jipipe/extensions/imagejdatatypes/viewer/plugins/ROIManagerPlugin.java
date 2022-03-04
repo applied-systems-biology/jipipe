@@ -57,7 +57,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
                 overlayRois.add(roi);
             }
         }
-        updateROIJList();
+        updateROIJList(true);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         JPopupMenu importMenu = UIUtils.addPopupMenuToComponent(importROIsButton);
 
         JMenuItem importDataManagerItem = new JMenuItem("Import from ImageJ ROI Manager", UIUtils.getIconFromResources("apps/imagej.png"));
-        importDataManagerItem.addActionListener(e -> importROIsFromManager());
+        importDataManagerItem.addActionListener(e -> importROIsFromManager(false));
         importMenu.add(importDataManagerItem);
 
         JMenuItem importDataFileItem = new JMenuItem("Import from file", UIUtils.getIconFromResources("actions/fileopen.png"));
@@ -107,7 +107,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             toggle.setSelected(roiFilterList);
             toggle.addActionListener(e -> {
                 roiFilterList = toggle.isSelected();
-                updateROIJList();
+                updateROIJList(false);
             });
             listToolBar.add(toggle);
         }
@@ -145,7 +145,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
         JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
         removeButton.setToolTipText("Remove selected ROIs");
-        removeButton.addActionListener(e -> removeSelectedROIs());
+        removeButton.addActionListener(e -> removeSelectedROIs(false));
         listToolBar.add(removeButton);
 
         JScrollPane scrollPane = new JScrollPane(roiJList);
@@ -234,7 +234,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import ROI", UIUtils.EXTENSION_FILTER_ROIS);
         if (path != null) {
             ROIListData importedROIs = ROIListData.loadRoiListFromFile(path);
-            importROIs(importedROIs);
+            importROIs(importedROIs, false);
         }
     }
 
@@ -271,8 +271,8 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     @Override
-    public void onSliceChanged() {
-        updateROIJList();
+    public void onSliceChanged(boolean deferUploadSlice) {
+        updateROIJList(deferUploadSlice);
     }
 
     @Override
@@ -402,36 +402,36 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         roiJList.addListSelectionListener(e -> uploadSliceToCanvas());
     }
 
-    public void importROIs(ROIListData rois) {
+    public void importROIs(ROIListData rois, boolean deferUploadSlice) {
         for (Roi roi : rois) {
             this.rois.add((Roi) roi.clone());
         }
-        updateROIJList();
+        updateROIJList(deferUploadSlice);
         uploadSliceToCanvas();
     }
 
-    public void removeSelectedROIs() {
+    public void removeSelectedROIs(boolean deferUploadSlice) {
         rois.removeAll(roiJList.getSelectedValuesList());
-        updateROIJList();
+        updateROIJList(deferUploadSlice);
     }
 
-    public void clearROIs() {
+    public void clearROIs(boolean deferUploadSlice) {
         rois.clear();
-        updateROIJList();
+        updateROIJList(deferUploadSlice);
     }
 
     public void exportROIsToManager() {
         rois.addToRoiManager(RoiManager.getRoiManager());
     }
 
-    public void importROIsFromManager() {
+    public void importROIsFromManager(boolean deferUploadSlice) {
         for (Roi roi : RoiManager.getRoiManager().getRoisAsArray()) {
             rois.add((Roi) roi.clone());
         }
-        updateROIJList();
+        updateROIJList(deferUploadSlice);
     }
 
-    private void updateROIJList() {
+    private void updateROIJList(boolean deferUploadSlice) {
         DefaultListModel<Roi> model = new DefaultListModel<>();
         int[] selectedIndices = roiJList.getSelectedIndices();
         ImageSliceIndex currentIndex = getCurrentSlicePosition();
@@ -443,6 +443,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         roiJList.setModel(model);
         roiJList.setSelectedIndices(selectedIndices);
         roiInfoLabel.setText(rois.size() + " ROI");
-        uploadSliceToCanvas();
+        if(!deferUploadSlice)
+            uploadSliceToCanvas();
     }
 }
