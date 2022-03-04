@@ -417,7 +417,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
             if (configuration.isStoreToCache() && !configuration.getDisableStoreToCacheNodes().contains(slot.getNode())) {
                 JIPipeGraphNode runAlgorithm = slot.getNode();
                 JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(runAlgorithm.getUUIDInGraph());
-                JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm);
+                JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm.getUUIDInGraph());
                 progressInfo.resolve("GC").log("Caching output slot " + slot.getDisplayName());
                 project.getCache().store(projectAlgorithm, stateId, slot, progressInfo.resolve("GC"));
             }
@@ -475,20 +475,6 @@ public class JIPipeProjectRun implements JIPipeRunnable {
     }
 
     /**
-     * Returns true if the data in the node is already cached
-     *
-     * @param algorithm  the node (inside copy graph)
-     * @param cacheQuery the cache query
-     * @return true if data is found in the cache
-     */
-    private boolean isCached(JIPipeGraphNode algorithm, JIPipeProjectCacheQuery cacheQuery) {
-        JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(algorithm.getUUIDInGraph());
-        JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm);
-        Map<String, JIPipeDataSlot> cachedData = project.getCache().extract(projectAlgorithm, stateId);
-        return !cachedData.isEmpty();
-    }
-
-    /**
      * Attempts to load data from cache
      *
      * @param algorithm  the target node (inside copy graph)
@@ -501,8 +487,8 @@ public class JIPipeProjectRun implements JIPipeRunnable {
         if (!(algorithm instanceof JIPipeAlgorithm))
             return false;
         JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(algorithm.getUUIDInGraph());
-        JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm);
-        Map<String, JIPipeDataSlot> cachedData = project.getCache().extract(projectAlgorithm, stateId);
+        JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm.getUUIDInGraph());
+        Map<String, JIPipeDataSlot> cachedData = project.getCache().extract(projectAlgorithm.getUUIDInGraph(), stateId);
         if (!cachedData.isEmpty()) {
             progressInfo.log(String.format("Accessing cache with slots %s via state id %s", String.join(", ",
                     cachedData.keySet()), stateId));

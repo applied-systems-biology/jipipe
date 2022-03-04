@@ -79,7 +79,7 @@ public class SaveProjectAndCacheRun implements JIPipeRunnable {
             JIPipeGraphNode node = nodes.get(i);
             JIPipeProgressInfo nodeProgress = progressInfo.resolveAndLog(node.getDisplayName(), i, nodes.size());
 
-            Map<String, JIPipeDataSlot> cache = query.getCachedCache(node);
+            Map<String, JIPipeDataSlot> cache = query.getCachedData(node);
             if (cache == null || cache.isEmpty())
                 continue;
 

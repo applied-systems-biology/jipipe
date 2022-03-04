@@ -60,7 +60,7 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
         for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
             if (!(node instanceof JIPipeAlgorithm))
                 continue;
-            Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(node);
+            Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(node.getUUIDInGraph());
             if (stateMap == null)
                 continue;
 

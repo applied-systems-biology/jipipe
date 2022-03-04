@@ -101,7 +101,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
                     if (!predecessorNode.getInfo().isRunnable())
                         continue;
                     JIPipeGraphNode projectPredecessorNode = project.getGraph().getEquivalentAlgorithm(predecessorNode);
-                    Map<String, JIPipeDataSlot> cache = query.getCachedCache(projectPredecessorNode);
+                    Map<String, JIPipeDataSlot> cache = query.getCachedData(projectPredecessorNode);
 
                     if (cache.isEmpty()) {
                         // The cache is empty -> This is now a predecessor and must be executed.
@@ -151,7 +151,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
 
         // Remove the benched algorithm from cache. This is a workaround.
         if (settings.isLoadFromCache()) {
-            getProject().getCache().clear(targetNode);
+            getProject().getCache().clear(targetNode.getUUIDInGraph());
         }
 
         // Run the internal graph runner

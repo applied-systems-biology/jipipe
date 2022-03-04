@@ -102,7 +102,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
 
     private void showDataSlotsOfState(JIPipeProjectCacheState state) {
         List<JIPipeDataSlot> result = new ArrayList<>();
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode);
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode.getUUIDInGraph());
         if (stateMap != null) {
             Map<String, JIPipeDataSlot> slotMap = stateMap.getOrDefault(state, null);
             if (slotMap != null) {
@@ -114,7 +114,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
 
     private void showAllDataSlots() {
         List<JIPipeDataSlot> result = new ArrayList<>();
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode);
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode.getUUIDInGraph());
         if (stateMap != null) {
             for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
                 result.addAll(stateEntry.getValue().values());
@@ -124,7 +124,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void showDataSlotsOfAlgorithm(JIPipeGraphNode algorithm) {
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(algorithm);
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(algorithm.getUUIDInGraph());
         if (stateMap != null) {
             List<JIPipeDataSlot> result = new ArrayList<>();
             for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
@@ -165,7 +165,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(clearOutdatedButton);
 
         JButton clearAllButton = new JButton("Clear all", UIUtils.getIconFromResources("actions/clear-brush.png"));
-        clearAllButton.addActionListener(e -> getProject().getCache().clear(this.graphNode));
+        clearAllButton.addActionListener(e -> getProject().getCache().clear(this.graphNode.getUUIDInGraph()));
         toolBar.add(clearAllButton);
 
         toolBar.add(Box.createHorizontalGlue());
@@ -203,7 +203,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
 
     private void exportCache() {
         Object lastPathComponent = tree.getTree().getLastSelectedPathComponent();
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode);
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode.getUUIDInGraph());
         if (stateMap.isEmpty()) {
             JOptionPane.showMessageDialog(this, "There is no cached data to export!", "Export cache", JOptionPane.ERROR_MESSAGE);
             return;

@@ -73,9 +73,9 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
     private void reloadContextMenu() {
         contextMenu.removeAll();
         JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(getProject());
-        JIPipeProjectCacheState currentState = query.getCachedId(getDataSlot().getNode());
+        JIPipeProjectCacheState currentState = query.getCachedId(getDataSlot().getNode().getUUIDInGraph());
 
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(getDataSlot().getNode());
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(getDataSlot().getNode().getUUIDInGraph());
         if (stateMap != null) {
             JMenuItem openCurrent = createOpenStateButton(stateMap, currentState, "Open current snapshot");
             if (openCurrent != null) {
@@ -104,7 +104,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
 
         JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("actions/delete.png"));
         clearAll.setToolTipText("Removes all cached items for this node.");
-        clearAll.addActionListener(e -> getProject().getCache().clear((JIPipeAlgorithm) dataSlot.getNode()));
+        clearAll.addActionListener(e -> getProject().getCache().clear(dataSlot.getNode().getUUIDInGraph()));
         contextMenu.add(clearAll);
     }
 
@@ -156,7 +156,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
 
     private void updateStatus() {
         JIPipeProjectCache cache = getProject().getCache();
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cache.extract(getDataSlot().getNode());
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cache.extract(getDataSlot().getNode().getUUIDInGraph());
         int dataRows = 0;
         if (stateMap != null) {
             for (Map<String, JIPipeDataSlot> slotMap : stateMap.values()) {

@@ -68,7 +68,7 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
 
         // Push into cache
         JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(project);
-        JIPipeProjectCacheState state = query.getCachedId(graphNode);
+        JIPipeProjectCacheState state = query.getCachedId(graphNode.getUUIDInGraph());
         for (int i = 0; i < graphNode.getOutputSlots().size(); i++) {
             JIPipeProgressInfo slotProgressInfo = this.progressInfo.resolveAndLog("Storing into cache", i, graphNode.getOutputSlots().size());
             JIPipeDataSlot outputSlot = graphNode.getOutputSlots().get(i);

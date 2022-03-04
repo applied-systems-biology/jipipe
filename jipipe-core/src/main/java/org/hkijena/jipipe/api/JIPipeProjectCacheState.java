@@ -21,12 +21,13 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.UUID;
 
 /**
  * Encapsulates a state
  */
 public class JIPipeProjectCacheState implements Comparable<JIPipeProjectCacheState> {
-    private final JIPipeGraphNode node;
+    private final UUID nodeUUID;
     private final LocalDateTime generationTime;
     private final String stateId;
     private final Set<JIPipeProjectCacheState> predecessorStates;
@@ -39,7 +40,7 @@ public class JIPipeProjectCacheState implements Comparable<JIPipeProjectCacheSta
      * @param generationTime    the generation time. It is ignored during comparison.
      */
     public JIPipeProjectCacheState(JIPipeGraphNode node, Set<JIPipeProjectCacheState> predecessorStates, LocalDateTime generationTime) {
-        this.node = node;
+        this.nodeUUID = node.getUUIDInGraph();
         this.predecessorStates = predecessorStates;
         this.generationTime = generationTime;
         if (node instanceof JIPipeAlgorithm) {
@@ -81,8 +82,8 @@ public class JIPipeProjectCacheState implements Comparable<JIPipeProjectCacheSta
         return StringUtils.formatDateTime(getGenerationTime());
     }
 
-    public JIPipeGraphNode getNode() {
-        return node;
+    public UUID getNodeUUID() {
+        return nodeUUID;
     }
 
     @Override
@@ -92,7 +93,7 @@ public class JIPipeProjectCacheState implements Comparable<JIPipeProjectCacheSta
         JIPipeProjectCacheState state = (JIPipeProjectCacheState) o;
 
         // Our state maps are generally mutable, so we need to recreate hashsets
-        if (node.equals(state.node) && stateId.equals(state.stateId)) {
+        if (nodeUUID.equals(state.nodeUUID) && stateId.equals(state.stateId)) {
             // Check predecessor step
             return new HashSet<>(predecessorStates).equals(new HashSet<>(state.predecessorStates));
         }

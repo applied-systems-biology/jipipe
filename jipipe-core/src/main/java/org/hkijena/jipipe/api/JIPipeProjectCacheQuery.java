@@ -30,9 +30,8 @@ import java.util.UUID;
  */
 public class JIPipeProjectCacheQuery {
     private final JIPipeProject project;
-    private BiMap<UUID, JIPipeGraphNode> nodes = HashBiMap.create();
-    private BiMap<JIPipeGraphNode, JIPipeProjectCacheState> cachedStates = HashBiMap.create();
-    private DefaultDirectedGraph<JIPipeProjectCacheState, DefaultEdge> stateGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
+    private final BiMap<UUID, JIPipeGraphNode> nodes = HashBiMap.create();
+    private final BiMap<UUID, JIPipeProjectCacheState> cachedStates = HashBiMap.create();
 
     public JIPipeProjectCacheQuery(JIPipeProject project) {
         this.project = project;
@@ -50,14 +49,14 @@ public class JIPipeProjectCacheQuery {
         }
 
         // Create the state graph
-        stateGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
+        DefaultDirectedGraph<JIPipeProjectCacheState, DefaultEdge> stateGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
         for (JIPipeGraphNode node : project.getGraph().getGraphNodes()) {
             JIPipeProjectCacheState state = new JIPipeProjectCacheState(node, new HashSet<>(), LocalDateTime.now());
             stateGraph.addVertex(state);
-            cachedStates.put(node, state);
+            cachedStates.put(node.getUUIDInGraph(), state);
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : project.getGraph().getSlotEdges()) {
-            stateGraph.addEdge(cachedStates.get(edge.getKey().getNode()), cachedStates.get(edge.getValue().getNode()));
+            stateGraph.addEdge(cachedStates.get(edge.getKey().getNode().getUUIDInGraph()), cachedStates.get(edge.getValue().getNode().getUUIDInGraph()));
         }
 
         // Resolve connections
@@ -87,18 +86,18 @@ public class JIPipeProjectCacheQuery {
      * @param node the node
      * @return map of slot name to cache slot
      */
-    public Map<String, JIPipeDataSlot> getCachedCache(JIPipeGraphNode node) {
-        return project.getCache().extract(node, getCachedId(node));
+    public Map<String, JIPipeDataSlot> getCachedData(JIPipeGraphNode node) {
+        return project.getCache().extract(node.getUUIDInGraph(), getCachedId(node.getUUIDInGraph()));
     }
 
     /**
      * Returns the current cache state of an algorithm node.
      * Please note that this will not necessarily be the most current id, only the one that was extracted by the last rebuild()
      *
-     * @param node the node
+     * @param nodeUUID the node UUID
      * @return the current cache state with the current local date and time
      */
-    public JIPipeProjectCacheState getCachedId(JIPipeGraphNode node) {
-        return cachedStates.get(node);
+    public JIPipeProjectCacheState getCachedId(UUID nodeUUID) {
+        return cachedStates.get(nodeUUID);
     }
 }

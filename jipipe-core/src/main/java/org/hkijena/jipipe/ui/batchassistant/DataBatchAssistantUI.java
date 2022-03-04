@@ -93,13 +93,13 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
             Set<JIPipeDataSlot> sourceSlots = algorithm.getGraph().getSourceSlots(inputSlot);
             if (!sourceSlots.isEmpty()) {
                 for (JIPipeDataSlot sourceSlot : sourceSlots) {
-                    Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> sourceCaches = getProject().getCache().extract(sourceSlot.getNode());
+                    Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> sourceCaches = getProject().getCache().extract(sourceSlot.getNode().getUUIDInGraph());
                     if (sourceCaches == null || sourceCaches.isEmpty()) {
                         errorLabel.setText("No cached data available");
                         currentCache.clear();
                         return;
                     }
-                    Map<String, JIPipeDataSlot> sourceCache = sourceCaches.getOrDefault(query.getCachedId(sourceSlot.getNode()), null);
+                    Map<String, JIPipeDataSlot> sourceCache = sourceCaches.getOrDefault(query.getCachedId(sourceSlot.getNode().getUUIDInGraph()), null);
                     if (sourceCache != null) {
                         JIPipeDataSlot cache = sourceCache.getOrDefault(sourceSlot.getName(), null);
                         if (cache != null) {

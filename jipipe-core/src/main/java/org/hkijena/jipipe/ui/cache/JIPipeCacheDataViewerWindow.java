@@ -265,7 +265,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
     private void reloadFromCurrentCache() {
         JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(project);
-        Map<String, JIPipeDataSlot> currentCache = query.getCachedCache(algorithm);
+        Map<String, JIPipeDataSlot> currentCache = query.getCachedData(algorithm);
         JIPipeDataSlot slot = currentCache.getOrDefault(slotName, null);
         if (slot != null && slot.getRowCount() > dataSource.getRow()) {
             hideErrorUI();

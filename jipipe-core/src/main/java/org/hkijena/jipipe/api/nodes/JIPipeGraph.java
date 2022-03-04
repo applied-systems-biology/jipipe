@@ -1774,6 +1774,10 @@ public class JIPipeGraph implements JIPipeValidatable {
         return result;
     }
 
+    public boolean containsNode(UUID nodeUUID) {
+        return this.nodeUUIDs.containsKey(nodeUUID);
+    }
+
     /**
      * Serializes an {@link JIPipeGraph}
      */

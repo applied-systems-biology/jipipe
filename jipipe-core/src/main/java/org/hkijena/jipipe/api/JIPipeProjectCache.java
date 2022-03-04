@@ -30,7 +30,7 @@ import java.util.*;
 public class JIPipeProjectCache {
     private final EventBus eventBus = new EventBus();
     private final JIPipeProject project;
-    private final Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>>> cacheEntries = new HashMap<>();
+    private final Map<UUID, Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>>> cacheEntries = new HashMap<>();
     private final Map<JIPipeDataInfo, Integer> cachedDataTypes = new HashMap<>();
     private int cachedRowNumber = 0;
     private boolean disableTriggerEvent = false;
@@ -65,7 +65,7 @@ public class JIPipeProjectCache {
         Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if (stateMap == null) {
             stateMap = new HashMap<>();
-            cacheEntries.put(source, stateMap);
+            cacheEntries.put(source.getUUIDInGraph(), stateMap);
         }
 
         Map<String, JIPipeDataSlot> slotMap = stateMap.getOrDefault(stateId, null);
@@ -94,21 +94,21 @@ public class JIPipeProjectCache {
     /**
      * Tries to extract data from the cache
      *
-     * @param source the generating algorithm
+     * @param source the node UUID
      * @return map from state ID to map of slot name to slot. Null if not found
      */
-    public Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> extract(JIPipeGraphNode source) {
+    public Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> extract(UUID source) {
         return cacheEntries.getOrDefault(source, null);
     }
 
     /**
      * Tries to extract data from the cache. Returns null if no data is available.
      *
-     * @param source  the generating algorithm
+     * @param source  the node UUID
      * @param stateId the state id
      * @return all cached slots. Please do not work directly on those. Use targetSlot.copyFrom() instead. Never null.
      */
-    public Map<String, JIPipeDataSlot> extract(JIPipeGraphNode source, JIPipeProjectCacheState stateId) {
+    public Map<String, JIPipeDataSlot> extract(UUID source, JIPipeProjectCacheState stateId) {
         Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if (stateMap != null) {
             return stateMap.getOrDefault(stateId, Collections.emptyMap());
@@ -119,12 +119,12 @@ public class JIPipeProjectCache {
     /**
      * Tries to extract data from the cache. Returns null if no data is available.
      *
-     * @param source   the generating algorithm
+     * @param source   the node UUID
      * @param stateId  the state id
      * @param slotName the slot that contains the data
      * @return the cache's slot. Please do not work directly on this slot. Use targetSlot.copyFrom() instead. Null if not found
      */
-    public JIPipeDataSlot extract(JIPipeGraphNode source, String stateId, String slotName) {
+    public JIPipeDataSlot extract(UUID source, JIPipeProjectCacheState stateId, String slotName) {
         Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if (stateMap != null) {
             Map<String, JIPipeDataSlot> slotMap = stateMap.getOrDefault(stateId, null);
@@ -138,9 +138,9 @@ public class JIPipeProjectCache {
     /**
      * Removes an algorithm from the cache
      *
-     * @param source the algorithm
+     * @param source the node UUID
      */
-    public void clear(JIPipeGraphNode source) {
+    public void clear(UUID source) {
         Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if (stateMap != null) {
             for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
@@ -158,10 +158,10 @@ public class JIPipeProjectCache {
     /**
      * Removes an algorithm from the cache
      *
-     * @param source  the algorithm
+     * @param source  the node UUID
      * @param stateId state id
      */
-    public void clear(JIPipeGraphNode source, JIPipeProjectCacheState stateId) {
+    public void clear(UUID source, JIPipeProjectCacheState stateId) {
         Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(source, null);
         if (stateMap != null) {
             Map<String, JIPipeDataSlot> slotMap = stateMap.getOrDefault(stateId, null);
@@ -181,7 +181,7 @@ public class JIPipeProjectCache {
      * Removes everything from the cache
      */
     public void clear() {
-        for (Map.Entry<JIPipeGraphNode, Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>>> algorithmEntry : cacheEntries.entrySet()) {
+        for (Map.Entry<UUID, Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>>> algorithmEntry : cacheEntries.entrySet()) {
             for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : algorithmEntry.getValue().entrySet()) {
                 for (Map.Entry<String, JIPipeDataSlot> slotEntry : stateEntry.getValue().entrySet()) {
                     slotEntry.getValue().clearData();
@@ -223,26 +223,27 @@ public class JIPipeProjectCache {
             disableTriggerEvent = true;
             JIPipeProjectCacheQuery cacheQuery = new JIPipeProjectCacheQuery(project);
             List<JIPipeGraphNode> traversedAlgorithms = null;
-            for (JIPipeGraphNode algorithm : ImmutableList.copyOf(cacheEntries.keySet())) {
-                if (project.getGraph().containsNode(algorithm)) {
+            for (UUID nodeUUID : ImmutableList.copyOf(cacheEntries.keySet())) {
+                if (project.getGraph().containsNode(nodeUUID)) {
+                    JIPipeGraphNode node = project.getGraph().getNodeByUUID(nodeUUID);
                     if (compareSlots || compareProjectStates) {
                         if (traversedAlgorithms == null) {
                             traversedAlgorithms = project.getGraph().traverse();
                         }
-                        JIPipeProjectCacheState stateId = cacheQuery.getCachedId(algorithm);
+                        JIPipeProjectCacheState stateId = cacheQuery.getCachedId(nodeUUID);
 
-                        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(algorithm, null);
+                        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(nodeUUID, null);
                         for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : ImmutableList.copyOf(stateMap.entrySet())) {
                             if (compareProjectStates) {
                                 if (!Objects.equals(stateEntry.getKey(), stateId)) {
-                                    progressInfo.log("Clearing " + algorithm.getDisplayName() + " state " + stateEntry.getKey());
-                                    clear(algorithm, stateEntry.getKey());
+                                    progressInfo.log("Clearing " + node.getDisplayName() + " state " + stateEntry.getKey());
+                                    clear(nodeUUID, stateEntry.getKey());
                                 }
                             } else {
                                 for (String slotName : stateEntry.getValue().keySet()) {
-                                    if (!algorithm.getOutputSlotMap().containsKey(slotName) || !algorithm.getOutputSlotMap().get(slotName).isOutput()) {
-                                        progressInfo.log("Clearing " + algorithm.getDisplayName() + " state " + stateEntry.getKey());
-                                        clear(algorithm, stateEntry.getKey());
+                                    if (!node.getOutputSlotMap().containsKey(slotName) || !node.getOutputSlotMap().get(slotName).isOutput()) {
+                                        progressInfo.log("Clearing " + node.getDisplayName() + " state " + stateEntry.getKey());
+                                        clear(nodeUUID, stateEntry.getKey());
                                         break;
                                     }
                                 }
@@ -250,7 +251,7 @@ public class JIPipeProjectCache {
                         }
                     }
                 } else {
-                    clear(algorithm);
+                    clear(nodeUUID);
                 }
             }
         } finally {
@@ -306,8 +307,11 @@ public class JIPipeProjectCache {
      */
     public void makeVirtual(JIPipeProgressInfo progress) {
         progress.addMaxProgress(cachedRowNumber);
-        for (Map.Entry<JIPipeGraphNode, Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>>> nodeMap : cacheEntries.entrySet()) {
-            JIPipeProgressInfo nodeProgress = progress.resolve(nodeMap.getKey().getName());
+        for (Map.Entry<UUID, Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>>> nodeMap : cacheEntries.entrySet()) {
+            JIPipeGraphNode node = getProject().getGraph().getNodeByUUID(nodeMap.getKey());
+            if(node == null)
+                continue;
+            JIPipeProgressInfo nodeProgress = progress.resolve(node.getName());
             for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMapEntry : nodeMap.getValue().entrySet()) {
                 JIPipeProgressInfo stateProgress = nodeProgress.resolve(stateMapEntry.getKey().renderGenerationTime());
                 for (Map.Entry<String, JIPipeDataSlot> dataSlotEntry : stateMapEntry.getValue().entrySet()) {
@@ -328,8 +332,11 @@ public class JIPipeProjectCache {
      */
     public void makeNonVirtual(JIPipeProgressInfo progress) {
         progress.addMaxProgress(cachedRowNumber);
-        for (Map.Entry<JIPipeGraphNode, Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>>> nodeMap : cacheEntries.entrySet()) {
-            JIPipeProgressInfo nodeProgress = progress.resolve(nodeMap.getKey().getName());
+        for (Map.Entry<UUID, Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>>> nodeMap : cacheEntries.entrySet()) {
+            JIPipeGraphNode node = getProject().getGraph().getNodeByUUID(nodeMap.getKey());
+            if(node == null)
+                continue;
+            JIPipeProgressInfo nodeProgress = progress.resolve(node.getName());
             for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMapEntry : nodeMap.getValue().entrySet()) {
                 JIPipeProgressInfo stateProgress = nodeProgress.resolve(stateMapEntry.getKey().renderGenerationTime());
                 for (Map.Entry<String, JIPipeDataSlot> dataSlotEntry : stateMapEntry.getValue().entrySet()) {
