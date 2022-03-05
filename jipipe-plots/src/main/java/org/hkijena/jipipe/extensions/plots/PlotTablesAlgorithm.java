@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeDataParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotColumn;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;

@@ -478,7 +478,12 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
 
     private void insertImage(BufferedImage image) {
         setCursor(Cursor.getPredefinedCursor(Cursor.WAIT_CURSOR));
-        String base64 = UIUtils.imageToBase64(image, "png");
+        String base64;
+        try {
+            base64 = UIUtils.imageToBase64(image, "png");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
         if (base64.length() > 128 * 1024) {
             Object result = JOptionPane.showInputDialog(this, "The image has a size of " + image.getWidth() + " x " + image.getHeight() + " pixels (" + (base64.length() / 1024) + "KB)." +
@@ -512,7 +517,11 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
                     ImageProcessor processor = new ColorProcessor(image);
                     processor = processor.resize((int) (processor.getWidth() * percentage), (int) (processor.getHeight() * percentage));
                     image = processor.getBufferedImage();
-                    base64 = UIUtils.imageToBase64(image, "png");
+                    try {
+                        base64 = UIUtils.imageToBase64(image, "png");
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 }
             } else {
                 return;

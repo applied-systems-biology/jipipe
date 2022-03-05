@@ -11,10 +11,9 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.parameters.library.editors;
+package org.hkijena.jipipe.extensions.parameters.library.references;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.parameters.library.references.IconRef;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.JIPipeIconPickerDialog;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -31,7 +30,7 @@ import java.util.Set;
 /**
  * Editor for {@link IconRef}
  */
-public class JIPipeAlgorithmIconRefParameterEditorUI extends JIPipeParameterEditorUI {
+public class IconRefParameterEditorUI extends JIPipeParameterEditorUI {
 
     private static Set<String> availableAlgorithmIcons;
     private JButton currentlyDisplayed;
@@ -40,13 +39,13 @@ public class JIPipeAlgorithmIconRefParameterEditorUI extends JIPipeParameterEdit
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public JIPipeAlgorithmIconRefParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public IconRefParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         initialize();
         reload();
     }
 
-    public static Set<String> getAvailableAlgorithmIcons() {
+    public static Set<String> getAvailableIcons() {
         if (availableAlgorithmIcons == null) {
             availableAlgorithmIcons = new HashSet<>();
             Set<String> rawIcons = ResourceUtils.walkInternalResourceFolder("icons/");
@@ -76,7 +75,7 @@ public class JIPipeAlgorithmIconRefParameterEditorUI extends JIPipeParameterEdit
     }
 
     private void pickIcon() {
-        String picked = JIPipeIconPickerDialog.showDialog(this, ResourceUtils.getResourcePath("icons"), getAvailableAlgorithmIcons());
+        String picked = JIPipeIconPickerDialog.showDialog(this, ResourceUtils.getResourcePath("icons"), getAvailableIcons());
         IconRef ref = getParameter(IconRef.class);
         ref.setIconName(picked);
         setParameter(ref, true);

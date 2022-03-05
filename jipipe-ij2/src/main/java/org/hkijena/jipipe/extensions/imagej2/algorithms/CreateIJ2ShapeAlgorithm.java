@@ -10,14 +10,11 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.EmptyImageJ2ShapeData;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.ImageJ2ShapeData;
-import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeDataParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.classfilters.NonGenericClassFilter;
-import org.scijava.Priority;
 
 @JIPipeDocumentation(name = "Create shape", description = "Defines an ImageJ2 shape")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)

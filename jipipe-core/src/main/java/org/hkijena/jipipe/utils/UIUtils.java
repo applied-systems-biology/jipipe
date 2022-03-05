@@ -15,6 +15,7 @@ package org.hkijena.jipipe.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.primitives.Ints;
+import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import ij.IJ;
 import org.apache.commons.lang3.SystemUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -41,6 +42,7 @@ import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.jdesktop.swingx.JXTable;
+import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import javax.imageio.ImageIO;
@@ -786,22 +788,23 @@ public class UIUtils {
         return Collections.emptyList();
     }
 
-    public static String imageToBase64(BufferedImage image, String type) {
-        String imageString = null;
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
-
-        try {
+    public static String imageToBase64(BufferedImage image, String type) throws IOException {
+        String imageString;
+        try ( ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             ImageIO.write(image, type, bos);
             byte[] imageBytes = bos.toByteArray();
-
             BASE64Encoder encoder = new BASE64Encoder();
             imageString = encoder.encode(imageBytes);
-
-            bos.close();
-        } catch (IOException e) {
-            e.printStackTrace();
         }
         return imageString;
+    }
+
+    public static BufferedImage base64ToImage(String imageString) throws IOException {
+        BASE64Decoder decoder = new BASE64Decoder();
+        byte[] bytes = decoder.decodeBuffer(imageString);
+        try(ByteInputStream bis = new ByteInputStream(bytes, bytes.length)) {
+            return ImageIO.read(bis);
+        }
     }
 
     /**

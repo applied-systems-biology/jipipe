@@ -273,7 +273,7 @@ public class JIPipeAuthorMetadata implements JIPipeParameterCollection {
                     stringBuilder.append("<div><strong>Contact:</strong> ").append(HtmlEscapers.htmlEscaper().escape(author.getContact())).append("</div>");
                 }
             }
-            if(!StringUtils.isNullOrEmpty(author.getContact())) {
+            if(!StringUtils.isNullOrEmpty(author.getWebsite())) {
                 stringBuilder.append("<div><strong>Website:</strong> <a href=\"").append(author.getWebsite()).append("\">").append(author.getWebsite()).append("</a></div>");
             }
             if(!author.getAffiliations().isEmpty()) {

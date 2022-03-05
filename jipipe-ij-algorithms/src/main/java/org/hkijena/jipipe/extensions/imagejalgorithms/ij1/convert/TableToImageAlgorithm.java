@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert;
 
-import com.google.common.collect.ImmutableList;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
@@ -20,15 +19,13 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.filters.NonGenericImagePlusDataClassFilter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeDataParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.ZeroTableColumn;
 import org.hkijena.jipipe.utils.ReflectionUtils;
-
-import java.util.Map;
 
 @JIPipeDocumentation(name = "Convert table to image", description = "Converts a table of pixel information into an image")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Convert")

@@ -47,9 +47,11 @@ import org.hkijena.jipipe.extensions.parameters.api.scripts.ScriptParameterEdito
 import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameter;
 import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.colors.*;
-import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeAlgorithmIconRefParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeDataInfoRefParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeNodeInfoRefParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.references.IconRefParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRefParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeNodeInfoRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.FilePathParameterEditorUI;
@@ -164,9 +166,14 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerScriptParameters();
         registerRangeParameters();
         registerQuantityParameters();
+        registerImageParameters();
 
         registerMenuExtension(ParameterTesterJIPipeMenuExtension.class);
         registerMenuExtension(ExpressionTesterJIPipeMenuExtension.class);
+    }
+
+    private void registerImageParameters() {
+        registerParameterType("image", ImageParameter.class, "Image", "An image", ImageParameterEditorUI.class);
     }
 
     private void registerQuantityParameters() {
@@ -603,7 +610,7 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 r -> new IconRef((IconRef) r),
                 "Algorithm type icon",
                 "Reference to an algorithm type icon",
-                JIPipeAlgorithmIconRefParameterEditorUI.class);
+                IconRefParameterEditorUI.class);
 
         // Metadata
         registerParameterType("author",

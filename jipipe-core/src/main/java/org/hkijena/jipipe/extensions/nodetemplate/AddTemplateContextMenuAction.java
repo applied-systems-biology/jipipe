@@ -2,18 +2,25 @@ package org.hkijena.jipipe.extensions.nodetemplate;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.extensions.parameters.library.references.IconRefParameterEditorUI;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
+import java.net.URL;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,6 +34,31 @@ public class AddTemplateContextMenuAction implements NodeUIContextAction {
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         Set<JIPipeGraphNode> algorithms = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
         JIPipeNodeTemplate template = new JIPipeNodeTemplate();
+
+        if(algorithms.size() == 1) {
+            JIPipeGraphNode node = algorithms.iterator().next();
+            template.setName(node.getName());
+            template.setFillColor(node.getInfo().getCategory().getFillColor());
+            template.setBorderColor(node.getInfo().getCategory().getBorderColor());
+            URL url = JIPipe.getNodes().getIconURLFor(node.getInfo());
+            if(node.getInfo().getCategory() instanceof DataSourceNodeTypeCategory) {
+                if(node.getOutputSlots().size() > 0) {
+                    url = JIPipe.getDataTypes().getIconURLFor(JIPipeDataInfo.getInstance(node.getOutputSlots().get(0).getAcceptedDataType()));
+                }
+            }
+            if(url != null) {
+                String urlString = url.toString();
+                String iconName = null;
+                for (String icon : IconRefParameterEditorUI.getAvailableIcons()) {
+                    if(urlString.endsWith(icon)) {
+                        iconName = icon;
+                        break;
+                    }
+                }
+                template.getIcon().setIconName(iconName);
+            }
+        }
+
         JIPipeGraph graph = canvasUI.getGraph();
         JIPipeGraph subGraph = graph.extract(algorithms, false);
         template.setData(JsonUtils.toPrettyJsonString(subGraph));
