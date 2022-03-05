@@ -26,18 +26,18 @@ import java.io.IOException;
 /**
  * Used by {@link JsonNodeInfo} to setup icons
  */
-@JsonSerialize(using = JIPipeAlgorithmIconRef.Serializer.class)
-@JsonDeserialize(using = JIPipeAlgorithmIconRef.Deserializer.class)
-public class JIPipeAlgorithmIconRef {
+@JsonSerialize(using = IconRef.Serializer.class)
+@JsonDeserialize(using = IconRef.Deserializer.class)
+public class IconRef {
     private String iconName;
 
     /**
      * Creates a new instance
      */
-    public JIPipeAlgorithmIconRef() {
+    public IconRef() {
     }
 
-    public JIPipeAlgorithmIconRef(String iconName) {
+    public IconRef(String iconName) {
         this.iconName = iconName;
     }
 
@@ -46,7 +46,7 @@ public class JIPipeAlgorithmIconRef {
      *
      * @param other the original
      */
-    public JIPipeAlgorithmIconRef(JIPipeAlgorithmIconRef other) {
+    public IconRef(IconRef other) {
         this.iconName = other.iconName;
     }
 
@@ -64,24 +64,24 @@ public class JIPipeAlgorithmIconRef {
     }
 
     /**
-     * Serializes {@link JIPipeAlgorithmIconRef}
+     * Serializes {@link IconRef}
      */
-    public static class Serializer extends JsonSerializer<JIPipeAlgorithmIconRef> {
+    public static class Serializer extends JsonSerializer<IconRef> {
         @Override
-        public void serialize(JIPipeAlgorithmIconRef ref, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
+        public void serialize(IconRef ref, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
             jsonGenerator.writeString(ref.iconName);
         }
     }
 
     /**
-     * Deserializes {@link JIPipeAlgorithmIconRef}
+     * Deserializes {@link IconRef}
      */
-    public static class Deserializer extends JsonDeserializer<JIPipeAlgorithmIconRef> {
+    public static class Deserializer extends JsonDeserializer<IconRef> {
 
         @Override
-        public JIPipeAlgorithmIconRef deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+        public IconRef deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JsonNode node = jsonParser.readValueAsTree();
-            JIPipeAlgorithmIconRef result = new JIPipeAlgorithmIconRef();
+            IconRef result = new IconRef();
             if (!node.isNull()) {
                 result.setIconName(node.textValue());
             }

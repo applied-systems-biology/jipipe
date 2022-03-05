@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeAlgorithmIconRef;
+import org.hkijena.jipipe.extensions.parameters.library.references.IconRef;
 
 import java.awt.*;
 
@@ -24,7 +24,7 @@ public class JIPipeCommentNode extends JIPipeGraphNode {
 
     private Color backgroundColor = new Color(255, 255, 204);
     private Color textColor = Color.BLACK;
-    private JIPipeAlgorithmIconRef icon = new JIPipeAlgorithmIconRef("actions/edit-comment.png");
+    private IconRef icon = new IconRef("actions/edit-comment.png");
 
     public JIPipeCommentNode(JIPipeNodeInfo info) {
         super(info);
@@ -34,7 +34,7 @@ public class JIPipeCommentNode extends JIPipeGraphNode {
         super(other);
         this.backgroundColor = other.backgroundColor;
         this.textColor = other.textColor;
-        this.icon = new JIPipeAlgorithmIconRef(other.icon);
+        this.icon = new IconRef(other.icon);
     }
 
     @Override
@@ -71,12 +71,12 @@ public class JIPipeCommentNode extends JIPipeGraphNode {
 
     @JIPipeDocumentation(name = "Icon", description = "Defines the icon of this comment node.")
     @JIPipeParameter("icon")
-    public JIPipeAlgorithmIconRef getIcon() {
+    public IconRef getIcon() {
         return icon;
     }
 
     @JIPipeParameter("icon")
-    public void setIcon(JIPipeAlgorithmIconRef icon) {
+    public void setIcon(IconRef icon) {
         this.icon = icon;
     }
 }

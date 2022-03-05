@@ -47,4 +47,9 @@ public @interface StringParameterSettings {
      * @return Prompt shown on the text field
      */
     String prompt() default "";
+
+    /**
+     * @return true if the string is shown. otherwise, a button for editing the text is displayed
+     */
+    boolean visible() default true;
 }

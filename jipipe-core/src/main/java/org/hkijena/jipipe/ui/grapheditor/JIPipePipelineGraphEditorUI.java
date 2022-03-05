@@ -17,8 +17,6 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
@@ -29,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplateBox;
+import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplateMenu;
 import org.hkijena.jipipe.extensions.nodetoolboxtool.NodeToolBox;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -44,10 +43,6 @@ import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCop
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphCutNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphDuplicateNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.AlgorithmGraphPasteNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.navigation.MoveNodeUIDownContextAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.navigation.MoveNodeUILeftContextAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.navigation.MoveNodeUIRightContextAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.navigation.MoveNodeUIUpContextAction;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeMultiAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeSingleAlgorithmSelectionPanelUI;
@@ -110,6 +105,9 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                 menuBar.add(menu);
             }
         }
+
+        // Add template menu
+        menuBar.add(new NodeTemplateMenu(graphEditorUI.getWorkbench(), graphEditorUI));
     }
 
     /**
@@ -232,24 +230,6 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
 
     }
 
-//    @Override
-//    public void installNodeUIFeatures(JIPipeAlgorithmUI ui) {
-//        ui.installContextMenu(Arrays.asList(
-//                new OpenSettingsAlgorithmContextMenuFeature(),
-//                new AddToSelectionAlgorithmContextMenuFeature(),
-//                new SeparatorAlgorithmContextMenuFeature(),
-//                new RunAndShowResultsAlgorithmContextMenuFeature(),
-//                new SeparatorAlgorithmContextMenuFeature(),
-//                new CutCopyAlgorithmContextMenuFeature(),
-//                new SeparatorAlgorithmContextMenuFeature(),
-//                new EnableDisablePassThroughAlgorithmContextMenuFeature(),
-//                new SeparatorAlgorithmContextMenuFeature(),
-//                new JsonAlgorithmToGroupAlgorithmContextMenuFeature(),
-//                new CollapseIOInterfaceAlgorithmContextMenuFeature(),
-//                new DeleteAlgorithmContextMenuFeature()
-//        ));
-//    }
-
     private void initializeContextActions() {
         getCanvasUI().setDragAndDropBehavior(new JIPipeGraphCompartmentDragAndDropBehavior());
         List<NodeUIContextAction> nodeSpecificContextActions = new ArrayList<>();
@@ -367,10 +347,10 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
         bottomPanel.addTab("Quick guide", UIUtils.getIconFromResources("actions/help.png"), markdownReader, DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Available nodes", UIUtils.getIconFromResources("actions/configuration.png"),
-                new NodeToolBox(), DocumentTabPane.CloseMode.withoutCloseButton);
+                new NodeToolBox(true), DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Node templates", UIUtils.getIconFromResources("actions/favorite.png"),
-                new NodeTemplateBox(getWorkbench()), DocumentTabPane.CloseMode.withoutCloseButton);
+                new NodeTemplateBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Bookmarks", UIUtils.getIconFromResources("actions/bookmarks.png"),
                 new BookmarkListPanel(getWorkbench(), getAlgorithmGraph(), this), DocumentTabPane.CloseMode.withoutCloseButton);

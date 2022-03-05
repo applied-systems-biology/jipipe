@@ -404,6 +404,12 @@ public class UIUtils {
         return popupMenu;
     }
 
+    public static JSeparator createVerticalSeparator() {
+        JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
+        separator.setMaximumSize(new Dimension(1, Integer.MAX_VALUE) );
+        return separator;
+    }
+
     /**
      * Returns an icon from JIPipe resources
      *

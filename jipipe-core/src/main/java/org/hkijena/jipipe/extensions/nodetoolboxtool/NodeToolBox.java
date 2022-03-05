@@ -25,16 +25,18 @@ public class NodeToolBox extends JPanel {
 
     private final MarkdownReader documentationReader = new MarkdownReader(false);
     private final JToolBar toolBar = new JToolBar();
+    private final boolean isDocked;
     private JList<JIPipeNodeInfo> algorithmList;
     private SearchTextField searchField;
 
-    public NodeToolBox() {
+    public NodeToolBox(boolean isDocked) {
+        this.isDocked = isDocked;
         initialize();
         reloadAlgorithmList();
     }
 
     public static void openNewToolBoxWindow() {
-        NodeToolBox toolBox = new NodeToolBox();
+        NodeToolBox toolBox = new NodeToolBox(false);
         JFrame window = new JFrame();
         toolBox.getToolBar().add(new AlwaysOnTopToggle(window));
         window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -95,6 +97,12 @@ public class NodeToolBox extends JPanel {
         searchField = new SearchTextField();
         searchField.addActionListener(e -> reloadAlgorithmList());
         toolBar.add(searchField);
+
+        if(isDocked) {
+            JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
+            openWindowButton.setToolTipText("Open in new window");
+            openWindowButton.addActionListener(e -> openNewToolBoxWindow());
+        }
 
         algorithmList = new JList<>();
         algorithmList.setToolTipText("Drag one or multiple entries from the list into the graph to create nodes.");

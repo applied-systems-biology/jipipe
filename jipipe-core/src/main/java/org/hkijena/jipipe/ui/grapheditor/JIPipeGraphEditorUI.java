@@ -75,6 +75,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private Point panningScrollbarOffset = null;
     private boolean isPanning = false;
     private Set<JIPipeNodeInfo> addableAlgorithms = new HashSet<>();
+    private final JMenu graphMenu = new JMenu("Graph");
 
     /**
      * @param workbenchUI    the workbench
@@ -96,6 +97,10 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         initializeHotkeys();
         SwingUtilities.invokeLater(() -> canvasUI.crop(true));
         canvasUI.setLayoutHelperEnabled(graphUISettings.isEnableLayoutHelper());
+    }
+
+    public JMenu getGraphMenu() {
+        return graphMenu;
     }
 
     private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
@@ -235,6 +240,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         splitPane.setRightComponent(new JPanel());
         add(splitPane, BorderLayout.CENTER);
 
+//        menuBar.setLayout(new BoxLayout(menuBar, BoxLayout.X_AXIS));
         add(menuBar, BorderLayout.NORTH);
         navigator.setModel(new DefaultComboBoxModel<>());
         navigator.setDataToString(o -> {
@@ -295,8 +301,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         menuBar.add(Box.createHorizontalGlue());
         menuBar.add(Box.createHorizontalStrut(8));
 
-        navigator.getComboBox().setMaximumSize(new Dimension(200, 32));
         menuBar.add(navigator);
+        navigator.setVisible(graphUISettings.isEnableSearch());
         menuBar.add(Box.createHorizontalStrut(8));
 
         List<GraphEditorToolBarButtonExtension> graphEditorToolBarButtonExtensions = JIPipe.getCustomMenus().graphEditorToolBarButtonExtensionsFor(this);
@@ -322,73 +328,23 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             menuBar.add(redoButton);
         }
 
-        menuBar.add(new JSeparator(JSeparator.VERTICAL));
+        menuBar.add(UIUtils.createVerticalSeparator());
 
-        initializeViewModeMenu(menuBar);
+        graphMenu.setIcon(UIUtils.getIconFromResources("actions/draw-connector.png"));
+        menuBar.add(graphMenu);
 
-        JButton layoutButton = new JButton(UIUtils.getIconFromResources("actions/view-multiple-objects.png"));
-        UIUtils.makeFlat25x25(layoutButton);
-        layoutButton.setToolTipText("Additional layout tools");
-        menuBar.add(layoutButton);
+        initializeCenterViewCommand(graphMenu);
+        initializeExportMenu(graphMenu);
+        initializeViewModeMenu(graphMenu);
+        initializeLayoutMenu(graphMenu);
+        initializeSearchMenu(graphMenu);
 
-        JPopupMenu layoutMenu = new JPopupMenu();
-        UIUtils.addReloadablePopupMenuToComponent(layoutButton, layoutMenu, () -> {
-            layoutMenu.removeAll();
-            JMenuItem autoLayoutItem = new JMenuItem("Auto-layout all nodes", UIUtils.getIconFromResources("actions/distribute-unclump.png"));
-            autoLayoutItem.addActionListener(e -> {
-                if (getHistoryJournal() != null) {
-                    getHistoryJournal().snapshot("Auto-layout", "Apply auto-layout", getCompartment(), UIUtils.getIconFromResources("actions/distribute-unclump.png"));
-                }
-                canvasUI.autoLayoutAll();
-            });
-            autoLayoutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK));
-            layoutMenu.add(autoLayoutItem);
+        menuBar.add(UIUtils.createVerticalSeparator());
 
-            JCheckBoxMenuItem layoutHelperItem = new JCheckBoxMenuItem("Layout helper",
-                    UIUtils.getIconFromResources("actions/connector-avoid.png"),
-                    GraphEditorUISettings.getInstance().isEnableLayoutHelper());
-            layoutHelperItem.setToolTipText("Auto-layout layout on making data slot connections");
-            canvasUI.setLayoutHelperEnabled(GraphEditorUISettings.getInstance().isEnableLayoutHelper());
-            layoutHelperItem.addActionListener(e -> {
-                canvasUI.setLayoutHelperEnabled(layoutHelperItem.isSelected());
-                GraphEditorUISettings.getInstance().setEnableLayoutHelper(layoutHelperItem.isSelected());
-            });
-            layoutMenu.add(layoutHelperItem);
-        });
+        initializeZoomMenu();
+    }
 
-        JButton centerViewButton = new JButton(UIUtils.getIconFromResources("actions/view-restore.png"));
-        centerViewButton.setToolTipText("Center view to nodes");
-        UIUtils.makeFlat25x25(centerViewButton);
-        centerViewButton.addActionListener(e -> {
-            if (getHistoryJournal() != null) {
-                getHistoryJournal().snapshot("Center view to nodes", "Apply center view to nodes", getCompartment(), UIUtils.getIconFromResources("actions/view-restore.png"));
-            }
-            canvasUI.crop(true);
-        });
-        menuBar.add(centerViewButton);
-
-        menuBar.add(new JSeparator(JSeparator.VERTICAL));
-
-        JButton exportButton = new JButton(UIUtils.getIconFromResources("actions/document-export.png"));
-        exportButton.setToolTipText("Export graph");
-        UIUtils.makeFlat25x25(exportButton);
-
-        JPopupMenu exportAsImageMenu = UIUtils.addPopupMenuToComponent(exportButton);
-
-        JMenuItem exportToClipboardItem = new JMenuItem("Copy snapshot to clipboard", UIUtils.getIconFromResources("actions/edit-copy.png"));
-        exportToClipboardItem.addActionListener(e -> createScreenshotClipboard());
-        exportAsImageMenu.add(exportToClipboardItem);
-        JMenuItem exportAsPngItem = new JMenuItem("Export as *.png", UIUtils.getIconFromResources("actions/viewimage.png"));
-        exportAsPngItem.addActionListener(e -> createScreenshotPNG());
-        exportAsImageMenu.add(exportAsPngItem);
-        JMenuItem exportAsSvgItem = new JMenuItem("Export as *.svg", UIUtils.getIconFromResources("actions/viewimage.png"));
-        exportAsSvgItem.addActionListener(e -> createScreenshotSVG());
-        exportAsImageMenu.add(exportAsSvgItem);
-
-        menuBar.add(exportButton);
-
-        menuBar.add(new JSeparator(JSeparator.VERTICAL));
-
+    private void initializeZoomMenu() {
         JButton zoomOutButton = new JButton(UIUtils.getIconFromResources("actions/zoom-out.png"));
         UIUtils.makeFlat25x25(zoomOutButton);
         zoomOutButton.setToolTipText("<html>Zoom out<br><i>Ctrl-NumPad -</i></html>");
@@ -435,6 +391,99 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         menuBar.add(zoomInButton);
     }
 
+    private void initializeSearchMenu(JMenu graphMenu) {
+        JMenu searchMenu = new JMenu("Search");
+        searchMenu.setIcon(UIUtils.getIconFromResources("actions/search.png"));
+        graphMenu.add(searchMenu);
+
+        JMenuItem searchEnabledItem = new JCheckBoxMenuItem("Enable search");
+        searchEnabledItem.setSelected(graphUISettings.isEnableSearch());
+        searchEnabledItem.addActionListener(e -> {
+            graphUISettings.setEnableSearch(searchEnabledItem.isSelected());
+            JIPipe.getInstance().getSettingsRegistry().save();
+            navigator.setVisible(graphUISettings.isEnableSearch());
+            menuBar.revalidate();
+        });
+        searchMenu.add(searchEnabledItem);
+
+        JMenuItem searchFindNewNodes = new JCheckBoxMenuItem("Search can create new nodes");
+        searchFindNewNodes.setSelected(graphUISettings.isSearchFindNewNodes());
+        searchFindNewNodes.addActionListener(e -> {
+            graphUISettings.setSearchFindNewNodes(searchFindNewNodes.isSelected());
+            JIPipe.getInstance().getSettingsRegistry().save();
+            updateNavigation();
+        });
+        searchMenu.add(searchFindNewNodes);
+
+        JMenuItem searchFindExistingNodes = new JCheckBoxMenuItem("Search can find existing nodes");
+        searchFindExistingNodes.setSelected(graphUISettings.isSearchFindExistingNodes());
+        searchFindExistingNodes.addActionListener(e -> {
+            graphUISettings.setSearchFindExistingNodes(searchFindExistingNodes.isSelected());
+            JIPipe.getInstance().getSettingsRegistry().save();
+            updateNavigation();
+        });
+        searchMenu.add(searchFindExistingNodes);
+    }
+
+    private void initializeExportMenu(JMenu graphMenu) {
+        JMenu exportAsImageMenu = new JMenu("Export as image");
+        exportAsImageMenu.setIcon(UIUtils.getIconFromResources("actions/document-export.png"));
+        graphMenu.add(exportAsImageMenu);
+
+        JMenuItem exportToClipboardItem = new JMenuItem("Copy snapshot to clipboard", UIUtils.getIconFromResources("actions/edit-copy.png"));
+        exportToClipboardItem.addActionListener(e -> createScreenshotClipboard());
+        exportAsImageMenu.add(exportToClipboardItem);
+        JMenuItem exportAsPngItem = new JMenuItem("Export as *.png", UIUtils.getIconFromResources("actions/viewimage.png"));
+        exportAsPngItem.addActionListener(e -> createScreenshotPNG());
+        exportAsImageMenu.add(exportAsPngItem);
+        JMenuItem exportAsSvgItem = new JMenuItem("Export as *.svg", UIUtils.getIconFromResources("actions/viewimage.png"));
+        exportAsSvgItem.addActionListener(e -> createScreenshotSVG());
+        exportAsImageMenu.add(exportAsSvgItem);
+    }
+
+    private void initializeCenterViewCommand(JMenu graphMenu) {
+        JMenuItem centerViewButton = new JMenuItem("Center view to nodes");
+        centerViewButton.setIcon(UIUtils.getIconFromResources("actions/view-restore.png"));
+        centerViewButton.addActionListener(e -> {
+            if (getHistoryJournal() != null) {
+                getHistoryJournal().snapshot("Center view to nodes",
+                        "Apply center view to nodes",
+                        getCompartment(),
+                        UIUtils.getIconFromResources("actions/view-restore.png"));
+            }
+            canvasUI.crop(true);
+        });
+        graphMenu.add(centerViewButton);
+    }
+
+    private void initializeLayoutMenu(JMenu graphMenu) {
+
+        JMenu layoutMenu = new JMenu("Layout");
+        layoutMenu.setIcon(UIUtils.getIconFromResources("actions/distribute-randomize.png"));
+        graphMenu.add(layoutMenu);
+
+        JMenuItem autoLayoutItem = new JMenuItem("Auto-layout all nodes", UIUtils.getIconFromResources("actions/distribute-unclump.png"));
+        autoLayoutItem.addActionListener(e -> {
+            if (getHistoryJournal() != null) {
+                getHistoryJournal().snapshot("Auto-layout", "Apply auto-layout", getCompartment(), UIUtils.getIconFromResources("actions/distribute-unclump.png"));
+            }
+            canvasUI.autoLayoutAll();
+        });
+        autoLayoutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK));
+        layoutMenu.add(autoLayoutItem);
+
+        JCheckBoxMenuItem layoutHelperItem = new JCheckBoxMenuItem("Layout helper",
+                UIUtils.getIconFromResources("actions/connector-avoid.png"),
+                GraphEditorUISettings.getInstance().isEnableLayoutHelper());
+        layoutHelperItem.setToolTipText("Auto-layout layout on making data slot connections");
+        canvasUI.setLayoutHelperEnabled(GraphEditorUISettings.getInstance().isEnableLayoutHelper());
+        layoutHelperItem.addActionListener(e -> {
+            canvasUI.setLayoutHelperEnabled(layoutHelperItem.isSelected());
+            GraphEditorUISettings.getInstance().setEnableLayoutHelper(layoutHelperItem.isSelected());
+        });
+        layoutMenu.add(layoutHelperItem);
+    }
+
     public void createScreenshotClipboard() {
         BufferedImage screenshot = canvasUI.createScreenshotPNG();
         CopyImageToClipboard copyImageToClipboard = new CopyImageToClipboard();
@@ -442,17 +491,19 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         getWorkbench().sendStatusBarText("Copied screenshot to clipboard");
     }
 
-    private void initializeViewModeMenu(JMenuBar menuBar) {
+    private void initializeViewModeMenu(JMenu menu) {
+        JMenu viewModeMenu = new JMenu("Display mode");
+        updateViewModeMenuIcon(viewModeMenu);
+        menu.add(viewModeMenu);
+
         ButtonGroup viewModeGroup = new ButtonGroup();
-        JButton viewModeButton = new JButton();
-        JPopupMenu viewModeMenu = UIUtils.addPopupMenuToComponent(viewModeButton);
 
         JMenuItem viewModeHorizontalItem = new JCheckBoxMenuItem("Display nodes horizontally");
         viewModeHorizontalItem.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Horizontal);
         viewModeHorizontalItem.addActionListener(e -> {
             canvasUI.setViewMode(JIPipeGraphViewMode.Horizontal);
             canvasUI.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.Horizontal);
-            updateViewModeMenuIcon(viewModeButton);
+            updateViewModeMenuIcon(viewModeMenu);
         });
         viewModeGroup.add(viewModeHorizontalItem);
         viewModeMenu.add(viewModeHorizontalItem);
@@ -462,7 +513,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         viewModeVerticalItem.addActionListener(e -> {
             canvasUI.setViewMode(JIPipeGraphViewMode.Vertical);
             canvasUI.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.Vertical);
-            updateViewModeMenuIcon(viewModeButton);
+            updateViewModeMenuIcon(viewModeMenu);
         });
         viewModeGroup.add(viewModeVerticalItem);
         viewModeMenu.add(viewModeVerticalItem);
@@ -472,30 +523,22 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         viewModeVerticalCompactItem.addActionListener(e -> {
             canvasUI.setViewMode(JIPipeGraphViewMode.VerticalCompact);
             canvasUI.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
-            updateViewModeMenuIcon(viewModeButton);
+            updateViewModeMenuIcon(viewModeMenu);
         });
         viewModeGroup.add(viewModeVerticalCompactItem);
         viewModeMenu.add(viewModeVerticalCompactItem);
-
-        updateViewModeMenuIcon(viewModeButton);
-
-        UIUtils.makeFlat25x25(viewModeButton);
-        menuBar.add(viewModeButton);
     }
 
-    private void updateViewModeMenuIcon(JButton viewModeButton) {
+    private void updateViewModeMenuIcon(JMenu viewModeButton) {
         switch (canvasUI.getViewMode()) {
             case Horizontal:
                 viewModeButton.setIcon(UIUtils.getIconFromResources("actions/view-mode-horizontal.png"));
-                viewModeButton.setToolTipText("Nodes are displayed horizontally. Click to change.");
                 break;
             case Vertical:
                 viewModeButton.setIcon(UIUtils.getIconFromResources("actions/view-mode-vertical.png"));
-                viewModeButton.setToolTipText("Nodes are displayed vertically. Click to change.");
                 break;
             case VerticalCompact:
                 viewModeButton.setIcon(UIUtils.getIconFromResources("actions/view-mode-vertical-compact.png"));
-                viewModeButton.setToolTipText("Nodes are displayed vertically (compact). Click to change.");
                 break;
         }
     }
@@ -817,14 +860,18 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * Updates the navigation list
      */
     public void updateNavigation() {
-        boolean canCreateNewNodes = true;
-        if (getWorkbench() instanceof JIPipeProjectWorkbench) {
-            canCreateNewNodes = !((JIPipeProjectWorkbench) getWorkbench()).getProject().getMetadata().getPermissions().isPreventAddingDeletingNodes();
+        boolean canCreateNewNodes = graphUISettings.isSearchFindNewNodes();
+        if(canCreateNewNodes) {
+            if (getWorkbench() instanceof JIPipeProjectWorkbench) {
+                canCreateNewNodes = !((JIPipeProjectWorkbench) getWorkbench()).getProject().getMetadata().getPermissions().isPreventAddingDeletingNodes();
+            }
         }
         DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<>();
         model.removeAllElements();
-        for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values().stream().sorted(Comparator.comparing(ui -> ui.getNode().getName())).collect(Collectors.toList())) {
-            model.addElement(ui);
+        if(graphUISettings.isSearchFindExistingNodes()) {
+            for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values().stream().sorted(Comparator.comparing(ui -> ui.getNode().getName())).collect(Collectors.toList())) {
+                model.addElement(ui);
+            }
         }
         if (canCreateNewNodes) {
             for (JIPipeNodeInfo info : addableAlgorithms.stream()

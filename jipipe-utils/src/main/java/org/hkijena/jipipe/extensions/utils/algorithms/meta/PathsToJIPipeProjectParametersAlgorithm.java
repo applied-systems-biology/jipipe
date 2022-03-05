@@ -160,6 +160,11 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
             public String prompt() {
                 return null;
             }
+
+            @Override
+            public boolean visible() {
+                return true;
+            }
         };
 
         @Subscribe

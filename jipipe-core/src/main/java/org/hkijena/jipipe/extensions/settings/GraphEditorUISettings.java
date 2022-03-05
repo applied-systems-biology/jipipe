@@ -29,7 +29,7 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
 
     public static String ID = "graph-editor-ui";
 
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private JIPipeGraphViewMode defaultViewMode = JIPipeGraphViewMode.VerticalCompact;
     private GraphAutoLayout autoLayout = GraphAutoLayout.MST;
     private boolean switchPanningDirection = false;
@@ -46,9 +46,45 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean accurateMiniMap = false;
     private boolean drawNodeShadows = true;
     private boolean drawImprovedEdges = true;
+    private boolean enableSearch = true;
+    private boolean searchFindNewNodes = true;
+    private boolean searchFindExistingNodes = true;
 
     public static GraphEditorUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
+    }
+
+    @JIPipeDocumentation(name = "Enable search", description = "If enabled, a search box is shown in the menu bar. Only applies to newly opened editors.")
+    @JIPipeParameter("enable-search")
+    public boolean isEnableSearch() {
+        return enableSearch;
+    }
+
+    @JIPipeParameter("enable-search")
+    public void setEnableSearch(boolean enableSearch) {
+        this.enableSearch = enableSearch;
+    }
+
+    @JIPipeDocumentation(name = "Search: Create nodes", description = "If enabled, the search will allow to create new nodes")
+    @JIPipeParameter("search-find-new-nodes")
+    public boolean isSearchFindNewNodes() {
+        return searchFindNewNodes;
+    }
+
+    @JIPipeParameter("search-find-new-nodes")
+    public void setSearchFindNewNodes(boolean searchFindNewNodes) {
+        this.searchFindNewNodes = searchFindNewNodes;
+    }
+
+    @JIPipeDocumentation(name = "Search: Existing nodes", description = "If enabled, the search will allow to find existing nodes")
+    @JIPipeParameter("search-find-existing-nodes")
+    public boolean isSearchFindExistingNodes() {
+        return searchFindExistingNodes;
+    }
+
+    @JIPipeParameter("search-find-existing-nodes")
+    public void setSearchFindExistingNodes(boolean searchFindExistingNodes) {
+        this.searchFindExistingNodes = searchFindExistingNodes;
     }
 
     @JIPipeDocumentation(name = "Improve edge drawing", description = "If enabled, edges are drawn with outlines to make them easier distinguishable. " +

@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.library.editors;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeAlgorithmIconRef;
+import org.hkijena.jipipe.extensions.parameters.library.references.IconRef;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.JIPipeIconPickerDialog;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
@@ -29,7 +29,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Editor for {@link JIPipeAlgorithmIconRef}
+ * Editor for {@link IconRef}
  */
 public class JIPipeAlgorithmIconRefParameterEditorUI extends JIPipeParameterEditorUI {
 
@@ -77,7 +77,7 @@ public class JIPipeAlgorithmIconRefParameterEditorUI extends JIPipeParameterEdit
 
     private void pickIcon() {
         String picked = JIPipeIconPickerDialog.showDialog(this, ResourceUtils.getResourcePath("icons"), getAvailableAlgorithmIcons());
-        JIPipeAlgorithmIconRef ref = getParameter(JIPipeAlgorithmIconRef.class);
+        IconRef ref = getParameter(IconRef.class);
         ref.setIconName(picked);
         setParameter(ref, true);
     }
@@ -89,7 +89,7 @@ public class JIPipeAlgorithmIconRefParameterEditorUI extends JIPipeParameterEdit
 
     @Override
     public void reload() {
-        JIPipeAlgorithmIconRef ref = getParameter(JIPipeAlgorithmIconRef.class);
+        IconRef ref = getParameter(IconRef.class);
         if (!StringUtils.isNullOrEmpty(ref.getIconName())) {
             URL resource = ResourceUtils.getPluginResource("icons/" + ref.getIconName());
             if (resource != null) {

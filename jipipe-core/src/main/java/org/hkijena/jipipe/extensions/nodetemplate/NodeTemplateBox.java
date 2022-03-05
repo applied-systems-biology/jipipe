@@ -3,19 +3,12 @@ package org.hkijena.jipipe.extensions.nodetemplate;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
-import com.google.common.html.HtmlEscapers;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
@@ -24,6 +17,7 @@ import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.search.RankedData;
@@ -45,11 +39,13 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
     private final Set<JIPipeNodeTemplate> projectTemplateList = new HashSet<>();
     private final MarkdownReader documentationReader = new MarkdownReader(false);
     private final JToolBar toolBar = new JToolBar();
+    private final boolean isDocked;
     private JList<JIPipeNodeTemplate> templateList;
     private SearchTextField searchField;
 
-    public NodeTemplateBox(JIPipeWorkbench workbench) {
+    public NodeTemplateBox(JIPipeWorkbench workbench, boolean isDocked) {
         super(workbench);
+        this.isDocked = isDocked;
         if (workbench instanceof JIPipeProjectWorkbench) {
             this.project = ((JIPipeProjectWorkbench) workbench).getProject();
         } else {
@@ -61,7 +57,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
     }
 
     public static void openNewToolBoxWindow(JIPipeWorkbench workbench) {
-        NodeTemplateBox toolBox = new NodeTemplateBox(workbench);
+        NodeTemplateBox toolBox = new NodeTemplateBox(workbench, false);
         JFrame window = new JFrame();
         toolBox.getToolBar().add(new AlwaysOnTopToggle(window));
         window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -189,6 +185,12 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         JMenuItem deleteItem = new JMenuItem("Delete selection", UIUtils.getIconFromResources("actions/edit-delete.png"));
         deleteItem.addActionListener(e -> deleteSelection());
         manageMenu.add(deleteItem);
+
+        if(isDocked) {
+            JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
+            openWindowButton.setToolTipText("Open in new window");
+            openWindowButton.addActionListener(e -> openNewToolBoxWindow(getWorkbench()));
+        }
     }
 
     private void editSelected() {
@@ -200,9 +202,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         JIPipeNodeTemplate copy = new JIPipeNodeTemplate(template);
         if (ParameterPanel.showDialog(getWorkbench(), copy, new MarkdownDocument("# Node templates\n\nUse this user interface to modify node templates."), "Edit template",
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION)) {
-            template.setData(copy.getData());
-            template.setDescription(copy.getDescription());
-            template.setName(copy.getName());
+            template.copyFrom(copy);
             if (project != null) {
                 project.getMetadata().triggerParameterChange("node-templates");
             }
@@ -386,57 +386,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
 
     private void selectNodeTemplate(JIPipeNodeTemplate template) {
         if (template != null) {
-            StringBuilder builder = new StringBuilder();
-            builder.append("# ").append(template.getName()).append("\n\n");
-
-            // Write description
-            String description = template.getDescription().getBody();
-            if (description != null && !description.isEmpty())
-                builder.append(description).append("</br>");
-
-            JIPipeGraph graph = template.getGraph();
-            if (graph != null) {
-                // Write description
-                if (graph.getGraphNodes().size() == 1) {
-                    description = graph.getGraphNodes().iterator().next().getInfo().getDescription().getBody();
-                }
-                if (description != null && !description.isEmpty())
-                    builder.append(description).append("</br>");
-
-                if (graph.getGraphNodes().size() == 1) {
-                    JIPipeGraphNode node = graph.getGraphNodes().iterator().next();
-                    // Write algorithm slot info
-                    builder.append("<table style=\"margin-top: 10px;\">");
-                    for (JIPipeDataSlot slot : node.getInputSlots()) {
-                        builder.append("<tr>");
-                        builder.append("<td><p style=\"background-color:#27ae60; color:white;border:3px solid #27ae60;border-radius:5px;text-align:center;\">Input</p></td>");
-                        builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType())).append("\"/></td>");
-                        builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.getName(), "-"))).append("</td>");
-                        builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i></td>");
-                        builder.append("</tr>");
-                    }
-                    for (JIPipeDataSlot slot : node.getOutputSlots()) {
-                        builder.append("<tr>");
-                        builder.append("<td><p style=\"background-color:#da4453; color:white;border:3px solid #da4453;border-radius:5px;text-align:center;\">Output</p></td>");
-                        builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType())).append("\"/></td>");
-                        builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.getName(), "-"))).append("</td>");
-                        builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i></td>");
-                        builder.append("</tr>");
-                    }
-                    builder.append("</table>\n\n");
-                } else if (!graph.getGraphNodes().isEmpty()) {
-                    // Write list of nodes
-                    builder.append("<table style=\"margin-top: 10px;\">");
-                    for (JIPipeGraphNode node : graph.getGraphNodes()) {
-                        builder.append("<tr>");
-                        builder.append("<td>").append("<img src=\"").append(JIPipe.getNodes().getIconURLFor(node.getInfo())).append("\"/></td>");
-                        builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(node.getName())).append("</td>");
-                        builder.append("</tr>");
-                    }
-                    builder.append("</table>\n\n");
-                }
-            }
-            documentationReader.setDocument(new MarkdownDocument(builder.toString()));
+            documentationReader.setDocument(new MarkdownDocument("# " + template.getName() + "\n\n" + TooltipUtils.getAlgorithmTooltip(template, false)));
         } else
             documentationReader.setDocument(new MarkdownDocument(""));
     }

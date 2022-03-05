@@ -598,9 +598,9 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
 
         // Icon types
         registerParameterType("algorithm-type-icon",
-                JIPipeAlgorithmIconRef.class,
-                JIPipeAlgorithmIconRef::new,
-                r -> new JIPipeAlgorithmIconRef((JIPipeAlgorithmIconRef) r),
+                IconRef.class,
+                IconRef::new,
+                r -> new IconRef((IconRef) r),
                 "Algorithm type icon",
                 "Reference to an algorithm type icon",
                 JIPipeAlgorithmIconRefParameterEditorUI.class);

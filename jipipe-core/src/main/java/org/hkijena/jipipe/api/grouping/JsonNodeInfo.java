@@ -38,7 +38,7 @@ import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicCategoryEn
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeAlgorithmIconRef;
+import org.hkijena.jipipe.extensions.parameters.library.references.IconRef;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.*;
@@ -58,7 +58,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     private Map<JIPipeDataSlot, String> exportedSlotNames = new HashMap<>();
     private StringList menuPath = new StringList();
     private boolean hidden = false;
-    private JIPipeAlgorithmIconRef customIcon = new JIPipeAlgorithmIconRef();
+    private IconRef customIcon = new IconRef();
     private GraphWrapperAlgorithmInput algorithmInput;
     private GraphWrapperAlgorithmOutput algorithmOutput;
     private GraphNodeParameters exportedParameters;
@@ -420,14 +420,14 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     @JIPipeDocumentation(name = "Icon", description = "A custom algorithm icon")
     @JIPipeParameter(value = "icon", uiOrder = 25)
     @JsonGetter("icon")
-    public JIPipeAlgorithmIconRef getCustomIcon() {
+    public IconRef getCustomIcon() {
         if (customIcon == null)
-            customIcon = new JIPipeAlgorithmIconRef();
+            customIcon = new IconRef();
         return customIcon;
     }
 
     @JIPipeParameter("icon")
-    public void setCustomIcon(JIPipeAlgorithmIconRef customIcon) {
+    public void setCustomIcon(IconRef customIcon) {
         this.customIcon = customIcon;
 
     }

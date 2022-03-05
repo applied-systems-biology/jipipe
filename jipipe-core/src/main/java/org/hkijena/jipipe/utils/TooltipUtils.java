@@ -17,6 +17,7 @@ import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
@@ -243,6 +244,69 @@ public class TooltipUtils {
         builder.append("</table>\n\n");
 
         builder.append("</html>");
+        return builder.toString();
+    }
+
+    /**
+     * Creates a tooltip for an algorithm
+     *
+     * @param template      the node template
+     * @param withTitle if a title is displayed
+     * @return the tooltip
+     */
+    public static String getAlgorithmTooltip(JIPipeNodeTemplate template, boolean withTitle) {
+        StringBuilder builder = new StringBuilder();
+        if(withTitle) {
+            builder.append("<u><strong>").append(template.getName()).append("</strong></u><br/>");
+        }
+
+        // Write description
+        String description = template.getDescription().getBody();
+        if (description != null && !description.isEmpty())
+            builder.append(description).append("</br>");
+
+        JIPipeGraph graph = template.getGraph();
+        if (graph != null) {
+            // Write description
+            if (graph.getGraphNodes().size() == 1) {
+                description = graph.getGraphNodes().iterator().next().getInfo().getDescription().getBody();
+            }
+            if (description != null && !description.isEmpty())
+                builder.append(description).append("</br>");
+
+            if (graph.getGraphNodes().size() == 1) {
+                JIPipeGraphNode node = graph.getGraphNodes().iterator().next();
+                // Write algorithm slot info
+                builder.append("<table style=\"margin-top: 10px;\">");
+                for (JIPipeDataSlot slot : node.getInputSlots()) {
+                    builder.append("<tr>");
+                    builder.append("<td><p style=\"background-color:#27ae60; color:white;border:3px solid #27ae60;border-radius:5px;text-align:center;\">Input</p></td>");
+                    builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType())).append("\"/></td>");
+                    builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.getName(), "-"))).append("</td>");
+                    builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i></td>");
+                    builder.append("</tr>");
+                }
+                for (JIPipeDataSlot slot : node.getOutputSlots()) {
+                    builder.append("<tr>");
+                    builder.append("<td><p style=\"background-color:#da4453; color:white;border:3px solid #da4453;border-radius:5px;text-align:center;\">Output</p></td>");
+                    builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType())).append("\"/></td>");
+                    builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.getName(), "-"))).append("</td>");
+                    builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i></td>");
+                    builder.append("</tr>");
+                }
+                builder.append("</table>\n\n");
+            } else if (!graph.getGraphNodes().isEmpty()) {
+                // Write list of nodes
+                builder.append("<table style=\"margin-top: 10px;\">");
+                for (JIPipeGraphNode node : graph.getGraphNodes()) {
+                    builder.append("<tr>");
+                    builder.append("<td>").append("<img src=\"").append(JIPipe.getNodes().getIconURLFor(node.getInfo())).append("\"/></td>");
+                    builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(node.getName())).append("</td>");
+                    builder.append("</tr>");
+                }
+                builder.append("</table>\n\n");
+            }
+        }
         return builder.toString();
     }
 

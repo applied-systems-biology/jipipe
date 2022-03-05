@@ -38,7 +38,6 @@ public class NodeTemplateBoxToolExtension extends JIPipePrepackagedDefaultJavaEx
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerGraphEditorToolBarButtonExtension(NodeTemplateBoxMenuExtension.class);
         registerContextMenuAction(new AddTemplateContextMenuAction());
     }
 }
