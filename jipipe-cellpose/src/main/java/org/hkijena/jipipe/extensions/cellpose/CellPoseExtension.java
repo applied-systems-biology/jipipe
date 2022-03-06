@@ -37,7 +37,7 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
         CellPoseSettings settings = CellPoseSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        CellPoseEnvInstaller installer = new CellPoseEnvInstaller(workbench, parameterAccess);
+        MinicondaCellPoseEnvInstaller installer = new MinicondaCellPoseEnvInstaller(workbench, parameterAccess);
         JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
@@ -45,7 +45,7 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
         CellPoseSettings settings = CellPoseSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        CellPoseGPUEnvInstaller installer = new CellPoseGPUEnvInstaller(workbench, parameterAccess);
+        MinicondaCellPoseGPUEnvInstaller installer = new MinicondaCellPoseGPUEnvInstaller(workbench, parameterAccess);
         JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
@@ -95,8 +95,8 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 new CellPoseSettings());
-        registerEnvironmentInstaller(PythonEnvironment.class, CellPoseEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, CellPoseGPUEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, MinicondaCellPoseEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, MinicondaCellPoseGPUEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
 
         registerEnumParameterType("cellpose-model", CellPoseModel.class, "Cellpose model", "A Cellpose model");
         registerEnumParameterType("cellpose-pretrained-model", CellPosePretrainedModel.class, "Cellpose pre-trained model", "A pretrained model for Cellpose");
