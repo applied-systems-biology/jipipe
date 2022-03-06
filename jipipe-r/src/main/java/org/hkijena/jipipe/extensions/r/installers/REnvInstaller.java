@@ -206,7 +206,7 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
         private String name = "R";
 
         public Configuration() {
-            installationPath = Paths.get("r");
+            installationPath = Paths.get("jipipe").resolve("r");
         }
 
         @Override
