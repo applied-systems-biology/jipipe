@@ -4,6 +4,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.nio.file.Paths;
@@ -44,6 +45,7 @@ public class PythonCellPoseGPUEnvInstaller extends PythonCellPoseEnvInstaller {
        @JIPipeDocumentation(name = "PyTorch pip package", description = "The pip package that is used for installing PyTorch. " +
                "To generate custom settings, visit https://pytorch.org/get-started/locally/ and copy the parts after 'pip3 install' into this field.")
        @JIPipeParameter("pytorch-pip-package")
+       @StringParameterSettings(monospace = true)
         public String getPyTorchPipPackage() {
             return pyTorchPipPackage;
         }
