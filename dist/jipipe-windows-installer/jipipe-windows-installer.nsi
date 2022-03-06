@@ -123,6 +123,7 @@ Section "Common files (Required)" SEC01
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/net/java/dev/jna/jna-platform/4.5.2/jna-platform-4.5.2.jar" "$INSTDIR\Fiji.app\plugins\jna-platform-4.5.2.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/releases/content/de/biomedical-imaging/imagej/ij_ridge_detect/1.4.1/ij_ridge_detect-1.4.1.jar" "$INSTDIR\Fiji.app\plugins\ij_ridge_detect-1.4.1.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/org/apache/commons/commons-compress/1.9/commons-compress-1.9.jar" "$INSTDIR\Fiji.app\jars\commons-compress-1.9.jar"
+  inetc::get "https://maven.scijava.org/service/local/repositories/central/content/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.11.0/jackson-dataformat-yaml-2.11.0.jar" "$INSTDIR\Fiji.app\jars\jackson-dataformat-yaml-2.11.0.jar"
 
   ; Bootstrap update sites
   SetOutPath "$INSTDIR\Fiji.app"

@@ -19,8 +19,8 @@ public class MinicondaCellPoseGPUEnvInstaller extends MinicondaCellPoseEnvInstal
     public MinicondaCellPoseGPUEnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         this.setConfiguration(new Configuration());
-        getConfiguration().setInstallationPath(Paths.get("jipipe").resolve("cellpose-gpu"));
-        getConfiguration().setName("Cellpose (GPU)");
+        getConfiguration().setInstallationPath(Paths.get("jipipe").resolve("miniconda-cellpose-gpu"));
+        getConfiguration().setName("Miniconda: Cellpose (GPU)");
     }
 
     @Override

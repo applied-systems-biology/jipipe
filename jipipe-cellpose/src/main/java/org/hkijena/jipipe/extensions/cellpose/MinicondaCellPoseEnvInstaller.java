@@ -28,8 +28,8 @@ public class MinicondaCellPoseEnvInstaller extends BasicMinicondaEnvPythonInstal
     public MinicondaCellPoseEnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         setConfiguration(new Configuration());
-        getConfiguration().setInstallationPath(Paths.get("jipipe").resolve("cellpose-cpu"));
-        getConfiguration().setName("Cellpose (CPU)");
+        getConfiguration().setInstallationPath(Paths.get("jipipe").resolve("miniconda-cellpose-cpu"));
+        getConfiguration().setName("Miniconda: Cellpose (CPU)");
     }
 
     @Override
