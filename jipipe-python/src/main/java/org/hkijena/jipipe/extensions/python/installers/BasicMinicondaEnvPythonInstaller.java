@@ -171,10 +171,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
         }
 
         // We must add Library/bin to Path. Otherwise, there SSL won't work
-        Map<String, String> environmentVariables = new HashMap<>();
-        for (Map.Entry<String, String> entry : System.getenv().entrySet()) {
-            environmentVariables.put(entry.getKey(), entry.getValue());
-        }
+        Map<String, String> environmentVariables = new HashMap<>(System.getenv());
         if (SystemUtils.IS_OS_WINDOWS) {
             environmentVariables.put("Path", getConfiguration().getInstallationPath().resolve("Library").resolve("bin").toAbsolutePath() + ";" +
                     environmentVariables.getOrDefault("Path", ""));

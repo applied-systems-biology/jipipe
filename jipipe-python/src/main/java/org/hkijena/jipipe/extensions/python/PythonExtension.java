@@ -25,10 +25,7 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.python.algorithms.*;
-import org.hkijena.jipipe.extensions.python.installers.MinicondaEnvPythonInstaller;
-import org.hkijena.jipipe.extensions.python.installers.SelectCondaEnvPythonInstaller;
-import org.hkijena.jipipe.extensions.python.installers.SelectSystemPythonInstaller;
-import org.hkijena.jipipe.extensions.python.installers.SelectVirtualEnvPythonInstaller;
+import org.hkijena.jipipe.extensions.python.installers.*;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
@@ -129,6 +126,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 settings);
         registerEnvironmentInstaller(PythonEnvironment.class, MinicondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/browser-download.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, PythonEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/browser-download.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectCondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectSystemPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectVirtualEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));

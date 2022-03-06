@@ -75,15 +75,16 @@ def load_table_file(data_slot: DataSlot, row: int = 0):
     return read_csv(filepath_or_buffer=file) if file is not None else None
 
 
-def add_table(table, data_slot: DataSlot, annotations: dict = None):
+def add_table(table, data_slot: DataSlot, text_annotations: dict = None, data_annotations: dict = None):
     """
     Adds a new table into a new row of the specified slot
     :param table: the table. must be a Pandas table or dictionary that can be converted into a data frame
     :param data_slot: the data slot
-    :param annotations: optional annotations (a dict of string keys and string values)
+    :param text_annotations: optional annotations (a dict of string keys and string values)
+    :param data_annotations: optional annotations (a dict of string keys and dict values that contain true-data-type and row-storage-folder)
     :return: index of the newly added row
     """
-    row = data_slot.add_row(annotations=annotations)
+    row = data_slot.add_row(text_annotations=text_annotations, data_annotations=data_annotations)
     row_storage_path = data_slot.get_row_storage_path(row)
     file_name = row_storage_path / Path("data.csv")
     print("Writing table to " + str(file_name))
@@ -95,21 +96,22 @@ def add_table(table, data_slot: DataSlot, annotations: dict = None):
     return row
 
 
-def add_image(data, data_slot: DataSlot, annotations: dict = None, convert_64_to_32=True, imagej=True, **kwargs):
+def add_image(data, data_slot: DataSlot, text_annotations: dict = None, data_annotations: dict = None, convert_64_to_32=True, imagej=True, **kwargs):
     """
     Adds a new image into a new row of the specified slot. The image will be saved as TIFF.
     Requires tifffile. This method accepts all parameters utilized by tifffile.imsave
     :param convert_64_to_32: If enabled, convert 64-bit float to 32-bit float. ImageJ does not support 64 bit
     :param data: an image. must be a numpy array. Can be None. In this case, you must provide shape and dtype (like tifffile's method requires)
     :param data_slot: the data slot
-    :param annotations: optional annotations (a dict of string keys and string values)
+    :param text_annotations: optional annotations (a dict of string keys and string values)
+    :param data_annotations: optional annotations (a dict of string keys and dict values that contain true-data-type and row-storage-folder)
     :param imagej: if the generated output should have the necessary metadata for ImageJ loading
     :return: index of the newly added row
     """
     import numpy as np
     if convert_64_to_32 and data.dtype is np.dtype("float64"):
         data = np.float32(data)
-    row = data_slot.add_row(annotations=annotations)
+    row = data_slot.add_row(text_annotations=text_annotations, data_annotations=data_annotations)
     row_storage_path = data_slot.get_row_storage_path(row)
     file_name = row_storage_path / Path("data.tif")
     from tifffile import imwrite

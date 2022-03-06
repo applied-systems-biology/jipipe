@@ -42,16 +42,17 @@ get_file = get_path
 get_folder = get_path
 
 
-def add_path(path, data_slot: DataSlot, annotations: dict = None, data_type_id="path"):
+def add_path(path, data_slot: DataSlot, text_annotations: dict = None, data_annotations: dict = None, data_type_id="path"):
     """
     Adds a new path into a new row of the specified slot
     :param data_type_id: The ID of the generated path data type
     :param path: a path-like object
     :param data_slot: the data slot
-    :param annotations: optional annotations (a dict of string keys and string values)
+    :param text_annotations: optional annotations (a dict of string keys and string values)
+    :param data_annotations: optional annotations (a dict of string keys and dict values that contain true-data-type and row-storage-folder)
     :return: index of the newly added row
     """
-    row = data_slot.add_row(annotations=annotations)
+    row = data_slot.add_row(text_annotations=text_annotations, data_annotations=data_annotations)
     row_storage_path = data_slot.get_row_storage_path(row)
     file_name = row_storage_path / Path("data.json")
     print("Writing path data to " + str(file_name))
@@ -65,23 +66,25 @@ def add_path(path, data_slot: DataSlot, annotations: dict = None, data_type_id="
     return row
 
 
-def add_folder(path, data_slot: DataSlot, annotations: dict = None):
+def add_folder(path, data_slot: DataSlot, text_annotations: dict = None, data_annotations: dict = None):
     """
    Adds a new path into a new row of the specified slot
    :param path: a path-like object
    :param data_slot: the data slot
-   :param annotations: optional annotations (a dict of string keys and string values)
+   :param text_annotations: optional annotations (a dict of string keys and string values)
+   :param data_annotations: optional annotations (a dict of string keys and dict values that contain true-data-type and row-storage-folder)
    :return: index of the newly added row
    """
-    add_path(path, data_slot=data_slot, annotations=annotations, data_type_id="folder")
+    add_path(path, data_slot=data_slot, text_annotations=text_annotations, data_annotations=data_annotations, data_type_id="folder")
 
 
-def add_file(path, data_slot: DataSlot, annotations: dict = None):
+def add_file(path, data_slot: DataSlot, text_annotations: dict = None, data_annotations: dict = None):
     """
    Adds a new path into a new row of the specified slot
    :param path: a path-like object
    :param data_slot: the data slot
-   :param annotations: optional annotations (a dict of string keys and string values)
+   :param text_annotations: optional annotations (a dict of string keys and string values)
+   :param data_annotations: optional annotations (a dict of string keys and dict values that contain true-data-type and row-storage-folder)
    :return: index of the newly added row
    """
-    add_path(path, data_slot=data_slot, annotations=annotations, data_type_id="file")
+    add_path(path, data_slot=data_slot, text_annotations=text_annotations, data_annotations=data_annotations, data_type_id="file")

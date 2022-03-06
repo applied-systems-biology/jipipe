@@ -89,11 +89,7 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
         if (userCancelled.get())
             return;
 
-        generatedEnvironment = new PythonEnvironment();
-        generatedEnvironment.setType(PythonEnvironmentType.System);
-        generatedEnvironment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
-        generatedEnvironment.setExecutablePath(configuration.getPythonExecutable());
-        generatedEnvironment.setName(configuration.getName());
+        generatedEnvironment = generateEnvironment(configuration);
         if (getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> {
                 if (getParameterAccess().getFieldClass().isAssignableFrom(generatedEnvironment.getClass())) {
@@ -104,6 +100,15 @@ public class SelectSystemPythonInstaller extends ExternalEnvironmentInstaller {
                 }
             });
         }
+    }
+
+    public static PythonEnvironment generateEnvironment(Configuration configuration) {
+        PythonEnvironment generatedEnvironment = new PythonEnvironment();
+        generatedEnvironment.setType(PythonEnvironmentType.System);
+        generatedEnvironment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
+        generatedEnvironment.setExecutablePath(configuration.getPythonExecutable());
+        generatedEnvironment.setName(configuration.getName());
+        return generatedEnvironment;
     }
 
     public static class Configuration implements JIPipeParameterCollection {
