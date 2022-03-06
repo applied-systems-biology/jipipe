@@ -45,7 +45,8 @@ class DataSlot:
         self.internal_path = internal_path
         self.name = name
         self.rows = 0
-        self.annotations = []
+        self.text_annotations = []
+        self.data_annotations = []
         self.true_data_types = []
 
         if not isdir(storage_path):
@@ -66,29 +67,34 @@ class DataSlot:
         :param source_row: the source row
         """
         target_row = self.add_row(true_data_type=source_data_slot.true_data_types[source_row])
-        self.annotations[target_row] = source_data_slot.annotations[source_row].copy()
+        self.text_annotations[target_row] = source_data_slot.text_annotations[source_row].copy()
+        self.data_annotations[target_row] = source_data_slot.data_annotations[source_row].copy()
         target_row_storage_path = self.get_row_storage_path(target_row)
         print("Copy " + str(source_data_slot.get_row_storage_path(source_row)) + " to " + str(target_row_storage_path))
         shutil.copytree(src=source_data_slot.get_row_storage_path(source_row),
                         dst=target_row_storage_path,
                         dirs_exist_ok=True)
 
-    def add_row(self, n: int = 1, annotations: dict = None, true_data_type: str = None):
+    def add_row(self, n: int = 1, text_annotations: dict = None, data_annotations: dict = None, true_data_type: str = None):
         """
         Adds n rows into the slot
         :param true_data_type: the true data type ID of this entry. If none, the slot data type is used
-        :param annotations: annotations to set for these rows
+        :param text_annotations: annotations to set for these rows
+        :param data_annotations: annotations to set for these rows
         :param n: how many rows to add
         :return: the last row index
         """
-        if annotations is None:
-            annotations = {}
+        if text_annotations is None:
+            text_annotations = {}
+        if data_annotations is None:
+            data_annotations = {}
         if true_data_type is None:
             true_data_type = self.data_type
         for i in range(n):
             self.rows += 1
             self.true_data_types.append(true_data_type)
-            self.annotations.append(annotations.copy())
+            self.text_annotations.append(text_annotations.copy())
+            self.data_annotations.append(data_annotations.copy())
             p = self.get_row_storage_path(self.rows - 1)
             if not isdir(p):
                 makedirs(p)
@@ -106,12 +112,18 @@ class DataSlot:
             "jipipe:true-data-type": [self.true_data_types[row] for row in range(self.rows)],
             "jipipe:index": [row for row in range(self.rows)]
         }
-        annotation_columns = set()
-        for annotations in self.annotations:
+        text_annotation_columns = set()
+        data_annotation_columns = set()
+        for annotations in self.text_annotations:
             for name in annotations:
-                annotation_columns.add(name)
-        for annotation_column in annotation_columns:
-            csv_data[annotation_column] = [self.annotations[row].get(annotation_column, "") for row in range(self.rows)]
+                text_annotation_columns.add(name)
+        for annotations in self.data_annotations:
+            for name in annotations:
+                data_annotation_columns.add(name)
+        for annotation_column in text_annotation_columns:
+            csv_data[annotation_column] = [self.text_annotations[row].get(annotation_column, "") for row in range(self.rows)]
+        for annotation_column in data_annotation_columns:
+            csv_data["$" + annotation_column] = [str(self.data_annotations[row].get(annotation_column, "")) for row in range(self.rows)]
 
         from pandas import DataFrame
         return DataFrame(data=csv_data)
@@ -129,12 +141,17 @@ class DataSlot:
             "rows": [{
                 "index": row,
                 "true-data-type": self.true_data_types[row],
-                "annotations": [{
+                "text-annotations": [{
                         "name": name,
                         "value": value
-                    } for name, value in self.annotations[row].items()
+                    } for name, value in self.text_annotations[row].items()
                 ],
-                "data-annotations": [] # TODO: Support for data annotations
+                "data-annotations": [{
+                        "name": name,
+                        "true-data-type": value["true-data-type"],
+                        "row-storage-folder": value["row-storage-folder"]
+                    } for name, value in self.text_annotations[row].items()
+                ]
             } for row in range(self.rows)]
         }
 
@@ -172,8 +189,11 @@ def import_from_folder(storage_path: Path):
         rows = data_table.get("rows", [])
         rows.sort(key=lambda row: row["index"])
         for row in rows:
-            annotations = {}
-            for annotation in row["annotations"]:
-                annotations[annotation["name"]] = annotation["value"]
-            data_slot.add_row(annotations=annotations, true_data_type=row["true-data-type"])
+            text_annotations = {}
+            data_annotations = {}
+            for annotation in row["text-annotations"]:
+                text_annotations[annotation["name"]] = annotation["value"]
+            for annotation in row["data-annotations"]:
+                text_annotations[annotation["name"]] = annotation
+            data_slot.add_row(text_annotations=text_annotations, data_annotations=data_annotations, true_data_type=row["true-data-type"])
         return data_slot
