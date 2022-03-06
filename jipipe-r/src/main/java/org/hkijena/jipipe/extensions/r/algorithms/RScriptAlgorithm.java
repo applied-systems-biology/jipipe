@@ -40,7 +40,7 @@ import java.util.Map;
         "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
         "<ul>" +
         "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot.</li>" +
-        "<li><code>JIPipe.InputSlotRowAnnotations</code> contains the list of annotations (named strings) for each slot.</li>" +
+        "<li><code>JIPipe.InputSlotRowTextAnnotations</code> contains the list of annotations (named strings) for each slot.</li>" +
         "<li><code>JIPipe.Variables</code> contains the list of variables defined by parameters (named values). " +
         "If a parameter's unique key is a valid variable name, it will also be available as variable.</li>" +
         "<li><code>JIPipe.GetInputFolder(slot, row=0)</code> returns the data folder of the specified slot. " +
@@ -190,7 +190,7 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
             "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
             "<ul>" +
             "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot.</li>" +
-            "<li><code>JIPipe.InputSlotRowAnnotations</code> contains the list of annotations (named strings) for each slot.</li>" +
+            "<li><code>JIPipe.InputSlotRowTextAnnotations</code> contains the list of annotations (named strings) for each slot.</li>" +
             "<li><code>JIPipe.Variables</code> contains the list of variables defined by parameters (named values). " +
             "If a parameter's unique key is a valid variable name, it will also be available as variable.</li>" +
             "<li><code>JIPipe.GetInputFolder(slot, row=0)</code> returns the data folder of the specified slot. " +

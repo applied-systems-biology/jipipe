@@ -51,10 +51,10 @@ public class RUtils {
      * @param code        the code
      * @param annotations the annotations
      */
-    public static void annotationsToR(StringBuilder code, Collection<JIPipeTextAnnotation> annotations) {
-        code.append("JIPipe.Annotations <- list()\n");
+    public static void textAnnotationsToR(StringBuilder code, Collection<JIPipeTextAnnotation> annotations) {
+        code.append("JIPipe.TextAnnotations <- list()\n");
         for (JIPipeTextAnnotation annotation : annotations) {
-            code.append(String.format("Annotations$\"%s\" <- \"%s\"\n", MacroUtils.escapeString(annotation.getName()),
+            code.append(String.format("TextAnnotations$\"%s\" <- \"%s\"\n", MacroUtils.escapeString(annotation.getName()),
                     MacroUtils.escapeString(annotation.getValue())));
         }
     }
@@ -133,14 +133,14 @@ public class RUtils {
 
         code.append("JIPipe.InputSlotFolders <- list()\n");
         code.append("JIPipe.InputSlotRowCounts <- list()\n");
-        code.append("JIPipe.InputSlotRowAnnotations <- list()\n");
+        code.append("JIPipe.InputSlotRowTextAnnotations <- list()\n");
         for (Map.Entry<String, Path> entry : inputSlotPaths.entrySet()) {
             JIPipeDataSlot slot = inputSlotMap.get(entry.getKey());
             String escapedKey = MacroUtils.escapeString(entry.getKey());
             code.append("JIPipe.InputSlotFolders$\"").append(escapedKey).append("\" <- \"")
                     .append(MacroUtils.escapeString(entry.getValue() + "")).append("\"\n");
             code.append("JIPipe.InputSlotRowCounts$\"").append(escapedKey).append("\" <- ").append(slot.getRowCount()).append("\n");
-            code.append("JIPipe.InputSlotRowAnnotations$\"").append(escapedKey).append("\" <- list()\n");
+            code.append("JIPipe.InputSlotRowTextAnnotations$\"").append(escapedKey).append("\" <- list()\n");
             StringBuilder stringBuilder = new StringBuilder();
             for (int row = 0; row < slot.getRowCount(); row++) {
                 stringBuilder.setLength(0);
@@ -153,7 +153,7 @@ public class RUtils {
                             .append(MacroUtils.escapeString(annotation.getValue()))
                             .append("\"");
                 }
-                code.append("JIPipe.InputSlotRowAnnotations$\"").append(escapedKey).append("\"[[")
+                code.append("JIPipe.InputSlotRowTextAnnotations$\"").append(escapedKey).append("\"[[")
                         .append(row).append(1).append("]] <- list(").append(stringBuilder).append(")\n");
             }
         }

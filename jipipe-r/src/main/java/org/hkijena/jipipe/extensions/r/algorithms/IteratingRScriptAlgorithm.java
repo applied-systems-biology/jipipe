@@ -40,7 +40,7 @@ import java.util.Map;
         "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
         "<ul>" +
         "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot. Is always 1 for each slot.</li>" +
-        "<li><code>JIPipe.Annotations</code> contains the list of annotations (named strings)</li>" +
+        "<li><code>JIPipe.TextAnnotations</code> contains the list of annotations (named strings)</li>" +
         "<li><code>JIPipe.Variables</code> contains the list of variables defined by parameters (named values). " +
         "If a parameter's unique key is a valid variable name, it will also be available as variable.</li>" +
         "<li><code>JIPipe.GetInputFolder(slot, row=0)</code> returns the data folder of the specified slot. " +
@@ -128,7 +128,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
         RUtils.parametersToR(code, variables);
 
         // Add annotations
-        RUtils.annotationsToR(code, dataBatch.getMergedTextAnnotations().values());
+        RUtils.textAnnotationsToR(code, dataBatch.getMergedTextAnnotations().values());
 
         Path workDirectory = getNewScratch();
 
@@ -209,7 +209,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
             "The script comes with various API functions and variables that allow to communicate with JIPipe: " +
             "<ul>" +
             "<li><code>JIPipe.InputSlotRowCounts</code> contains named row counts for each slot. Is always 1 for each slot.</li>" +
-            "<li><code>JIPipe.Annotations</code> contains the list of annotations (named strings)</li>" +
+            "<li><code>JIPipe.TextAnnotations</code> contains the list of text annotations (named strings)</li>" +
             "<li><code>JIPipe.Variables</code> contains the list of variables defined by parameters (named values). " +
             "If a parameter's unique key is a valid variable name, it will also be available as variable.</li>" +
             "<li><code>JIPipe.GetInputFolder(slot, row=0)</code> returns the data folder of the specified slot. " +
