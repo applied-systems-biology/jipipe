@@ -5,7 +5,7 @@ import ij.Prefs;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.utils.WebUtils;
-import org.hkijena.jipipe.utils.ZipUtils;
+import org.hkijena.jipipe.utils.ArchiveUtils;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -67,7 +67,7 @@ public class DownloadOfflineManualRun implements JIPipeRunnable {
         // Unzip the target file
         progressInfo.setProgress(1);
         try {
-            ZipUtils.unzip(targetFile, targetFile.getParent(), progressInfo.resolve("Extracting"));
+            ArchiveUtils.decompressZipFile(targetFile, targetFile.getParent(), progressInfo.resolve("Extracting"));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

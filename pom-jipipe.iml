@@ -11,6 +11,14 @@
       <excludeFolder url="file://$MODULE_DIR$/jipipe-python-adapter" />
       <excludeFolder url="file://$MODULE_DIR$/cellpose-cpu" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/codeStyles" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/dictionaries" />
+      <excludeFolder url="file://$MODULE_DIR$/.idea/inspectionProfiles" />
+      <excludeFolder url="file://$MODULE_DIR$/jipipe-deep-learning/target" />
+      <excludeFolder url="file://$MODULE_DIR$/lib-dltoolkit" />
+      <excludeFolder url="file://$MODULE_DIR$/lib-jipipe-py" />
+      <excludeFolder url="file://$MODULE_DIR$/miniconda" />
+      <excludeFolder url="file://$MODULE_DIR$/r" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

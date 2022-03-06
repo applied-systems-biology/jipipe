@@ -103,6 +103,28 @@ public class StringUtils {
     }
 
     /**
+     * Applies a \0 termination to a string.
+     * Used to parse unclean input from C
+     * @param input the input string
+     * @return string that ends at the first \0
+     */
+    public static String nullTerminate(String input) {
+        int firstNull = -1;
+        for (int i = 0; i < input.length(); i++) {
+            if(input.charAt(i) == '\0') {
+                firstNull = i;
+                break;
+            }
+        }
+        if(firstNull == -1) {
+            return input;
+        }
+        else {
+            return input.substring(0, firstNull);
+        }
+    }
+
+    /**
      * Removes the HTML root from HTML
      *
      * @param html the HTML

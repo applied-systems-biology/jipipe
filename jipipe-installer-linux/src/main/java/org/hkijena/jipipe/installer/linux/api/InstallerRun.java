@@ -74,7 +74,8 @@ public class InstallerRun implements JIPipeRunnable {
             "https://maven.scijava.org/service/local/repositories/central/content/org/apache/commons/commons-exec/1.3/commons-exec-1.3.jar",
             "https://github.com/ome/omero-insight/releases/download/v5.5.14/omero_ij-5.5.14-all.jar",
             "https://maven.scijava.org/service/local/repositories/central/content/net/java/dev/jna/jna-platform/4.5.2/jna-platform-4.5.2.jar",
-            "https://maven.scijava.org/service/local/repositories/releases/content/de/biomedical-imaging/imagej/ij_ridge_detect/1.4.1/ij_ridge_detect-1.4.1.jar"
+            "https://maven.scijava.org/service/local/repositories/releases/content/de/biomedical-imaging/imagej/ij_ridge_detect/1.4.1/ij_ridge_detect-1.4.1.jar",
+            "https://maven.scijava.org/service/local/repositories/central/content/org/apache/commons/commons-compress/1.9/commons-compress-1.9.jar"
     };
 
     static {

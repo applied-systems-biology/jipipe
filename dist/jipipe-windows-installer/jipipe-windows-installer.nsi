@@ -122,6 +122,7 @@ Section "Common files (Required)" SEC01
   inetc::get "https://github.com/ome/omero-insight/releases/download/v5.5.14/omero_ij-5.5.14-all.jar" "$INSTDIR\Fiji.app\plugins\omero_ij-5.5.14-all.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/central/content/net/java/dev/jna/jna-platform/4.5.2/jna-platform-4.5.2.jar" "$INSTDIR\Fiji.app\plugins\jna-platform-4.5.2.jar"
   inetc::get "https://maven.scijava.org/service/local/repositories/releases/content/de/biomedical-imaging/imagej/ij_ridge_detect/1.4.1/ij_ridge_detect-1.4.1.jar" "$INSTDIR\Fiji.app\plugins\ij_ridge_detect-1.4.1.jar"
+  inetc::get "https://maven.scijava.org/service/local/repositories/central/content/org/apache/commons/commons-compress/1.9/commons-compress-1.9.jar" "$INSTDIR\Fiji.app\jars\commons-compress-1.9.jar"
 
   ; Bootstrap update sites
   SetOutPath "$INSTDIR\Fiji.app"
