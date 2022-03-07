@@ -218,6 +218,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
     public void executeQuickRun(boolean showResults, boolean showCache, boolean showBatchAssistant, boolean saveToDisk, boolean storeIntermediateOutputs, boolean excludeSelected) {
         // Activate the quick run
         tabbedPane.switchToContent(testBenchTabContent);
+        activateLazyContent(tabbedPane);
         QuickRunSetupUI testBenchSetupUI = (QuickRunSetupUI) testBenchTabContent.getComponent(0);
         QuickRunSettings settings = new QuickRunSettings();
         settings.setSaveToDisk(saveToDisk);
