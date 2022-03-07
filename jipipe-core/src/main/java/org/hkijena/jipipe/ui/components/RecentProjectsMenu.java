@@ -65,6 +65,7 @@ public class RecentProjectsMenu extends JMenu {
 
     private void openProjectSearch() {
         JDialog dialog = new JDialog(workbenchWindow);
+        dialog.setTitle("Open project");
         RecentProjectsListPanel panel = new RecentProjectsListPanel(workbenchWindow.getProjectUI());
         panel.getEventBus().register(new Object() {
             @Subscribe
