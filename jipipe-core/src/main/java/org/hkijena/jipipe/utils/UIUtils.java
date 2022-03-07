@@ -15,7 +15,6 @@ package org.hkijena.jipipe.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.primitives.Ints;
-import com.sun.xml.internal.messaging.saaj.util.ByteInputStream;
 import ij.IJ;
 import org.apache.commons.lang3.SystemUtils;
 import org.fife.ui.rsyntaxtextarea.RSyntaxTextArea;
@@ -58,6 +57,7 @@ import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URI;
@@ -821,7 +821,7 @@ public class UIUtils {
     public static BufferedImage base64ToImage(String imageString) throws IOException {
         BASE64Decoder decoder = new BASE64Decoder();
         byte[] bytes = decoder.decodeBuffer(imageString);
-        try(ByteInputStream bis = new ByteInputStream(bytes, bytes.length)) {
+        try(ByteArrayInputStream bis = new ByteArrayInputStream(bytes)) {
             return ImageIO.read(bis);
         }
     }
