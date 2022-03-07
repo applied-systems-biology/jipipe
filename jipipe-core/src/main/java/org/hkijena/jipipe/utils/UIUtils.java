@@ -51,6 +51,7 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.HyperlinkEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
@@ -102,6 +103,24 @@ public class UIUtils {
     public static boolean DARK_THEME = false;
     private static Theme RSYNTAX_THEME_DEFAULT;
     private static Theme RSYNTAX_THEME_DARK;
+
+    public static void registerHyperlinkHandler(JTextPane content) {
+        content.addHyperlinkListener(e -> {
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                if (e.getDescription() != null && e.getDescription().startsWith("#")) {
+                    // Not supported
+                } else {
+                    if (Desktop.isDesktopSupported()) {
+                        try {
+                            Desktop.getDesktop().browse(e.getURL().toURI());
+                        } catch (Exception e1) {
+                            throw new RuntimeException(e1);
+                        }
+                    }
+                }
+            }
+        });
+    }
 
     public static void sendTrayNotification(String caption, String message, TrayIcon.MessageType messageType) {
         if (SystemUtils.IS_OS_LINUX) {

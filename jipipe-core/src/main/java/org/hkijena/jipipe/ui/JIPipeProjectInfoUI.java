@@ -62,6 +62,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         descriptionReader.setContentType("text/html");
         descriptionReader.setEditorKit(new ExtendedHTMLEditorKit());
         descriptionReader.setEditable(false);
+        UIUtils.registerHyperlinkHandler(descriptionReader);
         descriptionReaderScrollPane = new JScrollPane(descriptionReader);
         parameterPanel = new ParameterPanel(getWorkbench(),
                 getProject().getPipelineParameters(),
