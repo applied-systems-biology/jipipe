@@ -42,6 +42,7 @@ if [ ! -e "./dependencies" ]; then
   wget "https://github.com/ome/omero-insight/releases/download/v5.5.14/omero_ij-5.5.14-all.jar"
   wget "https://maven.scijava.org/service/local/repositories/central/content/net/java/dev/jna/jna-platform/4.5.2/jna-platform-4.5.2.jar"
   wget "https://maven.scijava.org/service/local/repositories/releases/content/de/biomedical-imaging/imagej/ij_ridge_detect/1.4.1/ij_ridge_detect-1.4.1.jar"
+  wget "https://maven.scijava.org/service/local/repositories/central/content/org/apache/commons/commons-compress/1.9/commons-compress-1.9.jar"
   wget "https://maven.scijava.org/service/local/repositories/central/content/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.11.0/jackson-dataformat-yaml-2.11.0.jar"
   wget -O "LICENSE_OMERO.txt" https://github.com/ome/omero-insight/blob/master/LICENSE.txt
   wget -O "LICENSE_Javaluator.html" https://opensource.org/licenses/lgpl-3.0.html
