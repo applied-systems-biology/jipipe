@@ -35,7 +35,7 @@ public class NodeToolBox extends JPanel {
         reloadAlgorithmList();
     }
 
-    public static void openNewToolBoxWindow() {
+    public static void openNewToolBoxWindow(Component parent) {
         NodeToolBox toolBox = new NodeToolBox(false);
         JFrame window = new JFrame();
         toolBox.getToolBar().add(new AlwaysOnTopToggle(window));
@@ -46,6 +46,7 @@ public class NodeToolBox extends JPanel {
         window.setContentPane(toolBox);
         window.pack();
         window.setSize(300, 700);
+        window.setLocationRelativeTo(parent);
         window.setVisible(true);
     }
 
@@ -101,7 +102,8 @@ public class NodeToolBox extends JPanel {
         if(isDocked) {
             JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
             openWindowButton.setToolTipText("Open in new window");
-            openWindowButton.addActionListener(e -> openNewToolBoxWindow());
+            openWindowButton.addActionListener(e -> openNewToolBoxWindow(SwingUtilities.getWindowAncestor(this)));
+            toolBar.add(openWindowButton);
         }
 
         algorithmList = new JList<>();

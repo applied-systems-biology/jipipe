@@ -67,6 +67,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         window.setContentPane(toolBox);
         window.pack();
         window.setSize(300, 700);
+        window.setLocationRelativeTo(workbench.getWindow());
         window.setVisible(true);
     }
 
@@ -190,6 +191,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
             JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
             openWindowButton.setToolTipText("Open in new window");
             openWindowButton.addActionListener(e -> openNewToolBoxWindow(getWorkbench()));
+            toolBar.add(openWindowButton);
         }
     }
 
