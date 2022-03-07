@@ -93,17 +93,17 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     public static final String TAB_PROJECT_OVERVIEW = "PROJECT_OVERVIEW";
     public static final String TAB_LOG = "LOG";
     public DocumentTabPane documentTabPane;
-    private JIPipeProjectWindow window;
-    private JIPipeProject project;
+    private final JIPipeProjectWindow window;
+    private final JIPipeProject project;
     private JLabel statusText;
-    private Context context;
+    private final Context context;
     private ReloadableValidityChecker validityCheckerPanel;
     private JIPipePluginValidityCheckerPanel pluginValidityCheckerPanel;
-    private RealTimeProjectRunner realTimeProjectRunner;
-    private VirtualDataControl virtualDataControl;
+    private final RealTimeProjectRunner realTimeProjectRunner;
+    private final VirtualDataControl virtualDataControl;
     private boolean projectModified;
-    private JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
-    private NotificationButton notificationButton = new NotificationButton(this);
+    private final JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
+    private final NotificationButton notificationButton = new NotificationButton(this);
 
     /**
      * @param window           Parent window

@@ -302,7 +302,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         menuBar.add(Box.createHorizontalStrut(8));
 
         menuBar.add(navigator);
-        navigator.setVisible(graphUISettings.isEnableSearch());
+        navigator.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
         menuBar.add(Box.createHorizontalStrut(8));
 
         List<GraphEditorToolBarButtonExtension> graphEditorToolBarButtonExtensions = JIPipe.getCustomMenus().graphEditorToolBarButtonExtensionsFor(this);
@@ -397,28 +397,28 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         graphMenu.add(searchMenu);
 
         JMenuItem searchEnabledItem = new JCheckBoxMenuItem("Enable search");
-        searchEnabledItem.setSelected(graphUISettings.isEnableSearch());
+        searchEnabledItem.setSelected(graphUISettings.getSearchSettings().isEnableSearch());
         searchEnabledItem.addActionListener(e -> {
-            graphUISettings.setEnableSearch(searchEnabledItem.isSelected());
+            graphUISettings.getSearchSettings().setEnableSearch(searchEnabledItem.isSelected());
             JIPipe.getInstance().getSettingsRegistry().save();
-            navigator.setVisible(graphUISettings.isEnableSearch());
+            navigator.setVisible(graphUISettings.getSearchSettings().isEnableSearch());
             menuBar.revalidate();
         });
         searchMenu.add(searchEnabledItem);
 
         JMenuItem searchFindNewNodes = new JCheckBoxMenuItem("Search can create new nodes");
-        searchFindNewNodes.setSelected(graphUISettings.isSearchFindNewNodes());
+        searchFindNewNodes.setSelected(graphUISettings.getSearchSettings().isSearchFindNewNodes());
         searchFindNewNodes.addActionListener(e -> {
-            graphUISettings.setSearchFindNewNodes(searchFindNewNodes.isSelected());
+            graphUISettings.getSearchSettings().setSearchFindNewNodes(searchFindNewNodes.isSelected());
             JIPipe.getInstance().getSettingsRegistry().save();
             updateNavigation();
         });
         searchMenu.add(searchFindNewNodes);
 
         JMenuItem searchFindExistingNodes = new JCheckBoxMenuItem("Search can find existing nodes");
-        searchFindExistingNodes.setSelected(graphUISettings.isSearchFindExistingNodes());
+        searchFindExistingNodes.setSelected(graphUISettings.getSearchSettings().isSearchFindExistingNodes());
         searchFindExistingNodes.addActionListener(e -> {
-            graphUISettings.setSearchFindExistingNodes(searchFindExistingNodes.isSelected());
+            graphUISettings.getSearchSettings().setSearchFindExistingNodes(searchFindExistingNodes.isSelected());
             JIPipe.getInstance().getSettingsRegistry().save();
             updateNavigation();
         });
@@ -860,7 +860,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * Updates the navigation list
      */
     public void updateNavigation() {
-        boolean canCreateNewNodes = graphUISettings.isSearchFindNewNodes();
+        boolean canCreateNewNodes = graphUISettings.getSearchSettings().isSearchFindNewNodes();
         if(canCreateNewNodes) {
             if (getWorkbench() instanceof JIPipeProjectWorkbench) {
                 canCreateNewNodes = !((JIPipeProjectWorkbench) getWorkbench()).getProject().getMetadata().getPermissions().isPreventAddingDeletingNodes();
@@ -868,7 +868,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         }
         DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<>();
         model.removeAllElements();
-        if(graphUISettings.isSearchFindExistingNodes()) {
+        if(graphUISettings.getSearchSettings().isSearchFindExistingNodes()) {
             for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values().stream().sorted(Comparator.comparing(ui -> ui.getNode().getName())).collect(Collectors.toList())) {
                 model.addElement(ui);
             }
@@ -891,11 +891,10 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      */
     public static class NavigationRenderer extends JPanel implements ListCellRenderer<Object> {
 
-        private SolidColorIcon icon;
-        private JLabel iconLabel;
-        private JLabel actionLabel;
-        private JLabel algorithmLabel;
-        private JLabel menuLabel;
+        private final SolidColorIcon icon;
+        private final JLabel actionLabel;
+        private final JLabel algorithmLabel;
+        private final JLabel menuLabel;
 
         /**
          * Creates a new instance
@@ -908,7 +907,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
 
             icon = new SolidColorIcon(16, 40);
-            iconLabel = new JLabel(icon);
+            JLabel iconLabel = new JLabel(icon);
             Insets border = new Insets(2, 4, 2, 2);
             add(iconLabel, new GridBagConstraints() {
                 {

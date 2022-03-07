@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
@@ -58,6 +59,9 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
     private SearchTextField searchField;
     private FormPanel formPanel;
     private final Timer scrollToBeginTimer = new Timer(200, e -> scrollToBeginning());
+
+    private final JToggleButton findExistingNodesToggle = new JToggleButton(UIUtils.getIconFromResources("actions/find.png"));
+    private final JToggleButton createNodesToggle = new JToggleButton(UIUtils.getIconFromResources("actions/add.png"));
 
     /**
      * Creates a new UI
@@ -137,6 +141,8 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
+        toolBar.add(Box.createHorizontalStrut(8));
+
         JLabel algorithmNameLabel = new JLabel(algorithm.getName(), new SolidColorIcon(16, 16, UIUtils.getFillColorFor(algorithm.getInfo())), JLabel.LEFT);
         algorithmNameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getInfo()));
         toolBar.add(algorithmNameLabel);
@@ -150,6 +156,25 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
         searchField = new SearchTextField();
         searchField.addActionListener(e -> reloadAlgorithmList());
         toolBar.add(searchField);
+
+        findExistingNodesToggle.setSelected(GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().isSearchFindExistingNodes());
+        createNodesToggle.setSelected(GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().isSearchFindNewNodes());
+        UIUtils.makeFlat25x25(findExistingNodesToggle);
+        UIUtils.makeFlat25x25(createNodesToggle);
+        findExistingNodesToggle.setToolTipText("Find existing nodes");
+        createNodesToggle.setToolTipText("Create new nodes");
+        findExistingNodesToggle.addActionListener(e-> {
+            GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().setSearchFindExistingNodes(findExistingNodesToggle.isSelected());
+            JIPipe.getSettings().save();
+            reloadAlgorithmList();
+        });
+        createNodesToggle.addActionListener(e-> {
+            GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().setSearchFindNewNodes(createNodesToggle.isSelected());
+            JIPipe.getSettings().save();
+            reloadAlgorithmList();
+        });
+        toolBar.add(findExistingNodesToggle);
+        toolBar.add(createNodesToggle);
 
         add(toolBar, BorderLayout.NORTH);
     }
@@ -166,8 +191,12 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
                 continue;
             String asString;
             if (content instanceof JIPipeNodeInfo) {
+                if(!createNodesToggle.isSelected())
+                    continue;
                 asString = ((JIPipeNodeInfo) content).getName();
             } else if (content instanceof JIPipeGraphNode) {
+                if(!findExistingNodesToggle.isSelected())
+                    continue;
                 asString = ((JIPipeGraphNode) content).getName();
             } else {
                 asString = "" + content;

@@ -46,45 +46,23 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean accurateMiniMap = false;
     private boolean drawNodeShadows = true;
     private boolean drawImprovedEdges = true;
-    private boolean enableSearch = true;
-    private boolean searchFindNewNodes = true;
-    private boolean searchFindExistingNodes = true;
+    private final SearchSettings searchSettings = new SearchSettings();
+    private final AlgorithmFinderSettings algorithmFinderSettings = new AlgorithmFinderSettings();
 
     public static GraphEditorUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
     }
 
-    @JIPipeDocumentation(name = "Enable search", description = "If enabled, a search box is shown in the menu bar. Only applies to newly opened editors.")
-    @JIPipeParameter("enable-search")
-    public boolean isEnableSearch() {
-        return enableSearch;
+    @JIPipeDocumentation(name = "Algorithm finder settings", description = "Settings related to the algorithm finder")
+    @JIPipeParameter("algorithm-finder-settings")
+    public AlgorithmFinderSettings getAlgorithmFinderSettings() {
+        return algorithmFinderSettings;
     }
 
-    @JIPipeParameter("enable-search")
-    public void setEnableSearch(boolean enableSearch) {
-        this.enableSearch = enableSearch;
-    }
-
-    @JIPipeDocumentation(name = "Search: Create nodes", description = "If enabled, the search will allow to create new nodes")
-    @JIPipeParameter("search-find-new-nodes")
-    public boolean isSearchFindNewNodes() {
-        return searchFindNewNodes;
-    }
-
-    @JIPipeParameter("search-find-new-nodes")
-    public void setSearchFindNewNodes(boolean searchFindNewNodes) {
-        this.searchFindNewNodes = searchFindNewNodes;
-    }
-
-    @JIPipeDocumentation(name = "Search: Existing nodes", description = "If enabled, the search will allow to find existing nodes")
-    @JIPipeParameter("search-find-existing-nodes")
-    public boolean isSearchFindExistingNodes() {
-        return searchFindExistingNodes;
-    }
-
-    @JIPipeParameter("search-find-existing-nodes")
-    public void setSearchFindExistingNodes(boolean searchFindExistingNodes) {
-        this.searchFindExistingNodes = searchFindExistingNodes;
+    @JIPipeDocumentation(name = "Search settings", description = "Settings related to the search bar")
+    @JIPipeParameter("search-settings")
+    public SearchSettings getSearchSettings() {
+        return searchSettings;
     }
 
     @JIPipeDocumentation(name = "Improve edge drawing", description = "If enabled, edges are drawn with outlines to make them easier distinguishable. " +
@@ -278,5 +256,82 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("show-open-context-menu-button")
     public void setShowSettingsNodeButton(boolean showSettingsNodeButton) {
         this.showSettingsNodeButton = showSettingsNodeButton;
+    }
+
+    public static class AlgorithmFinderSettings implements JIPipeParameterCollection {
+        private final EventBus eventBus = new EventBus();
+        private boolean searchFindNewNodes = true;
+        private boolean searchFindExistingNodes = true;
+
+        @Override
+        public EventBus getEventBus() {
+            return eventBus;
+        }
+
+        @JIPipeDocumentation(name = "Search: Create nodes", description = "If enabled, the search will allow to create new nodes")
+        @JIPipeParameter("search-find-new-nodes")
+        public boolean isSearchFindNewNodes() {
+            return searchFindNewNodes;
+        }
+
+        @JIPipeParameter("search-find-new-nodes")
+        public void setSearchFindNewNodes(boolean searchFindNewNodes) {
+            this.searchFindNewNodes = searchFindNewNodes;
+        }
+
+        @JIPipeDocumentation(name = "Search: Existing nodes", description = "If enabled, the search will allow to find existing nodes")
+        @JIPipeParameter("search-find-existing-nodes")
+        public boolean isSearchFindExistingNodes() {
+            return searchFindExistingNodes;
+        }
+        @JIPipeParameter("search-find-existing-nodes")
+        public void setSearchFindExistingNodes(boolean searchFindExistingNodes) {
+            this.searchFindExistingNodes = searchFindExistingNodes;
+        }
+    }
+
+    public static class SearchSettings implements JIPipeParameterCollection {
+
+        private final EventBus eventBus = new EventBus();
+        private boolean enableSearch = true;
+        private boolean searchFindNewNodes = true;
+        private boolean searchFindExistingNodes = true;
+
+        @Override
+        public EventBus getEventBus() {
+            return eventBus;
+        }
+
+        @JIPipeDocumentation(name = "Enable search", description = "If enabled, a search box is shown in the menu bar. Only applies to newly opened editors.")
+        @JIPipeParameter("enable-search")
+        public boolean isEnableSearch() {
+            return enableSearch;
+        }
+
+        @JIPipeParameter("enable-search")
+        public void setEnableSearch(boolean enableSearch) {
+            this.enableSearch = enableSearch;
+        }
+
+        @JIPipeDocumentation(name = "Search: Create nodes", description = "If enabled, the search will allow to create new nodes")
+        @JIPipeParameter("search-find-new-nodes")
+        public boolean isSearchFindNewNodes() {
+            return searchFindNewNodes;
+        }
+
+        @JIPipeParameter("search-find-new-nodes")
+        public void setSearchFindNewNodes(boolean searchFindNewNodes) {
+            this.searchFindNewNodes = searchFindNewNodes;
+        }
+
+        @JIPipeDocumentation(name = "Search: Existing nodes", description = "If enabled, the search will allow to find existing nodes")
+        @JIPipeParameter("search-find-existing-nodes")
+        public boolean isSearchFindExistingNodes() {
+            return searchFindExistingNodes;
+        }
+        @JIPipeParameter("search-find-existing-nodes")
+        public void setSearchFindExistingNodes(boolean searchFindExistingNodes) {
+            this.searchFindExistingNodes = searchFindExistingNodes;
+        }
     }
 }
