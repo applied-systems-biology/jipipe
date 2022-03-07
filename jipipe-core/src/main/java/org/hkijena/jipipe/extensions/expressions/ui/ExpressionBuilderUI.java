@@ -142,10 +142,10 @@ public class ExpressionBuilderUI extends JPanel {
         setLayout(new BorderLayout());
 
         // Create documentation
-        tabPane.addSingletonTab("DOCUMENTATION",
+        tabPane.registerSingletonTab("DOCUMENTATION",
                 "Info",
                 UIUtils.getIconFromResources("actions/help-info.png"),
-                new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/expression-editor.md", Collections.emptyMap())),
+                () -> new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/expression-editor.md", Collections.emptyMap())),
                 DocumentTabPane.CloseMode.withoutCloseButton, false);
 
         JPanel contentPanel = new JPanel(new BorderLayout(4, 16));

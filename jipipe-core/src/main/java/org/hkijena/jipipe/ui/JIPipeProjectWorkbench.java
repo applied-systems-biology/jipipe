@@ -218,62 +218,62 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         setLayout(new BorderLayout());
 
         documentTabPane = new DocumentTabPane();
-        documentTabPane.addSingletonTab(TAB_INTRODUCTION,
+        documentTabPane.registerSingletonTab(TAB_INTRODUCTION,
                 "Getting started",
                 UIUtils.getIconFromResources("actions/help-info.png"),
-                new WelcomePanel(this),
+                () -> new WelcomePanel(this),
                 !GeneralUISettings.getInstance().isShowIntroduction() || !showIntroduction);
-        documentTabPane.addSingletonTab(TAB_PROJECT_OVERVIEW,
+        documentTabPane.registerSingletonTab(TAB_PROJECT_OVERVIEW,
                 "Project overview",
                 UIUtils.getIconFromResources("actions/help-info.png"),
-                new JIPipeProjectInfoUI(this),
+                () -> new JIPipeProjectInfoUI(this),
                 !GeneralUISettings.getInstance().isShowProjectInfo() || isNewProject);
-        documentTabPane.addSingletonTab(TAB_LICENSE,
+        documentTabPane.registerSingletonTab(TAB_LICENSE,
                 "License",
                 UIUtils.getIconFromResources("actions/license.png"),
-                new MarkdownReader(true, MarkdownDocument.fromPluginResource("documentation/license.md", new HashMap<>())),
+                () -> new MarkdownReader(true, MarkdownDocument.fromPluginResource("documentation/license.md", new HashMap<>())),
                 true);
-        documentTabPane.addSingletonTab(TAB_COMPARTMENT_EDITOR,
+        documentTabPane.registerSingletonTab(TAB_COMPARTMENT_EDITOR,
                 "Compartments",
                 UIUtils.getIconFromResources("actions/straight-connector.png"),
-                new JIPipeCompartmentsGraphEditorUI(this),
+                () -> new JIPipeCompartmentsGraphEditorUI(this),
                 false);
-        documentTabPane.addSingletonTab(TAB_PROJECT_SETTINGS,
+        documentTabPane.registerSingletonTab(TAB_PROJECT_SETTINGS,
                 "Project settings",
                 UIUtils.getIconFromResources("actions/wrench.png"),
-                new JIPipeProjectSettingsUI(this),
+                () -> new JIPipeProjectSettingsUI(this),
                 true);
-        documentTabPane.addSingletonTab(TAB_APPLICATION_SETTINGS,
+        documentTabPane.registerSingletonTab(TAB_APPLICATION_SETTINGS,
                 "Application settings",
                 UIUtils.getIconFromResources("apps/jipipe.png"),
-                new JIPipeApplicationSettingsUI(this),
+                () -> new JIPipeApplicationSettingsUI(this),
                 true);
-        documentTabPane.addSingletonTab(TAB_PLUGIN_MANAGER,
+        documentTabPane.registerSingletonTab(TAB_PLUGIN_MANAGER,
                 "Plugin manager",
                 UIUtils.getIconFromResources("actions/plugins.png"),
-                new JIPipePluginManagerUIPanel(this),
+                () -> new JIPipePluginManagerUIPanel(this),
                 true);
         validityCheckerPanel = new ReloadableValidityChecker(project);
-        documentTabPane.addSingletonTab(TAB_VALIDITY_CHECK,
+        documentTabPane.registerSingletonTab(TAB_VALIDITY_CHECK,
                 "Project validation",
                 UIUtils.getIconFromResources("actions/checkmark.png"),
-                validityCheckerPanel,
+                () -> validityCheckerPanel,
                 true);
         pluginValidityCheckerPanel = new JIPipePluginValidityCheckerPanel();
-        documentTabPane.addSingletonTab(TAB_PLUGIN_VALIDITY_CHECK,
+        documentTabPane.registerSingletonTab(TAB_PLUGIN_VALIDITY_CHECK,
                 "Plugin validation",
                 UIUtils.getIconFromResources("actions/plugins.png"),
-                pluginValidityCheckerPanel,
+                () -> pluginValidityCheckerPanel,
                 true);
-        documentTabPane.addSingletonTab(TAB_LOG,
+        documentTabPane.registerSingletonTab(TAB_LOG,
                 "Log viewer",
                 UIUtils.getIconFromResources("actions/show_log.png"),
-                new JIPipeLogViewer(this),
+                () -> new JIPipeLogViewer(this),
                 true);
-        documentTabPane.addSingletonTab(TAB_NOTIFICATIONS,
+        documentTabPane.registerSingletonTab(TAB_NOTIFICATIONS,
                 "Notifications",
                 UIUtils.getIconFromResources("emblems/warning.png"),
-                new WorkbenchNotificationInboxUI(this),
+                () -> new WorkbenchNotificationInboxUI(this),
                 true);
         add(documentTabPane, BorderLayout.CENTER);
 

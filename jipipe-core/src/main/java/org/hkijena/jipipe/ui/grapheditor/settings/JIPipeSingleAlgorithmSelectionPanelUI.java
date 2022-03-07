@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.batchassistant.DataBatchAssistantUI;
 import org.hkijena.jipipe.ui.cache.JIPipeAlgorithmCacheBrowserUI;
@@ -75,39 +74,39 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 algorithm,
                 TooltipUtils.getAlgorithmDocumentation(algorithm),
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SEARCH_BAR);
-        tabbedPane.addSingletonTab("PARAMETERS", "Parameters", UIUtils.getIconFromResources("actions/configure.png"),
-                parametersUI, DocumentTabPane.CloseMode.withoutCloseButton, false);
+        tabbedPane.registerSingletonTab("PARAMETERS", "Parameters", UIUtils.getIconFromResources("actions/configure.png"),
+                () -> parametersUI, DocumentTabPane.CloseMode.withoutCloseButton, false);
 
         JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, algorithm);
-        tabbedPane.addSingletonTab("SLOTS", "Slots", UIUtils.getIconFromResources("actions/plug.png"),
-                slotEditorUI,
+        tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIconFromResources("actions/plug.png"),
+                () -> slotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton, false);
 
         if (algorithm.getGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project) {
             cacheBrowserTabContent = new JPanel(new BorderLayout());
             if (algorithm instanceof JIPipeAlgorithm) {
-                tabbedPane.addSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIconFromResources("actions/database.png"),
-                        cacheBrowserTabContent,
+                tabbedPane.registerSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIconFromResources("actions/database.png"),
+                        () -> cacheBrowserTabContent,
                         DocumentTabPane.CloseMode.withoutCloseButton, false);
             }
             if (algorithm instanceof JIPipeDataBatchAlgorithm) {
                 batchAssistantTabContent = new JPanel(new BorderLayout());
-                tabbedPane.addSingletonTab("DATA_BATCHES", "Data batches", UIUtils.getIconFromResources("actions/package.png"),
-                        batchAssistantTabContent,
+                tabbedPane.registerSingletonTab("DATA_BATCHES", "Data batches", UIUtils.getIconFromResources("actions/package.png"),
+                        () -> batchAssistantTabContent,
                         DocumentTabPane.CloseMode.withoutCloseButton, false);
             }
 
             testBenchTabContent = new JPanel(new BorderLayout());
             if (algorithm.getInfo().isRunnable()) {
-                tabbedPane.addSingletonTab("QUICK_RUN", "Quick run", UIUtils.getIconFromResources("actions/media-play.png"),
-                        testBenchTabContent,
+                tabbedPane.registerSingletonTab("QUICK_RUN", "Quick run", UIUtils.getIconFromResources("actions/media-play.png"),
+                        () -> testBenchTabContent,
                         DocumentTabPane.CloseMode.withoutCloseButton, false);
             }
 
             if (JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
                 currentRunTabContent = new JPanel(new BorderLayout());
-                tabbedPane.addSingletonTab("CURRENT_RUN", "Current process", UIUtils.getIconFromResources("actions/show_log.png"),
-                        currentRunTabContent, DocumentTabPane.CloseMode.withoutCloseButton, false);
+                tabbedPane.registerSingletonTab("CURRENT_RUN", "Current process", UIUtils.getIconFromResources("actions/show_log.png"),
+                        () -> currentRunTabContent, DocumentTabPane.CloseMode.withoutCloseButton, false);
             }
         }
 
@@ -123,21 +122,12 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
     private void restoreTabState() {
         if (SAVED_TAB == null)
             return;
-        for (Map.Entry<String, DocumentTabPane.DocumentTab> entry : tabbedPane.getSingletonTabs().entrySet()) {
-            if (Objects.equals(entry.getKey(), SAVED_TAB)) {
-                tabbedPane.switchToContent(entry.getValue().getContent());
-                return;
-            }
-        }
+        tabbedPane.selectSingletonTab(SAVED_TAB);
+        activateLazyContent(tabbedPane);
     }
 
     private void saveTabState(DocumentTabPane tabbedPane) {
-        for (Map.Entry<String, DocumentTabPane.DocumentTab> entry : tabbedPane.getSingletonTabs().entrySet()) {
-            if (entry.getValue().getContent() == tabbedPane.getCurrentContent()) {
-                SAVED_TAB = entry.getKey();
-                return;
-            }
-        }
+        SAVED_TAB = tabbedPane.getCurrentlySelectedSingletonTabId();
     }
 
     private void activateLazyContent(DocumentTabPane tabbedPane) {

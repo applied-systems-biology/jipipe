@@ -650,10 +650,11 @@ public class ImageViewerPanel extends JPanel {
             if (formPanel == null) {
                 formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
                 formPanels.put(plugin.getCategory(), formPanel);
-                tabPane.addSingletonTab(plugin.getCategory(),
+                FormPanel finalFormPanel = formPanel;
+                tabPane.registerSingletonTab(plugin.getCategory(),
                         plugin.getCategory(),
                         plugin.getCategoryIcon(),
-                        formPanel,
+                        () -> finalFormPanel,
                         DocumentTabPane.CloseMode.withoutCloseButton,
                         false);
             }

@@ -84,26 +84,26 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
         setLayout(new BorderLayout());
 
         documentTabPane = new DocumentTabPane();
-        documentTabPane.addSingletonTab("INTRODUCTION",
+        documentTabPane.registerSingletonTab("INTRODUCTION",
                 "Introduction",
                 UIUtils.getIconFromResources("actions/help-info.png"),
-                new JIPipeJsonExtensionInfoUI(this),
+                () -> new JIPipeJsonExtensionInfoUI(this),
                 !showIntroduction);
-        documentTabPane.addSingletonTab("PROJECT_SETTINGS",
+        documentTabPane.registerSingletonTab("PROJECT_SETTINGS",
                 "Extension settings",
                 UIUtils.getIconFromResources("actions/wrench.png"),
-                new JIPipeJsonExtensionSettingsUI(this),
+                () -> new JIPipeJsonExtensionSettingsUI(this),
                 false);
-        documentTabPane.addSingletonTab("PROJECT_CONTENTS",
+        documentTabPane.registerSingletonTab("PROJECT_CONTENTS",
                 "Extension contents",
                 UIUtils.getIconFromResources("actions/plugins.png"),
-                new JIPipeJsonExtensionContentListUI(this),
+                () -> new JIPipeJsonExtensionContentListUI(this),
                 false);
         validityCheckerPanel = new ReloadableValidityChecker(new JIPipeJsonExtensionProjectValidation(project));
-        documentTabPane.addSingletonTab("VALIDITY_CHECK",
+        documentTabPane.registerSingletonTab("VALIDITY_CHECK",
                 "Project validation",
                 UIUtils.getIconFromResources("actions/checkmark.png"),
-                validityCheckerPanel,
+                () -> validityCheckerPanel,
                 true);
         initializeMenu();
         initializeStatusBar();
