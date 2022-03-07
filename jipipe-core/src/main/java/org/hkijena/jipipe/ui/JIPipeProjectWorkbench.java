@@ -222,59 +222,59 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                 "Getting started",
                 UIUtils.getIconFromResources("actions/help-info.png"),
                 () -> new WelcomePanel(this),
-                !GeneralUISettings.getInstance().isShowIntroduction() || !showIntroduction);
+                (GeneralUISettings.getInstance().isShowIntroduction() &&showIntroduction) ? DocumentTabPane.SingletonTabMode.Present : DocumentTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_PROJECT_OVERVIEW,
                 "Project overview",
                 UIUtils.getIconFromResources("actions/help-info.png"),
                 () -> new JIPipeProjectInfoUI(this),
-                !GeneralUISettings.getInstance().isShowProjectInfo() || isNewProject);
+                (GeneralUISettings.getInstance().isShowProjectInfo() && !isNewProject) ? DocumentTabPane.SingletonTabMode.Present : DocumentTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_LICENSE,
                 "License",
                 UIUtils.getIconFromResources("actions/license.png"),
                 () -> new MarkdownReader(true, MarkdownDocument.fromPluginResource("documentation/license.md", new HashMap<>())),
-                true);
+                DocumentTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_COMPARTMENT_EDITOR,
                 "Compartments",
                 UIUtils.getIconFromResources("actions/straight-connector.png"),
                 () -> new JIPipeCompartmentsGraphEditorUI(this),
-                false);
+                DocumentTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_PROJECT_SETTINGS,
                 "Project settings",
                 UIUtils.getIconFromResources("actions/wrench.png"),
                 () -> new JIPipeProjectSettingsUI(this),
-                true);
+                DocumentTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_APPLICATION_SETTINGS,
                 "Application settings",
                 UIUtils.getIconFromResources("apps/jipipe.png"),
                 () -> new JIPipeApplicationSettingsUI(this),
-                true);
+                DocumentTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_PLUGIN_MANAGER,
                 "Plugin manager",
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 () -> new JIPipePluginManagerUIPanel(this),
-                true);
+                DocumentTabPane.SingletonTabMode.Hidden);
         validityCheckerPanel = new ReloadableValidityChecker(project);
         documentTabPane.registerSingletonTab(TAB_VALIDITY_CHECK,
                 "Project validation",
                 UIUtils.getIconFromResources("actions/checkmark.png"),
                 () -> validityCheckerPanel,
-                true);
+                DocumentTabPane.SingletonTabMode.Hidden);
         pluginValidityCheckerPanel = new JIPipePluginValidityCheckerPanel();
         documentTabPane.registerSingletonTab(TAB_PLUGIN_VALIDITY_CHECK,
                 "Plugin validation",
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 () -> pluginValidityCheckerPanel,
-                true);
+                DocumentTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_LOG,
                 "Log viewer",
                 UIUtils.getIconFromResources("actions/show_log.png"),
                 () -> new JIPipeLogViewer(this),
-                true);
+                DocumentTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_NOTIFICATIONS,
                 "Notifications",
                 UIUtils.getIconFromResources("emblems/warning.png"),
                 () -> new WorkbenchNotificationInboxUI(this),
-                true);
+                DocumentTabPane.SingletonTabMode.Hidden);
         add(documentTabPane, BorderLayout.CENTER);
 
         initializeMenu();

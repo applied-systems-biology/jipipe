@@ -88,23 +88,23 @@ public class JIPipeJsonExtensionWorkbench extends JPanel implements JIPipeWorkbe
                 "Introduction",
                 UIUtils.getIconFromResources("actions/help-info.png"),
                 () -> new JIPipeJsonExtensionInfoUI(this),
-                !showIntroduction);
+                showIntroduction ? DocumentTabPane.SingletonTabMode.Present : DocumentTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab("PROJECT_SETTINGS",
                 "Extension settings",
                 UIUtils.getIconFromResources("actions/wrench.png"),
                 () -> new JIPipeJsonExtensionSettingsUI(this),
-                false);
+                DocumentTabPane.SingletonTabMode.Present);
         documentTabPane.registerSingletonTab("PROJECT_CONTENTS",
                 "Extension contents",
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 () -> new JIPipeJsonExtensionContentListUI(this),
-                false);
+                DocumentTabPane.SingletonTabMode.Present);
         validityCheckerPanel = new ReloadableValidityChecker(new JIPipeJsonExtensionProjectValidation(project));
         documentTabPane.registerSingletonTab("VALIDITY_CHECK",
                 "Project validation",
                 UIUtils.getIconFromResources("actions/checkmark.png"),
                 () -> validityCheckerPanel,
-                true);
+                DocumentTabPane.SingletonTabMode.Present);
         initializeMenu();
         initializeStatusBar();
         sendStatusBarText("Welcome to the JIPipe extension builder");

@@ -75,38 +75,38 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 TooltipUtils.getAlgorithmDocumentation(algorithm),
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SEARCH_BAR);
         tabbedPane.registerSingletonTab("PARAMETERS", "Parameters", UIUtils.getIconFromResources("actions/configure.png"),
-                () -> parametersUI, DocumentTabPane.CloseMode.withoutCloseButton, false);
+                () -> parametersUI, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
         JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, algorithm);
         tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIconFromResources("actions/plug.png"),
                 () -> slotEditorUI,
-                DocumentTabPane.CloseMode.withoutCloseButton, false);
+                DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
         if (algorithm.getGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project) {
             cacheBrowserTabContent = new JPanel(new BorderLayout());
             if (algorithm instanceof JIPipeAlgorithm) {
                 tabbedPane.registerSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIconFromResources("actions/database.png"),
                         () -> cacheBrowserTabContent,
-                        DocumentTabPane.CloseMode.withoutCloseButton, false);
+                        DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             }
             if (algorithm instanceof JIPipeDataBatchAlgorithm) {
                 batchAssistantTabContent = new JPanel(new BorderLayout());
                 tabbedPane.registerSingletonTab("DATA_BATCHES", "Data batches", UIUtils.getIconFromResources("actions/package.png"),
                         () -> batchAssistantTabContent,
-                        DocumentTabPane.CloseMode.withoutCloseButton, false);
+                        DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             }
 
             testBenchTabContent = new JPanel(new BorderLayout());
             if (algorithm.getInfo().isRunnable()) {
                 tabbedPane.registerSingletonTab("QUICK_RUN", "Quick run", UIUtils.getIconFromResources("actions/media-play.png"),
                         () -> testBenchTabContent,
-                        DocumentTabPane.CloseMode.withoutCloseButton, false);
+                        DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             }
 
             if (JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
                 currentRunTabContent = new JPanel(new BorderLayout());
                 tabbedPane.registerSingletonTab("CURRENT_RUN", "Current process", UIUtils.getIconFromResources("actions/show_log.png"),
-                        () -> currentRunTabContent, DocumentTabPane.CloseMode.withoutCloseButton, false);
+                        () -> currentRunTabContent, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             }
         }
 

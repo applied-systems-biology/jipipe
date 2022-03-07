@@ -31,6 +31,7 @@ public class JIPipeCachedDataViewerAnnotationInfoPanel extends JIPipeWorkbenchPa
         setLayout(new BorderLayout());
         JPanel tableContainer = new JPanel(new BorderLayout());
         tableContainer.setOpaque(true);
+        tableContainer.setBackground(UIManager.getColor("Table.background"));
         table = new JXTable();
         tableContainer.add(new JScrollPane(table), BorderLayout.CENTER);
         tableContainer.add(table.getTableHeader(), BorderLayout.NORTH);

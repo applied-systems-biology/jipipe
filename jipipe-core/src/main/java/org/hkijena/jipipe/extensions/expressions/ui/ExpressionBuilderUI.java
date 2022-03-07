@@ -146,7 +146,7 @@ public class ExpressionBuilderUI extends JPanel {
                 "Info",
                 UIUtils.getIconFromResources("actions/help-info.png"),
                 () -> new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/expression-editor.md", Collections.emptyMap())),
-                DocumentTabPane.CloseMode.withoutCloseButton, false);
+                DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Selected);
 
         JPanel contentPanel = new JPanel(new BorderLayout(4, 16));
         TokenMakerFactory tokenMakerFactory = new TokenMakerFactory() {

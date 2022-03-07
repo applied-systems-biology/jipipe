@@ -656,7 +656,7 @@ public class ImageViewerPanel extends JPanel {
                         plugin.getCategoryIcon(),
                         () -> finalFormPanel,
                         DocumentTabPane.CloseMode.withoutCloseButton,
-                        false);
+                        DocumentTabPane.SingletonTabMode.Present);
             }
             plugin.createPalettePanel(formPanel);
         }

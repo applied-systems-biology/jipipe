@@ -471,15 +471,14 @@ public class DocumentTabPane extends JPanel {
 
     /**
      * Adds a tab that can be silently closed and brought up again
-     *
-     * @param id        Unique tab identifier
+     *  @param id        Unique tab identifier
      * @param title     Tab title
      * @param icon      Tab icon
      * @param componentSupplier Tab content
-     * @param hidden    If the tab is hidden by default
+     * @param singletonTabMode    If the tab is hidden by default
      */
-    public SingletonTab registerSingletonTab(String id, String title, Icon icon, Supplier<Component> componentSupplier, boolean hidden) {
-        return registerSingletonTab(id, title, icon, componentSupplier, CloseMode.withSilentCloseButton, hidden);
+    public SingletonTab registerSingletonTab(String id, String title, Icon icon, Supplier<Component> componentSupplier, SingletonTabMode singletonTabMode) {
+        return registerSingletonTab(id, title, icon, componentSupplier, CloseMode.withSilentCloseButton, singletonTabMode);
     }
 
     /**
@@ -498,21 +497,25 @@ public class DocumentTabPane extends JPanel {
 
     /**
      * Adds a tab that can be silently closed and brought up again
-     *
-     * @param id        Unique tab identifier
+     *  @param id        Unique tab identifier
      * @param title     Tab title
      * @param icon      Tab icon
      * @param componentSupplier Tab content
-     * @param hidden    If the tab is hidden by default
+     * @param singletonTabMode  How the singleton tab is displayed
      */
-    public SingletonTab registerSingletonTab(String id, String title, Icon icon,  Supplier<Component> componentSupplier, CloseMode closeMode, boolean hidden) {
+    public SingletonTab registerSingletonTab(String id, String title, Icon icon, Supplier<Component> componentSupplier, CloseMode closeMode, SingletonTabMode singletonTabMode) {
         if(singletonTabs.containsKey(id))
             throw new IllegalArgumentException("Already contains singleton tab with ID " + id);
         SingletonTab singletonTab = new SingletonTab(icon, closeMode, componentSupplier, title);
         singletonTabs.put(id, singletonTab);
-        if(!hidden) {
-            selectSingletonTab(id);
-        }
+          switch (singletonTabMode) {
+              case Present:
+                  getOrCreateSingletonTab(id);
+                  break;
+              case Selected:
+                  selectSingletonTab(id);
+                  break;
+          }
         return singletonTab;
     }
 
@@ -523,18 +526,25 @@ public class DocumentTabPane extends JPanel {
      * @return the tab. null if there is no such singleton tab
      */
     public DocumentTab selectSingletonTab(String id) {
+        DocumentTab tab = getOrCreateSingletonTab(id);
+        if(tab != null) {
+            switchToTab(tab);
+        }
+        return tab;
+    }
+
+    private DocumentTab getOrCreateSingletonTab(String id) {
         if(singletonTabInstances.containsKey(id)) {
-            switchToTab(singletonTabInstances.get(id));
             return singletonTabInstances.get(id);
         }
         else {
             SingletonTab tab = singletonTabs.getOrDefault(id, null);
-            if(tab == null)
+            if (tab == null) {
                 return null;
+            }
             // Create a new instance
             Component component = tab.contentSupplier.get();
             DocumentTab documentTab = addTab(tab.title, tab.icon, component, tab.closeMode, false);
-            switchToTab(documentTab);
             singletonTabInstances.put(id, documentTab);
             return documentTab;
         }
@@ -627,6 +637,12 @@ public class DocumentTabPane extends JPanel {
          * Close button is shown, but disabled
          */
         withDisabledCloseButton
+    }
+
+    public enum SingletonTabMode {
+        Hidden,
+        Present,
+        Selected
     }
 
     /**
