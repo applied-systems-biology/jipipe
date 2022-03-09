@@ -23,6 +23,8 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -88,12 +90,23 @@ public class ArchiveUtils {
             try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn)) {
                 TarArchiveEntry entry;
 
+                Map<Path, Path> createdLinks = new HashMap<>();
+
                 while ((entry = (TarArchiveEntry) tarIn.getNextEntry()) != null) {
                     String entryName = StringUtils.nullTerminate(entry.getName());
 
                     Path entryOutputPath = targetDir.resolve(Paths.get(entryName));
                     progressInfo.log("Entry " + entryName + " -> " + entryOutputPath);
-                    if (entry.isDirectory()) {
+
+                    if(entry.isSymbolicLink() ||entry.isLink()) {
+                        Path linkName = Paths.get(StringUtils.nullTerminate(entry.getLinkName()));
+                        if(!linkName.isAbsolute()) {
+                            linkName = entryOutputPath.getParent().resolve(linkName);
+                        }
+                        // Needs to be deferred
+                        createdLinks.put(linkName, entryOutputPath);
+                    }
+                    else if (entry.isDirectory()) {
                         Files.createDirectories(entryOutputPath);
                     } else if(entry.isFile()) {
 
@@ -110,15 +123,19 @@ public class ArchiveUtils {
                             }
                         }
                     }
-                    else if(entry.isSymbolicLink() ||entry.isLink()) {
-                        Path linkName = targetDir.resolve(StringUtils.nullTerminate(entry.getLinkName()));
-                        progressInfo.log("Linking " + entryOutputPath + " -> " + linkName);
-                        Files.createSymbolicLink(entryOutputPath, linkName);
-                    }
                     else {
                         progressInfo.log("Unsupported entry: " + entryName);
                     }
                 }
+
+                for (Map.Entry<Path, Path> pathEntry : createdLinks.entrySet()) {
+                    Path linkName = pathEntry.getKey();
+                    Path entryOutputPath = pathEntry.getValue();
+                    progressInfo.log("Linking " + entryOutputPath + " -> " + linkName);
+                    Files.createDirectories(entryOutputPath.getParent());
+                    Files.createSymbolicLink(entryOutputPath, linkName);
+                }
+
             }
         }
     }
@@ -126,8 +143,9 @@ public class ArchiveUtils {
     public static void main(String[] args) throws IOException {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         progressInfo.setLogToStdOut(true);
-        Path tarFile = Paths.get("E:\\Projects\\JIPipe\\tmp\\cpython-3.8.12+20220227-x86_64-pc-windows-msvc-shared-install_only.tar.gz");
-        Path outputDir = Paths.get("E:\\Projects\\JIPipe\\tmp\\python");
+        Path tarFile = Paths.get("/home/rgerst/Downloads/JIPipepython2110683282828642183.tar.gz");
+        Path outputDir = Paths.get("/home/rgerst/tmp/python/");
         decompressTarGZ(tarFile, outputDir, progressInfo);
+        Files.list(outputDir.resolve("python").resolve("bin")).forEach(PathUtils::makeUnixExecutable);
     }
 }

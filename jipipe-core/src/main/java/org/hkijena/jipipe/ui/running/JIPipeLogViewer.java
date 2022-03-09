@@ -31,19 +31,17 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
-    private final RuntimeSettings runtimeSettings = RuntimeSettings.getInstance();
-    private final List<LogEntry> logEntries = new ArrayList<>();
-    private final JList<LogEntry> logEntryJList = new JList<>();
+    private final JList<JIPipeLogs.LogEntry> logEntryJList = new JList<>();
     private final JTextPane logReader = new JTextPane();
+    private JIPipeLogs.LogEntry currentlyDisplayedLog;
 
     public JIPipeLogViewer(JIPipeProjectWorkbench workbenchUI) {
         super(workbenchUI);
         initialize();
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        JIPipeLogs.getInstance().getEventBus().register(this);
+        updateEntryList();
     }
 
     private void initialize() {
@@ -55,7 +53,7 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
         JPanel leftPanel = new JPanel(new BorderLayout());
         leftPanel.add(logEntryJList, BorderLayout.CENTER);
         logEntryJList.addListSelectionListener(e -> {
-            LogEntry selectedValue = logEntryJList.getSelectedValue();
+            JIPipeLogs.LogEntry selectedValue = logEntryJList.getSelectedValue();
             if (selectedValue != null) {
                 showLog(selectedValue);
             }
@@ -66,7 +64,7 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
         leftPanel.add(leftToolbar, BorderLayout.NORTH);
 
         JButton clearButton = new JButton("Clear", UIUtils.getIconFromResources("actions/edit-clear.png"));
-        clearButton.addActionListener(e -> clearLog());
+        clearButton.addActionListener(e -> JIPipeLogs.getInstance().clear());
         leftToolbar.add(clearButton);
 
         // Viewer panel
@@ -92,6 +90,22 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
         add(splitPane, BorderLayout.CENTER);
     }
 
+    @Subscribe
+    public void onLogCleared(JIPipeLogs.LogClearedEvent event) {
+        logReader.setText("");
+        currentlyDisplayedLog = null;
+        updateEntryList();
+    }
+
+    @Subscribe
+    public void onLogEntryAdded(JIPipeLogs.LogEntryAddedEvent event) {
+        updateEntryList();
+        if(currentlyDisplayedLog != null) {
+            logEntryJList.setSelectedValue(currentlyDisplayedLog, true);
+            showLog(currentlyDisplayedLog);
+        }
+    }
+
     private void openLogInExternalTool() {
         Path tempFile = RuntimeSettings.generateTempFile("log", ".txt");
         try {
@@ -113,82 +127,26 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
         }
     }
 
-    private void clearLog() {
-        logReader.setText("");
-        logEntries.clear();
-        updateEntryList();
-    }
-
     public void showLog(String log) {
+        currentlyDisplayedLog = null;
         logEntryJList.clearSelection();
         logReader.setText(log);
     }
 
     private void updateEntryList() {
-        DefaultListModel<LogEntry> model = new DefaultListModel<>();
-        for (LogEntry logEntry : logEntries) {
+        DefaultListModel<JIPipeLogs.LogEntry> model = new DefaultListModel<>();
+        for (JIPipeLogs.LogEntry logEntry : JIPipeLogs.getInstance().getLogEntries()) {
             model.add(0, logEntry);
         }
         logEntryJList.setModel(model);
     }
 
-    private void showLog(LogEntry entry) {
+    private void showLog(JIPipeLogs.LogEntry entry) {
+        currentlyDisplayedLog = entry;
         logReader.setText(entry.getLog());
     }
 
-    private void pushToLog(JIPipeRunnable run, boolean success) {
-        if (run instanceof JIPipeProjectRun && ((JIPipeProjectRun) run).getProject() != getProject())
-            return;
-        StringBuilder log = run.getProgressInfo().getLog();
-        if (log != null && log.length() > 0) {
-            if (logEntries.size() + 1 > runtimeSettings.getLogLimit())
-                logEntries.remove(0);
-            logEntries.add(new LogEntry(run.getTaskLabel(), LocalDateTime.now(), log.toString(), success));
-            updateEntryList();
-        }
-    }
-
-    @Subscribe
-    public void onRunFinished(RunUIWorkerFinishedEvent event) {
-        pushToLog(event.getRun(), true);
-    }
-
-    @Subscribe
-    public void onRunCancelled(RunUIWorkerInterruptedEvent event) {
-        pushToLog(event.getRun(), false);
-    }
-
-    public static class LogEntry {
-        private final String name;
-        private final LocalDateTime dateTime;
-        private final String log;
-        private final boolean success;
-
-        public LogEntry(String name, LocalDateTime dateTime, String log, boolean success) {
-            this.name = name;
-            this.dateTime = dateTime;
-            this.log = log;
-            this.success = success;
-        }
-
-        public LocalDateTime getDateTime() {
-            return dateTime;
-        }
-
-        public String getLog() {
-            return log;
-        }
-
-        public boolean isSuccess() {
-            return success;
-        }
-
-        public String getName() {
-            return name;
-        }
-    }
-
-    public static class LogEntryRenderer extends JPanel implements ListCellRenderer<LogEntry> {
+    public static class LogEntryRenderer extends JPanel implements ListCellRenderer<JIPipeLogs.LogEntry> {
 
         private JLabel nameLabel;
         private JLabel timeLabel;
@@ -248,10 +206,10 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
         }
 
         @Override
-        public Component getListCellRendererComponent(JList<? extends LogEntry> list, LogEntry value, int index, boolean isSelected, boolean cellHasFocus) {
+        public Component getListCellRendererComponent(JList<? extends JIPipeLogs.LogEntry> list, JIPipeLogs.LogEntry value, int index, boolean isSelected, boolean cellHasFocus) {
             nameLabel.setText(value.getName());
-            timeLabel.setText(StringUtils.formatDateTime(value.dateTime));
-            successLabel.setText(value.success ? "Successful" : "<html><span style=\"color: red;\">Failed</span></html>");
+            timeLabel.setText(StringUtils.formatDateTime(value.getDateTime()));
+            successLabel.setText(value.isSuccess() ? "Successful" : "<html><span style=\"color: red;\">Failed</span></html>");
             if (isSelected) {
                 setBackground(UIManager.getColor("List.selectionBackground"));
             } else {

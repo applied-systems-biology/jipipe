@@ -201,6 +201,7 @@ public class BasicPythonEnvPythonInstaller extends ExternalEnvironmentInstaller 
         progressInfo.log("The Python distribution was obtained from: https://github.com/indygreg/python-build-standalone/releases/");
         try {
             ArchiveUtils.decompressTarGZ(archivePath, configuration.installationPath.toAbsolutePath(), progressInfo.resolve("Extract Python"));
+            Files.list(configuration.installationPath.toAbsolutePath().resolve("python").resolve("bin")).forEach(PathUtils::makeUnixExecutable);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

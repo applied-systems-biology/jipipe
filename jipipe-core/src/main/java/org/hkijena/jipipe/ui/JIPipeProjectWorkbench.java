@@ -217,6 +217,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     private void initialize(boolean showIntroduction, boolean isNewProject) {
         setLayout(new BorderLayout());
 
+        // Initialize JIPipe logger
+        JIPipeLogs.getInstance();
+
         documentTabPane = new DocumentTabPane();
         documentTabPane.registerSingletonTab(TAB_INTRODUCTION,
                 "Getting started",

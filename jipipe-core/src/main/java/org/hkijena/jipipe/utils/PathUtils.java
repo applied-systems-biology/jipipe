@@ -26,12 +26,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.PosixFilePermission;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -40,6 +42,25 @@ import java.util.stream.Collectors;
 public class PathUtils {
     private PathUtils() {
 
+    }
+
+    /**
+     * Makes a file/directory executable
+     * Does nothing if the OS is Windows
+     * @param path the path
+     */
+    public static void makeUnixExecutable(Path path) {
+        if(SystemUtils.IS_OS_WINDOWS)
+            return;
+        try {
+            Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(path);
+            permissions.add(PosixFilePermission.OWNER_EXECUTE);
+            permissions.add(PosixFilePermission.GROUP_EXECUTE);
+            permissions.add(PosixFilePermission.OTHERS_EXECUTE);
+            Files.setPosixFilePermissions(path, permissions);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static Path resolveAndMakeSubDirectory(Path directory, String name) {
