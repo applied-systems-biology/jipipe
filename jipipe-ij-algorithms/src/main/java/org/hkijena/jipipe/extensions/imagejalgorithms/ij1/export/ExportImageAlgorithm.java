@@ -122,7 +122,7 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
             break;
             case AVI: {
                 outputFile = outputPath.resolve(baseName + ".avi");
-                ImageJUtils.writeImageToMovie(image, movieAnimatedDimension, movieFrameTime, outputFile, aviCompression, jpegQuality, progressInfo);
+                ImageJUtils.writeImageToMovie(image, movieAnimatedDimension, movieFrameTime, outputFile, aviCompression, jpegQuality, progressInfo.detachProgress());
             }
             break;
             default:
