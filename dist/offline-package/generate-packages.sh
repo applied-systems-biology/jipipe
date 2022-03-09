@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JIPIPE_VERSION="1.66.0"
+JIPIPE_VERSION="1.66.1"
 PROJECT_DIR=$PWD/../../
 
 mkdir zip
