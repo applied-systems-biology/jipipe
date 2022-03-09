@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
+import java.nio.file.Paths;
 import java.util.*;
 
 /**
@@ -149,9 +150,11 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                 } else {
                     // Encountered a loop
                     if (!executedLoops.contains(loop)) {
-                        subProgress = progressInfo.resolveAndLog("Loop #" + (loopGroups.indexOf(loop) + 1));
+                        int loopNumber = loopGroups.indexOf(loop) + 1;
+                        subProgress = progressInfo.resolveAndLog("Loop #" + loopNumber);
                         JIPipeGraph loopGraph = algorithmGraph.extract(loop.getNodes(), true);
                         NodeGroup group = new NodeGroup(loopGraph, false, false, true);
+                        group.setInternalStoragePath(Paths.get("loop" + loopNumber));
                         BiMap<JIPipeDataSlot, JIPipeDataSlot> loopGraphSlotMap = group.autoCreateSlots();
                         group.setIterationMode(loop.getLoopStartNode().getIterationMode());
                         group.setThreadPool(threadPool);
@@ -167,7 +170,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                         }
 
                         // Execute the loop
-                        group.run(subProgress);
+                        group.run(subProgress.detachProgress());
 
                         // Pass output data
                         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> entry : loopGraphSlotMap.entrySet()) {

@@ -321,9 +321,11 @@ public class JIPipeProjectRun implements JIPipeRunnable {
                 } else {
                     // Encountered a loop
                     if (!executedLoops.contains(loop)) {
-                        subProgress = progressInfo.resolveAndLog("Loop #" + (loopGroups.indexOf(loop) + 1));
+                        int loopNumber = loopGroups.indexOf(loop) + 1;
+                        subProgress = progressInfo.resolveAndLog("Loop #" + loopNumber);
                         JIPipeGraph loopGraph = copiedGraph.extract(loop.getNodes(), true);
                         NodeGroup group = new NodeGroup(loopGraph, false, false, true);
+                        group.setInternalStoragePath(Paths.get("loop" + loopNumber));
                         BiMap<JIPipeDataSlot, JIPipeDataSlot> loopGraphSlotMap = group.autoCreateSlots();
                         group.setIterationMode(loop.getLoopStartNode().getIterationMode());
                         group.setThreadPool(threadPool);
@@ -339,7 +341,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
                         }
 
                         // Execute the loop
-                        group.run(subProgress);
+                        group.run(subProgress.detachProgress());
 
                         // Pass output data
                         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> entry : loopGraphSlotMap.entrySet()) {
