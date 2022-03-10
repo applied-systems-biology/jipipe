@@ -51,7 +51,7 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
 
         // List panel
         JPanel leftPanel = new JPanel(new BorderLayout());
-        leftPanel.add(logEntryJList, BorderLayout.CENTER);
+        leftPanel.add(new JScrollPane(logEntryJList), BorderLayout.CENTER);
         logEntryJList.addListSelectionListener(e -> {
             JIPipeLogs.LogEntry selectedValue = logEntryJList.getSelectedValue();
             if (selectedValue != null) {
