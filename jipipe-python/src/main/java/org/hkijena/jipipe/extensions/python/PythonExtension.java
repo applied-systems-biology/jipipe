@@ -52,11 +52,11 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
-    private static void installConda(JIPipeWorkbench workbench) {
+    private static void installPython(JIPipeWorkbench workbench) {
         PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        MinicondaEnvPythonInstaller installer = new MinicondaEnvPythonInstaller(workbench, parameterAccess);
+        PythonEnvPythonInstaller installer = new PythonEnvPythonInstaller(workbench, parameterAccess);
         JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
@@ -147,14 +147,10 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
             notification.setHeading("Python is not configured");
             notification.setDescription("To make use of Python within JIPipe, you need to either provide JIPipe with an " +
                     "existing Python installation or let JIPipe install a Python distribution for you.");
-            notification.getActions().add(new JIPipeNotificationAction("Install Miniconda",
-                    "Installs Miniconda 3",
+            notification.getActions().add(new JIPipeNotificationAction("Install Python",
+                    "Installs a portable Python distribution",
                     UIUtils.getIconFromResources("actions/browser-download.png"),
-                    PythonExtension::installConda));
-            notification.getActions().add(new JIPipeNotificationAction("Select Conda",
-                    "Selects an existing Conda installation",
-                    UIUtils.getIconFromResources("actions/folder-open.png"),
-                    PythonExtension::selectConda));
+                    PythonExtension::installPython));
             notification.getActions().add(new JIPipeNotificationAction("Configure Python",
                     "Opens the applications settings page",
                     UIUtils.getIconFromResources("actions/configure.png"),
