@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>ij-updater-cli</artifactId>
-    <version>1.66.2</version>
+    <version>1.67.0</version>
 
     <name>ij-updater-cli</name>
     <description>ImageJ Updater CLI</description>

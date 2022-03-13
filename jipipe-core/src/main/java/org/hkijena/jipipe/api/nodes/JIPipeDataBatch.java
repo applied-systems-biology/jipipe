@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 
 import java.util.*;
 
@@ -382,6 +383,36 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
         for (String name : localDataAnnotations.keySet()) {
             slot.setVirtualDataAnnotation(slot.getRowCount() - 1, name, dataAnnotationMergeStrategy.merge(localDataAnnotations.get(name)).iterator().next().getVirtualData());
         }
+    }
+
+    /**
+     * Writes output data into the provided slot
+     * Please note that annotations that are added to all annotations should be set up till this point
+     *
+     * @param slot                  Slot instance
+     * @param virtualData                  Added data
+     * @param additionalAnnotations Annotations that are added additionally to the merged ones
+     * @param mergeStrategy         how annotations should be merged
+     * @param progressInfo          storage progress
+     */
+    public void addOutputData(JIPipeDataSlot slot, JIPipeVirtualData virtualData, List<JIPipeTextAnnotation> additionalAnnotations, JIPipeTextAnnotationMergeMode mergeStrategy, List<JIPipeDataAnnotation> additionalDataAnnotations, JIPipeDataAnnotationMergeMode dataAnnotationMergeStrategy, JIPipeProgressInfo progressInfo) {
+        if (slot.getNode() != node)
+            throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
+        if (!slot.isOutput())
+            throw new IllegalArgumentException("Slot is not an output slot!");
+        List<JIPipeTextAnnotation> finalAnnotations = new ArrayList<>(mergedAnnotations.values());
+        finalAnnotations.addAll(additionalAnnotations);
+        Multimap<String, JIPipeDataAnnotation> localDataAnnotations = HashMultimap.create();
+        for (Map.Entry<String, JIPipeDataAnnotation> entry : mergedDataAnnotations.entrySet()) {
+            localDataAnnotations.put(entry.getKey(), entry.getValue());
+        }
+        for (JIPipeDataAnnotation dataAnnotation : additionalDataAnnotations) {
+            localDataAnnotations.put(dataAnnotation.getName(), dataAnnotation);
+        }
+        for (String name : localDataAnnotations.keySet()) {
+            slot.setVirtualDataAnnotation(slot.getRowCount() - 1, name, dataAnnotationMergeStrategy.merge(localDataAnnotations.get(name)).iterator().next().getVirtualData());
+        }
+        slot.addData(virtualData, finalAnnotations, mergeStrategy, new ArrayList<>(localDataAnnotations.values()), JIPipeDataAnnotationMergeMode.OverwriteExisting);
     }
 
     /**
