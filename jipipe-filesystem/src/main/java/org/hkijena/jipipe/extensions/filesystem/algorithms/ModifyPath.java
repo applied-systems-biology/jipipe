@@ -13,6 +13,7 @@ import org.hkijena.jipipe.extensions.expressions.variables.PathFilterExpressionP
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 @JIPipeDocumentation(name = "Modify path", description = "Uses an expression to modify a path.")
@@ -47,6 +48,9 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
         Object result = expression.evaluate(variableSet);
         if (result instanceof String) {
             dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(StringUtils.nullToEmpty(result))), progressInfo);
+        }
+        else if(result instanceof Path) {
+            dataBatch.addOutputData(getFirstOutputSlot(), new PathData((Path) result), progressInfo);
         } else {
             progressInfo.log("Expression generated value '" + result + "', which is not a string. Dropping this data.");
         }
