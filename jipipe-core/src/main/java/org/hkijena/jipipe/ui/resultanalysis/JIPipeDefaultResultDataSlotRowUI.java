@@ -20,6 +20,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -95,6 +97,14 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                 entryMenu.add(valueItem);
 
                 entryMenu.addSeparator();
+
+                JMenuItem copyAnnotationNameItem = new JMenuItem("Copy name", UIUtils.getIconFromResources("actions/edit-copy.png"));
+                copyAnnotationNameItem.addActionListener(e -> UIUtils.copyToClipboard(annotation.getName()));
+                entryMenu.add(copyAnnotationNameItem);
+
+                JMenuItem copyAnnotationNameAsVariableItem = new JMenuItem("Copy name as expression variable", UIUtils.getIconFromResources("actions/edit-copy.png"));
+                copyAnnotationNameAsVariableItem.addActionListener(e -> UIUtils.copyToClipboard(DefaultExpressionEvaluator.escapeVariable(annotation.getName())));
+                entryMenu.add(copyAnnotationNameAsVariableItem);
 
                 JMenuItem copyAnnotationValueItem = new JMenuItem("Copy value", UIUtils.getIconFromResources("actions/edit-copy.png"));
                 copyAnnotationValueItem.addActionListener(e -> UIUtils.copyToClipboard(annotation.getValue()));
