@@ -53,6 +53,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.CannyEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.LaplacianEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export.ExportImage2Algorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export.ExportImageAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export.ExportROIAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export.ExportTableAlgorithm;
@@ -540,6 +541,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerEnumParameterType("ij1-export-image-to-web:file-format", ExportImageAlgorithm.FileFormat.class, "File format", "Exported file format.");
         registerEnumParameterType("ij1-export-table:file-format", ExportTableAlgorithm.FileFormat.class, "File format", "Exported file format.");
         registerNodeType("iji-export-image-to-web", ExportImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("iji-export-image-to-web:directory-slot", ExportImage2Algorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("iji-export-roi-list", ExportROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
         registerNodeType("iji-export-table", ExportTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
 
