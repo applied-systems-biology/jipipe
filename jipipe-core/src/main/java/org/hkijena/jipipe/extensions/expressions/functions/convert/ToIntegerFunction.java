@@ -27,7 +27,7 @@ import java.util.List;
 public class ToIntegerFunction extends ExpressionFunction {
 
     public ToIntegerFunction() {
-        super("TO_NUMBER", 1);
+        super("TO_INTEGER", 1);
     }
 
     @Override
