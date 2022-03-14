@@ -51,7 +51,7 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();
     private JIPipeDataByMetadataExporter exporter;
-    private FileFormat fileFormat = FileFormat.PNG;
+    private ExportImageAlgorithm.FileFormat fileFormat = ExportImageAlgorithm.FileFormat.PNG;
     private int movieFrameTime = 100;
     private HyperstackDimension movieAnimatedDimension = HyperstackDimension.Frame;
     private AVICompression aviCompression = AVICompression.PNG;
@@ -153,12 +153,12 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
             "<li>TIFF: All images supported</li>" +
             "</ul>")
     @JIPipeParameter(value = "file-format", uiOrder = -20)
-    public FileFormat getFileFormat() {
+    public ExportImageAlgorithm.FileFormat getFileFormat() {
         return fileFormat;
     }
 
     @JIPipeParameter("file-format")
-    public void setFileFormat(FileFormat fileFormat) {
+    public void setFileFormat(ExportImageAlgorithm.FileFormat fileFormat) {
         this.fileFormat = fileFormat;
         triggerParameterUIChange();
     }
@@ -213,7 +213,7 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if (fileFormat != FileFormat.AVI) {
+        if (fileFormat != ExportImageAlgorithm.FileFormat.AVI) {
             if ("movie-frame-time".equals(access.getKey())) {
                 return false;
             }
@@ -228,13 +228,5 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
             }
         }
         return super.isParameterUIVisible(tree, access);
-    }
-
-    public enum FileFormat {
-        PNG,
-        JPEG,
-        BMP,
-        AVI,
-        TIFF
     }
 }
