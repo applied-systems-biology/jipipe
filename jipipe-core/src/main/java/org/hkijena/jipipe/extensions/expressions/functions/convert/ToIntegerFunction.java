@@ -58,6 +58,6 @@ public class ToIntegerFunction extends ExpressionFunction {
         else if (value instanceof Boolean)
             return (boolean) value ? 1 : 0;
         else
-            return NumberUtils.createInteger("" + value);
+            return NumberUtils.createDouble("" + value).intValue();
     }
 }

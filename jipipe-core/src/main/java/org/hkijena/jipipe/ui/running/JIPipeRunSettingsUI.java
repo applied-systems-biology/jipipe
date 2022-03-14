@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -153,21 +154,51 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
             panel.add(table, BorderLayout.CENTER);
             panel.add(table.getTableHeader(), BorderLayout.NORTH);
             formPanel.addWideToForm(panel, null);
-
-            formPanel.addVerticalGlue();
         }
 
         Set<JIPipeDataSlot> heavyIntermediateOutputs = getProject().getHeavyIntermediateAlgorithmOutputSlots();
         for (JIPipeGraphNode node : algorithmsWithMissingInput) {
-            heavyIntermediateOutputs.removeAll(node.getOutputSlots());
+            node.getOutputSlots().forEach(heavyIntermediateOutputs::remove);
         }
-        if (!heavyIntermediateOutputs.isEmpty()) {
-            formPanel.removeLastRow();
+        if(!heavyIntermediateOutputs.isEmpty()) {
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Large intermediate results",
                     UIUtils.getIconFromResources("emblems/warning.png"));
             headerPanel.getDescriptionArea().setVisible(true);
             headerPanel.getDescriptionArea().setText("There are algorithms that look like that they only generate intermediate results, but generate potentially large amounts of data that would all be saved to the hard drive. " +
                     "You can deselect these outputs in the following list to disable saving outputs for them. They will still be executed, but their results will not be saved to the hard drive.");
+            createOutputsManagerPanel(formPanel, heavyIntermediateOutputs);
+        }
+        Set<JIPipeDataSlot> remainingOutputs = getProject().getGraph().getSlotNodes().stream().filter(slot -> slot.getSlotType() == JIPipeSlotType.Output).collect(Collectors.toSet());
+        if(!remainingOutputs.isEmpty()) {
+            FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Saved results",
+                    UIUtils.getIconFromResources("emblems/emblem-information.png"));
+            headerPanel.getDescriptionArea().setVisible(true);
+            headerPanel.getDescriptionArea().setText("The following list contains all outputs that will be saved to the hard drive. Uncheck an item to exclude saving the output. Please note that dedicated exporter nodes will still write their data, as it is independent of the automated storage.");
+            createOutputsManagerPanel(formPanel, remainingOutputs);
+        }
+
+        formPanel.addVerticalGlue();
+        setupPanel.add(formPanel, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        JButton runButton = new JButton("Run now", UIUtils.getIconFromResources("actions/run-build.png"));
+        runButton.addActionListener(e -> runNow());
+        buttonPanel.add(runButton);
+
+        add(buttonPanel, BorderLayout.SOUTH);
+
+        add(setupPanel, BorderLayout.CENTER);
+        revalidate();
+    }
+
+    private void createOutputsManagerPanel(ParameterPanel formPanel, Set<JIPipeDataSlot> outputSlots) {
+        if (!outputSlots.isEmpty()) {
+
             List<JCheckBox> checkBoxes = new ArrayList<>();
             JPanel contentPanel = new JPanel(new GridBagLayout());
             List<JIPipeGraphNode> traversed = getProject().getGraph().traverse();
@@ -175,7 +206,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
                 if (!(node instanceof JIPipeAlgorithm))
                     continue;
                 for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
-                    if (heavyIntermediateOutputs.contains(outputSlot)) {
+                    if (outputSlots.contains(outputSlot)) {
                         int row = checkBoxes.size();
                         JCheckBox checkBox = new JCheckBox(outputSlot.getDisplayName(), true);
                         checkBox.addActionListener(e -> {
@@ -225,7 +256,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
                 for (JCheckBox checkBox : checkBoxes) {
                     checkBox.setSelected(true);
                 }
-                for (JIPipeDataSlot slot : heavyIntermediateOutputs) {
+                for (JIPipeDataSlot slot : outputSlots) {
                     JIPipeGraphNode node = slot.getNode();
                     JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
                     runAlgorithm.getOutputSlot(slot.getName()).getInfo().setSaveOutputs(true);
@@ -238,7 +269,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
                 for (JCheckBox checkBox : checkBoxes) {
                     checkBox.setSelected(false);
                 }
-                for (JIPipeDataSlot slot : heavyIntermediateOutputs) {
+                for (JIPipeDataSlot slot : outputSlots) {
                     JIPipeGraphNode node = slot.getNode();
                     JIPipeGraphNode runAlgorithm = run.getGraph().getEquivalentAlgorithm(node);
                     runAlgorithm.getOutputSlot(slot.getName()).getInfo().setSaveOutputs(false);
@@ -251,25 +282,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
             panel.setBorder(BorderFactory.createLineBorder(UIManager.getColor("Button.borderColor")));
 
             formPanel.addWideToForm(panel, null);
-            formPanel.addVerticalGlue();
         }
-
-        setupPanel.add(formPanel, BorderLayout.CENTER);
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(0, 8, 8, 8));
-        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
-
-        buttonPanel.add(Box.createHorizontalGlue());
-
-        JButton runButton = new JButton("Run now", UIUtils.getIconFromResources("actions/run-build.png"));
-        runButton.addActionListener(e -> runNow());
-        buttonPanel.add(runButton);
-
-        add(buttonPanel, BorderLayout.SOUTH);
-
-        add(setupPanel, BorderLayout.CENTER);
-        revalidate();
     }
 
     private void runNow() {
