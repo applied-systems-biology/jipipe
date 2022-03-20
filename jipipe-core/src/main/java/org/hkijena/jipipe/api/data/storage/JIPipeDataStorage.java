@@ -1,11 +1,12 @@
 package org.hkijena.jipipe.api.data.storage;
 
+import java.io.Closeable;
 import java.nio.file.Path;
 
 /**
  * A storage for serialized {@link org.hkijena.jipipe.api.data.JIPipeData}
  */
-public interface JIPipeDataStorage {
+public interface JIPipeDataStorage extends AutoCloseable, Closeable {
 
     /**
      * Returns true if the file system path is initialized.

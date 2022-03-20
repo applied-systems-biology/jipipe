@@ -73,4 +73,8 @@ public class JIPipeFileSystemWriteDataStorage implements JIPipeWriteDataStorage 
         return "{Filesystem Write} /" + getInternalPath() + " @ " + getFileSystemPath();
     }
 
+    @Override
+    public void close() throws IOException {
+        // Nothing to do
+    }
 }

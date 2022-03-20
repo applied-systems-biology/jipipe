@@ -85,4 +85,9 @@ public class JIPipeFileSystemReadDataStorage implements JIPipeReadDataStorage {
     public String toString() {
         return "{Filesystem Read} /" + getInternalPath() + " @ " + getFileSystemPath();
     }
+
+    @Override
+    public void close() throws IOException {
+        // Nothing to do
+    }
 }
