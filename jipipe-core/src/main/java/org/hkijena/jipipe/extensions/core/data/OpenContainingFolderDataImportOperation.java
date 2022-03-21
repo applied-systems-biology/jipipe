@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.core.data;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -56,7 +57,7 @@ public class OpenContainingFolderDataImportOperation implements JIPipeDataImport
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
         try {
             Desktop.getDesktop().open(Objects.requireNonNull(rowStorageFolder.toFile()));
         } catch (IOException e) {

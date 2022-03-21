@@ -39,8 +39,8 @@ public class ImportJIPipeProjectDataOperation implements JIPipeDataImportOperati
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
-        JIPipeOutputData data = JIPipeOutputData.importData(new JIPipeFileSystemReadDataStorage(rowStorageFolder), new JIPipeProgressInfo());
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
+        JIPipeOutputData data = JIPipeOutputData.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), progressInfo);
         JIPipeProjectWindow window = (JIPipeProjectWindow) workbench.getWindow();
         window.openProject(data.toPath());
         return data;

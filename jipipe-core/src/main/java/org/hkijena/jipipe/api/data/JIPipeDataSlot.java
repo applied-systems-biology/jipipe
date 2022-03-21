@@ -241,7 +241,7 @@ public class JIPipeDataSlot extends JIPipeDataTable {
      */
     public void exportToSlotStoragePath(JIPipeProgressInfo saveProgress) {
         if (isOutput() && slotStoragePath != null) {
-            exportData(new JIPipeFileSystemWriteDataStorage(slotStoragePath), saveProgress);
+            exportData(new JIPipeFileSystemWriteDataStorage(saveProgress, slotStoragePath), saveProgress);
         }
     }
 

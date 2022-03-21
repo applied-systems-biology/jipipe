@@ -126,7 +126,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         Path path = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Save plot");
         if (path != null) {
             if (PathUtils.ensureEmptyFolder(this, path)) {
-                getCurrentPlot().exportData(new JIPipeFileSystemWriteDataStorage(path), path.getFileName().toString(), false, new JIPipeProgressInfo());
+                getCurrentPlot().exportData(new JIPipeFileSystemWriteDataStorage(new JIPipeProgressInfo(), path), path.getFileName().toString(), false, new JIPipeProgressInfo());
             }
         }
     }
@@ -134,7 +134,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     private void openPlot() {
         Path path = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Open plot");
         if (path != null) {
-            PlotData plotData = PlotData.importData(new JIPipeFileSystemReadDataStorage(path), PlotData.class, new JIPipeProgressInfo());
+            PlotData plotData = PlotData.importData(new JIPipeFileSystemReadDataStorage(new JIPipeProgressInfo(), path), PlotData.class, new JIPipeProgressInfo());
             importExistingPlot(plotData);
         }
     }

@@ -92,11 +92,11 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
                 } else {
                     roiName = StringUtils.makeUniqueString(baseName, "_", existing);
                 }
-                singleton.exportData(new JIPipeFileSystemWriteDataStorage(outputPath), roiName, true, progressInfo);
+                singleton.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, outputPath), roiName, true, progressInfo);
                 dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath.resolve(roiName + ".roi")), progressInfo);
             }
         } else {
-            rois.exportData(new JIPipeFileSystemWriteDataStorage(outputPath), baseName, true, progressInfo);
+            rois.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, outputPath), baseName, true, progressInfo);
             if (rois.size() == 1) {
                 dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath.resolve(baseName + ".roi")), progressInfo);
             } else {

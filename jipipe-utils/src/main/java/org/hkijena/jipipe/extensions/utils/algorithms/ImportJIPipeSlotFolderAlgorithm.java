@@ -81,7 +81,7 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
                     "Check if the folder contains many numeric subfolders and a data-table.json file.");
         }
 
-        JIPipeDataTable dataTable = JIPipeDataTable.importData(new JIPipeFileSystemReadDataStorage(dataFolder), progressInfo);
+        JIPipeDataTable dataTable = JIPipeDataTable.importData(new JIPipeFileSystemReadDataStorage(progressInfo, dataFolder), progressInfo);
         for (int row = 0; row < dataTable.getRowCount(); row++) {
             List<JIPipeTextAnnotation> textAnnotationList = ignoreImportedTextAnnotations ? Collections.emptyList() : dataTable.getTextAnnotations(row);
             List<JIPipeDataAnnotation> dataAnnotationList = ignoreImportedDataAnnotations ? Collections.emptyList() : dataTable.getDataAnnotations(row);

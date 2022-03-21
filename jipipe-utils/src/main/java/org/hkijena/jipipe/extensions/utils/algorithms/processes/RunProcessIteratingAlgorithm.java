@@ -58,7 +58,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
         // Save all inputs
         for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
             JIPipeDataTable dummy = slot.slice(Collections.singletonList(dataBatch.getInputRow(slot)));
-            dummy.exportData(new JIPipeFileSystemWriteDataStorage(inputPath.resolve(slot.getName())), progressInfo.resolve("Save inputs"));
+            dummy.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, inputPath.resolve(slot.getName())), progressInfo.resolve("Save inputs"));
         }
 
         // Run process
@@ -86,7 +86,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
                 continue;
             Path slotPath = outputPath.resolve(slot.getName());
             if (Files.exists(slotPath.resolve("data-table.json"))) {
-                JIPipeDataTable loaded = JIPipeDataTable.importData(new JIPipeFileSystemReadDataStorage(slotPath), progressInfo.resolve("Extracting output '" + slot.getName() + "'"));
+                JIPipeDataTable loaded = JIPipeDataTable.importData(new JIPipeFileSystemReadDataStorage(progressInfo, slotPath), progressInfo.resolve("Extracting output '" + slot.getName() + "'"));
                 for (int i = 0; i < loaded.getRowCount(); i++) {
                     dataBatch.addOutputData(slot.getName(), loaded.getData(i, slot.getAcceptedDataType(), progressInfo), progressInfo);
                 }

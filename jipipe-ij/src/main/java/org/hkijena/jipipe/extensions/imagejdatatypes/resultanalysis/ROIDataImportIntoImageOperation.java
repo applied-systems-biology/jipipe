@@ -7,6 +7,7 @@ import ij.WindowManager;
 import ij.gui.Roi;
 import ij.macro.Interpreter;
 import ij.plugin.frame.RoiManager;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -75,7 +76,7 @@ public class ROIDataImportIntoImageOperation implements JIPipeDataImportOperatio
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
         Path roiFile = findROIFile(rowStorageFolder);
         ROIListData rois = new ROIListData(ROIListData.loadRoiListFromFile(roiFile));
         ImagePlus imp = WindowManager.getCurrentImage();

@@ -63,7 +63,7 @@ public class OMEImageResultImportRun implements JIPipeRunnable {
     public void run() {
         progressInfo.setProgress(1, 3);
         progressInfo.log("Importing image from " + rowStorageFolder);
-        image = OMEImageData.importData(new JIPipeFileSystemReadDataStorage(rowStorageFolder), getProgressInfo());
+        image = OMEImageData.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), getProgressInfo());
         progressInfo.setProgress(3, 3);
     }
 

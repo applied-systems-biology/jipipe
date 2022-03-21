@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.core.data;
 
 import com.google.common.base.Charsets;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.extensions.strings.StringData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -52,7 +53,7 @@ public class OpenTextInJIPipeDataOperation implements JIPipeDataImportOperation,
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
         if (rowStorageFolder == null || !Files.isDirectory(rowStorageFolder))
             return null;
         Path textFile = PathUtils.findFileByExtensionIn(rowStorageFolder, extensions);

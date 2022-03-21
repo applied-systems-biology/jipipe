@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis;
 
 import ij.IJ;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -39,7 +40,7 @@ public class OMEImageDataImportViaBioFormatsOperation implements JIPipeDataImpor
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
         Path targetFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".ome.tif");
         IJ.run("Bio-Formats Importer", "open=[" + targetFile + "]");
         return null;

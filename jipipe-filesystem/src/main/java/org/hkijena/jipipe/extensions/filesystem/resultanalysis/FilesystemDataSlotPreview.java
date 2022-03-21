@@ -72,7 +72,8 @@ public class FilesystemDataSlotPreview extends JIPipeResultDataSlotPreview {
         label.setIcon(JIPipe.getDataTypes().getIconFor(getSlot().getAcceptedDataType()));
         Path listFile = findListFile(getSlot(), getRow());
         if (listFile != null) {
-            PathData pathData = PathData.importData(new JIPipeFileSystemReadDataStorage(getRowStorageFolder(getSlot(), getRow(), getDataAnnotation())), new JIPipeProgressInfo());
+            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+            PathData pathData = PathData.importData(new JIPipeFileSystemReadDataStorage(progressInfo, getRowStorageFolder(getSlot(), getRow(), getDataAnnotation())), progressInfo);
             label.setText(pathData.getPath() + "");
         } else {
             label.setText("<Not found>");

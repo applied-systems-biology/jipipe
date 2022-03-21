@@ -59,7 +59,7 @@ public class OpenResultsTableInImageJDataOperation implements JIPipeDataImportOp
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
         if (rowStorageFolder == null || !Files.isDirectory(rowStorageFolder))
             return null;
         Path csvFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".csv");

@@ -63,8 +63,8 @@ public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOp
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
-        ROIListData rois = ROIListData.importData(new JIPipeFileSystemReadDataStorage(rowStorageFolder), new JIPipeProgressInfo());
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
+        ROIListData rois = ROIListData.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), progressInfo);
         display(rois, displayName, workbench, new JIPipeResultSlotDataSource(slot, row, rowStorageFolder));
         return rois;
     }

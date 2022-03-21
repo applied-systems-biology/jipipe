@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.api.data.storage;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -14,15 +16,18 @@ import java.util.stream.Collectors;
  * Storage on a file system
  */
 public class JIPipeFileSystemReadDataStorage implements JIPipeReadDataStorage {
+    private final JIPipeProgressInfo progressInfo;
     private final Path fileSystemPath;
     private final Path internalPath;
 
-    public JIPipeFileSystemReadDataStorage(Path fileSystemPath) {
+    public JIPipeFileSystemReadDataStorage(JIPipeProgressInfo progressInfo, Path fileSystemPath) {
+        this.progressInfo = progressInfo;
         this.fileSystemPath = fileSystemPath;
         this.internalPath = Paths.get("");
     }
 
-    public JIPipeFileSystemReadDataStorage(Path fileSystemPath, Path internalPath) {
+    public JIPipeFileSystemReadDataStorage(JIPipeProgressInfo progressInfo, Path fileSystemPath, Path internalPath) {
+        this.progressInfo = progressInfo;
         this.fileSystemPath = fileSystemPath;
         this.internalPath = internalPath;
     }
@@ -43,8 +48,13 @@ public class JIPipeFileSystemReadDataStorage implements JIPipeReadDataStorage {
     }
 
     @Override
+    public JIPipeProgressInfo getProgressInfo() {
+        return progressInfo;
+    }
+
+    @Override
     public JIPipeReadDataStorage resolve(Path path) {
-        return new JIPipeFileSystemReadDataStorage(getFileSystemPath().resolve(path), getInternalPath().resolve(path));
+        return new JIPipeFileSystemReadDataStorage(progressInfo, getFileSystemPath().resolve(path), getInternalPath().resolve(path));
     }
 
     @Override

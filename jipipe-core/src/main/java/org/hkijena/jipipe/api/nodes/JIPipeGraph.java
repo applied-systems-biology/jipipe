@@ -1635,35 +1635,24 @@ public class JIPipeGraph implements JIPipeValidatable {
         // Collect all valid loop starts and ends
         Set<JIPipeGraphNode> loopStarts = new HashSet<>();
         Set<JIPipeGraphNode> loopEnds = new HashSet<>();
-        for (JIPipeGraphNode node : getGraphNodes()) {
-            if ((node instanceof LoopEndNode && !((LoopEndNode) node).isPassThrough()) || additionalLoopEnds.contains(node)) {
-                loopEnds.add(node);
-            } else if (node instanceof LoopStartNode && ((LoopStartNode) node).getIterationMode() != GraphWrapperAlgorithm.IterationMode.PassThrough && !((LoopStartNode) node).isPassThrough()) {
-                loopStarts.add(node);
-            } else if (node.getOutputSlots().isEmpty()) {
-                loopEnds.add(node);
-            } else {
-                boolean isConnected = false;
-                for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
-                    for (JIPipeGraphEdge edge : graph.outgoingEdgesOf(outputSlot)) {
-                        JIPipeDataSlot target = graph.getEdgeTarget(edge);
-                        if (!deactivatedNodes.contains(target.getNode())) {
-                            isConnected = true;
-                            break;
-                        }
-                    }
-                    if (isConnected)
-                        break;
-                }
-                if (!isConnected)
-                    loopEnds.add(node);
-            }
-        }
+        findLoopStartsAndEnds(additionalLoopEnds, deactivatedNodes, loopStarts, loopEnds);
 
         // Optimization if there are no loops
         if (loopStarts.isEmpty()) {
             return new ArrayList<>();
         }
+
+//        // Find predecessor sets
+//        Map<JIPipeGraphNode, Set<JIPipeGraphNode>> predecessorSets = new IdentityHashMap<>();
+//        for (JIPipeGraphNode node : traverse()) {
+//            Set<JIPipeGraphNode> predecessors = new HashSet<>();
+//            for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
+//                predecessors.add(inputSlot.getNode());
+//                predecessors.addAll(predecessorSets.get(inputSlot.getNode()));
+//            }
+//            predecessorSets.put(node, predecessors);
+//        }
+
 
         // Find start points for the loop search
         Set<JIPipeGraphNode> startNodes = new HashSet<>();
@@ -1772,6 +1761,33 @@ public class JIPipeGraph implements JIPipeValidatable {
         }
 
         return result;
+    }
+
+    private void findLoopStartsAndEnds(Set<JIPipeGraphNode> additionalLoopEnds, Set<JIPipeGraphNode> deactivatedNodes, Set<JIPipeGraphNode> loopStarts, Set<JIPipeGraphNode> loopEnds) {
+        for (JIPipeGraphNode node : getGraphNodes()) {
+            if ((node instanceof LoopEndNode && !((LoopEndNode) node).isPassThrough()) || additionalLoopEnds.contains(node)) {
+                loopEnds.add(node);
+            } else if (node instanceof LoopStartNode && ((LoopStartNode) node).getIterationMode() != GraphWrapperAlgorithm.IterationMode.PassThrough && !((LoopStartNode) node).isPassThrough()) {
+                loopStarts.add(node);
+            } else if (node.getOutputSlots().isEmpty()) {
+                loopEnds.add(node);
+            } else {
+                boolean isConnected = false;
+                for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
+                    for (JIPipeGraphEdge edge : graph.outgoingEdgesOf(outputSlot)) {
+                        JIPipeDataSlot target = graph.getEdgeTarget(edge);
+                        if (!deactivatedNodes.contains(target.getNode())) {
+                            isConnected = true;
+                            break;
+                        }
+                    }
+                    if (isConnected)
+                        break;
+                }
+                if (!isConnected)
+                    loopEnds.add(node);
+            }
+        }
     }
 
     public boolean containsNode(UUID nodeUUID) {

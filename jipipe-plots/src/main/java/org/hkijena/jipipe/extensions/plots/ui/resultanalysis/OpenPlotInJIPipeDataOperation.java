@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.plots.ui.resultanalysis;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -22,7 +23,7 @@ public class OpenPlotInJIPipeDataOperation implements JIPipeDataDisplayOperation
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
         PlotData plotData = PlotData.fromFolder(rowStorageFolder);
         PlotEditor plotBuilderUI = new PlotEditor(workbench);
         plotBuilderUI.importExistingPlot(plotData);

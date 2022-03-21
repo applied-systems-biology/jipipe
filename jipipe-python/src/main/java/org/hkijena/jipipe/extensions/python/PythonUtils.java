@@ -185,7 +185,7 @@ public class PythonUtils {
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
             JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), node, slot);
-            dummy.exportData(new JIPipeFileSystemWriteDataStorage(tempPath), progressInfo);
+            dummy.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, tempPath), progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
         }
         PythonUtils.inputSlotsToPython(code, inputSlotPaths);
@@ -202,7 +202,7 @@ public class PythonUtils {
                 throw new RuntimeException(e);
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
-            slot.exportData(new JIPipeFileSystemWriteDataStorage(tempPath), progressInfo);
+            slot.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, tempPath), progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
         }
         PythonUtils.inputSlotsToPython(code, inputSlotPaths);
@@ -220,7 +220,7 @@ public class PythonUtils {
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
             JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), node, slot);
-            dummy.exportData(new JIPipeFileSystemWriteDataStorage(tempPath), progressInfo);
+            dummy.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, tempPath), progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
         }
         PythonUtils.inputSlotsToPython(code, inputSlotPaths);
@@ -245,7 +245,7 @@ public class PythonUtils {
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
-                JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(rowStoragePath), dataInfo.getDataClass(), progressInfo);
+                JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStoragePath), dataInfo.getDataClass(), progressInfo);
                 dataBatch.addOutputData(outputSlot, data, table.getRowList().get(row).getTextAnnotations(), annotationMergeStrategy, progressInfo);
             }
         }
@@ -258,7 +258,7 @@ public class PythonUtils {
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
-                JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(rowStoragePath), dataInfo.getDataClass(), progressInfo);
+                JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStoragePath), dataInfo.getDataClass(), progressInfo);
                 dataBatch.addOutputData(outputSlot, data, table.getRowList().get(row).getTextAnnotations(), annotationMergeStrategy, progressInfo);
             }
         }
@@ -271,7 +271,7 @@ public class PythonUtils {
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
-                JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(rowStoragePath), dataInfo.getDataClass(), progressInfo);
+                JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStoragePath), dataInfo.getDataClass(), progressInfo);
                 outputSlot.addData(data, table.getRowList().get(row).getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
             }
         }

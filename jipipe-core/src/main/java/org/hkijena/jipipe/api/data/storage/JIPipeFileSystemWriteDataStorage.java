@@ -1,8 +1,8 @@
 package org.hkijena.jipipe.api.data.storage;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -14,15 +14,18 @@ import java.nio.file.Paths;
  * Storage on a file system. This is the simplest {@link JIPipeWriteDataStorage}.
  */
 public class JIPipeFileSystemWriteDataStorage implements JIPipeWriteDataStorage {
+    private final JIPipeProgressInfo progressInfo;
     private final Path fileSystemPath;
     private final Path internalPath;
 
-    public JIPipeFileSystemWriteDataStorage(Path fileSystemPath) {
+    public JIPipeFileSystemWriteDataStorage(JIPipeProgressInfo progressInfo, Path fileSystemPath) {
+        this.progressInfo = progressInfo;
         this.fileSystemPath = fileSystemPath;
         this.internalPath = Paths.get("");
     }
 
-    public JIPipeFileSystemWriteDataStorage(Path fileSystemPath, Path internalPath) {
+    public JIPipeFileSystemWriteDataStorage(JIPipeProgressInfo progressInfo, Path fileSystemPath, Path internalPath) {
+        this.progressInfo = progressInfo;
         this.fileSystemPath = fileSystemPath;
         this.internalPath = internalPath;
     }
@@ -43,6 +46,11 @@ public class JIPipeFileSystemWriteDataStorage implements JIPipeWriteDataStorage 
     }
 
     @Override
+    public JIPipeProgressInfo getProgressInfo() {
+        return progressInfo;
+    }
+
+    @Override
     public JIPipeWriteDataStorage resolve(Path path) {
         Path newPath = getFileSystemPath().resolve(path);
         try {
@@ -52,7 +60,7 @@ public class JIPipeFileSystemWriteDataStorage implements JIPipeWriteDataStorage 
                     toString(), "The path might be invalid, or you might not have the permissions to write in a parent folder.",
                     "Check if the path is valid, and you have write-access.");
         }
-        return new JIPipeFileSystemWriteDataStorage(newPath, getInternalPath().resolve(path));
+        return new JIPipeFileSystemWriteDataStorage(progressInfo, newPath, getInternalPath().resolve(path));
     }
 
     @Override

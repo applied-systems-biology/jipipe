@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -22,7 +23,7 @@ public class ImagePlusDataImportIntoImageJOperation implements JIPipeDataImportO
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
         ImagePlusResultImportRun run = new ImagePlusResultImportRun(slot, row, rowStorageFolder, compartmentName, algorithmName, displayName, workbench);
         knownRuns.add(run);
         JIPipeRunnerQueue.getInstance().enqueue(run);

@@ -106,13 +106,13 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
             Path storageFolder = dataFolder.resolve("" + row.getIndex());
             List<JIPipeTextAnnotation> annotationList = row.getTextAnnotations();
             JIPipeDataInfo trueDataType = exportedDataTable.getDataTypeOf(row.getIndex());
-            JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(storageFolder), trueDataType.getDataClass(), progressInfo);
+            JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, storageFolder), trueDataType.getDataClass(), progressInfo);
             tempSlot.addData(data, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, slotProgressInfo);
 
             for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
                 try {
                     JIPipeDataInfo dataAnnotationDataTypeInfo = JIPipeDataInfo.getInstance(dataAnnotation.getTrueDataType());
-                    JIPipeData dataAnnotationData = JIPipe.importData(new JIPipeFileSystemReadDataStorage(dataFolder.resolve(dataAnnotation.getRowStorageFolder())),
+                    JIPipeData dataAnnotationData = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, dataFolder.resolve(dataAnnotation.getRowStorageFolder())),
                             dataAnnotationDataTypeInfo.getDataClass(),
                             progressInfo);
                     tempSlot.setDataAnnotation(tempSlot.getRowCount() - 1, dataAnnotation.getName(), dataAnnotationData);

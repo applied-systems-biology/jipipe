@@ -64,7 +64,7 @@ public class ImagePlusResultImportRun implements JIPipeRunnable {
     public void run() {
         progressInfo.setProgress(1, 3);
         progressInfo.log("Importing image from " + rowStorageFolder);
-        ImagePlusData data = ImagePlusData.importData(new JIPipeFileSystemReadDataStorage(rowStorageFolder), progressInfo);
+        ImagePlusData data = ImagePlusData.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), progressInfo);
         image = data.getImage();
         progressInfo.setProgress(3, 3);
     }

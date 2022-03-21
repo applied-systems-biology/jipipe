@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis;
 
 import ij.IJ;
 import ij.io.Opener;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -85,7 +86,7 @@ public class ImportImageJPathDataOperation implements JIPipeDataImportOperation,
     }
 
     @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench) {
+    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
         Path targetPath = getTargetPath(rowStorageFolder);
         if (targetPath == null)
             return null;

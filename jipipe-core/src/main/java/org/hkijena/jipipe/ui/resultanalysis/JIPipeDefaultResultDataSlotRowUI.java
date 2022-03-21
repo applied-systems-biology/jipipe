@@ -21,7 +21,6 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -179,9 +178,9 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                     @Override
                     public void run() {
                         progressInfo.log("Importing data from " + getRowStorageFolder() + " ...");
-                        JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(getRowStorageFolder()),
+                        JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, getRowStorageFolder()),
                                 JIPipe.getDataTypes().getById(getRow().getTrueDataType()), progressInfo);
-                        data.exportData(new JIPipeFileSystemWriteDataStorage(path), "data", false, progressInfo.resolveAndLog("Saving data"));
+                        data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path), "data", false, progressInfo.resolveAndLog("Saving data"));
                     }
 
                     @Override
@@ -217,8 +216,8 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
                 @Override
                 public void run() {
                     progressInfo.log("Importing data from " + getRowStorageFolder() + " ...");
-                    JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(getRowStorageFolder()), JIPipe.getDataTypes().getById(getRow().getTrueDataType()), progressInfo);
-                    data.exportData(new JIPipeFileSystemWriteDataStorage(path.getParent()), path.getFileName().toString(), true, progressInfo.resolveAndLog("Exporting data"));
+                    JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, getRowStorageFolder()), JIPipe.getDataTypes().getById(getRow().getTrueDataType()), progressInfo);
+                    data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path.getParent()), path.getFileName().toString(), true, progressInfo.resolveAndLog("Exporting data"));
                 }
 
                 @Override
@@ -234,13 +233,29 @@ public class JIPipeDefaultResultDataSlotRowUI extends JIPipeResultDataSlotRowUI 
 
     private void runImportOperation(JIPipeDataImportOperation operation, JIPipeExportedDataAnnotation dataAnnotation) {
         try (BusyCursor cursor = new BusyCursor(this)) {
-            operation.show(getSlot(), getRow(), dataAnnotation.getName(), getSlot().getSlotStoragePath().resolve(dataAnnotation.getRowStorageFolder()), getAlgorithmCompartmentName(), getAlgorithmName(), getDisplayName(), getWorkbench());
+            operation.show(getSlot(),
+                    getRow(),
+                    dataAnnotation.getName(),
+                    getSlot().getSlotStoragePath().resolve(dataAnnotation.getRowStorageFolder()),
+                    getAlgorithmCompartmentName(),
+                    getAlgorithmName(),
+                    getDisplayName(),
+                    getWorkbench(),
+                    new JIPipeProgressInfo());
         }
     }
 
     private void runImportOperation(JIPipeDataImportOperation operation) {
         try (BusyCursor cursor = new BusyCursor(this)) {
-            operation.show(getSlot(), getRow(), null, getRowStorageFolder(), getAlgorithmCompartmentName(), getAlgorithmName(), getDisplayName(), getWorkbench());
+            operation.show(getSlot(),
+                    getRow(),
+                    null,
+                    getRowStorageFolder(),
+                    getAlgorithmCompartmentName(),
+                    getAlgorithmName(),
+                    getDisplayName(),
+                    getWorkbench(),
+                    new JIPipeProgressInfo());
             if (GeneralDataSettings.getInstance().isAutoSaveLastImporter()) {
                 String dataTypeId = JIPipe.getDataTypes().getIdOf(getSlot().getAcceptedDataType());
                 DynamicDataImportOperationIdEnumParameter parameter = DefaultResultImporterSettings.getInstance().getValue(dataTypeId, DynamicDataImportOperationIdEnumParameter.class);

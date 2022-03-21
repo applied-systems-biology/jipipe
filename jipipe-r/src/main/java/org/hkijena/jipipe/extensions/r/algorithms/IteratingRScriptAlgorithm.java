@@ -143,7 +143,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
             JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), this, slot);
-            dummy.exportData(new JIPipeFileSystemWriteDataStorage(tempPath), progressInfo);
+            dummy.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, tempPath), progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
             dummySlots.add(dummy);
         }
@@ -181,7 +181,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
             for (int row = 0; row < table.getRowCount(); row++) {
                 JIPipeDataInfo dataInfo = table.getDataTypeOf(row);
                 Path rowStoragePath = table.getRowStoragePath(storagePath, row);
-                JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(rowStoragePath), dataInfo.getDataClass(), progressInfo);
+                JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStoragePath), dataInfo.getDataClass(), progressInfo);
                 dataBatch.addOutputData(outputSlot, data, table.getRowList().get(row).getTextAnnotations(), annotationMergeStrategy, progressInfo);
             }
         }

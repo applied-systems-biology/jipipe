@@ -913,13 +913,13 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             JIPipeDataTableMetadataRow row = dataTable.getRowList().get(i);
             Path rowStorage = storagePath.resolve("" + row.getIndex());
             Class<? extends JIPipeData> rowDataType = JIPipe.getDataTypes().getById(row.getTrueDataType());
-            JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(rowStorage), rowDataType, rowProgress);
+            JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorage), rowDataType, rowProgress);
             slot.addData(data, row.getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, rowProgress);
 
             for (JIPipeExportedDataAnnotation dataAnnotation : row.getDataAnnotations()) {
                 Path dataAnnotationRowStorage = storagePath.resolve(dataAnnotation.getRowStorageFolder());
                 Class<? extends JIPipeData> dataAnnotationDataType = JIPipe.getDataTypes().getById(dataAnnotation.getTrueDataType());
-                JIPipeData dataAnnotationData = JIPipe.importData(new JIPipeFileSystemReadDataStorage(dataAnnotationRowStorage), dataAnnotationDataType, progressInfo);
+                JIPipeData dataAnnotationData = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, dataAnnotationRowStorage), dataAnnotationDataType, progressInfo);
                 slot.setDataAnnotation(i, dataAnnotation.getName(), dataAnnotationData);
             }
         }

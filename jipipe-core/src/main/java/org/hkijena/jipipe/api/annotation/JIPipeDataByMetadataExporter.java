@@ -319,7 +319,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         outputPath = PathUtils.resolveAndMakeSubDirectory(outputPath, generateSubFolder(dataSlot, row));
         JIPipeData data = dataSlot.getData(row, JIPipeData.class, progressInfo);
         progressInfo.log("Saving " + data + " as " + metadataString + " into " + outputPath);
-        data.exportData(new JIPipeFileSystemWriteDataStorage(outputPath), metadataString, true, progressInfo);
+        data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, outputPath), metadataString, true, progressInfo);
     }
 
     /**

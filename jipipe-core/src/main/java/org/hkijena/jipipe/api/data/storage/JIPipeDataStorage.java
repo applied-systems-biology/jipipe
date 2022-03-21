@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.api.data.storage;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+
 import java.io.Closeable;
 import java.nio.file.Path;
 
@@ -7,6 +9,12 @@ import java.nio.file.Path;
  * A storage for serialized {@link org.hkijena.jipipe.api.data.JIPipeData}
  */
 public interface JIPipeDataStorage extends AutoCloseable, Closeable {
+
+    /**
+     * Returns the {@link JIPipeProgressInfo} instance where information is logged
+     * @return the {@link JIPipeProgressInfo} instance
+     */
+    JIPipeProgressInfo getProgressInfo();
 
     /**
      * Returns true if the file system path is initialized.

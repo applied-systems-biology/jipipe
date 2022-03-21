@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.data;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.nio.file.Path;
@@ -45,7 +46,8 @@ public interface JIPipeDataImportOperation extends JIPipeDataOperation {
      * @param algorithmName      the name of the algorithm that generated the data
      * @param displayName        a unique identifier for the slot
      * @param workbench          the workbench that issued the command
+     * @param progressInfo the {@link JIPipeProgressInfo}
      * @return the imported data. null if not successful.
      */
-    JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench);
+    JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo);
 }
