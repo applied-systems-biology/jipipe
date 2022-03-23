@@ -16,7 +16,7 @@ function process_directory() {
     pushd $FIJI_DIR
     rm -rv ./jipipe
     rm -rv ./plugins/JIPipe/*
-    for component in jipipe-core jipipe-clij jipipe-multiparameters jipipe-filesystem jipipe-ij jipipe-ij2 jipipe-ij-omero jipipe-ij-algorithms jipipe-ij-multi-template-matching jipipe-python jipipe-plots jipipe-tables jipipe-annotation jipipe-utils jipipe-strings jipipe-forms jipipe-r jipipe-cellpose jipipe-launcher ij-updater-cli; do
+    for component in jipipe-core jipipe-clij jipipe-multiparameters jipipe-filesystem jipipe-ij jipipe-ij2 jipipe-ij-omero jipipe-ij-algorithms jipipe-ij-multi-template-matching jipipe-python jipipe-plots jipipe-tables jipipe-annotation jipipe-utils jipipe-strings jipipe-forms jipipe-r jipipe-cellpose jipipe-launcher jipipe-ij-updater-cli; do
         cp -v $PROJECT_DIR/$component/target/$component-$JIPIPE_VERSION.jar ./plugins/JIPipe/
     done
     popd

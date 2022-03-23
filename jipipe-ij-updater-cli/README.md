@@ -13,4 +13,4 @@ add <Update Site Name> <URL>
 remove <Update Site Name>
 
 To run this tool, execute following command:
-<ImageJ executable> --pass-classpath --full-classpath --main-class org.hkijena.ijupdatercli.Main
+<ImageJ executable> --pass-classpath --full-classpath --main-class org.hkijena.jipipe.ijupdatercli.Main

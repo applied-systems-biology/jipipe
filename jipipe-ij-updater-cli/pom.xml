@@ -9,10 +9,10 @@
         <relativePath/>
     </parent>
 
-    <artifactId>ij-updater-cli</artifactId>
+    <artifactId>jipipe-ij-updater-cli</artifactId>
     <version>1.68.0</version>
 
-    <name>ij-updater-cli</name>
+    <name>jipipe-ij-updater-cli</name>
     <description>ImageJ Updater CLI</description>
     <inceptionYear>2020</inceptionYear>
     <url>https://www.jipipe.org/</url>
@@ -100,7 +100,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.hkijena.ijupdatercli.Main</mainClass>
+                            <mainClass>org.hkijena.jipipe.ijupdatercli.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

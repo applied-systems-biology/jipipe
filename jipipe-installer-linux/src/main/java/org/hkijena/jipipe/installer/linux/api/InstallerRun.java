@@ -236,7 +236,7 @@ public class InstallerRun implements JIPipeRunnable {
             commandLine.addArgument("--pass-classpath");
             commandLine.addArgument("--full-classpath");
             commandLine.addArgument("--main-class");
-            commandLine.addArgument("org.hkijena.ijupdatercli.Main");
+            commandLine.addArgument("org.hkijena.jipipe.ijupdatercli.Main");
             commandLine.addArgument("activate");
             for (String fijiUpdateSite : FIJI_UPDATE_SITES) {
                 commandLine.addArgument(fijiUpdateSite);
@@ -271,7 +271,7 @@ public class InstallerRun implements JIPipeRunnable {
             commandLine.addArgument("--pass-classpath");
             commandLine.addArgument("--full-classpath");
             commandLine.addArgument("--main-class");
-            commandLine.addArgument("org.hkijena.ijupdatercli.Main");
+            commandLine.addArgument("org.hkijena.jipipe.ijupdatercli.Main");
             commandLine.addArgument("update");
             DefaultExecutor executor = new DefaultExecutor();
             executor.setWatchdog(new ExecuteWatchdog(ExecuteWatchdog.INFINITE_TIMEOUT));

@@ -11,6 +11,7 @@
         <module name="jipipe-ij-omero" />
         <module name="jipipe-annotation" />
         <module name="jipipe-core" />
+        <module name="jipipe-ij-updater-cli" />
         <module name="jipipe-tables" />
         <module name="jipipe-strings" />
         <module name="jipipe-utils" />
@@ -27,7 +28,6 @@
         <module name="jipipe-multiparameters" />
         <module name="jipipe-plots" />
         <module name="jipipe-cellpose" />
-        <module name="ij-updater-cli" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
@@ -43,6 +43,7 @@
       <module name="jipipe-ij-algorithms" target="1.8" />
       <module name="jipipe-ij-multi-template-matching" target="1.8" />
       <module name="jipipe-ij-omero" target="1.8" />
+      <module name="jipipe-ij-updater-cli" target="1.8" />
       <module name="jipipe-ij2" target="1.8" />
       <module name="jipipe-installer-linux" target="1.8" />
       <module name="jipipe-launcher" target="1.8" />

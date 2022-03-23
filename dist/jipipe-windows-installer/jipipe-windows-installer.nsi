@@ -64,7 +64,7 @@ Section "Common files (Required)" SEC01
 
   ; Copy updater & JIPipe
   SetOutPath "$INSTDIR\Fiji.app\plugins"
-  File "..\..\ij-updater-cli\target\ij-updater-cli-${PRODUCT_VERSION}.jar"
+  File "..\..\jipipe-ij-updater-cli\target\jipipe-ij-updater-cli-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-annotation\target\jipipe-annotation-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-clij\target\jipipe-clij-${PRODUCT_VERSION}.jar"
   File "..\..\jipipe-core\target\jipipe-core-${PRODUCT_VERSION}.jar"
@@ -127,8 +127,8 @@ Section "Common files (Required)" SEC01
 
   ; Bootstrap update sites
   SetOutPath "$INSTDIR\Fiji.app"
-  nsExec::ExecToLog "$INSTDIR\Fiji.app\ImageJ-win64.exe --pass-classpath --full-classpath --main-class org.hkijena.ijupdatercli.Main activate clij clij2 IJPB-plugins ImageScience IJ-OpenCV-plugins Multi-Template-Matching"
-  nsExec::ExecToLog "$INSTDIR\Fiji.app\ImageJ-win64.exe --pass-classpath --full-classpath --main-class org.hkijena.ijupdatercli.Main update"
+  nsExec::ExecToLog "$INSTDIR\Fiji.app\ImageJ-win64.exe --pass-classpath --full-classpath --main-class org.hkijena.jipipe.ijupdatercli.Main activate clij clij2 IJPB-plugins ImageScience IJ-OpenCV-plugins Multi-Template-Matching"
+  nsExec::ExecToLog "$INSTDIR\Fiji.app\ImageJ-win64.exe --pass-classpath --full-classpath --main-class org.hkijena.jipipe.ijupdatercli.Main update"
 
   ; Start menu & desktop shortcuts
   CreateDirectory "$SMPROGRAMS\JIPipe"

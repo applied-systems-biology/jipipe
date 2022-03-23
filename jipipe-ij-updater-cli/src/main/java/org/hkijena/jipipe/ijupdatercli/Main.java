@@ -1,4 +1,4 @@
-package org.hkijena.ijupdatercli;
+package org.hkijena.jipipe.ijupdatercli;
 
 import net.imagej.ui.swing.updater.ProgressDialog;
 import net.imagej.ui.swing.updater.SwingAuthenticator;
@@ -186,7 +186,7 @@ public class Main {
         System.out.println("remove <Update Site Name>");
         System.out.println();
         System.out.println("To run this tool, execute following command:");
-        System.out.println("<ImageJ executable> --debug --pass-classpath --full-classpath --main-class org.hkijena.ijupdatercli.Main");
+        System.out.println("<ImageJ executable> --debug --pass-classpath --full-classpath --main-class org.hkijena.jipipe.ijupdatercli.Main");
     }
 
     public static void applyUpdates(FilesCollection filesCollection) {
