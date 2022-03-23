@@ -9,7 +9,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
@@ -140,7 +139,7 @@ public class BookmarkListPanel extends JIPipeWorkbenchPanel {
     }
 
     private void goToBookmark(JIPipeGraphNode node) {
-        if (node.getGraph() == null)
+        if (node.getParentGraph() == null)
             return;
         if (getWorkbench() instanceof JIPipeProjectWorkbench && graph.getProject() != null) {
             if (node instanceof JIPipeProjectCompartment) {

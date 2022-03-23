@@ -60,7 +60,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode {
      * @return The compartment ID
      */
     public UUID getProjectCompartmentUUID() {
-        return getUUIDInGraph();
+        return getUUIDInParentGraph();
     }
 
     /**

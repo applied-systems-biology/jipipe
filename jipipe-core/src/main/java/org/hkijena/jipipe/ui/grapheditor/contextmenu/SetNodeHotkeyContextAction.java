@@ -65,9 +65,9 @@ public class SetNodeHotkeyContextAction implements NodeUIContextAction {
 
             button.addActionListener(e -> {
                 if (button.isSelected()) {
-                    hotKeyStorage.setHotkey(compartment, node.getUUIDInGraph(), NodeHotKeyStorage.Hotkey.fromIndex(number));
+                    hotKeyStorage.setHotkey(compartment, node.getUUIDInParentGraph(), NodeHotKeyStorage.Hotkey.fromIndex(number));
                 } else {
-                    hotKeyStorage.setHotkey(compartment, node.getUUIDInGraph(), NodeHotKeyStorage.Hotkey.None);
+                    hotKeyStorage.setHotkey(compartment, node.getUUIDInParentGraph(), NodeHotKeyStorage.Hotkey.None);
                 }
                 dialog.dispose();
             });

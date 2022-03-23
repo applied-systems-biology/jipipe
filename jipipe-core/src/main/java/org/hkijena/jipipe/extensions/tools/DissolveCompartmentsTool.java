@@ -55,7 +55,7 @@ public class DissolveCompartmentsTool extends JIPipeMenuExtension {
             JIPipeProjectCompartment compartment = workbench.getProject().addCompartment("Merged");
             UUID compartmentUUID = compartment.getProjectCompartmentUUID();
             for (JIPipeGraphNode node : graph.getGraphNodes()) {
-                graph.setCompartment(node.getUUIDInGraph(), compartmentUUID);
+                graph.setCompartment(node.getUUIDInParentGraph(), compartmentUUID);
             }
             workbench.getProject().getGraph().mergeWith(graph);
         }

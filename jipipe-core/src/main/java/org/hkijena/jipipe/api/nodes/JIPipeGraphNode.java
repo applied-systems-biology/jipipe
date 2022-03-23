@@ -67,7 +67,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     private Path storagePath;
     private String customName;
     private HTMLText customDescription;
-    private JIPipeGraph graph;
+    private JIPipeGraph parentGraph;
     private Path projectWorkDirectory;
     private Path scratchBaseDirectory;
     private boolean bookmarked;
@@ -474,8 +474,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public void toJson(JsonGenerator jsonGenerator) throws IOException, JsonProcessingException {
         jsonGenerator.writeStartObject();
-        jsonGenerator.writeStringField("jipipe:graph-compartment", StringUtils.nullToEmpty(getCompartmentUUIDInGraph()));
-        jsonGenerator.writeStringField("jipipe:alias-id", StringUtils.nullToEmpty(getAliasIdInGraph()));
+        jsonGenerator.writeStringField("jipipe:graph-compartment", StringUtils.nullToEmpty(getCompartmentUUIDInParentGraph()));
+        jsonGenerator.writeStringField("jipipe:alias-id", StringUtils.nullToEmpty(getAliasIdInParentGraph()));
         jsonGenerator.writeObjectField("jipipe:slot-configuration", slotConfiguration);
         jsonGenerator.writeFieldName("jipipe:ui-grid-location");
         jsonGenerator.writeStartObject();
@@ -626,7 +626,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     public List<JIPipeDataSlot> getOpenInputSlots() {
         List<JIPipeDataSlot> result = new ArrayList<>();
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
-            if (graph.getSourceSlots(inputSlot).isEmpty()) {
+            if (parentGraph.getInputIncomingSourceSlots(inputSlot).isEmpty()) {
                 result.add(inputSlot);
             }
         }
@@ -681,18 +681,18 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return Graph instance or null
      */
-    public JIPipeGraph getGraph() {
-        return graph;
+    public JIPipeGraph getParentGraph() {
+        return parentGraph;
     }
 
     /**
      * Sets the graph this algorithm is location in.
      * This has no side effects and is only for reference usage.
      *
-     * @param graph Graph instance or null
+     * @param parentGraph Graph instance or null
      */
-    public void setGraph(JIPipeGraph graph) {
-        this.graph = graph;
+    public void setParentGraph(JIPipeGraph parentGraph) {
+        this.parentGraph = parentGraph;
     }
 
     /**
@@ -700,8 +700,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return The UUID within getGraph()
      */
-    public UUID getUUIDInGraph() {
-        return graph.getUUIDOf(this);
+    public UUID getUUIDInParentGraph() {
+        return parentGraph.getUUIDOf(this);
     }
 
     /**
@@ -709,9 +709,9 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return The UUID within getGraph()
      */
-    public UUID getCompartmentUUIDInGraph() {
-        if (graph != null) {
-            return graph.getCompartmentUUIDOf(this);
+    public UUID getCompartmentUUIDInParentGraph() {
+        if (parentGraph != null) {
+            return parentGraph.getCompartmentUUIDOf(this);
         } else {
             return null;
         }
@@ -794,10 +794,10 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public Path getNewScratch() {
         if (getScratchBaseDirectory() == null) {
-            return RuntimeSettings.generateTempDirectory(getGraph() != null ? getAliasIdInGraph() : "scratch");
+            return RuntimeSettings.generateTempDirectory(getParentGraph() != null ? getAliasIdInParentGraph() : "scratch");
         }
         try {
-            return Files.createTempDirectory(getScratchBaseDirectory(), getGraph() != null ? getAliasIdInGraph() : "scratch");
+            return Files.createTempDirectory(getScratchBaseDirectory(), getParentGraph() != null ? getAliasIdInParentGraph() : "scratch");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -825,7 +825,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
             return slotInstance.getAcceptedDataType();
 
         // Inherit from the inherited slot if there is no graph connection
-        Set<JIPipeDataSlot> sourceSlots = graph.getSourceSlots(inheritedSlot);
+        Set<JIPipeDataSlot> sourceSlots = parentGraph.getInputIncomingSourceSlots(inheritedSlot);
         Class<? extends JIPipeData> inheritedType;
         if (sourceSlots.isEmpty())
             inheritedType = JIPipeDataSlotInfo.applyInheritanceConversion(slotDefinition, inheritedSlot.getAcceptedDataType());
@@ -844,7 +844,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * the trait configuration.
      */
     public void updateSlotInheritance() {
-        if (graph != null) {
+        if (parentGraph != null) {
             boolean modified = false;
             for (Map.Entry<String, JIPipeDataSlotInfo> entry : getSlotConfiguration().getOutputSlots().entrySet()) {
                 JIPipeDataSlot slotInstance = outputSlotMap.getOrDefault(entry.getKey(), null);
@@ -861,7 +861,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
             if (modified) {
                 Set<JIPipeGraphNode> algorithms = new HashSet<>();
                 for (JIPipeDataSlot slot : getOutputSlots()) {
-                    for (JIPipeDataSlot targetSlot : graph.getTargetSlots(slot)) {
+                    for (JIPipeDataSlot targetSlot : parentGraph.getOutputOutgoingTargetSlots(slot)) {
                         algorithms.add(targetSlot.getNode());
                     }
                 }
@@ -971,7 +971,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return if a user can delete this algorithm
      */
     public boolean canUserDelete() {
-        return graph.canUserDelete(this);
+        return parentGraph.canUserDelete(this);
     }
 
     /**
@@ -1039,10 +1039,10 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     }
 
     public boolean isVisibleIn(UUID compartmentUUIDInGraph) {
-        UUID currentCompartmentUUID = getCompartmentUUIDInGraph();
+        UUID currentCompartmentUUID = getCompartmentUUIDInParentGraph();
         if (Objects.equals(compartmentUUIDInGraph, currentCompartmentUUID))
             return true;
-        return graph.getVisibleCompartmentUUIDsOf(this).contains(compartmentUUIDInGraph);
+        return parentGraph.getVisibleCompartmentUUIDsOf(this).contains(compartmentUUIDInGraph);
     }
 
     /**
@@ -1052,10 +1052,10 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     public String getCompartmentDisplayName() {
         String compartment = "";
-        if (graph != null) {
-            UUID compartmentUUID = getCompartmentUUIDInGraph();
+        if (parentGraph != null) {
+            UUID compartmentUUID = getCompartmentUUIDInParentGraph();
             if (compartmentUUID != null) {
-                JIPipeProject project = graph.getProject();
+                JIPipeProject project = parentGraph.getProject();
                 if (project != null) {
                     JIPipeProjectCompartment projectCompartment = project.getCompartments().getOrDefault(compartmentUUID, null);
                     if (projectCompartment != null) {
@@ -1086,7 +1086,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return UUID as string or an empty string of the compartment is null;
      */
     public String getCompartmentUUIDInGraphAsString() {
-        return StringUtils.nullToEmpty(getCompartmentUUIDInGraph());
+        return StringUtils.nullToEmpty(getCompartmentUUIDInParentGraph());
     }
 
     /**
@@ -1096,9 +1096,9 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return the alias ID. Null if there is no graph.
      */
-    public String getAliasIdInGraph() {
-        if (graph != null) {
-            return graph.getAliasIdOf(this);
+    public String getAliasIdInParentGraph() {
+        if (parentGraph != null) {
+            return parentGraph.getAliasIdOf(this);
         } else {
             return null;
         }
@@ -1111,8 +1111,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return the compartment
      */
     public JIPipeProjectCompartment getProjectCompartment() {
-        JIPipeProject project = graph.getAttachment(JIPipeProject.class);
-        return project.getCompartments().getOrDefault(getCompartmentUUIDInGraph(), null);
+        JIPipeProject project = parentGraph.getAttachment(JIPipeProject.class);
+        return project.getCompartments().getOrDefault(getCompartmentUUIDInParentGraph(), null);
     }
 
     /**

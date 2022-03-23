@@ -115,7 +115,7 @@ public class JIPipeResultUI extends JIPipeProjectWorkbenchPanel {
         UUID projectCompartmentUUID = compartment.getProjectCompartmentUUID();
         List<JIPipeDataSlot> result = new ArrayList<>();
         for (JIPipeGraphNode algorithm : run.getGraph().getGraphNodes()) {
-            if (Objects.equals(algorithm.getCompartmentUUIDInGraph(), projectCompartmentUUID)) {
+            if (Objects.equals(algorithm.getCompartmentUUIDInParentGraph(), projectCompartmentUUID)) {
                 for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
                     if (Files.exists(outputSlot.getSlotStoragePath().resolve("data-table.json"))) {
                         result.add(outputSlot);

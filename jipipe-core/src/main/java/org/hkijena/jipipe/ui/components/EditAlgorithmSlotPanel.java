@@ -236,7 +236,7 @@ public class EditAlgorithmSlotPanel extends JPanel {
 
         // Create a undo snapshot
         if (getHistoryJournal() != null) {
-            getHistoryJournal().snapshotBeforeEditSlot(existingSlot, existingSlot.getNode().getCompartmentUUIDInGraph());
+            getHistoryJournal().snapshotBeforeEditSlot(existingSlot, existingSlot.getNode().getCompartmentUUIDInParentGraph());
         }
 
         JIPipeGraphNode algorithm = existingSlot.getNode();
@@ -261,15 +261,15 @@ public class EditAlgorithmSlotPanel extends JPanel {
 
         // Remember connections to the existing slot
         // Remember the slot order
-        JIPipeGraph graph = algorithm.getGraph();
+        JIPipeGraph graph = algorithm.getParentGraph();
         Set<JIPipeDataSlot> sourceSlots = null;
         Set<JIPipeDataSlot> targetSlots = null;
         List<String> slotOrder;
         if (slotType == JIPipeSlotType.Input) {
-            sourceSlots = graph.getSourceSlots(existingSlot);
+            sourceSlots = graph.getInputIncomingSourceSlots(existingSlot);
             slotOrder = new ArrayList<>(slotConfiguration.getInputSlotOrder());
         } else {
-            targetSlots = graph.getTargetSlots(existingSlot);
+            targetSlots = graph.getOutputOutgoingTargetSlots(existingSlot);
             slotOrder = new ArrayList<>(slotConfiguration.getOutputSlotOrder());
         }
 

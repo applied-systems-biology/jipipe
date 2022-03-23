@@ -260,7 +260,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
         slotDefinition.setInheritanceConversions(inheritanceConversions);
 
         if (getHistoryJournal() != null) {
-            getHistoryJournal().snapshotBeforeAddSlot(algorithm, slotDefinition, algorithm.getCompartmentUUIDInGraph());
+            getHistoryJournal().snapshotBeforeAddSlot(algorithm, slotDefinition, algorithm.getCompartmentUUIDInParentGraph());
         }
 
         slotConfiguration.addSlot(slotName, slotDefinition, true);

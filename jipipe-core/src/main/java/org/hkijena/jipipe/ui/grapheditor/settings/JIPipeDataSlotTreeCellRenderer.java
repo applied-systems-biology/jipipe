@@ -88,7 +88,7 @@ public class JIPipeDataSlotTreeCellRenderer extends JPanel implements TreeCellRe
                 slotLabel.setText(null);
             }
             if (slot.isInput()) {
-                Set<JIPipeDataSlot> sourceSlots = slot.getNode().getGraph().getSourceSlots(slot);
+                Set<JIPipeDataSlot> sourceSlots = slot.getNode().getParentGraph().getInputIncomingSourceSlots(slot);
                 if (sourceSlots.isEmpty()) {
                     slotEdges.setText("No connections");
                 } else {
@@ -101,7 +101,7 @@ public class JIPipeDataSlotTreeCellRenderer extends JPanel implements TreeCellRe
                     slotEdges.setText(stringBuilder.toString());
                 }
             } else {
-                Set<JIPipeDataSlot> targetSlots = slot.getNode().getGraph().getTargetSlots(slot);
+                Set<JIPipeDataSlot> targetSlots = slot.getNode().getParentGraph().getOutputOutgoingTargetSlots(slot);
                 if (targetSlots.isEmpty()) {
                     slotEdges.setText("No connections");
                 } else {

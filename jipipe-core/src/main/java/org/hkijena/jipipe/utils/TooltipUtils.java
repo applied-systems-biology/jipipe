@@ -174,9 +174,9 @@ public class TooltipUtils {
             builder.append("## Developer information\n\n");
             builder.append("<table>");
             builder.append("<tr><td><strong>Node type ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(info.getId())).append("</code></td></tr>");
-            if (node.getGraph() != null) {
-                builder.append("<tr><td><strong>Node UUID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(node.getUUIDInGraph().toString())).append("</code></td></tr>");
-                builder.append("<tr><td><strong>Node alias ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(node.getAliasIdInGraph())).append("</code></td></tr>");
+            if (node.getParentGraph() != null) {
+                builder.append("<tr><td><strong>Node UUID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(node.getUUIDInParentGraph().toString())).append("</code></td></tr>");
+                builder.append("<tr><td><strong>Node alias ID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(node.getAliasIdInParentGraph())).append("</code></td></tr>");
                 builder.append("<tr><td><strong>Compartment UUID</strong></td><td><code>").append(HtmlEscapers.htmlEscaper().escape(node.getCompartmentUUIDInGraphAsString())).append("</code></td></tr>");
             }
             for (String dependencyCitation : info.getAdditionalCitations()) {

@@ -53,10 +53,10 @@ public class JIPipeProjectCacheQuery {
         for (JIPipeGraphNode node : project.getGraph().getGraphNodes()) {
             JIPipeProjectCacheState state = new JIPipeProjectCacheState(node, new HashSet<>(), LocalDateTime.now());
             stateGraph.addVertex(state);
-            cachedStates.put(node.getUUIDInGraph(), state);
+            cachedStates.put(node.getUUIDInParentGraph(), state);
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : project.getGraph().getSlotEdges()) {
-            stateGraph.addEdge(cachedStates.get(edge.getKey().getNode().getUUIDInGraph()), cachedStates.get(edge.getValue().getNode().getUUIDInGraph()));
+            stateGraph.addEdge(cachedStates.get(edge.getKey().getNode().getUUIDInParentGraph()), cachedStates.get(edge.getValue().getNode().getUUIDInParentGraph()));
         }
 
         // Resolve connections
@@ -87,7 +87,7 @@ public class JIPipeProjectCacheQuery {
      * @return map of slot name to cache slot
      */
     public Map<String, JIPipeDataSlot> getCachedData(JIPipeGraphNode node) {
-        return project.getCache().extract(node.getUUIDInGraph(), getCachedId(node.getUUIDInGraph()));
+        return project.getCache().extract(node.getUUIDInParentGraph(), getCachedId(node.getUUIDInParentGraph()));
     }
 
     /**

@@ -38,7 +38,7 @@ public class JsonAlgorithmToGroupNodeUIContextAction implements NodeUIContextAct
             return;
         if (canvasUI.getHistoryJournal() != null) {
             Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
-            UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInGraph).findFirst().orElse(null);
+            UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInParentGraph).findFirst().orElse(null);
             canvasUI.getHistoryJournal().snapshot("Convert to group", "Converted nodes into a group", compartment, UIUtils.getIconFromResources("actions/extract-archive.png"));
         }
         for (JIPipeNodeUI ui : selection) {

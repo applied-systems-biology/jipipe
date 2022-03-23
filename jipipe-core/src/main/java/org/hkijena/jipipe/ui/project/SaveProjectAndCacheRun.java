@@ -83,7 +83,7 @@ public class SaveProjectAndCacheRun implements JIPipeRunnable {
             if (cache == null || cache.isEmpty())
                 continue;
 
-            Path nodeDir = outputPath.resolve(node.getProjectCompartment().getAliasIdInGraph()).resolve(node.getAliasIdInGraph());
+            Path nodeDir = outputPath.resolve(node.getProjectCompartment().getAliasIdInParentGraph()).resolve(node.getAliasIdInParentGraph());
             try {
                 Files.createDirectories(nodeDir);
             } catch (IOException e) {

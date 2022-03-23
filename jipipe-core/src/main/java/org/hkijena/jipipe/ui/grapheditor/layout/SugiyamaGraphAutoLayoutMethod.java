@@ -50,9 +50,9 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             boolean isFreeFloating = true;
             outer:
             for (JIPipeDataSlot inputSlot : ui.getNode().getInputSlots()) {
-                Set<JIPipeDataSlot> sourceSlots = graph.getSourceSlots(inputSlot);
+                Set<JIPipeDataSlot> sourceSlots = graph.getInputIncomingSourceSlots(inputSlot);
                 for (JIPipeDataSlot sourceSlot : sourceSlots) {
-                    if (Objects.equals(sourceSlot.getNode().getCompartmentUUIDInGraph(), inputSlot.getNode().getCompartmentUUIDInGraph())) {
+                    if (Objects.equals(sourceSlot.getNode().getCompartmentUUIDInParentGraph(), inputSlot.getNode().getCompartmentUUIDInParentGraph())) {
                         isFreeFloating = false;
                         break outer;
                     }
@@ -61,8 +61,8 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             if (isFreeFloating) {
                 outer:
                 for (JIPipeDataSlot outputSlot : ui.getNode().getOutputSlots()) {
-                    for (JIPipeDataSlot targetSlot : graph.getTargetSlots(outputSlot)) {
-                        if (Objects.equals(outputSlot.getNode().getCompartmentUUIDInGraph(), targetSlot.getNode().getCompartmentUUIDInGraph())) {
+                    for (JIPipeDataSlot targetSlot : graph.getOutputOutgoingTargetSlots(outputSlot)) {
+                        if (Objects.equals(outputSlot.getNode().getCompartmentUUIDInParentGraph(), targetSlot.getNode().getCompartmentUUIDInParentGraph())) {
                             isFreeFloating = false;
                             break outer;
                         }

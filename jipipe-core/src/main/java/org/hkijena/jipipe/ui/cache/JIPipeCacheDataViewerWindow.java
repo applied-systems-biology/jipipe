@@ -71,7 +71,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
         if(dataSource.getDataTable() instanceof JIPipeDataSlot) {
             JIPipeGraphNode node = ((JIPipeDataSlot) dataSource.getDataTable()).getNode();
-            if(node != null && node.getGraph() != null) {
+            if(node != null && node.getParentGraph() != null) {
                 this.algorithm = (JIPipeAlgorithm) project.getGraph().getEquivalentAlgorithm(node);
             }
             else {

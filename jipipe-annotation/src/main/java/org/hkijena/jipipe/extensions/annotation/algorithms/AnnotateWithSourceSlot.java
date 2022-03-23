@@ -71,7 +71,7 @@ public class AnnotateWithSourceSlot extends JIPipeSimpleIteratingAlgorithm {
             JIPipeData inputData = dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo);
 
             String annotationValue;
-            Set<JIPipeDataSlot> sourceSlots = getGraph().getSourceSlots(getFirstInputSlot());
+            Set<JIPipeDataSlot> sourceSlots = getParentGraph().getInputIncomingSourceSlots(getFirstInputSlot());
             if (sourceSlots.isEmpty()) {
                 annotationValue = "";
             } else if (sourceSlots.size() == 1) {

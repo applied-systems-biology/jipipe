@@ -44,7 +44,7 @@ public class ExportCompartmentToNodeUIContextAction implements NodeUIContextActi
         final UUID compartmentId = compartment.getProjectCompartmentUUID();
         JIPipeIssueReport report = new JIPipeIssueReport();
         for (JIPipeGraphNode node : project.getGraph().getGraphNodes()) {
-            if (Objects.equals(node.getCompartmentUUIDInGraph(), compartmentId)) {
+            if (Objects.equals(node.getCompartmentUUIDInParentGraph(), compartmentId)) {
                 report.resolve(node.getDisplayName()).report(node);
             }
         }

@@ -19,9 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
 import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ZoomFlatIconButton;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
@@ -73,9 +71,9 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
     private void reloadContextMenu() {
         contextMenu.removeAll();
         JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(getProject());
-        JIPipeProjectCacheState currentState = query.getCachedId(getDataSlot().getNode().getUUIDInGraph());
+        JIPipeProjectCacheState currentState = query.getCachedId(getDataSlot().getNode().getUUIDInParentGraph());
 
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(getDataSlot().getNode().getUUIDInGraph());
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(getDataSlot().getNode().getUUIDInParentGraph());
         if (stateMap != null) {
             JMenuItem openCurrent = createOpenStateButton(stateMap, currentState, "Open current snapshot");
             if (openCurrent != null) {
@@ -104,7 +102,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
 
         JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("actions/delete.png"));
         clearAll.setToolTipText("Removes all cached items for this node.");
-        clearAll.addActionListener(e -> getProject().getCache().clear(dataSlot.getNode().getUUIDInGraph()));
+        clearAll.addActionListener(e -> getProject().getCache().clear(dataSlot.getNode().getUUIDInParentGraph()));
         contextMenu.add(clearAll);
     }
 
@@ -156,7 +154,7 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
 
     private void updateStatus() {
         JIPipeProjectCache cache = getProject().getCache();
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cache.extract(getDataSlot().getNode().getUUIDInGraph());
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cache.extract(getDataSlot().getNode().getUUIDInParentGraph());
         int dataRows = 0;
         if (stateMap != null) {
             for (Map<String, JIPipeDataSlot> slotMap : stateMap.values()) {

@@ -132,10 +132,10 @@ public class GetJIPipeSlotFolderAlgorithm extends JIPipeSimpleIteratingAlgorithm
                         DefaultMutableTreeNode node = (DefaultMutableTreeNode) component;
                         if (node.getUserObject() instanceof JIPipeDataSlot) {
                             JIPipeDataSlot slot = (JIPipeDataSlot) node.getUserObject();
-                            ParameterUtils.setParameter(this, "node-id", slot.getNode().getAliasIdInGraph());
+                            ParameterUtils.setParameter(this, "node-id", slot.getNode().getAliasIdInParentGraph());
                             ParameterUtils.setParameter(this, "slot-name", slot.getName());
                             ParameterUtils.setParameter(this, "compartment-id",
-                                    slot.getNode().getProjectCompartment().getAliasIdInGraph());
+                                    slot.getNode().getProjectCompartment().getAliasIdInParentGraph());
                         } else {
                             JOptionPane.showMessageDialog(workbench.getWindow(), "Please select a slot", "Error", JOptionPane.ERROR_MESSAGE);
                         }

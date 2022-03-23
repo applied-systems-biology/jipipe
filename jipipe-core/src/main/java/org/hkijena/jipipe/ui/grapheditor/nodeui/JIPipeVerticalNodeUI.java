@@ -178,7 +178,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
 
     @Override
     public void updateHotkeyInfo() {
-        NodeHotKeyStorage.Hotkey hotkey = getGraphUI().getNodeHotKeyStorage().getHotkeyFor(getGraphUI().getCompartment(), getNode().getUUIDInGraph());
+        NodeHotKeyStorage.Hotkey hotkey = getGraphUI().getNodeHotKeyStorage().getHotkeyFor(getGraphUI().getCompartment(), getNode().getUUIDInParentGraph());
         openSettingsButton.setVisible(hotkey != NodeHotKeyStorage.Hotkey.None || getGraphUI().getSettings().isShowSettingsNodeButton());
         switch (hotkey) {
             case None:
@@ -340,7 +340,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
 
         // For JIPipeCompartmentOutput, we want to hide creating outputs / inputs depending on the current compartment
         if (getNode() instanceof JIPipeCompartmentOutput) {
-            if (Objects.equals(getNode().getCompartmentUUIDInGraph(), getGraphUI().getCompartment())) {
+            if (Objects.equals(getNode().getCompartmentUUIDInParentGraph(), getGraphUI().getCompartment())) {
                 createAddOutputSlotButton = false;
                 createOutputSlots = false;
             } else {

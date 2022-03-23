@@ -92,7 +92,7 @@ public class JIPipeAlgorithmTargetRanking implements RankingFunction<Object> {
                     compatibilityRanking = -1;
                 }
                 ranks[2] = Math.min(compatibilityRanking, ranks[2]);
-                if (!sourceSlot.getNode().getGraph().getSourceSlots(targetSlot).isEmpty()) {
+                if (!sourceSlot.getNode().getParentGraph().getInputIncomingSourceSlots(targetSlot).isEmpty()) {
                     ranks[3] = 1;
                 }
             }

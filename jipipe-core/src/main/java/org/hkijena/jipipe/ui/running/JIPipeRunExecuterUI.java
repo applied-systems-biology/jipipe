@@ -182,7 +182,7 @@ public class JIPipeRunExecuterUI extends JPanel {
             progressBar.setMaximum(event.getStatus().getMaxProgress());
             progressBar.setValue(event.getStatus().getProgress());
             progressBar.setString("(" + progressBar.getValue() + "/" + progressBar.getMaximum() + ") " + event.getStatus().getMessage());
-            log.append("[" + event.getStatus().getProgress() + "/" + event.getStatus().getMaxProgress() + "] " + event.getStatus().getMessage() + "\n");
+            log.append(event.getStatus().render() + "\n");
         }
     }
 

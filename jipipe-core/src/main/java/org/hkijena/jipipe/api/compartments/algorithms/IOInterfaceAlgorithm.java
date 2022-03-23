@@ -57,17 +57,17 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
      * @param algorithm the algorithm
      */
     public static void collapse(IOInterfaceAlgorithm algorithm) {
-        JIPipeGraph graph = algorithm.getGraph();
+        JIPipeGraph graph = algorithm.getParentGraph();
         Multimap<String, JIPipeDataSlot> inputSourceMap = HashMultimap.create();
         Map<String, Set<JIPipeDataSlot>> outputTargetMap = new HashMap<>();
         for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-            Set<JIPipeDataSlot> sourceSlots = graph.getSourceSlots(inputSlot);
+            Set<JIPipeDataSlot> sourceSlots = graph.getInputIncomingSourceSlots(inputSlot);
             for (JIPipeDataSlot sourceSlot : sourceSlots) {
                 inputSourceMap.put(inputSlot.getName(), sourceSlot);
             }
         }
         for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
-            outputTargetMap.put(outputSlot.getName(), graph.getTargetSlots(outputSlot));
+            outputTargetMap.put(outputSlot.getName(), graph.getOutputOutgoingTargetSlots(outputSlot));
         }
 
         graph.removeNode(algorithm, false);
@@ -87,8 +87,8 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
      * @param compartmentOutput the output to be replaced
      */
     public static void replaceCompartmentOutput(JIPipeCompartmentOutput compartmentOutput) {
-        JIPipeGraph graph = compartmentOutput.getGraph();
-        UUID uuid = compartmentOutput.getUUIDInGraph();
+        JIPipeGraph graph = compartmentOutput.getParentGraph();
+        UUID uuid = compartmentOutput.getUUIDInParentGraph();
         IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode("io-interface", IOInterfaceAlgorithm.class);
         ioInterfaceAlgorithm.setCustomName(compartmentOutput.getName());
         ioInterfaceAlgorithm.setCustomDescription(compartmentOutput.getCustomDescription());
@@ -97,16 +97,16 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
         Multimap<String, JIPipeDataSlot> inputSourceMap = HashMultimap.create();
         Map<String, Set<JIPipeDataSlot>> outputTargetMap = new HashMap<>();
         for (JIPipeDataSlot inputSlot : compartmentOutput.getInputSlots()) {
-            Set<JIPipeDataSlot> sourceSlots = graph.getSourceSlots(inputSlot);
+            Set<JIPipeDataSlot> sourceSlots = graph.getInputIncomingSourceSlots(inputSlot);
             for (JIPipeDataSlot sourceSlot : sourceSlots) {
                 inputSourceMap.put(inputSlot.getName(), sourceSlot);
             }
         }
         for (JIPipeDataSlot outputSlot : compartmentOutput.getOutputSlots()) {
-            outputTargetMap.put(outputSlot.getName(), graph.getTargetSlots(outputSlot));
+            outputTargetMap.put(outputSlot.getName(), graph.getOutputOutgoingTargetSlots(outputSlot));
         }
         graph.removeNode(compartmentOutput, false);
-        graph.insertNode(uuid, ioInterfaceAlgorithm, compartmentOutput.getCompartmentUUIDInGraph());
+        graph.insertNode(uuid, ioInterfaceAlgorithm, compartmentOutput.getCompartmentUUIDInParentGraph());
         for (Map.Entry<String, Collection<JIPipeDataSlot>> entry : inputSourceMap.asMap().entrySet()) {
             JIPipeDataSlot target = ioInterfaceAlgorithm.getInputSlot(entry.getKey());
             for (JIPipeDataSlot source : entry.getValue()) {

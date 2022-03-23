@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.theme.ArrowLessScrollBarUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -61,7 +60,7 @@ public class JIPipeAlgorithmCacheTree extends JIPipeProjectWorkbenchPanel {
         stateTreeNodeMap.clear();
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(null);
 
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode.getUUIDInGraph());
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode.getUUIDInParentGraph());
         if (stateMap != null) {
             for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
                 DefaultMutableTreeNode stateNode = new DefaultMutableTreeNode(stateEntry.getKey());

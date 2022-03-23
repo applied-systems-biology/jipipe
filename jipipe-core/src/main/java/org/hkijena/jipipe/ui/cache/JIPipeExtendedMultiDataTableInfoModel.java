@@ -79,7 +79,7 @@ public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
         }
         JIPipeProjectCompartment compartment = null;
         if (project != null && dataTable instanceof JIPipeDataSlot) {
-            compartment = project.getCompartments().getOrDefault(((JIPipeDataSlot) dataTable).getNode().getCompartmentUUIDInGraph(), null);
+            compartment = project.getCompartments().getOrDefault(((JIPipeDataSlot) dataTable).getNode().getCompartmentUUIDInParentGraph(), null);
         }
         if (compartment == null) {
             compartment = new JIPipeProjectCompartment(new JIPipeEmptyNodeInfo());

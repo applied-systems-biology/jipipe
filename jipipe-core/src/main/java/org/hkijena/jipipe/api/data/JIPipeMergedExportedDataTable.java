@@ -56,7 +56,7 @@ public class JIPipeMergedExportedDataTable implements TableModel {
             if (!dataAnnotationColumns.contains(annotationColumn))
                 dataAnnotationColumns.add(annotationColumn);
         }
-        UUID compartmentUUID = dataSlot.getNode().getCompartmentUUIDInGraph();
+        UUID compartmentUUID = dataSlot.getNode().getCompartmentUUIDInParentGraph();
         JIPipeProjectCompartment compartment = project.getCompartments().get(compartmentUUID);
         JIPipeGraphNode algorithm = dataSlot.getNode();
 

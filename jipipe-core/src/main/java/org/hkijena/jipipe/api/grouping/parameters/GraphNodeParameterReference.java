@@ -140,7 +140,7 @@ public class GraphNodeParameterReference {
             UUID uuid = null;
             for (JIPipeParameterAccess access : tree.getParameters().values()) {
                 if (access.getSource() instanceof JIPipeGraphNode) {
-                    JIPipeGraph graph = ((JIPipeGraphNode) access.getSource()).getGraph();
+                    JIPipeGraph graph = ((JIPipeGraphNode) access.getSource()).getParentGraph();
                     if (graph == null)
                         break;
                     uuid = graph.findNodeUUID(uuidOrAlias);

@@ -137,8 +137,8 @@ public class RenderPipelineRun implements JIPipeRunnable {
         final Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : project.getCompartmentGraph().getSlotEdges()) {
             JIPipeGraphEdge graphEdge = project.getCompartmentGraph().getGraph().getEdge(edge.getKey(), edge.getValue());
-            UUID sourceCompartment = edge.getKey().getNode().getUUIDInGraph();
-            UUID targetCompartment = edge.getValue().getNode().getUUIDInGraph();
+            UUID sourceCompartment = edge.getKey().getNode().getUUIDInParentGraph();
+            UUID targetCompartment = edge.getValue().getNode().getUUIDInParentGraph();
             Rectangle sourceBounds = new Rectangle(compartmentBounds.get(sourceCompartment));
             Rectangle targetBounds = new Rectangle(compartmentBounds.get(targetCompartment));
             sourceBounds.x *= scaleFactor;
@@ -387,7 +387,7 @@ public class RenderPipelineRun implements JIPipeRunnable {
                 canvasUI.crop(false);
                 canvasUI.revalidate();
                 for (Map.Entry<JIPipeGraphNode, JIPipeNodeUI> entry : canvasUI.getNodeUIs().entrySet()) {
-                    compartmentBounds.put(entry.getKey().getUUIDInGraph(), entry.getValue().getBounds());
+                    compartmentBounds.put(entry.getKey().getUUIDInParentGraph(), entry.getValue().getBounds());
                 }
             });
         } catch (InterruptedException | InvocationTargetException e) {

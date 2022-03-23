@@ -61,7 +61,7 @@ public class LoadResultIntoCacheRun implements JIPipeRunnable {
             JIPipeGraphNode node = nodes.get(i);
             progressInfo.setProgress(i, nodes.size());
             JIPipeProgressInfo nodeProgress = progressInfo.resolveAndLog(node.getDisplayName(), i, nodes.size());
-            Path nodeDir = resultPath.resolve(node.getProjectCompartment().getAliasIdInGraph()).resolve(node.getAliasIdInGraph());
+            Path nodeDir = resultPath.resolve(node.getProjectCompartment().getAliasIdInParentGraph()).resolve(node.getAliasIdInParentGraph());
 
             if (Files.isDirectory(nodeDir)) {
                 JIPipeImportCachedSlotOutputRun run = new JIPipeImportCachedSlotOutputRun(project, node, nodeDir);

@@ -29,7 +29,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.batchassistant.DataBatchStatusData;
 import org.hkijena.jipipe.extensions.strings.StringData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
@@ -78,7 +77,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         updateStatus();
         getProject().getCache().getEventBus().register(this);
         algorithm.getEventBus().register(this);
-        algorithm.getGraph().getEventBus().register(this);
+        algorithm.getParentGraph().getEventBus().register(this);
         batchSettings.getEventBus().register(this);
     }
 
@@ -90,16 +89,16 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         }
         JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(getProject());
         for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-            Set<JIPipeDataSlot> sourceSlots = algorithm.getGraph().getSourceSlots(inputSlot);
+            Set<JIPipeDataSlot> sourceSlots = algorithm.getParentGraph().getInputIncomingSourceSlots(inputSlot);
             if (!sourceSlots.isEmpty()) {
                 for (JIPipeDataSlot sourceSlot : sourceSlots) {
-                    Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> sourceCaches = getProject().getCache().extract(sourceSlot.getNode().getUUIDInGraph());
+                    Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> sourceCaches = getProject().getCache().extract(sourceSlot.getNode().getUUIDInParentGraph());
                     if (sourceCaches == null || sourceCaches.isEmpty()) {
                         errorLabel.setText("No cached data available");
                         currentCache.clear();
                         return;
                     }
-                    Map<String, JIPipeDataSlot> sourceCache = sourceCaches.getOrDefault(query.getCachedId(sourceSlot.getNode().getUUIDInGraph()), null);
+                    Map<String, JIPipeDataSlot> sourceCache = sourceCaches.getOrDefault(query.getCachedId(sourceSlot.getNode().getUUIDInParentGraph()), null);
                     if (sourceCache != null) {
                         JIPipeDataSlot cache = sourceCache.getOrDefault(sourceSlot.getName(), null);
                         if (cache != null) {

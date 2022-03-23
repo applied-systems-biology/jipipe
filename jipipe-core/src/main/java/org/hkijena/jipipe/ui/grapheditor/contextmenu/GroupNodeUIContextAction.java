@@ -39,7 +39,7 @@ public class GroupNodeUIContextAction implements NodeUIContextAction {
             return;
         if (canvasUI.getHistoryJournal() != null) {
             Set<JIPipeGraphNode> nodes = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());
-            UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInGraph).findFirst().orElse(null);
+            UUID compartment = nodes.stream().map(JIPipeGraphNode::getUUIDInParentGraph).findFirst().orElse(null);
             canvasUI.getHistoryJournal().snapshot("Group", "Grouped nodes", compartment, UIUtils.getIconFromResources("actions/object-group.png"));
         }
         Set<JIPipeGraphNode> algorithms = selection.stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet());

@@ -74,7 +74,7 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
         // Change the compartment
         UUID compartment = canvasUI.getCompartment();
         for (JIPipeGraphNode node : graph.getGraphNodes()) {
-            graph.setCompartment(node.getUUIDInGraph(), compartment);
+            graph.setCompartment(node.getUUIDInParentGraph(), compartment);
         }
 
         // Update the location relative to the mouse

@@ -1167,7 +1167,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 }
             } else if (currentHighlightedForDisconnect.getSlot().isOutput()) {
                 JIPipeDataSlot source = currentHighlightedForDisconnect.getSlot();
-                for (JIPipeDataSlot target : getGraph().getTargetSlots(source)) {
+                for (JIPipeDataSlot target : getGraph().getOutputOutgoingTargetSlots(source)) {
                     JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
                     JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
 
@@ -1442,7 +1442,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 Point sourcePoint = new Point();
                 Point targetPoint = new Point();
                 if (viewMode == JIPipeGraphViewMode.Horizontal) {
-                    if (getCompartment() == null || getCompartment().equals(ui.getNode().getCompartmentUUIDInGraph())) {
+                    if (getCompartment() == null || getCompartment().equals(ui.getNode().getCompartmentUUIDInParentGraph())) {
                         sourcePoint.x = ui.getX() + ui.getWidth();
                         sourcePoint.y = ui.getY() + viewMode.getGridHeight() / 2;
                         targetPoint.x = getWidth();
@@ -1454,7 +1454,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                         targetPoint.y = sourcePoint.y;
                     }
                 } else {
-                    if (getCompartment() == null || getCompartment().equals(ui.getNode().getCompartmentUUIDInGraph())) {
+                    if (getCompartment() == null || getCompartment().equals(ui.getNode().getCompartmentUUIDInParentGraph())) {
                         sourcePoint.x = ui.getX() + ui.getWidth() / 2;
                         sourcePoint.y = ui.getY() + ui.getHeight();
                         targetPoint.x = sourcePoint.x;

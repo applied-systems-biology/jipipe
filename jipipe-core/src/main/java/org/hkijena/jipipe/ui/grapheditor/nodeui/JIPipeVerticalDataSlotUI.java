@@ -69,7 +69,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
     @Override
     protected void reloadButtonStatus() {
         if (getSlot().isInput()) {
-            if (getGraph().getSourceSlots(getSlot()).isEmpty()) {
+            if (getGraph().getInputIncomingSourceSlots(getSlot()).isEmpty()) {
                 if (getSlot().getInfo().isOptional()) {
                     assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-output-vertical.png"), getGraphUI()));
                 } else {
@@ -79,7 +79,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
                 assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-connected-vertical.png"), getGraphUI()));
             }
         } else if (getSlot().isOutput()) {
-            if (getGraph().getTargetSlots(getSlot()).isEmpty()) {
+            if (getGraph().getOutputOutgoingTargetSlots(getSlot()).isEmpty()) {
                 assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-unconnected-output-vertical.png"), getGraphUI()));
             } else {
                 assignButton.setIcon(new ZoomIcon(UIUtils.getIconFromResources("emblems/slot-connected-vertical.png"), getGraphUI()));
@@ -113,7 +113,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
 
         if (getSlot().getNode() instanceof JIPipeCompartmentOutput) {
-            if (Objects.equals(getSlot().getNode().getCompartmentUUIDInGraph(), getCompartment())) {
+            if (Objects.equals(getSlot().getNode().getCompartmentUUIDInParentGraph(), getCompartment())) {
                 if (getSlot().isOutput()) {
                     assignButton.setEnabled(false);
                 }

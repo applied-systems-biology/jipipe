@@ -16,7 +16,6 @@ package org.hkijena.jipipe.ui.resultanalysis;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 
 import java.nio.file.Path;
@@ -77,7 +76,7 @@ public abstract class JIPipeResultDataSlotRowUI extends JIPipeProjectWorkbenchPa
      * @return the compartment name of the algorithm that generated the data
      */
     public String getAlgorithmCompartmentName() {
-        return getProjectWorkbench().getProject().getCompartments().get(slot.getNode().getCompartmentUUIDInGraph()).getName();
+        return getProjectWorkbench().getProject().getCompartments().get(slot.getNode().getCompartmentUUIDInParentGraph()).getName();
     }
 
     /**

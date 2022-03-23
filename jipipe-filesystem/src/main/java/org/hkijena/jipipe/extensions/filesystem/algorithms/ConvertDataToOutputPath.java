@@ -49,7 +49,7 @@ public class ConvertDataToOutputPath extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        for (JIPipeDataSlot sourceSlot : getGraph().getSourceSlots(getFirstInputSlot())) {
+        for (JIPipeDataSlot sourceSlot : getParentGraph().getInputIncomingSourceSlots(getFirstInputSlot())) {
             dataBatch.addOutputData(getFirstOutputSlot(), new FolderData(sourceSlot.getSlotStoragePath()), progressInfo);
         }
     }

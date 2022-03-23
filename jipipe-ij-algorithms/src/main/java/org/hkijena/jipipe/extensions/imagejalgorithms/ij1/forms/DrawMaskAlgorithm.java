@@ -121,7 +121,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
         synchronized (lock) {
             SwingUtilities.invokeLater(() -> {
                 try {
-                    JIPipeWorkbench workbench = JIPipeWorkbench.tryFindWorkbench(getGraph(), new JIPipeDummyWorkbench());
+                    JIPipeWorkbench workbench = JIPipeWorkbench.tryFindWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
                     FormsDialog dialog = new FormsDialog(workbench, dataBatches, formsSlot, "Tab");
                     dialog.setTitle(getName());
                     dialog.setSize(1024, 768);

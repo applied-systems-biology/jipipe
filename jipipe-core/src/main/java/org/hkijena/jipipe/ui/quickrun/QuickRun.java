@@ -72,7 +72,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
             disabled.remove(targetNodeCopy);
             if(!settings.isStoreIntermediateResults() && settings.isExcludeSelected()) {
                 for (JIPipeDataSlot inputSlot : targetNodeCopy.getInputSlots()) {
-                    for (JIPipeDataSlot sourceSlot : getRun().getGraph().getSourceSlots(inputSlot)) {
+                    for (JIPipeDataSlot sourceSlot : getRun().getGraph().getInputIncomingSourceSlots(inputSlot)) {
                         JIPipeGraphNode node = sourceSlot.getNode();
                         disabled.remove(node);
                     }
@@ -93,7 +93,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
         while (!stack.isEmpty()) {
             JIPipeGraphNode node = stack.pop();
             for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
-                for (JIPipeDataSlot sourceSlot : run.getGraph().getSourceSlots(inputSlot)) {
+                for (JIPipeDataSlot sourceSlot : run.getGraph().getInputIncomingSourceSlots(inputSlot)) {
                     JIPipeGraphNode predecessorNode = sourceSlot.getNode();
                     if (handledNodes.contains(predecessorNode))
                         continue;
@@ -140,7 +140,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
         }
         if(settings.isExcludeSelected() && !settings.isStoreIntermediateResults()) {
             for (JIPipeDataSlot inputSlot : targetNodeCopy.getInputSlots()) {
-                for (JIPipeDataSlot sourceSlot : getRun().getGraph().getSourceSlots(inputSlot)) {
+                for (JIPipeDataSlot sourceSlot : getRun().getGraph().getInputIncomingSourceSlots(inputSlot)) {
                     JIPipeGraphNode node = sourceSlot.getNode();
                     if(node instanceof JIPipeAlgorithm) {
                         ((JIPipeAlgorithm) node).setEnabled(true);
@@ -151,7 +151,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
 
         // Remove the benched algorithm from cache. This is a workaround.
         if (settings.isLoadFromCache()) {
-            getProject().getCache().clear(targetNode.getUUIDInGraph());
+            getProject().getCache().clear(targetNode.getUUIDInParentGraph());
         }
 
         // Run the internal graph runner

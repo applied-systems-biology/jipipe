@@ -57,7 +57,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
      * @param algorithm the algorithm
      */
     public static void unpackToNodeGroup(JsonAlgorithm algorithm) {
-        JIPipeGraph graph = algorithm.getGraph();
+        JIPipeGraph graph = algorithm.getParentGraph();
         NodeGroup group = JIPipe.createNode("node-group", NodeGroup.class);
         group.setCustomName(algorithm.getName());
         group.setCustomDescription(algorithm.getCustomDescription());
@@ -74,7 +74,7 @@ public class JsonAlgorithm extends GraphWrapperAlgorithm implements JIPipeCustom
         }
 
         graph.removeNode(algorithm, false);
-        graph.insertNode(group, algorithm.getCompartmentUUIDInGraph());
+        graph.insertNode(group, algorithm.getCompartmentUUIDInParentGraph());
 
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : edges) {
             if (edge.getKey().getNode() == algorithm) {

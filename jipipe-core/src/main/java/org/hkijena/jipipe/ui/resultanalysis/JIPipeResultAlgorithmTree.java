@@ -65,7 +65,7 @@ public class JIPipeResultAlgorithmTree extends JIPipeProjectWorkbenchPanel {
             UUID projectCompartmentUUID = compartment.getProjectCompartmentUUID();
 
             for (JIPipeGraphNode algorithm : run.getGraph().traverse()) {
-                if (Objects.equals(algorithm.getCompartmentUUIDInGraph(), projectCompartmentUUID)) {
+                if (Objects.equals(algorithm.getCompartmentUUIDInParentGraph(), projectCompartmentUUID)) {
                     DefaultMutableTreeNode algorithmNode = new DefaultMutableTreeNode(algorithm);
 
                     boolean algorithmMatches = compartmentMatches || searchTextField.test(algorithm.getName());

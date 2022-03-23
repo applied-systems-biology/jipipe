@@ -37,8 +37,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Collections;
-import java.util.Map;
-import java.util.Objects;
 
 /**
  * UI for a single {@link JIPipeGraphNode}
@@ -82,7 +80,7 @@ public class JIPipeSingleAlgorithmSelectionPanelUI extends JIPipeProjectWorkbenc
                 () -> slotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
-        if (algorithm.getGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project) {
+        if (algorithm.getParentGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project) {
             cacheBrowserTabContent = new JPanel(new BorderLayout());
             if (algorithm instanceof JIPipeAlgorithm) {
                 tabbedPane.registerSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIconFromResources("actions/database.png"),

@@ -65,15 +65,15 @@ public class JIPipeExportedCompartment {
         Map<UUID, JIPipeGraphNode> copies = new HashMap<>();
         UUID compartmentId = compartment.getProjectCompartmentUUID();
         for (JIPipeGraphNode algorithm : sourceGraph.getGraphNodes()) {
-            if (!Objects.equals(algorithm.getCompartmentUUIDInGraph(), compartmentId))
+            if (!Objects.equals(algorithm.getCompartmentUUIDInParentGraph(), compartmentId))
                 continue;
             JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
             graph.insertNode(copy);
-            copies.put(algorithm.getUUIDInGraph(), copy);
+            copies.put(algorithm.getUUIDInParentGraph(), copy);
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : sourceGraph.getSlotEdges()) {
-            JIPipeGraphNode copySource = copies.getOrDefault(edge.getKey().getNode().getUUIDInGraph(), null);
-            JIPipeGraphNode copyTarget = copies.getOrDefault(edge.getValue().getNode().getUUIDInGraph(), null);
+            JIPipeGraphNode copySource = copies.getOrDefault(edge.getKey().getNode().getUUIDInParentGraph(), null);
+            JIPipeGraphNode copyTarget = copies.getOrDefault(edge.getValue().getNode().getUUIDInParentGraph(), null);
             if (copySource == null || copyTarget == null)
                 continue;
             graph.connect(copySource.getOutputSlotMap().get(edge.getKey().getName()),
@@ -105,26 +105,26 @@ public class JIPipeExportedCompartment {
 
         UUID compartmentUUID = compartment.getProjectCompartmentUUID();
         for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
-            graph.setCompartment(algorithm.getUUIDInGraph(), compartmentUUID);
+            graph.setCompartment(algorithm.getUUIDInParentGraph(), compartmentUUID);
         }
 
         Map<UUID, JIPipeGraphNode> copies = new HashMap<>();
         for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
             if (algorithm instanceof JIPipeCompartmentOutput) {
                 // We just assign the existing project output
-                copies.put(algorithm.getUUIDInGraph(), projectOutputNode);
+                copies.put(algorithm.getUUIDInParentGraph(), projectOutputNode);
 
                 // Copy the slot configuration over
                 projectOutputNode.getSlotConfiguration().setTo(algorithm.getSlotConfiguration());
             } else {
                 JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
                 project.getGraph().insertNode(copy, compartmentUUID);
-                copies.put(algorithm.getUUIDInGraph(), copy);
+                copies.put(algorithm.getUUIDInParentGraph(), copy);
             }
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : graph.getSlotEdges()) {
-            JIPipeGraphNode copySource = copies.get(edge.getKey().getNode().getUUIDInGraph());
-            JIPipeGraphNode copyTarget = copies.get(edge.getValue().getNode().getUUIDInGraph());
+            JIPipeGraphNode copySource = copies.get(edge.getKey().getNode().getUUIDInParentGraph());
+            JIPipeGraphNode copyTarget = copies.get(edge.getValue().getNode().getUUIDInParentGraph());
             project.getGraph().connect(copySource.getOutputSlotMap().get(edge.getKey().getName()),
                     copyTarget.getInputSlotMap().get(edge.getValue().getName()));
         }

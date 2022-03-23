@@ -207,7 +207,7 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
         rankedData.sort(Comparator.naturalOrder());
 
         // Add open slots
-        Set<JIPipeGraphNode> knownTargetAlgorithms = graph.getTargetSlots(outputSlot).stream().map(JIPipeDataSlot::getNode).collect(Collectors.toSet());
+        Set<JIPipeGraphNode> knownTargetAlgorithms = graph.getOutputOutgoingTargetSlots(outputSlot).stream().map(JIPipeDataSlot::getNode).collect(Collectors.toSet());
 
         // Add algorithms that allow adding slots of given type
         for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {

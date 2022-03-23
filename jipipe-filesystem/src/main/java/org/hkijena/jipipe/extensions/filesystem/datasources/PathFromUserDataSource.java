@@ -85,7 +85,7 @@ public class PathFromUserDataSource extends JIPipeSimpleIteratingAlgorithm {
         synchronized (lock) {
             SwingUtilities.invokeLater(() -> {
                 try {
-                    JIPipeWorkbench workbench = JIPipeWorkbench.tryFindWorkbench(getGraph(), new JIPipeDummyWorkbench());
+                    JIPipeWorkbench workbench = JIPipeWorkbench.tryFindWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
                     if (multiple) {
                         pathList.addAll(FileChooserSettings.selectMulti(workbench.getWindow(),
                                 FileChooserSettings.LastDirectoryKey.Data,

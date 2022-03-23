@@ -99,7 +99,7 @@ public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
 
         // Collect input nodes
         Set<JIPipeGraphNode> nodeSet = new HashSet<>();
-        for (JIPipeDataSlot sourceSlot : getGraph().getSourceSlots(getFirstInputSlot())) {
+        for (JIPipeDataSlot sourceSlot : getParentGraph().getInputIncomingSourceSlots(getFirstInputSlot())) {
             nodeSet.add(sourceSlot.getNode());
         }
 
@@ -116,8 +116,8 @@ public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
             }
 
             List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
-            nodeUUIDAnnotation.addAnnotationIfEnabled(annotationList, node.getUUIDInGraph().toString());
-            nodeAliasIDAnnotation.addAnnotationIfEnabled(annotationList, node.getAliasIdInGraph());
+            nodeUUIDAnnotation.addAnnotationIfEnabled(annotationList, node.getUUIDInParentGraph().toString());
+            nodeAliasIDAnnotation.addAnnotationIfEnabled(annotationList, node.getAliasIdInParentGraph());
             nodeNameAnnotation.addAnnotationIfEnabled(annotationList, node.getName());
             getFirstOutputSlot().addData(parametersData, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }

@@ -10,7 +10,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeDataSlotUI;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
@@ -113,8 +112,8 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
     }
 
     private void connectOrDisconnectSlots(JIPipeDataSlot firstSlot, JIPipeDataSlot secondSlot) {
-        JIPipeGraph graph = firstSlot.getNode().getGraph();
-        if (graph != secondSlot.getNode().getGraph())
+        JIPipeGraph graph = firstSlot.getNode().getParentGraph();
+        if (graph != secondSlot.getNode().getParentGraph())
             return;
         if (firstSlot.isInput() != secondSlot.isInput()) {
             if (firstSlot.isInput()) {
@@ -145,7 +144,7 @@ public class JIPipeConnectionDragAndDropBehavior implements DropTargetListener, 
         }
 
         ObjectNode node = JsonUtils.getObjectMapper().getNodeFactory().objectNode();
-        node.put("node", slotUI.getSlot().getNode().getUUIDInGraph().toString());
+        node.put("node", slotUI.getSlot().getNode().getUUIDInParentGraph().toString());
         node.put("slot", slotUI.getSlot().getName());
         node.put("slot-type", slotUI.getSlot().getSlotType().name());
         try {

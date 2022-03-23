@@ -17,7 +17,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -65,7 +64,7 @@ public abstract class JIPipeResultDataSlotPreview extends JIPipeProjectWorkbench
      * @return The algorithm compartment
      */
     public static String getAlgorithmCompartment(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot) {
-        return workbenchUI.getProject().getCompartments().get(slot.getNode().getCompartmentUUIDInGraph()).getName();
+        return workbenchUI.getProject().getCompartments().get(slot.getNode().getCompartmentUUIDInParentGraph()).getName();
     }
 
     /**

@@ -30,7 +30,7 @@ public class RunAndShowIntermediateResultsNodeUIContextAction implements NodeUIC
             JIPipeGraphNode node = selection.iterator().next().getNode();
             if (!node.getInfo().isRunnable())
                 return false;
-            if (node.getGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.Project)
+            if (node.getParentGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.Project)
                 return false;
             return true;
         }

@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -60,7 +59,7 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
         for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
             if (!(node instanceof JIPipeAlgorithm))
                 continue;
-            Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(node.getUUIDInGraph());
+            Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(node.getUUIDInParentGraph());
             if (stateMap == null)
                 continue;
 
@@ -68,7 +67,7 @@ public class JIPipeCacheTree extends JIPipeProjectWorkbenchPanel {
                 Map<String, JIPipeDataSlot> slots = stateMap.getOrDefault(stateEntry.getKey(), null);
                 if (slots == null)
                     continue;
-                UUID compartmentId = node.getCompartmentUUIDInGraph();
+                UUID compartmentId = node.getCompartmentUUIDInParentGraph();
                 Map<JIPipeGraphNode, Map<JIPipeProjectCacheState, List<JIPipeDataSlot>>> algorithmMap = byCompartmentId.getOrDefault(compartmentId, null);
                 if (algorithmMap == null) {
                     algorithmMap = new HashMap<>();

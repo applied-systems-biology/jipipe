@@ -106,10 +106,11 @@ public class JIPipeProgressInfo {
             log.append(" | ");
         log.append(" ").append(message);
         log.append("\n");
+        StatusUpdatedEvent event = new StatusUpdatedEvent(this, progress.get(), maxProgress.get(), logPrepend + (needsSeparator ? " | " : " ") + message);
         if (logToStdOut.get()) {
-            System.out.println((detachedProgress ? "SUB " : "") + "<" + progress + "/" + maxProgress + "> " + logPrepend + (needsSeparator ? " | " : "") + message);
+            System.out.println(event.render());
         }
-        eventBus.post(new StatusUpdatedEvent(this, progress.get(), maxProgress.get(), logPrepend + (needsSeparator ? " | " : " ") + message));
+        eventBus.post(event);
     }
 
     /**
@@ -401,6 +402,10 @@ public class JIPipeProgressInfo {
 
         public String getMessage() {
             return message;
+        }
+
+        public String render() {
+            return (source.detachedProgress ? "SUB " : "") + "[" + progress + "/" + maxProgress + "] " + message;
         }
     }
 

@@ -24,7 +24,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
@@ -131,7 +130,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
             JIPipeDataSlot slot = slots.get(i);
             Path targetPath = outputPath;
             if (splitBySlot) {
-                targetPath = outputPath.resolve(StringUtils.makeUniqueString(slot.getNode().getAliasIdInGraph() + "-" + slot.getName(), " ", existingSlots));
+                targetPath = outputPath.resolve(StringUtils.makeUniqueString(slot.getNode().getAliasIdInParentGraph() + "-" + slot.getName(), " ", existingSlots));
                 existingFiles.clear();
             }
             existingMetadata.clear();

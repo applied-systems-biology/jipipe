@@ -42,7 +42,7 @@ public class SelectAndMoveNodeHereNodeUIContextAction implements NodeUIContextAc
             JIPipeNodeUI ui = canvasUI.getNodeUIs().getOrDefault(algorithm, null);
             if (ui != null) {
                 if (canvasUI.getHistoryJournal() != null) {
-                    canvasUI.getHistoryJournal().snapshotBeforeMoveNodes(Collections.singleton(ui.getNode()), ui.getNode().getCompartmentUUIDInGraph());
+                    canvasUI.getHistoryJournal().snapshotBeforeMoveNodes(Collections.singleton(ui.getNode()), ui.getNode().getCompartmentUUIDInParentGraph());
                 }
                 ui.moveToClosestGridPoint(canvasUI.getGraphEditorCursor(), false, true);
                 canvasUI.repaint();

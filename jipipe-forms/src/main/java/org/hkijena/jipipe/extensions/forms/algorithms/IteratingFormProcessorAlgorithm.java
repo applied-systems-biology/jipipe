@@ -146,7 +146,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
             synchronized (lock) {
                 SwingUtilities.invokeLater(() -> {
                     try {
-                        JIPipeWorkbench workbench = JIPipeWorkbench.tryFindWorkbench(getGraph(), new JIPipeDummyWorkbench());
+                        JIPipeWorkbench workbench = JIPipeWorkbench.tryFindWorkbench(getParentGraph(), new JIPipeDummyWorkbench());
                         FormsDialog dialog = new FormsDialog(workbench, dataBatchList, formsSlot, tabAnnotation);
                         dialog.setTitle(getName());
                         dialog.setSize(1024, 768);

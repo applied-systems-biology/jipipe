@@ -158,7 +158,7 @@ public class JIPipeSlotEditorUI extends JPanel {
                     "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
                     slot.getInfo().getCustomName());
             if (editorUI.getHistoryJournal() != null) {
-                editorUI.getHistoryJournal().snapshotBeforeLabelSlot(slot, slot.getNode().getCompartmentUUIDInGraph());
+                editorUI.getHistoryJournal().snapshotBeforeLabelSlot(slot, slot.getNode().getCompartmentUUIDInParentGraph());
             }
             slot.getInfo().setCustomName(newLabel);
         }
@@ -168,7 +168,7 @@ public class JIPipeSlotEditorUI extends JPanel {
         JIPipeDataSlot slot = getSelectedSlot();
         if (slot != null) {
             if (editorUI.getHistoryJournal() != null) {
-                editorUI.getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInGraph());
+                editorUI.getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInParentGraph());
             }
             ((JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveDown(slot.getName(), slot.getSlotType());
             editorUI.getCanvasUI().repaint(50);
@@ -179,7 +179,7 @@ public class JIPipeSlotEditorUI extends JPanel {
         JIPipeDataSlot slot = getSelectedSlot();
         if (slot != null) {
             if (editorUI.getHistoryJournal() != null) {
-                editorUI.getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInGraph());
+                editorUI.getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInParentGraph());
             }
             ((JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration()).moveUp(slot.getName(), slot.getSlotType());
             editorUI.getCanvasUI().repaint(50);
@@ -235,7 +235,7 @@ public class JIPipeSlotEditorUI extends JPanel {
                 continue;
             }
             if (editorUI.getHistoryJournal() != null) {
-                editorUI.getHistoryJournal().snapshotBeforeRemoveSlot(slot.getNode(), slot.getInfo(), slot.getNode().getCompartmentUUIDInGraph());
+                editorUI.getHistoryJournal().snapshotBeforeRemoveSlot(slot.getNode(), slot.getInfo(), slot.getNode().getCompartmentUUIDInParentGraph());
             }
             if (slot.isInput())
                 slotConfiguration.removeInputSlot(slot.getName(), true);

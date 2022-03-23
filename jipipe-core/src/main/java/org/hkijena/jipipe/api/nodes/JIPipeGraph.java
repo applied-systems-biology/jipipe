@@ -102,7 +102,7 @@ public class JIPipeGraph implements JIPipeValidatable {
             nodeAliasIds.put(kv.getKey(), other.getAliasIdOf(kv.getValue()));
             nodeCompartmentUUIDs.put(kv.getKey(), other.getCompartmentUUIDOf(kv.getValue()));
             nodeVisibleCompartmentUUIDs.put(kv.getKey(), new HashSet<>(other.getVisibleCompartmentUUIDsOf(kv.getValue())));
-            algorithm.setGraph(this);
+            algorithm.setParentGraph(this);
             algorithm.getEventBus().register(this);
         }
         repairGraph();
@@ -231,7 +231,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         try {
             JIPipeGraphNode node = nodeUUIDs.getOrDefault(UUID.fromString(uuidOrAlias), null);
             if (node != null)
-                return node.getUUIDInGraph();
+                return node.getUUIDInParentGraph();
             else
                 return null;
         } catch (IllegalArgumentException e) {
@@ -284,7 +284,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                     "Algorithm graph", "There already exists an algorithm with the same identifier.",
                     "If you are loading from a JSON project or plugin, check if the file is valid. Contact " +
                             "the JIPipe or plugin developers for further assistance.");
-        node.setGraph(this);
+        node.setParentGraph(this);
         nodeUUIDs.put(uuid, node);
         nodeCompartmentUUIDs.put(uuid, compartment);
         getAliasIdOf(node); // Use the side effect of creating an alias
@@ -504,7 +504,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         for (JIPipeDataSlot slot : node.getOutputSlots()) {
             graph.removeVertex(slot);
         }
-        node.setGraph(null);
+        node.setParentGraph(null);
         --preventTriggerEvents;
         postChangedEvent();
     }
@@ -657,7 +657,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @param target The input slot
      * @return The output slot that generates data for the input. Null if no source exists.
      */
-    public Set<JIPipeDataSlot> getSourceSlots(JIPipeDataSlot target) {
+    public Set<JIPipeDataSlot> getInputIncomingSourceSlots(JIPipeDataSlot target) {
         if (target.isInput()) {
             Set<JIPipeGraphEdge> edges = graph.incomingEdgesOf(target);
             Set<JIPipeDataSlot> result = new HashSet<>();
@@ -676,7 +676,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @param source An output slot
      * @return All slots that receive data from the output slot
      */
-    public Set<JIPipeDataSlot> getTargetSlots(JIPipeDataSlot source) {
+    public Set<JIPipeDataSlot> getOutputOutgoingTargetSlots(JIPipeDataSlot source) {
         if (source.isOutput()) {
             Set<JIPipeGraphEdge> edges = graph.outgoingEdgesOf(source);
             Set<JIPipeDataSlot> result = new HashSet<>();
@@ -714,7 +714,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                 continue;
             result.add(source);
         }
-        result.removeAll(getSourceSlots(target));
+        result.removeAll(getInputIncomingSourceSlots(target));
         return result;
     }
 
@@ -726,11 +726,11 @@ public class JIPipeGraph implements JIPipeValidatable {
      */
     public void disconnectAll(JIPipeDataSlot slot, boolean user) {
         if (slot.isInput()) {
-            for (JIPipeDataSlot source : getSourceSlots(slot)) {
+            for (JIPipeDataSlot source : getInputIncomingSourceSlots(slot)) {
                 disconnect(source, slot, user);
             }
         } else if (slot.isOutput()) {
-            for (JIPipeDataSlot target : getTargetSlots(slot)) {
+            for (JIPipeDataSlot target : getOutputOutgoingTargetSlots(slot)) {
                 disconnect(slot, target, user);
             }
         }
@@ -1068,8 +1068,8 @@ public class JIPipeGraph implements JIPipeValidatable {
             insertedNodes.put(newId, node);
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : otherGraph.getSlotEdges()) {
-            JIPipeGraphNode copySource = insertedNodes.get(edge.getKey().getNode().getUUIDInGraph());
-            JIPipeGraphNode copyTarget = insertedNodes.get(edge.getValue().getNode().getUUIDInGraph());
+            JIPipeGraphNode copySource = insertedNodes.get(edge.getKey().getNode().getUUIDInParentGraph());
+            JIPipeGraphNode copyTarget = insertedNodes.get(edge.getValue().getNode().getUUIDInParentGraph());
             connect(copySource.getOutputSlotMap().get(edge.getKey().getName()), copyTarget.getInputSlotMap().get(edge.getValue().getName()));
         }
         return insertedNodes;
@@ -1094,7 +1094,7 @@ public class JIPipeGraph implements JIPipeValidatable {
             Map<String, Point> map = copy.getLocations().getOrDefault(compartment, new HashMap<>());
             copy.getLocations().clear();
             copy.getLocations().put("", map);
-            graph.insertNode(node.getUUIDInGraph(), copy, null);
+            graph.insertNode(node.getUUIDInParentGraph(), copy, null);
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : getSlotEdges()) {
             JIPipeDataSlot source = edge.getKey();
@@ -1183,7 +1183,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                 for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
                     if (inputSlot.getInfo().isOptional())
                         continue;
-                    Set<JIPipeDataSlot> sourceSlots = getSourceSlots(inputSlot);
+                    Set<JIPipeDataSlot> sourceSlots = getInputIncomingSourceSlots(inputSlot);
                     if (sourceSlots.isEmpty()) {
                         missing.add(algorithm);
                         break;
@@ -1230,7 +1230,7 @@ public class JIPipeGraph implements JIPipeValidatable {
             for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
                 if (inputSlot.getInfo().isOptional())
                     continue;
-                Set<JIPipeDataSlot> sourceSlots = getSourceSlots(inputSlot);
+                Set<JIPipeDataSlot> sourceSlots = getInputIncomingSourceSlots(inputSlot);
                 if (sourceSlots.isEmpty()) {
                     missing.add(algorithm);
                     break;
@@ -1454,7 +1454,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                 System.err.println("Could not find input slot " + entry.getKey());
                 continue;
             }
-            for (JIPipeDataSlot slot : getSourceSlots(entry.getValue())) {
+            for (JIPipeDataSlot slot : getInputIncomingSourceSlots(entry.getValue())) {
                 connect(slot, replacementInput);
             }
         }
@@ -1464,7 +1464,7 @@ public class JIPipeGraph implements JIPipeValidatable {
                 System.err.println("Could not find output slot " + entry.getKey());
                 continue;
             }
-            for (JIPipeDataSlot slot : getTargetSlots(entry.getValue())) {
+            for (JIPipeDataSlot slot : getOutputOutgoingTargetSlots(entry.getValue())) {
                 connect(replacementOutput, slot);
             }
         }
@@ -1479,7 +1479,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return Equivalent algorithm within this graph
      */
     public JIPipeGraphNode getEquivalentAlgorithm(JIPipeGraphNode foreign) {
-        return getNodeByUUID(foreign.getUUIDInGraph());
+        return getNodeByUUID(foreign.getUUIDInParentGraph());
     }
 
     /**
@@ -1489,7 +1489,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return slot with the same name within the algorithm with the same ID
      */
     public JIPipeDataSlot getEquivalentSlot(JIPipeDataSlot foreign) {
-        JIPipeGraphNode here = getNodeByUUID(foreign.getNode().getUUIDInGraph());
+        JIPipeGraphNode here = getNodeByUUID(foreign.getNode().getUUIDInParentGraph());
         if (foreign.isInput())
             return here.getInputSlotMap().get(foreign.getName());
         else
@@ -1503,10 +1503,10 @@ public class JIPipeGraph implements JIPipeValidatable {
         List<JIPipeDataSlot> result = new ArrayList<>();
         for (JIPipeDataSlot slot : traverseSlots()) {
             if (slot.isInput()) {
-                if (getSourceSlots(slot).isEmpty())
+                if (getInputIncomingSourceSlots(slot).isEmpty())
                     result.add(slot);
             } else if (slot.isOutput()) {
-                if (getTargetSlots(slot).isEmpty())
+                if (getOutputOutgoingTargetSlots(slot).isEmpty())
                     result.add(slot);
             }
         }
@@ -1559,7 +1559,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         this.nodeCompartmentUUIDs.putAll(other.nodeCompartmentUUIDs);
         this.nodeAliasIds.putAll(other.nodeAliasIds);
         for (JIPipeGraphNode node : this.nodeUUIDs.values()) {
-            node.setGraph(this);
+            node.setParentGraph(this);
             node.getEventBus().register(this);
         }
         this.graph = other.graph;
@@ -1577,7 +1577,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     public Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> getEdgesBetween(JIPipeGraphNode source, JIPipeGraphNode target) {
         Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> result = new HashSet<>();
         for (JIPipeDataSlot outputSlot : source.getOutputSlots()) {
-            for (JIPipeDataSlot targetSlot : getTargetSlots(outputSlot)) {
+            for (JIPipeDataSlot targetSlot : getOutputOutgoingTargetSlots(outputSlot)) {
                 if (targetSlot.getNode() == target) {
                     result.add(new AbstractMap.SimpleEntry<>(outputSlot, targetSlot));
                 }
@@ -1633,26 +1633,27 @@ public class JIPipeGraph implements JIPipeValidatable {
     public List<LoopGroup> extractLoopGroups(Set<JIPipeGraphNode> additionalLoopEnds, Set<JIPipeGraphNode> deactivatedNodes) {
 
         // Collect all valid loop starts and ends
-        Set<JIPipeGraphNode> loopStarts = new HashSet<>();
-        Set<JIPipeGraphNode> loopEnds = new HashSet<>();
-        findLoopStartsAndEnds(additionalLoopEnds, deactivatedNodes, loopStarts, loopEnds);
+        Set<JIPipeGraphNode> allValidLoopStarts = new HashSet<>();
+        Set<JIPipeGraphNode> allValidLoopEnds = new HashSet<>();
+        findLoopStartsAndEnds(additionalLoopEnds, deactivatedNodes, allValidLoopStarts, allValidLoopEnds);
 
         // Optimization if there are no loops
-        if (loopStarts.isEmpty()) {
+        if (allValidLoopStarts.isEmpty()) {
             return new ArrayList<>();
         }
 
-//        // Find predecessor sets
-//        Map<JIPipeGraphNode, Set<JIPipeGraphNode>> predecessorSets = new IdentityHashMap<>();
-//        for (JIPipeGraphNode node : traverse()) {
-//            Set<JIPipeGraphNode> predecessors = new HashSet<>();
-//            for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
-//                predecessors.add(inputSlot.getNode());
-//                predecessors.addAll(predecessorSets.get(inputSlot.getNode()));
-//            }
-//            predecessorSets.put(node, predecessors);
-//        }
-
+        // Find predecessor sets
+        Map<JIPipeGraphNode, Set<JIPipeGraphNode>> predecessorSets = new IdentityHashMap<>();
+        for (JIPipeGraphNode node : traverse()) {
+            Set<JIPipeGraphNode> predecessors = new HashSet<>();
+            for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
+                predecessors.add(inputSlot.getNode());
+                for (JIPipeDataSlot sourceSlot : getInputIncomingSourceSlots(inputSlot)) {
+                    predecessors.addAll(predecessorSets.get(sourceSlot.getNode()));
+                }
+            }
+            predecessorSets.put(node, predecessors);
+        }
 
         // Find start points for the loop search
         Set<JIPipeGraphNode> startNodes = new HashSet<>();
@@ -1670,88 +1671,108 @@ public class JIPipeGraph implements JIPipeValidatable {
         }
 
         // We need this to distinguish null from "no loop"
-        LoopStartNode dummyLoopStart = new LoopStartNode(new JIPipeJavaNodeInfo("loop:start", LoopStartNode.class));
+        final LoopStartNode dummyLoopStart = new LoopStartNode(new JIPipeJavaNodeInfo("loop:start", LoopStartNode.class));
 
         // Iterate from start points to assign loop starts
         // Nested loops will be ignored (but tracked)
-        Map<JIPipeGraphNode, LoopStartNode> loopStartNodes = new HashMap<>();
-        Map<JIPipeGraphNode, Integer> loopDepths = new HashMap<>();
+        Map<JIPipeGraphNode, LoopStartNode> detectedLoopStarts = new HashMap<>();
+        Map<JIPipeGraphNode, Integer> detectedLoopDepths = new HashMap<>();
         for (JIPipeGraphNode startNode : startNodes) {
             // Initialize the start nodes
-            if (loopStarts.contains(startNode)) {
-                loopStartNodes.put(startNode, (LoopStartNode) startNode);
-                loopDepths.put(startNode, 1);
+            if (allValidLoopStarts.contains(startNode)) {
+                detectedLoopStarts.put(startNode, (LoopStartNode) startNode);
+                detectedLoopDepths.put(startNode, 1);
             } else {
-                loopStartNodes.put(startNode, dummyLoopStart);
-                loopDepths.put(startNode, 0);
+                detectedLoopStarts.put(startNode, dummyLoopStart);
+                detectedLoopDepths.put(startNode, 0);
             }
         }
-        for (JIPipeDataSlot target : traverseSlots()) {
-            JIPipeGraphNode targetNode = target.getNode();
-            if (target.isInput()) {
-                JIPipeGraphNode currentLoopStart = loopStartNodes.getOrDefault(targetNode, null);
-                // Must be null -> Otherwise it might already be assigned
-                if (currentLoopStart == null) {
-                    Set<JIPipeGraphNode> previousLoopStarts = new HashSet<>();
-                    int previousLoopDepth = 0;
-                    boolean previousConnectedToEnd = false;
-                    for (JIPipeGraphEdge edge : graph.incomingEdgesOf(target)) {
-                        JIPipeDataSlot source = graph.getEdgeSource(edge);
+        for (JIPipeGraphNode targetNode : traverse()) {
+            JIPipeGraphNode currentLoopStart = detectedLoopStarts.getOrDefault(targetNode, null);
+            // Must be null -> Otherwise it might already be assigned
+            if (currentLoopStart == null) {
+                Set<JIPipeGraphNode> previousLoopStarts = new HashSet<>();
+                int previousLoopDepth = 0;
+                boolean previousConnectedToEnd = false;
+                for (JIPipeDataSlot target : targetNode.getInputSlots()) {
+                    for (JIPipeDataSlot source : getInputIncomingSourceSlots(target)) {
                         JIPipeGraphNode sourceNode = source.getNode();
                         if (sourceNode instanceof JIPipeAlgorithm) {
-                            if (!loopEnds.contains(sourceNode)) {
-                                JIPipeGraphNode edgeLoopStart = loopStartNodes.getOrDefault(sourceNode, dummyLoopStart);
+                            if (!allValidLoopEnds.contains(sourceNode)) {
+                                JIPipeGraphNode edgeLoopStart = detectedLoopStarts.getOrDefault(sourceNode, dummyLoopStart);
                                 previousLoopStarts.add(edgeLoopStart);
                             } else {
                                 previousConnectedToEnd = true;
                             }
-                            previousLoopDepth = Math.max(previousLoopDepth, loopDepths.get(sourceNode));
+                            previousLoopDepth = Math.max(previousLoopDepth, detectedLoopDepths.get(sourceNode));
                         }
                     }
-                    // Determine the depth
-                    if (loopStarts.contains(targetNode)) {
-                        previousLoopDepth += 1;
-                    } else if (previousConnectedToEnd) {
-                        previousLoopDepth = Math.max(0, previousLoopDepth - 1);
-                    }
-                    if (previousLoopDepth == 0) {
-                        previousLoopStarts.clear();
-                    }
-                    if (previousLoopStarts.isEmpty()) {
-                        previousLoopStarts.add(dummyLoopStart);
-                    }
-                    if (previousLoopStarts.size() == 1) {
-                        JIPipeGraphNode previousLoopStart = previousLoopStarts.iterator().next();
-                        if (previousLoopStart == dummyLoopStart && loopStarts.contains(targetNode)) {
-                            loopStartNodes.put(targetNode, (LoopStartNode) targetNode);
-                            loopDepths.put(targetNode, previousLoopDepth);
-                        } else {
-                            loopStartNodes.put(targetNode, (LoopStartNode) previousLoopStart);
-                            loopDepths.put(targetNode, previousLoopDepth);
+                }
+                // Do we have a dummy loop start (branch merge?)
+                if(previousLoopStarts.size() > 1 && previousLoopStarts.contains(dummyLoopStart)) {
+                    JIPipeGraphNode correctLoopStart = previousLoopStarts.stream().filter(start -> start != dummyLoopStart).findAny().get();
+                    // We encounter a branch merge -> All predecessors that have a dummy loop start will be included into the current loop
+                    for (JIPipeDataSlot target : targetNode.getInputSlots()) {
+                        for (JIPipeDataSlot source : getInputIncomingSourceSlots(target)) {
+                            JIPipeGraphNode sourceNode = source.getNode();
+                            if (sourceNode instanceof JIPipeAlgorithm) {
+                                if(detectedLoopStarts.get(sourceNode) == dummyLoopStart) {
+                                    detectedLoopStarts.put(sourceNode, (LoopStartNode) correctLoopStart);
+                                    detectedLoopDepths.put(sourceNode, previousLoopDepth);
+                                    for (JIPipeGraphNode predecessor : predecessorSets.get(sourceNode)) {
+                                        detectedLoopStarts.put(predecessor, (LoopStartNode) correctLoopStart);
+                                        detectedLoopDepths.put(predecessor, previousLoopDepth);
+                                    }
+                                }
+                            }
                         }
+                    }
+                    previousLoopStarts.remove(dummyLoopStart);
+                }
+
+                // Determine the depth
+                if (allValidLoopStarts.contains(targetNode)) {
+                    previousLoopDepth += 1;
+                } else if (previousConnectedToEnd) {
+                    previousLoopDepth = Math.max(0, previousLoopDepth - 1);
+                }
+                if (previousLoopDepth == 0) {
+                    previousLoopStarts.clear();
+                }
+                if (previousLoopStarts.isEmpty()) {
+                    previousLoopStarts.add(dummyLoopStart);
+                }
+                if (previousLoopStarts.size() == 1) {
+                    JIPipeGraphNode previousLoopStart = previousLoopStarts.iterator().next();
+                    if (previousLoopStart == dummyLoopStart && allValidLoopStarts.contains(targetNode)) {
+                        detectedLoopStarts.put(targetNode, (LoopStartNode) targetNode);
+                        detectedLoopDepths.put(targetNode, previousLoopDepth);
                     } else {
-                        throw new UserFriendlyRuntimeException("Invalid loop detected: The node '" + targetNode.getDisplayName() + "' is rooted in different loops: "
-                                + previousLoopStarts.stream().map(JIPipeGraphNode::getDisplayName).collect(Collectors.joining(", ")),
-                                "Invalid loop detected!",
-                                "Node '" + targetNode.getDisplayName() + "', loop start nodes " + previousLoopStarts.stream().map(JIPipeGraphNode::getDisplayName).collect(Collectors.joining(", ")),
-                                "You have created a loop section that has more than one loop starts. JIPipe does not know how to resolve this.",
-                                "Check the affected node and trace back the loop start nodes. You can nest loops, but you cannot have multiple loop starts with equal depths.");
+                        detectedLoopStarts.put(targetNode, (LoopStartNode) previousLoopStart);
+                        detectedLoopDepths.put(targetNode, previousLoopDepth);
                     }
+                } else {
+                    throw new UserFriendlyRuntimeException("Invalid loop detected: The node '" + targetNode.getDisplayName() + "' is rooted in different loops: "
+                            + previousLoopStarts.stream().map(JIPipeGraphNode::getDisplayName).collect(Collectors.joining(", ")),
+                            "Invalid loop detected!",
+                            "Node '" + targetNode.getDisplayName() + "', loop start nodes " + previousLoopStarts.stream().map(JIPipeGraphNode::getDisplayName).collect(Collectors.joining(", ")),
+                            "You have created a loop section that has more than one loop starts. JIPipe does not know how to resolve this.",
+                            "Check the affected node and trace back the loop start nodes. You can nest loops, but you cannot have multiple loop starts with equal depths.");
                 }
             }
         }
 
         // Collect loops
         List<LoopGroup> result = new ArrayList<>();
-        for (LoopStartNode loopStartNode : new HashSet<>(loopStartNodes.values())) {
+        for (LoopStartNode loopStartNode : new HashSet<>(detectedLoopStarts.values())) {
             if (loopStartNode != dummyLoopStart) {
                 LoopGroup loopGroup = new LoopGroup(this);
                 loopGroup.setLoopStartNode(loopStartNode);
                 loopGroup.getNodes().add(loopStartNode);
-                for (Map.Entry<JIPipeGraphNode, LoopStartNode> entry : loopStartNodes.entrySet()) {
+                for (Map.Entry<JIPipeGraphNode, LoopStartNode> entry : detectedLoopStarts.entrySet()) {
                     if (entry.getValue() == loopStartNode) {
                         loopGroup.getNodes().add(entry.getKey());
-                        if (loopEnds.contains(entry.getKey())) {
+                        if (allValidLoopEnds.contains(entry.getKey())) {
                             loopGroup.getLoopEndNodes().add(entry.getKey());
                         }
                     }

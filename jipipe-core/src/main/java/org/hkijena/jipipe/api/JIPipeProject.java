@@ -297,7 +297,7 @@ public class JIPipeProject implements JIPipeValidatable {
         for (JIPipeGraphNode targetNode : compartmentGraph.getGraphNodes()) {
             if (targetNode instanceof JIPipeProjectCompartment) {
                 JIPipeProjectCompartment target = (JIPipeProjectCompartment) targetNode;
-                for (JIPipeDataSlot sourceSlot : compartmentGraph.getSourceSlots(target.getFirstInputSlot())) {
+                for (JIPipeDataSlot sourceSlot : compartmentGraph.getInputIncomingSourceSlots(target.getFirstInputSlot())) {
                     if (sourceSlot.getNode() instanceof JIPipeProjectCompartment) {
                         JIPipeProjectCompartment source = (JIPipeProjectCompartment) sourceSlot.getNode();
                         Set<UUID> visibleCompartmentUUIDs = graph.getVisibleCompartmentUUIDsOf(source.getOutputNode());
@@ -320,7 +320,7 @@ public class JIPipeProject implements JIPipeValidatable {
             if (graph.getGraph().containsEdge(edge)) {
                 JIPipeDataSlot source = graph.getGraph().getEdgeSource(edge);
                 JIPipeDataSlot target = graph.getGraph().getEdgeTarget(edge);
-                if (!source.getNode().isVisibleIn(target.getNode().getCompartmentUUIDInGraph())) {
+                if (!source.getNode().isVisibleIn(target.getNode().getCompartmentUUIDInParentGraph())) {
                     graph.disconnect(source, target, false);
                     changed = true;
                 }
@@ -536,8 +536,8 @@ public class JIPipeProject implements JIPipeValidatable {
                 JIPipeGraphNode compartmentNode = compartmentGraph.findNode(entry.getValue());
                 JIPipeGraphNode node = graph.getNodeByUUID(entry.getKey());
                 if (compartmentNode != null) {
-                    JIPipe.getInstance().getLogService().info("[Project format conversion] Fix legacy compartment '" + entry.getValue() + "' --> " + compartmentNode.getUUIDInGraph());
-                    graph.setCompartment(entry.getKey(), compartmentNode.getUUIDInGraph());
+                    JIPipe.getInstance().getLogService().info("[Project format conversion] Fix legacy compartment '" + entry.getValue() + "' --> " + compartmentNode.getUUIDInParentGraph());
+                    graph.setCompartment(entry.getKey(), compartmentNode.getUUIDInParentGraph());
                 } else {
                     // Ghost node -> delete
                     graph.removeNode(node, false);
@@ -578,7 +578,7 @@ public class JIPipeProject implements JIPipeValidatable {
             // Checking for error
             JIPipeIssueReport checkNodesReport = report.resolve("Check nodes");
             for (JIPipeGraphNode graphNode : ImmutableList.copyOf(graph.getGraphNodes())) {
-                UUID compartmentUUIDInGraph = graphNode.getCompartmentUUIDInGraph();
+                UUID compartmentUUIDInGraph = graphNode.getCompartmentUUIDInParentGraph();
                 if (compartmentUUIDInGraph == null || !compartments.containsKey(compartmentUUIDInGraph)) {
                     checkNodesReport.reportIsInvalid("Node has no compartment!",
                             "The node '" + graphNode.getDisplayName() + "' has no compartment assigned!",
@@ -637,7 +637,7 @@ public class JIPipeProject implements JIPipeValidatable {
         outer:
         for (JIPipeGraphNode node : graph.getGraphNodes()) {
             for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
-                if (graph.getTargetSlots(outputSlot).isEmpty()) {
+                if (graph.getOutputOutgoingTargetSlots(outputSlot).isEmpty()) {
                     continue outer;
                 }
             }
@@ -657,7 +657,7 @@ public class JIPipeProject implements JIPipeValidatable {
         for (JIPipeGraphNode node : graph.getGraphNodes()) {
             for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
                 boolean heavy = JIPipeData.isHeavy(outputSlot.getAcceptedDataType());
-                if (heavy && !graph.getTargetSlots(outputSlot).isEmpty()) {
+                if (heavy && !graph.getOutputOutgoingTargetSlots(outputSlot).isEmpty()) {
                     result.add(outputSlot);
                 }
             }
@@ -696,7 +696,7 @@ public class JIPipeProject implements JIPipeValidatable {
                     // Find a new output node
                     boolean found = false;
                     for (JIPipeGraphNode graphNode : graph.getGraphNodes()) {
-                        if (graphNode instanceof JIPipeCompartmentOutput && Objects.equals(graphNode.getCompartmentUUIDInGraph(), projectCompartmentUUID)) {
+                        if (graphNode instanceof JIPipeCompartmentOutput && Objects.equals(graphNode.getCompartmentUUIDInParentGraph(), projectCompartmentUUID)) {
                             compartment.setOutputNode((JIPipeCompartmentOutput) graphNode);
                             found = true;
                             break;

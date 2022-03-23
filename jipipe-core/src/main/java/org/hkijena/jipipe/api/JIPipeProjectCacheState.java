@@ -40,7 +40,7 @@ public class JIPipeProjectCacheState implements Comparable<JIPipeProjectCacheSta
      * @param generationTime    the generation time. It is ignored during comparison.
      */
     public JIPipeProjectCacheState(JIPipeGraphNode node, Set<JIPipeProjectCacheState> predecessorStates, LocalDateTime generationTime) {
-        this.nodeUUID = node.getUUIDInGraph();
+        this.nodeUUID = node.getUUIDInParentGraph();
         this.predecessorStates = predecessorStates;
         this.generationTime = generationTime;
         if (node instanceof JIPipeAlgorithm) {

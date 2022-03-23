@@ -270,7 +270,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     public void setWrappedGraph(JIPipeGraph wrappedGraph) {
         if (this.wrappedGraph != wrappedGraph) {
             for (JIPipeGraphNode value : wrappedGraph.getGraphNodes()) {
-                wrappedGraph.setCompartment(value.getUUIDInGraph(), null);
+                wrappedGraph.setCompartment(value.getUUIDInParentGraph(), null);
             }
             this.wrappedGraph = wrappedGraph;
             this.algorithmInput = null;
@@ -353,7 +353,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
         // Also update the storage paths of the internal nodes
         Path scratch = getNewScratch();
         for (JIPipeGraphNode node : getWrappedGraph().getGraphNodes()) {
-            node.setInternalStoragePath(scratch.resolve(node.getAliasIdInGraph()));
+            node.setInternalStoragePath(scratch.resolve(node.getAliasIdInParentGraph()));
         }
         for (JIPipeDataSlot slot : getWrappedGraph().getSlotNodes()) {
             if (slot.isOutput()) {

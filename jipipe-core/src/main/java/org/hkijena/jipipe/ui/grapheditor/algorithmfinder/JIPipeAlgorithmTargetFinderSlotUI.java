@@ -66,7 +66,7 @@ public class JIPipeAlgorithmTargetFinderSlotUI extends JPanel {
         setLayout(new BorderLayout());
 
         Icon icon;
-        if (inputSlot.getNode().getGraph() == null || inputSlot.getNode().getGraph().getSourceSlots(inputSlot).isEmpty())
+        if (inputSlot.getNode().getParentGraph() == null || inputSlot.getNode().getParentGraph().getInputIncomingSourceSlots(inputSlot).isEmpty())
             icon = UIUtils.getIconFromResources("emblems/slot-free-horizontal.png");
         else
             icon = UIUtils.getIconFromResources("emblems/slot-connected-horizontal.png");

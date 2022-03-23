@@ -69,7 +69,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                 preprocessorNodes.add(node);
             } else if (!unExecutableAlgorithms.contains(node) &&
                     node instanceof JIPipeAlgorithm && ((JIPipeAlgorithm) node).isPreprocessor()) {
-                if (node.getOpenInputSlots().stream().allMatch(nd -> algorithmGraph.getTargetSlots(nd).isEmpty())) {
+                if (node.getOpenInputSlots().stream().allMatch(nd -> algorithmGraph.getOutputOutgoingTargetSlots(nd).isEmpty())) {
                     postprocessorNodes.add(node);
                 }
             }
@@ -118,7 +118,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                 // Only applied if the slot does not receive data from outside
                 if (!algorithmsWithExternalInput.contains(slot.getNode())) {
                     // Copy data from source (merging rows)
-                    Set<JIPipeDataSlot> sourceSlots = algorithmGraph.getSourceSlots(slot);
+                    Set<JIPipeDataSlot> sourceSlots = algorithmGraph.getInputIncomingSourceSlots(slot);
                     for (JIPipeDataSlot sourceSlot : sourceSlots) {
                         if (slot.getNode() instanceof JIPipeAlgorithm) {
                             // Add data from source slot

@@ -81,7 +81,7 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
 
     private void showDataSlotsOfState(JIPipeGraphNode algorithm, JIPipeProjectCacheState state) {
         List<JIPipeDataSlot> result = new ArrayList<>();
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(algorithm.getUUIDInGraph());
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(algorithm.getUUIDInParentGraph());
         if (stateMap != null) {
             Map<String, JIPipeDataSlot> slotMap = stateMap.getOrDefault(state, null);
             if (slotMap != null) {
@@ -94,7 +94,7 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     private void showAllDataSlots() {
         List<JIPipeDataSlot> result = new ArrayList<>();
         for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
-            Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(node.getUUIDInGraph());
+            Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(node.getUUIDInParentGraph());
             if (stateMap != null) {
                 for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
                     result.addAll(stateEntry.getValue().values());
@@ -105,7 +105,7 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void showDataSlotsOfAlgorithm(JIPipeGraphNode algorithm) {
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(algorithm.getUUIDInGraph());
+        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(algorithm.getUUIDInParentGraph());
         if (stateMap != null) {
             List<JIPipeDataSlot> result = new ArrayList<>();
             for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
@@ -117,10 +117,10 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
 
     private void showDataSlotsOfCompartment(JIPipeProjectCompartment compartment) {
         List<JIPipeDataSlot> result = new ArrayList<>();
-        UUID uuid = compartment.getUUIDInGraph();
+        UUID uuid = compartment.getUUIDInParentGraph();
         for (JIPipeGraphNode algorithm : getProject().getGraph().getGraphNodes()) {
-            if (Objects.equals(algorithm.getCompartmentUUIDInGraph(), uuid)) {
-                Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(algorithm.getUUIDInGraph());
+            if (Objects.equals(algorithm.getCompartmentUUIDInParentGraph(), uuid)) {
+                Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(algorithm.getUUIDInParentGraph());
                 if (stateMap != null) {
                     for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
                         result.addAll(stateEntry.getValue().values());

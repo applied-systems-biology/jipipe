@@ -104,8 +104,8 @@ public class JIPipeProjectRun implements JIPipeRunnable {
 
     private void initializeInternalStoragePaths() {
         for (JIPipeGraphNode algorithm : copiedGraph.getGraphNodes()) {
-            JIPipeProjectCompartment compartment = project.getCompartments().get(algorithm.getCompartmentUUIDInGraph());
-            algorithm.setInternalStoragePath(Paths.get(StringUtils.safeJsonify(compartment.getAliasIdInGraph()))
+            JIPipeProjectCompartment compartment = project.getCompartments().get(algorithm.getCompartmentUUIDInParentGraph());
+            algorithm.setInternalStoragePath(Paths.get(StringUtils.safeJsonify(compartment.getAliasIdInParentGraph()))
                     .resolve(StringUtils.safeJsonify(copiedGraph.getAliasIdOf(algorithm))));
         }
     }
@@ -234,7 +234,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
                 preprocessorNodes.add(node);
             } else if (!unExecutableAlgorithms.contains(node) &&
                     node instanceof JIPipeAlgorithm && ((JIPipeAlgorithm) node).isPreprocessor()) {
-                if (node.getOpenInputSlots().stream().allMatch(nd -> copiedGraph.getTargetSlots(nd).isEmpty())) {
+                if (node.getOpenInputSlots().stream().allMatch(nd -> copiedGraph.getOutputOutgoingTargetSlots(nd).isEmpty())) {
                     postprocessorNodes.add(node);
                 }
             }
@@ -288,7 +288,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
 
             if (slot.isInput()) {
                 // Copy data from source
-                Set<JIPipeDataSlot> sourceSlots = copiedGraph.getSourceSlots(slot);
+                Set<JIPipeDataSlot> sourceSlots = copiedGraph.getInputIncomingSourceSlots(slot);
                 for (JIPipeDataSlot sourceSlot : sourceSlots) {
                     if (slot.getNode() instanceof JIPipeAlgorithm) {
                         // Add data from source slot
@@ -321,35 +321,43 @@ public class JIPipeProjectRun implements JIPipeRunnable {
                 } else {
                     // Encountered a loop
                     if (!executedLoops.contains(loop)) {
-                        int loopNumber = loopGroups.indexOf(loop) + 1;
-                        subProgress = progressInfo.resolveAndLog("Loop #" + loopNumber);
-                        JIPipeGraph loopGraph = copiedGraph.extract(loop.getNodes(), true);
-                        NodeGroup group = new NodeGroup(loopGraph, false, false, true);
-                        group.setInternalStoragePath(Paths.get("loop" + loopNumber));
-                        BiMap<JIPipeDataSlot, JIPipeDataSlot> loopGraphSlotMap = group.autoCreateSlots();
-                        group.setIterationMode(loop.getLoopStartNode().getIterationMode());
-                        group.setThreadPool(threadPool);
+                        if (!unExecutableAlgorithms.contains(slot.getNode())) {
 
-                        // IMPORTANT! Otherwise the nested JIPipeGraphRunner will run into an infinite depth loop
-                        ((LoopStartNode) loopGraph.getEquivalentAlgorithm(loop.getLoopStartNode()))
-                                .setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
+                            // Only start the loop if we are at the loop start node
+                            if(slot.getNode() != loop.getLoopStartNode()) {
+                                continue;
+                            }
 
-                        // Pass input data from inputs of loop into equivalent input of group
-                        for (JIPipeDataSlot inputSlot : loop.getLoopStartNode().getInputSlots()) {
-                            JIPipeDataSlot groupInput = loopGraphSlotMap.get(loopGraph.getEquivalentSlot(inputSlot));
-                            groupInput.addData(inputSlot, subProgress);
-                        }
+                            int loopNumber = loopGroups.indexOf(loop) + 1;
+                            subProgress = progressInfo.resolveAndLog("Loop #" + loopNumber);
+                            JIPipeGraph loopGraph = copiedGraph.extract(loop.getNodes(), true);
+                            NodeGroup group = new NodeGroup(loopGraph, false, false, true);
+                            group.setInternalStoragePath(Paths.get("loop" + loopNumber));
+                            BiMap<JIPipeDataSlot, JIPipeDataSlot> loopGraphSlotMap = group.autoCreateSlots();
+                            group.setIterationMode(loop.getLoopStartNode().getIterationMode());
+                            group.setThreadPool(threadPool);
 
-                        // Execute the loop
-                        group.run(subProgress.detachProgress());
+                            // IMPORTANT! Otherwise the nested JIPipeGraphRunner will run into an infinite depth loop
+                            ((LoopStartNode) loopGraph.getEquivalentAlgorithm(loop.getLoopStartNode()))
+                                    .setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
 
-                        // Pass output data
-                        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> entry : loopGraphSlotMap.entrySet()) {
-                            // Info: We need the value; the key already has cleared data!
-                            if (entry.getKey().isOutput()) {
-                                JIPipeDataSlot originalSlot = copiedGraph.getEquivalentSlot(entry.getKey());
-                                JIPipeDataSlot sourceSlot = entry.getValue();
-                                originalSlot.addData(sourceSlot, subProgress);
+                            // Pass input data from inputs of loop into equivalent input of group
+                            for (JIPipeDataSlot inputSlot : loop.getLoopStartNode().getInputSlots()) {
+                                JIPipeDataSlot groupInput = loopGraphSlotMap.get(loopGraph.getEquivalentSlot(inputSlot));
+                                groupInput.addData(inputSlot, subProgress);
+                            }
+
+                            // Execute the loop
+                            group.run(subProgress.detachProgress());
+
+                            // Pass output data
+                            for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> entry : loopGraphSlotMap.entrySet()) {
+                                // Info: We need the value; the key already has cleared data!
+                                if (entry.getKey().isOutput()) {
+                                    JIPipeDataSlot originalSlot = copiedGraph.getEquivalentSlot(entry.getKey());
+                                    JIPipeDataSlot sourceSlot = entry.getValue();
+                                    originalSlot.addData(sourceSlot, subProgress);
+                                }
                             }
                         }
 
@@ -418,8 +426,8 @@ public class JIPipeProjectRun implements JIPipeRunnable {
         } else if (slot.isOutput()) {
             if (configuration.isStoreToCache() && !configuration.getDisableStoreToCacheNodes().contains(slot.getNode())) {
                 JIPipeGraphNode runAlgorithm = slot.getNode();
-                JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(runAlgorithm.getUUIDInGraph());
-                JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm.getUUIDInGraph());
+                JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(runAlgorithm.getUUIDInParentGraph());
+                JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm.getUUIDInParentGraph());
                 progressInfo.resolve("GC").log("Caching output slot " + slot.getDisplayName());
                 project.getCache().store(projectAlgorithm, stateId, slot, progressInfo.resolve("GC"));
             }
@@ -444,7 +452,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
         }
 
         if (!dataLoadedFromCache) {
-            JIPipeProjectCompartment nodeCompartment = getProject().getCompartments().get(node.getCompartmentUUIDInGraph());
+            JIPipeProjectCompartment nodeCompartment = getProject().getCompartments().get(node.getCompartmentUUIDInParentGraph());
             String nodeCompartmentName = nodeCompartment != null ? nodeCompartment.getName() : "<Subgraph>";
             try {
                 if (node instanceof JIPipeAlgorithm) {
@@ -488,9 +496,9 @@ public class JIPipeProjectRun implements JIPipeRunnable {
             return false;
         if (!(algorithm instanceof JIPipeAlgorithm))
             return false;
-        JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(algorithm.getUUIDInGraph());
-        JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm.getUUIDInGraph());
-        Map<String, JIPipeDataSlot> cachedData = project.getCache().extract(projectAlgorithm.getUUIDInGraph(), stateId);
+        JIPipeGraphNode projectAlgorithm = cacheQuery.getNode(algorithm.getUUIDInParentGraph());
+        JIPipeProjectCacheState stateId = cacheQuery.getCachedId(projectAlgorithm.getUUIDInParentGraph());
+        Map<String, JIPipeDataSlot> cachedData = project.getCache().extract(projectAlgorithm.getUUIDInParentGraph(), stateId);
         if (!cachedData.isEmpty()) {
             progressInfo.log(String.format("Accessing cache with slots %s via state id %s", String.join(", ",
                     cachedData.keySet()), stateId));

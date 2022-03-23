@@ -35,7 +35,7 @@ public class UpdateCacheNodeUIContextAction implements NodeUIContextAction {
                 return false;
             if (!(node instanceof JIPipeAlgorithm))
                 return false;
-            if (node.getGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.Project)
+            if (node.getParentGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.Project)
                 return false;
             return true;
         } else {
