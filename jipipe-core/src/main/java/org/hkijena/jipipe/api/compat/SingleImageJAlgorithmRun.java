@@ -44,9 +44,9 @@ import java.util.*;
 @JsonSerialize(using = SingleImageJAlgorithmRun.Serializer.class)
 public class SingleImageJAlgorithmRun implements JIPipeValidatable {
 
-    private EventBus eventBus = new EventBus();
-    private JIPipeGraphNode algorithm;
-    private Map<String, ImageJDatatypeImporter> inputSlotImporters = new HashMap<>();
+    private final EventBus eventBus = new EventBus();
+    private final JIPipeGraphNode algorithm;
+    private final Map<String, ImageJDatatypeImporter> inputSlotImporters = new HashMap<>();
 
     /**
      * @param algorithm the algorithm to be run

@@ -110,8 +110,9 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
             dialog.setModal(true);
             dialog.pack();
-            dialog.setSize(new Dimension(800, 600));
+            dialog.setSize(new Dimension(1024, 768));
             UIUtils.addEscapeListener(dialog);
+            dialog.setLocationRelativeTo(null);
             dialog.setVisible(true);
             if (dialog.isCanceled()) {
                 cancel("User clicked 'Cancel' in setup dialog.");

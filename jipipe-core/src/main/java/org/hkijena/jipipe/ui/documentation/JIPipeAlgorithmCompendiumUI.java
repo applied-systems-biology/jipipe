@@ -67,7 +67,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
     }
 
     @Override
-    protected MarkdownDocument generateCompendiumFor(JIPipeNodeInfo info, boolean forJava) {
+    public MarkdownDocument generateCompendiumFor(JIPipeNodeInfo info, boolean forJava) {
         StringBuilder builder = new StringBuilder();
         builder.append("# ").append(info.getName()).append("\n\n");
 

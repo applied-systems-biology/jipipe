@@ -83,12 +83,12 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * @param compartment    the graph compartment to display. Set to null to display all compartments
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
      */
-    public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment, JIPipeHistoryJournal historyJournal) {
+    public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment, JIPipeHistoryJournal historyJournal, GraphEditorUISettings settings) {
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
         this.historyJournal = historyJournal;
         this.canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), this, algorithmGraph, compartment, historyJournal);
-        this.graphUISettings = GraphEditorUISettings.getInstance();
+        this.graphUISettings = settings;
         initialize();
         reloadMenuBar();
         JIPipe.getNodes().getEventBus().register(this);
@@ -97,6 +97,16 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         initializeHotkeys();
         SwingUtilities.invokeLater(() -> canvasUI.crop(true));
         canvasUI.setLayoutHelperEnabled(graphUISettings.isEnableLayoutHelper());
+    }
+
+    /**
+     * @param workbenchUI    the workbench
+     * @param algorithmGraph the algorithm graph
+     * @param compartment    the graph compartment to display. Set to null to display all compartments
+     * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
+     */
+    public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment, JIPipeHistoryJournal historyJournal) {
+        this(workbenchUI, algorithmGraph, compartment, historyJournal, GraphEditorUISettings.getInstance());
     }
 
     public JMenu getGraphMenu() {

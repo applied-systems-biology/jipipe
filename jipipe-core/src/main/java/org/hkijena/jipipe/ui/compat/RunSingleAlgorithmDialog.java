@@ -59,21 +59,22 @@ import java.util.stream.Collectors;
 public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench {
     private final Context context;
     private boolean canceled = true;
-    private SingleImageJAlgorithmRun runSettings;
     private JList<JIPipeNodeInfo> algorithmList;
     private SearchTextField searchField;
-    private FormPanel formPanel;
+    private JPanel settingsPanel;
+    private RunSingleAlgorithmSettingsPanel currentSettings;
     private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
     private DocumentTabPane tabPane;
-    private JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
+    private final JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
 
     /**
      * @param context SciJava context
      */
     public RunSingleAlgorithmDialog(Context context) {
         this.context = context;
-        initialize(null);
+        initialize();
         reloadAlgorithmList();
+        selectNode(null);
     }
 
     /**
@@ -82,8 +83,8 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
      */
     public RunSingleAlgorithmDialog(Context context, JIPipeNodeInfo selectedNode) {
         this.context = context;
-        initialize(selectedNode);
         reloadAlgorithmList();
+        selectNode(selectedNode);
     }
 
     /**
@@ -92,40 +93,28 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
      */
     public RunSingleAlgorithmDialog(Context context, Class<? extends JIPipeGraphNode> selectedNode) {
         this.context = context;
-        initialize(JIPipe.getNodes().getNodeInfosFromClass(selectedNode).iterator().next());
         reloadAlgorithmList();
+        selectNode(JIPipe.getNodes().getNodeInfosFromClass(selectedNode).iterator().next());
     }
 
-    private void initialize(JIPipeNodeInfo selectedNode) {
-        JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
-
+    private void initialize() {
+        JPanel contentPanel = new JPanel(new BorderLayout());
         JPanel listPanel = new JPanel(new BorderLayout());
-        formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
+        JPanel settingsContainer = new JPanel(new BorderLayout());
+        this.settingsPanel = new JPanel(new BorderLayout());
+        settingsContainer.add(settingsPanel, BorderLayout.CENTER);
 
-        if (selectedNode == null) {
-            AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, formPanel, AutoResizeSplitPane.RATIO_1_TO_3);
-            contentPanel.add(splitPane, BorderLayout.CENTER);
-        } else {
-            contentPanel.add(formPanel, BorderLayout.CENTER);
-        }
+        tabPane = new DocumentTabPane();
+        setContentPane(tabPane);
+
+        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, settingsContainer, AutoResizeSplitPane.RATIO_1_TO_3);
+        contentPanel.add(splitPane, BorderLayout.CENTER);
 
         initializeToolbar(listPanel);
         initializeList(listPanel);
-        initializeButtonPanel(contentPanel);
+        initializeButtonPanel(settingsContainer);
 
-        tabPane = new DocumentTabPane();
-        tabPane.addTab("Run single algorithm",
-                UIUtils.getIconFromResources("actions/run-build.png"),
-                contentPanel,
-                DocumentTabPane.CloseMode.withoutCloseButton,
-                false);
-        setContentPane(tabPane);
-
-        if (selectedNode != null) {
-            reloadAlgorithmList();
-        } else {
-            selectNodeInfo(selectedNode);
-        }
+        tabPane.addTab("Run JIPipe node", UIUtils.getIconFromResources("apps/jipipe.png"), contentPanel, DocumentTabPane.CloseMode.withoutCloseButton);
     }
 
     private void initializeToolbar(JPanel contentPanel) {
@@ -141,6 +130,31 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
         contentPanel.add(toolBar, BorderLayout.NORTH);
     }
 
+    private void initializeList(JPanel listPanel) {
+        algorithmList = new JList<>();
+        algorithmList.setBorder(BorderFactory.createEtchedBorder());
+        algorithmList.setCellRenderer(new JIPipeNodeInfoListCellRenderer());
+        algorithmList.setModel(new DefaultListModel<>());
+        algorithmList.addListSelectionListener(e -> selectNode(algorithmList.getSelectedValue()));
+        JScrollPane scrollPane = new JScrollPane(algorithmList);
+        listPanel.add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private void selectNode(JIPipeNodeInfo info) {
+        settingsPanel.removeAll();
+        currentSettings = null;
+        if(info != null) {
+            currentSettings = new RunSingleAlgorithmSettingsPanel(this, info);
+            settingsPanel.add(currentSettings, BorderLayout.CENTER);
+        }
+        else {
+
+        }
+        revalidate();
+        repaint();
+    }
+
+
     private void reloadAlgorithmList() {
         List<JIPipeNodeInfo> infos = getFilteredAndSortedInfos();
         DefaultListModel<JIPipeNodeInfo> model = new DefaultListModel<>();
@@ -153,7 +167,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
         if (!model.isEmpty())
             algorithmList.setSelectedIndex(0);
         else
-            selectNodeInfo(null);
+            selectNode(null);
     }
 
     private List<JIPipeNodeInfo> getFilteredAndSortedInfos() {
@@ -163,157 +177,147 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
                 .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList());
     }
 
-    private void initializeList(JPanel listPanel) {
-        algorithmList = new JList<>();
-        algorithmList.setBorder(BorderFactory.createEtchedBorder());
-        algorithmList.setCellRenderer(new JIPipeNodeInfoListCellRenderer());
-        algorithmList.setModel(new DefaultListModel<>());
-        algorithmList.addListSelectionListener(e -> selectNodeInfo(algorithmList.getSelectedValue()));
-        JScrollPane scrollPane = new JScrollPane(algorithmList);
-        listPanel.add(scrollPane, BorderLayout.CENTER);
-    }
+//    private void selectNodeInfo(JIPipeNodeInfo info) {
+//        if (info != null) {
+//            if (runSettings != null) {
+//                runSettings.getEventBus().unregister(this);
+//            }
+//            runSettings = new SingleImageJAlgorithmRun(info.newInstance());
+//            reloadAlgorithmProperties();
+//            runSettings.getEventBus().register(this);
+//        } else {
+//            formPanel.clear();
+//        }
+//    }
 
-    private void selectNodeInfo(JIPipeNodeInfo info) {
-        if (info != null) {
-            if (runSettings != null) {
-                runSettings.getEventBus().unregister(this);
-            }
-            runSettings = new SingleImageJAlgorithmRun(info.newInstance());
-            reloadAlgorithmProperties();
-            runSettings.getEventBus().register(this);
-        } else {
-            formPanel.clear();
-        }
-    }
+//    private void reloadAlgorithmProperties() {
+//        formPanel.clear();
+//
+//        // Add some descriptions
+//        JTextPane descriptions = new JTextPane();
+//        descriptions.setContentType("text/html");
+//        descriptions.setText(TooltipUtils.getAlgorithmTooltip(runSettings.getAlgorithm().getInfo(), false));
+//        descriptions.setEditable(false);
+//        descriptions.setBorder(null);
+//        descriptions.setOpaque(false);
+//        formPanel.addWideToForm(descriptions, null);
+//
+//        // Add runtime settings
+//        reloadRuntimeSettings();
+//
+//        // Add slot importers
+//        reloadInputSlots();
+//
+//        // Add output slots
+//        reloadOutputSlots();
+//
+//        // Add parameter editor
+//        formPanel.addGroupHeader("Algorithm parameters", UIUtils.getIconFromResources("actions/wrench.png"));
+//        formPanel.addWideToForm(new ParameterPanel(this, runSettings.getAlgorithm(), null, ParameterPanel.NONE), null);
+//
+//        formPanel.addVerticalGlue();
+//    }
 
-    private void reloadAlgorithmProperties() {
-        formPanel.clear();
+//    private void reloadRuntimeSettings() {
+//        formPanel.addGroupHeader("Runtime", UIUtils.getIconFromResources("actions/run-build.png"));
+//        SpinnerNumberModel model = new SpinnerNumberModel(numThreads, 1, Integer.MAX_VALUE, 1);
+//        JSpinner spinner = new JSpinner(model);
+//        spinner.addChangeListener(e -> {
+//            setNumThreads(model.getNumber().intValue());
+//        });
+//        formPanel.addToForm(spinner, new JLabel("Number of threads"), null);
+//    }
+//
+//    private void reloadInputSlots() {
+//        FormPanel.GroupHeaderPanel inputDataHeaderPanel = formPanel.addGroupHeader("Input data", UIUtils.getIconFromResources("data-types/data-type.png"));
+//        boolean inputSlotsAreMutable = getAlgorithm().getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration;
+//        boolean inputSlotsAreRemovable = false;
+//        if (inputSlotsAreMutable) {
+//            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
+//            if (slotConfiguration.canAddInputSlot()) {
+//                JButton addButton = new JButton(UIUtils.getIconFromResources("actions/list-add.png"));
+//                addButton.setToolTipText("Add new input");
+//                UIUtils.makeFlat25x25(addButton);
+//                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, new JIPipeDummyGraphHistoryJournal(), getAlgorithm(), JIPipeSlotType.Input));
+//                inputDataHeaderPanel.addColumn(addButton);
+//            }
+//            if (slotConfiguration.canModifyInputSlots()) {
+//                inputSlotsAreRemovable = true;
+//            }
+//        }
+//        for (Map.Entry<String, ImageJDatatypeImporter> entry : runSettings.getInputSlotImporters().entrySet()) {
+//            ImageJDatatypeImporterUI ui = JIPipe.getImageJAdapters().getUIFor(entry.getValue());
+//            Component slotName;
+//            if (inputSlotsAreRemovable) {
+//                JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
+//                JPanel panel = new JPanel(new BorderLayout(8, 0));
+//                JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
+//                UIUtils.makeBorderlessWithoutMargin(removeButton);
+//                removeButton.setToolTipText("Remove input slot");
+//                removeButton.addActionListener(e -> slotConfiguration.removeInputSlot(entry.getKey(), true));
+//                panel.add(removeButton, BorderLayout.WEST);
+//                panel.add(new JLabel(entry.getKey(),
+//                        JIPipe.getDataTypes().getIconFor(entry.getValue().getAdapter().getJIPipeDatatype()),
+//                        JLabel.LEFT), BorderLayout.CENTER);
+//                slotName = panel;
+//            } else {
+//                slotName = new JLabel(entry.getKey(),
+//                        JIPipe.getDataTypes().getIconFor(entry.getValue().getAdapter().getJIPipeDatatype()),
+//                        JLabel.LEFT);
+//            }
+//            formPanel.addToForm(ui, slotName, null);
+//        }
+//    }
+//
+//    private void reloadOutputSlots() {
+//        FormPanel.GroupHeaderPanel outputDataHeaderPanel = formPanel.addGroupHeader("Output data", UIUtils.getIconFromResources("data-types/data-type.png"));
+//        boolean outputSlotsAreMutable = getAlgorithm().getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration;
+//        boolean outputSlotsAreRemovable = false;
+//        if (outputSlotsAreMutable) {
+//            JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
+//            if (slotConfiguration.canAddInputSlot()) {
+//                JButton addButton = new JButton(UIUtils.getIconFromResources("actions/list-add.png"));
+//                addButton.setToolTipText("Add new output");
+//                UIUtils.makeFlat25x25(addButton);
+//                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, new JIPipeDummyGraphHistoryJournal(), getAlgorithm(), JIPipeSlotType.Input));
+//                outputDataHeaderPanel.addColumn(addButton);
+//            }
+//            if (slotConfiguration.canModifyInputSlots()) {
+//                outputSlotsAreRemovable = true;
+//            }
+//        }
+//        for (JIPipeDataSlot outputSlot : getAlgorithm().getOutputSlots()) {
+//            Component slotName;
+//            if (outputSlotsAreRemovable) {
+//                JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
+//                JPanel panel = new JPanel(new BorderLayout(8, 0));
+//                JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
+//                UIUtils.makeBorderlessWithoutMargin(removeButton);
+//                removeButton.setToolTipText("Remove output slot");
+//                removeButton.addActionListener(e -> slotConfiguration.removeOutputSlot(outputSlot.getName(), true));
+//                panel.add(removeButton, BorderLayout.WEST);
+//                panel.add(new JLabel(outputSlot.getName(),
+//                        JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()),
+//                        JLabel.LEFT), BorderLayout.CENTER);
+//                slotName = panel;
+//            } else {
+//                slotName = new JLabel(outputSlot.getName(),
+//                        JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()),
+//                        JLabel.LEFT);
+//            }
+//            formPanel.addWideToForm(slotName, null);
+//        }
+//    }
 
-        // Add some descriptions
-        JTextPane descriptions = new JTextPane();
-        descriptions.setContentType("text/html");
-        descriptions.setText(TooltipUtils.getAlgorithmTooltip(runSettings.getAlgorithm().getInfo(), false));
-        descriptions.setEditable(false);
-        descriptions.setBorder(null);
-        descriptions.setOpaque(false);
-        formPanel.addWideToForm(descriptions, null);
-
-        // Add runtime settings
-        reloadRuntimeSettings();
-
-        // Add slot importers
-        reloadInputSlots();
-
-        // Add output slots
-        reloadOutputSlots();
-
-        // Add parameter editor
-        formPanel.addGroupHeader("Algorithm parameters", UIUtils.getIconFromResources("actions/wrench.png"));
-        formPanel.addWideToForm(new ParameterPanel(this, runSettings.getAlgorithm(), null, ParameterPanel.NONE), null);
-
-        formPanel.addVerticalGlue();
-    }
-
-    private void reloadRuntimeSettings() {
-        formPanel.addGroupHeader("Runtime", UIUtils.getIconFromResources("actions/run-build.png"));
-        SpinnerNumberModel model = new SpinnerNumberModel(numThreads, 1, Integer.MAX_VALUE, 1);
-        JSpinner spinner = new JSpinner(model);
-        spinner.addChangeListener(e -> {
-            setNumThreads(model.getNumber().intValue());
-        });
-        formPanel.addToForm(spinner, new JLabel("Number of threads"), null);
-    }
-
-    private void reloadInputSlots() {
-        FormPanel.GroupHeaderPanel inputDataHeaderPanel = formPanel.addGroupHeader("Input data", UIUtils.getIconFromResources("data-types/data-type.png"));
-        boolean inputSlotsAreMutable = getAlgorithm().getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration;
-        boolean inputSlotsAreRemovable = false;
-        if (inputSlotsAreMutable) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
-            if (slotConfiguration.canAddInputSlot()) {
-                JButton addButton = new JButton(UIUtils.getIconFromResources("actions/list-add.png"));
-                addButton.setToolTipText("Add new input");
-                UIUtils.makeFlat25x25(addButton);
-                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, new JIPipeDummyGraphHistoryJournal(), getAlgorithm(), JIPipeSlotType.Input));
-                inputDataHeaderPanel.addColumn(addButton);
-            }
-            if (slotConfiguration.canModifyInputSlots()) {
-                inputSlotsAreRemovable = true;
-            }
-        }
-        for (Map.Entry<String, ImageJDatatypeImporter> entry : runSettings.getInputSlotImporters().entrySet()) {
-            ImageJDatatypeImporterUI ui = JIPipe.getImageJAdapters().getUIFor(entry.getValue());
-            Component slotName;
-            if (inputSlotsAreRemovable) {
-                JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
-                JPanel panel = new JPanel(new BorderLayout(8, 0));
-                JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
-                UIUtils.makeBorderlessWithoutMargin(removeButton);
-                removeButton.setToolTipText("Remove input slot");
-                removeButton.addActionListener(e -> slotConfiguration.removeInputSlot(entry.getKey(), true));
-                panel.add(removeButton, BorderLayout.WEST);
-                panel.add(new JLabel(entry.getKey(),
-                        JIPipe.getDataTypes().getIconFor(entry.getValue().getAdapter().getJIPipeDatatype()),
-                        JLabel.LEFT), BorderLayout.CENTER);
-                slotName = panel;
-            } else {
-                slotName = new JLabel(entry.getKey(),
-                        JIPipe.getDataTypes().getIconFor(entry.getValue().getAdapter().getJIPipeDatatype()),
-                        JLabel.LEFT);
-            }
-            formPanel.addToForm(ui, slotName, null);
-        }
-    }
-
-    private void reloadOutputSlots() {
-        FormPanel.GroupHeaderPanel outputDataHeaderPanel = formPanel.addGroupHeader("Output data", UIUtils.getIconFromResources("data-types/data-type.png"));
-        boolean outputSlotsAreMutable = getAlgorithm().getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration;
-        boolean outputSlotsAreRemovable = false;
-        if (outputSlotsAreMutable) {
-            JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
-            if (slotConfiguration.canAddInputSlot()) {
-                JButton addButton = new JButton(UIUtils.getIconFromResources("actions/list-add.png"));
-                addButton.setToolTipText("Add new output");
-                UIUtils.makeFlat25x25(addButton);
-                addButton.addActionListener(e -> AddAlgorithmSlotPanel.showDialog(this, new JIPipeDummyGraphHistoryJournal(), getAlgorithm(), JIPipeSlotType.Input));
-                outputDataHeaderPanel.addColumn(addButton);
-            }
-            if (slotConfiguration.canModifyInputSlots()) {
-                outputSlotsAreRemovable = true;
-            }
-        }
-        for (JIPipeDataSlot outputSlot : getAlgorithm().getOutputSlots()) {
-            Component slotName;
-            if (outputSlotsAreRemovable) {
-                JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) getAlgorithm().getSlotConfiguration();
-                JPanel panel = new JPanel(new BorderLayout(8, 0));
-                JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
-                UIUtils.makeBorderlessWithoutMargin(removeButton);
-                removeButton.setToolTipText("Remove output slot");
-                removeButton.addActionListener(e -> slotConfiguration.removeOutputSlot(outputSlot.getName(), true));
-                panel.add(removeButton, BorderLayout.WEST);
-                panel.add(new JLabel(outputSlot.getName(),
-                        JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()),
-                        JLabel.LEFT), BorderLayout.CENTER);
-                slotName = panel;
-            } else {
-                slotName = new JLabel(outputSlot.getName(),
-                        JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()),
-                        JLabel.LEFT);
-            }
-            formPanel.addWideToForm(slotName, null);
-        }
-    }
-
-    /**
-     * Triggered when algorithm slots are changed
-     *
-     * @param event Generated event
-     */
-    @Subscribe
-    public void onAlgorithmSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
-        reloadAlgorithmProperties();
-    }
+//    /**
+//     * Triggered when algorithm slots are changed
+//     *
+//     * @param event Generated event
+//     */
+//    @Subscribe
+//    public void onAlgorithmSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
+//        reloadAlgorithmProperties();
+//    }
 
     private void initializeButtonPanel(JPanel contentPanel) {
         JPanel buttonPanel = new JPanel();
@@ -342,7 +346,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
 
     private void copyCommand() {
         JIPipeIssueReport report = new JIPipeIssueReport();
-        runSettings.reportValidity(report);
+        currentSettings.getRun().reportValidity(report);
         if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report, false);
             return;
@@ -356,7 +360,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
 
     private void runNow() {
         JIPipeIssueReport report = new JIPipeIssueReport();
-        runSettings.reportValidity(report);
+        currentSettings.getRun().reportValidity(report);
         if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report, false);
             return;
@@ -370,23 +374,23 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     }
 
     public String getAlgorithmId() {
-        return runSettings.getAlgorithm().getInfo().getId();
+        return currentSettings.getNodeInfo().getId();
     }
 
     public String getAlgorithmParametersJson() {
         try {
-            return JsonUtils.getObjectMapper().writeValueAsString(runSettings);
+            return JsonUtils.getObjectMapper().writeValueAsString(currentSettings.getRun());
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
     }
 
     public JIPipeGraphNode getAlgorithm() {
-        return runSettings.getAlgorithm();
+        return currentSettings.getNode();
     }
 
     public SingleImageJAlgorithmRun getRunSettings() {
-        return runSettings;
+        return currentSettings.getRun();
     }
 
     public int getNumThreads() {

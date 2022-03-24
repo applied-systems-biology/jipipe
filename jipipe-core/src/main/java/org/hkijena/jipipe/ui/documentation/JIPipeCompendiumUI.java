@@ -218,5 +218,5 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
      * @param forJava if the generated markdown is intended for usage within Java. Otherwise, more modern HTML code can be used
      * @return compendium page
      */
-    protected abstract MarkdownDocument generateCompendiumFor(T item, boolean forJava);
+    public abstract MarkdownDocument generateCompendiumFor(T item, boolean forJava);
 }
