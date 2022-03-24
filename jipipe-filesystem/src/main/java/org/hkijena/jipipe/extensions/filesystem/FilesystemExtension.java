@@ -16,10 +16,12 @@ package org.hkijena.jipipe.extensions.filesystem;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.filesystem.algorithms.*;
-import org.hkijena.jipipe.extensions.filesystem.compat.PathDataImageJAdapter;
+import org.hkijena.jipipe.extensions.filesystem.compat.PathDataFromTableImageJImporter;
 import org.hkijena.jipipe.extensions.filesystem.compat.PathDataImporterUI;
+import org.hkijena.jipipe.extensions.filesystem.compat.PathDataToTableImageJExporter;
 import org.hkijena.jipipe.extensions.filesystem.datasources.*;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
@@ -82,9 +84,10 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatypeConversion(new ImplicitPathTypeConverter(FolderData.class, FileData.class));
 
         // Register ImageJ compat
-        registerImageJDataAdapter(new PathDataImageJAdapter(PathData.class), PathDataImporterUI.class);
-        registerImageJDataAdapter(new PathDataImageJAdapter(FileData.class), PathDataImporterUI.class);
-        registerImageJDataAdapter(new PathDataImageJAdapter(FolderData.class), PathDataImporterUI.class);
+        registerImageJDataImporter("path-from-results-table", new PathDataFromTableImageJImporter(PathData.class), DefaultImageJDataImporterUI.class);
+        registerImageJDataImporter("file-from-results-table", new PathDataFromTableImageJImporter(FileData.class), DefaultImageJDataImporterUI.class);
+        registerImageJDataImporter("folder-from-results-table", new PathDataFromTableImageJImporter(FolderData.class), DefaultImageJDataImporterUI.class);
+        registerImageJDataExporter("path-to-results-table", new PathDataToTableImageJExporter());
 
         registerAlgorithms();
 

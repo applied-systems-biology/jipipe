@@ -145,8 +145,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
         List<JIPipeNodeInfo> infos = getFilteredAndSortedInfos();
         DefaultListModel<JIPipeNodeInfo> model = new DefaultListModel<>();
         for (JIPipeNodeInfo info : infos) {
-            if (info.isCompatibleWithImageJ())
-                model.addElement(info);
+            model.addElement(info);
         }
         algorithmList.setModel(model);
 

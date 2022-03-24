@@ -122,7 +122,9 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
                 cancel("User clicked 'Cancel' in setup dialog.");
                 return;
             } else {
-                parameters = dialog.getAlgorithmParametersJson();
+                parameters = dialog.getRun().getParametersString();
+                inputs = dialog.getRun().getInputsString();
+                outputs = dialog.getRun().getOutputsString();
                 threads = dialog.getNumThreads();
                 algorithm = dialog.getAlgorithm();
                 settings = dialog.getRun();

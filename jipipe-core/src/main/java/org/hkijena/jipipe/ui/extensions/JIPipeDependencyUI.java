@@ -116,12 +116,8 @@ public class JIPipeDependencyUI extends JPanel {
         DefaultTableModel model = new DefaultTableModel();
         model.setColumnIdentifiers(new Object[]{"Name", "ID", "Description", "ImageJ support"});
         for (JIPipeDataInfo info : list) {
-            boolean supportsImageJ = JIPipe.getImageJAdapters().supportsJIPipeData(info.getDataClass());
             String supportsImageJEntry;
-            if (supportsImageJ)
-                supportsImageJEntry = StringUtils.createIconTextHTMLTable("Yes", ResourceUtils.getPluginResource("icons/emblems/vcs-normal.png"));
-            else
-                supportsImageJEntry = StringUtils.createIconTextHTMLTable("No", ResourceUtils.getPluginResource("icons/emblems/vcs-conflicting.png"));
+            supportsImageJEntry = StringUtils.createIconTextHTMLTable("Yes", ResourceUtils.getPluginResource("icons/emblems/vcs-normal.png"));
             model.addRow(new Object[]{
                     StringUtils.createIconTextHTMLTable(info.getName(), JIPipe.getDataTypes().getIconURLFor(info)),
                     info.getId(),
@@ -153,10 +149,7 @@ public class JIPipeDependencyUI extends JPanel {
         model.setColumnIdentifiers(new Object[]{"Name", "ID", "Description", "Input slots", "Output slots", "ImageJ support"});
         for (JIPipeNodeInfo info : list) {
             String supportsImageJEntry;
-            if (info.isCompatibleWithImageJ())
-                supportsImageJEntry = StringUtils.createIconTextHTMLTable("Yes", ResourceUtils.getPluginResource("icons/emblems/vcs-normal.png"));
-            else
-                supportsImageJEntry = StringUtils.createIconTextHTMLTable("No", ResourceUtils.getPluginResource("icons/emblems/vcs-conflicting.png"));
+            supportsImageJEntry = StringUtils.createIconTextHTMLTable("Yes", ResourceUtils.getPluginResource("icons/emblems/vcs-normal.png"));
             model.addRow(new Object[]{
                     info.getName(),
                     info.getId(),

@@ -17,6 +17,7 @@ import ome.xml.model.enums.DimensionOrder;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
@@ -73,6 +74,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataPreview;
+import org.hkijena.jipipe.extensions.tables.compat.ResultsTableDataImageJExporter;
+import org.hkijena.jipipe.extensions.tables.compat.ResultsTableDataImageJImporter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.display.CacheAwareOpenResultsTableInJIPipeDataOperation;
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInImageJDataOperation;
@@ -242,7 +245,8 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 new OpenResultsTableInJIPipeTabDataOperation(),
                 new CacheAwareOpenResultsTableInJIPipeDataOperation(),
                 new OpenInNativeApplicationDataImportOperation(".csv"));
-        registerImageJDataAdapter(new ResultsTableDataImageJAdapter(), ResultsTableDataImporterUI.class);
+        registerImageJDataImporter("import-results-table", new ResultsTableDataImageJImporter(), DefaultImageJDataImporterUI.class);
+        registerImageJDataExporter("export-results-table", new ResultsTableDataImageJExporter());
 
         // Register FFT data types
         registerImageDataType("imagej-imgplus-fft", ImagePlusFFTData.class, "icons/data-types/imgplus-fft.png");

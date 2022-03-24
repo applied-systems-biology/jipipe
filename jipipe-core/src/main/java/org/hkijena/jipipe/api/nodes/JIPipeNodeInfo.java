@@ -185,27 +185,6 @@ public interface JIPipeNodeInfo {
     }
 
     /**
-     * Returns true if an algorithm can be run in a single ImageJ algorithm run
-     *
-     * @return if the algorithm is compatible
-     */
-    default boolean isCompatibleWithImageJ() {
-        if (!getCategory().userCanCreate())
-            return false;
-        JIPipeGraphNode algorithm = newInstance();
-        for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-            if (!JIPipe.getImageJAdapters().supportsJIPipeData(inputSlot.getAcceptedDataType()))
-                return false;
-        }
-        for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
-            if (!JIPipe.getImageJAdapters().supportsJIPipeData(outputSlot.getAcceptedDataType()))
-                return false;
-        }
-
-        return true;
-    }
-
-    /**
      * Gets the icon for this node info
      *
      * @return the icon
