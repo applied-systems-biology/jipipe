@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.compat;
 
-import org.hkijena.jipipe.api.compat.ImageJDatatypeImporter;
-import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
+import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
+import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,11 +22,11 @@ import java.awt.*;
 /**
  * UI for a {@link org.hkijena.jipipe.extensions.imagejdatatypes.compat.ResultsTableDataImageJAdapter}
  */
-public class ResultsTableDataImporterUI extends ImageJDatatypeImporterUI {
+public class ResultsTableDataImporterUI extends ImageJDataImporterUI {
     /**
      * @param importer the importer
      */
-    public ResultsTableDataImporterUI(ImageJDatatypeImporter importer) {
+    public ResultsTableDataImporterUI(ImageJDataImportOperation importer) {
         super(importer);
         initialize();
     }

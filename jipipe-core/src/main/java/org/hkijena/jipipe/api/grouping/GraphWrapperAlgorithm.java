@@ -115,7 +115,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
         }
         if (algorithmInput == null) {
             // Create if it doesn't exist
-            algorithmInput = JIPipe.createNode("graph-wrapper:input", GraphWrapperAlgorithmInput.class);
+            algorithmInput = JIPipe.createNode("graph-wrapper:input");
             wrappedGraph.insertNode(algorithmInput);
         }
         return algorithmInput;
@@ -137,7 +137,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
         }
         if (algorithmOutput == null) {
             // Create if it doesn't exist
-            algorithmOutput = JIPipe.createNode("graph-wrapper:output", GraphWrapperAlgorithmOutput.class);
+            algorithmOutput = JIPipe.createNode("graph-wrapper:output");
             wrappedGraph.insertNode(algorithmOutput);
         }
         return algorithmOutput;

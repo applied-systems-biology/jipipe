@@ -2,21 +2,19 @@ package org.hkijena.jipipe.ui.compat;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.compat.ImageJDatatypeImporter;
+import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
+import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.history.JIPipeDummyGraphHistoryJournal;
-import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.util.Map;
-import java.util.UUID;
 
 public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI {
 
@@ -53,10 +51,10 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
         if(!settingsPanel.getNode().getInputSlots().isEmpty()) {
             FormPanel.GroupHeaderPanel groupHeader = propertyPanel.addGroupHeader("Inputs", UIUtils.getIconFromResources("data-types/slot.png"));
             groupHeader.setDescription("Please use the following items to assign inputs to the node:");
-            for (Map.Entry<String, ImageJDatatypeImporter> entry : settingsPanel.getRun().getInputSlotImporters().entrySet()) {
+            for (Map.Entry<String, ImageJDataImportOperation> entry : settingsPanel.getRun().getInputSlotImporters().entrySet()) {
                 JLabel label = new JLabel(entry.getKey());
                 label.setIcon(JIPipe.getDataTypes().getIconFor(settingsPanel.getNode().getInputSlot(entry.getKey()).getAcceptedDataType()));
-                ImageJDatatypeImporterUI ui = JIPipe.getImageJAdapters().getUIFor(entry.getValue());
+                ImageJDataImporterUI ui = JIPipe.getImageJAdapters().createUIForImportOperation(entry.getValue());
                 propertyPanel.addToForm(ui, label, null);
             }
         }

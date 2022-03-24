@@ -46,7 +46,7 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalDefaultExpressionParameter zAxis = new OptionalDefaultExpressionParameter(true, "MAX(num_z, num_c, num_t)");
 
     private TransformScale2DAlgorithm scale2DAlgorithm =
-            JIPipe.createNode("ij1-transform-scale2d", TransformScale2DAlgorithm.class);
+            JIPipe.createNode("ij1-transform-scale2d");
 
     /**
      * Instantiates a new node type.

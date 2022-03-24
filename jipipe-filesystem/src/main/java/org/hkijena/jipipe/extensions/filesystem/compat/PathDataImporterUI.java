@@ -13,8 +13,8 @@
 
 package org.hkijena.jipipe.extensions.filesystem.compat;
 
-import org.hkijena.jipipe.api.compat.ImageJDatatypeImporter;
-import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
+import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
+import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
@@ -24,14 +24,14 @@ import java.awt.*;
 /**
  * Imports {@link org.hkijena.jipipe.extensions.filesystem.dataypes.PathData}
  */
-public class PathDataImporterUI extends ImageJDatatypeImporterUI {
+public class PathDataImporterUI extends ImageJDataImporterUI {
 
     private PathEditor pathEditor;
 
     /**
      * @param importer the importer
      */
-    public PathDataImporterUI(ImageJDatatypeImporter importer) {
+    public PathDataImporterUI(ImageJDataImportOperation importer) {
         super(importer);
         initialize();
     }

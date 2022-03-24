@@ -55,7 +55,7 @@ public class FilterRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
 
     private DefaultExpressionParameter filters = new DefaultExpressionParameter();
     private RoiStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipe.createNode("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
+            JIPipe.createNode("ij1-roi-statistics");
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
     private boolean outputEmptyLists = true;
 

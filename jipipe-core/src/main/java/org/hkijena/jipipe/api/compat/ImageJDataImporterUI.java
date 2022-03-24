@@ -11,26 +11,29 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.compat;
+package org.hkijena.jipipe.api.compat;
 
-import org.hkijena.jipipe.api.compat.ImageJDatatypeImporter;
+import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 
 import javax.swing.*;
 
 /**
- * User interface around an {@link org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter} that
+ * User interface around a {@link ImageJDataImportOperation}
  */
-public class ImageJDatatypeImporterUI extends JPanel {
-    private ImageJDatatypeImporter importer;
+public class ImageJDataImporterUI extends JIPipeWorkbenchPanel {
+    private final ImageJDataImportOperation importer;
 
     /**
      * @param importer the importer
      */
-    public ImageJDatatypeImporterUI(ImageJDatatypeImporter importer) {
+    public ImageJDataImporterUI(JIPipeWorkbench workbench, ImageJDataImportOperation importer) {
+        super(workbench);
         this.importer = importer;
     }
 
-    public ImageJDatatypeImporter getImporter() {
+    public ImageJDataImportOperation getImporter() {
         return importer;
     }
 }

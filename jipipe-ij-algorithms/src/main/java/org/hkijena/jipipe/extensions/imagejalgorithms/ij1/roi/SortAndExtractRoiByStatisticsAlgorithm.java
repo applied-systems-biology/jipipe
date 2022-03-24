@@ -53,8 +53,8 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
 
     private MeasurementColumnSortOrder.List sortOrderList = new MeasurementColumnSortOrder.List();
     private NumericFunctionExpression selection = new NumericFunctionExpression();
-    private RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics",
-            RoiStatisticsAlgorithm.class);
+    private RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics"
+    );
     private boolean autoClamp = true;
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
     private OptionalColorMapParameter mapLineColor = new OptionalColorMapParameter();

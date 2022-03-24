@@ -5,6 +5,9 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.compat.DefaultImageJDataExporter;
+import org.hkijena.jipipe.api.compat.DefaultImageJDataImporter;
+import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
@@ -67,6 +70,10 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatypeImportOperation("", new CopyContainingFolderDataImportOperation());
         registerDatatypeImportOperation("", new OpenContainingFolderDataImportOperation());
         registerDatatypeDisplayOperation("", new DefaultDataDisplayOperation());
+
+        // Default ImageJ data adapters
+        registerImageJDataImporter(DefaultImageJDataImporter.ID, new DefaultImageJDataImporter(), DefaultImageJDataImporterUI.class);
+        registerImageJDataExporter(DefaultImageJDataImporter.ID, new DefaultImageJDataExporter());
 
         // Global parameters
         registerEnumParameterType("jipipe:annotation-matching-method",

@@ -4,15 +4,11 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.WindowManager;
 import net.imagej.Dataset;
-import org.apache.commons.lang.reflect.ConstructorUtils;
-import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.ImageJ2DatasetData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 

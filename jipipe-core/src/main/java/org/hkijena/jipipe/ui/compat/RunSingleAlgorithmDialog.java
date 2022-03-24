@@ -13,31 +13,18 @@
 
 package org.hkijena.jipipe.ui.compat;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.compat.ImageJDatatypeImporter;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRun;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
-import org.hkijena.jipipe.api.history.JIPipeDummyGraphHistoryJournal;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
-import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
@@ -49,7 +36,6 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -62,7 +48,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     private JList<JIPipeNodeInfo> algorithmList;
     private SearchTextField searchField;
     private JPanel settingsPanel;
-    private RunSingleAlgorithmSettingsPanel currentSettings;
+    private RunSingleAlgorithmSettingsPanel currentRunSettingsPanel;
     private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
     private DocumentTabPane tabPane;
     private final JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
@@ -142,10 +128,10 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
 
     private void selectNode(JIPipeNodeInfo info) {
         settingsPanel.removeAll();
-        currentSettings = null;
+        currentRunSettingsPanel = null;
         if(info != null) {
-            currentSettings = new RunSingleAlgorithmSettingsPanel(this, info);
-            settingsPanel.add(currentSettings, BorderLayout.CENTER);
+            currentRunSettingsPanel = new RunSingleAlgorithmSettingsPanel(this, info);
+            settingsPanel.add(currentRunSettingsPanel, BorderLayout.CENTER);
         }
         else {
 
@@ -346,13 +332,20 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
 
     private void copyCommand() {
         JIPipeIssueReport report = new JIPipeIssueReport();
-        currentSettings.getRun().reportValidity(report);
+        currentRunSettingsPanel.getRun().reportValidity(report);
         if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report, false);
             return;
         }
-        String json = getAlgorithmParametersJson();
-        String macro = String.format("run(\"Run JIPipe algorithm\", \"nodeId=%s, threads=%d, parameters=%s\");", getAlgorithmId(), numThreads, MacroUtils.escapeString(json));
+        String parameters = getRun().getParametersString();
+        String inputs = getRun().getInputsString();
+        String outputs = getRun().getOutputsString();
+        String macro = String.format("run(\"Run JIPipe algorithm\", \"nodeId=%s, threads=%d, parameters=%s, inputs=%s, outputs=%s\");",
+                getAlgorithmId(),
+                numThreads,
+                MacroUtils.escapeString(parameters),
+                MacroUtils.escapeString(inputs),
+                MacroUtils.escapeString(outputs));
         StringSelection selection = new StringSelection(macro);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, selection);
@@ -360,7 +353,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
 
     private void runNow() {
         JIPipeIssueReport report = new JIPipeIssueReport();
-        currentSettings.getRun().reportValidity(report);
+        currentRunSettingsPanel.getRun().reportValidity(report);
         if (!report.isValid()) {
             UIUtils.openValidityReportDialog(this, report, false);
             return;
@@ -374,23 +367,15 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     }
 
     public String getAlgorithmId() {
-        return currentSettings.getNodeInfo().getId();
-    }
-
-    public String getAlgorithmParametersJson() {
-        try {
-            return JsonUtils.getObjectMapper().writeValueAsString(currentSettings.getRun());
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
+        return currentRunSettingsPanel.getNodeInfo().getId();
     }
 
     public JIPipeGraphNode getAlgorithm() {
-        return currentSettings.getNode();
+        return currentRunSettingsPanel.getNode();
     }
 
-    public SingleImageJAlgorithmRun getRunSettings() {
-        return currentSettings.getRun();
+    public SingleImageJAlgorithmRun getRun() {
+        return currentRunSettingsPanel.getRun();
     }
 
     public int getNumThreads() {

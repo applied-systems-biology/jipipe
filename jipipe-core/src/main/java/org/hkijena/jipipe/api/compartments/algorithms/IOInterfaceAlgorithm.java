@@ -89,7 +89,7 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
     public static void replaceCompartmentOutput(JIPipeCompartmentOutput compartmentOutput) {
         JIPipeGraph graph = compartmentOutput.getParentGraph();
         UUID uuid = compartmentOutput.getUUIDInParentGraph();
-        IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode("io-interface", IOInterfaceAlgorithm.class);
+        IOInterfaceAlgorithm ioInterfaceAlgorithm = JIPipe.createNode("io-interface");
         ioInterfaceAlgorithm.setCustomName(compartmentOutput.getName());
         ioInterfaceAlgorithm.setCustomDescription(compartmentOutput.getCustomDescription());
         ioInterfaceAlgorithm.getSlotConfiguration().setTo(compartmentOutput.getSlotConfiguration());

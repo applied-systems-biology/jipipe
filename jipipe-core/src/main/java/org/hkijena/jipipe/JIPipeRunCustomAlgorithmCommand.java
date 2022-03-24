@@ -13,13 +13,11 @@
 
 package org.hkijena.jipipe;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRun;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -28,7 +26,6 @@ import org.hkijena.jipipe.ui.compat.RunSingleAlgorithmDialog;
 import org.hkijena.jipipe.ui.components.SplashScreen;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Initializable;
 import org.scijava.command.Command;
 import org.scijava.command.DynamicCommand;
@@ -37,7 +34,6 @@ import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -52,6 +48,12 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
 
     @Parameter(persist = false)
     private String parameters = "";
+
+    @Parameter(persist = false)
+    private String inputs = "";
+
+    @Parameter(persist = false)
+    private String outputs = "";
 
     @Parameter(persist = false)
     private int threads = 1;
@@ -71,6 +73,8 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
     public void initialize() {
         resolveInput("parameters");
         resolveInput("threads");
+        resolveInput("inputs");
+        resolveInput("outputs");
     }
 
     private void initializeRegistry(boolean withSplash) {
@@ -121,21 +125,12 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
                 parameters = dialog.getAlgorithmParametersJson();
                 threads = dialog.getNumThreads();
                 algorithm = dialog.getAlgorithm();
-                settings = dialog.getRunSettings();
+                settings = dialog.getRun();
             }
         } else {
             initializeRegistry(false);
-            JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(nodeId);
-            algorithm = info.newInstance();
-            settings = new SingleImageJAlgorithmRun(algorithm);
-            try {
-                settings.fromJson(JsonUtils.getObjectMapper().readValue(parameters, JsonNode.class));
-            } catch (IOException e) {
-                throw new UserFriendlyRuntimeException(e, "Unable to load parameters from JSON!",
-                        windowTitle, "Either the data is not valid JSON, does not fit to the selected algorithm, or was corrupted.",
-                        "Please check if the text parameter is valid JSON. You can use a JSON online validator to validate the format. " +
-                                "Also please check if the parameters really fit to the selected algorithm.");
-            }
+            settings = new SingleImageJAlgorithmRun(nodeId, parameters, inputs, outputs, threads);
+            algorithm = settings.getAlgorithm();
             JIPipeIssueReport report = new JIPipeIssueReport();
             settings.reportValidity(report);
             if (!report.isValid()) {

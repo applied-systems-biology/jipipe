@@ -152,7 +152,7 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
         Filler roiFiller = new Filler();
         if (drawLabel) {
             RoiStatisticsAlgorithm statisticsAlgorithm =
-                    JIPipe.createNode("ij1-roi-statistics", RoiStatisticsAlgorithm.class);
+                    JIPipe.createNode("ij1-roi-statistics");
             statisticsAlgorithm.setAllSlotsVirtual(false, false, null);
             statisticsAlgorithm.setOverrideReferenceImage(false);
             statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());

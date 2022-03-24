@@ -17,7 +17,8 @@ import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeMetadata;
-import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
+import org.hkijena.jipipe.api.compat.ImageJDataExporter;
+import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
@@ -42,7 +43,7 @@ import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterTypeInfo;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
-import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
+import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
@@ -523,14 +524,22 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     }
 
     /**
-     * Registers an adapter between ImageJ and JIPipe data types
-     *
-     * @param adapter         An adapter
-     * @param importerUIClass User interface class used for importing ImageJ data
+     * Registers an importer for data from ImageJ
+     * @param id the unique ID
+     * @param dataImporter the importer instance
+     * @param importerUIClass the UI (can be null)
      */
-    public void registerImageJDataAdapter(ImageJDatatypeAdapter adapter, Class<? extends ImageJDatatypeImporterUI> importerUIClass) {
-        registry.getImageJDataAdapterRegistry().register(adapter);
-        registry.getImageJDataAdapterRegistry().registerImporterFor(adapter.getImageJDatatype(), importerUIClass);
+    public void registerImageJDataImporter(String id, ImageJDataImporter dataImporter, Class<? extends ImageJDataImporterUI> importerUIClass) {
+        registry.getImageJDataAdapterRegistry().register(id, dataImporter, importerUIClass);
+    }
+
+    /**
+     * Registers an importer for data from ImageJ
+     * @param id the unique ID
+     * @param dataExporter the exporter instance
+     */
+    public void registerImageJDataExporter(String id, ImageJDataExporter dataExporter) {
+        registry.getImageJDataAdapterRegistry().register(id, dataExporter);
     }
 
     /**

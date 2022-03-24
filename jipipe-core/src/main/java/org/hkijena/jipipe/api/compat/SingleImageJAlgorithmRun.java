@@ -20,6 +20,8 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
@@ -39,14 +41,115 @@ import java.io.IOException;
 import java.util.*;
 
 /**
- * Settings class used for a single algorithm run
+ * Manages a single algorithm run
  */
-@JsonSerialize(using = SingleImageJAlgorithmRun.Serializer.class)
 public class SingleImageJAlgorithmRun implements JIPipeValidatable {
 
     private final EventBus eventBus = new EventBus();
     private final JIPipeGraphNode algorithm;
-    private final Map<String, ImageJDatatypeImporter> inputSlotImporters = new HashMap<>();
+    private final Map<String, ImageJDataImportOperation> inputSlotImporters = new HashMap<>();
+    private final Map<String, ImageJDataExportOperation> outputSlotExporters = new HashMap<>();
+    private int numThreads = 1;
+
+    public SingleImageJAlgorithmRun(String nodeId, String parameters, String inputs, String outputs, int threads) {
+        this.algorithm = JIPipe.createNode(nodeId);
+        this.numThreads = threads;
+
+        // Read parameters
+        importParameterString(parameters);
+        importInputString(inputs);
+        importOutputString(outputs);
+    }
+
+    private void importInputString(String inputString) {
+        JsonNode jsonNode = JsonUtils.readFromString(inputString, JsonNode.class);
+        JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
+
+        // Create/remove slots
+        if(slotConfiguration.canModifyInputSlots()) {
+            for (String slotName : Sets.symmetricDifference(ImmutableSet.copyOf(jsonNode.fieldNames()), algorithm.getInputSlotMap().keySet()).immutableCopy()) {
+                if (slotConfiguration.hasInputSlot(slotName)) {
+                    // Need to remove it
+                    slotConfiguration.removeInputSlot(slotName, true);
+                } else {
+                    // Need to add it
+                    JsonNode slotInfoNode = jsonNode.get(slotName);
+                    String dataType = slotInfoNode.get("data-type").textValue();
+                    Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(dataType);
+                    slotConfiguration.addSlot(new JIPipeDataSlotInfo(dataClass, JIPipeSlotType.Input, slotName, ""), true);
+                }
+            }
+        }
+
+        // Set importer
+        for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.fields())) {
+            if(slotConfiguration.hasInputSlot(entry.getKey())) {
+                // Parse
+                try {
+                    ImageJDataImportOperation operation = JsonUtils.getObjectMapper().readerFor(ImageJDataImportOperation.class).readValue(entry.getValue());
+                    inputSlotImporters.put(entry.getKey(), operation);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+    private void importOutputString(String outputString) {
+        JsonNode jsonNode = JsonUtils.readFromString(outputString, JsonNode.class);
+        JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
+
+        // Create/remove slots
+        if(slotConfiguration.canAddOutputSlot()) {
+            for (String slotName : Sets.symmetricDifference(ImmutableSet.copyOf(jsonNode.fieldNames()), algorithm.getOutputSlotMap().keySet()).immutableCopy()) {
+                if (slotConfiguration.hasOutputSlot(slotName)) {
+                    // Need to remove it
+                    slotConfiguration.removeOutputSlot(slotName, true);
+                } else {
+                    // Need to add it
+                    JsonNode slotInfoNode = jsonNode.get(slotName);
+                    String dataType = slotInfoNode.get("data-type").textValue();
+                    Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(dataType);
+                    slotConfiguration.addSlot(new JIPipeDataSlotInfo(dataClass, JIPipeSlotType.Output, slotName, ""), true);
+                }
+            }
+        }
+
+        // Set importer
+        for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.fields())) {
+            if(slotConfiguration.hasOutputSlot(entry.getKey())) {
+                // Parse
+                try {
+                    ImageJDataExportOperation operation = JsonUtils.getObjectMapper().readerFor(ImageJDataExportOperation.class).readValue(entry.getValue());
+                    outputSlotExporters.put(entry.getKey(), operation);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+    private void importParameterString(String parametersString) {
+        JsonNode jsonNode = JsonUtils.readFromString(parametersString, JsonNode.class);
+        Map<String, JIPipeParameterAccess> parameters = JIPipeParameterTree.getParameters(algorithm);
+        for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("parameters").fields())) {
+            JIPipeParameterAccess access = parameters.getOrDefault(entry.getKey(), null);
+            try {
+                access.set(JsonUtils.getObjectMapper().readerFor(access.getFieldClass()).readValue(entry.getValue()));
+            } catch (IOException e) {
+                throw new UserFriendlyRuntimeException(e, "Unable to load parameters!", "JIPipe single-algorithm run", "The JSON data is invalid or incomplete.",
+                        "Use the GUI to create a valid parameter set.");
+            }
+        }
+    }
+
+    public int getNumThreads() {
+        return numThreads;
+    }
+
+    public void setNumThreads(int numThreads) {
+        this.numThreads = numThreads;
+    }
 
     /**
      * @param algorithm the algorithm to be run
@@ -71,21 +174,31 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
         return algorithm;
     }
 
-    public Map<String, ImageJDatatypeImporter> getInputSlotImporters() {
+    public Map<String, ImageJDataImportOperation> getInputSlotImporters() {
         return Collections.unmodifiableMap(inputSlotImporters);
     }
 
     private void updateSlots() {
-        for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-            if (!inputSlotImporters.containsKey(inputSlot.getName())) {
-                inputSlotImporters.put(inputSlot.getName(), new ImageJDatatypeImporter(
-                        JIPipe.getImageJAdapters().getAdapterForJIPipeData(inputSlot.getAcceptedDataType())));
+        for (String slotName : Sets.symmetricDifference(algorithm.getInputSlotMap().keySet(), inputSlotImporters.keySet()).immutableCopy()) {
+            if(algorithm.getInputSlotMap().containsKey(slotName)) {
+                // Need to add
+                inputSlotImporters.put(slotName, new ImageJDataImportOperation(
+                        JIPipe.getImageJAdapters().getDefaultImporterFor(algorithm.getInputSlot(slotName).getAcceptedDataType())));
+            }
+            else {
+                // Need to remove
+                inputSlotImporters.remove(slotName);
             }
         }
-        for (Map.Entry<String, ImageJDatatypeImporter> entry : ImmutableList.copyOf(inputSlotImporters.entrySet())) {
-            JIPipeDataSlot slot = algorithm.getInputSlotMap().getOrDefault(entry.getKey(), null);
-            if (slot == null || !slot.isInput()) {
-                inputSlotImporters.remove(entry.getKey());
+        for (String slotName : Sets.symmetricDifference(algorithm.getOutputSlotMap().keySet(), outputSlotExporters.keySet()).immutableCopy()) {
+            if(algorithm.getInputSlotMap().containsKey(slotName)) {
+                // Need to add
+                outputSlotExporters.put(slotName, new ImageJDataExportOperation(
+                        JIPipe.getImageJAdapters().getDefaultExporterFor(algorithm.getInputSlot(slotName).getAcceptedDataType())));
+            }
+            else {
+                // Need to remove
+                outputSlotExporters.remove(slotName);
             }
         }
     }
@@ -94,26 +207,20 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
      * Pushes selected ImageJ data into the algorithm input slots
      */
     public void pushInput() {
-        for (Map.Entry<String, ImageJDatatypeImporter> entry : inputSlotImporters.entrySet()) {
+        for (Map.Entry<String, ImageJDataImportOperation> entry : inputSlotImporters.entrySet()) {
             JIPipeDataSlot slot = algorithm.getInputSlot(entry.getKey());
             slot.clearData();
-            slot.addData(entry.getValue().get(), new JIPipeProgressInfo());
+            slot.addData(entry.getValue().apply(null), new JIPipeProgressInfo());
         }
     }
 
     /**
      * Extracts algorithm output into ImageJ.
-     * This will run convertMultipleJIPipeToImageJ to allow output condensation
      */
     public void pullOutput() {
         for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
-            ImageJDatatypeAdapter adapter = JIPipe.getImageJAdapters().getAdapterForJIPipeData(outputSlot.getAcceptedDataType());
-            List<JIPipeData> jipipeData = new ArrayList<>();
-            for (int i = 0; i < outputSlot.getRowCount(); ++i) {
-                JIPipeData data = outputSlot.getData(i, JIPipeData.class, new JIPipeProgressInfo());
-                jipipeData.add(data);
-            }
-            adapter.convertMultipleJIPipeToImageJ(jipipeData, true, false, outputSlot.getName());
+            ImageJDataExportOperation exportOperation = outputSlotExporters.get(outputSlot.getName());
+            exportOperation.apply(outputSlot);
         }
     }
 
@@ -128,129 +235,19 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
         eventBus.post(event);
     }
 
-    /**
-     * Loads data from JSON
-     *
-     * @param jsonNode JSON data
-     */
-    public void fromJson(JsonNode jsonNode) {
-        if (jsonNode.has("parameters")) {
-            Map<String, JIPipeParameterAccess> parameters = JIPipeParameterTree.getParameters(algorithm);
-            for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("parameters").fields())) {
-                JIPipeParameterAccess access = parameters.getOrDefault(entry.getKey(), null);
-                try {
-                    access.set(JsonUtils.getObjectMapper().readerFor(access.getFieldClass()).readValue(entry.getValue()));
-                } catch (IOException e) {
-                    throw new UserFriendlyRuntimeException(e, "Unable to load parameters!", "JIPipe single-algorithm run", "The JSON data is invalid or incomplete.",
-                            "Use the GUI to create a valid parameter set.");
-                }
-            }
-        }
-        if (jsonNode.has("add-input")) {
-            JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
-            for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("add-input").fields())) {
-                JIPipeDataInfo info = JIPipeDataInfo.getInstance(entry.getValue().textValue());
-                slotConfiguration.addSlot(entry.getKey(), new JIPipeDataSlotInfo(info.getDataClass(),
-                        JIPipeSlotType.Input,
-                        entry.getKey(),
-                        "", null), false);
-            }
-        }
-        if (jsonNode.has("add-output")) {
-            JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
-            for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("add-output").fields())) {
-                JIPipeDataInfo info = JIPipeDataInfo.getInstance(entry.getValue().textValue());
-                slotConfiguration.addSlot(entry.getKey(), new JIPipeDataSlotInfo(info.getDataClass(),
-                        JIPipeSlotType.Output,
-                        entry.getKey(),
-                        "", null), false);
-            }
-        }
-        if (jsonNode.has("input")) {
-            for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("input").fields())) {
-                ImageJDatatypeImporter importer = inputSlotImporters.get(entry.getKey());
-                importer.setParameters(entry.getValue().textValue());
-            }
-        }
-    }
-
     public EventBus getEventBus() {
         return eventBus;
     }
 
-    /**
-     * Serializes the run
-     */
-    public static class Serializer extends JsonSerializer<SingleImageJAlgorithmRun> {
-        @Override
-        public void serialize(SingleImageJAlgorithmRun run, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-            // Instantiate an unchanged algorithm to reduce the output
-            JIPipeGraphNode comparison = run.getAlgorithm().getInfo().newInstance();
-            jsonGenerator.writeStartObject();
+    public String getParametersString() {
+        return JsonUtils.toJsonString(algorithm);
+    }
 
-            serializeParameters(run, comparison, jsonGenerator);
-            serializeInputSlotConfiguration(run, comparison, jsonGenerator);
-            serializeInputSlotData(run, jsonGenerator);
-            serializeOutputSlotConfiguration(run, comparison, jsonGenerator);
+    public String getInputsString() {
+        return JsonUtils.toJsonString(inputSlotImporters);
+    }
 
-            jsonGenerator.writeEndObject();
-        }
-
-        private void serializeInputSlotData(SingleImageJAlgorithmRun run, JsonGenerator jsonGenerator) throws IOException {
-            Map<String, String> slotData = new HashMap<>();
-            for (Map.Entry<String, ImageJDatatypeImporter> entry : run.inputSlotImporters.entrySet()) {
-                if (entry.getValue().getParameters() != null) {
-                    slotData.put(entry.getKey(), entry.getValue().getParameters());
-                }
-            }
-            if (!slotData.isEmpty()) {
-                jsonGenerator.writeObjectField("input", slotData);
-            }
-        }
-
-        private void serializeOutputSlotConfiguration(SingleImageJAlgorithmRun run, JIPipeGraphNode comparison, JsonGenerator jsonGenerator) throws IOException {
-            Map<String, String> serializedSlots = new HashMap<>();
-            for (JIPipeDataSlot outputSlot : run.getAlgorithm().getOutputSlots()) {
-                JIPipeDataSlot existingSlot = comparison.getOutputSlotMap().getOrDefault(outputSlot.getName(), null);
-                if (existingSlot != null && existingSlot.isOutput())
-                    continue;
-                serializedSlots.put(outputSlot.getName(), JIPipe.getDataTypes().getIdOf(outputSlot.getAcceptedDataType()));
-            }
-            if (!serializedSlots.isEmpty()) {
-                jsonGenerator.writeObjectField("add-output", serializedSlots);
-            }
-        }
-
-        private void serializeInputSlotConfiguration(SingleImageJAlgorithmRun run, JIPipeGraphNode comparison, JsonGenerator jsonGenerator) throws IOException {
-            Map<String, String> serializedSlots = new HashMap<>();
-            for (JIPipeDataSlot inputSlot : run.getAlgorithm().getInputSlots()) {
-                JIPipeDataSlot existingSlot = comparison.getInputSlotMap().getOrDefault(inputSlot.getName(), null);
-                if (existingSlot != null && existingSlot.isInput())
-                    continue;
-                serializedSlots.put(inputSlot.getName(), JIPipe.getDataTypes().getIdOf(inputSlot.getAcceptedDataType()));
-            }
-            if (!serializedSlots.isEmpty()) {
-                jsonGenerator.writeObjectField("add-input", serializedSlots);
-            }
-        }
-
-        private void serializeParameters(SingleImageJAlgorithmRun run, JIPipeParameterCollection comparison, JsonGenerator jsonGenerator) throws IOException {
-
-            Map<String, JIPipeParameterAccess> comparisonParameters = JIPipeParameterTree.getParameters(comparison);
-            Map<String, Object> serializedParameters = new HashMap<>();
-
-            for (Map.Entry<String, JIPipeParameterAccess> entry : JIPipeParameterTree.getParameters(run.getAlgorithm()).entrySet()) {
-                JIPipeParameterAccess originalAccess = comparisonParameters.getOrDefault(entry.getKey(), null);
-                Object originalValue = originalAccess != null ? originalAccess.get(Object.class) : null;
-                Object value = entry.getValue().get(Object.class);
-                if (!Objects.equals(originalValue, value)) {
-                    serializedParameters.put(entry.getKey(), value);
-                }
-            }
-
-            if (!serializedParameters.isEmpty()) {
-                jsonGenerator.writeObjectField("parameters", serializedParameters);
-            }
-        }
+    public String getOutputsString() {
+        return JsonUtils.toJsonString(outputSlotExporters);
     }
 }

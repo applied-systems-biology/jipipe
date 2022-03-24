@@ -317,11 +317,10 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * Creates a new node instance from its id
      *
      * @param id    Algorithm ID
-     * @param klass the node type
      * @param <T>   Algorithm class
      * @return Algorithm instance
      */
-    public static <T extends JIPipeGraphNode> T createNode(String id, Class<T> klass) {
+    public static <T extends JIPipeGraphNode> T createNode(String id) {
         return (T) getNodes().getInfoById(id).newInstance();
     }
 

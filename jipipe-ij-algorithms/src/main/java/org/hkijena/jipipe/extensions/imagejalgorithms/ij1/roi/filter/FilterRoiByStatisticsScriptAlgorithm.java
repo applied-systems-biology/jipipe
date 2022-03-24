@@ -60,8 +60,8 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiPro
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgorithm {
 
-    private RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics",
-            RoiStatisticsAlgorithm.class);
+    private RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics"
+    );
     private PythonInterpreter pythonInterpreter;
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,

@@ -15,8 +15,8 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.compat;
 
 import ij.ImagePlus;
 import ij.WindowManager;
-import org.hkijena.jipipe.api.compat.ImageJDatatypeImporter;
-import org.hkijena.jipipe.ui.compat.ImageJDatatypeImporterUI;
+import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
+import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -28,14 +28,14 @@ import java.awt.*;
 /**
  * Imports an {@link ImagePlus}
  */
-public class ImagePlusDataImporterUI extends ImageJDatatypeImporterUI {
+public class ImagePlusDataImporterUI extends ImageJDataImporterUI {
 
     private JComboBox<ImagePlus> imageSelection;
 
     /**
      * @param importer the importer
      */
-    public ImagePlusDataImporterUI(ImageJDatatypeImporter importer) {
+    public ImagePlusDataImporterUI(ImageJDataImportOperation importer) {
         super(importer);
         initialize();
         reloadList();

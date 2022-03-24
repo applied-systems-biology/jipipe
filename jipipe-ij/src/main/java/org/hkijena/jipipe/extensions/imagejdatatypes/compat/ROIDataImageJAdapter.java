@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.compat;
 
 import ij.plugin.frame.RoiManager;
-import org.hkijena.jipipe.api.compat.ImageJDatatypeAdapter;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 

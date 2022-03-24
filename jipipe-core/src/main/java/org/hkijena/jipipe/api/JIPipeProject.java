@@ -234,7 +234,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * @return The compartment
      */
     public JIPipeProjectCompartment addCompartment(String name) {
-        JIPipeProjectCompartment compartment = JIPipe.createNode("jipipe:project-compartment", JIPipeProjectCompartment.class);
+        JIPipeProjectCompartment compartment = JIPipe.createNode("jipipe:project-compartment");
         compartment.setProject(this);
         compartment.setCustomName(name);
         compartmentGraph.insertNode(compartment);
@@ -275,7 +275,7 @@ public class JIPipeProject implements JIPipeValidatable {
             }
         }
         if (compartmentOutput == null) {
-            compartmentOutput = JIPipe.createNode("jipipe:compartment-output", JIPipeCompartmentOutput.class);
+            compartmentOutput = JIPipe.createNode("jipipe:compartment-output");
             compartmentOutput.setCustomName(compartment.getName() + " output");
             graph.insertNode(compartmentOutput, compartmentUUID);
         }
@@ -705,7 +705,7 @@ public class JIPipeProject implements JIPipeValidatable {
 
                     // Create a new one
                     if (!found) {
-                        JIPipeCompartmentOutput compartmentOutput = JIPipe.createNode("jipipe:compartment-output", JIPipeCompartmentOutput.class);
+                        JIPipeCompartmentOutput compartmentOutput = JIPipe.createNode("jipipe:compartment-output");
                         compartmentOutput.setCustomName(compartment.getName() + " output");
                         graph.insertNode(compartmentOutput, compartment.getProjectCompartmentUUID());
                         compartment.setOutputNode(compartmentOutput);
