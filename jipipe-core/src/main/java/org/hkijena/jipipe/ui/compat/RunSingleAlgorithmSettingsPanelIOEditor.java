@@ -42,7 +42,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
     }
 
     @Subscribe
-    public void onSlotsChanged(JIPipeSlotConfiguration.SlotsChangedEvent event) {
+    public void onSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
         reloadPropertyPanel();
     }
 
@@ -57,6 +57,10 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
                 ImageJDataImporterUI ui = JIPipe.getImageJAdapters().createUIForImportOperation(getWorkbench(), entry.getValue());
                 propertyPanel.addToForm(ui, label, null);
             }
+        }
+        if(!settingsPanel.getNode().getOutputSlots().isEmpty()) {
+            FormPanel.GroupHeaderPanel groupHeader = propertyPanel.addGroupHeader("Outputs", UIUtils.getIconFromResources("data-types/slot.png"));
+            groupHeader.setDescription("Following outputs will be generated:");
         }
         propertyPanel.addVerticalGlue();
     }
