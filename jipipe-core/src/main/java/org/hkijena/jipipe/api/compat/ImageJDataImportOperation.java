@@ -64,6 +64,7 @@ public class ImageJDataImportOperation extends ImageJImportParameters implements
     @JIPipeParameter("id")
     @JsonSetter("id")
     public void setImporterId(String importerId) {
+        this.importer = null;
         this.importerId = importerId;
     }
 

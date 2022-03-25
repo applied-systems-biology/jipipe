@@ -59,8 +59,8 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     public RunSingleAlgorithmDialog(Context context) {
         this.context = context;
         initialize();
-        reloadAlgorithmList();
         selectNode(null);
+        reloadAlgorithmList();
     }
 
     /**

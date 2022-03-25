@@ -59,6 +59,7 @@ public class ImageJDataExportOperation extends ImageJExportParameters implements
     @JsonSetter("id")
     public void setExporterId(String exporterId) {
         this.exporterId = exporterId;
+        this.exporter = null;
     }
 
     /**

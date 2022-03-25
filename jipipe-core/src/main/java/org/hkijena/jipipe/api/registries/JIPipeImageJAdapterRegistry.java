@@ -75,7 +75,7 @@ public class JIPipeImageJAdapterRegistry {
      */
     public Set<ImageJDataImporter> getAvailableImporters(Class<? extends JIPipeData> dataClass, boolean includeConvertible) {
         Set<ImageJDataImporter> result;
-        if(includeConvertible) {
+        if(!includeConvertible) {
             result = supportedConvertibleImporters.getOrDefault(dataClass, null);
             if(result == null) {
                 result = new HashSet<>();
@@ -113,7 +113,7 @@ public class JIPipeImageJAdapterRegistry {
      */
     public Set<ImageJDataExporter> getAvailableExporters(Class<? extends JIPipeData> dataClass, boolean includeConvertible) {
         Set<ImageJDataExporter> result;
-        if(includeConvertible) {
+        if(!includeConvertible) {
             result = supportedConvertibleExporters.getOrDefault(dataClass, null);
             if(result == null) {
                 result = new HashSet<>();
@@ -168,6 +168,10 @@ public class JIPipeImageJAdapterRegistry {
         if(available.isEmpty()) {
             return getImporterById(DefaultImageJDataImporter.ID); // the default importer
         }
+        for (ImageJDataImporter importer : available) {
+            if(importer.getImportedJIPipeDataType() == dataClass)
+                return importer;
+        }
         return available.iterator().next();
     }
 
@@ -175,6 +179,10 @@ public class JIPipeImageJAdapterRegistry {
         Set<ImageJDataExporter> available = getAvailableExporters(dataClass, false);
         if(available.isEmpty()) {
             return getExporterById(DefaultImageJDataExporter.ID); // the default importer
+        }
+        for (ImageJDataExporter exporter : available) {
+            if(exporter.getExportedJIPipeDataType() == dataClass)
+                return exporter;
         }
         return available.iterator().next();
     }

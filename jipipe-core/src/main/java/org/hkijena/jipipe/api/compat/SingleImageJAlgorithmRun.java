@@ -13,12 +13,7 @@
 
 package org.hkijena.jipipe.api.compat;
 
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -33,7 +28,6 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -178,6 +172,10 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
         return Collections.unmodifiableMap(inputSlotImporters);
     }
 
+    public Map<String, ImageJDataExportOperation> getOutputSlotExporters() {
+        return Collections.unmodifiableMap(outputSlotExporters);
+    }
+
     private void updateSlots() {
         for (String slotName : Sets.symmetricDifference(algorithm.getInputSlotMap().keySet(), inputSlotImporters.keySet()).immutableCopy()) {
             if(algorithm.getInputSlotMap().containsKey(slotName)) {
@@ -206,7 +204,7 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
     /**
      * Pushes selected ImageJ data into the algorithm input slots
      */
-    public void pushInput() {
+    public void importInputsFromImageJ() {
         for (Map.Entry<String, ImageJDataImportOperation> entry : inputSlotImporters.entrySet()) {
             JIPipeDataSlot slot = algorithm.getInputSlot(entry.getKey());
             slot.clearData();
@@ -217,7 +215,7 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
     /**
      * Extracts algorithm output into ImageJ.
      */
-    public void pullOutput() {
+    public void exportOutputToImageJ() {
         for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
             ImageJDataExportOperation exportOperation = outputSlotExporters.get(outputSlot.getName());
             exportOperation.apply(outputSlot);

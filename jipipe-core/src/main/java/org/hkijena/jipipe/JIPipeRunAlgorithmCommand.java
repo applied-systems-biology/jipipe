@@ -147,7 +147,7 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
         }
         IJ.showStatus("Running JIPipe algorithm ...");
         IJ.showProgress(1, 3);
-        settings.pushInput();
+        settings.importInputsFromImageJ();
         IJ.showProgress(2, 3);
         JIPipeFixedThreadPool threadPool = new JIPipeFixedThreadPool(threads);
         try {
@@ -164,6 +164,6 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             threadPool = null;
         }
         IJ.showProgress(3, 3);
-        settings.pullOutput();
+        settings.exportOutputToImageJ();
     }
 }

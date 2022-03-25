@@ -147,7 +147,7 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
         }
         IJ.showStatus(windowTitle + " ...");
         IJ.showProgress(1, 3);
-        settings.pushInput();
+        settings.importInputsFromImageJ();
         IJ.showProgress(2, 3);
         JIPipeFixedThreadPool threadPool = new JIPipeFixedThreadPool(threads);
         try {
@@ -164,6 +164,6 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
             threadPool = null;
         }
         IJ.showProgress(3, 3);
-        settings.pullOutput();
+        settings.exportOutputToImageJ();
     }
 }

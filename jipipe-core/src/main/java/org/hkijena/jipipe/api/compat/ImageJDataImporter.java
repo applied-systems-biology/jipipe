@@ -64,7 +64,7 @@ public interface ImageJDataImporter {
     default String getDescription() {
         JIPipeDocumentation annotation = getClass().getAnnotation(JIPipeDocumentation.class);
         if(annotation != null) {
-            return annotation.name();
+            return annotation.description();
         }
         else {
             return "";
