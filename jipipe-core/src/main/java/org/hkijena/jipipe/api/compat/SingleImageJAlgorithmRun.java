@@ -191,10 +191,10 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
             }
         }
         for (String slotName : Sets.symmetricDifference(algorithm.getOutputSlotMap().keySet(), outputSlotExporters.keySet()).immutableCopy()) {
-            if(algorithm.getInputSlotMap().containsKey(slotName)) {
+            if(algorithm.getOutputSlotMap().containsKey(slotName)) {
                 // Need to add
                 outputSlotExporters.put(slotName, new ImageJDataExportOperation(
-                        JIPipe.getImageJAdapters().getDefaultExporterFor(algorithm.getInputSlot(slotName).getAcceptedDataType())));
+                        JIPipe.getImageJAdapters().getDefaultExporterFor(algorithm.getOutputSlot(slotName).getAcceptedDataType())));
             }
             else {
                 // Need to remove

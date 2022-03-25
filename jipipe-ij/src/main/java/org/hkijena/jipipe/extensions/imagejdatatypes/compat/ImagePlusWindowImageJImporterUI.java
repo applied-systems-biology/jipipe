@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
 import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -70,7 +71,7 @@ public class ImagePlusWindowImageJImporterUI extends ImageJDataImporterUI {
             ImagePlus img = (ImagePlus) imageSelection.getSelectedItem();
             getImporter().setName(img.getTitle());
         } else {
-            getImporter().setName("" + imageSelection.getSelectedItem());
+            getImporter().setName(StringUtils.nullToEmpty(imageSelection.getSelectedItem()));
         }
     }
 
