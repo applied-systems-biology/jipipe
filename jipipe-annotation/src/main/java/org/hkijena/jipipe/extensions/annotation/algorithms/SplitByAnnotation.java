@@ -63,7 +63,7 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
      */
     public SplitByAnnotation(SplitByAnnotation other) {
         super(other);
-        this.targetSlots = new OutputSlotMapParameterCollection(AnnotationGeneratorExpression.class, this, null, false);
+        this.targetSlots = new OutputSlotMapParameterCollection(AnnotationGeneratorExpression.class, this, null, true);
         other.targetSlots.copyTo(this.targetSlots);
         this.targetSlots.getEventBus().register(this);
     }

@@ -55,14 +55,14 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
                 .addOutputSlot("Parameters", "The project parameters", ParametersData.class, null)
                 .sealOutput()
                 .build());
-        this.parameterKeyAssignments = new InputSlotMapParameterCollection(String.class, this, () -> "", false);
+        this.parameterKeyAssignments = new InputSlotMapParameterCollection(String.class, this, (slotInfo) -> "", false);
         parameterKeyAssignments.getEventBus().register(new ParameterWatcher());
         registerSubParameter(parameterKeyAssignments);
     }
 
     public PathsToJIPipeProjectParametersAlgorithm(PathsToJIPipeProjectParametersAlgorithm other) {
         super(other);
-        this.parameterKeyAssignments = new InputSlotMapParameterCollection(String.class, this, () -> "", false);
+        this.parameterKeyAssignments = new InputSlotMapParameterCollection(String.class, this, (slotInfo) -> "", false);
         parameterKeyAssignments.getEventBus().register(new ParameterWatcher());
         other.parameterKeyAssignments.copyTo(parameterKeyAssignments);
         registerSubParameter(parameterKeyAssignments);

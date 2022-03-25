@@ -67,9 +67,7 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 .sealInput()
                 .build());
         stackAssignments = new OutputSlotMapParameterCollection(IntegerRange.class,
-                this,
-                IntegerRange::new,
-                false);
+                this);
         stackAssignments.updateSlots();
         registerSubParameter(stackAssignments);
     }
@@ -87,9 +85,7 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.annotationType = other.annotationType;
 
         stackAssignments = new OutputSlotMapParameterCollection(IntegerRange.class,
-                this,
-                IntegerRange::new,
-                false);
+                this);
         other.stackAssignments.copyTo(stackAssignments);
         registerSubParameter(stackAssignments);
     }

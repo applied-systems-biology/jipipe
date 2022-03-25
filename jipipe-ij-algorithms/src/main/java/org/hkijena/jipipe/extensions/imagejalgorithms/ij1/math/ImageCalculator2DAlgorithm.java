@@ -90,7 +90,7 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
         return true;
     }
 
-    private Operand getNewOperand() {
+    private Operand getNewOperand(JIPipeDataSlotInfo info) {
         for (Operand value : Operand.values()) {
             if (operands.getParameters().values().stream()
                     .noneMatch(parameterAccess -> parameterAccess.get(Operand.class) == value)) {

@@ -47,10 +47,19 @@ public class OutputSlotMapParameterCollection extends SlotMapParameterCollection
      * @param dataClass            the data type of the parameter assigned to each slot
      * @param algorithm            the algorithm that contains the slots
      * @param newInstanceGenerator optional method that generated new instances. Can be null
-     * @param initialize           If true, update the slots on creation
      */
-    public OutputSlotMapParameterCollection(Class<?> dataClass, JIPipeGraphNode algorithm, Supplier<Object> newInstanceGenerator, boolean initialize) {
-        super(dataClass, algorithm, (info) -> newInstanceGenerator.get(), initialize);
+    public OutputSlotMapParameterCollection(Class<?> dataClass, JIPipeGraphNode algorithm, Function<JIPipeDataSlotInfo, Object> newInstanceGenerator) {
+        super(dataClass, algorithm, newInstanceGenerator, false);
+    }
+
+    /**
+     * Creates a new instance
+     *
+     * @param dataClass            the data type of the parameter assigned to each slot
+     * @param algorithm            the algorithm that contains the slots
+     */
+    public OutputSlotMapParameterCollection(Class<?> dataClass, JIPipeGraphNode algorithm) {
+        super(dataClass, algorithm, null, false);
     }
 
     @Override

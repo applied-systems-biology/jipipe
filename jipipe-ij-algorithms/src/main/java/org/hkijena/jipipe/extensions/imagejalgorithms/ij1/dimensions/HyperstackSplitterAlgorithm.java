@@ -40,7 +40,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 .addOutputSlot("Output", "", ImagePlusData.class, "Input")
                 .sealInput()
                 .build());
-        this.outputIndices = new OutputSlotMapParameterCollection(OptionalIntegerRange.class, this, OptionalIntegerRange::new, false);
+        this.outputIndices = new OutputSlotMapParameterCollection(OptionalIntegerRange.class, this,null, false);
         outputIndices.updateSlots();
         registerSubParameter(outputIndices);
     }
@@ -50,7 +50,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
         this.targetDimension = other.targetDimension;
         this.targetDimensionAnnotation = new OptionalAnnotationNameParameter(other.targetDimensionAnnotation);
-        outputIndices = new OutputSlotMapParameterCollection(OptionalIntegerRange.class, this, OptionalIntegerRange::new, false);
+        outputIndices = new OutputSlotMapParameterCollection(OptionalIntegerRange.class, this, null, false);
         other.outputIndices.copyTo(outputIndices);
         registerSubParameter(outputIndices);
     }

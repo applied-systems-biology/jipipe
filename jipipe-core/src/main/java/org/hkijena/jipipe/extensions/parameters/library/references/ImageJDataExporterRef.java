@@ -64,6 +64,10 @@ public class ImageJDataExporterRef implements JIPipeValidatable {
         this.id = id;
     }
 
+    public ImageJDataExporter getInstance() {
+        return JIPipe.getImageJAdapters().getExporterById(getId());
+    }
+
     @Override
     public void reportValidity(JIPipeIssueReport report) {
         if (id == null)

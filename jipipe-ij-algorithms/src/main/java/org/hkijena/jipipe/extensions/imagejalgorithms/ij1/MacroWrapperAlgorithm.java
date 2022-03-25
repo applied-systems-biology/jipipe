@@ -24,12 +24,15 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.compat.ImageJDataExporter;
+import org.hkijena.jipipe.api.compat.ImageJDataImporter;
+import org.hkijena.jipipe.api.compat.ImageJExportParameters;
+import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.OverlayChannelsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.library.graph.InputSlotMapParameterCollection;
@@ -85,11 +88,11 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean strictMode = true;
     private JIPipeDynamicParameterCollection macroParameters = new JIPipeDynamicParameterCollection(ALLOWED_PARAMETER_CLASSES);
 
-    private List<ImagePlus> initiallyOpenedImages = new ArrayList<>();
-    private List<Window> initiallyOpenedWindows = new ArrayList<>();
+    private final List<ImagePlus> initiallyOpenedImages = new ArrayList<>();
+    private final List<Window> initiallyOpenedWindows = new ArrayList<>();
 
-    private InputSlotMapParameterCollection inputImporters;
-    private OutputSlotMapParameterCollection outputExporters;
+    private InputSlotMapParameterCollection inputToImageJExporters;
+    private OutputSlotMapParameterCollection outputFromImageJImporters;
 
     /**
      * @param info the info
@@ -101,14 +104,14 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         this.macroParameters.getEventBus().register(this);
 
         // Importer settings
-        inputImporters = new InputSlotMapParameterCollection(ImageJDataImporterRef.class, this, this::getDefaultImporterRef, false);
-        inputImporters.updateSlots();
-        registerSubParameter(inputImporters);
+        inputToImageJExporters = new InputSlotMapParameterCollection(ImageJDataExporterRef.class, this, this::getDefaultExporterRef, false);
+        inputToImageJExporters.updateSlots();
+        registerSubParameter(inputToImageJExporters);
 
         // Exporter settings
-        outputExporters = new OutputSlotMapParameterCollection(ImageJDataImporterRef.class, this, this::getDefaultExporterRef, false);
-        outputExporters.updateSlots();
-        registerSubParameter(outputExporters);
+        outputFromImageJImporters = new OutputSlotMapParameterCollection(ImageJDataImporterRef.class, this, this::getDefaultImporterRef, false);
+        outputFromImageJImporters.updateSlots();
+        registerSubParameter(outputFromImageJImporters);
     }
 
     /**
@@ -123,14 +126,14 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         this.macroParameters.getEventBus().register(this);
 
         // Importer settings
-        inputImporters = new InputSlotMapParameterCollection(ImageJDataImporterRef.class, this, this::getDefaultImporterRef, false);
-        other.inputImporters.copyTo(inputImporters);
-        registerSubParameter(inputImporters);
+        inputToImageJExporters = new InputSlotMapParameterCollection(ImageJDataExporterRef.class, this, this::getDefaultExporterRef, false);
+        other.inputToImageJExporters.copyTo(inputToImageJExporters);
+        registerSubParameter(inputToImageJExporters);
 
         // Exporter settings
-        outputExporters = new OutputSlotMapParameterCollection(ImageJDataImporterRef.class, this, this::getDefaultExporterRef, false);
-        other.outputExporters.copyTo(outputExporters);
-        registerSubParameter(outputExporters);
+        outputFromImageJImporters = new OutputSlotMapParameterCollection(ImageJDataImporterRef.class, this, this::getDefaultImporterRef, false);
+        other.outputFromImageJImporters.copyTo(outputFromImageJImporters);
+        registerSubParameter(outputFromImageJImporters);
     }
 
     private Object getDefaultExporterRef(JIPipeDataSlotInfo info) {
@@ -217,9 +220,12 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
 
     private void passOutputData(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-            ImageJDatatypeAdapter adapter = JIPipe.getImageJAdapters().getAdapterForJIPipeData(outputSlot.getAcceptedDataType());
-            JIPipeData data = adapter.importDataImageJ(outputSlot.getName());
-            dataBatch.addOutputData(outputSlot, data, progressInfo);
+            ImageJDataImporterRef ref = outputFromImageJImporters.get(outputSlot.getName()).get(ImageJDataImporterRef.class);
+            ImageJDataImporter importer = ref.getInstance();
+            JIPipeDataTable imported = importer.importData(null, new ImageJImportParameters(outputSlot.getName()));
+            for (int row = 0; row < imported.getRowCount(); row++) {
+                dataBatch.addOutputData(outputSlot, imported.getData(row, JIPipeData.class, progressInfo), progressInfo);
+            }
 
             // Workaround bug: Not closing all outputs
             if (ImagePlusData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
@@ -293,10 +299,9 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         }
         for (JIPipeDataSlot inputSlot : getNonParameterInputSlots()) {
             JIPipeData data = dataBatch.getInputData(inputSlot, JIPipeData.class, progressInfo);
-            if (data instanceof PathData)
-                continue;
-            ImageJDatatypeAdapter adapter = JIPipe.getImageJAdapters().getAdapterForJIPipeData(data);
-            adapter.convertJIPipeToImageJ(data, true, false, inputSlot.getName());
+            ImageJDataExporterRef ref = inputToImageJExporters.get(inputSlot.getName()).get(ImageJDataExporterRef.class);
+            ImageJDataExporter exporter = ref.getInstance();
+            exporter.exportData(data, new ImageJExportParameters(true, false, false, inputSlot.getName()));
         }
     }
 

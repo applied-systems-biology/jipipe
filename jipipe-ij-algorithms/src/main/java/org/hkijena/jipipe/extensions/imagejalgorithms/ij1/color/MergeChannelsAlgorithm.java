@@ -91,7 +91,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         registerSubParameter(channelColorAssignment);
     }
 
-    private ChannelColor getNewChannelColor() {
+    private ChannelColor getNewChannelColor(JIPipeDataSlotInfo info) {
         for (ChannelColor value : ChannelColor.values()) {
             if (channelColorAssignment.getParameters().values().stream().noneMatch(
                     parameterAccess -> parameterAccess.get(ChannelColor.class) == value)) {

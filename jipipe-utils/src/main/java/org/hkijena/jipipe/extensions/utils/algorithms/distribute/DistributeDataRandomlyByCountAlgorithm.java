@@ -28,14 +28,14 @@ public class DistributeDataRandomlyByCountAlgorithm extends JIPipeMergingAlgorit
                 .addInputSlot("Input", "", JIPipeData.class)
                 .sealInput()
                 .build());
-        counts = new OutputSlotMapParameterCollection(Integer.class, this, () -> 1, false);
+        counts = new OutputSlotMapParameterCollection(Integer.class, this, (slotInfo) -> 1, false);
         counts.updateSlots();
         registerSubParameter(counts);
     }
 
     public DistributeDataRandomlyByCountAlgorithm(DistributeDataRandomlyByCountAlgorithm other) {
         super(other);
-        counts = new OutputSlotMapParameterCollection(Integer.class, this, () -> 1, false);
+        counts = new OutputSlotMapParameterCollection(Integer.class, this, (slotInfo) -> 1, false);
         other.counts.copyTo(counts);
         registerSubParameter(counts);
     }

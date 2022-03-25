@@ -77,7 +77,7 @@ public class OverlayChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         registerSubParameter(channelColorAssignment);
     }
 
-    private Channel getNewChannelColor() {
+    private Channel getNewChannelColor(JIPipeDataSlotInfo info) {
         int index = channelColorAssignment.getParameters().size() % 7 - 1;
         switch (index) {
             case 0:

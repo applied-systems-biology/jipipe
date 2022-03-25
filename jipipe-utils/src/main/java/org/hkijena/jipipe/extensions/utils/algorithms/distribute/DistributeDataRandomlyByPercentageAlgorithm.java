@@ -35,14 +35,14 @@ public class DistributeDataRandomlyByPercentageAlgorithm extends JIPipeMergingAl
                 .sealInput()
                 .build());
         getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
-        weights = new OutputSlotMapParameterCollection(Double.class, this, () -> 1, false);
+        weights = new OutputSlotMapParameterCollection(Double.class, this, (slotInfo) -> 1, false);
         weights.updateSlots();
         registerSubParameter(weights);
     }
 
     public DistributeDataRandomlyByPercentageAlgorithm(DistributeDataRandomlyByPercentageAlgorithm other) {
         super(other);
-        weights = new OutputSlotMapParameterCollection(Double.class, this, () -> 1, false);
+        weights = new OutputSlotMapParameterCollection(Double.class, this, (slotInfo) -> 1, false);
         other.weights.copyTo(weights);
         registerSubParameter(weights);
     }

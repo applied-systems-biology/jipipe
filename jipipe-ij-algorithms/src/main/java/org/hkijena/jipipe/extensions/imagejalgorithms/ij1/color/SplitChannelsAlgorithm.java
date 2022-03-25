@@ -78,7 +78,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 .allowOutputSlotInheritance(false)
                 .sealInput()
                 .build());
-        channelToSlotAssignment = new OutputSlotMapParameterCollection(Integer.class, this, () -> 0, false);
+        channelToSlotAssignment = new OutputSlotMapParameterCollection(Integer.class, this, (slotInfo) -> 0, false);
         channelToSlotAssignment.updateSlots();
         registerSubParameter(channelToSlotAssignment);
     }
@@ -96,7 +96,7 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.annotateWithSlotName = other.annotateWithSlotName;
         this.annotateWithChannelIndex = other.annotateWithChannelIndex;
 
-        channelToSlotAssignment = new OutputSlotMapParameterCollection(Integer.class, this, () -> 0, false);
+        channelToSlotAssignment = new OutputSlotMapParameterCollection(Integer.class, this, (slotInfo) -> 0, false);
         other.channelToSlotAssignment.copyTo(channelToSlotAssignment);
         registerSubParameter(channelToSlotAssignment);
     }
