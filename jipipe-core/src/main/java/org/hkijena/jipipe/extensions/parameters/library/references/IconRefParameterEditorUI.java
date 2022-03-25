@@ -15,7 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.library.references;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.JIPipeIconPickerDialog;
+import org.hkijena.jipipe.ui.components.pickers.JIPipeIconPickerDialog;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;

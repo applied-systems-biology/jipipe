@@ -13,37 +13,36 @@
 
 package org.hkijena.jipipe.ui.components.renderers;
 
-import org.hkijena.jipipe.ui.components.pickers.JIPipeIconPickerDialog;
-import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * Renders entries in {@link JIPipeIconPickerDialog}
+ * Renders {@link ImageJDataExporter}
  */
-public class PrefixedIconListCellRenderer extends JLabel implements ListCellRenderer<String> {
-
-    private String prefix;
+public class ImageJDataExporterListCellRenderer extends JLabel implements ListCellRenderer<ImageJDataExporter> {
 
     /**
-     * @param prefix the resource prefix to prepend to the icon names
+     * Creates a new renderer
      */
-    public PrefixedIconListCellRenderer(String prefix) {
-        this.prefix = prefix;
+    public ImageJDataExporterListCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
     }
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends String> list, String value, int index, boolean isSelected, boolean cellHasFocus) {
-
-        if (value == null) {
-            setIcon(null);
-            setText("<Null>");
+    public Component getListCellRendererComponent(JList<? extends ImageJDataExporter> list, ImageJDataExporter value, int index, boolean isSelected, boolean cellHasFocus) {
+        if (list.getFont() != null) {
+            setFont(list.getFont());
+        }
+        if (value != null) {
+            setText(value.getName());
+            setIcon(JIPipe.getDataTypes().getIconFor(value.getExportedJIPipeDataType()));
         } else {
-            setText(value);
-            setIcon(new ImageIcon(ResourceUtils.class.getResource(prefix + "/" + value)));
+            setText("<No Exporter>");
+            setIcon(null);
         }
 
         if (isSelected) {
@@ -51,7 +50,6 @@ public class PrefixedIconListCellRenderer extends JLabel implements ListCellRend
         } else {
             setBackground(UIManager.getColor("List.background"));
         }
-
         return this;
     }
 }

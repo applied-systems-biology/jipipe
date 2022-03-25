@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.components;
+package org.hkijena.jipipe.ui.components.pickers;
 
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;

@@ -602,6 +602,16 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Optional node type",
                 "Optional reference to a node type",
                 null);
+        registerParameterType("imagej-importer",
+                ImageJDataImporterRef.class,
+                "ImageJ importer",
+                "Operation that import data from ImageJ",
+                ImageJDataImporterRefParameterEditorUI.class);
+        registerParameterType("imagej-exporter",
+                ImageJDataExporterRef.class,
+                "ImageJ exporter",
+                "Operation that exports data into ImageJ",
+                ImageJDataExporterRefParameterEditorUI.class);
 
         // Icon types
         registerParameterType("algorithm-type-icon",

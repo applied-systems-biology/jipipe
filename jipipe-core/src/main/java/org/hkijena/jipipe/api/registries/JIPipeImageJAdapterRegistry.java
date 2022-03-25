@@ -17,8 +17,6 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.compat.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
@@ -34,9 +32,9 @@ public class JIPipeImageJAdapterRegistry {
     private final BiMap<String, ImageJDataExporter> registeredExporters = HashBiMap.create();
     private final Map<String, Class<? extends ImageJDataImporterUI>> registeredImporterUIs = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, Set<ImageJDataImporter>> supportedImporters = new HashMap<>();
-    private final Map<Class<? extends JIPipeData>, Set<ImageJDataImporter>> supportedConvertableImporters = new HashMap<>();
+    private final Map<Class<? extends JIPipeData>, Set<ImageJDataImporter>> supportedConvertibleImporters = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, Set<ImageJDataExporter>> supportedExporters = new HashMap<>();
-    private final Map<Class<? extends JIPipeData>, Set<ImageJDataExporter>> supportedConvertableExporters = new HashMap<>();
+    private final Map<Class<? extends JIPipeData>, Set<ImageJDataExporter>> supportedConvertibleExporters = new HashMap<>();
 
     /**
      * Registers an importer
@@ -71,16 +69,16 @@ public class JIPipeImageJAdapterRegistry {
     /**
      * Returns all importer instances that
      * @param dataClass the data type to import
-     * @param includeConvertable if the list should include importers that convert to the specified data type
+     * @param includeConvertible if the list should include importers that convert to the specified data type
      * @return the list of importers
      */
-    public Set<ImageJDataImporter> getAvailableImporters(Class<? extends JIPipeData> dataClass, boolean includeConvertable) {
+    public Set<ImageJDataImporter> getAvailableImporters(Class<? extends JIPipeData> dataClass, boolean includeConvertible) {
         Set<ImageJDataImporter> result;
-        if(includeConvertable) {
-            result = supportedConvertableImporters.getOrDefault(dataClass, null);
+        if(includeConvertible) {
+            result = supportedConvertibleImporters.getOrDefault(dataClass, null);
             if(result == null) {
                 result = new HashSet<>();
-                supportedConvertableImporters.put(dataClass, result);
+                supportedConvertibleImporters.put(dataClass, result);
                 for (ImageJDataImporter importer : registeredImporters.values()) {
                     if(dataClass.isAssignableFrom(importer.getImportedJIPipeDataType())) {
                         result.add(importer);
@@ -109,16 +107,16 @@ public class JIPipeImageJAdapterRegistry {
     /**
      * Returns all exporter instances that
      * @param dataClass the data type to exporter
-     * @param includeConvertable if the list should include importers that convert to the specified data type
+     * @param includeConvertible if the list should include importers that convert to the specified data type
      * @return the list of importers
      */
-    public Set<ImageJDataExporter> getAvailableExporters(Class<? extends JIPipeData> dataClass, boolean includeConvertable) {
+    public Set<ImageJDataExporter> getAvailableExporters(Class<? extends JIPipeData> dataClass, boolean includeConvertible) {
         Set<ImageJDataExporter> result;
-        if(includeConvertable) {
-            result = supportedConvertableExporters.getOrDefault(dataClass, null);
+        if(includeConvertible) {
+            result = supportedConvertibleExporters.getOrDefault(dataClass, null);
             if(result == null) {
                 result = new HashSet<>();
-                supportedConvertableExporters.put(dataClass, result);
+                supportedConvertibleExporters.put(dataClass, result);
                 for (ImageJDataExporter exporter : registeredExporters.values()) {
                     if(dataClass.isAssignableFrom(exporter.getExportedJIPipeDataType())) {
                         result.add(exporter);

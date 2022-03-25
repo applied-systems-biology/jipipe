@@ -11,12 +11,14 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.components;
+package org.hkijena.jipipe.ui.components.pickers;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
+import org.hkijena.jipipe.ui.components.MultiSelectionModel;
+import org.hkijena.jipipe.ui.components.SingleSelectionModel;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
