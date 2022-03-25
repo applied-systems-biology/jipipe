@@ -776,6 +776,23 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     }
 
     /**
+     * Converts this data table in-place and sets the accepted data type
+     * @param dataClass the target data type
+     */
+    public void convert(Class<? extends JIPipeData> dataClass, JIPipeProgressInfo progressInfo) {
+        for (int row = 0; row < getRowCount(); row++) {
+            JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Convert", row, getRowCount());
+            JIPipeVirtualData virtualData = getVirtualData(row);
+            if(!dataClass.isAssignableFrom(virtualData.getDataClass())) {
+                JIPipeData converted = JIPipe.getDataTypes().convert(virtualData.getData(rowProgress), dataClass);
+                virtualData = new JIPipeVirtualData(converted);
+                data.set(row, virtualData);
+            }
+        }
+        this.acceptedDataType = dataClass;
+    }
+
+    /**
      * Similar to flush(), but only destroys the data.
      * This will keep the annotations, and replace all data items by null
      */

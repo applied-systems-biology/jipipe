@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.compat;
 
 import ij.ImagePlus;
+import ij.WindowManager;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
@@ -21,10 +22,12 @@ public class ImagePlusDataToImageWindowImageJExporter implements ImageJDataExpor
         for (int row = 0; row < dataTable.getRowCount(); row++) {
             ImagePlusData data = dataTable.getData(row, ImagePlusData.class, new JIPipeProgressInfo());
             result.add(data.getImage());
-            if(parameters.isActivate() && !parameters.isNoWindows()) {
+            if(parameters.isActivate()) {
                 if(!StringUtils.isNullOrEmpty(parameters.getName())) {
                     data.getImage().setTitle(parameters.getName());
                 }
+                if(!parameters.isNoWindows())
+                    WindowManager.setTempCurrentImage(data.getImage());
                 data.getImage().show();
             }
         }

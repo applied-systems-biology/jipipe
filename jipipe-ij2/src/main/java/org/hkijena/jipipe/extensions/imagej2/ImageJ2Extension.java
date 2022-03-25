@@ -23,7 +23,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.imagej2.algorithms.CreateIJ2OutOfBoundsFactoryAlgorithm;
 import org.hkijena.jipipe.extensions.imagej2.algorithms.CreateIJ2ShapeAlgorithm;
-import org.hkijena.jipipe.extensions.imagej2.compat.ImageJ2DataSetDataImageJAdapter;
+import org.hkijena.jipipe.extensions.imagej2.compat.IJ2DataFromImageWindowImageJImporter;
+import org.hkijena.jipipe.extensions.imagej2.compat.IJ2DataToImageWindowImageJExporter;
 import org.hkijena.jipipe.extensions.imagej2.converters.ImageJ1ToImageJ2Converter;
 import org.hkijena.jipipe.extensions.imagej2.converters.ImageJ2ToImageJ1Converter;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.ImageJ2DatasetData;
@@ -77,7 +78,8 @@ public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("ij2-dataset", ImageJ2DatasetData.class, UIUtils.getIconURLFromResources("data-types/ij2-image.png"));
         registerDatatypeConversion(new ImageJ1ToImageJ2Converter());
         registerDatatypeConversion(new ImageJ2ToImageJ1Converter());
-        registerImageJDataAdapter(new ImageJ2DataSetDataImageJAdapter(), ImagePlusWindowImageJImporterUI.class);
+        registerImageJDataImporter("ij2-dataset-from-window", new IJ2DataFromImageWindowImageJImporter(), ImagePlusWindowImageJImporterUI.class);
+        registerImageJDataExporter("ij2-dataset-to-window", new IJ2DataToImageWindowImageJExporter());
 
         // Shapes
         registerDatatype("ij2-shape", ImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
