@@ -17,6 +17,7 @@ import ij.ImagePlus;
 import ij.WindowManager;
 import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
 import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -28,15 +29,15 @@ import java.awt.*;
 /**
  * Imports an {@link ImagePlus}
  */
-public class ImagePlusDataImporterUI extends ImageJDataImporterUI {
+public class ImagePlusWindowImageJImporterUI extends ImageJDataImporterUI {
 
     private JComboBox<ImagePlus> imageSelection;
 
     /**
      * @param importer the importer
      */
-    public ImagePlusDataImporterUI(ImageJDataImportOperation importer) {
-        super(importer);
+    public ImagePlusWindowImageJImporterUI(JIPipeWorkbench workbench, ImageJDataImportOperation importer) {
+        super(workbench, importer);
         initialize();
         reloadList();
         onImageSelected();
@@ -67,9 +68,9 @@ public class ImagePlusDataImporterUI extends ImageJDataImporterUI {
     private void onImageSelected() {
         if (imageSelection.getSelectedItem() instanceof ImagePlus) {
             ImagePlus img = (ImagePlus) imageSelection.getSelectedItem();
-            getImporter().setParameters(img.getTitle());
+            getImporter().setName(img.getTitle());
         } else {
-            getImporter().setParameters("" + imageSelection.getSelectedItem());
+            getImporter().setName("" + imageSelection.getSelectedItem());
         }
     }
 

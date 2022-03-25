@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.api.compat;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
@@ -40,4 +41,32 @@ public interface ImageJDataExporter {
      * @return the ImageJ data type that is exported by this importer
      */
     Class<?> getExportedImageJDataType();
+
+    /**
+     * A documentation name. Utilizes a {@link org.hkijena.jipipe.api.JIPipeDocumentation} by default (if present). Otherwise, returns the class name.
+     * @return the name of this operation
+     */
+    default String getName() {
+        JIPipeDocumentation annotation = getClass().getAnnotation(JIPipeDocumentation.class);
+        if(annotation != null) {
+            return annotation.name();
+        }
+        else {
+            return getClass().getName();
+        }
+    }
+
+    /**
+     * A documentation description. Utilizes a {@link org.hkijena.jipipe.api.JIPipeDocumentation} by default (if present). Otherwise, returns an empty string.
+     * @return the description of this operation
+     */
+    default String getDescription() {
+        JIPipeDocumentation annotation = getClass().getAnnotation(JIPipeDocumentation.class);
+        if(annotation != null) {
+            return annotation.name();
+        }
+        else {
+            return "";
+        }
+    }
 }

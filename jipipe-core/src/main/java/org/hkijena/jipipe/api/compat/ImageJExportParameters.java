@@ -14,14 +14,16 @@ public class ImageJExportParameters implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private boolean activate;
     private boolean noWindows;
+    private boolean append;
     private String name;
 
     public ImageJExportParameters() {
     }
 
-    public ImageJExportParameters(boolean activate, boolean noWindows, String name) {
+    public ImageJExportParameters(boolean activate, boolean noWindows, boolean append, String name) {
         this.activate = activate;
         this.noWindows = noWindows;
+        this.append = append;
         this.name = name;
     }
 
@@ -66,5 +68,18 @@ public class ImageJExportParameters implements JIPipeParameterCollection {
     @JsonSetter("name")
     public void setName(String name) {
         this.name = name;
+    }
+
+    @JIPipeDocumentation(name = "Append data", description = "If enabled, data is appended if possible")
+    @JIPipeParameter("append")
+    @JsonGetter("append")
+    public boolean isAppend() {
+        return append;
+    }
+
+    @JIPipeParameter("append")
+    @JsonSetter("append")
+    public void setAppend(boolean append) {
+        this.append = append;
     }
 }

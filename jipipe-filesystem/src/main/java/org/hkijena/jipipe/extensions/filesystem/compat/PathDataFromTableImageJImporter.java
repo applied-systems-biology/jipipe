@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.tables.compat.ResultsTableDataImageJImporter;
@@ -13,7 +14,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.List;
 
-@JIPipeDocumentation(name = "Import path from table", description = "Imports a path from an opened table. The paths must be located in the first column.")
+@JIPipeDocumentation(description = "Imports a path from an opened table. The paths must be located in the first column.")
 public class PathDataFromTableImageJImporter implements ImageJDataImporter {
 
     private final Class<? extends PathData> dataClass;
@@ -45,5 +46,10 @@ public class PathDataFromTableImageJImporter implements ImageJDataImporter {
     @Override
     public Class<?> getImportedImageJDataType() {
         return ResultsTable.class;
+    }
+
+    @Override
+    public String getName() {
+        return "Import " + JIPipeDataInfo.getInstance(dataClass).getName() + " from table";
     }
 }

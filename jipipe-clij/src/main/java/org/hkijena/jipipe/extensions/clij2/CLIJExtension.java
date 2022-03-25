@@ -5,7 +5,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.clij2.algorithms.*;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
@@ -14,8 +13,7 @@ import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageToImagePlusDataCon
 import org.hkijena.jipipe.extensions.clij2.datatypes.ImagePlusDataToCLIJImageDataConverter;
 import org.hkijena.jipipe.extensions.clij2.parameters.OpenCLKernelScript;
 import org.hkijena.jipipe.extensions.clij2.ui.CLIJControlPanelJIPipeMenuExtension;
-import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
-import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusDataImporterUI;
+import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusWindowImageJImporterUI;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImagePlusDataImportIntoImageJOperation;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -82,7 +80,7 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
                 new ImagePlusDataImportIntoImageJOperation());
         registerDatatypeConversion(new CLIJImageToImagePlusDataConverter(ImagePlusData.class));
         registerDatatypeConversion(new ImagePlusDataToCLIJImageDataConverter());
-        registerImageJDataAdapter(new CLIJImageDataImageJAdapter(), ImagePlusDataImporterUI.class);
+        registerImageJDataAdapter(new CLIJImageDataImageJAdapter(), ImagePlusWindowImageJImporterUI.class);
         registerAlgorithms();
 
         registerSettingsSheet(CLIJSettings.ID,

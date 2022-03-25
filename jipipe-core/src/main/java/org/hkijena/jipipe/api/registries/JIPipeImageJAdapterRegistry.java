@@ -37,8 +37,6 @@ public class JIPipeImageJAdapterRegistry {
     private final Map<Class<? extends JIPipeData>, Set<ImageJDataImporter>> supportedConvertableImporters = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, Set<ImageJDataExporter>> supportedExporters = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, Set<ImageJDataExporter>> supportedConvertableExporters = new HashMap<>();
-    private final Map<String, JIPipeDocumentation> importerDocumentations = new HashMap<>();
-    private final Map<String, JIPipeDocumentation> exporterDocumentations = new HashMap<>();
 
     /**
      * Registers an importer
@@ -48,10 +46,6 @@ public class JIPipeImageJAdapterRegistry {
      */
     public void register(String id, ImageJDataImporter importer,  Class<? extends ImageJDataImporterUI> uiClass) {
         registeredImporters.put(id, importer);
-        JIPipeDocumentation documentation = importer.getClass().getAnnotation(JIPipeDocumentation.class);
-        if(documentation != null) {
-            importerDocumentations.put(id, documentation);
-        }
         if(uiClass != null) {
             registeredImporterUIs.put(id, uiClass);
         }
@@ -63,31 +57,7 @@ public class JIPipeImageJAdapterRegistry {
      * @param exporter the exporter instance
      */
     public void register(String id, ImageJDataExporter exporter) {
-        JIPipeDocumentation documentation = exporter.getClass().getAnnotation(JIPipeDocumentation.class);
-        if(documentation != null) {
-            exporterDocumentations.put(id, documentation);
-        }
         registeredExporters.put(id, exporter);
-    }
-
-    public JIPipeDocumentation getDocumentation(ImageJDataImporter importer) {
-        String id = getIdOf(importer);
-        JIPipeDocumentation documentation = importerDocumentations.getOrDefault(id, null);
-        if(documentation == null) {
-            documentation = new JIPipeDefaultDocumentation(importer.getClass().getName(), "");
-            importerDocumentations.put(id, documentation);
-        }
-        return documentation;
-    }
-
-    public JIPipeDocumentation getDocumentation(ImageJDataExporter exporter) {
-        String id = getIdOf(exporter);
-        JIPipeDocumentation documentation = exporterDocumentations.getOrDefault(id, null);
-        if(documentation == null) {
-            documentation = new JIPipeDefaultDocumentation(exporter.getClass().getName(), "");
-            exporterDocumentations.put(id, documentation);
-        }
-        return documentation;
     }
 
     public String getIdOf(ImageJDataImporter importer) {

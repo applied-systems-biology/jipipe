@@ -15,19 +15,20 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.compat;
 
 import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
 import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import javax.swing.*;
 import java.awt.*;
 
 /**
- * UI for a {@link org.hkijena.jipipe.extensions.imagejdatatypes.compat.ResultsTableDataImageJAdapter}
+ * UI for a {@link org.hkijena.jipipe.extensions.tables.compat.ResultsTableDataImageJImporter}
  */
 public class ResultsTableDataImporterUI extends ImageJDataImporterUI {
     /**
      * @param importer the importer
      */
-    public ResultsTableDataImporterUI(ImageJDataImportOperation importer) {
-        super(importer);
+    public ResultsTableDataImporterUI(JIPipeWorkbench workbench, ImageJDataImportOperation importer) {
+        super(workbench, importer);
         initialize();
     }
 

@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.compat;
 
 import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
 import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,12 +23,12 @@ import java.awt.*;
 /**
  * Importer around {@link org.hkijena.jipipe.extensions.imagejdatatypes.compat.ROIDataImageJAdapter}
  */
-public class ROIDataImporterUI extends ImageJDataImporterUI {
+public class RoiManagerImageJImporterUI extends ImageJDataImporterUI {
     /**
      * @param importer the importer
      */
-    public ROIDataImporterUI(ImageJDataImportOperation importer) {
-        super(importer);
+    public RoiManagerImageJImporterUI(JIPipeWorkbench workbench, ImageJDataImportOperation importer) {
+        super(workbench, importer);
         initialize();
     }
 

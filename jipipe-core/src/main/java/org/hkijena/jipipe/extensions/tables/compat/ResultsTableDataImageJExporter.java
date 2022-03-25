@@ -18,18 +18,23 @@ public class ResultsTableDataImageJExporter implements ImageJDataExporter {
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters) {
         List<Object> result = new ArrayList<>();
         if(parameters.isActivate()) {
-            ResultsTable.getResultsTable().reset();
-        }
-        for (int i = 0; i < dataTable.getRowCount(); i++) {
-            ResultsTableData data = new ResultsTableData(dataTable.getData(i, ResultsTableData.class, new JIPipeProgressInfo()));
-            result.add(data.getTable());
-            if(parameters.isActivate()) {
-                data.addToTable(ResultsTable.getResultsTable());
+            ResultsTable resultsTable = ResultsTable.getResultsTable();
+            if(parameters.isAppend()) {
+                resultsTable.reset();
+            }
+            for (int i = 0; i < dataTable.getRowCount(); i++) {
+                ResultsTableData data = new ResultsTableData(dataTable.getData(i, ResultsTableData.class, new JIPipeProgressInfo()));
+                result.add(data.getTable());
+                data.addToTable(resultsTable);
+            }
+            if(!parameters.isNoWindows()) {
+                ResultsTable.getResultsTable().show("Results");
             }
         }
-        if (parameters.isActivate()) {
-            if (!parameters.isNoWindows()) {
-                ResultsTable.getResultsTable().show("Results");
+        else {
+            for (int i = 0; i < dataTable.getRowCount(); i++) {
+                ResultsTableData data = new ResultsTableData(dataTable.getData(i, ResultsTableData.class, new JIPipeProgressInfo()));
+                result.add(data.getTable());
             }
         }
         return result;

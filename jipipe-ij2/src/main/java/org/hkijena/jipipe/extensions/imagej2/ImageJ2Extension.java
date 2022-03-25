@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.imagej2.datatypes.ImageJ2DatasetData;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.*;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.constant.*;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.*;
-import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusDataImporterUI;
+import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusWindowImageJImporterUI;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -77,7 +77,7 @@ public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("ij2-dataset", ImageJ2DatasetData.class, UIUtils.getIconURLFromResources("data-types/ij2-image.png"));
         registerDatatypeConversion(new ImageJ1ToImageJ2Converter());
         registerDatatypeConversion(new ImageJ2ToImageJ1Converter());
-        registerImageJDataAdapter(new ImageJ2DataSetDataImageJAdapter(), ImagePlusDataImporterUI.class);
+        registerImageJDataAdapter(new ImageJ2DataSetDataImageJAdapter(), ImagePlusWindowImageJImporterUI.class);
 
         // Shapes
         registerDatatype("ij2-shape", ImageJ2ShapeData.class, UIUtils.getIconURLFromResources("data-types/ij2-shape.png"));
