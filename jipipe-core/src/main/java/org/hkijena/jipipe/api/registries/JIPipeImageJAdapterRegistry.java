@@ -20,6 +20,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compat.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -145,16 +146,18 @@ public class JIPipeImageJAdapterRegistry {
     /**
      * Generates a UI for the importer
      *
+     *
+     * @param workbench
      * @param importOperation importer
      * @return UI instance
      */
-    public ImageJDataImporterUI createUIForImportOperation(ImageJDataImportOperation importOperation) {
+    public ImageJDataImporterUI createUIForImportOperation(JIPipeWorkbench workbench, ImageJDataImportOperation importOperation) {
         Class<? extends ImageJDataImporterUI> importerClass = registeredImporterUIs.get(importOperation.getImporterId());
         if(importerClass == null) {
             importerClass = DefaultImageJDataImporterUI.class;
         }
         try {
-            return ConstructorUtils.invokeConstructor(importerClass, importOperation);
+            return ConstructorUtils.invokeConstructor(importerClass, workbench, importOperation);
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
             throw new RuntimeException(e);
         }

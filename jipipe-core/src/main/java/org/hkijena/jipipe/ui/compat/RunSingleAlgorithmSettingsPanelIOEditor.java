@@ -54,7 +54,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
             for (Map.Entry<String, ImageJDataImportOperation> entry : settingsPanel.getRun().getInputSlotImporters().entrySet()) {
                 JLabel label = new JLabel(entry.getKey());
                 label.setIcon(JIPipe.getDataTypes().getIconFor(settingsPanel.getNode().getInputSlot(entry.getKey()).getAcceptedDataType()));
-                ImageJDataImporterUI ui = JIPipe.getImageJAdapters().createUIForImportOperation(entry.getValue());
+                ImageJDataImporterUI ui = JIPipe.getImageJAdapters().createUIForImportOperation(getWorkbench(), entry.getValue());
                 propertyPanel.addToForm(ui, label, null);
             }
         }
