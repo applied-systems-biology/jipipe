@@ -16,11 +16,11 @@ package org.hkijena.jipipe.extensions.filesystem;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.filesystem.algorithms.*;
 import org.hkijena.jipipe.extensions.filesystem.compat.PathDataFromTableImageJImporter;
-import org.hkijena.jipipe.extensions.filesystem.compat.PathDataImporterUI;
 import org.hkijena.jipipe.extensions.filesystem.compat.PathDataToTableImageJExporter;
 import org.hkijena.jipipe.extensions.filesystem.datasources.*;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
@@ -87,7 +87,7 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerImageJDataImporter("path-from-results-table", new PathDataFromTableImageJImporter(PathData.class), DefaultImageJDataImporterUI.class);
         registerImageJDataImporter("file-from-results-table", new PathDataFromTableImageJImporter(FileData.class), DefaultImageJDataImporterUI.class);
         registerImageJDataImporter("folder-from-results-table", new PathDataFromTableImageJImporter(FolderData.class), DefaultImageJDataImporterUI.class);
-        registerImageJDataExporter("path-to-results-table", new PathDataToTableImageJExporter());
+        registerImageJDataExporter("path-to-results-table", new PathDataToTableImageJExporter(), DefaultImageJDataExporterUI.class);
 
         registerAlgorithms();
 

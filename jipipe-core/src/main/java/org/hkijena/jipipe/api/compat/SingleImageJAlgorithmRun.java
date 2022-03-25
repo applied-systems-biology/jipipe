@@ -180,8 +180,9 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
         for (String slotName : Sets.symmetricDifference(algorithm.getInputSlotMap().keySet(), inputSlotImporters.keySet()).immutableCopy()) {
             if(algorithm.getInputSlotMap().containsKey(slotName)) {
                 // Need to add
-                inputSlotImporters.put(slotName, new ImageJDataImportOperation(
-                        JIPipe.getImageJAdapters().getDefaultImporterFor(algorithm.getInputSlot(slotName).getAcceptedDataType())));
+                ImageJDataImportOperation operation = new ImageJDataImportOperation(
+                        JIPipe.getImageJAdapters().getDefaultImporterFor(algorithm.getInputSlot(slotName).getAcceptedDataType()));
+                inputSlotImporters.put(slotName, operation);
             }
             else {
                 // Need to remove
@@ -191,8 +192,11 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
         for (String slotName : Sets.symmetricDifference(algorithm.getOutputSlotMap().keySet(), outputSlotExporters.keySet()).immutableCopy()) {
             if(algorithm.getOutputSlotMap().containsKey(slotName)) {
                 // Need to add
-                outputSlotExporters.put(slotName, new ImageJDataExportOperation(
-                        JIPipe.getImageJAdapters().getDefaultExporterFor(algorithm.getOutputSlot(slotName).getAcceptedDataType())));
+                ImageJDataExportOperation operation = new ImageJDataExportOperation(
+                        JIPipe.getImageJAdapters().getDefaultExporterFor(algorithm.getOutputSlot(slotName).getAcceptedDataType()));
+                operation.setName(slotName);
+                operation.setActivate(true);
+                outputSlotExporters.put(slotName, operation);
             }
             else {
                 // Need to remove

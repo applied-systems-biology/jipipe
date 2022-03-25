@@ -12,6 +12,7 @@ public class AutoResizeSplitPane extends JSplitPane {
 
     public static final double RATIO_3_TO_1 = 0.66;
     public static final double RATIO_1_TO_3 = 0.33;
+    public static final double RATIO_1_TO_1 = 0.5;
 
     private final double ratio;
 

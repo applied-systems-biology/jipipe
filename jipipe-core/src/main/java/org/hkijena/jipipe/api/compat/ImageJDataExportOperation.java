@@ -48,7 +48,7 @@ public class ImageJDataExportOperation extends ImageJExportParameters implements
     }
 
     @JIPipeDocumentation(name = "Exporter ID", description = "The unique ID of the exporter")
-    @JIPipeParameter("id")
+    @JIPipeParameter(value = "id", hidden = true)
     @StringParameterSettings(monospace = true)
     @JsonGetter("id")
     public String getExporterId() {

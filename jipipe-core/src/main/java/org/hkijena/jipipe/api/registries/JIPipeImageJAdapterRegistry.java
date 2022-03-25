@@ -15,12 +15,14 @@ package org.hkijena.jipipe.api.registries;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compat.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -32,16 +34,19 @@ public class JIPipeImageJAdapterRegistry {
     private final BiMap<String, ImageJDataImporter> registeredImporters = HashBiMap.create();
     private final BiMap<String, ImageJDataExporter> registeredExporters = HashBiMap.create();
     private final Map<String, Class<? extends ImageJDataImporterUI>> registeredImporterUIs = new HashMap<>();
+    private final Map<String, Class<? extends ImageJDataExporterUI>> registeredExporterUIs = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, Set<ImageJDataImporter>> supportedImporters = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, Set<ImageJDataImporter>> supportedConvertibleImporters = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, Set<ImageJDataExporter>> supportedExporters = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, Set<ImageJDataExporter>> supportedConvertibleExporters = new HashMap<>();
+    private final Map<Class<? extends JIPipeData>, ImageJDataImporter> defaultImporters = new HashMap<>();
+    private final Map<Class<? extends JIPipeData>, ImageJDataExporter> defaultExporters = new HashMap<>();
 
     /**
      * Registers an importer
      * @param id unique ID of the importer
      * @param importer the importer instance
-     * @param uiClass UI class for the importer. can be null (falls back to a default UI)
+     * @param uiClass UI class for the importer. can be null (falls back to {@link DefaultImageJDataImporterUI})
      */
     public void register(String id, ImageJDataImporter importer,  Class<? extends ImageJDataImporterUI> uiClass) {
         registeredImporters.put(id, importer);
@@ -54,9 +59,13 @@ public class JIPipeImageJAdapterRegistry {
      * Registers an importer
      * @param id unique ID of the importer
      * @param exporter the exporter instance
+     * @param uiClass UI class for the exporter. can be null (falls back to {@link DefaultImageJDataExporterUI})
      */
-    public void register(String id, ImageJDataExporter exporter) {
+    public void register(String id, ImageJDataExporter exporter, Class<? extends ImageJDataExporterUI> uiClass) {
         registeredExporters.put(id, exporter);
+        if(uiClass != null) {
+            registeredExporterUIs.put(id, uiClass);
+        }
     }
 
     public String getIdOf(ImageJDataImporter importer) {
@@ -119,7 +128,7 @@ public class JIPipeImageJAdapterRegistry {
                 result = new HashSet<>();
                 supportedConvertibleExporters.put(dataClass, result);
                 for (ImageJDataExporter exporter : registeredExporters.values()) {
-                    if(dataClass.isAssignableFrom(exporter.getExportedJIPipeDataType())) {
+                    if(exporter.getExportedJIPipeDataType().isAssignableFrom(dataClass)) {
                         result.add(exporter);
                     }
                 }
@@ -131,10 +140,10 @@ public class JIPipeImageJAdapterRegistry {
                 result = new HashSet<>();
                 supportedExporters.put(dataClass, result);
                 for (ImageJDataExporter exporter : registeredExporters.values()) {
-                    if(dataClass.isAssignableFrom(exporter.getExportedJIPipeDataType())) {
+                    if(exporter.getExportedJIPipeDataType().isAssignableFrom(dataClass)) {
                         result.add(exporter);
                     }
-                    else if(JIPipe.getDataTypes().isConvertible(exporter.getExportedJIPipeDataType(), dataClass)) {
+                    else if(JIPipe.getDataTypes().isConvertible(dataClass, exporter.getExportedJIPipeDataType())) {
                         result.add(exporter);
                     }
                 }
@@ -147,7 +156,7 @@ public class JIPipeImageJAdapterRegistry {
      * Generates a UI for the importer
      *
      *
-     * @param workbench
+     * @param workbench the workbench
      * @param importOperation importer
      * @return UI instance
      */
@@ -163,28 +172,78 @@ public class JIPipeImageJAdapterRegistry {
         }
     }
 
-    public ImageJDataImporter getDefaultImporterFor(Class<? extends JIPipeData> dataClass) {
-        Set<ImageJDataImporter> available = getAvailableImporters(dataClass, false);
-        if(available.isEmpty()) {
-            return getImporterById(DefaultImageJDataImporter.ID); // the default importer
+    /**
+     * Generates a UI for the importer
+     *
+     *
+     * @param workbench the workbench
+     * @param exportOperation importer
+     * @return UI instance
+     */
+    public ImageJDataExporterUI createUIForExportOperation(JIPipeWorkbench workbench, ImageJDataExportOperation exportOperation) {
+        Class<? extends ImageJDataExporterUI> exporterClass = registeredExporterUIs.get(exportOperation.getExporterId());
+        if(exporterClass == null) {
+            exporterClass = DefaultImageJDataExporterUI.class;
         }
-        for (ImageJDataImporter importer : available) {
-            if(importer.getImportedJIPipeDataType() == dataClass)
-                return importer;
+        try {
+            return ConstructorUtils.invokeConstructor(exporterClass, workbench, exportOperation);
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+            throw new RuntimeException(e);
         }
-        return available.iterator().next();
     }
 
+    /**
+     * Gets the default importer for a data class
+     * @param dataClass the data class
+     * @return the importer
+     */
+    public ImageJDataImporter getDefaultImporterFor(Class<? extends JIPipeData> dataClass) {
+        ImageJDataImporter importer = defaultImporters.get(dataClass);
+        if(importer != null)
+            return importer;
+        Set<ImageJDataImporter> available = getAvailableImporters(dataClass, false);
+        if(available.isEmpty()) {
+            importer = getImporterById(DefaultImageJDataImporter.ID); // the default importer
+        }
+        else {
+            importer = available.stream().min(Comparator.comparing(op -> {
+                if (op.getImportedJIPipeDataType() == dataClass)
+                    return 0;
+                else if (dataClass.isAssignableFrom(op.getImportedJIPipeDataType()))
+                    return ReflectionUtils.getClassDistance(dataClass, op.getImportedJIPipeDataType());
+                else
+                    return Integer.MAX_VALUE;
+            })).get();
+        }
+        defaultImporters.put(dataClass, importer);
+        return importer;
+    }
+
+    /**
+     * Gets the default exporter for a data class
+     * @param dataClass the data class
+     * @return the exporter
+     */
     public ImageJDataExporter getDefaultExporterFor(Class<? extends JIPipeData> dataClass) {
+        ImageJDataExporter exporter = defaultExporters.get(dataClass);
+        if(exporter != null)
+            return exporter;
         Set<ImageJDataExporter> available = getAvailableExporters(dataClass, false);
         if(available.isEmpty()) {
-            return getExporterById(DefaultImageJDataExporter.ID); // the default importer
+            exporter = getExporterById(DefaultImageJDataExporter.ID); // the default importer
         }
-        for (ImageJDataExporter exporter : available) {
-            if(exporter.getExportedJIPipeDataType() == dataClass)
-                return exporter;
+        else {
+            exporter = available.stream().min(Comparator.comparing(op -> {
+                if (op.getExportedJIPipeDataType() == dataClass)
+                    return 0;
+                else if (op.getExportedJIPipeDataType().isAssignableFrom(dataClass))
+                    return ReflectionUtils.getClassDistance(op.getExportedJIPipeDataType(), dataClass);
+                else
+                    return Integer.MAX_VALUE;
+            })).get();
         }
-        return available.iterator().next();
+        defaultExporters.put(dataClass, exporter);
+        return exporter;
     }
 
     public ImageJDataImporter getImporterById(String id) {

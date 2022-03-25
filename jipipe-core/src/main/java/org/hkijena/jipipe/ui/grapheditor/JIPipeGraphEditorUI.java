@@ -56,6 +56,11 @@ import java.util.stream.Collectors;
  */
 public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener {
 
+    public static final int FLAGS_NONE = 0;
+    public static final int FLAGS_SPLIT_PANE_VERTICAL = 1;
+    public static final int FLAGS_SPLIT_PANE_RATIO_1_1 = 2;
+    public static final int FLAGS_SPLIT_PANE_SWITCH_CONTENT = 4;
+
     public static final KeyStroke KEY_STROKE_UNDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK, true);
     public static final KeyStroke KEY_STROKE_REDO = KeyStroke.getKeyStroke(KeyEvent.VK_Z, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
     public static final KeyStroke KEY_STROKE_AUTO_LAYOUT = KeyStroke.getKeyStroke(KeyEvent.VK_L, InputEvent.CTRL_MASK | InputEvent.SHIFT_MASK, true);
@@ -68,6 +73,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private final JIPipeGraph algorithmGraph;
     private final SearchBox<Object> navigator = new SearchBox<>();
     private final JIPipeHistoryJournal historyJournal;
+    private final int flags;
     protected JMenuBar menuBar = new JMenuBar();
     private JSplitPane splitPane;
     private JScrollPane scrollPane;
@@ -82,11 +88,13 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * @param algorithmGraph the algorithm graph
      * @param compartment    the graph compartment to display. Set to null to display all compartments
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
+     * @param flags additional flags
      */
-    public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment, JIPipeHistoryJournal historyJournal, GraphEditorUISettings settings) {
+    public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment, JIPipeHistoryJournal historyJournal, GraphEditorUISettings settings, int flags) {
         super(workbenchUI);
         this.algorithmGraph = algorithmGraph;
         this.historyJournal = historyJournal;
+        this.flags = flags;
         this.canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), this, algorithmGraph, compartment, historyJournal);
         this.graphUISettings = settings;
         initialize();
@@ -106,7 +114,11 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
      */
     public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment, JIPipeHistoryJournal historyJournal) {
-        this(workbenchUI, algorithmGraph, compartment, historyJournal, GraphEditorUISettings.getInstance());
+        this(workbenchUI, algorithmGraph, compartment, historyJournal, GraphEditorUISettings.getInstance(), JIPipeGraphEditorUI.FLAGS_NONE);
+    }
+
+    public int getFlags() {
+        return flags;
     }
 
     public JMenu getGraphMenu() {
@@ -233,9 +245,15 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         return canvasUI;
     }
 
+    public boolean isFlagSet(int flag) {
+        return (flags & flag) == flag;
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
-        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, AutoResizeSplitPane.RATIO_3_TO_1);
+        int splitPaneSplit = isFlagSet(FLAGS_SPLIT_PANE_VERTICAL) ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT;
+        double splitPaneRatio = isFlagSet(FLAGS_SPLIT_PANE_RATIO_1_1) ? AutoResizeSplitPane.RATIO_1_TO_1 : AutoResizeSplitPane.RATIO_3_TO_1;
+        splitPane = new AutoResizeSplitPane(splitPaneSplit, splitPaneRatio);
 
         canvasUI.fullRedraw();
         canvasUI.getEventBus().register(this);
@@ -246,8 +264,14 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         scrollPane.getHorizontalScrollBar().setUnitIncrement(25);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        splitPane.setLeftComponent(scrollPane);
-        splitPane.setRightComponent(new JPanel());
+        if(isFlagSet(FLAGS_SPLIT_PANE_SWITCH_CONTENT)) {
+            splitPane.setRightComponent(scrollPane);
+            splitPane.setLeftComponent(new JPanel());
+        }
+        else {
+            splitPane.setLeftComponent(scrollPane);
+            splitPane.setRightComponent(new JPanel());
+        }
         add(splitPane, BorderLayout.CENTER);
 
 //        menuBar.setLayout(new BoxLayout(menuBar, BoxLayout.X_AXIS));
@@ -729,7 +753,12 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      */
     protected void setPropertyPanel(Component content) {
         int dividerLocation = splitPane.getDividerLocation();
-        splitPane.setRightComponent(content);
+        if(isFlagSet(FLAGS_SPLIT_PANE_SWITCH_CONTENT)) {
+            splitPane.setLeftComponent(content);
+        }
+        else {
+            splitPane.setRightComponent(content);
+        }
         splitPane.setDividerLocation(dividerLocation);
     }
 

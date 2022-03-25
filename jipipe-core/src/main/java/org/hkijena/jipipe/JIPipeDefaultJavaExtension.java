@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
+import org.hkijena.jipipe.api.compat.ImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
@@ -527,7 +528,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * Registers an importer for data from ImageJ
      * @param id the unique ID
      * @param dataImporter the importer instance
-     * @param importerUIClass the UI (can be null)
+     * @param importerUIClass the UI (can be null to fall back to {@link org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI})
      */
     public void registerImageJDataImporter(String id, ImageJDataImporter dataImporter, Class<? extends ImageJDataImporterUI> importerUIClass) {
         registry.getImageJDataAdapterRegistry().register(id, dataImporter, importerUIClass);
@@ -537,9 +538,10 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * Registers an importer for data from ImageJ
      * @param id the unique ID
      * @param dataExporter the exporter instance
+     * @param uiClass the UI (can be null to fall back to {@link org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI})
      */
-    public void registerImageJDataExporter(String id, ImageJDataExporter dataExporter) {
-        registry.getImageJDataAdapterRegistry().register(id, dataExporter);
+    public void registerImageJDataExporter(String id, ImageJDataExporter dataExporter, Class<? extends ImageJDataExporterUI> uiClass) {
+        registry.getImageJDataAdapterRegistry().register(id, dataExporter, uiClass);
     }
 
     /**

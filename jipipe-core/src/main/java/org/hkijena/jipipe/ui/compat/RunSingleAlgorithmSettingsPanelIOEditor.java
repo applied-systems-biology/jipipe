@@ -21,7 +21,12 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
     private final RunSingleAlgorithmSettingsPanel settingsPanel;
 
     public RunSingleAlgorithmSettingsPanelIOEditor(RunSingleAlgorithmSettingsPanel settingsPanel) {
-        super(settingsPanel.getWorkbench(), createGraph(settingsPanel.getNode()), null, new JIPipeDummyGraphHistoryJournal(), createSettings());
+        super(settingsPanel.getWorkbench(),
+                createGraph(settingsPanel.getNode()),
+                null,
+                new JIPipeDummyGraphHistoryJournal(),
+                createSettings(),
+                JIPipeGraphEditorUI.FLAGS_SPLIT_PANE_VERTICAL | JIPipeGraphEditorUI.FLAGS_SPLIT_PANE_SWITCH_CONTENT);
         this.settingsPanel = settingsPanel;
         initialize();
         reloadPropertyPanel();
@@ -38,6 +43,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
                 UIUtils.getIconFromResources("data-types/slot.png"),
                 outputsPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton);
+        setPropertyPanel(propertyPanel);
     }
 
     private static JIPipeGraph createGraph(JIPipeGraphNode node) {
@@ -78,6 +84,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
                 inputsPanel.addWideToForm(ui, null);
             }
         }
+        inputsPanel.addVerticalGlue();
         if(!settingsPanel.getNode().getOutputSlots().isEmpty()) {
 //            FormPanel.GroupHeaderPanel groupHeader = inputsPanel.addGroupHeader("Outputs", UIUtils.getIconFromResources("data-types/slot.png"));
 //            groupHeader.setDescription("The following items refer to the generated outputs. " +
@@ -88,7 +95,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
                 outputsPanel.addWideToForm(ui, null);
             }
         }
-        inputsPanel.addVerticalGlue();
+        outputsPanel.addVerticalGlue();
     }
 
 }

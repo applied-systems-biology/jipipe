@@ -3,6 +3,7 @@ package org.hkijena.jipipe.ui.compat;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
+import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.components.pickers.ImageJDataImporterPicker;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -16,6 +17,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditorInputUI extends JPanel {
     private final RunSingleAlgorithmSettingsPanelIOEditor editor;
     private final String slotName;
     private final JButton selectImporterButton = new JButton();
+    private final JPanel editorPanel = new JPanel(new BorderLayout());
 
     public RunSingleAlgorithmSettingsPanelIOEditorInputUI(RunSingleAlgorithmSettingsPanelIOEditor editor, String slotName) {
         this.editor = editor;
@@ -31,11 +33,10 @@ public class RunSingleAlgorithmSettingsPanelIOEditorInputUI extends JPanel {
         // Initialize title panel
         JPanel titlePanel = new JPanel(new BorderLayout());
         titlePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,1,0, Color.DARK_GRAY),
-                BorderFactory.createEmptyBorder(3,0,3,0)));
+                BorderFactory.createEmptyBorder(3,3,3,3)));
         titlePanel.add(new JLabel(slotName,
                 JIPipe.getDataTypes().getIconFor(getNode().getInputSlot(slotName).getAcceptedDataType()),
-                JLabel.LEFT));
-        add(titlePanel);
+                JLabel.LEFT), BorderLayout.WEST);
 
         // Initialize importer button
         selectImporterButton.addActionListener(e -> pickImporter());
@@ -44,7 +45,14 @@ public class RunSingleAlgorithmSettingsPanelIOEditorInputUI extends JPanel {
         JButton pickImporterButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
         pickImporterButton.addActionListener(e -> pickImporter());
         editImporterPanel.add(pickImporterButton, BorderLayout.EAST);
-        add(editImporterPanel);
+        UIUtils.makeFlat25x25(pickImporterButton);
+        UIUtils.makeFlatH25(selectImporterButton);
+        titlePanel.add(editImporterPanel, BorderLayout.EAST);
+        add(titlePanel);
+
+        // Add editor
+        editorPanel.setBorder(BorderFactory.createEmptyBorder(8,4,4,4));
+        add(editorPanel);
     }
 
     private void pickImporter() {
@@ -68,6 +76,12 @@ public class RunSingleAlgorithmSettingsPanelIOEditorInputUI extends JPanel {
         selectImporterButton.setIcon(JIPipe.getDataTypes().getIconFor(currentOperation.getImporter().getImportedJIPipeDataType()));
         selectImporterButton.setToolTipText(currentOperation.getImporter().getDescription());
 
+        editorPanel.removeAll();
+        ImageJDataImporterUI ui = JIPipe.getImageJAdapters().createUIForImportOperation(editor.getWorkbench(), getCurrentOperation());
+        editorPanel.add(ui, BorderLayout.CENTER);
+
+        revalidate();
+        repaint();
     }
 
     private ImageJDataImportOperation getCurrentOperation() {

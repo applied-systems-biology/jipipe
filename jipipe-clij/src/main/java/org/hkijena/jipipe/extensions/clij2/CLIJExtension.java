@@ -5,6 +5,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.clij2.algorithms.*;
 import org.hkijena.jipipe.extensions.clij2.compat.CLIIJ2DataToImageWindowImageJExporter;
@@ -82,7 +83,7 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatypeConversion(new CLIJImageToImagePlusDataConverter(ImagePlusData.class));
         registerDatatypeConversion(new ImagePlusDataToCLIJImageDataConverter());
         registerImageJDataImporter("clij2-image-from-window", new CLIJ2DataFromImageWindowImageJImporter(), ImagePlusWindowImageJImporterUI.class);
-        registerImageJDataExporter("clij2-to-window", new CLIIJ2DataToImageWindowImageJExporter());
+        registerImageJDataExporter("clij2-to-window", new CLIIJ2DataToImageWindowImageJExporter(), DefaultImageJDataExporterUI.class);
         registerAlgorithms();
 
         registerSettingsSheet(CLIJSettings.ID,

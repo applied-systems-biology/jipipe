@@ -215,4 +215,36 @@ public class ReflectionUtils {
     public static boolean isAbstractOrInterface(Class<?> klass) {
         return klass.isInterface() || Modifier.isAbstract(klass.getModifiers());
     }
+
+    /**
+     * The number of hierarchy classes between two classes.
+     * @param parent the parent class or interface
+     * @param child the child class or interface
+     * @return the number of steps. zero if parent = child. -1 if not assignable.
+     */
+    public static int getClassDistance(Class<?> parent, Class<?> child) {
+        if(parent == child)
+            return 0;
+        if(parent.isAssignableFrom(child)) {
+            int result = Integer.MAX_VALUE;
+            if(child.getSuperclass() != null && parent.isAssignableFrom(child.getSuperclass())) {
+                int distance = getClassDistance(parent, child.getSuperclass());
+                if (distance >= 0)
+                    result = Math.min(result, distance + 1);
+            }
+            for (Class<?> anInterface : child.getInterfaces()) {
+                if(parent.isAssignableFrom(anInterface)) {
+                    int distance = getClassDistance(parent, anInterface);
+                    if(distance >= 0)
+                        result = Math.min(result, distance + 1);
+                }
+            }
+            if(result == Integer.MAX_VALUE)
+                result = -1;
+            return result;
+        }
+        else {
+            return -1;
+        }
+    }
 }

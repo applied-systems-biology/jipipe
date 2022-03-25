@@ -71,9 +71,9 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         // Default ImageJ data adapters
         registerImageJDataImporter(DefaultImageJDataImporter.ID, new DefaultImageJDataImporter(), DefaultImageJDataImporterUI.class);
-        registerImageJDataExporter(DefaultImageJDataImporter.ID, new DefaultImageJDataExporter());
+        registerImageJDataExporter(DefaultImageJDataImporter.ID, new DefaultImageJDataExporter(), DefaultImageJDataExporterUI.class);
         registerImageJDataImporter("none", new EmptyImageJDataImporter(), EmptyImageJDataImporterUI.class);
-        registerImageJDataExporter("none", new EmptyImageJDataExporter());
+        registerImageJDataExporter("none", new EmptyImageJDataExporter(), EmptyImageJDataExporterUI.class);
 
         // Global parameters
         registerEnumParameterType("jipipe:annotation-matching-method",

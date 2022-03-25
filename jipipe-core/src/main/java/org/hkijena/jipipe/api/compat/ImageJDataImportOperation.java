@@ -54,7 +54,7 @@ public class ImageJDataImportOperation extends ImageJImportParameters implements
     }
 
     @JIPipeDocumentation(name = "Importer ID", description = "The unique ID of the importer")
-    @JIPipeParameter("id")
+    @JIPipeParameter(value = "id", hidden = true)
     @StringParameterSettings(monospace = true)
     @JsonGetter("id")
     public String getImporterId() {

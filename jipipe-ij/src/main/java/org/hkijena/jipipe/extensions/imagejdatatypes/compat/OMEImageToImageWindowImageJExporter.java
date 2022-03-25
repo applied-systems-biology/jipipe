@@ -42,7 +42,7 @@ public class OMEImageToImageWindowImageJExporter implements ImageJDataExporter {
 
     @Override
     public Class<? extends JIPipeData> getExportedJIPipeDataType() {
-        return ImagePlusData.class;
+        return OMEImageData.class;
     }
 
     @Override

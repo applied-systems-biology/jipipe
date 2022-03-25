@@ -3,6 +3,7 @@ package org.hkijena.jipipe.api.compat;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 
 import java.awt.*;
 
@@ -21,7 +22,6 @@ public class DefaultImageJDataImporterUI extends ImageJDataImporterUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JIPipeParameterAccess parameterAccess = getImporter().getParameterAccess("name");
-        add(JIPipe.getParameterTypes().createEditorFor(getWorkbench(), parameterAccess));
+        add(new ParameterPanel(getWorkbench(), getImporter(), null, ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITHOUT_COLLAPSE));
     }
 }

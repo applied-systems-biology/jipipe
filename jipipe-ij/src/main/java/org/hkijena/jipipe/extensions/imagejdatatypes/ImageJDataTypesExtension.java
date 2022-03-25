@@ -17,6 +17,7 @@ import ome.xml.model.enums.DimensionOrder;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
@@ -175,7 +176,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 new OMEImageDataImportViaBioFormatsOperation(),
                 new OMEImageDataImportIntoJIPipeOperation());
         registerImageJDataImporter("ome-image-from-image-window", new OMEImageFromImageWindowImageJImporter(), ImagePlusWindowImageJImporterUI.class);
-        registerImageJDataExporter("ome-image-to-image-window", new OMEImageToImageWindowImageJExporter());
+        registerImageJDataExporter("ome-image-to-image-window", new OMEImageToImageWindowImageJExporter(), DefaultImageJDataExporterUI.class);
         registerImageDataType("imagej-imgplus", ImagePlusData.class, "icons/data-types/imgplus.png");
         registerImageDataType("imagej-imgplus-greyscale", ImagePlusGreyscaleData.class, "icons/data-types/imgplus-greyscale.png");
         registerImageDataType("imagej-imgplus-greyscale-8u", ImagePlusGreyscale8UData.class, "icons/data-types/imgplus-greyscale-8u.png");
@@ -227,7 +228,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerImageDataType("imagej-imgplus-5d-color-hsb", ImagePlus5DColorHSBData.class, "icons/data-types/imgplus-5d-color-hsb.png");
         registerImageDataType("imagej-imgplus-5d-color-lab", ImagePlus5DColorLABData.class, "icons/data-types/imgplus-5d-color-lab.png");
         registerConverters();
-        registerImageJDataExporter("image-to-imagej", new ImagePlusDataToImageWindowImageJExporter());
+        registerImageJDataExporter("image-to-imagej", new ImagePlusDataToImageWindowImageJExporter(), DefaultImageJDataExporterUI.class);
 
         registerDatatype("imagej-roi", ROIListData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
                 null, ROIDataPreview.class,
@@ -237,7 +238,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 new AddROIToJIPipeImageViewerDataDisplay());
         registerDatatype("imagej-lut", LUTData.class, ResourceUtils.getPluginResource("icons/data-types/lut.png"));
         registerImageJDataImporter("roi-from-roi-manager", new RoiManagerImageJImporter(), RoiManagerImageJImporterUI.class);
-        registerImageJDataExporter("roi-to-roi-manager", new RoiManagerImageJExporter());
+        registerImageJDataExporter("roi-to-roi-manager", new RoiManagerImageJExporter(), DefaultImageJDataExporterUI.class);
         registerDatatype("imagej-results-table",
                 ResultsTableData.class,
                 ResourceUtils.getPluginResource("icons/data-types/results-table.png"),
@@ -248,7 +249,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 new CacheAwareOpenResultsTableInJIPipeDataOperation(),
                 new OpenInNativeApplicationDataImportOperation(".csv"));
         registerImageJDataImporter("import-results-table", new ResultsTableDataImageJImporter(), ResultsTableDataImporterUI.class);
-        registerImageJDataExporter("export-results-table", new ResultsTableDataImageJExporter());
+        registerImageJDataExporter("export-results-table", new ResultsTableDataImageJExporter(), DefaultImageJDataExporterUI.class);
 
         // Register FFT data types
         registerImageDataType("imagej-imgplus-fft", ImagePlusFFTData.class, "icons/data-types/imgplus-fft.png");
