@@ -178,6 +178,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerImageJDataImporter("ome-image-from-image-window", new OMEImageFromImageWindowImageJImporter(), ImagePlusWindowImageJImporterUI.class);
         registerImageJDataExporter("ome-image-to-image-window", new OMEImageToImageWindowImageJExporter(), DefaultImageJDataExporterUI.class);
         registerImageDataType("imagej-imgplus", ImagePlusData.class, "icons/data-types/imgplus.png");
+        registerImageJDataImporter("import-imagej-imgplus", new ImagePlusDataFromImageWindowImageJImporter(ImagePlusData.class), ImagePlusWindowImageJImporterUI.class);
         registerImageDataType("imagej-imgplus-greyscale", ImagePlusGreyscaleData.class, "icons/data-types/imgplus-greyscale.png");
         registerImageDataType("imagej-imgplus-greyscale-8u", ImagePlusGreyscale8UData.class, "icons/data-types/imgplus-greyscale-8u.png");
         registerImageDataType("imagej-imgplus-greyscale-16u", ImagePlusGreyscale16UData.class, "icons/data-types/imgplus-greyscale-16u.png");
@@ -340,7 +341,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 new ImagePlusDataImportIntoImageJOperation(),
                 new OpenInImageJDataDisplay(),
                 new OMEImageDataImportViaBioFormatsOperation());
-        registerImageJDataImporter("import-" + id, new ImagePlusDataFromImageWindowImageJImporter(dataClass), ImagePlusWindowImageJImporterUI.class);
+//        registerImageJDataImporter("import-" + id, new ImagePlusDataFromImageWindowImageJImporter(dataClass), ImagePlusWindowImageJImporterUI.class);
     }
 }
 

@@ -27,8 +27,8 @@ public class JIPipeLauncher {
      */
     public static void main(final String... args) {
         final ImageJ ij = new ImageJ();
-        final WindowWatcher windowWatcher = new WindowWatcher();
-        SwingUtilities.invokeLater(() -> ij.command().run(JIPipeGUICommand.class, true));
+        final WindowWatcher windowWatcher = new WindowWatcher(); //JIPipeGUICommand
+        SwingUtilities.invokeLater(() -> ij.command().run(JIPipeRunAlgorithmCommand.class, true));
     }
 
     public static class WindowWatcher {

@@ -85,8 +85,6 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         // Register ImageJ compat
         registerImageJDataImporter("path-from-results-table", new PathDataFromTableImageJImporter(PathData.class), DefaultImageJDataImporterUI.class);
-        registerImageJDataImporter("file-from-results-table", new PathDataFromTableImageJImporter(FileData.class), DefaultImageJDataImporterUI.class);
-        registerImageJDataImporter("folder-from-results-table", new PathDataFromTableImageJImporter(FolderData.class), DefaultImageJDataImporterUI.class);
         registerImageJDataExporter("path-to-results-table", new PathDataToTableImageJExporter(), DefaultImageJDataExporterUI.class);
 
         registerAlgorithms();

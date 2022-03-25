@@ -28,6 +28,7 @@ import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotRowUI;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.classfilters.ClassFilter;
@@ -170,6 +171,29 @@ public class JIPipeDatatypeRegistry {
             }
             assert outputDataType.isAssignableFrom(data.getClass());
             return data;
+        }
+    }
+
+    /**
+     * Returns the number of conversion steps.
+     * Returns 0 if no conversion is needed.
+     * Returns -1 if no conversion is possible.
+     * @param inputDataType the input data type
+     * @param outputDataType the output data type
+     * @return number of conversion steps
+     */
+    public int getConversionDistance(Class<? extends JIPipeData> inputDataType, Class<? extends JIPipeData> outputDataType) {
+        if(inputDataType == outputDataType) {
+            return 0;
+        }
+        else if(isTriviallyConvertible(inputDataType, outputDataType)) {
+            return ReflectionUtils.getClassDistance(outputDataType, inputDataType);
+        }
+        else {
+            GraphPath<JIPipeDataInfo, DataConverterEdge> path = shortestPath.getPath(JIPipeDataInfo.getInstance(inputDataType), JIPipeDataInfo.getInstance(outputDataType));
+            if(path == null)
+                return -1;
+            return path.getLength();
         }
     }
 

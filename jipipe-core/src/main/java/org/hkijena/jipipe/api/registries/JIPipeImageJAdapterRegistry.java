@@ -201,18 +201,17 @@ public class JIPipeImageJAdapterRegistry {
         ImageJDataImporter importer = defaultImporters.get(dataClass);
         if(importer != null)
             return importer;
-        Set<ImageJDataImporter> available = getAvailableImporters(dataClass, false);
+        Set<ImageJDataImporter> available = getAvailableImporters(dataClass, true);
         if(available.isEmpty()) {
             importer = getImporterById(DefaultImageJDataImporter.ID); // the default importer
         }
         else {
+            JIPipeDatatypeRegistry datatypeRegistry = JIPipe.getDataTypes();
             importer = available.stream().min(Comparator.comparing(op -> {
-                if (op.getImportedJIPipeDataType() == dataClass)
-                    return 0;
-                else if (dataClass.isAssignableFrom(op.getImportedJIPipeDataType()))
-                    return ReflectionUtils.getClassDistance(dataClass, op.getImportedJIPipeDataType());
-                else
-                    return Integer.MAX_VALUE;
+                int conversionDistance = datatypeRegistry.getConversionDistance(op.getImportedJIPipeDataType(), dataClass);
+                if(conversionDistance < 0)
+                    conversionDistance = Integer.MAX_VALUE;
+                return conversionDistance;
             })).get();
         }
         defaultImporters.put(dataClass, importer);
@@ -228,18 +227,17 @@ public class JIPipeImageJAdapterRegistry {
         ImageJDataExporter exporter = defaultExporters.get(dataClass);
         if(exporter != null)
             return exporter;
-        Set<ImageJDataExporter> available = getAvailableExporters(dataClass, false);
+        Set<ImageJDataExporter> available = getAvailableExporters(dataClass, true);
         if(available.isEmpty()) {
             exporter = getExporterById(DefaultImageJDataExporter.ID); // the default importer
         }
         else {
+            JIPipeDatatypeRegistry datatypeRegistry = JIPipe.getDataTypes();
             exporter = available.stream().min(Comparator.comparing(op -> {
-                if (op.getExportedJIPipeDataType() == dataClass)
-                    return 0;
-                else if (op.getExportedJIPipeDataType().isAssignableFrom(dataClass))
-                    return ReflectionUtils.getClassDistance(op.getExportedJIPipeDataType(), dataClass);
-                else
-                    return Integer.MAX_VALUE;
+                int conversionDistance = datatypeRegistry.getConversionDistance(dataClass, op.getExportedJIPipeDataType());
+                if(conversionDistance < 0)
+                    conversionDistance = Integer.MAX_VALUE;
+                return conversionDistance;
             })).get();
         }
         defaultExporters.put(dataClass, exporter);
