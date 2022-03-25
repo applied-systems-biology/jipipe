@@ -74,7 +74,6 @@ public class ImageJDataImporterRefParameterEditorUI extends JIPipeParameterEdito
         if (importer != null) {
             currentlyDisplayed.setText(importer.getName());
             currentlyDisplayed.setToolTipText(importer.getDescription());
-            currentlyDisplayed.addActionListener(e -> pick());
             currentlyDisplayed.setIcon(JIPipe.getDataTypes().getIconFor(importer.getImportedJIPipeDataType()));
         } else {
             currentlyDisplayed.setText("None selected");

@@ -85,7 +85,6 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     };
 
     private ImageJMacro code = new ImageJMacro();
-    private boolean strictMode = true;
     private JIPipeDynamicParameterCollection macroParameters = new JIPipeDynamicParameterCollection(ALLOWED_PARAMETER_CLASSES);
 
     private final List<ImagePlus> initiallyOpenedImages = new ArrayList<>();
@@ -134,6 +133,18 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         outputFromImageJImporters = new OutputSlotMapParameterCollection(ImageJDataImporterRef.class, this, this::getDefaultImporterRef, false);
         other.outputFromImageJImporters.copyTo(outputFromImageJImporters);
         registerSubParameter(outputFromImageJImporters);
+    }
+
+    @JIPipeDocumentation(name = "JIPipe to ImageJ", description = "Use the following settings to change how inputs are converted from JIPipe to ImageJ.")
+    @JIPipeParameter("input-to-imagej-exporters")
+    public InputSlotMapParameterCollection getInputToImageJExporters() {
+        return inputToImageJExporters;
+    }
+
+    @JIPipeDocumentation(name = "ImageJ to JIPipe", description = "Use the following settings to change how outputs are extracted from ImageJ to JIPipe.")
+    @JIPipeParameter("output-from-imagej-importers")
+    public OutputSlotMapParameterCollection getOutputFromImageJImporters() {
+        return outputFromImageJImporters;
     }
 
     private Object getDefaultExporterRef(JIPipeDataSlotInfo info) {
@@ -343,29 +354,6 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
                         this);
             }
         }
-
-        if (strictMode) {
-            for (JIPipeDataSlot inputSlot : getNonParameterInputSlots()) {
-                if (ImagePlusData.class.isAssignableFrom(inputSlot.getAcceptedDataType())) {
-                    if (!code.getCode(getProjectWorkDirectory()).contains("\"" + inputSlot.getName() + "\"")) {
-                        report.reportIsInvalid("Strict mode: Unused input image",
-                                "Input image '" + inputSlot.getName() + "' is not used!",
-                                "You can use selectWindow(\"" + inputSlot.getName() + "\"); to process the image. Disable strict mode to stop this message.",
-                                this);
-                    }
-                }
-            }
-            for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-                if (ImagePlusData.class.isAssignableFrom(outputSlot.getAcceptedDataType())) {
-                    if (!code.getCode(getProjectWorkDirectory()).contains("\"" + outputSlot.getName() + "\"")) {
-                        report.reportIsInvalid("Strict mode: Unused output image",
-                                "Output image '" + outputSlot.getName() + "' is not used!",
-                                "You should rename an output image via rename(\"" + outputSlot.getName() + "\"); to allow JIPipe to find it. Disable strict mode to stop this message.",
-                                this);
-                    }
-                }
-            }
-        }
     }
 
     @Override
@@ -374,7 +362,11 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         code.makeExternalScriptFileRelative(projectWorkDirectory);
     }
 
-    @JIPipeDocumentation(name = "Code")
+    @JIPipeDocumentation(name = "Code", description = "The macro code. " + "Images are opened as windows named according to the input slot. You have to select windows with " +
+            "the select() function or comparable functions. You have have one results table input which " +
+            "can be addressed via the global functions. Input ROI are merged into one ROI manager.\n\n" +
+            "You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data, named according to the slot name. " +
+            "Annotations can also be accessed via a function getJIPipeAnnotation(key), which returns the string value of the annotation or an empty string if no value was set.")
     @JIPipeParameter("code")
     public ImageJMacro getCode() {
         return code;
@@ -383,17 +375,6 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("code")
     public void setCode(ImageJMacro code) {
         this.code = code;
-    }
-
-    @JIPipeDocumentation(name = "Strict mode", description = "If enabled, macro code is scanned for common mistakes and an error is generated.")
-    @JIPipeParameter("strict-mode")
-    public boolean isStrictMode() {
-        return strictMode;
-    }
-
-    @JIPipeParameter("strict-mode")
-    public void setStrictMode(boolean strictMode) {
-        this.strictMode = strictMode;
     }
 
     @JIPipeParameter(value = "macro-parameters", persistence = JIPipeParameterPersistence.NestedCollection)

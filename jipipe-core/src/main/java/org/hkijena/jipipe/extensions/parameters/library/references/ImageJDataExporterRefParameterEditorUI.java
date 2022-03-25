@@ -69,7 +69,6 @@ public class ImageJDataExporterRefParameterEditorUI extends JIPipeParameterEdito
         if (exporter != null) {
             currentlyDisplayed.setText(exporter.getName());
             currentlyDisplayed.setToolTipText(exporter.getDescription());
-            currentlyDisplayed.addActionListener(e -> pick());
             currentlyDisplayed.setIcon(JIPipe.getDataTypes().getIconFor(exporter.getExportedJIPipeDataType()));
         } else {
             currentlyDisplayed.setText("None selected");

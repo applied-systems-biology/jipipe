@@ -79,7 +79,6 @@ public class JIPipeNodeInfoRefParameterEditorUI extends JIPipeParameterEditorUI 
         if (info != null) {
             currentlyDisplayed.setText(info.getName());
             currentlyDisplayed.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
-            currentlyDisplayed.addActionListener(e -> pickNodeInfo());
             currentlyDisplayed.setIcon(UIUtils.getIconFromColor(UIUtils.getFillColorFor(info)));
             picker.setSelectedInfos(Collections.singleton(info));
         } else {
