@@ -14,10 +14,12 @@
 package org.hkijena.jipipe.extensions.parameters.api.graph;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -26,7 +28,7 @@ import java.util.function.Supplier;
 public abstract class SlotMapParameterCollection extends JIPipeDynamicParameterCollection {
     private JIPipeGraphNode algorithm;
     private Class<?> dataClass;
-    private Supplier<Object> newInstanceGenerator;
+    private Function<JIPipeDataSlotInfo, Object> newInstanceGenerator;
 
     /**
      * Creates a new instance
@@ -36,7 +38,7 @@ public abstract class SlotMapParameterCollection extends JIPipeDynamicParameterC
      * @param newInstanceGenerator optional method that generated new instances. Can be null
      * @param initialize           If true, update the slots on creation
      */
-    public SlotMapParameterCollection(Class<?> dataClass, JIPipeGraphNode algorithm, Supplier<Object> newInstanceGenerator, boolean initialize) {
+    public SlotMapParameterCollection(Class<?> dataClass, JIPipeGraphNode algorithm, Function<JIPipeDataSlotInfo, Object> newInstanceGenerator, boolean initialize) {
         this.dataClass = dataClass;
         this.algorithm = algorithm;
         this.newInstanceGenerator = newInstanceGenerator;
@@ -69,11 +71,11 @@ public abstract class SlotMapParameterCollection extends JIPipeDynamicParameterC
         updateSlots();
     }
 
-    public Supplier<Object> getNewInstanceGenerator() {
+    public Function<JIPipeDataSlotInfo, Object> getNewInstanceGenerator() {
         return newInstanceGenerator;
     }
 
-    public void setNewInstanceGenerator(Supplier<Object> newInstanceGenerator) {
+    public void setNewInstanceGenerator(Function<JIPipeDataSlotInfo, Object> newInstanceGenerator) {
         this.newInstanceGenerator = newInstanceGenerator;
     }
 }

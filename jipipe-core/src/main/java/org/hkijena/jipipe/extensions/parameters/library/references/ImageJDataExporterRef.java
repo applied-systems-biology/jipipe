@@ -19,8 +19,11 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.compat.ImageJDataExporter;
+import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -43,6 +46,10 @@ public class ImageJDataExporterRef implements JIPipeValidatable {
      */
     public ImageJDataExporterRef() {
 
+    }
+
+    public ImageJDataExporterRef(ImageJDataExporter exporter) {
+        this(JIPipe.getImageJAdapters().getIdOf(exporter));
     }
 
     public ImageJDataExporterRef(ImageJDataExporterRef other) {

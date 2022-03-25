@@ -19,8 +19,10 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -47,6 +49,10 @@ public class ImageJDataImporterRef implements JIPipeValidatable {
 
     public ImageJDataImporterRef(ImageJDataImporterRef other) {
         this.id = other.id;
+    }
+
+    public ImageJDataImporterRef(ImageJDataImporter importer) {
+        this(JIPipe.getImageJAdapters().getIdOf(importer));
     }
 
     public String getId() {

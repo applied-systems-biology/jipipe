@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.parameters.library.graph;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.extensions.parameters.api.graph.SlotMapParameterCollection;
@@ -21,6 +22,7 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 /**
@@ -35,8 +37,20 @@ public class OutputSlotMapParameterCollection extends SlotMapParameterCollection
      * @param newInstanceGenerator optional method that generated new instances. Can be null
      * @param initialize           If true, update the slots on creation
      */
-    public OutputSlotMapParameterCollection(Class<?> dataClass, JIPipeGraphNode algorithm, Supplier<Object> newInstanceGenerator, boolean initialize) {
+    public OutputSlotMapParameterCollection(Class<?> dataClass, JIPipeGraphNode algorithm, Function<JIPipeDataSlotInfo, Object> newInstanceGenerator, boolean initialize) {
         super(dataClass, algorithm, newInstanceGenerator, initialize);
+    }
+
+    /**
+     * Creates a new instance
+     *
+     * @param dataClass            the data type of the parameter assigned to each slot
+     * @param algorithm            the algorithm that contains the slots
+     * @param newInstanceGenerator optional method that generated new instances. Can be null
+     * @param initialize           If true, update the slots on creation
+     */
+    public OutputSlotMapParameterCollection(Class<?> dataClass, JIPipeGraphNode algorithm, Supplier<Object> newInstanceGenerator, boolean initialize) {
+        super(dataClass, algorithm, (info) -> newInstanceGenerator.get(), initialize);
     }
 
     @Override
@@ -57,7 +71,7 @@ public class OutputSlotMapParameterCollection extends SlotMapParameterCollection
                     JIPipeMutableParameterAccess access = addParameter(slot.getName(), getDataClass());
                     access.setUIOrder(i);
                     if (getNewInstanceGenerator() != null)
-                        access.set(getNewInstanceGenerator().get());
+                        access.set(getNewInstanceGenerator().apply(slot.getInfo()));
                     else
                         access.set(ReflectionUtils.newInstance(getDataClass()));
                 } else {

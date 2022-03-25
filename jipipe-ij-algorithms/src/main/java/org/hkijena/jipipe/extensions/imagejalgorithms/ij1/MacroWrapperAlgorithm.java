@@ -29,8 +29,13 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.OverlayChannelsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.parameters.library.graph.InputSlotMapParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.library.graph.OutputSlotMapParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.library.references.ImageJDataExporterRef;
+import org.hkijena.jipipe.extensions.parameters.library.references.ImageJDataImporterRef;
 import org.hkijena.jipipe.extensions.parameters.library.scripts.ImageJMacro;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -83,16 +88,27 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     private List<ImagePlus> initiallyOpenedImages = new ArrayList<>();
     private List<Window> initiallyOpenedWindows = new ArrayList<>();
 
+    private InputSlotMapParameterCollection inputImporters;
+    private OutputSlotMapParameterCollection outputExporters;
+
     /**
      * @param info the info
      */
     public MacroWrapperAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .allowOutputSlotInheritance(true)
-                .restrictInputTo(getCompatibleTypes())
-                .restrictOutputTo(getCompatibleTypes())
                 .build());
         this.macroParameters.getEventBus().register(this);
+
+        // Importer settings
+        inputImporters = new InputSlotMapParameterCollection(ImageJDataImporterRef.class, this, this::getDefaultImporterRef, false);
+        inputImporters.updateSlots();
+        registerSubParameter(inputImporters);
+
+        // Exporter settings
+        outputExporters = new OutputSlotMapParameterCollection(ImageJDataImporterRef.class, this, this::getDefaultExporterRef, false);
+        outputExporters.updateSlots();
+        registerSubParameter(outputExporters);
     }
 
     /**
@@ -105,15 +121,24 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         this.code = new ImageJMacro(other.code);
         this.macroParameters = new JIPipeDynamicParameterCollection(other.macroParameters);
         this.macroParameters.getEventBus().register(this);
+
+        // Importer settings
+        inputImporters = new InputSlotMapParameterCollection(ImageJDataImporterRef.class, this, this::getDefaultImporterRef, false);
+        other.inputImporters.copyTo(inputImporters);
+        registerSubParameter(inputImporters);
+
+        // Exporter settings
+        outputExporters = new OutputSlotMapParameterCollection(ImageJDataImporterRef.class, this, this::getDefaultExporterRef, false);
+        other.outputExporters.copyTo(outputExporters);
+        registerSubParameter(outputExporters);
     }
 
-    /**
-     * Returns all types compatible with the {@link MacroWrapperAlgorithm}
-     *
-     * @return compatible data types
-     */
-    public static Class[] getCompatibleTypes() {
-        return JIPipe.getImageJAdapters().getSupportedJIPipeDataTypes().toArray(new Class[0]);
+    private Object getDefaultExporterRef(JIPipeDataSlotInfo info) {
+        return new ImageJDataExporterRef(JIPipe.getImageJAdapters().getDefaultExporterFor(info.getDataClass()));
+    }
+
+    private Object getDefaultImporterRef(JIPipeDataSlotInfo info) {
+        return new ImageJDataImporterRef(JIPipe.getImageJAdapters().getDefaultImporterFor(info.getDataClass()));
     }
 
     @Override

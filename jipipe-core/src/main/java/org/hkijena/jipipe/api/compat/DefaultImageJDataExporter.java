@@ -5,7 +5,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
+import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -25,7 +27,7 @@ public class DefaultImageJDataExporter implements ImageJDataExporter {
 
     @Override
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters properties) {
-        Path path = Paths.get(properties.getName());
+        Path path = StringUtils.isNullOrEmpty(properties.getName()) ? RuntimeSettings.generateTempDirectory("data-table-export") : Paths.get(properties.getName());
         try {
             Files.createDirectories(path);
         } catch (IOException e) {
