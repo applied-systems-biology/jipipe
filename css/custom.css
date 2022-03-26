@@ -455,6 +455,7 @@ Download page
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: center;
+  margin-bottom: 2em;
 }
 
 .download-panel-selection input {

@@ -1,4 +1,3 @@
-org.hkijena.ijupdatercli
 org.hkijena.jipipe
 org.hkijena.jipipe.api
 org.hkijena.jipipe.api.annotation
@@ -31,6 +30,7 @@ org.hkijena.jipipe.extensions.cellpose.datatypes
 org.hkijena.jipipe.extensions.cellpose.parameters
 org.hkijena.jipipe.extensions.clij2
 org.hkijena.jipipe.extensions.clij2.algorithms
+org.hkijena.jipipe.extensions.clij2.compat
 org.hkijena.jipipe.extensions.clij2.datatypes
 org.hkijena.jipipe.extensions.clij2.parameters
 org.hkijena.jipipe.extensions.clij2.ui
@@ -100,7 +100,6 @@ org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.datasources
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge
-org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft
 org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms
@@ -129,9 +128,9 @@ org.hkijena.jipipe.extensions.imagejalgorithms.utils
 org.hkijena.jipipe.extensions.imagejdatatypes
 org.hkijena.jipipe.extensions.imagejdatatypes.algorithms
 org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.color
-org.hkijena.jipipe.extensions.imagejdatatypes.color
+org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.datasources
+org.hkijena.jipipe.extensions.imagejdatatypes.colorspace
 org.hkijena.jipipe.extensions.imagejdatatypes.compat
-org.hkijena.jipipe.extensions.imagejdatatypes.datasources
 org.hkijena.jipipe.extensions.imagejdatatypes.datatypes
 org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color
 org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2
@@ -149,6 +148,7 @@ org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d5.greyscale
 org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft
 org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale
 org.hkijena.jipipe.extensions.imagejdatatypes.display
+org.hkijena.jipipe.extensions.imagejdatatypes.filters
 org.hkijena.jipipe.extensions.imagejdatatypes.parameters
 org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis
 org.hkijena.jipipe.extensions.imagejdatatypes.tools
@@ -184,6 +184,7 @@ org.hkijena.jipipe.extensions.parameters.library.colors
 org.hkijena.jipipe.extensions.parameters.library.editors
 org.hkijena.jipipe.extensions.parameters.library.filesystem
 org.hkijena.jipipe.extensions.parameters.library.graph
+org.hkijena.jipipe.extensions.parameters.library.images
 org.hkijena.jipipe.extensions.parameters.library.jipipe
 org.hkijena.jipipe.extensions.parameters.library.markup
 org.hkijena.jipipe.extensions.parameters.library.matrix
@@ -200,6 +201,7 @@ org.hkijena.jipipe.extensions.parameters.library.roi
 org.hkijena.jipipe.extensions.parameters.library.scripts
 org.hkijena.jipipe.extensions.parameters.library.table
 org.hkijena.jipipe.extensions.parameters.library.util
+org.hkijena.jipipe.extensions.pipelinerender
 org.hkijena.jipipe.extensions.plots
 org.hkijena.jipipe.extensions.plots.converters
 org.hkijena.jipipe.extensions.plots.datatypes
@@ -220,6 +222,7 @@ org.hkijena.jipipe.extensions.strings
 org.hkijena.jipipe.extensions.strings.datasources
 org.hkijena.jipipe.extensions.tables
 org.hkijena.jipipe.extensions.tables.algorithms
+org.hkijena.jipipe.extensions.tables.compat
 org.hkijena.jipipe.extensions.tables.datatypes
 org.hkijena.jipipe.extensions.tables.display
 org.hkijena.jipipe.extensions.tables.operations.converting
@@ -237,6 +240,7 @@ org.hkijena.jipipe.extensions.utils.algorithms.processes
 org.hkijena.jipipe.extensions.utils.contextmenu
 org.hkijena.jipipe.extensions.utils.datatypes
 org.hkijena.jipipe.extensions.utils.display
+org.hkijena.jipipe.ijupdatercli
 org.hkijena.jipipe.installer.linux
 org.hkijena.jipipe.installer.linux.api
 org.hkijena.jipipe.installer.linux.ui
@@ -252,6 +256,7 @@ org.hkijena.jipipe.ui.components.html
 org.hkijena.jipipe.ui.components.icons
 org.hkijena.jipipe.ui.components.layouts
 org.hkijena.jipipe.ui.components.markdown
+org.hkijena.jipipe.ui.components.pickers
 org.hkijena.jipipe.ui.components.renderers
 org.hkijena.jipipe.ui.components.search
 org.hkijena.jipipe.ui.components.tabs
@@ -269,6 +274,7 @@ org.hkijena.jipipe.ui.grapheditor.compartments
 org.hkijena.jipipe.ui.grapheditor.connections
 org.hkijena.jipipe.ui.grapheditor.contextmenu
 org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard
+org.hkijena.jipipe.ui.grapheditor.contextmenu.navigation
 org.hkijena.jipipe.ui.grapheditor.layout
 org.hkijena.jipipe.ui.grapheditor.nodeui
 org.hkijena.jipipe.ui.grapheditor.settings
