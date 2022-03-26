@@ -6,6 +6,8 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.extensions.tables.compat.ResultsTableDataImageJExporter;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -28,12 +30,22 @@ public class DefaultImageJDataExporter implements ImageJDataExporter {
     @Override
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters properties) {
         Path path = StringUtils.isNullOrEmpty(properties.getName()) ? RuntimeSettings.generateTempDirectory("data-table-export") : Paths.get(properties.getName());
+        if(!path.isAbsolute()) {
+            path = RuntimeSettings.generateTempDirectory("data-table-export").resolve(path);
+        }
         try {
             Files.createDirectories(path);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         dataTable.exportData(new JIPipeFileSystemWriteDataStorage(new JIPipeProgressInfo(), path), new JIPipeProgressInfo());
+        if(properties.isActivate()) {
+            ResultsTableData tableData = new ResultsTableData();
+            tableData.addStringColumn("Path");
+            tableData.addRow();
+            tableData.setValueAt(path.toString(), 0, 0);
+            (new ResultsTableDataImageJExporter()).exportData(tableData, properties);
+        }
         return Collections.singletonList(path.toFile());
     }
 

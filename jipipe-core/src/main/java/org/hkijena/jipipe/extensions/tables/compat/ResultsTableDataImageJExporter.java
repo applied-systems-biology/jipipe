@@ -19,7 +19,7 @@ public class ResultsTableDataImageJExporter implements ImageJDataExporter {
         List<Object> result = new ArrayList<>();
         if(parameters.isActivate()) {
             ResultsTable resultsTable = ResultsTable.getResultsTable();
-            if(parameters.isAppend()) {
+            if(!parameters.isAppend()) {
                 resultsTable.reset();
             }
             for (int i = 0; i < dataTable.getRowCount(); i++) {
