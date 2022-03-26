@@ -177,59 +177,64 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 new OMEImageDataImportIntoJIPipeOperation());
         registerImageJDataImporter("ome-image-from-image-window", new OMEImageFromImageWindowImageJImporter(), ImagePlusWindowImageJImporterUI.class);
         registerImageJDataExporter("ome-image-to-image-window", new OMEImageToImageWindowImageJExporter(), DefaultImageJDataExporterUI.class);
-        registerImageDataType("imagej-imgplus", ImagePlusData.class, "icons/data-types/imgplus.png");
-        registerImageJDataImporter("import-imagej-imgplus", new ImagePlusDataFromImageWindowImageJImporter(ImagePlusData.class), ImagePlusWindowImageJImporterUI.class);
-        registerImageDataType("imagej-imgplus-greyscale", ImagePlusGreyscaleData.class, "icons/data-types/imgplus-greyscale.png");
-        registerImageDataType("imagej-imgplus-greyscale-8u", ImagePlusGreyscale8UData.class, "icons/data-types/imgplus-greyscale-8u.png");
-        registerImageDataType("imagej-imgplus-greyscale-16u", ImagePlusGreyscale16UData.class, "icons/data-types/imgplus-greyscale-16u.png");
-        registerImageDataType("imagej-imgplus-greyscale-32f", ImagePlusGreyscale32FData.class, "icons/data-types/imgplus-greyscale-32f.png");
-        registerImageDataType("imagej-imgplus-greyscale-mask", ImagePlusGreyscaleMaskData.class, "icons/data-types/imgplus-greyscale-mask.png");
-        registerImageDataType("imagej-imgplus-color", ImagePlusColorData.class, "icons/data-types/imgplus-color.png");
-        registerImageDataType("imagej-imgplus-color-rgb", ImagePlusColorRGBData.class, "icons/data-types/imgplus-color-rgb.png");
-        registerImageDataType("imagej-imgplus-color-hsb", ImagePlusColorHSBData.class, "icons/data-types/imgplus-color-hsb.png");
-        registerImageDataType("imagej-imgplus-color-lab", ImagePlusColorLABData.class, "icons/data-types/imgplus-color-lab.png");
-        registerImageDataType("imagej-imgplus-2d", ImagePlus2DData.class, "icons/data-types/imgplus-2d.png");
-        registerImageDataType("imagej-imgplus-2d-greyscale", ImagePlus2DGreyscaleData.class, "icons/data-types/imgplus-2d-greyscale.png");
-        registerImageDataType("imagej-imgplus-2d-greyscale-8u", ImagePlus2DGreyscale8UData.class, "icons/data-types/imgplus-2d-greyscale-8u.png");
-        registerImageDataType("imagej-imgplus-2d-greyscale-16u", ImagePlus2DGreyscale16UData.class, "icons/data-types/imgplus-2d-greyscale-16u.png");
-        registerImageDataType("imagej-imgplus-2d-greyscale-32f", ImagePlus2DGreyscale32FData.class, "icons/data-types/imgplus-2d-greyscale-32f.png");
-        registerImageDataType("imagej-imgplus-2d-greyscale-mask", ImagePlus2DGreyscaleMaskData.class, "icons/data-types/imgplus-2d-greyscale-mask.png");
-        registerImageDataType("imagej-imgplus-2d-color", ImagePlus2DColorData.class, "icons/data-types/imgplus-2d-color.png");
-        registerImageDataType("imagej-imgplus-2d-color-rgb", ImagePlus2DColorRGBData.class, "icons/data-types/imgplus-2d-color-rgb.png");
-        registerImageDataType("imagej-imgplus-2d-color-hsb", ImagePlus2DColorHSBData.class, "icons/data-types/imgplus-2d-color-hsb.png");
-        registerImageDataType("imagej-imgplus-2d-color-lab", ImagePlus2DColorLABData.class, "icons/data-types/imgplus-2d-color-lab.png");
-        registerImageDataType("imagej-imgplus-3d", ImagePlus3DData.class, "icons/data-types/imgplus-3d.png");
-        registerImageDataType("imagej-imgplus-3d-greyscale", ImagePlus3DGreyscaleData.class, "icons/data-types/imgplus-3d-greyscale.png");
-        registerImageDataType("imagej-imgplus-3d-greyscale-8u", ImagePlus3DGreyscale8UData.class, "icons/data-types/imgplus-3d-greyscale-8u.png");
-        registerImageDataType("imagej-imgplus-3d-greyscale-16u", ImagePlus3DGreyscale16UData.class, "icons/data-types/imgplus-3d-greyscale-16u.png");
-        registerImageDataType("imagej-imgplus-3d-greyscale-32f", ImagePlus3DGreyscale32FData.class, "icons/data-types/imgplus-3d-greyscale-32f.png");
-        registerImageDataType("imagej-imgplus-3d-greyscale-mask", ImagePlus3DGreyscaleMaskData.class, "icons/data-types/imgplus-3d-greyscale-mask.png");
-        registerImageDataType("imagej-imgplus-3d-color", ImagePlus3DColorData.class, "icons/data-types/imgplus-3d-color.png");
-        registerImageDataType("imagej-imgplus-3d-color-rgb", ImagePlus3DColorRGBData.class, "icons/data-types/imgplus-3d-color-rgb.png");
-        registerImageDataType("imagej-imgplus-3d-color-hsb", ImagePlus3DColorHSBData.class, "icons/data-types/imgplus-3d-color-hsb.png");
-        registerImageDataType("imagej-imgplus-3d-color-lab", ImagePlus3DColorLABData.class, "icons/data-types/imgplus-3d-color-lab.png");
-        registerImageDataType("imagej-imgplus-4d", ImagePlus4DData.class, "icons/data-types/imgplus-4d.png");
-        registerImageDataType("imagej-imgplus-4d-greyscale", ImagePlus4DGreyscaleData.class, "icons/data-types/imgplus-4d-greyscale.png");
-        registerImageDataType("imagej-imgplus-4d-greyscale-8u", ImagePlus4DGreyscale8UData.class, "icons/data-types/imgplus-4d-greyscale-8u.png");
-        registerImageDataType("imagej-imgplus-4d-greyscale-16u", ImagePlus4DGreyscale16UData.class, "icons/data-types/imgplus-4d-greyscale-16u.png");
-        registerImageDataType("imagej-imgplus-4d-greyscale-32f", ImagePlus4DGreyscale32FData.class, "icons/data-types/imgplus-4d-greyscale-32f.png");
-        registerImageDataType("imagej-imgplus-4d-greyscale-mask", ImagePlus4DGreyscaleMaskData.class, "icons/data-types/imgplus-4d-greyscale-mask.png");
-        registerImageDataType("imagej-imgplus-4d-color", ImagePlus4DColorData.class, "icons/data-types/imgplus-4d-color.png");
-        registerImageDataType("imagej-imgplus-4d-color-rgb", ImagePlus4DColorRGBData.class, "icons/data-types/imgplus-4d-color-rgb.png");
-        registerImageDataType("imagej-imgplus-4d-color-hsb", ImagePlus4DColorHSBData.class, "icons/data-types/imgplus-4d-color-hsb.png");
-        registerImageDataType("imagej-imgplus-4d-color-lab", ImagePlus4DColorLABData.class, "icons/data-types/imgplus-4d-color-lab.png");
-        registerImageDataType("imagej-imgplus-5d", ImagePlus5DData.class, "icons/data-types/imgplus-5d.png");
-        registerImageDataType("imagej-imgplus-5d-greyscale", ImagePlus5DGreyscaleData.class, "icons/data-types/imgplus-5d-greyscale.png");
-        registerImageDataType("imagej-imgplus-5d-greyscale-8u", ImagePlus5DGreyscale8UData.class, "icons/data-types/imgplus-5d-greyscale-8u.png");
-        registerImageDataType("imagej-imgplus-5d-greyscale-16u", ImagePlus5DGreyscale16UData.class, "icons/data-types/imgplus-5d-greyscale-16u.png");
-        registerImageDataType("imagej-imgplus-5d-greyscale-32f", ImagePlus5DGreyscale32FData.class, "icons/data-types/imgplus-5d-greyscale-32f.png");
-        registerImageDataType("imagej-imgplus-5d-greyscale-mask", ImagePlus5DGreyscaleMaskData.class, "icons/data-types/imgplus-5d-greyscale-mask.png");
-        registerImageDataType("imagej-imgplus-5d-color", ImagePlus5DColorData.class, "icons/data-types/imgplus-5d-color.png");
-        registerImageDataType("imagej-imgplus-5d-color-rgb", ImagePlus5DColorRGBData.class, "icons/data-types/imgplus-5d-color-rgb.png");
-        registerImageDataType("imagej-imgplus-5d-color-hsb", ImagePlus5DColorHSBData.class, "icons/data-types/imgplus-5d-color-hsb.png");
-        registerImageDataType("imagej-imgplus-5d-color-lab", ImagePlus5DColorLABData.class, "icons/data-types/imgplus-5d-color-lab.png");
+
+        ImagePlusDataFromImageWindowImageJImporter imageImporter = new ImagePlusDataFromImageWindowImageJImporter(ImagePlusData.class);
+        ImagePlusDataToImageWindowImageJExporter imageExporter = new ImagePlusDataToImageWindowImageJExporter();
+        registerImageJDataImporter("imagej-window-to-imgplus", imageImporter, ImagePlusWindowImageJImporterUI.class);
+        registerImageJDataExporter("image-to-imagej-window", imageExporter, DefaultImageJDataExporterUI.class);
+        registerImageDataType("imagej-imgplus", ImagePlusData.class, imageImporter, imageExporter, "icons/data-types/imgplus.png");
+
+        // Other image data types
+        registerImageDataType("imagej-imgplus-greyscale", ImagePlusGreyscaleData.class, imageImporter, imageExporter, "icons/data-types/imgplus-greyscale.png");
+        registerImageDataType("imagej-imgplus-greyscale-8u", ImagePlusGreyscale8UData.class, imageImporter, imageExporter, "icons/data-types/imgplus-greyscale-8u.png");
+        registerImageDataType("imagej-imgplus-greyscale-16u", ImagePlusGreyscale16UData.class, imageImporter, imageExporter, "icons/data-types/imgplus-greyscale-16u.png");
+        registerImageDataType("imagej-imgplus-greyscale-32f", ImagePlusGreyscale32FData.class, imageImporter, imageExporter, "icons/data-types/imgplus-greyscale-32f.png");
+        registerImageDataType("imagej-imgplus-greyscale-mask", ImagePlusGreyscaleMaskData.class, imageImporter, imageExporter, "icons/data-types/imgplus-greyscale-mask.png");
+        registerImageDataType("imagej-imgplus-color", ImagePlusColorData.class, imageImporter, imageExporter, "icons/data-types/imgplus-color.png");
+        registerImageDataType("imagej-imgplus-color-rgb", ImagePlusColorRGBData.class, imageImporter, imageExporter, "icons/data-types/imgplus-color-rgb.png");
+        registerImageDataType("imagej-imgplus-color-hsb", ImagePlusColorHSBData.class, imageImporter, imageExporter, "icons/data-types/imgplus-color-hsb.png");
+        registerImageDataType("imagej-imgplus-color-lab", ImagePlusColorLABData.class, imageImporter, imageExporter, "icons/data-types/imgplus-color-lab.png");
+        registerImageDataType("imagej-imgplus-2d", ImagePlus2DData.class, imageImporter, imageExporter, "icons/data-types/imgplus-2d.png");
+        registerImageDataType("imagej-imgplus-2d-greyscale", ImagePlus2DGreyscaleData.class, imageImporter, imageExporter, "icons/data-types/imgplus-2d-greyscale.png");
+        registerImageDataType("imagej-imgplus-2d-greyscale-8u", ImagePlus2DGreyscale8UData.class, imageImporter, imageExporter, "icons/data-types/imgplus-2d-greyscale-8u.png");
+        registerImageDataType("imagej-imgplus-2d-greyscale-16u", ImagePlus2DGreyscale16UData.class, imageImporter, imageExporter, "icons/data-types/imgplus-2d-greyscale-16u.png");
+        registerImageDataType("imagej-imgplus-2d-greyscale-32f", ImagePlus2DGreyscale32FData.class, imageImporter, imageExporter, "icons/data-types/imgplus-2d-greyscale-32f.png");
+        registerImageDataType("imagej-imgplus-2d-greyscale-mask", ImagePlus2DGreyscaleMaskData.class, imageImporter, imageExporter, "icons/data-types/imgplus-2d-greyscale-mask.png");
+        registerImageDataType("imagej-imgplus-2d-color", ImagePlus2DColorData.class, imageImporter, imageExporter, "icons/data-types/imgplus-2d-color.png");
+        registerImageDataType("imagej-imgplus-2d-color-rgb", ImagePlus2DColorRGBData.class, imageImporter, imageExporter, "icons/data-types/imgplus-2d-color-rgb.png");
+        registerImageDataType("imagej-imgplus-2d-color-hsb", ImagePlus2DColorHSBData.class, imageImporter, imageExporter, "icons/data-types/imgplus-2d-color-hsb.png");
+        registerImageDataType("imagej-imgplus-2d-color-lab", ImagePlus2DColorLABData.class, imageImporter, imageExporter, "icons/data-types/imgplus-2d-color-lab.png");
+        registerImageDataType("imagej-imgplus-3d", ImagePlus3DData.class, imageImporter, imageExporter, "icons/data-types/imgplus-3d.png");
+        registerImageDataType("imagej-imgplus-3d-greyscale", ImagePlus3DGreyscaleData.class, imageImporter, imageExporter, "icons/data-types/imgplus-3d-greyscale.png");
+        registerImageDataType("imagej-imgplus-3d-greyscale-8u", ImagePlus3DGreyscale8UData.class, imageImporter, imageExporter, "icons/data-types/imgplus-3d-greyscale-8u.png");
+        registerImageDataType("imagej-imgplus-3d-greyscale-16u", ImagePlus3DGreyscale16UData.class, imageImporter, imageExporter, "icons/data-types/imgplus-3d-greyscale-16u.png");
+        registerImageDataType("imagej-imgplus-3d-greyscale-32f", ImagePlus3DGreyscale32FData.class, imageImporter, imageExporter, "icons/data-types/imgplus-3d-greyscale-32f.png");
+        registerImageDataType("imagej-imgplus-3d-greyscale-mask", ImagePlus3DGreyscaleMaskData.class, imageImporter, imageExporter, "icons/data-types/imgplus-3d-greyscale-mask.png");
+        registerImageDataType("imagej-imgplus-3d-color", ImagePlus3DColorData.class, imageImporter, imageExporter, "icons/data-types/imgplus-3d-color.png");
+        registerImageDataType("imagej-imgplus-3d-color-rgb", ImagePlus3DColorRGBData.class, imageImporter, imageExporter, "icons/data-types/imgplus-3d-color-rgb.png");
+        registerImageDataType("imagej-imgplus-3d-color-hsb", ImagePlus3DColorHSBData.class, imageImporter, imageExporter, "icons/data-types/imgplus-3d-color-hsb.png");
+        registerImageDataType("imagej-imgplus-3d-color-lab", ImagePlus3DColorLABData.class, imageImporter, imageExporter, "icons/data-types/imgplus-3d-color-lab.png");
+        registerImageDataType("imagej-imgplus-4d", ImagePlus4DData.class, imageImporter, imageExporter, "icons/data-types/imgplus-4d.png");
+        registerImageDataType("imagej-imgplus-4d-greyscale", ImagePlus4DGreyscaleData.class, imageImporter, imageExporter, "icons/data-types/imgplus-4d-greyscale.png");
+        registerImageDataType("imagej-imgplus-4d-greyscale-8u", ImagePlus4DGreyscale8UData.class, imageImporter, imageExporter, "icons/data-types/imgplus-4d-greyscale-8u.png");
+        registerImageDataType("imagej-imgplus-4d-greyscale-16u", ImagePlus4DGreyscale16UData.class, imageImporter, imageExporter, "icons/data-types/imgplus-4d-greyscale-16u.png");
+        registerImageDataType("imagej-imgplus-4d-greyscale-32f", ImagePlus4DGreyscale32FData.class, imageImporter, imageExporter, "icons/data-types/imgplus-4d-greyscale-32f.png");
+        registerImageDataType("imagej-imgplus-4d-greyscale-mask", ImagePlus4DGreyscaleMaskData.class, imageImporter, imageExporter, "icons/data-types/imgplus-4d-greyscale-mask.png");
+        registerImageDataType("imagej-imgplus-4d-color", ImagePlus4DColorData.class, imageImporter, imageExporter, "icons/data-types/imgplus-4d-color.png");
+        registerImageDataType("imagej-imgplus-4d-color-rgb", ImagePlus4DColorRGBData.class, imageImporter, imageExporter, "icons/data-types/imgplus-4d-color-rgb.png");
+        registerImageDataType("imagej-imgplus-4d-color-hsb", ImagePlus4DColorHSBData.class, imageImporter, imageExporter, "icons/data-types/imgplus-4d-color-hsb.png");
+        registerImageDataType("imagej-imgplus-4d-color-lab", ImagePlus4DColorLABData.class, imageImporter, imageExporter, "icons/data-types/imgplus-4d-color-lab.png");
+        registerImageDataType("imagej-imgplus-5d", ImagePlus5DData.class, imageImporter, imageExporter, "icons/data-types/imgplus-5d.png");
+        registerImageDataType("imagej-imgplus-5d-greyscale", ImagePlus5DGreyscaleData.class, imageImporter, imageExporter, "icons/data-types/imgplus-5d-greyscale.png");
+        registerImageDataType("imagej-imgplus-5d-greyscale-8u", ImagePlus5DGreyscale8UData.class, imageImporter, imageExporter, "icons/data-types/imgplus-5d-greyscale-8u.png");
+        registerImageDataType("imagej-imgplus-5d-greyscale-16u", ImagePlus5DGreyscale16UData.class, imageImporter, imageExporter, "icons/data-types/imgplus-5d-greyscale-16u.png");
+        registerImageDataType("imagej-imgplus-5d-greyscale-32f", ImagePlus5DGreyscale32FData.class, imageImporter, imageExporter, "icons/data-types/imgplus-5d-greyscale-32f.png");
+        registerImageDataType("imagej-imgplus-5d-greyscale-mask", ImagePlus5DGreyscaleMaskData.class, imageImporter, imageExporter, "icons/data-types/imgplus-5d-greyscale-mask.png");
+        registerImageDataType("imagej-imgplus-5d-color", ImagePlus5DColorData.class, imageImporter, imageExporter, "icons/data-types/imgplus-5d-color.png");
+        registerImageDataType("imagej-imgplus-5d-color-rgb", ImagePlus5DColorRGBData.class, imageImporter, imageExporter, "icons/data-types/imgplus-5d-color-rgb.png");
+        registerImageDataType("imagej-imgplus-5d-color-hsb", ImagePlus5DColorHSBData.class, imageImporter, imageExporter, "icons/data-types/imgplus-5d-color-hsb.png");
+        registerImageDataType("imagej-imgplus-5d-color-lab", ImagePlus5DColorLABData.class, imageImporter, imageExporter, "icons/data-types/imgplus-5d-color-lab.png");
         registerConverters();
-        registerImageJDataExporter("image-to-imagej", new ImagePlusDataToImageWindowImageJExporter(), DefaultImageJDataExporterUI.class);
 
         registerDatatype("imagej-roi", ROIListData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
                 null, ROIDataPreview.class,
@@ -253,11 +258,11 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerImageJDataExporter("export-results-table", new ResultsTableDataImageJExporter(), DefaultImageJDataExporterUI.class);
 
         // Register FFT data types
-        registerImageDataType("imagej-imgplus-fft", ImagePlusFFTData.class, "icons/data-types/imgplus-fft.png");
-        registerImageDataType("imagej-imgplus-fft-2d", ImagePlusFFT2DData.class, "icons/data-types/imgplus-fft-2d.png");
-        registerImageDataType("imagej-imgplus-fft-3d", ImagePlusFFT3DData.class, "icons/data-types/imgplus-fft-3d.png");
-        registerImageDataType("imagej-imgplus-fft-4d", ImagePlusFFT4DData.class, "icons/data-types/imgplus-fft-4d.png");
-        registerImageDataType("imagej-imgplus-fft-5d", ImagePlusFFT5DData.class, "icons/data-types/imgplus-fft-5d.png");
+        registerImageDataType("imagej-imgplus-fft", ImagePlusFFTData.class, imageImporter, imageExporter, "icons/data-types/imgplus-fft.png");
+        registerImageDataType("imagej-imgplus-fft-2d", ImagePlusFFT2DData.class, imageImporter, imageExporter, "icons/data-types/imgplus-fft-2d.png");
+        registerImageDataType("imagej-imgplus-fft-3d", ImagePlusFFT3DData.class, imageImporter, imageExporter, "icons/data-types/imgplus-fft-3d.png");
+        registerImageDataType("imagej-imgplus-fft-4d", ImagePlusFFT4DData.class, imageImporter, imageExporter, "icons/data-types/imgplus-fft-4d.png");
+        registerImageDataType("imagej-imgplus-fft-5d", ImagePlusFFT5DData.class, imageImporter, imageExporter, "icons/data-types/imgplus-fft-5d.png");
 
         // Register data sources
         registerNodeType("import-imagej-roi-from-file", ROIDataFromFile.class);
@@ -328,7 +333,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         }
     }
 
-    private void registerImageDataType(String id, Class<? extends ImagePlusData> dataClass, String iconResource) {
+    private void registerImageDataType(String id, Class<? extends ImagePlusData> dataClass, ImagePlusDataFromImageWindowImageJImporter imageImporter, ImagePlusDataToImageWindowImageJExporter imageExporter, String iconResource) {
         if(dataClass.getAnnotation(ImageTypeInfo.class) == null) {
             throw new IllegalArgumentException("Cannot register image data type '" + id + "' (" + dataClass + ") without ImageTypeInfo annotation!");
         }
@@ -341,6 +346,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 new ImagePlusDataImportIntoImageJOperation(),
                 new OpenInImageJDataDisplay(),
                 new OMEImageDataImportViaBioFormatsOperation());
+        configureDefaultImageJAdapters(dataClass, imageImporter, imageExporter);
 //        registerImageJDataImporter("import-" + id, new ImagePlusDataFromImageWindowImageJImporter(dataClass), ImagePlusWindowImageJImporterUI.class);
     }
 }

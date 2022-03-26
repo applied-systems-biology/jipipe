@@ -214,8 +214,29 @@ public class JIPipeImageJAdapterRegistry {
                 return conversionDistance;
             })).get();
         }
+        if(importer instanceof EmptyImageJDataImporter) {
+            importer = getImporterById(DefaultImageJDataExporter.ID);
+        }
         defaultImporters.put(dataClass, importer);
         return importer;
+    }
+
+    /**
+     * Sets the default exporter for a data type
+     * @param dataClass the data type
+     * @param id the ID of the exporter
+     */
+    public void setDefaultExporterFor(Class<? extends JIPipeData> dataClass, String id) {
+        defaultExporters.put(dataClass, getExporterById(id));
+    }
+
+    /**
+     * Sets the default importer for a data type
+     * @param dataClass the data type
+     * @param id the ID of the exporter
+     */
+    public void setDefaultImporterFor(Class<? extends JIPipeData> dataClass, String id) {
+        defaultImporters.put(dataClass, getImporterById(id));
     }
 
     /**
@@ -239,6 +260,9 @@ public class JIPipeImageJAdapterRegistry {
                     conversionDistance = Integer.MAX_VALUE;
                 return conversionDistance;
             })).get();
+        }
+        if(exporter instanceof EmptyImageJDataExporter) {
+            exporter = getExporterById(DefaultImageJDataExporter.ID);
         }
         defaultExporters.put(dataClass, exporter);
         return exporter;

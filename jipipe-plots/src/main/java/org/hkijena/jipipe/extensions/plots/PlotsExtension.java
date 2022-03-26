@@ -16,6 +16,8 @@ package org.hkijena.jipipe.extensions.plots;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.compat.DefaultImageJDataImporter;
+import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataOperation;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
@@ -173,5 +175,13 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
                 UIPlotDataSeriesColumnEnumParameterEditorUI.class);
     }
 
-
+    @Override
+    public void postprocess() {
+        super.postprocess();
+        for (Class<? extends JIPipeData> value : getRegistry().getDatatypeRegistry().getRegisteredDataTypes().values()) {
+            if(PlotData.class.isAssignableFrom(value)) {
+                configureDefaultImageJAdapters(value, DefaultImageJDataImporter.ID, "image-to-imagej-window");
+            }
+        }
+    }
 }

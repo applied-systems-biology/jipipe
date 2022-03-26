@@ -53,6 +53,7 @@ import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.service.AbstractService;
 
 import javax.swing.*;
@@ -522,6 +523,32 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
         JIPipeDocumentation documentation = function.getClass().getAnnotation(JIPipeDocumentation.class);
         registry.getExpressionRegistry().registerExpressionFunction(function, documentation.name(),
                 DocumentationUtils.getDocumentationDescription(documentation));
+    }
+
+    /**
+     * Sets the default ImageJ adapters
+     * @param dataClass the data type
+     * @param defaultImporterId the ID of the importer. the importer must be registered. can be null (ignore value)
+     * @param defaultExporterId the ID of the exporter. the exporter must be registered. can be null (ignore value)
+     */
+    public void configureDefaultImageJAdapters(Class<? extends JIPipeData> dataClass, String defaultImporterId, String defaultExporterId) {
+        if(!StringUtils.isNullOrEmpty(defaultImporterId))
+            registry.getImageJDataAdapterRegistry().setDefaultImporterFor(dataClass, defaultImporterId);
+        if(!StringUtils.isNullOrEmpty(defaultExporterId))
+         registry.getImageJDataAdapterRegistry().setDefaultExporterFor(dataClass, defaultExporterId);
+    }
+
+    /**
+     * Sets the default ImageJ adapters
+     * @param dataClass the data type
+     * @param defaultImporter the importer. the importer must be registered. can be null (ignore value)
+     * @param defaultExporter the exporter. the exporter must be registered. can be null (ignore value)
+     */
+    public void configureDefaultImageJAdapters(Class<? extends JIPipeData> dataClass, ImageJDataImporter defaultImporter, ImageJDataExporter defaultExporter) {
+        if(defaultImporter != null)
+            registry.getImageJDataAdapterRegistry().setDefaultImporterFor(dataClass, registry.getImageJDataAdapterRegistry().getIdOf(defaultImporter));
+        if(defaultExporter != null)
+            registry.getImageJDataAdapterRegistry().setDefaultExporterFor(dataClass, registry.getImageJDataAdapterRegistry().getIdOf(defaultExporter));
     }
 
     /**

@@ -17,6 +17,8 @@ import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.api.compat.ImageJDataExporter;
+import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
@@ -256,6 +258,23 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
             builder.append(info.getStorageSchema());
         }
         builder.append("\n\n");
+
+        // ImageJ conversion information
+        builder.append("## ImageJ conversion\n\n");
+        builder.append("<ul>");
+        {
+            ImageJDataImporter importer = JIPipe.getImageJAdapters().getDefaultImporterFor(info.getDataClass());
+            builder.append("<li>Default importer: ");
+            builder.append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(importer.getImportedJIPipeDataType())).append("\"/><span>").append(importer.getName()).append("</span>");
+            builder.append("</li>");
+        }
+        {
+            ImageJDataExporter exporter = JIPipe.getImageJAdapters().getDefaultExporterFor(info.getDataClass());
+            builder.append("<li>Default exporter: ");
+            builder.append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(exporter.getExportedJIPipeDataType())).append("\"/><span>").append(exporter.getName()).append("</span>");
+            builder.append("</li>");
+        }
+        builder.append("</ul>\n\n");
 
         // Info about the developer
         JIPipeDependency source = JIPipe.getDataTypes().getSourceOf(info.getId());

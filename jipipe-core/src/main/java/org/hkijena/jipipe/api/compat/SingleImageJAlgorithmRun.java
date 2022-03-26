@@ -23,6 +23,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -212,7 +214,14 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
         for (Map.Entry<String, ImageJDataImportOperation> entry : inputSlotImporters.entrySet()) {
             JIPipeDataSlot slot = algorithm.getInputSlot(entry.getKey());
             slot.clearData();
-            slot.addData(entry.getValue().apply(null), new JIPipeProgressInfo());
+            JIPipeDataTable dataTable = entry.getValue().apply(null);
+            for (int row = 0; row < dataTable.getRowCount(); row++) {
+                slot.addData(dataTable.getVirtualData(row).duplicate(new JIPipeProgressInfo()),
+                        dataTable.getTextAnnotations(row),
+                        JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                        dataTable.getDataAnnotations(row),
+                        JIPipeDataAnnotationMergeMode.OverwriteExisting);
+            }
         }
     }
 
