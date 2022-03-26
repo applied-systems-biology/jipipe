@@ -17,12 +17,12 @@ import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRun;
+import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRunConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
-import org.hkijena.jipipe.ui.compat.RunSingleAlgorithmDialog;
+import org.hkijena.jipipe.ui.compat.RunSingleAlgorithmWindow;
 import org.hkijena.jipipe.ui.components.SplashScreen;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -106,32 +106,20 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
     @Override
     public void run() {
         JIPipeGraphNode algorithm;
-        SingleImageJAlgorithmRun settings;
+        SingleImageJAlgorithmRunConfiguration settings;
         if (StringUtils.isNullOrEmpty(nodeId) || StringUtils.isNullOrEmpty(parameters)) {
             UIUtils.loadLookAndFeelFromSettings();
             initializeRegistry(true);
-            RunSingleAlgorithmDialog dialog = new RunSingleAlgorithmDialog(getContext(), JIPipe.getNodes().getInfoById(nodeId));
+            RunSingleAlgorithmWindow dialog = new RunSingleAlgorithmWindow(getContext(), JIPipe.getNodes().getInfoById(nodeId));
             dialog.setTitle(windowTitle);
             dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-            dialog.setModal(true);
             dialog.pack();
-            dialog.setSize(new Dimension(800, 600));
-            UIUtils.addEscapeListener(dialog);
+            dialog.setSize(new Dimension(1024, 768));
             dialog.setVisible(true);
-            if (dialog.isCanceled()) {
-                cancel("User clicked 'Cancel' in setup dialog.");
-                return;
-            } else {
-                parameters = dialog.getRun().getParametersString();
-                inputs = dialog.getRun().getInputsString();
-                outputs = dialog.getRun().getOutputsString();
-                threads = dialog.getNumThreads();
-                algorithm = dialog.getAlgorithm();
-                settings = dialog.getRun();
-            }
+            return;
         } else {
             initializeRegistry(false);
-            settings = new SingleImageJAlgorithmRun(nodeId, parameters, inputs, outputs, threads);
+            settings = new SingleImageJAlgorithmRunConfiguration(nodeId, parameters, inputs, outputs, threads);
             algorithm = settings.getAlgorithm();
             JIPipeIssueReport report = new JIPipeIssueReport();
             settings.reportValidity(report);

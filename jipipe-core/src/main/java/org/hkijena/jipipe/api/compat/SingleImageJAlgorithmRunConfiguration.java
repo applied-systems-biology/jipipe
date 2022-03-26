@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
@@ -39,7 +40,7 @@ import java.util.*;
 /**
  * Manages a single algorithm run
  */
-public class SingleImageJAlgorithmRun implements JIPipeValidatable {
+public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable {
 
     private final EventBus eventBus = new EventBus();
     private final JIPipeGraphNode algorithm;
@@ -47,7 +48,7 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
     private final Map<String, ImageJDataExportOperation> outputSlotExporters = new HashMap<>();
     private int numThreads = 1;
 
-    public SingleImageJAlgorithmRun(String nodeId, String parameters, String inputs, String outputs, int threads) {
+    public SingleImageJAlgorithmRunConfiguration(String nodeId, String parameters, String inputs, String outputs, int threads) {
         this.algorithm = JIPipe.createNode(nodeId);
         this.numThreads = threads;
 
@@ -127,16 +128,7 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
 
     private void importParameterString(String parametersString) {
         JsonNode jsonNode = JsonUtils.readFromString(parametersString, JsonNode.class);
-        Map<String, JIPipeParameterAccess> parameters = JIPipeParameterTree.getParameters(algorithm);
-        for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("parameters").fields())) {
-            JIPipeParameterAccess access = parameters.getOrDefault(entry.getKey(), null);
-            try {
-                access.set(JsonUtils.getObjectMapper().readerFor(access.getFieldClass()).readValue(entry.getValue()));
-            } catch (IOException e) {
-                throw new UserFriendlyRuntimeException(e, "Unable to load parameters!", "JIPipe single-algorithm run", "The JSON data is invalid or incomplete.",
-                        "Use the GUI to create a valid parameter set.");
-            }
-        }
+        ParameterUtils.deserializeParametersFromJson(algorithm, jsonNode, new JIPipeIssueReport());
     }
 
     public int getNumThreads() {
@@ -150,7 +142,7 @@ public class SingleImageJAlgorithmRun implements JIPipeValidatable {
     /**
      * @param algorithm the algorithm to be run
      */
-    public SingleImageJAlgorithmRun(JIPipeGraphNode algorithm) {
+    public SingleImageJAlgorithmRunConfiguration(JIPipeGraphNode algorithm) {
         this.algorithm = algorithm;
         updateSlots();
         algorithm.getEventBus().register(this);

@@ -1,37 +1,30 @@
 package org.hkijena.jipipe.ui.compat;
 
-import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRun;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRunConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.documentation.JIPipeAlgorithmCompendiumUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
 import java.awt.BorderLayout;
 
 public class RunSingleAlgorithmSettingsPanel extends JIPipeWorkbenchPanel {
 
     private final JIPipeNodeInfo nodeInfo;
     private final JIPipeGraphNode node;
-    private final SingleImageJAlgorithmRun run;
+    private final SingleImageJAlgorithmRunConfiguration run;
 
     public RunSingleAlgorithmSettingsPanel(JIPipeWorkbench workbench, JIPipeNodeInfo nodeInfo) {
         super(workbench);
         this.nodeInfo = nodeInfo;
         this.node = nodeInfo.newInstance();
-        this.run = new SingleImageJAlgorithmRun(node);
+        this.run = new SingleImageJAlgorithmRunConfiguration(node);
         initialize();
     }
 
@@ -57,7 +50,7 @@ public class RunSingleAlgorithmSettingsPanel extends JIPipeWorkbenchPanel {
                 DocumentTabPane.CloseMode.withoutCloseButton);
     }
 
-    public SingleImageJAlgorithmRun getRun() {
+    public SingleImageJAlgorithmRunConfiguration getRun() {
         return run;
     }
 

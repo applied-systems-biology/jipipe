@@ -14,8 +14,9 @@
 package org.hkijena.jipipe.ui.compat;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeRunAlgorithmCommand;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRun;
+import org.hkijena.jipipe.api.compat.SingleImageJAlgorithmRunConfiguration;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -26,25 +27,26 @@ import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
 import org.scijava.Context;
+import org.scijava.command.CommandService;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 /**
- * UI for {@link SingleImageJAlgorithmRun}
+ * UI for {@link SingleImageJAlgorithmRunConfiguration}
  */
-public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench {
+public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench {
     private final Context context;
-    private boolean canceled = true;
     private JList<JIPipeNodeInfo> algorithmList;
     private SearchTextField searchField;
     private JPanel settingsPanel;
@@ -52,11 +54,12 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
     private DocumentTabPane tabPane;
     private final JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
+    private final JCheckBox keepWindowToggle = new JCheckBox("Keep window open", true);
 
     /**
      * @param context SciJava context
      */
-    public RunSingleAlgorithmDialog(Context context) {
+    public RunSingleAlgorithmWindow(Context context) {
         this.context = context;
         initialize();
         selectNode(null);
@@ -67,7 +70,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
      * @param context      SciJava context
      * @param selectedNode the node that should be run. If not null, no selection list will be added
      */
-    public RunSingleAlgorithmDialog(Context context, JIPipeNodeInfo selectedNode) {
+    public RunSingleAlgorithmWindow(Context context, JIPipeNodeInfo selectedNode) {
         this.context = context;
         reloadAlgorithmList();
         selectNode(selectedNode);
@@ -77,7 +80,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
      * @param context      SciJava context
      * @param selectedNode the node that should be run. If not null, no selection list will be added
      */
-    public RunSingleAlgorithmDialog(Context context, Class<? extends JIPipeGraphNode> selectedNode) {
+    public RunSingleAlgorithmWindow(Context context, Class<? extends JIPipeGraphNode> selectedNode) {
         this.context = context;
         reloadAlgorithmList();
         selectNode(JIPipe.getNodes().getNodeInfosFromClass(selectedNode).iterator().next());
@@ -167,7 +170,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
 //            if (runSettings != null) {
 //                runSettings.getEventBus().unregister(this);
 //            }
-//            runSettings = new SingleImageJAlgorithmRun(info.newInstance());
+//            runSettings = new SingleImageJAlgorithmRunConfiguration(info.newInstance());
 //            reloadAlgorithmProperties();
 //            runSettings.getEventBus().register(this);
 //        } else {
@@ -307,6 +310,9 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
     private void initializeButtonPanel(JPanel contentPanel) {
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+
+        buttonPanel.add(keepWindowToggle);
+
         buttonPanel.add(Box.createHorizontalGlue());
 
         JButton copyCommandButton = new JButton("Copy command", UIUtils.getIconFromResources("actions/edit-copy.png"));
@@ -316,10 +322,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
         buttonPanel.add(Box.createHorizontalStrut(8));
 
         JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
-        cancelButton.addActionListener(e -> {
-            this.canceled = true;
-            this.setVisible(false);
-        });
+        cancelButton.addActionListener(e -> this.setVisible(false));
         buttonPanel.add(cancelButton);
 
         JButton confirmButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));
@@ -357,12 +360,19 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
             UIUtils.openValidityReportDialog(this, report, false);
             return;
         }
-        canceled = false;
-        setVisible(false);
-    }
-
-    public boolean isCanceled() {
-        return canceled;
+        if(!keepWindowToggle.isSelected())
+            setVisible(false);
+        String parameters = getRun().getParametersString();
+        String inputs = getRun().getInputsString();
+        String outputs = getRun().getOutputsString();
+        CommandService commandService = getContext().getService(CommandService.class);
+        Map<String, Object> map = new HashMap<>();
+        map.put("nodeId", getAlgorithmId());
+        map.put("threads", numThreads);
+        map.put("parameters", parameters);
+        map.put("inputs", inputs);
+        map.put("outputs", outputs);
+        commandService.run(JIPipeRunAlgorithmCommand.class, true, map);
     }
 
     public String getAlgorithmId() {
@@ -373,7 +383,7 @@ public class RunSingleAlgorithmDialog extends JDialog implements JIPipeWorkbench
         return currentRunSettingsPanel.getNode();
     }
 
-    public SingleImageJAlgorithmRun getRun() {
+    public SingleImageJAlgorithmRunConfiguration getRun() {
         return currentRunSettingsPanel.getRun();
     }
 
