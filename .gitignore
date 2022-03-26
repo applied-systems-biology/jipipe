@@ -10,10 +10,12 @@ target
 /dist/jipipe-windows-installer/fiji-win64.zip
 /dist/jipipe-windows-installer/Fiji.app/
 /dist/jipipe-windows-installer/dependencies/
+/dist/offline-package/tmp/
+/dist/offline-package/fiji-*/
 /dist/zip/package/
 /dist/zip/dependencies/
 /dist/zip/*.zip
-/dist/jipipe-windows-installer/JIPipe-1.68.0-Setup.exe
+/dist/jipipe-windows-installer/*.exe
 /miniconda/
 /cellpose-cpu/
 /cellpose-gpu/
@@ -26,6 +28,6 @@ target
 /r/
 /jipipe/
 /dist/zip/*
-/dist/JIPipe-1.68.0.zip
+/dist/*.zip
 **/__pycache__/
 

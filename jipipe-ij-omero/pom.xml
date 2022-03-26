@@ -88,7 +88,7 @@
             <dependency>
                 <groupId>org.openmicroscopy</groupId>
                 <artifactId>omero-gateway</artifactId>
-                <version>5.6.5</version>
+                <version>5.6.7</version>
             </dependency>
             <dependency>
                 <groupId>org.openmicroscopy</groupId>
