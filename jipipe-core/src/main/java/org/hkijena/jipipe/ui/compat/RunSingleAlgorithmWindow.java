@@ -25,6 +25,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
+import org.hkijena.jipipe.ui.documentation.JIPipeAlgorithmCompendiumUI;
+import org.hkijena.jipipe.ui.documentation.JIPipeDataTypeCompendiumUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
@@ -35,6 +37,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -46,6 +51,8 @@ import java.util.stream.Collectors;
  * UI for {@link SingleImageJAlgorithmRunConfiguration}
  */
 public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench {
+    public static final String HELP_URL = "https://www.jipipe.org/documentation/imagej-integration/#running-a-single-node";
+
     private final Context context;
     private JList<JIPipeNodeInfo> algorithmList;
     private SearchTextField searchField;
@@ -99,11 +106,58 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
         AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, settingsContainer, AutoResizeSplitPane.RATIO_1_TO_3);
         contentPanel.add(splitPane, BorderLayout.CENTER);
 
+        initializeMenu();
         initializeToolbar(listPanel);
         initializeList(listPanel);
         initializeButtonPanel(settingsContainer);
 
         tabPane.addTab("Run JIPipe node", UIUtils.getIconFromResources("apps/jipipe.png"), contentPanel, DocumentTabPane.CloseMode.withoutCloseButton);
+    }
+
+    private void initializeMenu() {
+        JMenuBar menuBar = new JMenuBar();
+        menuBar.add(Box.createHorizontalGlue());
+
+        JMenu helpMenu = new JMenu("Help");
+        helpMenu.setPreferredSize(new Dimension(60,32));
+        helpMenu.setIcon(UIUtils.getIconFromResources("actions/help.png"));
+
+        JMenuItem manualButton = new JMenuItem("Open online documentation",  UIUtils.getIconFromResources("actions/help.png"));
+        manualButton.setToolTipText("Opens the documentation for the single algorithm run feature. " + HELP_URL);
+        manualButton.addActionListener(e -> {
+            try {
+                Desktop.getDesktop().browse(new URI(HELP_URL));
+            } catch (IOException | URISyntaxException ex) {
+                ex.printStackTrace();
+            }
+        });
+        helpMenu.add(manualButton);
+
+        JMenuItem algorithmCompendiumButton = new JMenuItem("Open algorithm compendium", UIUtils.getIconFromResources("data-types/node.png"));
+        algorithmCompendiumButton.addActionListener(e -> {
+            getDocumentTabPane().addTab("Algorithm compendium",
+                    UIUtils.getIconFromResources("actions/help.png"),
+                    new JIPipeAlgorithmCompendiumUI(),
+                    DocumentTabPane.CloseMode.withSilentCloseButton,
+                    true);
+            getDocumentTabPane().switchToLastTab();
+        });
+        helpMenu.add(algorithmCompendiumButton);
+
+        JMenuItem datatypeCompendiumButton = new JMenuItem("Open data type compendium", UIUtils.getIconFromResources("data-types/data-type.png"));
+        datatypeCompendiumButton.addActionListener(e -> {
+            getDocumentTabPane().addTab("Data type compendium",
+                    UIUtils.getIconFromResources("actions/help.png"),
+                    new JIPipeDataTypeCompendiumUI(),
+                    DocumentTabPane.CloseMode.withSilentCloseButton,
+                    true);
+            getDocumentTabPane().switchToLastTab();
+        });
+        helpMenu.add(datatypeCompendiumButton);
+
+        menuBar.add(helpMenu);
+
+        add(menuBar, BorderLayout.NORTH);
     }
 
     private void initializeToolbar(JPanel contentPanel) {
@@ -113,9 +167,6 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
         searchField = new SearchTextField();
         searchField.addActionListener(e -> reloadAlgorithmList());
         toolBar.add(searchField);
-
-        add(toolBar, BorderLayout.NORTH);
-
         contentPanel.add(toolBar, BorderLayout.NORTH);
     }
 

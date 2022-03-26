@@ -22,6 +22,7 @@ public class DefaultImageJDataImporterUI extends ImageJDataImporterUI {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        add(new ParameterPanel(getWorkbench(), getImporter(), null, ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITHOUT_COLLAPSE));
+        ImageJDataImportOperation importer = getImporter();
+        add(new ParameterPanel(getWorkbench(), importer, null, ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITHOUT_COLLAPSE));
     }
 }

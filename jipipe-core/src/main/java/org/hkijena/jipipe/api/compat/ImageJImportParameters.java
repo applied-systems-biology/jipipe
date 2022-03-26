@@ -34,6 +34,7 @@ public class ImageJImportParameters implements JIPipeParameterCollection {
     }
 
     @JsonSetter("name")
+    @JIPipeParameter("name")
     public void setName(String name) {
         this.name = name;
     }

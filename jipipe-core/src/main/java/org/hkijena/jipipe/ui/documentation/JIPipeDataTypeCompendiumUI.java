@@ -276,6 +276,26 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
         }
         builder.append("</ul>\n\n");
 
+        builder.append("### Available importers\n\n");
+        builder.append("<table>");
+        for (ImageJDataImporter importer : JIPipe.getImageJAdapters().getAvailableImporters(info.getDataClass(), true)) {
+            builder.append("<tr>");
+            builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(importer.getImportedJIPipeDataType())).append("\"/></td><td>").append(HtmlEscapers.htmlEscaper().escape(importer.getName())).append("</td>");
+            builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(importer.getDescription())).append("</td>");
+            builder.append("</tr>");
+        }
+        builder.append("</table>\n\n");
+
+        builder.append("### Available exporters\n\n");
+        builder.append("<table>");
+        for (ImageJDataExporter exporter : JIPipe.getImageJAdapters().getAvailableExporters(info.getDataClass(), true)) {
+            builder.append("<tr>");
+            builder.append("<td><img src=\"").append(JIPipe.getDataTypes().getIconURLFor(exporter.getExportedJIPipeDataType())).append("\"/></td><td>").append(HtmlEscapers.htmlEscaper().escape(exporter.getName())).append("</td>");
+            builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(exporter.getDescription())).append("</td>");
+            builder.append("</tr>");
+        }
+        builder.append("</table>\n\n");
+
         // Info about the developer
         JIPipeDependency source = JIPipe.getDataTypes().getSourceOf(info.getId());
         if (source != null) {
