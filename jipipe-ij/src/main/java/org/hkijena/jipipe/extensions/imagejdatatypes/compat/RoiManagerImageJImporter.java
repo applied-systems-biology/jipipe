@@ -19,12 +19,18 @@ public class RoiManagerImageJImporter implements ImageJDataImporter {
         if(objects != null && !objects.isEmpty()) {
             for (Object object : objects) {
                 RoiManager manager = (RoiManager) object;
-                result.addData(new ROIListData(manager), new JIPipeProgressInfo());
+                ROIListData data = new ROIListData(manager);
+                if(parameters.isDuplicate())
+                    data = (ROIListData) data.duplicate(new JIPipeProgressInfo());
+                result.addData(data, new JIPipeProgressInfo());
             }
         }
         else {
             RoiManager manager = RoiManager.getRoiManager();
-            result.addData(new ROIListData(manager), new JIPipeProgressInfo());
+            ROIListData data = new ROIListData(manager);
+            if(parameters.isDuplicate())
+                data = (ROIListData) data.duplicate(new JIPipeProgressInfo());
+            result.addData(data, new JIPipeProgressInfo());
         }
         return result;
     }

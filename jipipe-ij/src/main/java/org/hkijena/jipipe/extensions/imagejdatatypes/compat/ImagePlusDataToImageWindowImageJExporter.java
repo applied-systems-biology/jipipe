@@ -21,14 +21,21 @@ public class ImagePlusDataToImageWindowImageJExporter implements ImageJDataExpor
         List<Object> result = new ArrayList<>();
         for (int row = 0; row < dataTable.getRowCount(); row++) {
             ImagePlusData data = dataTable.getData(row, ImagePlusData.class, new JIPipeProgressInfo());
-            result.add(data.getImage());
+            ImagePlus image;
+            if(parameters.isDuplicate()) {
+                image = data.getDuplicateImage();
+            }
+            else {
+                image = data.getImage();
+            }
+            result.add(image);
             if(parameters.isActivate()) {
                 if(!StringUtils.isNullOrEmpty(parameters.getName())) {
-                    data.getImage().setTitle(parameters.getName());
+                    image.setTitle(parameters.getName());
                 }
                 if(!parameters.isNoWindows())
-                    WindowManager.setTempCurrentImage(data.getImage());
-                data.getImage().show();
+                    WindowManager.setTempCurrentImage(image);
+                image.show();
             }
         }
         return result;

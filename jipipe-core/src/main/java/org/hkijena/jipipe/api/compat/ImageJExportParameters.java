@@ -15,6 +15,7 @@ public class ImageJExportParameters implements JIPipeParameterCollection {
     private boolean activate;
     private boolean noWindows;
     private boolean append;
+    private boolean duplicate;
     private String name;
 
     public ImageJExportParameters() {
@@ -25,6 +26,14 @@ public class ImageJExportParameters implements JIPipeParameterCollection {
         this.noWindows = noWindows;
         this.append = append;
         this.name = name;
+    }
+
+    public ImageJExportParameters(ImageJExportParameters other) {
+        this.activate = other.activate;
+        this.noWindows = other.noWindows;
+        this.append = other.append;
+        this.name = other.name;
+        this.duplicate = other.duplicate;
     }
 
     @Override
@@ -82,5 +91,24 @@ public class ImageJExportParameters implements JIPipeParameterCollection {
     @JsonSetter("append")
     public void setAppend(boolean append) {
         this.append = append;
+    }
+
+    @JIPipeDocumentation(name = "Duplicate data", description = "If enabled, a duplicate is exported if possible")
+    @JIPipeParameter("duplicate")
+    public boolean isDuplicate() {
+        return duplicate;
+    }
+
+    @JIPipeParameter("duplicate")
+    public void setDuplicate(boolean duplicate) {
+        this.duplicate = duplicate;
+    }
+
+    public void copyTo(ImageJExportParameters other) {
+        other.name = this.name;
+        other.activate = this.activate;
+        other.append = this.append;
+        other.noWindows = this.noWindows;
+        other.duplicate = this.duplicate;
     }
 }

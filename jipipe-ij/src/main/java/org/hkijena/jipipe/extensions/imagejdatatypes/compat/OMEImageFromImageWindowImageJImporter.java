@@ -29,11 +29,19 @@ public class OMEImageFromImageWindowImageJImporter implements ImageJDataImporter
         else {
             imagePlus = WindowManager.getImage(parameters.getName());
         }
+        if(parameters.isDuplicate()) {
+            String title = imagePlus.getTitle();
+            imagePlus = imagePlus.duplicate();
+            imagePlus.setTitle(title);
+        }
         JIPipeDataTable result = new JIPipeDataTable(OMEImageData.class);
         ROIListData rois = new ROIListData();
         for (Roi roi : RoiManager.getRoiManager().getRoisAsArray()) {
             if(roi.getImage() == imagePlus) {
-                rois.add(roi);
+                if(parameters.isDuplicate())
+                    rois.add((Roi) roi.clone());
+                else
+                    rois.add(roi);
             }
         }
         OMEImageData omeImageData = new OMEImageData(imagePlus, rois, null);

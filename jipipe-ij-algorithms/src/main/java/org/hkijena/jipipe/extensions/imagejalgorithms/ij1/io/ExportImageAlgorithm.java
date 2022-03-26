@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io;
 
 import ij.IJ;
 import ij.ImagePlus;

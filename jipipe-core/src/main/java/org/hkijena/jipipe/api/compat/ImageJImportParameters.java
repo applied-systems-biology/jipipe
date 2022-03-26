@@ -13,12 +13,18 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 public class ImageJImportParameters implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private String name;
+    private boolean duplicate;
 
     public ImageJImportParameters() {
     }
 
     public ImageJImportParameters( String name) {
         this.name = name;
+    }
+
+    public ImageJImportParameters(ImageJImportParameters other) {
+        this.name = other.name;
+        this.duplicate = other.duplicate;
     }
 
     @Override
@@ -37,5 +43,21 @@ public class ImageJImportParameters implements JIPipeParameterCollection {
     @JIPipeParameter("name")
     public void setName(String name) {
         this.name = name;
+    }
+
+    @JIPipeDocumentation(name = "Duplicate data", description = "If enabled, a duplicate is imported if possible")
+    @JIPipeParameter("duplicate")
+    public boolean isDuplicate() {
+        return duplicate;
+    }
+
+    @JIPipeParameter("duplicate")
+    public void setDuplicate(boolean duplicate) {
+        this.duplicate = duplicate;
+    }
+
+    public void copyTo(ImageJImportParameters other) {
+        other.name = this.name;
+        other.duplicate = this.duplicate;
     }
 }

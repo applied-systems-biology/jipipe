@@ -24,6 +24,8 @@ public class RoiManagerImageJExporter implements ImageJDataExporter {
             }
             for (int i = 0; i < dataTable.getRowCount(); i++) {
                 ROIListData data = dataTable.getData(i, ROIListData.class, new JIPipeProgressInfo());
+                if(parameters.isDuplicate())
+                    data = (ROIListData) data.duplicate(new JIPipeProgressInfo());
                 data.addToRoiManager(manager);
             }
             result.add(manager);
@@ -32,6 +34,8 @@ public class RoiManagerImageJExporter implements ImageJDataExporter {
             for (int i = 0; i < dataTable.getRowCount(); i++) {
                 RoiManager manager = new RoiManager();
                 ROIListData data = dataTable.getData(i, ROIListData.class, new JIPipeProgressInfo());
+                if(parameters.isDuplicate())
+                    data = (ROIListData) data.duplicate(new JIPipeProgressInfo());
                 data.addToRoiManager(manager);
                 result.add(manager);
             }

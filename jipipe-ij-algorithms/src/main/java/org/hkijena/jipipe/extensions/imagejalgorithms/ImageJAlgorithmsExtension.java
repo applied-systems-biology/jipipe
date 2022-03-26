@@ -53,10 +53,10 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.dimensions.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.CannyEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.LaplacianEdgeDetectorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.edge.SobelEdgeDetectorAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export.ExportImage2Algorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export.ExportImageAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export.ExportROIAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.export.ExportTableAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ExportImage2Algorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ExportImageAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ExportROIAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.ExportTableAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.features.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DForwardTransform;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.fft.FFT2DInverseTransform;
@@ -511,6 +511,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+
+        registerEnumParameterType("ij1-export-image-to-web:file-format", ExportImageAlgorithm.FileFormat.class, "File format", "Exported file format.");
+        registerEnumParameterType("ij1-export-table:file-format", ExportTableAlgorithm.FileFormat.class, "File format", "Exported file format.");
+
         registerIOAlgorithms();
         registerBlurAlgorithms();
         registerColorAlgorithms();
@@ -537,13 +541,6 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerLabelAlgorithms();
         registerSegmentationAlgorithms();
         registerCalibrationAlgorithms();
-
-        registerEnumParameterType("ij1-export-image-to-web:file-format", ExportImageAlgorithm.FileFormat.class, "File format", "Exported file format.");
-        registerEnumParameterType("ij1-export-table:file-format", ExportTableAlgorithm.FileFormat.class, "File format", "Exported file format.");
-        registerNodeType("iji-export-image-to-web", ExportImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("iji-export-image-to-web:directory-slot", ExportImage2Algorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("iji-export-roi-list", ExportROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("iji-export-table", ExportTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
 
         registerNodeType("ij1-generate-missing-results-table", GenerateMissingTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
         registerNodeType("ij1-generate-filter-kernel", GenerateStructureElement2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
@@ -624,6 +621,14 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij-roi-from-gui", ROIFromGUI.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
         registerNodeType("ij-roi-to-gui", ROIToGUI.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
         registerNodeType("ij-import-stack", ImageStackFromFolder.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
+
+        registerNodeType("iji-export-image-to-web", ExportImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("iji-export-image-to-web:directory-slot", ExportImage2Algorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("iji-export-roi-list", ExportROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("iji-export-table", ExportTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+
+        registerNodeType("ij-import-from-imagej", RunImageJImporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
+        registerNodeType("ij-export-to-imagej", RunImageJExporterAlgorithm.class, UIUtils.getIconURLFromResources("apps/imagej.png"));
     }
 
     private void registerLUTAlgorithms() {

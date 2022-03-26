@@ -33,6 +33,11 @@ public class ImagePlusDataFromImageWindowImageJImporter implements ImageJDataImp
         else {
             imagePlus = WindowManager.getImage(parameters.getName());
         }
+        if(parameters.isDuplicate()) {
+            String title = imagePlus.getTitle();
+            imagePlus = imagePlus.duplicate();
+            imagePlus.setTitle(title);
+        }
         JIPipeDataTable result = new JIPipeDataTable(getImportedJIPipeDataType());
         result.addData(new ImagePlusData(imagePlus), new JIPipeProgressInfo());
         return result;
