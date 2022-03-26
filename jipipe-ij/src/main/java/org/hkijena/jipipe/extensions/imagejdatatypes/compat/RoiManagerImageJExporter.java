@@ -22,6 +22,10 @@ public class RoiManagerImageJExporter implements ImageJDataExporter {
             if(!parameters.isAppend()) {
                 manager.reset();
             }
+            for (int i = 0; i < dataTable.getRowCount(); i++) {
+                ROIListData data = dataTable.getData(i, ROIListData.class, new JIPipeProgressInfo());
+                data.addToRoiManager(manager);
+            }
             result.add(manager);
         }
         else {
