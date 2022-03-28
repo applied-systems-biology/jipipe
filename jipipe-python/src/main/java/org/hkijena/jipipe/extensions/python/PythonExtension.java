@@ -146,7 +146,9 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
             JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":python-not-configured");
             notification.setHeading("Python is not configured");
             notification.setDescription("To make use of Python within JIPipe, you need to either provide JIPipe with an " +
-                    "existing Python installation or let JIPipe install a Python distribution for you.");
+                    "existing Python installation or let JIPipe install a Python distribution for you. " +
+                    "Click 'Install Python' to let JIPipe setup a Python distribution automatically. " +
+                    "Alternatively, click 'Configure' to visit the settings page with more options, including the selection of an existing Python environment.");
             notification.getActions().add(new JIPipeNotificationAction("Install Python",
                     "Installs a portable Python distribution",
                     UIUtils.getIconFromResources("actions/browser-download.png"),
