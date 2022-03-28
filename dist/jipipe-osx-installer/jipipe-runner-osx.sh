@@ -73,6 +73,7 @@ if [[ ! -e $PWD/Fiji.app ]]; then
 
   # Download JIPipe dependencies
   pushd $PWD/Fiji.app/Contents/MacOS
+    chmod +x ./ImageJ-macosx
     ./ImageJ-macosx --pass-classpath --full-classpath --main-class org.hkijena.jipipe.ijupdatercli.Main activate clij clij2 IJPB-plugins ImageScience IJ-OpenCV-plugins Multi-Template-Matching
     ./ImageJ-macosx --pass-classpath --full-classpath --main-class org.hkijena.jipipe.ijupdatercli.Main update
   popd
@@ -81,6 +82,7 @@ if [[ ! -e $PWD/Fiji.app ]]; then
 fi
 
 cd "$PWD/Fiji.app/Contents/MacOS"
+chmod +x ./ImageJ-macosx
 nohup ./ImageJ-macosx --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeLauncher &
 
 echo "QUITAPP"

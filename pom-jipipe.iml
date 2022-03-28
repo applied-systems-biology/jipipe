@@ -22,11 +22,11 @@
       <excludeFolder url="file://$MODULE_DIR$/dist/offline-package/fiji-osx" />
       <excludeFolder url="file://$MODULE_DIR$/dist/offline-package/fiji-win" />
       <excludeFolder url="file://$MODULE_DIR$/dist/offline-package/zip" />
-      <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/dist/zip/dependencies" />
       <excludeFolder url="file://$MODULE_DIR$/dist/zip/package" />
       <excludeFolder url="file://$MODULE_DIR$/ij-updater-cli/target" />
       <excludeFolder url="file://$MODULE_DIR$/dist/offline-package/tmp" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
