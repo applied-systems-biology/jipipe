@@ -23,6 +23,10 @@
   </url>
   
   <url>
+    <loc>https://www.jipipe.org/faq/issues/</loc>
+  </url>
+  
+  <url>
     <loc>https://www.jipipe.org/faq/user-interface/</loc>
   </url>
   
@@ -80,6 +84,10 @@
   
   <url>
     <loc>https://www.jipipe.org/documentation/basic-concepts/visual-programming/</loc>
+  </url>
+  
+  <url>
+    <loc>https://www.jipipe.org/installation/</loc>
   </url>
   
   <url>
