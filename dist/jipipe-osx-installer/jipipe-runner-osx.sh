@@ -72,17 +72,17 @@ if [[ ! -e $PWD/Fiji.app ]]; then
   echo "PROGRESS:75"
 
   # Download JIPipe dependencies
-  pushd $PWD/Fiji.app/Contents/MacOS
-    chmod +x ./ImageJ-macosx
-    ./ImageJ-macosx --pass-classpath --full-classpath --main-class org.hkijena.jipipe.ijupdatercli.Main activate clij clij2 IJPB-plugins ImageScience IJ-OpenCV-plugins Multi-Template-Matching
-    ./ImageJ-macosx --pass-classpath --full-classpath --main-class org.hkijena.jipipe.ijupdatercli.Main update
+  pushd $PWD/Fiji.app/
+    chmod +x ./Contents/MacOS/ImageJ-macosx
+    ./Contents/MacOS/ImageJ-macosx --pass-classpath --full-classpath --main-class org.hkijena.jipipe.ijupdatercli.Main activate clij clij2 IJPB-plugins ImageScience IJ-OpenCV-plugins Multi-Template-Matching
+    ./Contents/MacOS/ImageJ-macosx --pass-classpath --full-classpath --main-class org.hkijena.jipipe.ijupdatercli.Main update
   popd
   echo "PROGRESS:100"
 
 fi
 
-cd "$PWD/Fiji.app/Contents/MacOS"
-chmod +x ./ImageJ-macosx
-nohup ./ImageJ-macosx --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeLauncher &
+cd "$PWD/Fiji.app/"
+chmod +x ./Contents/MacOS/ImageJ-macosx
+nohup ./Contents/MacOS/ImageJ-macosx --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeLauncher &
 
 echo "QUITAPP"
