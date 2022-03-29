@@ -17,20 +17,19 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Function;
-import java.util.function.Supplier;
+import java.util.function.BiFunction;
 
 /**
  * Runs a {@link ImageJDataImporter} import operation.
  */
-public class ImageJDataImportOperation extends ImageJImportParameters implements Function<List<Object>, JIPipeDataTable> {
+public class ImageJDataImportOperation extends ImageJImportParameters implements BiFunction<List<Object>, JIPipeProgressInfo, JIPipeDataTable> {
     private String importerId;
     private ImageJDataImporter importer;
 
@@ -69,7 +68,7 @@ public class ImageJDataImportOperation extends ImageJImportParameters implements
     }
 
     @Override
-    public JIPipeDataTable apply(List<Object> objects) {
-        return getImporter().importData(objects, this);
+    public JIPipeDataTable apply(List<Object> objects, JIPipeProgressInfo progressInfo) {
+        return getImporter().importData(objects, this, progressInfo);
     }
 }

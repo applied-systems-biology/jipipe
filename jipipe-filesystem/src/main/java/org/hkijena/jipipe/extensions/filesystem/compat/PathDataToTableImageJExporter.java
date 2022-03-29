@@ -11,13 +11,12 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.tables.compat.ResultsTableDataImageJExporter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-import java.util.Collections;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Export paths as table", description = "Exports paths as ImageJ table")
 public class PathDataToTableImageJExporter implements ImageJDataExporter {
     @Override
-    public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters) {
+    public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {
         ResultsTableData result = new ResultsTableData();
         result.addStringColumn("Path");
 
@@ -27,7 +26,7 @@ public class PathDataToTableImageJExporter implements ImageJDataExporter {
         }
 
         ResultsTableDataImageJExporter exporter = new ResultsTableDataImageJExporter();
-        return exporter.exportData(result, parameters);
+        return exporter.exportData(result, parameters, progressInfo);
     }
 
     @Override

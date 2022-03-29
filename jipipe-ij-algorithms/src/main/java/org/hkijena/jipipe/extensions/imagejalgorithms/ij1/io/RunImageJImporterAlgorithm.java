@@ -44,7 +44,7 @@ public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        JIPipeDataTable dataTable = importerType.getInstance().importData(null, importParameters);
+        JIPipeDataTable dataTable = importerType.getInstance().importData(null, importParameters, progressInfo);
         for (int i = 0; i < dataTable.getRowCount(); i++) {
             dataBatch.addOutputData(getFirstOutputSlot(),
                     dataTable.getVirtualData(i),

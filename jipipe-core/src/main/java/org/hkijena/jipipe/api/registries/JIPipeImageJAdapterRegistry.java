@@ -15,14 +15,12 @@ package org.hkijena.jipipe.api.registries;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import org.apache.commons.lang3.ClassUtils;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compat.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.*;
@@ -203,7 +201,7 @@ public class JIPipeImageJAdapterRegistry {
             return importer;
         Set<ImageJDataImporter> available = getAvailableImporters(dataClass, true);
         if(available.isEmpty()) {
-            importer = getImporterById(DefaultImageJDataImporter.ID); // the default importer
+            importer = getImporterById(DataTableImageJDataImporter.ID); // the default importer
         }
         else {
             JIPipeDatatypeRegistry datatypeRegistry = JIPipe.getDataTypes();
@@ -215,7 +213,7 @@ public class JIPipeImageJAdapterRegistry {
             })).get();
         }
         if(importer instanceof EmptyImageJDataImporter) {
-            importer = getImporterById(DefaultImageJDataExporter.ID);
+            importer = getImporterById(DataTableImageJDataExporter.ID);
         }
         defaultImporters.put(dataClass, importer);
         return importer;
@@ -250,7 +248,7 @@ public class JIPipeImageJAdapterRegistry {
             return exporter;
         Set<ImageJDataExporter> available = getAvailableExporters(dataClass, true);
         if(available.isEmpty()) {
-            exporter = getExporterById(DefaultImageJDataExporter.ID); // the default importer
+            exporter = getExporterById(DataTableImageJDataExporter.ID); // the default importer
         }
         else {
             JIPipeDatatypeRegistry datatypeRegistry = JIPipe.getDataTypes();
@@ -262,7 +260,7 @@ public class JIPipeImageJAdapterRegistry {
             })).get();
         }
         if(exporter instanceof EmptyImageJDataExporter) {
-            exporter = getExporterById(DefaultImageJDataExporter.ID);
+            exporter = getExporterById(DataTableImageJDataExporter.ID);
         }
         defaultExporters.put(dataClass, exporter);
         return exporter;

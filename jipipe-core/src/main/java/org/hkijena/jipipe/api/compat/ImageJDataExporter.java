@@ -1,12 +1,10 @@
 package org.hkijena.jipipe.api.compat;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public interface ImageJDataExporter {
@@ -15,21 +13,23 @@ public interface ImageJDataExporter {
      *
      * @param dataTable JIPipe data as table
      * @param parameters Properties of the export operation
+     * @param progressInfo the progress info
      * @return Converted object
      */
-    List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters);
+    List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo);
 
     /**
      * Converts a JIPipe data type to its corresponding ImageJ data type
      *
      * @param data JIPipe data
      * @param parameters Properties of the export operation
+     * @param progressInfo the progress info
      * @return Converted object
      */
-    default List<Object> exportData(JIPipeData data, ImageJExportParameters parameters) {
+    default List<Object> exportData(JIPipeData data, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {
         JIPipeDataTable dataTable = new JIPipeDataTable(data.getClass());
         dataTable.addData(data, new JIPipeProgressInfo());
-        return exportData(dataTable, parameters);
+        return exportData(dataTable, parameters, progressInfo);
     }
 
     /**

@@ -16,11 +16,11 @@ import java.util.List;
  * Its operations are based on importing/exporting data tables via the name parameter
  */
 @JIPipeDocumentation(name = "Data table import", description = "Imports a data table directory, provided via the name.")
-public class DefaultImageJDataImporter implements ImageJDataImporter {
+public class DataTableImageJDataImporter implements ImageJDataImporter {
     public static final String ID = "default";
 
     @Override
-    public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters) {
+    public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
         Path path = Paths.get(parameters.getName());
         return JIPipe.importData(new JIPipeFileSystemReadDataStorage(new JIPipeProgressInfo(), path), JIPipeDataTable.class, new JIPipeProgressInfo());
     }

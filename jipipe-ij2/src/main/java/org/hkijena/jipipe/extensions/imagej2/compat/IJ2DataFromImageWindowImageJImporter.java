@@ -9,7 +9,6 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.ImageJ2DatasetData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusDataFromImageWindowImageJImporter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusDataToImageWindowImageJExporter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.util.List;
@@ -17,9 +16,9 @@ import java.util.List;
 @JIPipeDocumentation(name = "Import IJ2 dataset from ImageJ window", description = "Imports an image window into JIPipe")
 public class IJ2DataFromImageWindowImageJImporter implements ImageJDataImporter {
     @Override
-    public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters) {
+    public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
         ImagePlusDataFromImageWindowImageJImporter importer = new ImagePlusDataFromImageWindowImageJImporter(ImagePlusData.class);
-        JIPipeDataTable dataTable = importer.importData(objects, parameters);
+        JIPipeDataTable dataTable = importer.importData(objects, parameters, progressInfo);
         dataTable.convert(ImageJ2DatasetData.class, new JIPipeProgressInfo());
         return dataTable;
     }

@@ -26,11 +26,8 @@ import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -201,14 +198,15 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
 
     /**
      * Pushes selected ImageJ data into the algorithm input slots
+     * @param progressInfo
      */
-    public void importInputsFromImageJ() {
+    public void importInputsFromImageJ(JIPipeProgressInfo progressInfo) {
         for (Map.Entry<String, ImageJDataImportOperation> entry : inputSlotImporters.entrySet()) {
             JIPipeDataSlot slot = algorithm.getInputSlot(entry.getKey());
             slot.clearData();
-            JIPipeDataTable dataTable = entry.getValue().apply(null);
+            JIPipeDataTable dataTable = entry.getValue().apply(null, progressInfo.resolve(entry.getKey()));
             for (int row = 0; row < dataTable.getRowCount(); row++) {
-                slot.addData(dataTable.getVirtualData(row).duplicate(new JIPipeProgressInfo()),
+                slot.addData(dataTable.getVirtualData(row).duplicate(progressInfo),
                         dataTable.getTextAnnotations(row),
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         dataTable.getDataAnnotations(row),
@@ -219,11 +217,12 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
 
     /**
      * Extracts algorithm output into ImageJ.
+     * @param progressInfo
      */
-    public void exportOutputToImageJ() {
+    public void exportOutputToImageJ(JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
             ImageJDataExportOperation exportOperation = outputSlotExporters.get(outputSlot.getName());
-            exportOperation.apply(outputSlot);
+            exportOperation.apply(outputSlot, progressInfo.resolve(outputSlot.getName()));
         }
     }
 

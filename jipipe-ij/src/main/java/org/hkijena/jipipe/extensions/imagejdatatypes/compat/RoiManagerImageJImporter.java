@@ -14,7 +14,7 @@ import java.util.List;
 @JIPipeDocumentation(name = "ROI from ROI Manager", description = "Imports ROI from the current ROI manager")
 public class RoiManagerImageJImporter implements ImageJDataImporter {
     @Override
-    public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters) {
+    public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
         JIPipeDataTable result = new JIPipeDataTable(ROIListData.class);
         if(objects != null && !objects.isEmpty()) {
             for (Object object : objects) {

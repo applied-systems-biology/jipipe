@@ -15,7 +15,7 @@ import java.util.List;
 @JIPipeDocumentation(name = "Export to results table", description = "Exports tables into the 'Results' table")
 public class ResultsTableDataImageJExporter implements ImageJDataExporter {
     @Override
-    public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters) {
+    public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {
         List<Object> result = new ArrayList<>();
         if(parameters.isActivate()) {
             ResultsTable resultsTable = ResultsTable.getResultsTable();

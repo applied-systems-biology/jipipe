@@ -8,14 +8,12 @@ import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.extensions.tables.compat.ResultsTableDataImageJExporter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -24,11 +22,11 @@ import java.util.List;
  * Its operations are based on importing/exporting data tables
  */
 @JIPipeDocumentation(name = "Data table export", description = "Exports a data table directory, provided via the name.")
-public class DefaultImageJDataExporter implements ImageJDataExporter {
+public class DataTableImageJDataExporter implements ImageJDataExporter {
     public static final String ID = "default";
 
     @Override
-    public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters properties) {
+    public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters properties, JIPipeProgressInfo progressInfo) {
         Path path = StringUtils.isNullOrEmpty(properties.getName()) ? RuntimeSettings.generateTempDirectory("data-table-export") : Paths.get(properties.getName());
         if(!path.isAbsolute()) {
             path = RuntimeSettings.generateTempDirectory("data-table-export").resolve(path);
@@ -44,7 +42,7 @@ public class DefaultImageJDataExporter implements ImageJDataExporter {
             tableData.addStringColumn("Path");
             tableData.addRow();
             tableData.setValueAt(path.toString(), 0, 0);
-            (new ResultsTableDataImageJExporter()).exportData(tableData, properties);
+            (new ResultsTableDataImageJExporter()).exportData(tableData, properties, progressInfo);
         }
         return Collections.singletonList(path.toFile());
     }

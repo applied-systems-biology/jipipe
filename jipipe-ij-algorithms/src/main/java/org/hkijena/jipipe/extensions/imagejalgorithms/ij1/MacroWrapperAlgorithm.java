@@ -233,7 +233,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
             ImageJDataImporterRef ref = outputFromImageJImporters.get(outputSlot.getName()).get(ImageJDataImporterRef.class);
             ImageJDataImporter importer = ref.getInstance();
-            JIPipeDataTable imported = importer.importData(null, new ImageJImportParameters(outputSlot.getName()));
+            JIPipeDataTable imported = importer.importData(null, new ImageJImportParameters(outputSlot.getName()), progressInfo);
             for (int row = 0; row < imported.getRowCount(); row++) {
                 dataBatch.addOutputData(outputSlot, imported.getData(row, JIPipeData.class, progressInfo).duplicate(progressInfo), progressInfo);
             }
@@ -312,7 +312,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             JIPipeData data = dataBatch.getInputData(inputSlot, JIPipeData.class, progressInfo);
             ImageJDataExporterRef ref = inputToImageJExporters.get(inputSlot.getName()).get(ImageJDataExporterRef.class);
             ImageJDataExporter exporter = ref.getInstance();
-            exporter.exportData(data.duplicate(progressInfo), new ImageJExportParameters(true, false, false, inputSlot.getName()));
+            exporter.exportData(data.duplicate(progressInfo), new ImageJExportParameters(true, false, false, inputSlot.getName()), progressInfo);
         }
     }
 

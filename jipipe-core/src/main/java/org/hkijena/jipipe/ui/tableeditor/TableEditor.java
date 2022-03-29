@@ -17,6 +17,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ImageJExportParameters;
 import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -336,7 +337,7 @@ public class TableEditor extends JIPipeWorkbenchPanel {
 
     private void exportToImageJ() {
         JIPipe.getImageJAdapters().getDefaultExporterFor(ResultsTableData.class).exportData(tableModel,
-                new ImageJExportParameters(true, false, false, "" + tableModel));
+                new ImageJExportParameters(true, false, false, "" + tableModel), new JIPipeProgressInfo());
     }
 
     private void importDataImageJ() {

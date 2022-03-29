@@ -21,7 +21,7 @@ import java.util.List;
 public class OMEImageFromImageWindowImageJImporter implements ImageJDataImporter {
 
     @Override
-    public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters) {
+    public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
         ImagePlus imagePlus;
         if(StringUtils.isNullOrEmpty(parameters.getName())) {
             imagePlus = IJ.getImage(); // The active image

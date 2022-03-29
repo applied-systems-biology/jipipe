@@ -15,7 +15,7 @@ import java.util.List;
 @JIPipeDocumentation(name = "Export to ROI Manager", description = "Exports provided ROI into the ImageJ ROI manager")
 public class RoiManagerImageJExporter implements ImageJDataExporter {
     @Override
-    public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters) {
+    public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {
         List<Object> result = new ArrayList<>();
         if(parameters.isActivate() && !parameters.isNoWindows()) {
             RoiManager manager = RoiManager.getRoiManager();

@@ -24,9 +24,9 @@ public class PathDataFromTableImageJImporter implements ImageJDataImporter {
     }
 
     @Override
-    public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters) {
+    public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
         ResultsTableDataImageJImporter importer = new ResultsTableDataImageJImporter();
-        JIPipeDataTable tables = importer.importData(objects, parameters);
+        JIPipeDataTable tables = importer.importData(objects, parameters, progressInfo);
         JIPipeDataTable result = new JIPipeDataTable(getImportedJIPipeDataType());
         for (int row = 0; row < tables.getRowCount(); row++) {
             ResultsTableData tableData = result.getData(row, ResultsTableData.class, new JIPipeProgressInfo());

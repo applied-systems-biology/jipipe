@@ -14,9 +14,10 @@ public interface ImageJDataImporter {
      *
      * @param objects the ImageJ objects (if available)
      * @param parameters Parameters of the adapter. Depends entirely on the adapter
+     * @param progressInfo the progress info
      * @return Imported JIPipe data as table
      */
-    JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters);
+    JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo);
 
     /**
      * Imports JIPipe data from ImageJ.
@@ -24,13 +25,14 @@ public interface ImageJDataImporter {
      *
      * @param object the ImageJ object (if available)
      * @param parameters Parameters of the adapter. Depends entirely on the adapter
+     * @param progressInfo the progress info
      * @return Imported JIPipe data
      */
-    default JIPipeData importData(Object object, ImageJImportParameters parameters) {
-        JIPipeDataTable dataTable = importData(Collections.singletonList(object), parameters);
+    default JIPipeData importData(Object object, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
+        JIPipeDataTable dataTable = importData(Collections.singletonList(object), parameters, progressInfo);
         if(dataTable.isEmpty())
             return null;
-        return dataTable.getData(0, JIPipeData.class, new JIPipeProgressInfo());
+        return dataTable.getData(0, JIPipeData.class, progressInfo);
     }
 
     /**

@@ -17,7 +17,7 @@ import java.util.List;
 @JIPipeDocumentation(name = "Open in ImageJ", description = "Displays the image(s) as ImageJ windows")
 public class ImagePlusDataToImageWindowImageJExporter implements ImageJDataExporter {
     @Override
-    public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters) {
+    public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {
         List<Object> result = new ArrayList<>();
         for (int row = 0; row < dataTable.getRowCount(); row++) {
             ImagePlusData data = dataTable.getData(row, ImagePlusData.class, new JIPipeProgressInfo());

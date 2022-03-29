@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe;
 
+import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
@@ -133,15 +134,21 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
                 return;
             }
         }
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+        progressInfo.getEventBus().register(new Object() {
+            @Subscribe
+            public void onProgress(JIPipeProgressInfo.StatusUpdatedEvent event) {
+                IJ.showStatus("[" + event.getProgress() + "/" + event.getMaxProgress() + "] " + event.getMessage());
+            }
+        });
         IJ.showStatus(windowTitle + " ...");
         IJ.showProgress(1, 3);
-        settings.importInputsFromImageJ();
+        settings.importInputsFromImageJ(progressInfo);
         IJ.showProgress(2, 3);
         JIPipeFixedThreadPool threadPool = new JIPipeFixedThreadPool(threads);
         try {
             if (algorithm instanceof JIPipeAlgorithm)
                 ((JIPipeAlgorithm) algorithm).setThreadPool(threadPool);
-            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             algorithm.run(progressInfo);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -152,6 +159,6 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
             threadPool = null;
         }
         IJ.showProgress(3, 3);
-        settings.exportOutputToImageJ();
+        settings.exportOutputToImageJ(progressInfo);
     }
 }

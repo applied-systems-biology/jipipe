@@ -13,7 +13,6 @@ import org.hkijena.jipipe.api.compat.ImageJExportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -55,7 +54,7 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
                     getFirstInputSlot().getDataAnnotations(row),
                     JIPipeDataAnnotationMergeMode.OverwriteExisting);
         }
-        exporterType.getInstance().exportData(dataTable, exportParameters);
+        exporterType.getInstance().exportData(dataTable, exportParameters, progressInfo);
     }
 
     @Override

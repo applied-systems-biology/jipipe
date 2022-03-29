@@ -70,8 +70,8 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatypeDisplayOperation("", new DefaultDataDisplayOperation());
 
         // Default ImageJ data adapters
-        registerImageJDataImporter(DefaultImageJDataImporter.ID, new DefaultImageJDataImporter(), DefaultImageJDataImporterUI.class);
-        registerImageJDataExporter(DefaultImageJDataImporter.ID, new DefaultImageJDataExporter(), DefaultImageJDataExporterUI.class);
+        registerImageJDataImporter(DataTableImageJDataImporter.ID, new DataTableImageJDataImporter(), DefaultImageJDataImporterUI.class);
+        registerImageJDataExporter(DataTableImageJDataImporter.ID, new DataTableImageJDataExporter(), DefaultImageJDataExporterUI.class);
         registerImageJDataImporter("none", new EmptyImageJDataImporter(), EmptyImageJDataImporterUI.class);
         registerImageJDataExporter("none", new EmptyImageJDataExporter(), EmptyImageJDataExporterUI.class);
 
@@ -121,6 +121,6 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.68.0";
+        return "1.69.0";
     }
 }

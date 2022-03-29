@@ -3,6 +3,8 @@ package org.hkijena.jipipe.extensions.cellpose;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.compat.ui.FileImageJDataImporterUI;
+import org.hkijena.jipipe.api.compat.ui.FolderImageJDataExporterUI;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
@@ -13,6 +15,10 @@ import org.hkijena.jipipe.extensions.cellpose.algorithms.CellPoseAlgorithm;
 import org.hkijena.jipipe.extensions.cellpose.algorithms.CellPoseTrainingAlgorithm;
 import org.hkijena.jipipe.extensions.cellpose.algorithms.ImportCellPoseModelAlgorithm;
 import org.hkijena.jipipe.extensions.cellpose.algorithms.ImportCellPoseSizeModelAlgorithm;
+import org.hkijena.jipipe.extensions.cellpose.compat.CellPoseModelImageJExporter;
+import org.hkijena.jipipe.extensions.cellpose.compat.CellPoseModelImageJImporter;
+import org.hkijena.jipipe.extensions.cellpose.compat.CellPoseSizeModelImageJExporter;
+import org.hkijena.jipipe.extensions.cellpose.compat.CellPoseSizeModelImageJImporter;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -79,7 +85,7 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.68.0";
+        return "1.69.0";
     }
 
     @Override
@@ -104,7 +110,11 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerEnumParameterType("cellpose-pretrained-model", CellPosePretrainedModel.class, "Cellpose pre-trained model", "A pretrained model for Cellpose");
 
         registerDatatype("cellpose-model", CellPoseModelData.class, UIUtils.getIconURLFromResources("data-types/cellpose-model.png"));
+        registerImageJDataImporter("cellpose-model-from-file", new CellPoseModelImageJImporter(), FileImageJDataImporterUI.class);
+        registerImageJDataExporter("cellpose-model-to-directory", new CellPoseModelImageJExporter(), FolderImageJDataExporterUI.class);
         registerDatatype("cellpose-size-model", CellPoseSizeModelData.class, UIUtils.getIconURLFromResources("data-types/cellpose-size-model.png"));
+        registerImageJDataImporter("cellpose-size-model-from-file", new CellPoseSizeModelImageJImporter(), FileImageJDataImporterUI.class);
+        registerImageJDataExporter("cellpose-size-model-to-directory", new CellPoseSizeModelImageJExporter(), FolderImageJDataExporterUI.class);
 
         registerNodeType("cellpose", CellPoseAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
         registerNodeType("cellpose-training", CellPoseTrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));

@@ -25,7 +25,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.ui.compat.RunSingleAlgorithmWindow;
 import org.hkijena.jipipe.ui.components.SplashScreen;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Initializable;
@@ -134,21 +133,21 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
                 return;
             }
         }
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+        progressInfo.getEventBus().register(new Object() {
+            @Subscribe
+            public void onProgress(JIPipeProgressInfo.StatusUpdatedEvent event) {
+                IJ.showStatus("[" + event.getProgress() + "/" + event.getMaxProgress() + "] " + event.getMessage());
+            }
+        });
         IJ.showStatus("Running JIPipe algorithm ...");
         IJ.showProgress(1, 3);
-        settings.importInputsFromImageJ();
+        settings.importInputsFromImageJ(progressInfo);
         IJ.showProgress(2, 3);
         JIPipeFixedThreadPool threadPool = new JIPipeFixedThreadPool(threads);
         try {
             if (algorithm instanceof JIPipeAlgorithm)
                 ((JIPipeAlgorithm) algorithm).setThreadPool(threadPool);
-            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            progressInfo.getEventBus().register(new Object() {
-                @Subscribe
-                public void onProgress(JIPipeProgressInfo.StatusUpdatedEvent event) {
-                    IJ.showStatus("[" + event.getProgress() + "/" + event.getMaxProgress() + "] " + event.getMessage());
-                }
-            });
             algorithm.run(progressInfo);
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -159,6 +158,6 @@ public class JIPipeRunAlgorithmCommand extends DynamicCommand implements Initial
             threadPool = null;
         }
         IJ.showProgress(3, 3);
-        settings.exportOutputToImageJ();
+        settings.exportOutputToImageJ(progressInfo);
     }
 }

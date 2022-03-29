@@ -16,9 +16,9 @@ import java.util.List;
 @JIPipeDocumentation(name = "Import IJ2 dataset from ImageJ window", description = "Imports an image window into JIPipe")
 public class CLIJ2DataFromImageWindowImageJImporter implements ImageJDataImporter {
     @Override
-    public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters) {
+    public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
         ImagePlusDataFromImageWindowImageJImporter importer = new ImagePlusDataFromImageWindowImageJImporter(ImagePlusData.class);
-        JIPipeDataTable dataTable = importer.importData(objects, parameters);
+        JIPipeDataTable dataTable = importer.importData(objects, parameters, progressInfo);
         dataTable.convert(CLIJImageData.class, new JIPipeProgressInfo());
         return dataTable;
     }

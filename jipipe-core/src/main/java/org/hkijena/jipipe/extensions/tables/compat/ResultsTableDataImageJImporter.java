@@ -14,7 +14,7 @@ import java.util.List;
 @JIPipeDocumentation(name = "Import results table", description = "Imports a results table")
 public class ResultsTableDataImageJImporter implements ImageJDataImporter {
     @Override
-    public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters) {
+    public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
         JIPipeDataTable dataTable = new JIPipeDataTable(ResultsTableData.class);
         if(objects != null && !objects.isEmpty()) {
             for (Object object : objects) {
