@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
+import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -18,14 +19,14 @@ public class CellPoseSizeModelImageJImporter implements ImageJDataImporter {
     public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
         JIPipeDataTable dataTable = new JIPipeDataTable(CellPoseModelData.class);
         Path modelPath = Paths.get(parameters.getName());
-        CellPoseModelData cellPoseModelData = new CellPoseModelData(modelPath);
+        CellPoseSizeModelData cellPoseModelData = new CellPoseSizeModelData(modelPath);
         dataTable.addData(cellPoseModelData, progressInfo);
         return dataTable;
     }
 
     @Override
     public Class<? extends JIPipeData> getImportedJIPipeDataType() {
-        return CellPoseModelData.class;
+        return CellPoseSizeModelData.class;
     }
 
     @Override

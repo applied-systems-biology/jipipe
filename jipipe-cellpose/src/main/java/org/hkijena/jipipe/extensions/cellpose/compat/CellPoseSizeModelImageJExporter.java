@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
+import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 
 import java.io.IOException;
@@ -39,7 +40,7 @@ public class CellPoseSizeModelImageJExporter implements ImageJDataExporter {
             }
         }
         for (int i = 0; i < dataTable.getRowCount(); i++) {
-            CellPoseModelData modelData = dataTable.getData(i, CellPoseModelData.class, progressInfo);
+            CellPoseSizeModelData modelData = dataTable.getData(i, CellPoseSizeModelData.class, progressInfo);
             modelData.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path), "data", false,progressInfo);
         }
         return Collections.emptyList();
@@ -47,7 +48,7 @@ public class CellPoseSizeModelImageJExporter implements ImageJDataExporter {
 
     @Override
     public Class<? extends JIPipeData> getExportedJIPipeDataType() {
-        return CellPoseModelData.class;
+        return CellPoseSizeModelData.class;
     }
 
     @Override
