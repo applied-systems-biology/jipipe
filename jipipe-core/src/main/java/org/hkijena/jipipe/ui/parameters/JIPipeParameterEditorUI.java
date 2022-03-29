@@ -18,7 +18,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.scijava.Context;
 import org.scijava.Contextual;
@@ -29,8 +28,8 @@ import java.util.Objects;
  * A UI for a parameter type
  */
 public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel implements Contextual {
-    private Context context;
     private final JIPipeParameterAccess parameterAccess;
+    private Context context;
     private int preventReload = 0;
     private boolean reloadScheduled = false;
 

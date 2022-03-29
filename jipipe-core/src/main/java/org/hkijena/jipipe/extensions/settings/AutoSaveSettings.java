@@ -194,7 +194,7 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
             JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), new CleanBackupsRun(workbench));
         }
     }
-    
+
     public List<Path> getLastBackups() {
         try {
             return Files.list(getCurrentSavePath()).filter(path -> path.getFileName().toString().endsWith(".jip")).collect(Collectors.toList());

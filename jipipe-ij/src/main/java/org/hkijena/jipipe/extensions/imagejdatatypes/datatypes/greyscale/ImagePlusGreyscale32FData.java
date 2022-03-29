@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.process.FloatProcessor;
-import ij.process.ShortProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -52,6 +51,7 @@ public class ImagePlusGreyscale32FData extends ImagePlusGreyscaleData {
 
     /**
      * Creates an empty image with given dimensions
+     *
      * @param dimensions the dimensions
      */
     public ImagePlusGreyscale32FData(ImageDimensions dimensions) {

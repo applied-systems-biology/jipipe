@@ -48,6 +48,7 @@ public abstract class JIPipeResultDataSlotRowUI extends JIPipeProjectWorkbenchPa
     /**
      * Runs the currently set default action for this data.
      * If the data column index is valid, the associated data annotation is displayed instead (using its appropriate standard action)
+     *
      * @param dataAnnotationColumn column index of the data column in the data table. if outside the range, silently will run the default data operation instead
      */
     public abstract void handleDefaultActionOrDisplayDataAnnotation(int dataAnnotationColumn);

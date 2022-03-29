@@ -51,6 +51,7 @@ public class ImagePlusColorRGBData extends ImagePlusColorData {
 
     /**
      * Creates an empty image with given dimensions
+     *
      * @param dimensions the dimensions
      */
     public ImagePlusColorRGBData(ImageDimensions dimensions) {
@@ -84,11 +85,10 @@ public class ImagePlusColorRGBData extends ImagePlusColorData {
                 // Standard method: Greyscale -> RGB
                 return new ImagePlusColorRGBData(data.getImage());
             } else {
-                if(data.getColorSpace() instanceof RGBColorSpace) {
+                if (data.getColorSpace() instanceof RGBColorSpace) {
                     // No conversion needed
                     return new ImagePlusColorRGBData(data.getImage());
-                }
-                else {
+                } else {
                     ImagePlus copy = data.getDuplicateImage();
                     RGBColorSpace.INSTANCE.convert(copy, data.getColorSpace(), new JIPipeProgressInfo());
                     return new ImagePlusColorRGBData(copy);

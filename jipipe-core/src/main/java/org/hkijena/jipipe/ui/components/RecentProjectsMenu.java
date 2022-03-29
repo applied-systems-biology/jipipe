@@ -17,12 +17,10 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
-import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.documentation.RecentProjectsListPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
 import java.nio.file.Path;
 
 /**

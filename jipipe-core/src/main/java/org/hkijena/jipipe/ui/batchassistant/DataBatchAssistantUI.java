@@ -20,7 +20,10 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
 import org.hkijena.jipipe.api.JIPipeProjectCacheState;
-import org.hkijena.jipipe.api.annotation.*;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
@@ -194,14 +197,12 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
 
                     status.put("Slot", inputSlot.getName());
                     status.put("Status", "Slot contains no data!");
-                }
-                else if(dataList.size() == 1) {
+                } else if (dataList.size() == 1) {
                     singletonData = dataList.get(0);
 
                     status.put("Slot", inputSlot.getName());
                     status.put("Status", "Contains 1 item.");
-                }
-                else {
+                } else {
                     JIPipeDataTable list = new JIPipeDataTable(JIPipeData.class);
                     for (JIPipeData datum : dataList) {
                         list.addData(datum, progressInfo);
@@ -217,9 +218,9 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
                 dataAnnotations.add(new JIPipeDataAnnotation(inputSlot.getName(), singletonData));
             }
 
-            if(hasEmpty)
+            if (hasEmpty)
                 batchPreviewMissingLabel.setVisible(true);
-            if(hasMultiple)
+            if (hasMultiple)
                 batchPreviewDuplicateLabel.setVisible(true);
             statusData.setStatusValid(!hasEmpty);
             statusData.setStatusMessage(hasEmpty ? "Missing data!" : (hasMultiple ? "Multiple data per slot" : "One data per slot"));

@@ -45,8 +45,8 @@ public class JIPipeExtendedDataTableInfoModel implements TableModel {
     /**
      * Creates a new instance
      *
-     * @param table the table
-     * @param dataTable  the wrapped slot
+     * @param table     the table
+     * @param dataTable the wrapped slot
      */
     public JIPipeExtendedDataTableInfoModel(JTable table, JIPipeDataTable dataTable) {
         this.table = table;
@@ -265,8 +265,7 @@ public class JIPipeExtendedDataTableInfoModel implements TableModel {
                     component.renderPreview();
                 }
             }
-        }
-        catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
         }
     }
 }

@@ -135,8 +135,8 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
     /**
      * Generates a document that contains the whole compendium
      *
-     * @return the document
      * @param forJava if the generated markdown is intended for usage within Java. Otherwise, more modern HTML code can be used
+     * @return the document
      */
     public MarkdownDocument generateWholeCompendium(boolean forJava) {
         StringBuilder builder = new StringBuilder();
@@ -214,7 +214,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
     /**
      * Generates the compendium page for the item
      *
-     * @param item the item
+     * @param item    the item
      * @param forJava if the generated markdown is intended for usage within Java. Otherwise, more modern HTML code can be used
      * @return compendium page
      */

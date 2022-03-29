@@ -17,7 +17,7 @@ import java.nio.file.Path;
  * the JIPipeData importData(Path) static function.
  */
 @JIPipeDataStorageDocumentation(humanReadableDescription = "A JSON file that contains the serialized data",
-jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 public abstract class JIPipeSerializedJsonObjectData implements JIPipeData {
 
     public JIPipeSerializedJsonObjectData() {

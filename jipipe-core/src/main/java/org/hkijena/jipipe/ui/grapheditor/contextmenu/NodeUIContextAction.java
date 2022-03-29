@@ -63,9 +63,12 @@ public interface NodeUIContextAction {
     /**
      * Determines if the item is never shown (even if it applies)
      * Keyboard shortcuts still work
+     *
      * @return if the item is hidden
      */
-    default boolean isHidden() { return false; }
+    default boolean isHidden() {
+        return false;
+    }
 
     /**
      * Determines if an item should be disabled or removed if it does not match

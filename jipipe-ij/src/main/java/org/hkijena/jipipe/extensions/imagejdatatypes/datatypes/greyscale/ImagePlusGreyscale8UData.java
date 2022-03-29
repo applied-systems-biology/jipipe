@@ -51,6 +51,7 @@ public class ImagePlusGreyscale8UData extends ImagePlusGreyscaleData {
 
     /**
      * Creates an empty image with given dimensions
+     *
      * @param dimensions the dimensions
      */
     public ImagePlusGreyscale8UData(ImageDimensions dimensions) {

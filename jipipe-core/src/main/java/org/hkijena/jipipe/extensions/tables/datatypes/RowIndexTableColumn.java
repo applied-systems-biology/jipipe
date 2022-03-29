@@ -22,14 +22,12 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
-import java.nio.file.Path;
-
 /**
  * Generates numbers from 0 to row count
  */
 @JIPipeDocumentation(name = "Row index table column", description = "A table column that generates each row based on the current row index")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "This is a structural data type. The storage folder is empty.",
-jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
 public class RowIndexTableColumn implements TableColumn {
     public static RowIndexTableColumn importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return new RowIndexTableColumn();

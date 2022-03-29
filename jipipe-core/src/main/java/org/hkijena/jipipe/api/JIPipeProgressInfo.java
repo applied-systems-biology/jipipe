@@ -98,7 +98,7 @@ public class JIPipeProgressInfo {
      * @param message the message
      */
     public synchronized void log(String message) {
-        if(detachedProgress)
+        if (detachedProgress)
             log.append("SUB ");
         log.append("<").append(progress).append("/").append(maxProgress).append("> ").append(logPrepend);
         boolean needsSeparator = !StringUtils.isNullOrEmpty(logPrepend) && !StringUtils.isNullOrEmpty(message);
@@ -115,6 +115,7 @@ public class JIPipeProgressInfo {
 
     /**
      * Returns true if the progress was detached from the root {@link JIPipeProgressInfo}
+     *
      * @return if the progress was detached
      */
     public boolean isDetachedProgress() {

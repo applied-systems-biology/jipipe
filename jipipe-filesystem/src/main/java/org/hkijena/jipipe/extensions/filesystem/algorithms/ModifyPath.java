@@ -48,8 +48,7 @@ public class ModifyPath extends JIPipeSimpleIteratingAlgorithm {
         Object result = expression.evaluate(variableSet);
         if (result instanceof String) {
             dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(StringUtils.nullToEmpty(result))), progressInfo);
-        }
-        else if(result instanceof Path) {
+        } else if (result instanceof Path) {
             dataBatch.addOutputData(getFirstOutputSlot(), new PathData((Path) result), progressInfo);
         } else {
             progressInfo.log("Expression generated value '" + result + "', which is not a string. Dropping this data.");

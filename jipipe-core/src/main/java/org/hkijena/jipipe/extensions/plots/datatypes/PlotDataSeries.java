@@ -31,7 +31,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.io.IOException;
-import java.nio.file.Path;
 
 /**
  * A data series (table) that is rendered as plot series

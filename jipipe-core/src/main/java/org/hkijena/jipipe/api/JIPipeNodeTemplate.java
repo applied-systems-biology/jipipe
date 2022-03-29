@@ -10,7 +10,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
-import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -45,8 +44,23 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
         copyFrom(other);
     }
 
+    public static Map<String, Set<JIPipeNodeTemplate>> groupByMenuPaths(Collection<JIPipeNodeTemplate> infos) {
+        Map<String, Set<JIPipeNodeTemplate>> result = new HashMap<>();
+        for (JIPipeNodeTemplate info : infos) {
+            String menuPath = String.join("\n", info.getMenuPath());
+            Set<JIPipeNodeTemplate> group = result.getOrDefault(menuPath, null);
+            if (group == null) {
+                group = new HashSet<>();
+                result.put(menuPath, group);
+            }
+            group.add(info);
+        }
+        return result;
+    }
+
     /**
      * Copies the properties to another node template
+     *
      * @param other the other node template
      */
     public void copyFrom(JIPipeNodeTemplate other) {
@@ -201,20 +215,6 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
     @Override
     public int hashCode() {
         return Objects.hash(name, description, data);
-    }
-
-    public static Map<String, Set<JIPipeNodeTemplate>> groupByMenuPaths(Collection<JIPipeNodeTemplate> infos) {
-        Map<String, Set<JIPipeNodeTemplate>> result = new HashMap<>();
-        for (JIPipeNodeTemplate info : infos) {
-            String menuPath = String.join("\n",info.getMenuPath());
-            Set<JIPipeNodeTemplate> group = result.getOrDefault(menuPath, null);
-            if (group == null) {
-                group = new HashSet<>();
-                result.put(menuPath, group);
-            }
-            group.add(info);
-        }
-        return result;
     }
 
     public static class List extends ListParameter<JIPipeNodeTemplate> {

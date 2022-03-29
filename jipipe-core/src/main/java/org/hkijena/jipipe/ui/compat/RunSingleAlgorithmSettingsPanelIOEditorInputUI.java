@@ -32,8 +32,8 @@ public class RunSingleAlgorithmSettingsPanelIOEditorInputUI extends JPanel {
 
         // Initialize title panel
         JPanel titlePanel = new JPanel(new BorderLayout());
-        titlePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,1,0, Color.DARK_GRAY),
-                BorderFactory.createEmptyBorder(3,3,3,3)));
+        titlePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY),
+                BorderFactory.createEmptyBorder(3, 3, 3, 3)));
         titlePanel.add(new JLabel(slotName,
                 JIPipe.getDataTypes().getIconFor(getNode().getInputSlot(slotName).getAcceptedDataType()),
                 JLabel.LEFT), BorderLayout.WEST);
@@ -51,7 +51,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditorInputUI extends JPanel {
         add(titlePanel);
 
         // Add editor
-        editorPanel.setBorder(BorderFactory.createEmptyBorder(8,4,4,4));
+        editorPanel.setBorder(BorderFactory.createEmptyBorder(8, 4, 4, 4));
         add(editorPanel);
     }
 
@@ -60,7 +60,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditorInputUI extends JPanel {
         picker.setAvailableItems(new ArrayList<>(JIPipe.getImageJAdapters().getAvailableImporters(getNode().getInputSlot(slotName).getAcceptedDataType(), true)));
         picker.setSelectedItem(getCurrentOperation().getImporter());
         ImageJDataImporter result = picker.showDialog();
-        if(result != null) {
+        if (result != null) {
             getCurrentOperation().setImporterId(JIPipe.getImageJAdapters().getIdOf(result));
         }
         reloadUI();

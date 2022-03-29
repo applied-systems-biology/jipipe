@@ -23,13 +23,12 @@ public class OMEImageFromImageWindowImageJImporter implements ImageJDataImporter
     @Override
     public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
         ImagePlus imagePlus;
-        if(StringUtils.isNullOrEmpty(parameters.getName())) {
+        if (StringUtils.isNullOrEmpty(parameters.getName())) {
             imagePlus = IJ.getImage(); // The active image
-        }
-        else {
+        } else {
             imagePlus = WindowManager.getImage(parameters.getName());
         }
-        if(parameters.isDuplicate()) {
+        if (parameters.isDuplicate()) {
             String title = imagePlus.getTitle();
             imagePlus = imagePlus.duplicate();
             imagePlus.setTitle(title);
@@ -37,8 +36,8 @@ public class OMEImageFromImageWindowImageJImporter implements ImageJDataImporter
         JIPipeDataTable result = new JIPipeDataTable(OMEImageData.class);
         ROIListData rois = new ROIListData();
         for (Roi roi : RoiManager.getRoiManager().getRoisAsArray()) {
-            if(roi.getImage() == imagePlus) {
-                if(parameters.isDuplicate())
+            if (roi.getImage() == imagePlus) {
+                if (parameters.isDuplicate())
                     rois.add((Roi) roi.clone());
                 else
                     rois.add(roi);

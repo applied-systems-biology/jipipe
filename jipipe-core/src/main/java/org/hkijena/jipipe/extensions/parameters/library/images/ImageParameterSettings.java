@@ -9,6 +9,7 @@ public @interface ImageParameterSettings {
      * @return the maximum width of images. A negative value indicates no limit.
      */
     int maxWidth() default -1;
+
     /**
      * @return the maximum height of images. A negative value indicates no limit.
      */

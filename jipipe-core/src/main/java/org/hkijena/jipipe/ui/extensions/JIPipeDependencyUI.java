@@ -60,7 +60,7 @@ public class JIPipeDependencyUI extends JPanel {
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getMetadata().getName()), new JLabel("Name"), null);
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getDependencyId()), new JLabel("ID"), null);
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getDependencyVersion()), new JLabel("Version"), null);
-        if(!dependency.getMetadata().getAuthors().isEmpty()) {
+        if (!dependency.getMetadata().getAuthors().isEmpty()) {
             JPanel authorPanel = new JPanel();
             authorPanel.setLayout(new BoxLayout(authorPanel, BoxLayout.X_AXIS));
             for (JIPipeAuthorMetadata author : dependency.getMetadata().getAuthors()) {

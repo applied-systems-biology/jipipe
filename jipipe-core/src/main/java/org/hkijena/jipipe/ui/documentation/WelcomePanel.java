@@ -13,20 +13,15 @@
 
 package org.hkijena.jipipe.ui.documentation;
 
-import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
-import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.BackgroundPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.RecentProjectListCellRenderer;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.renderers.TemplateProjectListCellRenderer;
@@ -42,7 +37,6 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.jar.Attributes;
 
@@ -77,7 +71,6 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
         }
         templateList.setModel(model);
     }
-
 
 
     private void initialize() {

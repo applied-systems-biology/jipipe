@@ -23,20 +23,19 @@ public class OMEImageToImageWindowImageJExporter implements ImageJDataExporter {
         for (int row = 0; row < dataTable.getRowCount(); row++) {
             OMEImageData data = dataTable.getData(row, OMEImageData.class, new JIPipeProgressInfo());
             ImagePlus image;
-            if(parameters.isDuplicate()) {
+            if (parameters.isDuplicate()) {
                 image = data.getDuplicateImage();
-            }
-            else {
-                image =data.getImage();
+            } else {
+                image = data.getImage();
             }
             result.add(image);
-            if(parameters.isActivate() && !parameters.isNoWindows()) {
-                if(!StringUtils.isNullOrEmpty(parameters.getName())) {
+            if (parameters.isActivate() && !parameters.isNoWindows()) {
+                if (!StringUtils.isNullOrEmpty(parameters.getName())) {
                     image.setTitle(parameters.getName());
                 }
                 image.show();
             }
-            if(data.getRois() != null) {
+            if (data.getRois() != null) {
                 for (Roi roi : data.getRois()) {
                     roi.setImage(image);
                     RoiManager.getRoiManager().addRoi(roi);

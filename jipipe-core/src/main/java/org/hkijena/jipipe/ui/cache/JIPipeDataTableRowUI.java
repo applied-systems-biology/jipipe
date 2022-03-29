@@ -57,7 +57,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
      * Creates a new instance
      *
      * @param workbench the workbench
-     * @param dataTable      the slot
+     * @param dataTable the slot
      * @param row       the row
      */
     public JIPipeDataTableRowUI(JIPipeWorkbench workbench, JIPipeDataTable dataTable, int row) {
@@ -69,6 +69,29 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
         String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
         displayOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId);
         this.initialize();
+    }
+
+    public static JIPipeDataDisplayOperation getMainOperation(Class<? extends JIPipeData> dataClass) {
+        String dataTypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
+        List<JIPipeDataDisplayOperation> displayOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(dataTypeId);
+        if (!displayOperations.isEmpty()) {
+            JIPipeDataDisplayOperation result = displayOperations.get(0);
+            DynamicDataDisplayOperationIdEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
+            if (parameter != null) {
+                String defaultName = parameter.getValue();
+                for (JIPipeDataDisplayOperation operation : displayOperations) {
+                    if (Objects.equals(operation.getId(), defaultName)) {
+                        result = operation;
+                        break;
+                    }
+                }
+            }
+            if (result == null) {
+                result = JIPipe.getDataTypes().getAllRegisteredDisplayOperations(dataTypeId).get("jipipe:show");
+            }
+            return result;
+        }
+        return null;
     }
 
     private void initialize() {
@@ -311,29 +334,6 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
         return null;
     }
 
-    public static JIPipeDataDisplayOperation getMainOperation(Class<? extends JIPipeData> dataClass) {
-        String dataTypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
-        List<JIPipeDataDisplayOperation> displayOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(dataTypeId);
-        if (!displayOperations.isEmpty()) {
-            JIPipeDataDisplayOperation result = displayOperations.get(0);
-            DynamicDataDisplayOperationIdEnumParameter parameter = DefaultCacheDisplaySettings.getInstance().getValue(dataTypeId, DynamicDataDisplayOperationIdEnumParameter.class);
-            if (parameter != null) {
-                String defaultName = parameter.getValue();
-                for (JIPipeDataDisplayOperation operation : displayOperations) {
-                    if (Objects.equals(operation.getId(), defaultName)) {
-                        result = operation;
-                        break;
-                    }
-                }
-            }
-            if (result == null) {
-                result = JIPipe.getDataTypes().getAllRegisteredDisplayOperations(dataTypeId).get("jipipe:show");
-            }
-            return result;
-        }
-        return null;
-    }
-
     public JButton getDataAnnotationsButton() {
         return dataAnnotationsButton;
     }
@@ -371,15 +371,15 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
     /**
      * Runs the currently set default action for this data.
      * If the data column index is valid, the associated data annotation is displayed instead (using its appropriate standard action)
+     *
      * @param dataAnnotationColumn column index of the data column in the data table. if outside the range, silently will run the default data operation instead
      */
     public void handleDefaultActionOrDisplayDataAnnotation(int dataAnnotationColumn) {
-        if(dataAnnotationColumn >= 0 && dataAnnotationColumn < dataTable.getDataAnnotationColumns().size()) {
+        if (dataAnnotationColumn >= 0 && dataAnnotationColumn < dataTable.getDataAnnotationColumns().size()) {
             JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(getRow(), dataTable.getDataAnnotationColumns().get(dataAnnotationColumn));
             JIPipeDataDisplayOperation operation = getMainOperation(dataAnnotation.getDataClass());
             runDisplayOperation(operation, dataAnnotation);
-        }
-        else {
+        } else {
             handleDefaultAction();
         }
     }

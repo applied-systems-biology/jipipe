@@ -22,7 +22,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PiePlot;
 
 import java.awt.*;
-import java.nio.file.Path;
 
 /**
  * Generates a Pie chart

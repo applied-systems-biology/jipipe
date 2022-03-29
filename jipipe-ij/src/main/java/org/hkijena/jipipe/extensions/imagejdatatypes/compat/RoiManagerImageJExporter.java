@@ -17,24 +17,23 @@ public class RoiManagerImageJExporter implements ImageJDataExporter {
     @Override
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {
         List<Object> result = new ArrayList<>();
-        if(parameters.isActivate() && !parameters.isNoWindows()) {
+        if (parameters.isActivate() && !parameters.isNoWindows()) {
             RoiManager manager = RoiManager.getRoiManager();
-            if(!parameters.isAppend()) {
+            if (!parameters.isAppend()) {
                 manager.reset();
             }
             for (int i = 0; i < dataTable.getRowCount(); i++) {
                 ROIListData data = dataTable.getData(i, ROIListData.class, new JIPipeProgressInfo());
-                if(parameters.isDuplicate())
+                if (parameters.isDuplicate())
                     data = (ROIListData) data.duplicate(new JIPipeProgressInfo());
                 data.addToRoiManager(manager);
             }
             result.add(manager);
-        }
-        else {
+        } else {
             for (int i = 0; i < dataTable.getRowCount(); i++) {
                 RoiManager manager = new RoiManager();
                 ROIListData data = dataTable.getData(i, ROIListData.class, new JIPipeProgressInfo());
-                if(parameters.isDuplicate())
+                if (parameters.isDuplicate())
                     data = (ROIListData) data.duplicate(new JIPipeProgressInfo());
                 data.addToRoiManager(manager);
                 result.add(manager);

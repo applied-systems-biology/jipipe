@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.data;
 
 /**
- * A {@link JIPipeDataSource} 
+ * A {@link JIPipeDataSource}
  */
 public class JIPipeDataTableDataSource implements JIPipeDataSource {
     private final JIPipeDataTable dataTable;

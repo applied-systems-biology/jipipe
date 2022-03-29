@@ -150,7 +150,7 @@ public class TooltipUtils {
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType())).append("\"/></td>");
             builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(slot.getName())).append("</td>");
             builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i>");
-            if(!StringUtils.isNullOrEmpty(slot.getDescription())) {
+            if (!StringUtils.isNullOrEmpty(slot.getDescription())) {
                 builder.append(" ").append(slot.getDescription());
             }
             builder.append("</td></tr>");
@@ -161,7 +161,7 @@ public class TooltipUtils {
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType())).append("\"/></td>");
             builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(slot.getName())).append("</td>");
             builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i>");
-            if(!StringUtils.isNullOrEmpty(slot.getDescription())) {
+            if (!StringUtils.isNullOrEmpty(slot.getDescription())) {
                 builder.append(" ").append(slot.getDescription());
             }
             builder.append("</td></tr>");
@@ -225,7 +225,7 @@ public class TooltipUtils {
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
             builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.slotName(), "-"))).append("</td>");
             builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.value()).getName())).append(")</i>");
-            if(!StringUtils.isNullOrEmpty(slot.description())) {
+            if (!StringUtils.isNullOrEmpty(slot.description())) {
                 builder.append(" ").append(HtmlEscapers.htmlEscaper().escape(slot.description()));
             }
             builder.append("</td></tr>");
@@ -236,7 +236,7 @@ public class TooltipUtils {
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
             builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.slotName(), "-"))).append("</td>");
             builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.value()).getName())).append(")</i>");
-            if(!StringUtils.isNullOrEmpty(slot.description())) {
+            if (!StringUtils.isNullOrEmpty(slot.description())) {
                 builder.append(" ").append(HtmlEscapers.htmlEscaper().escape(slot.description()));
             }
             builder.append("</td></tr>");
@@ -250,13 +250,13 @@ public class TooltipUtils {
     /**
      * Creates a tooltip for an algorithm
      *
-     * @param template      the node template
+     * @param template  the node template
      * @param withTitle if a title is displayed
      * @return the tooltip
      */
     public static String getAlgorithmTooltip(JIPipeNodeTemplate template, boolean withTitle) {
         StringBuilder builder = new StringBuilder();
-        if(withTitle) {
+        if (withTitle) {
             builder.append("<u><strong>").append(template.getName()).append("</strong></u><br/>");
         }
 
@@ -336,7 +336,7 @@ public class TooltipUtils {
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType())).append("\"/></td>");
             builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(slot.getName())).append("</td>");
             builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i>");
-            if(!StringUtils.isNullOrEmpty(slot.getDescription())) {
+            if (!StringUtils.isNullOrEmpty(slot.getDescription())) {
                 builder.append(" ").append(HtmlEscapers.htmlEscaper().escape(slot.getDescription()));
             }
             builder.append("</td></tr>");
@@ -347,7 +347,7 @@ public class TooltipUtils {
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.getAcceptedDataType())).append("\"/></td>");
             builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(slot.getName())).append("</td>");
             builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.getAcceptedDataType()).getName())).append(")</i>");
-            if(!StringUtils.isNullOrEmpty(slot.getDescription())) {
+            if (!StringUtils.isNullOrEmpty(slot.getDescription())) {
                 builder.append(" ").append(HtmlEscapers.htmlEscaper().escape(slot.getDescription()));
             }
             builder.append("</td></tr>");
@@ -382,8 +382,8 @@ public class TooltipUtils {
             builder.append("<br>").append(description).append("<br><br/>");
         }
 
-        if(dataTable instanceof JIPipeDataSlot) {
-         JIPipeDataSlot slot = (JIPipeDataSlot) dataTable;
+        if (dataTable instanceof JIPipeDataSlot) {
+            JIPipeDataSlot slot = (JIPipeDataSlot) dataTable;
             if (slot.isInput())
                 builder.append("Input");
             else

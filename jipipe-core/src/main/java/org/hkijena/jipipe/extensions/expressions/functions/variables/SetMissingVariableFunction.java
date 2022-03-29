@@ -43,11 +43,10 @@ public class SetMissingVariableFunction extends ExpressionFunction {
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
         String name = "" + parameters.get(0);
         Object newValue = parameters.get(1);
-        if(!variables.containsKey(name)) {
+        if (!variables.containsKey(name)) {
             variables.set(name, newValue);
             return newValue;
-        }
-        else {
+        } else {
             return variables.get(name);
         }
     }

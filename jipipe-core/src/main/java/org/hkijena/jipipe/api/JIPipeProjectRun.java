@@ -324,7 +324,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
                         if (!unExecutableAlgorithms.contains(slot.getNode())) {
 
                             // Only start the loop if we are at the loop start node
-                            if(slot.getNode() != loop.getLoopStartNode()) {
+                            if (slot.getNode() != loop.getLoopStartNode()) {
                                 continue;
                             }
 

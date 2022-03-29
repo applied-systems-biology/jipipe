@@ -309,7 +309,7 @@ public class JIPipeProjectCache {
         progress.addMaxProgress(cachedRowNumber);
         for (Map.Entry<UUID, Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>>> nodeMap : cacheEntries.entrySet()) {
             JIPipeGraphNode node = getProject().getGraph().getNodeByUUID(nodeMap.getKey());
-            if(node == null)
+            if (node == null)
                 continue;
             JIPipeProgressInfo nodeProgress = progress.resolve(node.getName());
             for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMapEntry : nodeMap.getValue().entrySet()) {
@@ -334,7 +334,7 @@ public class JIPipeProjectCache {
         progress.addMaxProgress(cachedRowNumber);
         for (Map.Entry<UUID, Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>>> nodeMap : cacheEntries.entrySet()) {
             JIPipeGraphNode node = getProject().getGraph().getNodeByUUID(nodeMap.getKey());
-            if(node == null)
+            if (node == null)
                 continue;
             JIPipeProgressInfo nodeProgress = progress.resolve(node.getName());
             for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMapEntry : nodeMap.getValue().entrySet()) {

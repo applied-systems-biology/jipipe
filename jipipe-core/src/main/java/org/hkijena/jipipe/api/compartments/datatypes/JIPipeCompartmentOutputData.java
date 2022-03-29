@@ -23,8 +23,6 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
-import java.nio.file.Path;
-
 /**
  * Represents an {@link org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput} in the compartment graph.
  * This is purely structural data.

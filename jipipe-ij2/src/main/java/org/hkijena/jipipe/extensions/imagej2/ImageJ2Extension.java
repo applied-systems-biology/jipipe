@@ -121,13 +121,12 @@ public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
             JIPipeProgressInfo moduleProgress = progressInfo.resolve(info.cInfo().getTitle() + " @ " + info.cInfo().getDelegateClassName());
             try {
                 ImageJ2OpNodeInfo nodeInfo = new ImageJ2OpNodeInfo(context, info, moduleProgress);
-                if(nodeInfo.getInputSlots().isEmpty() && nodeInfo.getOutputSlots().isEmpty()) {
+                if (nodeInfo.getInputSlots().isEmpty() && nodeInfo.getOutputSlots().isEmpty()) {
                     progressInfo.log("Node has no data slots. Skipping.");
                     continue;
                 }
                 registerNodeType(nodeInfo, UIUtils.getIconURLFromResources("apps/imagej2.png"));
-            }
-            catch (Exception e) {
+            } catch (Exception e) {
                 moduleProgress.log("Unable to register module:");
                 moduleProgress.log(e.toString());
             }

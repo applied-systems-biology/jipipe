@@ -59,11 +59,6 @@ public class ImagePlus2DGreyscaleData extends ImagePlus2DData implements Greysca
         return new ImagePlus2DGreyscaleData(ImagePlusData.importImagePlusFrom(storage, progressInfo));
     }
 
-    @Override
-    public ColorSpace getColorSpace() {
-        return GreyscaleColorSpace.INSTANCE;
-    }
-
     /**
      * Converts the incoming image data into the current format.
      *
@@ -76,5 +71,10 @@ public class ImagePlus2DGreyscaleData extends ImagePlus2DData implements Greysca
         } else {
             return new ImagePlus2DGreyscaleData(data.getImageSource());
         }
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return GreyscaleColorSpace.INSTANCE;
     }
 }

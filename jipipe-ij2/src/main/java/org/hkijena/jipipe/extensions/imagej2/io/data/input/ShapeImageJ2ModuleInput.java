@@ -1,15 +1,11 @@
 package org.hkijena.jipipe.extensions.imagej2.io.data.input;
 
-import net.imglib2.algorithm.neighborhood.RectangleShape;
 import net.imglib2.algorithm.neighborhood.Shape;
 import org.apache.commons.lang3.reflect.ConstructorUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.ImageJ2OutOfBoundsFactoryData;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.ImageJ2ShapeData;
-import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.RectangleImageJ2ShapeData;
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.scijava.plugin.Plugin;
 
 import java.lang.reflect.Constructor;
@@ -28,10 +24,10 @@ public class ShapeImageJ2ModuleInput extends DataSlotModuleInput<Shape, ImageJ2S
     @Override
     public ImageJ2ShapeData convertModuleToJIPipeData(Shape obj) {
         for (Class<? extends JIPipeData> dataClass : JIPipe.getDataTypes().getRegisteredDataTypes().values()) {
-            if(!ImageJ2ShapeData.class.isAssignableFrom(dataClass))
+            if (!ImageJ2ShapeData.class.isAssignableFrom(dataClass))
                 continue;
             Constructor<? extends JIPipeData> constructor = ConstructorUtils.getMatchingAccessibleConstructor(dataClass, obj.getClass());
-            if(constructor != null) {
+            if (constructor != null) {
                 try {
                     return (ImageJ2ShapeData) constructor.newInstance(obj);
                 } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {

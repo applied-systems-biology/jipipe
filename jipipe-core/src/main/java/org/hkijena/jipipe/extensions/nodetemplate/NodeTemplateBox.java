@@ -187,7 +187,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         deleteItem.addActionListener(e -> deleteSelection());
         manageMenu.add(deleteItem);
 
-        if(isDocked) {
+        if (isDocked) {
             JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
             openWindowButton.setToolTipText("Open in new window");
             openWindowButton.addActionListener(e -> openNewToolBoxWindow(getWorkbench()));

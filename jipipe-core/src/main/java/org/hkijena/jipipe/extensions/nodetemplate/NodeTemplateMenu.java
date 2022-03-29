@@ -20,7 +20,7 @@ import java.util.*;
 public class NodeTemplateMenu extends JMenu implements JIPipeWorkbenchAccess {
     private final JIPipeWorkbench workbench;
     private final JIPipeGraphEditorUI graphEditorUI;
-    private  final JIPipeProject project;
+    private final JIPipeProject project;
 
     public NodeTemplateMenu(JIPipeWorkbench workbench, JIPipeGraphEditorUI graphEditorUI) {
         this.workbench = workbench;
@@ -43,7 +43,7 @@ public class NodeTemplateMenu extends JMenu implements JIPipeWorkbenchAccess {
         }
         setVisible(!templates.isEmpty());
         removeAll();
-        if(!templates.isEmpty()) {
+        if (!templates.isEmpty()) {
             Map<String, Set<JIPipeNodeTemplate>> byMenuPath = JIPipeNodeTemplate.groupByMenuPaths(templates);
             Map<String, JMenu> menuTree = UIUtils.createMenuTree(this, byMenuPath.keySet());
             for (Map.Entry<String, Set<JIPipeNodeTemplate>> entry : byMenuPath.entrySet()) {

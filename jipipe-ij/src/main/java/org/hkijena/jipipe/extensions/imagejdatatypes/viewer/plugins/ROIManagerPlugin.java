@@ -443,7 +443,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         roiJList.setModel(model);
         roiJList.setSelectedIndices(selectedIndices);
         roiInfoLabel.setText(rois.size() + " ROI");
-        if(!deferUploadSlice)
+        if (!deferUploadSlice)
             uploadSliceToCanvas();
     }
 }

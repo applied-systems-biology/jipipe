@@ -29,9 +29,7 @@ import org.hkijena.jipipe.ui.resultanalysis.JIPipeDefaultResultDataSlotRowUI;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.classfilters.ClassFilter;
 import org.jgrapht.Graph;
 import org.jgrapht.GraphPath;
 import org.jgrapht.alg.shortestpath.DijkstraShortestPath;
@@ -72,44 +70,6 @@ public class JIPipeDatatypeRegistry {
     }
 
     /**
-     * Returns all {@link JIPipeData} classes that satisfy the provided interfaces
-     * @param interfaces the list of interfaces. if empty, all data types are returned
-     * @return list of data types
-     */
-    public List<Class<? extends JIPipeData>> findDataTypesByInterfaces(Class<?>... interfaces) {
-        List<Class<? extends JIPipeData>> result = new ArrayList<>();
-        for (Class<? extends JIPipeData> value : this.registeredDataTypes.values()) {
-            boolean success = true;
-            for (Class<?> aClass : interfaces) {
-                if(!aClass.isAssignableFrom(value)) {
-                    success = false;
-                    break;
-                }
-            }
-            if(success) {
-                result.add(value);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Returns all {@link JIPipeData} classes that satisfy the provided predicate
-     * @param predicate the predicate
-     * @return list of data types
-     */
-    public List<Class<? extends JIPipeData>> findDataTypes(Predicate<Class<?>> predicate) {
-        List<Class<? extends JIPipeData>> result = new ArrayList<>();
-        for (Class<? extends JIPipeData> value : this.registeredDataTypes.values()) {
-            if(predicate.test(value)) {
-                result.add(value);
-            }
-        }
-        return result;
-    }
-
-
-    /**
      * Returns true if the input data type can be trivially converted into the output data type.
      * A trivial conversion is applied when the input data is the same as the output data type or inherits from it.
      *
@@ -119,6 +79,45 @@ public class JIPipeDatatypeRegistry {
      */
     public static boolean isTriviallyConvertible(Class<? extends JIPipeData> inputDataType, Class<? extends JIPipeData> outputDataType) {
         return outputDataType.isAssignableFrom(inputDataType);
+    }
+
+    /**
+     * Returns all {@link JIPipeData} classes that satisfy the provided interfaces
+     *
+     * @param interfaces the list of interfaces. if empty, all data types are returned
+     * @return list of data types
+     */
+    public List<Class<? extends JIPipeData>> findDataTypesByInterfaces(Class<?>... interfaces) {
+        List<Class<? extends JIPipeData>> result = new ArrayList<>();
+        for (Class<? extends JIPipeData> value : this.registeredDataTypes.values()) {
+            boolean success = true;
+            for (Class<?> aClass : interfaces) {
+                if (!aClass.isAssignableFrom(value)) {
+                    success = false;
+                    break;
+                }
+            }
+            if (success) {
+                result.add(value);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Returns all {@link JIPipeData} classes that satisfy the provided predicate
+     *
+     * @param predicate the predicate
+     * @return list of data types
+     */
+    public List<Class<? extends JIPipeData>> findDataTypes(Predicate<Class<?>> predicate) {
+        List<Class<? extends JIPipeData>> result = new ArrayList<>();
+        for (Class<? extends JIPipeData> value : this.registeredDataTypes.values()) {
+            if (predicate.test(value)) {
+                result.add(value);
+            }
+        }
+        return result;
     }
 
     /**
@@ -178,20 +177,19 @@ public class JIPipeDatatypeRegistry {
      * Returns the number of conversion steps.
      * Returns 0 if no conversion is needed.
      * Returns -1 if no conversion is possible.
-     * @param inputDataType the input data type
+     *
+     * @param inputDataType  the input data type
      * @param outputDataType the output data type
      * @return number of conversion steps
      */
     public int getConversionDistance(Class<? extends JIPipeData> inputDataType, Class<? extends JIPipeData> outputDataType) {
-        if(inputDataType == outputDataType) {
+        if (inputDataType == outputDataType) {
             return 0;
-        }
-        else if(isTriviallyConvertible(inputDataType, outputDataType)) {
+        } else if (isTriviallyConvertible(inputDataType, outputDataType)) {
             return ReflectionUtils.getClassDistance(outputDataType, inputDataType);
-        }
-        else {
+        } else {
             GraphPath<JIPipeDataInfo, DataConverterEdge> path = shortestPath.getPath(JIPipeDataInfo.getInstance(inputDataType), JIPipeDataInfo.getInstance(outputDataType));
-            if(path == null)
+            if (path == null)
                 return -1;
             return path.getLength();
         }

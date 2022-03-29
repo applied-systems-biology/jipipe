@@ -21,7 +21,6 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.data.statistics.BoxAndWhiskerCategoryDataset;
 
 import java.awt.*;
-import java.nio.file.Path;
 
 /**
  * A box and whisker plot

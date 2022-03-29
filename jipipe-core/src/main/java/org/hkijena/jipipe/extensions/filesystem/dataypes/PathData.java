@@ -100,11 +100,10 @@ public class PathData implements JIPipeData {
     @Override
     public Component preview(int width, int height) {
         String name = "N/A";
-        if(path != null) {
+        if (path != null) {
             try {
                 name = Paths.get(path).getFileName().toString();
-            }
-            catch (InvalidPathException e) {
+            } catch (InvalidPathException e) {
             }
         }
         return new JLabel(name);

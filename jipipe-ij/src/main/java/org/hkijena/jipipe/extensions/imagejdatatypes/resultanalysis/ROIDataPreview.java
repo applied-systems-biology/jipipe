@@ -14,8 +14,8 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataTableMetadataRow;
+import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeAsyncResultDataPlotPreview;
 

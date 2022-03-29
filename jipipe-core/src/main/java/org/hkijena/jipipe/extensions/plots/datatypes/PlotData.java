@@ -81,7 +81,7 @@ import java.util.stream.Collectors;
         "<code>plot-series</code> is mandatory and is a list of objects with each object having an object <code>metadata</code>, and " +
         "a string element <code>file-name</code>. The file name must point at the corresponding <code>series[Index].csv</code> file of the series. " +
         "Additional metadata in the root object and series metadata depend on the exact plot type.",
-jsonSchemaURL = "https://jipipe.org/schemas/datatypes/plot-data.schema.json")
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/plot-data.schema.json")
 public abstract class PlotData implements JIPipeData, JIPipeParameterCollection, JIPipeValidatable {
 
     private final EventBus eventBus = new EventBus();

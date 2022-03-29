@@ -58,7 +58,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      * @param dataClass     slot data class
      * @param slotType      slot type
      * @param name          unique slot name
-     * @param description description of the slot
+     * @param description   description of the slot
      * @param inheritedSlot only relevant if output slot. Can be an input slot name or '*' to automatically select the first input slot
      */
     public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String name, String description, String inheritedSlot) {
@@ -71,9 +71,9 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     }
 
     /**
-     * @param dataClass slot data class
-     * @param slotType  slot type
-     * @param name      unique slot name
+     * @param dataClass   slot data class
+     * @param slotType    slot type
+     * @param name        unique slot name
      * @param description description of the slot
      */
     public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String name, String description) {

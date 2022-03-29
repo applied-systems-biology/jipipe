@@ -30,7 +30,6 @@ import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PreviewControlUI;
@@ -65,17 +64,17 @@ import java.util.Set;
  */
 public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
 
-    private JIPipeDataTable dataTable;
     private final boolean updateWithCache;
+    private final SearchTextField searchTextField = new SearchTextField();
+    private JIPipeDataTable dataTable;
     private JXTable table;
     private FormPanel rowUIList;
-    private final SearchTextField searchTextField = new SearchTextField();
     private JIPipeExtendedDataTableInfoModel dataTableModel;
     private JScrollPane scrollPane;
 
     /**
-     * @param workbenchUI the workbench UI
-     * @param dataTable        The slot
+     * @param workbenchUI     the workbench UI
+     * @param dataTable       The slot
      * @param updateWithCache if the table should refresh on project cache changes
      */
     public JIPipeExtendedDataTableInfoUI(JIPipeWorkbench workbenchUI, JIPipeDataTable dataTable, boolean updateWithCache) {
@@ -204,13 +203,13 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
         JPopupMenu windowMenu = UIUtils.addPopupMenuToComponent(openWindowButton);
 
         JMenuItem openReferenceWindowItem = new JMenuItem("Open in new tab", UIUtils.getIconFromResources("actions/tab.png"));
-        openReferenceWindowItem.addActionListener(e-> {
+        openReferenceWindowItem.addActionListener(e -> {
             openTableInNewTab();
         });
         windowMenu.add(openReferenceWindowItem);
 
         JMenuItem openFilteredWindowItem = new JMenuItem("Apply filter", UIUtils.getIconFromResources("actions/filter.png"));
-        openFilteredWindowItem.addActionListener(e-> {
+        openFilteredWindowItem.addActionListener(e -> {
             openFilteredTableInNewTab();
         });
         windowMenu.add(openFilteredWindowItem);
@@ -234,14 +233,13 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
 
     private void openFilteredTableInNewTab() {
         String name = getDataTable().getDisplayName();
-        if(searchTextField.getSearchStrings().length > 0) {
+        if (searchTextField.getSearchStrings().length > 0) {
             name = "[Filtered] " + name;
-        }
-        else {
+        } else {
             name = "Copy of " + name;
         }
         JIPipeDataTable copy = new JIPipeDataTable(dataTable.getAcceptedDataType());
-        if(table.getRowFilter() != null) {
+        if (table.getRowFilter() != null) {
             for (int viewRow = 0; viewRow < table.getRowCount(); viewRow++) {
                 int modelRow = table.convertRowIndexToModel(viewRow);
                 copy.addData(dataTable.getVirtualData(modelRow),
@@ -275,7 +273,7 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
             variables.add(new ExpressionParameterVariable(table.getModel().getColumnName(i), "", table.getModel().getColumnName(i)));
         }
         String result = ExpressionBuilderUI.showDialog(getWorkbench().getWindow(), searchTextField.getText(), variables);
-        if(result != null) {
+        if (result != null) {
             searchTextField.setText(result);
         }
     }

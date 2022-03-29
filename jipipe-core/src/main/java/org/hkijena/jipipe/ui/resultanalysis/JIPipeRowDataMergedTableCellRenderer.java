@@ -103,8 +103,7 @@ public class JIPipeRowDataMergedTableCellRenderer implements TableCellRenderer {
                         component.renderPreview();
                     }
                 }
-            }
-            catch (IndexOutOfBoundsException e) {
+            } catch (IndexOutOfBoundsException e) {
             }
         }
     }

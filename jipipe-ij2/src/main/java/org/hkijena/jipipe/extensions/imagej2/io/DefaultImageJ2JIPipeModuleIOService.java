@@ -14,6 +14,7 @@ import java.util.*;
 public class DefaultImageJ2JIPipeModuleIOService extends AbstractService implements ImageJ2JIPipeModuleIOService {
     private Map<Class<?>, ImageJ2ModuleIO> knownInputHandlers;
     private Map<Class<?>, ImageJ2ModuleIO> knownOutputHandlers;
+
     public DefaultImageJ2JIPipeModuleIOService() {
     }
 
@@ -23,10 +24,10 @@ public class DefaultImageJ2JIPipeModuleIOService extends AbstractService impleme
         for (PluginInfo<ImageJ2ModuleIO> plugin : getPlugins()) {
             try {
                 ImageJ2ModuleIO instance = plugin.createInstance();
-                if(instance.handlesInput()) {
+                if (instance.handlesInput()) {
                     knownInputHandlers.put(instance.getAcceptedModuleFieldClass(), instance);
                 }
-                if(instance.handlesOutput()) {
+                if (instance.handlesOutput()) {
                     knownOutputHandlers.put(instance.getAcceptedModuleFieldClass(), instance);
                 }
             } catch (InstantiableException e) {
@@ -37,13 +38,13 @@ public class DefaultImageJ2JIPipeModuleIOService extends AbstractService impleme
 
     @Override
     public ImageJ2ModuleIO findModuleIO(ModuleItem<?> moduleItem, JIPipeSlotType ioType) {
-        if(knownInputHandlers == null || knownOutputHandlers == null) {
+        if (knownInputHandlers == null || knownOutputHandlers == null) {
             reload();
         }
-        if(ioType == JIPipeSlotType.Input && moduleItem.isInput()) {
+        if (ioType == JIPipeSlotType.Input && moduleItem.isInput()) {
             return findModuleIO(moduleItem, knownInputHandlers);
         }
-        if(ioType == JIPipeSlotType.Output && moduleItem.isOutput()) {
+        if (ioType == JIPipeSlotType.Output && moduleItem.isOutput()) {
             return findModuleIO(moduleItem, knownOutputHandlers);
         }
         return null;
@@ -54,21 +55,21 @@ public class DefaultImageJ2JIPipeModuleIOService extends AbstractService impleme
         // Greatly simplifies the primitive handling
         moduleType = ClassUtils.primitiveToWrapper(moduleType);
         ImageJ2ModuleIO result = knownIOHandlers.getOrDefault(moduleType, null);
-        if(result == null) {
+        if (result == null) {
             Queue<Class<?>> queue = new ArrayDeque<>();
-            if(moduleType.getSuperclass() != null)
+            if (moduleType.getSuperclass() != null)
                 queue.add(moduleType.getSuperclass());
             queue.addAll(Arrays.asList(moduleType.getInterfaces()));
-            while(!queue.isEmpty()) {
+            while (!queue.isEmpty()) {
                 Class<?> item = queue.remove();
                 result = knownIOHandlers.getOrDefault(item, null);
-                if(result != null) {
+                if (result != null) {
                     knownIOHandlers.put(item, result);
                     return result;
                 }
-                if(item == Object.class)
+                if (item == Object.class)
                     continue;
-                if(item.getSuperclass() != null)
+                if (item.getSuperclass() != null)
                     queue.add(item.getSuperclass());
                 queue.addAll(Arrays.asList(item.getInterfaces()));
             }

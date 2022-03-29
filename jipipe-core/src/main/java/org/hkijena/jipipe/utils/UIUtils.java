@@ -427,7 +427,7 @@ public class UIUtils {
 
     public static JSeparator createVerticalSeparator() {
         JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
-        separator.setMaximumSize(new Dimension(1, Integer.MAX_VALUE) );
+        separator.setMaximumSize(new Dimension(1, Integer.MAX_VALUE));
         return separator;
     }
 
@@ -809,7 +809,7 @@ public class UIUtils {
 
     public static String imageToBase64(BufferedImage image, String type) throws IOException {
         String imageString;
-        try ( ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
+        try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
             ImageIO.write(image, type, bos);
             byte[] imageBytes = bos.toByteArray();
             BASE64Encoder encoder = new BASE64Encoder();
@@ -821,7 +821,7 @@ public class UIUtils {
     public static BufferedImage base64ToImage(String imageString) throws IOException {
         BASE64Decoder decoder = new BASE64Decoder();
         byte[] bytes = decoder.decodeBuffer(imageString);
-        try(ByteArrayInputStream bis = new ByteArrayInputStream(bytes)) {
+        try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes)) {
             return ImageIO.read(bis);
         }
     }
@@ -1002,7 +1002,7 @@ public class UIUtils {
                 null, null, null);
 
         if (result == JOptionPane.OK_OPTION) {
-            return Optional.of (((SpinnerNumberModel) spinner.getModel()).getNumber().intValue());
+            return Optional.of(((SpinnerNumberModel) spinner.getModel()).getNumber().intValue());
         }
         return Optional.empty();
     }
@@ -1029,7 +1029,7 @@ public class UIUtils {
                 null, null, null);
 
         if (result == JOptionPane.OK_OPTION) {
-            return Optional.of (((SpinnerNumberModel) spinner.getModel()).getNumber().doubleValue());
+            return Optional.of(((SpinnerNumberModel) spinner.getModel()).getNumber().doubleValue());
         }
         return Optional.empty();
     }

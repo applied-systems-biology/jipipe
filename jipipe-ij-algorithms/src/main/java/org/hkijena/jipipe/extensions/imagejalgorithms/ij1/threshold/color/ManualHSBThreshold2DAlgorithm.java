@@ -14,7 +14,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.BlackToWhiteTrackBackground;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.HSBHueTrackBackground;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.WhiteToRedTrackBackground;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;

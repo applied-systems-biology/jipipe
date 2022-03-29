@@ -15,8 +15,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify;
 
 import ij.gui.Roi;
 import ij.plugin.RoiScaler;
-import net.imagej.ops.Ops;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -26,9 +24,11 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.OptionalDefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -47,7 +47,7 @@ import java.util.Set;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private OptionalDefaultExpressionParameter roiName = new OptionalDefaultExpressionParameter(false,"roi_name");
+    private OptionalDefaultExpressionParameter roiName = new OptionalDefaultExpressionParameter(false, "roi_name");
     private OptionalDefaultExpressionParameter positionX = new OptionalDefaultExpressionParameter(false, "x");
     private OptionalDefaultExpressionParameter positionY = new OptionalDefaultExpressionParameter(false, "y");
     private OptionalDefaultExpressionParameter positionZ = new OptionalDefaultExpressionParameter(false, "z");
@@ -169,25 +169,22 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
     }
 
     private Color parseColor(Object o) {
-        if(o instanceof Color) {
+        if (o instanceof Color) {
             return (Color) o;
-        }
-        else if(o instanceof String) {
+        } else if (o instanceof String) {
             return ColorUtils.parseColor((String) o);
-        }
-        else if(o instanceof Collection) {
+        } else if (o instanceof Collection) {
             Collection<?> collection = (Collection<?>) o;
             Iterator<?> iterator = collection.iterator();
-            int red = ((Number)iterator.next()).intValue();
-            int green = ((Number)iterator.next()).intValue();
-            int blue = ((Number)iterator.next()).intValue();
+            int red = ((Number) iterator.next()).intValue();
+            int green = ((Number) iterator.next()).intValue();
+            int blue = ((Number) iterator.next()).intValue();
             int alpha = 255;
-            if(iterator.hasNext()) {
-                alpha = ((Number)iterator.next()).intValue();
+            if (iterator.hasNext()) {
+                alpha = ((Number) iterator.next()).intValue();
             }
             return new Color(red, green, blue, alpha);
-        }
-        else {
+        } else {
             return null;
         }
     }

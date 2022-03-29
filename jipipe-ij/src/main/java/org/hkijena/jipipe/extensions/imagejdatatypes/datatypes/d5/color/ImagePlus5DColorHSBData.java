@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.HSBColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
@@ -41,7 +40,7 @@ import java.awt.*;
 @JIPipeNode(menuPath = "Images\n5D\nColor")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = HSBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 5)
-public class ImagePlus5DColorHSBData extends ImagePlus5DColorData  {
+public class ImagePlus5DColorHSBData extends ImagePlus5DColorData {
 
     /**
      * @param image wrapped image
@@ -56,6 +55,7 @@ public class ImagePlus5DColorHSBData extends ImagePlus5DColorData  {
 
     /**
      * Creates an empty image with given dimensions
+     *
      * @param dimensions the dimensions
      */
     public ImagePlus5DColorHSBData(ImageDimensions dimensions) {

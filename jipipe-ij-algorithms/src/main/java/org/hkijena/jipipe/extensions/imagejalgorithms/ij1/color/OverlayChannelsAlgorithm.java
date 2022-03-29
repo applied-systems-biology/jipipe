@@ -110,7 +110,7 @@ public class OverlayChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         Map<JIPipeDataSlot, Channel> channelMap = new HashMap<>();
         Map<JIPipeDataSlot, ImagePlus> channelInputMap = new HashMap<>();
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
-            ImagePlus image = ((ImagePlusData)dataBatch.getInputData(inputSlot, inputSlot.getAcceptedDataType(), progressInfo)).getImage();
+            ImagePlus image = ((ImagePlusData) dataBatch.getInputData(inputSlot, inputSlot.getAcceptedDataType(), progressInfo)).getImage();
             if (image.getType() != ImagePlus.COLOR_RGB) {
                 image = ImageJUtils.convertToGreyscale8UIfNeeded(image);
             }

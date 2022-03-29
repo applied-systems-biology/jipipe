@@ -17,7 +17,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeProgressInfoOutputStream;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -85,7 +84,7 @@ public class ArchiveUtils {
     }
 
     public static void decompressTarGZ(Path zipFile, Path targetDir, JIPipeProgressInfo progressInfo) throws IOException {
-        try(FileInputStream in = new FileInputStream(zipFile.toFile())) {
+        try (FileInputStream in = new FileInputStream(zipFile.toFile())) {
             GzipCompressorInputStream gzipIn = new GzipCompressorInputStream(in);
             try (TarArchiveInputStream tarIn = new TarArchiveInputStream(gzipIn)) {
                 TarArchiveEntry entry;
@@ -98,17 +97,16 @@ public class ArchiveUtils {
                     Path entryOutputPath = targetDir.resolve(Paths.get(entryName));
                     progressInfo.log("Entry " + entryName + " -> " + entryOutputPath);
 
-                    if(entry.isSymbolicLink() ||entry.isLink()) {
+                    if (entry.isSymbolicLink() || entry.isLink()) {
                         Path linkName = Paths.get(StringUtils.nullTerminate(entry.getLinkName()));
-                        if(!linkName.isAbsolute()) {
+                        if (!linkName.isAbsolute()) {
                             linkName = entryOutputPath.getParent().resolve(linkName);
                         }
                         // Needs to be deferred
                         createdLinks.put(linkName, entryOutputPath);
-                    }
-                    else if (entry.isDirectory()) {
+                    } else if (entry.isDirectory()) {
                         Files.createDirectories(entryOutputPath);
-                    } else if(entry.isFile()) {
+                    } else if (entry.isFile()) {
 
                         // Ensure that parent directories exist
                         Files.createDirectories(entryOutputPath.getParent());
@@ -122,8 +120,7 @@ public class ArchiveUtils {
                                 }
                             }
                         }
-                    }
-                    else {
+                    } else {
                         progressInfo.log("Unsupported entry: " + entryName);
                     }
                 }

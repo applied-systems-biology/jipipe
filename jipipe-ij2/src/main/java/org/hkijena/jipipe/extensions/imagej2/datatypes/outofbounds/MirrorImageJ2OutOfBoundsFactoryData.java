@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds;
 
-import net.imglib2.algorithm.neighborhood.Shape;
 import net.imglib2.outofbounds.OutOfBoundsFactory;
 import net.imglib2.outofbounds.OutOfBoundsMirrorFactory;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -8,11 +7,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.ImageJ2ShapeData;
-import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.RectangleImageJ2ShapeData;
 import org.hkijena.jipipe.utils.ReflectionUtils;
-
-import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "IJ2 Mirror Out Of Bounds factory", description = "Creates appropriate strategies that virtually mirror an image at its borders.")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
@@ -25,7 +20,7 @@ public class MirrorImageJ2OutOfBoundsFactoryData extends ImageJ2OutOfBoundsFacto
 
     }
 
-    public MirrorImageJ2OutOfBoundsFactoryData(OutOfBoundsMirrorFactory<?,?> factory) {
+    public MirrorImageJ2OutOfBoundsFactoryData(OutOfBoundsMirrorFactory<?, ?> factory) {
         try {
             // Why is there no getter?
             this.boundary = (OutOfBoundsMirrorFactory.Boundary) ReflectionUtils.getFieldValue(OutOfBoundsMirrorFactory.class.getDeclaredField("boundary"), factory);
@@ -36,6 +31,10 @@ public class MirrorImageJ2OutOfBoundsFactoryData extends ImageJ2OutOfBoundsFacto
 
     public MirrorImageJ2OutOfBoundsFactoryData(MirrorImageJ2OutOfBoundsFactoryData other) {
         this.boundary = other.boundary;
+    }
+
+    public static MirrorImageJ2OutOfBoundsFactoryData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return (MirrorImageJ2OutOfBoundsFactoryData) ImageJ2OutOfBoundsFactoryData.importData(storage, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Boundary", description = "Boundary pixels are either " +
@@ -54,10 +53,6 @@ public class MirrorImageJ2OutOfBoundsFactoryData extends ImageJ2OutOfBoundsFacto
     @Override
     public OutOfBoundsFactory<?, ?> createFactory() {
         return new OutOfBoundsMirrorFactory(boundary);
-    }
-
-    public static MirrorImageJ2OutOfBoundsFactoryData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return (MirrorImageJ2OutOfBoundsFactoryData) ImageJ2OutOfBoundsFactoryData.importData(storage, progressInfo);
     }
 
     @Override

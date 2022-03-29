@@ -42,8 +42,9 @@ public interface JIPipeJavaExtension extends SciJavaPlugin, JIPipeDependency {
 
     /**
      * Registers custom modules into JIPipe
-     * @param jiPipe the {@link JIPipe} instance that calls this function
-     * @param context the SciJava {@link Context}
+     *
+     * @param jiPipe       the {@link JIPipe} instance that calls this function
+     * @param context      the SciJava {@link Context}
      * @param progressInfo the progress info
      */
     void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo);

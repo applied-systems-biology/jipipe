@@ -11,8 +11,6 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.ImageJ2OutOfBoundsFactoryData;
 
-import java.nio.file.Path;
-
 @JIPipeDocumentation(name = "IJ2 Constant Integer Out Of Bounds factory", description = "Sets the values outside the image border to a constant value.")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
@@ -24,21 +22,21 @@ public class IntegerConstantValueImageJ2OutOfBoundsFactoryData extends ImageJ2Ou
 
     }
 
-    public IntegerConstantValueImageJ2OutOfBoundsFactoryData(OutOfBoundsConstantValueFactory<?,?> factory) {
-        this.value = (int)((RealType)factory.getValue()).getRealDouble();
+    public IntegerConstantValueImageJ2OutOfBoundsFactoryData(OutOfBoundsConstantValueFactory<?, ?> factory) {
+        this.value = (int) ((RealType) factory.getValue()).getRealDouble();
     }
 
     public IntegerConstantValueImageJ2OutOfBoundsFactoryData(IntegerConstantValueImageJ2OutOfBoundsFactoryData other) {
         this.value = other.value;
     }
 
+    public static IntegerConstantValueImageJ2OutOfBoundsFactoryData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return (IntegerConstantValueImageJ2OutOfBoundsFactoryData) ImageJ2OutOfBoundsFactoryData.importData(storage, progressInfo);
+    }
+
     @Override
     public OutOfBoundsFactory<?, ?> createFactory() {
         return new OutOfBoundsConstantValueFactory(new IntType(value));
-    }
-
-    public static IntegerConstantValueImageJ2OutOfBoundsFactoryData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return (IntegerConstantValueImageJ2OutOfBoundsFactoryData) ImageJ2OutOfBoundsFactoryData.importData(storage, progressInfo);
     }
 
     @Override

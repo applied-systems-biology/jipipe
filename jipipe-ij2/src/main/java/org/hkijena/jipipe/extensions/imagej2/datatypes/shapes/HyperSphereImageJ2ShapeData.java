@@ -1,18 +1,12 @@
 package org.hkijena.jipipe.extensions.imagej2.datatypes.shapes;
 
-import com.google.common.primitives.Longs;
 import net.imglib2.algorithm.neighborhood.HyperSphereShape;
-import net.imglib2.algorithm.neighborhood.PairOfPointsShape;
 import net.imglib2.algorithm.neighborhood.Shape;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.list.LongList;
-import org.hkijena.jipipe.utils.json.JsonUtils;
-
-import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "IJ2 Hypersphere Shape", description = "A Shape representing a hypersphere.")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
@@ -33,13 +27,13 @@ public class HyperSphereImageJ2ShapeData extends ImageJ2ShapeData {
         this.radius = shape.getRadius();
     }
 
+    public static HyperSphereImageJ2ShapeData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return (HyperSphereImageJ2ShapeData) ImageJ2ShapeData.importData(storage, progressInfo);
+    }
+
     @Override
     public Shape createShape() {
         return new HyperSphereShape(radius);
-    }
-
-    public static HyperSphereImageJ2ShapeData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return (HyperSphereImageJ2ShapeData) ImageJ2ShapeData.importData(storage, progressInfo);
     }
 
     @Override

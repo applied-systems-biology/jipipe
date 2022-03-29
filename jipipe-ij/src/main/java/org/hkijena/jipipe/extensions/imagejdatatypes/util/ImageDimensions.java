@@ -16,20 +16,20 @@ public class ImageDimensions {
         this.sizeZ = sizeZ;
         this.sizeC = sizeC;
         this.sizeT = sizeT;
-        if(width <= 0)
+        if (width <= 0)
             throw new IllegalArgumentException("Invalid width " + width);
-        if(height <= 0)
+        if (height <= 0)
             throw new IllegalArgumentException("Invalid height " + height);
-        if(sizeZ <= 0)
+        if (sizeZ <= 0)
             throw new IllegalArgumentException("Invalid sizeZ " + sizeZ);
-        if(sizeC <= 0)
+        if (sizeC <= 0)
             throw new IllegalArgumentException("Invalid sizeC " + sizeC);
-        if(sizeT <= 0)
+        if (sizeT <= 0)
             throw new IllegalArgumentException("Invalid sizeT " + sizeT);
     }
 
     public ImageDimensions(int width, int height) {
-        this(width, height, 1,1,1);
+        this(width, height, 1, 1, 1);
     }
 
     public int getWidth() {

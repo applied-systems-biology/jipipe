@@ -9,12 +9,14 @@ import java.lang.annotation.RetentionPolicy;
 public @interface ImageJImporterParameterSettings {
     /**
      * The data type that is targeted
+     *
      * @return the base class
      */
     Class<? extends JIPipeData> baseClass() default JIPipeData.class;
 
     /**
      * If true, conversions are considered
+     *
      * @return if convertible importers are considered
      */
     boolean includeConvertible() default true;

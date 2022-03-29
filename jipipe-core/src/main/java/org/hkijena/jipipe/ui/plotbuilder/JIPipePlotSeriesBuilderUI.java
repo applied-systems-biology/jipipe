@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.plotbuilder;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -91,7 +90,7 @@ public class JIPipePlotSeriesBuilderUI extends JIPipeWorkbenchPanel {
     }
 
     private void removeSeries() {
-        if(JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
+        if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this),
                 "Do you really want to remove the series '" + seriesBuilder.getName() + "'?",
                 "Delete series",
                 JOptionPane.YES_NO_OPTION,

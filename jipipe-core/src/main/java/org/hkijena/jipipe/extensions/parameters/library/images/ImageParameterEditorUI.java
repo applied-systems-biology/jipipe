@@ -43,17 +43,17 @@ public class ImageParameterEditorUI extends JIPipeParameterEditorUI {
         add(importButton, BorderLayout.CENTER);
 
         JMenuItem openImageItem = new JMenuItem("Open from file ...", UIUtils.getIconFromResources("actions/document-open-folder.png"));
-        openImageItem.addActionListener(e->importImageFile());
+        openImageItem.addActionListener(e -> importImageFile());
         importMenu.add(openImageItem);
 
         JMenuItem importIconItem = new JMenuItem("Load icon", UIUtils.getIconFromResources("actions/view_icon.png"));
-        importIconItem.addActionListener(e->importIcon());
+        importIconItem.addActionListener(e -> importIcon());
         importMenu.add(importIconItem);
     }
 
     private void importIcon() {
         String picked = JIPipeIconPickerDialog.showDialog(this, ResourceUtils.getResourcePath("icons"), IconRefParameterEditorUI.getAvailableIcons());
-        if(picked != null) {
+        if (picked != null) {
             ImageIcon icon = UIUtils.getIconFromResources(picked);
             BufferedImage bufferedImage = UIUtils.toBufferedImage(icon.getImage(), BufferedImage.TYPE_INT_ARGB);
             importImage(bufferedImage);
@@ -65,7 +65,7 @@ public class ImageParameterEditorUI extends JIPipeParameterEditorUI {
                 FileChooserSettings.LastDirectoryKey.External,
                 "Open image",
                 UIUtils.EXTENSION_FILTER_IMAGEIO_IMAGES);
-        if(path != null) {
+        if (path != null) {
             try {
                 BufferedImage image = ImageIO.read(path.toFile());
                 importImage(image);
@@ -79,18 +79,18 @@ public class ImageParameterEditorUI extends JIPipeParameterEditorUI {
         ImageParameterSettings annotation = getParameterAccess().getAnnotationOfType(ImageParameterSettings.class);
         int maxWidth = -1;
         int maxHeight = -1;
-        if(annotation != null) {
+        if (annotation != null) {
             maxWidth = annotation.maxWidth();
             maxHeight = annotation.maxHeight();
         }
         double scale = 1.0;
-        if(maxWidth > 0) {
+        if (maxWidth > 0) {
             scale = 1.0 * maxWidth / image.getWidth();
         }
-        if(maxHeight > 0) {
+        if (maxHeight > 0) {
             scale = Math.min(1.0 * maxHeight / image.getHeight(), scale);
         }
-        if(scale != 1.0) {
+        if (scale != 1.0) {
             Image scaledInstance = image.getScaledInstance((int) (image.getWidth() * scale), (int) (image.getHeight() * scale), Image.SCALE_DEFAULT);
             image = UIUtils.toBufferedImage(scaledInstance, BufferedImage.TYPE_INT_ARGB);
         }
@@ -108,11 +108,10 @@ public class ImageParameterEditorUI extends JIPipeParameterEditorUI {
     @Override
     public void reload() {
         ImageParameter parameter = getParameter(ImageParameter.class);
-        if(parameter.getImage() == null) {
+        if (parameter.getImage() == null) {
             imagePreview.setText("NA");
             imagePreview.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
-        }
-        else {
+        } else {
             imagePreview.setText("");
             imagePreview.setIcon(new ImageIcon(parameter.getImage()));
         }

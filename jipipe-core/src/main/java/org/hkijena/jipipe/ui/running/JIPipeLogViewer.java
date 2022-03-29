@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.api.JIPipeProjectRun;
-import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -30,7 +28,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
 
 public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
     private final JList<JIPipeLogs.LogEntry> logEntryJList = new JList<>();
@@ -100,7 +97,7 @@ public class JIPipeLogViewer extends JIPipeProjectWorkbenchPanel {
     @Subscribe
     public void onLogEntryAdded(JIPipeLogs.LogEntryAddedEvent event) {
         updateEntryList();
-        if(currentlyDisplayedLog != null) {
+        if (currentlyDisplayedLog != null) {
             logEntryJList.setSelectedValue(currentlyDisplayedLog, true);
             showLog(currentlyDisplayedLog);
         }

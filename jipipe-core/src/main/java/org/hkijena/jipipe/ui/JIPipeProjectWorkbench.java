@@ -92,18 +92,18 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     public static final String TAB_NOTIFICATIONS = "NOTIFICATIONS";
     public static final String TAB_PROJECT_OVERVIEW = "PROJECT_OVERVIEW";
     public static final String TAB_LOG = "LOG";
-    public DocumentTabPane documentTabPane;
     private final JIPipeProjectWindow window;
     private final JIPipeProject project;
-    private JLabel statusText;
     private final Context context;
-    private ReloadableValidityChecker validityCheckerPanel;
-    private JIPipePluginValidityCheckerPanel pluginValidityCheckerPanel;
     private final RealTimeProjectRunner realTimeProjectRunner;
     private final VirtualDataControl virtualDataControl;
-    private boolean projectModified;
     private final JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
     private final NotificationButton notificationButton = new NotificationButton(this);
+    public DocumentTabPane documentTabPane;
+    private JLabel statusText;
+    private ReloadableValidityChecker validityCheckerPanel;
+    private JIPipePluginValidityCheckerPanel pluginValidityCheckerPanel;
+    private boolean projectModified;
 
     /**
      * @param window           Parent window
@@ -188,7 +188,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     }
 
     private void restoreTabs() {
-        if(project.getMetadata().isRestoreTabs()) {
+        if (project.getMetadata().isRestoreTabs()) {
             try {
                 Object metadata = project.getAdditionalMetadata().getOrDefault(JIPipeProjectTabMetadata.METADATA_KEY, null);
                 if (metadata instanceof JIPipeProjectTabMetadata) {
@@ -197,8 +197,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
-        else {
+        } else {
             documentTabPane.selectSingletonTab(TAB_COMPARTMENT_EDITOR);
             documentTabPane.selectSingletonTab(TAB_PROJECT_OVERVIEW);
         }
@@ -225,7 +224,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                 "Getting started",
                 UIUtils.getIconFromResources("actions/help-info.png"),
                 () -> new WelcomePanel(this),
-                (GeneralUISettings.getInstance().isShowIntroduction() &&showIntroduction) ? DocumentTabPane.SingletonTabMode.Present : DocumentTabPane.SingletonTabMode.Hidden);
+                (GeneralUISettings.getInstance().isShowIntroduction() && showIntroduction) ? DocumentTabPane.SingletonTabMode.Present : DocumentTabPane.SingletonTabMode.Hidden);
         documentTabPane.registerSingletonTab(TAB_PROJECT_OVERVIEW,
                 "Project overview",
                 UIUtils.getIconFromResources("actions/help-info.png"),
@@ -686,7 +685,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     }
 
     private void manageImageJPlugins(boolean useJIPipeUpdater) {
-        if(useJIPipeUpdater) {
+        if (useJIPipeUpdater) {
             List<DocumentTabPane.DocumentTab> tabs = getDocumentTabPane().getTabsContaining(JIPipeImageJPluginManager.class);
             if (!tabs.isEmpty()) {
                 getDocumentTabPane().switchToContent(tabs.get(0).getContent());
@@ -699,8 +698,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
                         false);
                 getDocumentTabPane().switchToLastTab();
             }
-        }
-        else {
+        } else {
             ImageJUpdater updater = new ImageJUpdater();
             getContext().inject(updater);
             updater.run();

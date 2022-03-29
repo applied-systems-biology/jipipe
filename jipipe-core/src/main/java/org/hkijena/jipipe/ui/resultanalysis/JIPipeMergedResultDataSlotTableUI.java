@@ -179,7 +179,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
             variables.add(new ExpressionParameterVariable(table.getModel().getColumnName(i), "", table.getModel().getColumnName(i)));
         }
         String result = ExpressionBuilderUI.showDialog(getWorkbench().getWindow(), searchTextField.getText(), variables);
-        if(result != null) {
+        if (result != null) {
             searchTextField.setText(result);
         }
     }
@@ -227,7 +227,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         JIPipeDataSlot slot = mergedDataTable.getSlot(multiRow);
         JIPipeResultDataSlotRowUI ui = JIPipe.getDataTypes().getUIForResultSlot(getProjectWorkbench(), slot, rowInstance);
         int dataAnnotationColumn = -1;
-        if(multiDataAnnotationColumn >= 0) {
+        if (multiDataAnnotationColumn >= 0) {
             String name = mergedDataTable.getDataAnnotationColumns().get(multiDataAnnotationColumn);
             dataAnnotationColumn = slot.getDataAnnotationColumns().indexOf(name);
         }

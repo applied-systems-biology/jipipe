@@ -134,6 +134,29 @@ public class ImagePlusData implements JIPipeData {
         return (ColorSpace) ReflectionUtils.newInstance(dataType.getAnnotation(ImageTypeInfo.class).colorSpace());
     }
 
+    /**
+     * Gets the dimensionality of {@link ImagePlusData}
+     *
+     * @param klass the class
+     * @return the dimensionality
+     */
+    public static int getDimensionalityOf(Class<? extends ImagePlusData> klass) {
+        return klass.getAnnotation(ImageTypeInfo.class).numDimensions();
+    }
+
+    /**
+     * Converts the incoming image data into the current format.
+     *
+     * @param data the data
+     * @return the converted data
+     */
+    public static ImagePlusData convertFrom(ImagePlusData data) {
+        if (data.hasLoadedImage())
+            return new ImagePlusData(data.getImage(), data.getColorSpace());
+        else
+            return new ImagePlusData(data.getImageSource(), data.getColorSpace());
+    }
+
     public int getWidth() {
         return getImage().getWidth();
     }
@@ -156,6 +179,7 @@ public class ImagePlusData implements JIPipeData {
 
     /**
      * Returns true if the image is grayscale
+     *
      * @return if the image is grayscale
      */
     public boolean isGrayscale() {
@@ -175,6 +199,7 @@ public class ImagePlusData implements JIPipeData {
     /**
      * Returns the appropriate Java type that stores the pixel data.
      * Does not return Java primitives, but instead their wrapper classes.
+     *
      * @return the pixel type
      */
     public Class<?> getPixelType() {
@@ -195,6 +220,7 @@ public class ImagePlusData implements JIPipeData {
 
     /**
      * Returns the appropriate {@link ImageProcessor} that stores the pixel data.
+     *
      * @return the {@link ImageProcessor} type
      */
     public Class<? extends ImageProcessor> getImageProcessorType() {
@@ -211,29 +237,6 @@ public class ImagePlusData implements JIPipeData {
             default:
                 throw new IllegalArgumentException();
         }
-    }
-
-    /**
-     * Gets the dimensionality of {@link ImagePlusData}
-     *
-     * @param klass the class
-     * @return the dimensionality
-     */
-    public static int getDimensionalityOf(Class<? extends ImagePlusData> klass) {
-        return klass.getAnnotation(ImageTypeInfo.class).numDimensions();
-    }
-
-    /**
-     * Converts the incoming image data into the current format.
-     *
-     * @param data the data
-     * @return the converted data
-     */
-    public static ImagePlusData convertFrom(ImagePlusData data) {
-        if (data.hasLoadedImage())
-            return new ImagePlusData(data.getImage(), data.getColorSpace());
-        else
-            return new ImagePlusData(data.getImageSource(), data.getColorSpace());
     }
 
     /**

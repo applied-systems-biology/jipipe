@@ -33,10 +33,10 @@ import ij.util.Tools;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.tables.ConvertingColumnOperation;
@@ -73,13 +73,12 @@ import static ij.measure.ResultsTable.COLUMN_NOT_FOUND;
 @JsonSerialize(using = ResultsTableData.Serializer.class)
 @JsonDeserialize(using = ResultsTableData.Deserializer.class)
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.csv file that contains the table data.",
-jsonSchemaURL = "https://jipipe.org/schemas/datatypes/results-table.schema.json")
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/results-table.schema.json")
 public class ResultsTableData implements JIPipeData, TableModel {
 
     private static final char commaSubstitute = 0x08B3;
-
-    private ResultsTable table;
     private final List<TableModelListener> listeners = new ArrayList<>();
+    private ResultsTable table;
 
     /**
      * Creates a new instance

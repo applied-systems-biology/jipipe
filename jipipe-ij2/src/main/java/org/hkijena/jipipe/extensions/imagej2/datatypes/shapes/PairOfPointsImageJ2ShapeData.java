@@ -11,8 +11,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.LongList;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import java.nio.file.Path;
-
 @JIPipeDocumentation(name = "IJ2 Pair Of Points Shape", description = "A Shape representing a pair of points. " +
         "The Shape as its origin at the first point, and the second one is simply found by adding the value of the offset array to its position.")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
@@ -33,13 +31,13 @@ public class PairOfPointsImageJ2ShapeData extends ImageJ2ShapeData {
         this.offset.addAll(Longs.asList(shape.getOffset()));
     }
 
+    public static PairOfPointsImageJ2ShapeData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return (PairOfPointsImageJ2ShapeData) ImageJ2ShapeData.importData(storage, progressInfo);
+    }
+
     @Override
     public Shape createShape() {
         return new PairOfPointsShape(Longs.toArray(offset));
-    }
-
-    public static PairOfPointsImageJ2ShapeData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return (PairOfPointsImageJ2ShapeData) ImageJ2ShapeData.importData(storage, progressInfo);
     }
 
     @Override

@@ -6,7 +6,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeDummyParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
@@ -22,11 +21,11 @@ import java.util.Map;
 
 public class ParametersDataViewer extends JIPipeWorkbenchPanel {
 
-    private ParametersData parametersData;
     private final DocumentTabPane tabPane = new DocumentTabPane();
     private final EditorPane jsonViewer = new EditorPane();
     private final TableEditor tableViewer;
     private final ParameterPanel guiViewer;
+    private ParametersData parametersData;
 
     /**
      * @param workbench the workbench
@@ -41,13 +40,8 @@ public class ParametersDataViewer extends JIPipeWorkbenchPanel {
         initialize();
     }
 
-    public void setParametersData(ParametersData parametersData) {
-        this.parametersData = parametersData;
-        updateData();
-    }
-
     private void updateData() {
-        if(parametersData != null) {
+        if (parametersData != null) {
             // GUI
             JIPipeDynamicParameterCollection asGUI = new JIPipeDynamicParameterCollection();
             for (Map.Entry<String, Object> entry : ((ParametersData) parametersData.duplicate(new JIPipeProgressInfo())).getParameterData().entrySet()) {
@@ -66,8 +60,7 @@ public class ParametersDataViewer extends JIPipeWorkbenchPanel {
             // Json
             String asJson = JsonUtils.toPrettyJsonString(parametersData);
             jsonViewer.setText(asJson);
-        }
-        else {
+        } else {
             guiViewer.setDisplayedParameters(new JIPipeDummyParameterCollection());
             tableViewer.setTableModel(new ResultsTableData());
             jsonViewer.setText("");
@@ -118,5 +111,10 @@ public class ParametersDataViewer extends JIPipeWorkbenchPanel {
 
     public ParametersData getParametersData() {
         return parametersData;
+    }
+
+    public void setParametersData(ParametersData parametersData) {
+        this.parametersData = parametersData;
+        updateData();
     }
 }

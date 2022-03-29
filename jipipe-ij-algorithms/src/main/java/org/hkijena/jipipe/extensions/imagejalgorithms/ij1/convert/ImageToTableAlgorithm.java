@@ -117,10 +117,9 @@ public class ImageToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             target.setValueAt(z, row, 2);
             target.setValueAt(c, row, 3);
             target.setValueAt(t, row, 4);
-            if(isGreyscale) {
+            if (isGreyscale) {
                 target.setValueAt(imp.getf(i), row, 5);
-            }
-            else {
+            } else {
                 colorSpace.decomposePixel(imp.get(i), channelBuffer);
                 for (int channel = 0; channel < channelBuffer.length; channel++) {
                     target.setValueAt(channelBuffer[channel], row, 5 + channel);
@@ -135,10 +134,9 @@ public class ImageToTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         resultsTable.addNumericColumn("z");
         resultsTable.addNumericColumn("c");
         resultsTable.addNumericColumn("t");
-        if(inputData.isGrayscale()) {
+        if (inputData.isGrayscale()) {
             resultsTable.addNumericColumn("value");
-        }
-        else {
+        } else {
             for (int c = 0; c < inputData.getColorSpace().getNChannels(); c++) {
                 resultsTable.addNumericColumn(inputData.getColorSpace().getChannelShortName(c));
             }

@@ -11,8 +11,6 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.ImageJ2OutOfBoundsFactoryData;
 
-import java.nio.file.Path;
-
 @JIPipeDocumentation(name = "IJ2 Constant Float Out Of Bounds factory", description = "Sets the values outside the image border to a constant value.")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
@@ -24,21 +22,21 @@ public class FloatConstantValueImageJ2OutOfBoundsFactoryData extends ImageJ2OutO
 
     }
 
-    public FloatConstantValueImageJ2OutOfBoundsFactoryData(OutOfBoundsConstantValueFactory<?,?> factory) {
-        this.value = (float)((RealType)factory.getValue()).getRealDouble();
+    public FloatConstantValueImageJ2OutOfBoundsFactoryData(OutOfBoundsConstantValueFactory<?, ?> factory) {
+        this.value = (float) ((RealType) factory.getValue()).getRealDouble();
     }
 
     public FloatConstantValueImageJ2OutOfBoundsFactoryData(FloatConstantValueImageJ2OutOfBoundsFactoryData other) {
         this.value = other.value;
     }
 
+    public static FloatConstantValueImageJ2OutOfBoundsFactoryData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return (FloatConstantValueImageJ2OutOfBoundsFactoryData) ImageJ2OutOfBoundsFactoryData.importData(storage, progressInfo);
+    }
+
     @Override
     public OutOfBoundsFactory<?, ?> createFactory() {
         return new OutOfBoundsConstantValueFactory(new FloatType(value));
-    }
-
-    public static FloatConstantValueImageJ2OutOfBoundsFactoryData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return (FloatConstantValueImageJ2OutOfBoundsFactoryData) ImageJ2OutOfBoundsFactoryData.importData(storage, progressInfo);
     }
 
     @Override

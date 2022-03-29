@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
-import gnu.trove.set.TIntSet;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -390,7 +389,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
      * Please note that annotations that are added to all annotations should be set up till this point
      *
      * @param slot                  Slot instance
-     * @param virtualData                  Added data
+     * @param virtualData           Added data
      * @param additionalAnnotations Annotations that are added additionally to the merged ones
      * @param mergeStrategy         how annotations should be merged
      * @param progressInfo          storage progress

@@ -5,7 +5,6 @@ import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.ImageJ2DatasetData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedImagePlusDataViewerWindow;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 
 public class ImageJDataSetDataImageViewerCustomLoader extends CachedImagePlusDataViewerWindow.CustomDataLoader {
     @Override

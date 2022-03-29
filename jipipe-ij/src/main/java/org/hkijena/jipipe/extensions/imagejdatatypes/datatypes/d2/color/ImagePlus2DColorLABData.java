@@ -40,7 +40,7 @@ import java.awt.*;
 @JIPipeNode(menuPath = "Images\n2D\nColor")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = LABColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 2)
-public class ImagePlus2DColorLABData extends ImagePlus2DColorData{
+public class ImagePlus2DColorLABData extends ImagePlus2DColorData {
 
     /**
      * @param image wrapped image
@@ -55,6 +55,7 @@ public class ImagePlus2DColorLABData extends ImagePlus2DColorData{
 
     /**
      * Creates an empty image with given dimensions
+     *
      * @param dimensions the dimensions
      */
     public ImagePlus2DColorLABData(ImageDimensions dimensions) {

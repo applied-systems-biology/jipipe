@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds;
 
-import net.imglib2.algorithm.neighborhood.Shape;
 import net.imglib2.outofbounds.OutOfBoundsFactory;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;

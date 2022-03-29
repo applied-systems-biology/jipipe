@@ -20,7 +20,7 @@ import java.nio.file.Path;
  */
 @JIPipeDocumentation(name = "Cellpose size model", description = "A Cellpose size model")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "A single .npy file that contains the Cellpose size model",
-jsonSchemaURL = "https://jipipe.org/schemas/datatypes/cellpose-size-model-data.schema.json")
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/cellpose-size-model-data.schema.json")
 public class CellPoseSizeModelData implements JIPipeData {
 
     final byte[] data;

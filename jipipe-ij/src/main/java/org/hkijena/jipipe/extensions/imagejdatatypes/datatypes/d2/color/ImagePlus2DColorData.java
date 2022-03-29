@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color;
 
-import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -27,7 +26,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 
@@ -42,7 +40,7 @@ import java.awt.*;
 @JIPipeNode(menuPath = "Images\n2D\nColor")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = RGBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 2)
-public class ImagePlus2DColorData extends ImagePlus2DData  {
+public class ImagePlus2DColorData extends ImagePlus2DData {
 
     /**
      * @param image wrapped image

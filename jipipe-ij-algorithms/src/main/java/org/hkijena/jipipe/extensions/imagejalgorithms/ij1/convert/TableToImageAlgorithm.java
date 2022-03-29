@@ -19,9 +19,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.filters.NonGenericImagePlusDataClassFilter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
+import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.ZeroTableColumn;
@@ -33,8 +33,8 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private JIPipeDataInfoRef outputImageType = new JIPipeDataInfoRef(ImagePlusGreyscale8UData.class);
     private final JIPipeDynamicParameterCollection columnAssignment;
+    private JIPipeDataInfoRef outputImageType = new JIPipeDataInfoRef(ImagePlusGreyscale8UData.class);
     private OptionalIntegerParameter customWidth = new OptionalIntegerParameter();
     private OptionalIntegerParameter customHeight = new OptionalIntegerParameter();
     private OptionalIntegerParameter customSizeZ = new OptionalIntegerParameter();
@@ -68,9 +68,9 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         progressInfo.log("Determining image properties");
         int width = findSizeFromTableOrParameter(table, customWidth, "x");
         int height = findSizeFromTableOrParameter(table, customHeight, "y");
-        int sizeZ= typeInfo.numDimensions() > 2 ? findSizeFromTableOrParameter(table, customSizeZ, "z") : 1;
-        int sizeC= typeInfo.numDimensions() > 2 ? findSizeFromTableOrParameter(table, customSizeC, "c") : 1;
-        int sizeT= typeInfo.numDimensions() > 2 ? findSizeFromTableOrParameter(table, customSizeT, "t") : 1;
+        int sizeZ = typeInfo.numDimensions() > 2 ? findSizeFromTableOrParameter(table, customSizeZ, "z") : 1;
+        int sizeC = typeInfo.numDimensions() > 2 ? findSizeFromTableOrParameter(table, customSizeC, "c") : 1;
+        int sizeT = typeInfo.numDimensions() > 2 ? findSizeFromTableOrParameter(table, customSizeT, "t") : 1;
 
         // Collect data and create image
 
@@ -89,7 +89,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         TableColumn cColumn = new ZeroTableColumn();
         TableColumn tColumn = new ZeroTableColumn();
 
-        if(typeInfo.numDimensions() > 2) {
+        if (typeInfo.numDimensions() > 2) {
             TableColumnSourceExpressionParameter zColumnSource = columnAssignment.getValue("z", TableColumnSourceExpressionParameter.class);
             TableColumnSourceExpressionParameter cColumnSource = columnAssignment.getValue("c", TableColumnSourceExpressionParameter.class);
             TableColumnSourceExpressionParameter tColumnSource = columnAssignment.getValue("t", TableColumnSourceExpressionParameter.class);
@@ -98,9 +98,9 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             tColumn = tColumnSource.pickOrGenerateColumn(table);
         }
 
-        progressInfo.log("Generating image from " + table.getRowCount() +" rows (this might take long)");
+        progressInfo.log("Generating image from " + table.getRowCount() + " rows (this might take long)");
 
-        if(colorSpace instanceof GreyscaleColorSpace) {
+        if (colorSpace instanceof GreyscaleColorSpace) {
             TableColumnSourceExpressionParameter valueColumnSource = columnAssignment.getValue("value", TableColumnSourceExpressionParameter.class);
             TableColumn valueColumn = valueColumnSource.pickOrGenerateColumn(table);
 
@@ -115,7 +115,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 int z = (int) zColumn.getRowAsDouble(row);
                 int c = (int) cColumn.getRowAsDouble(row);
                 int t = (int) tColumn.getRowAsDouble(row);
-                if(lastProcessor == null || z != lastZ || c != lastC || t != lastT) {
+                if (lastProcessor == null || z != lastZ || c != lastC || t != lastT) {
                     lastProcessor = ImageJUtils.getSliceZero(img, c, z, t);
                     lastC = c;
                     lastZ = z;
@@ -123,15 +123,14 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 }
 
                 // Get x,y
-                int x = (int)xColumn.getRowAsDouble(row);
-                int y = (int)yColumn.getRowAsDouble(row);
+                int x = (int) xColumn.getRowAsDouble(row);
+                int y = (int) yColumn.getRowAsDouble(row);
 
                 // Write value
                 float value = (float) valueColumn.getRowAsDouble(row);
                 lastProcessor.setf(x, y, value);
             }
-        }
-        else {
+        } else {
             int[] buffer = new int[colorSpace.getNChannels()];
             TableColumn[] channelColumns = new TableColumn[colorSpace.getNChannels()];
             for (int i = 0; i < colorSpace.getNChannels(); i++) {
@@ -149,7 +148,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 int z = (int) zColumn.getRowAsDouble(row);
                 int c = (int) cColumn.getRowAsDouble(row);
                 int t = (int) tColumn.getRowAsDouble(row);
-                if(lastProcessor == null || z != lastZ || c != lastC || t != lastT) {
+                if (lastProcessor == null || z != lastZ || c != lastC || t != lastT) {
                     lastProcessor = ImageJUtils.getSliceZero(img, c, z, t);
                     lastC = c;
                     lastZ = z;
@@ -157,8 +156,8 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 }
 
                 // Get x,y
-                int x = (int)xColumn.getRowAsDouble(row);
-                int y = (int)yColumn.getRowAsDouble(row);
+                int x = (int) xColumn.getRowAsDouble(row);
+                int y = (int) yColumn.getRowAsDouble(row);
 
                 // channel values
                 for (int i = 0; i < colorSpace.getNChannels(); i++) {
@@ -174,10 +173,9 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     private int findSizeFromTableOrParameter(ResultsTableData table, OptionalIntegerParameter parameter, String key) {
-        if(parameter.isEnabled()) {
+        if (parameter.isEnabled()) {
             return parameter.getContent();
-        }
-        else {
+        } else {
             return findSizeFromTable(table, columnAssignment.getValue(key, TableColumnSourceExpressionParameter.class));
         }
     }
@@ -186,7 +184,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         TableColumn tableColumn = columnSource.pickOrGenerateColumn(table);
         int max = 0;
         for (int i = 0; i < tableColumn.getRows(); i++) {
-            max = Math.max(max, (int)tableColumn.getRowAsDouble(i));
+            max = Math.max(max, (int) tableColumn.getRowAsDouble(i));
         }
         return max + 1;
     }
@@ -200,10 +198,10 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeParameter("output-image-type")
     public void setOutputImageType(JIPipeDataInfoRef outputImageType) {
-        if(outputImageType.getInfo() != this.outputImageType.getInfo()) {
+        if (outputImageType.getInfo() != this.outputImageType.getInfo()) {
             this.outputImageType = outputImageType;
             updateColumnAssignment();
-            if(outputImageType.getInfo() != null) {
+            if (outputImageType.getInfo() != null) {
                 getFirstOutputSlot().setAcceptedDataType(outputImageType.getInfo().getDataClass());
             }
         }
@@ -266,9 +264,9 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private void updateColumnAssignment() {
         getColumnAssignment().clear();
-        if(outputImageType.getInfo() != null) {
+        if (outputImageType.getInfo() != null) {
             ImageTypeInfo typeInfo = outputImageType.getInfo().getDataClass().getAnnotation(ImageTypeInfo.class);
-            if(typeInfo == null) {
+            if (typeInfo == null) {
                 return;
             }
             boolean wantsZCT = typeInfo.numDimensions() > 2;
@@ -283,7 +281,7 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     "Y",
                     "The pixel y coordinate");
             columnAssignment.get("y").set(new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"y\""));
-            if(wantsZCT) {
+            if (wantsZCT) {
                 columnAssignment.addParameter("z",
                         TableColumnSourceExpressionParameter.class,
                         "Z",
@@ -300,14 +298,13 @@ public class TableToImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                         "The pixel frame (T) coordinate");
                 columnAssignment.get("t").set(new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"t\""));
             }
-            if(colorSpace instanceof GreyscaleColorSpace) {
+            if (colorSpace instanceof GreyscaleColorSpace) {
                 columnAssignment.addParameter("value",
                         TableColumnSourceExpressionParameter.class,
                         "Value",
                         "The greyscale value");
                 columnAssignment.get("value").set(new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"value\""));
-            }
-            else {
+            } else {
                 for (int i = 0; i < colorSpace.getNChannels(); i++) {
                     columnAssignment.addParameter(colorSpace.getChannelName(i),
                             TableColumnSourceExpressionParameter.class,

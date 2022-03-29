@@ -43,11 +43,10 @@ public class SetVariableIfFunction extends ExpressionFunction {
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        if((boolean) parameters.get(2)) {
+        if ((boolean) parameters.get(2)) {
             variables.set("" + parameters.get(0), parameters.get(1));
             return true;
-        }
-        else {
+        } else {
             return false;
         }
     }

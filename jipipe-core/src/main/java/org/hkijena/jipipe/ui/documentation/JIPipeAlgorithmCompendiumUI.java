@@ -85,7 +85,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
             builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.slotName(), "-"))).append("</td>");
             builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(dataInfo.getName() + ": " + dataInfo.getDescription())).append(")</i>");
-            if(!StringUtils.isNullOrEmpty(slot.description())) {
+            if (!StringUtils.isNullOrEmpty(slot.description())) {
                 builder.append(" ").append(HtmlEscapers.htmlEscaper().escape(slot.description()));
             }
             builder.append("</td></tr>");
@@ -97,7 +97,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
             builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
             builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.slotName(), "-"))).append("</td>");
             builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(dataInfo.getName() + ": " + dataInfo.getDescription())).append(")</i>");
-            if(!StringUtils.isNullOrEmpty(slot.description())) {
+            if (!StringUtils.isNullOrEmpty(slot.description())) {
                 builder.append(" ").append(HtmlEscapers.htmlEscaper().escape(slot.description()));
             }
             builder.append("</td></tr>");

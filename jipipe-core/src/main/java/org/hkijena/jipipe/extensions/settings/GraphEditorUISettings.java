@@ -30,6 +30,8 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     public static String ID = "graph-editor-ui";
 
     private final EventBus eventBus = new EventBus();
+    private final SearchSettings searchSettings = new SearchSettings();
+    private final AlgorithmFinderSettings algorithmFinderSettings = new AlgorithmFinderSettings();
     private JIPipeGraphViewMode defaultViewMode = JIPipeGraphViewMode.VerticalCompact;
     private GraphAutoLayout autoLayout = GraphAutoLayout.MST;
     private boolean switchPanningDirection = false;
@@ -46,8 +48,6 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean accurateMiniMap = false;
     private boolean drawNodeShadows = true;
     private boolean drawImprovedEdges = true;
-    private final SearchSettings searchSettings = new SearchSettings();
-    private final AlgorithmFinderSettings algorithmFinderSettings = new AlgorithmFinderSettings();
 
     public static GraphEditorUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
@@ -284,6 +284,7 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
         public boolean isSearchFindExistingNodes() {
             return searchFindExistingNodes;
         }
+
         @JIPipeParameter("search-find-existing-nodes")
         public void setSearchFindExistingNodes(boolean searchFindExistingNodes) {
             this.searchFindExistingNodes = searchFindExistingNodes;
@@ -329,6 +330,7 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
         public boolean isSearchFindExistingNodes() {
             return searchFindExistingNodes;
         }
+
         @JIPipeParameter("search-find-existing-nodes")
         public void setSearchFindExistingNodes(boolean searchFindExistingNodes) {
             this.searchFindExistingNodes = searchFindExistingNodes;

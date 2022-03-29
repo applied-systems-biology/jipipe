@@ -18,7 +18,7 @@ public class ImageJImportParameters implements JIPipeParameterCollection {
     public ImageJImportParameters() {
     }
 
-    public ImageJImportParameters( String name) {
+    public ImageJImportParameters(String name) {
         this.name = name;
     }
 

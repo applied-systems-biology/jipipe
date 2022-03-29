@@ -31,7 +31,7 @@ import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "OMERO Dataset", description = "An OMERO dataset ID")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.json file that stores the <pre>dataset-id</pre> in a JSON object.",
-jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-dataset-reference-data.schema.json")
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/omero-dataset-reference-data.schema.json")
 public class OMERODatasetReferenceData implements JIPipeData {
     private long datasetId;
 

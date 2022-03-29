@@ -32,7 +32,7 @@ import java.nio.file.Path;
  * removing the requirement of storing the data type ID within the JSON.
  */
 @JIPipeDataStorageDocumentation(humanReadableDescription = "A JSON file that contains the serialized data",
-jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 @JsonSerialize(using = JIPipeSerializedParameterCollectionData.Serializer.class)
 @JsonDeserialize(using = JIPipeSerializedParameterCollectionData.Deserializer.class)
 public abstract class JIPipeSerializedParameterCollectionData implements JIPipeData, JIPipeParameterCollection {
@@ -47,14 +47,14 @@ public abstract class JIPipeSerializedParameterCollectionData implements JIPipeD
 
     }
 
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
     public static JIPipeData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         Path targetFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".json");
         return JsonUtils.readFromFile(targetFile, JIPipeSerializedParameterCollectionData.class);
+    }
+
+    @Override
+    public EventBus getEventBus() {
+        return eventBus;
     }
 
     @Override

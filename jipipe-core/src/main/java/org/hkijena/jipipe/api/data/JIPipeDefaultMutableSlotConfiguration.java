@@ -224,10 +224,10 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
     /**
      * Adds a new input slot
      *
-     * @param name      the name
+     * @param name        the name
      * @param description the description
-     * @param dataClass the data type
-     * @param user      if the user triggered this
+     * @param dataClass   the data type
+     * @param user        if the user triggered this
      * @return the slot info
      */
     public JIPipeDataSlotInfo addInputSlot(String name, String description, Class<? extends JIPipeData> dataClass, boolean user) {
@@ -238,11 +238,11 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
     /**
      * Adds a new input slot
      *
-     * @param name      the name
+     * @param name        the name
      * @param description the description
-     * @param dataClass the data type
-     * @param inherited inherited slot can be null or '*' or the slot name
-     * @param user      if the user triggered this
+     * @param dataClass   the data type
+     * @param inherited   inherited slot can be null or '*' or the slot name
+     * @param user        if the user triggered this
      * @return the slot info
      */
     public JIPipeDataSlotInfo addOutputSlot(String name, String description, Class<? extends JIPipeData> dataClass, String inherited, boolean user) {
@@ -754,9 +754,9 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         /**
          * Adds an input slot
          *
-         * @param name  Unique slot name
+         * @param name        Unique slot name
          * @param description the description
-         * @param klass Slot data class
+         * @param klass       Slot data class
          * @return The builder
          */
         public Builder addInputSlot(String name, String description, Class<? extends JIPipeData> klass) {
@@ -767,10 +767,10 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         /**
          * Adds an input slot
          *
-         * @param name     Unique slot name
+         * @param name        Unique slot name
          * @param description the description
-         * @param klass    Slot data class
-         * @param optional Make the slot optional
+         * @param klass       Slot data class
+         * @param optional    Make the slot optional
          * @return The builder
          */
         public Builder addInputSlot(String name, String description, Class<? extends JIPipeData> klass, boolean optional) {
@@ -783,7 +783,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * Adds an input slot
          *
          * @param name           Unique slot name
-         * @param description the description
+         * @param description    the description
          * @param klass          Slot data class
          * @param optional       Make the slot optional (default false in other overload)
          * @param userModifiable Make slot user-modifiable (default true in other overload)
@@ -800,7 +800,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * Adds an output slot
          *
          * @param name          Unique slot name
-         * @param description the description
+         * @param description   the description
          * @param klass         Slot data class
          * @param inheritedSlot From which slot the data type is inherited. Slot name of an input or '*' to select the first available slot. Can be null or empty.
          * @return The builder
@@ -817,7 +817,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * Adds an output slot
          *
          * @param name                   Unique slot name
-         * @param description the description
+         * @param description            the description
          * @param klass                  Slot data class
          * @param inheritedSlot          From which slot the data type is inherited. Slot name of an input or '*' to select the first available slot. Can be null or empty.
          * @param inheritanceConversions Instructions on how to convert inherited slot types.
@@ -839,7 +839,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          * Adds an output slot
          *
          * @param name                   Unique slot name
-         * @param description the description
+         * @param description            the description
          * @param klass                  Slot data class
          * @param inheritedSlot          From which slot the data type is inherited. Slot name of an input or '*' to select the first available slot. Can be null or empty.
          * @param inheritanceConversions Instructions on how to convert inherited slot types.

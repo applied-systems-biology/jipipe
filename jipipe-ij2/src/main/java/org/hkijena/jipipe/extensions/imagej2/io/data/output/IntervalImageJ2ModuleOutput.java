@@ -23,11 +23,10 @@ public class IntervalImageJ2ModuleOutput extends DataSlotModuleOutput<Interval, 
 
     @Override
     public ImageJ2DatasetData convertModuleToJIPipeData(Interval obj) {
-        if(obj instanceof ImgPlus) {
-            return new ImageJ2DatasetData(new DefaultDataset(JIPipe.getInstance().getContext(), (ImgPlus)obj));
-        }
-        else {
-            return new ImageJ2DatasetData(new DefaultDataset(JIPipe.getInstance().getContext(), new ImgPlus((Img)obj)));
+        if (obj instanceof ImgPlus) {
+            return new ImageJ2DatasetData(new DefaultDataset(JIPipe.getInstance().getContext(), (ImgPlus) obj));
+        } else {
+            return new ImageJ2DatasetData(new DefaultDataset(JIPipe.getInstance().getContext(), new ImgPlus((Img) obj)));
         }
     }
 

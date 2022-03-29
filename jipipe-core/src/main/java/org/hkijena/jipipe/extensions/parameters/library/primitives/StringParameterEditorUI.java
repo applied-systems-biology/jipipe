@@ -25,7 +25,6 @@ import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import javax.swing.text.JTextComponent;
 import java.awt.*;
-import java.util.Collections;
 import java.util.Objects;
 
 /**
@@ -62,7 +61,7 @@ public class StringParameterEditorUI extends JIPipeParameterEditorUI {
             visible = settings.visible();
         }
 
-        if(visible) {
+        if (visible) {
             Object value = getParameterAccess().get(Object.class);
             String stringValue = "";
             if (value != null) {
@@ -94,8 +93,7 @@ public class StringParameterEditorUI extends JIPipeParameterEditorUI {
                     setParameter(textComponent.getText(), false);
                 }
             });
-        }
-        else {
+        } else {
             JButton editButton = new JButton("Show/Edit", UIUtils.getIconFromResources("actions/document-edit.png"));
             editButton.addActionListener(e -> editText());
             add(editButton, BorderLayout.CENTER);
@@ -177,7 +175,7 @@ public class StringParameterEditorUI extends JIPipeParameterEditorUI {
 
     @Override
     public void reload() {
-        if(textComponent != null) {
+        if (textComponent != null) {
             Object value = getParameterAccess().get(Object.class);
             String stringValue = "";
             if (value != null) {

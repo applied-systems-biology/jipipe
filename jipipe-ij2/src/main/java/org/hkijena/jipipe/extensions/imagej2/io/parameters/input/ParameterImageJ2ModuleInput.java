@@ -6,7 +6,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNode;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNodeInfo;
-import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
 import org.hkijena.jipipe.extensions.imagej2.io.parameters.ParameterModuleIO;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -16,6 +15,7 @@ import org.scijava.service.AbstractService;
 
 /**
  * Handles input parameters (passed from/to JIPipe parameters)
+ *
  * @param <ModuleType> the type used in the module
  * @param <JIPipeType> the type used in JIPipe
  */
@@ -31,14 +31,14 @@ public abstract class ParameterImageJ2ModuleInput<ModuleType, JIPipeType> extend
 
     @Override
     public void install(ImageJ2OpNode node, ModuleItem<?> moduleItem) {
-        if(!node.moduleItemIsParameter(moduleItem)) {
+        if (!node.moduleItemIsParameter(moduleItem)) {
             String parameterKey = StringUtils.makeUniqueString(StringUtils.orElse(moduleItem.getPersistKey(), moduleItem.getName()).toLowerCase().replace(' ', '-'),
                     "-",
                     node.getModuleParameters().getParameters().keySet());
             String parameterName = WordUtils.capitalize(String.join(" ", org.apache.commons.lang3.StringUtils.splitByCharacterTypeCamelCase(moduleItem.getName())));
             node.addParameterForModuleItem(parameterKey, parameterName, moduleItem.getDescription(), getJIPipeParameterClass(), moduleItem);
             Object result = moduleItem.getValue(node.getModuleInstance());
-            if(result != null && getModuleClass().isAssignableFrom(result.getClass())) {
+            if (result != null && getModuleClass().isAssignableFrom(result.getClass())) {
                 node.getModuleParameters().get(parameterKey).set(convertFromModuleToJIPipe((ModuleType) result));
             }
         }

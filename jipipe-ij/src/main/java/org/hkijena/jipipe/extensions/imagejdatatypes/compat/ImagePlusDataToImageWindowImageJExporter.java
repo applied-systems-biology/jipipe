@@ -22,18 +22,17 @@ public class ImagePlusDataToImageWindowImageJExporter implements ImageJDataExpor
         for (int row = 0; row < dataTable.getRowCount(); row++) {
             ImagePlusData data = dataTable.getData(row, ImagePlusData.class, new JIPipeProgressInfo());
             ImagePlus image;
-            if(parameters.isDuplicate()) {
+            if (parameters.isDuplicate()) {
                 image = data.getDuplicateImage();
-            }
-            else {
+            } else {
                 image = data.getImage();
             }
             result.add(image);
-            if(parameters.isActivate()) {
-                if(!StringUtils.isNullOrEmpty(parameters.getName())) {
+            if (parameters.isActivate()) {
+                if (!StringUtils.isNullOrEmpty(parameters.getName())) {
                     image.setTitle(parameters.getName());
                 }
-                if(!parameters.isNoWindows())
+                if (!parameters.isNoWindows())
                     WindowManager.setTempCurrentImage(image);
                 image.show();
             }

@@ -13,13 +13,8 @@
 
 package org.hkijena.jipipe.extensions.nodetemplate;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;

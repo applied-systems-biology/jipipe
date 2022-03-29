@@ -23,7 +23,6 @@ import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 
 import java.awt.*;
-import java.nio.file.Path;
 
 /**
  * Generates a bar category plot

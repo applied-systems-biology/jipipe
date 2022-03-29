@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.LABColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
@@ -42,7 +41,7 @@ import java.awt.*;
 @JIPipeNode(menuPath = "Images\nColor")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = LABColorSpace.class, pixelType = Integer.class, bitDepth = 24)
-public class ImagePlusColorLABData extends ImagePlusColorData  {
+public class ImagePlusColorLABData extends ImagePlusColorData {
 
     public ImagePlusColorLABData(ImagePlus image) {
         super(ImageJUtils.convertToColorLABIfNeeded(image));
@@ -58,6 +57,7 @@ public class ImagePlusColorLABData extends ImagePlusColorData  {
 
     /**
      * Creates an empty image with given dimensions
+     *
      * @param dimensions the dimensions
      */
     public ImagePlusColorLABData(ImageDimensions dimensions) {
@@ -87,11 +87,10 @@ public class ImagePlusColorLABData extends ImagePlusColorData  {
                 // Standard method: Greyscale -> RGB
                 return new ImagePlusColorLABData(data.getImage());
             } else {
-                if(data.getColorSpace() instanceof LABColorSpace) {
+                if (data.getColorSpace() instanceof LABColorSpace) {
                     // No conversion needed
                     return new ImagePlusColorLABData(data.getImage());
-                }
-                else {
+                } else {
                     ImagePlus copy = data.getDuplicateImage();
                     LABColorSpace.INSTANCE.convert(copy, data.getColorSpace(), new JIPipeProgressInfo());
                     return new ImagePlusColorLABData(copy);

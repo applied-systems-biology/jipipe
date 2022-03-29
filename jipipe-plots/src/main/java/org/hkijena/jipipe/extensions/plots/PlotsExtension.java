@@ -179,7 +179,7 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
     public void postprocess() {
         super.postprocess();
         for (Class<? extends JIPipeData> value : getRegistry().getDatatypeRegistry().getRegisteredDataTypes().values()) {
-            if(PlotData.class.isAssignableFrom(value)) {
+            if (PlotData.class.isAssignableFrom(value)) {
                 configureDefaultImageJAdapters(value, DataTableImageJDataImporter.ID, "image-to-imagej-window");
             }
         }

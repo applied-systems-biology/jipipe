@@ -45,20 +45,6 @@ public class JIPipeVirtualData {
     }
 
     /**
-     * Fully duplicates the virtual data
-     * @param progressInfo the progress info
-     * @return the copy
-     */
-    public JIPipeVirtualData duplicate(JIPipeProgressInfo progressInfo) {
-        JIPipeData data = getData(progressInfo).duplicate(progressInfo);
-        JIPipeVirtualData virtualData = new JIPipeVirtualData(data);
-        if(isVirtual()) {
-            virtualData.makeVirtual(progressInfo, true);
-        }
-        return virtualData;
-    }
-
-    /**
      * Creates a custom virtual data. You have to ensure that everything inside here is correct!
      *
      * @param dataClass            the data class
@@ -69,6 +55,21 @@ public class JIPipeVirtualData {
         this.dataClass = dataClass;
         this.virtualStoragePath = new PathContainer(virtualStoragePath);
         this.stringRepresentation = stringRepresentation;
+    }
+
+    /**
+     * Fully duplicates the virtual data
+     *
+     * @param progressInfo the progress info
+     * @return the copy
+     */
+    public JIPipeVirtualData duplicate(JIPipeProgressInfo progressInfo) {
+        JIPipeData data = getData(progressInfo).duplicate(progressInfo);
+        JIPipeVirtualData virtualData = new JIPipeVirtualData(data);
+        if (isVirtual()) {
+            virtualData.makeVirtual(progressInfo, true);
+        }
+        return virtualData;
     }
 
     public synchronized boolean isVirtual() {
@@ -144,19 +145,21 @@ public class JIPipeVirtualData {
 
     /**
      * Gets the currently stored data. Applies conversion if needed.
-     * @param klass the output type
+     *
+     * @param klass        the output type
      * @param progressInfo the progress info
-     * @param <T> the output type
+     * @param <T>          the output type
      * @return the output data
      */
     public synchronized <T extends JIPipeData> T getData(Class<T> klass, JIPipeProgressInfo progressInfo) {
         JIPipeData data = getData(progressInfo);
         data = JIPipe.getDataTypes().convert(data, klass);
-        return (T)data;
+        return (T) data;
     }
 
     /**
      * Gets the currently stored data
+     *
      * @param progressInfo the progress info
      * @return the data
      */

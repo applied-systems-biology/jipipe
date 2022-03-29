@@ -97,19 +97,19 @@ public class JIPipeDataSlot extends JIPipeDataTable {
 
     @Override
     public String getLocation(String key, String defaultValue) {
-        if(getNode() != null && LOCATION_KEY_NODE_NAME.equals(key)) {
+        if (getNode() != null && LOCATION_KEY_NODE_NAME.equals(key)) {
             return getNode().getName();
         }
-        if(getNode() != null && LOCATION_KEY_NODE_DISPLAY_NAME.equals(key)) {
+        if (getNode() != null && LOCATION_KEY_NODE_DISPLAY_NAME.equals(key)) {
             return getNode().getDisplayName();
         }
-        if(LOCATION_KEY_SLOT_NAME.equals(key)) {
+        if (LOCATION_KEY_SLOT_NAME.equals(key)) {
             return getName();
         }
-        if(LOCATION_KEY_SLOT_DISPLAY_NAME.equals(key)) {
+        if (LOCATION_KEY_SLOT_DISPLAY_NAME.equals(key)) {
             return getDisplayName();
         }
-        if(LOCATION_KEY_SLOT_IO.equals(key)) {
+        if (LOCATION_KEY_SLOT_IO.equals(key)) {
             return isInput() ? "Input" : "Output";
         }
         return super.getLocation(key, defaultValue);

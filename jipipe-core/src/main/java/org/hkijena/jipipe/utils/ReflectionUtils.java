@@ -63,7 +63,8 @@ public class ReflectionUtils {
 
     /**
      * Gets the value of a field
-     * @param field the field
+     *
+     * @param field    the field
      * @param instance the instance
      * @return the return value
      */
@@ -218,32 +219,32 @@ public class ReflectionUtils {
 
     /**
      * The number of hierarchy classes between two classes.
+     *
      * @param parent the parent class or interface
-     * @param child the child class or interface
+     * @param child  the child class or interface
      * @return the number of steps. zero if parent = child. -1 if not assignable.
      */
     public static int getClassDistance(Class<?> parent, Class<?> child) {
-        if(parent == child)
+        if (parent == child)
             return 0;
-        if(parent.isAssignableFrom(child)) {
+        if (parent.isAssignableFrom(child)) {
             int result = Integer.MAX_VALUE;
-            if(child.getSuperclass() != null && parent.isAssignableFrom(child.getSuperclass())) {
+            if (child.getSuperclass() != null && parent.isAssignableFrom(child.getSuperclass())) {
                 int distance = getClassDistance(parent, child.getSuperclass());
                 if (distance >= 0)
                     result = Math.min(result, distance + 1);
             }
             for (Class<?> anInterface : child.getInterfaces()) {
-                if(parent.isAssignableFrom(anInterface)) {
+                if (parent.isAssignableFrom(anInterface)) {
                     int distance = getClassDistance(parent, anInterface);
-                    if(distance >= 0)
+                    if (distance >= 0)
                         result = Math.min(result, distance + 1);
                 }
             }
-            if(result == Integer.MAX_VALUE)
+            if (result == Integer.MAX_VALUE)
                 result = -1;
             return result;
-        }
-        else {
+        } else {
             return -1;
         }
     }

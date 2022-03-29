@@ -134,7 +134,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      * Creates a new UI
      *
      * @param workbench      the workbench
-     * @param graphEditorUI the graph editor UI that contains this canvas. can be null.
+     * @param graphEditorUI  the graph editor UI that contains this canvas. can be null.
      * @param graph          The algorithm graph
      * @param compartment    The compartment to show
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
@@ -286,6 +286,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     /**
      * Adds node UIs that are not in the canvas yet
+     *
      * @param force if the positioning is forced
      */
     private void addNewNodes(boolean force) {
@@ -506,12 +507,12 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 //        autoPlaceCloseToLocation(ui, new Point(minX, minY));
         int minX = 0;
         int minY = 0;
-        if(getGraphEditorCursor() != null) {
+        if (getGraphEditorCursor() != null) {
             minX = getGraphEditorCursor().x;
             minY = getGraphEditorCursor().y;
         }
         ui.moveToClosestGridPoint(new Point(minX, minY), force, true);
-        if(graphEditorUI != null) {
+        if (graphEditorUI != null) {
             graphEditorUI.scrollToAlgorithm(ui);
         }
     }
@@ -700,7 +701,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      * @param gridTop  expand top (in grid coordinates)
      */
     public void expandLeftTop(int gridLeft, int gridTop) {
-        if(gridLeft == 0 && gridTop == 0)
+        if (gridLeft == 0 && gridTop == 0)
             return;
         for (JIPipeNodeUI value : nodeUIs.values()) {
             if (!currentlyDraggedOffsets.containsKey(value)) {
@@ -782,7 +783,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 scheduleSeparator = true;
                 continue;
             }
-            if(action.isHidden())
+            if (action.isHidden())
                 continue;
             boolean matches = action.matches(selection);
             if (!matches && !action.disableOnNonMatch())
@@ -1759,7 +1760,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      */
     public void addToSelection(JIPipeNodeUI ui) {
         selection.add(ui);
-        if(getLayer(ui) < currentNodeLayer) {
+        if (getLayer(ui) < currentNodeLayer) {
             setLayer(ui, ++currentNodeLayer);
         }
         updateSelection();
@@ -1767,6 +1768,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     /**
      * Sets node positions to make the top left to 0, 0
+     *
      * @param save if the locations should be saved
      */
     public void crop(boolean save) {

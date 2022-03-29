@@ -186,18 +186,19 @@ public interface JIPipeData {
 
     /**
      * Saves the data to a folder
-     *  @param storage The storage where the data should be written
-     * @param name            A name reference that can be used to generate filename(s)
-     * @param forceName       If enabled, the data is saved potentially destructively. Generated files must always contain the name parameter. This is used to collect results for humans or other algorithms.
-     * @param progressInfo    the progress
+     *
+     * @param storage      The storage where the data should be written
+     * @param name         A name reference that can be used to generate filename(s)
+     * @param forceName    If enabled, the data is saved potentially destructively. Generated files must always contain the name parameter. This is used to collect results for humans or other algorithms.
+     * @param progressInfo the progress
      */
     void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo);
 
     /**
      * Duplicates the data
      *
-     * @return a deep copy of the data
      * @param progressInfo the progress of duplicating the data
+     * @return a deep copy of the data
      */
     JIPipeData duplicate(JIPipeProgressInfo progressInfo);
 

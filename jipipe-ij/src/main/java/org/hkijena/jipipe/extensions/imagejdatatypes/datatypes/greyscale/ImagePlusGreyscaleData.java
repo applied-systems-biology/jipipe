@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.GreyscaleColorSpace;
@@ -60,11 +59,6 @@ public class ImagePlusGreyscaleData extends ImagePlusData implements GreyscaleIm
         return new ImagePlusGreyscaleData(ImagePlusData.importImagePlusFrom(storage, progressInfo));
     }
 
-    @Override
-    public ColorSpace getColorSpace() {
-        return GreyscaleColorSpace.INSTANCE;
-    }
-
     /**
      * Converts the incoming image data into the current format.
      *
@@ -77,5 +71,10 @@ public class ImagePlusGreyscaleData extends ImagePlusData implements GreyscaleIm
         } else {
             return new ImagePlusGreyscaleData(data.getImageSource());
         }
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return GreyscaleColorSpace.INSTANCE;
     }
 }

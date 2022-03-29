@@ -94,14 +94,13 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
                 JIPipeAuthorMetadata.openAuthorInfoWindow(getWorkbench().getWindow(), getProject().getMetadata().getAuthors(), author);
             });
             authorButton.setOpaque(false);
-            authorButton.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+            authorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             authorButton.setBackground(new Color(0, 0, 0, 0));
             projectAuthors.add(authorButton);
         }
         projectAuthors.revalidate();
         projectAuthors.repaint();
     }
-
 
 
     private void refreshHeaderButtons() {

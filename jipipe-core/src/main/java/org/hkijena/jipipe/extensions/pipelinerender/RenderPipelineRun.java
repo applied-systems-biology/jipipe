@@ -3,7 +3,9 @@ package org.hkijena.jipipe.extensions.pipelinerender;
 import com.google.common.collect.ImmutableList;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.history.JIPipeDummyGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
@@ -30,11 +32,11 @@ import java.util.Map;
 import java.util.UUID;
 
 public class RenderPipelineRun implements JIPipeRunnable {
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private final JIPipeProject project;
     private final Path outputPath;
-    private BufferedImage outputImage;
     private final RenderPipelineRunSettings settings;
+    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+    private BufferedImage outputImage;
 
     public RenderPipelineRun(JIPipeProject project, Path outputPath, RenderPipelineRunSettings settings) {
         this.project = project;
@@ -65,7 +67,7 @@ public class RenderPipelineRun implements JIPipeRunnable {
 
         // Pre-calculate the expected label height
         int labelBoxHeight = 0;
-        if(settings.isRenderLabel()) {
+        if (settings.isRenderLabel()) {
             int labelTextHeight = (int) (settings.getLabelFontSize() * 1.333);
             labelBoxHeight = labelTextHeight * 2;
         }
@@ -91,14 +93,14 @@ public class RenderPipelineRun implements JIPipeRunnable {
             int expectedHeight = bufferedImage.getHeight() + 16;
             expectedHeight += labelBoxHeight + 16;
 
-            scaleFactor = (int)Math.round(Math.max(scaleFactor, Math.max(expectedWidth / bounds.getWidth(), expectedHeight / bounds.getHeight())));
+            scaleFactor = (int) Math.round(Math.max(scaleFactor, Math.max(expectedWidth / bounds.getWidth(), expectedHeight / bounds.getHeight())));
         }
         progressInfo.log("Scale factor is " + scaleFactor);
         progressInfo.log("If this causes issues, arrange your nodes and compartments in a space-efficient way!");
 
         // Calculate final image dimensions
         JIPipeGraphViewMode compartmentGraphViewMode = project.getCompartmentGraph().getAdditionalMetadata(JIPipeGraphViewMode.class, "jipipe:graph:view-mode");
-        if(compartmentGraphViewMode == null) {
+        if (compartmentGraphViewMode == null) {
             compartmentGraphViewMode = JIPipeGraphViewMode.VerticalCompact;
         }
         int outputWidth = 0;
@@ -119,16 +121,15 @@ public class RenderPipelineRun implements JIPipeRunnable {
 
         // Fill general background
         graphics2D.setPaint(UIManager.getColor("EditorPane.background"));
-        graphics2D.fillRect(0,0,outputWidth, outputHeight);
+        graphics2D.fillRect(0, 0, outputWidth, outputHeight);
 
         // Draw edges
         final int strokeBorderWidth;
         final int defaultStrokeWidth;
-        if(settings.getMaxEdgeWidth().isEnabled() && (6 * scaleFactor) > settings.getMaxEdgeWidth().getContent()) {
-            strokeBorderWidth =  settings.getMaxEdgeWidth().getContent();
-            defaultStrokeWidth = (int) (settings.getMaxEdgeWidth().getContent() * 4.0/6.0);
-        }
-        else {
+        if (settings.getMaxEdgeWidth().isEnabled() && (6 * scaleFactor) > settings.getMaxEdgeWidth().getContent()) {
+            strokeBorderWidth = settings.getMaxEdgeWidth().getContent();
+            defaultStrokeWidth = (int) (settings.getMaxEdgeWidth().getContent() * 4.0 / 6.0);
+        } else {
             strokeBorderWidth = 6 * scaleFactor;
             defaultStrokeWidth = 4 * scaleFactor;
         }
@@ -192,7 +193,7 @@ public class RenderPipelineRun implements JIPipeRunnable {
                 true,
                 true);
         Font labelFont = null;
-        if(settings.isRenderLabel()) {
+        if (settings.isRenderLabel()) {
             labelFont = new Font(Font.DIALOG, Font.PLAIN, settings.getLabelFontSize());
         }
         for (UUID compartmentUUID : compartmentUUIDs) {
@@ -203,7 +204,7 @@ public class RenderPipelineRun implements JIPipeRunnable {
             final int bHeight = bounds.height * scaleFactor;
 
             // Draw shadow
-            if(settings.isRenderShadow()) {
+            if (settings.isRenderShadow()) {
                 dropShadowRenderer.paint(graphics2D, bx - shadowShiftLeft, by - shadowShiftLeft, bWidth + shadowShiftRight, bHeight + shadowShiftRight);
             }
 
@@ -212,7 +213,7 @@ public class RenderPipelineRun implements JIPipeRunnable {
             graphics2D.fillRect(bx, by, bWidth, bHeight);
 
             // Draw label box
-            if(settings.isRenderLabel()) {
+            if (settings.isRenderLabel()) {
                 graphics2D.setPaint(UIManager.getColor("Panel.background"));
                 graphics2D.fillRect(bx, by, bWidth, labelBoxHeight);
                 graphics2D.setPaint(Color.LIGHT_GRAY);
@@ -226,7 +227,7 @@ public class RenderPipelineRun implements JIPipeRunnable {
             graphics2D.drawRect(bx, by, bWidth, bHeight);
 
             // Draw label text
-            if(settings.isRenderLabel()) {
+            if (settings.isRenderLabel()) {
                 graphics2D.setColor(UIManager.getColor("Label.foreground"));
                 graphics2D.setFont(labelFont);
                 FontMetrics fontMetrics = graphics2D.getFontMetrics(labelFont);
@@ -255,21 +256,21 @@ public class RenderPipelineRun implements JIPipeRunnable {
         graphics.dispose();
 
         // Save image
-        if(outputPath != null) {
+        if (outputPath != null) {
             progressInfo.log("Saving to " + outputPath);
             try {
                 ImageIO.write(finalImage, "PNG", outputPath.toFile());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             this.outputImage = finalImage;
         }
     }
 
     /**
      * The generated image. Only set if outputPath is null.
+     *
      * @return the generated image or null
      */
     public BufferedImage getOutputImage() {

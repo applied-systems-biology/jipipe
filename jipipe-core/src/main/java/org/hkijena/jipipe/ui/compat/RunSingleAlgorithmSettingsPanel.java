@@ -12,7 +12,7 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import java.awt.BorderLayout;
+import java.awt.*;
 
 public class RunSingleAlgorithmSettingsPanel extends JIPipeWorkbenchPanel {
 

@@ -16,19 +16,18 @@ public class RoiManagerImageJImporter implements ImageJDataImporter {
     @Override
     public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
         JIPipeDataTable result = new JIPipeDataTable(ROIListData.class);
-        if(objects != null && !objects.isEmpty()) {
+        if (objects != null && !objects.isEmpty()) {
             for (Object object : objects) {
                 RoiManager manager = (RoiManager) object;
                 ROIListData data = new ROIListData(manager);
-                if(parameters.isDuplicate())
+                if (parameters.isDuplicate())
                     data = (ROIListData) data.duplicate(new JIPipeProgressInfo());
                 result.addData(data, new JIPipeProgressInfo());
             }
-        }
-        else {
+        } else {
             RoiManager manager = RoiManager.getRoiManager();
             ROIListData data = new ROIListData(manager);
-            if(parameters.isDuplicate())
+            if (parameters.isDuplicate())
                 data = (ROIListData) data.duplicate(new JIPipeProgressInfo());
             result.addData(data, new JIPipeProgressInfo());
         }

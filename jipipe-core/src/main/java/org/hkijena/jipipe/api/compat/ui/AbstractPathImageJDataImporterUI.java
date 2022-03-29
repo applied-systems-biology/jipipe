@@ -16,7 +16,7 @@ import java.nio.file.Paths;
 public abstract class AbstractPathImageJDataImporterUI extends ImageJDataImporterUI {
     /**
      * @param workbench the workbench
-     * @param importer the importer
+     * @param importer  the importer
      */
     public AbstractPathImageJDataImporterUI(JIPipeWorkbench workbench, ImageJDataImportOperation importer) {
         super(workbench, importer);
@@ -30,10 +30,9 @@ public abstract class AbstractPathImageJDataImporterUI extends ImageJDataImporte
         PathEditor pathEditor = new PathEditor(PathIOMode.Open, getPathType());
         try {
             pathEditor.setPath(Paths.get(getImporter().getName()));
+        } catch (Exception e) {
         }
-        catch (Exception e) {
-        }
-        pathEditor.addActionListener(e-> {
+        pathEditor.addActionListener(e -> {
             getImporter().setName(pathEditor.getPath().toString());
         });
         add(pathEditor, BorderLayout.CENTER);

@@ -1,9 +1,7 @@
 package org.hkijena.jipipe.extensions.imagej2;
 
-import com.google.common.collect.Sets;
 import net.imagej.ops.OpInfo;
 import net.imagej.ops.Ops;
-import net.imagej.ops.imagemoments.moments.DefaultMoment11;
 import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -17,12 +15,10 @@ import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.jhotdraw.app.SDIApplication;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.MenuEntry;
 import org.scijava.MenuPath;
-import org.scijava.module.ModuleInfo;
 import org.scijava.module.ModuleItem;
 
 import java.util.*;
@@ -42,15 +38,12 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
     private final JIPipeNodeTypeCategory nodeTypeCategory;
     private final List<JIPipeInputSlot> inputSlots = new ArrayList<>();
     private final List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
-    private DefaultJIPipeOutputSlot parameterOutputSlot;
     private final Map<ModuleItem<?>, ImageJ2ModuleIO> inputModuleIO = new IdentityHashMap<>();
     private final Map<ModuleItem<?>, ImageJ2ModuleIO> outputModuleIO = new IdentityHashMap<>();
     private final Map<String, ModuleItem<?>> inputSlotToModuleItem = new HashMap<>();
     private final Map<String, ModuleItem<?>> outputSlotToModuleItem = new HashMap<>();
     private final Map<ModuleItem<?>, String> moduleItemToInputSlot = new IdentityHashMap<>();
     private final Map<ModuleItem<?>, String> moduleItemToOutputSlot = new IdentityHashMap<>();
-    private HTMLText description;
-
     /**
      * Contains functions that map from an input slot name to a function to extract the result as {@link JIPipeData}
      */
@@ -59,11 +52,12 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
      * Contains functions that map from an output slot name to a function to extract the result as {@link JIPipeData}
      */
     private final Map<String, Function<Object, JIPipeData>> outputSlotToJIPipeConverters = new HashMap<>();
-
     /**
      * Parameter collection that will be assigned to the node
      */
     private final JIPipeDynamicParameterCollection nodeParameters = new JIPipeDynamicParameterCollection();
+    private DefaultJIPipeOutputSlot parameterOutputSlot;
+    private HTMLText description;
 
     public ImageJ2OpNodeInfo(Context context, OpInfo opInfo, JIPipeProgressInfo progressInfo) throws InstantiableException {
         this.context = context;
@@ -72,21 +66,19 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
         this.nodeTypeCategory = new ImagesNodeTypeCategory();
         String title = opInfo.cInfo().getTitle();
         MenuPath menuPath = opInfo.cInfo().getMenuPath();
-        if(menuPath.isEmpty() || title.contains(":")) {
+        if (menuPath.isEmpty() || title.contains(":")) {
             List<String> strings = Arrays.stream(title.split("[:.$]")).map(String::trim).map(WordUtils::capitalize).collect(Collectors.toList());
-            if(strings.size() > 1) {
+            if (strings.size() > 1) {
                 this.name = "IJ2: " + String.join(" ", org.apache.commons.lang.StringUtils.splitByCharacterTypeCamelCase(strings.get(strings.size() - 1)));
                 strings.remove(strings.size() - 1);
                 this.menuPath = "IJ2\n" + String.join("\n", strings);
-            }
-            else {
+            } else {
                 this.name = "IJ2: " + title;
-                this.menuPath = "IJ2\n" +  menuPath.stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
+                this.menuPath = "IJ2\n" + menuPath.stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
             }
-        }
-        else {
+        } else {
             this.name = "IJ2: " + title;
-            this.menuPath = "IJ2\n" +  menuPath.stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
+            this.menuPath = "IJ2\n" + menuPath.stream().map(MenuEntry::getName).collect(Collectors.joining("\n"));
         }
         this.description = new HTMLText(StringUtils.orElse(opInfo.cInfo().getDescription(), "The developer provided no description") + "<br/><br/>This node was automatically imported from ImageJ2. " +
                 "Please be aware that JIPipe cannot guarantee that there are no issues.");
@@ -101,10 +93,11 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
     /**
      * Gets or creates the output slot for exported module parameters
      * The slot has a data type {@link org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData}
+     *
      * @return the slot definition
      */
     public DefaultJIPipeOutputSlot getOrCreateParameterDataOutputSlot() {
-        if(parameterOutputSlot == null) {
+        if (parameterOutputSlot == null) {
             String slotName = StringUtils.makeUniqueString("Output parameters", " ", this::hasOutputSlot);
             parameterOutputSlot = new DefaultJIPipeOutputSlot(ParametersData.class, slotName, "Output parameters generated by the IJ2 module", null, true);
             outputSlots.add(parameterOutputSlot);
@@ -122,30 +115,30 @@ public class ImageJ2OpNodeInfo implements JIPipeNodeInfo {
     public void addOutputSlotForModuleItem(ModuleItem<?> item, Class<? extends JIPipeData> dataClass) {
         String name = StringUtils.makeUniqueString(WordUtils.capitalize(StringUtils.makeFilesystemCompatible(item.getName())), " ", outputSlotToModuleItem.keySet());
         outputSlots.add(new DefaultJIPipeOutputSlot(dataClass, name, item.getDescription(), null, true));
-       outputSlotToModuleItem.put(name, item);
-       moduleItemToOutputSlot.put(item, name);
+        outputSlotToModuleItem.put(name, item);
+        moduleItemToOutputSlot.put(item, name);
     }
 
     private void initializeParameters(Context context, JIPipeProgressInfo progressInfo) {
         ImageJ2JIPipeModuleIOService service = context.getService(ImageJ2JIPipeModuleIOService.class);
-        if(opInfo.getType() == Ops.Threshold.Otsu.class) {
+        if (opInfo.getType() == Ops.Threshold.Otsu.class) {
             System.out.println();
         }
         for (ModuleItem<?> item : opInfo.outputs()) {
             ImageJ2ModuleIO moduleIO = service.findModuleIO(item, JIPipeSlotType.Output);
-            if(moduleIO == null) {
+            if (moduleIO == null) {
                 throw new RuntimeException("Unable to resolve output of type " + item.getType());
             }
             moduleIO.install(this, item);
             outputModuleIO.put(item, moduleIO);
         }
         for (ModuleItem<?> item : opInfo.inputs()) {
-            if(item.isOutput() && !item.isRequired()) {
+            if (item.isOutput() && !item.isRequired()) {
                 progressInfo.log("Skipping input " + item.getName() + ", as it seems to be an optional input, but is at the same time an output.");
                 continue;
             }
             ImageJ2ModuleIO moduleIO = service.findModuleIO(item, JIPipeSlotType.Input);
-            if(moduleIO == null) {
+            if (moduleIO == null) {
                 throw new RuntimeException("Unable to resolve input of type " + item.getType());
             }
             moduleIO.install(this, item);

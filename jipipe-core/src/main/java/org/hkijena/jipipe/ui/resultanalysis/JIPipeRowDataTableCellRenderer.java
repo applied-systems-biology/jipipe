@@ -102,8 +102,7 @@ public class JIPipeRowDataTableCellRenderer implements TableCellRenderer {
                         component.renderPreview();
                     }
                 }
-            }
-            catch (IndexOutOfBoundsException e) {
+            } catch (IndexOutOfBoundsException e) {
             }
         }
     }

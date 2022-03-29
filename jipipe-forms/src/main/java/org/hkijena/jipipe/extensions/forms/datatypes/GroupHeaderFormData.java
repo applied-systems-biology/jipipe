@@ -11,7 +11,6 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.*;
-import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "Group header form", description = "Generates a group header element that allows to structure forms.")
 public class GroupHeaderFormData extends ParameterFormData {

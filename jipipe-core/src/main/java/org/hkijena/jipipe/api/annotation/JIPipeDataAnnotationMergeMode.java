@@ -3,7 +3,9 @@ package org.hkijena.jipipe.api.annotation;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 
 import java.util.*;
 

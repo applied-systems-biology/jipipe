@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.extensionbuilder;
 
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;

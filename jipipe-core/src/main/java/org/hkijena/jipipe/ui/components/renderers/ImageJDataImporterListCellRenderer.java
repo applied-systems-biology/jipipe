@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.components.renderers;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 
 import javax.swing.*;
 import java.awt.*;

@@ -34,7 +34,7 @@ public class MoveNodeUIRightContextAction implements NodeUIContextAction {
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         for (JIPipeNodeUI ui : selection) {
             Point point = ui.getStoredGridLocation();
-            ui.moveToGridLocation(new Point(point.x+1, point.y), true, true);
+            ui.moveToGridLocation(new Point(point.x + 1, point.y), true, true);
         }
         canvasUI.revalidate();
         canvasUI.repaint(50);

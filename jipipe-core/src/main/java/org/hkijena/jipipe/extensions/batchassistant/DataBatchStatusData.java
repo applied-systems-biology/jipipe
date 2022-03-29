@@ -39,6 +39,10 @@ public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
         this.statusMessage = other.statusMessage;
     }
 
+    public static DataBatchStatusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return JIPipeSerializedJsonObjectData.importData(storage, DataBatchStatusData.class);
+    }
+
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         return new DataBatchStatusData(this);
@@ -53,7 +57,7 @@ public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
 
-        formPanel.addGroupHeader(getStatusMessage(),  UIUtils.getIconFromResources(isStatusValid() ? "emblems/vcs-normal.png" : "emblems/warning.png"));
+        formPanel.addGroupHeader(getStatusMessage(), UIUtils.getIconFromResources(isStatusValid() ? "emblems/vcs-normal.png" : "emblems/warning.png"));
         JXTable table = new JXTable(new ResultsTableData(getPerSlotStatus()));
         JPanel tablePanel = new JPanel(new BorderLayout());
         tablePanel.add(table, BorderLayout.CENTER);
@@ -68,10 +72,6 @@ public class DataBatchStatusData extends JIPipeSerializedJsonObjectData {
         frame.setSize(new Dimension(800, 600));
         frame.setLocationRelativeTo(workbench.getWindow());
         frame.setVisible(true);
-    }
-
-    public static DataBatchStatusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return JIPipeSerializedJsonObjectData.importData(storage, DataBatchStatusData.class);
     }
 
     @JsonGetter("per-slot-status")

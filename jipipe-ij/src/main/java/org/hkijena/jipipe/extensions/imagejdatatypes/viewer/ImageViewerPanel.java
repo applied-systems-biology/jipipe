@@ -53,10 +53,6 @@ public class ImageViewerPanel extends JPanel {
     private static ImageViewerPanel ACTIVE_PANEL = null;
     private final JButton zoomStatusButton = new JButton();
     private final ImageViewerUISettings settings;
-    private ImagePlus image;
-    private ImageProcessor currentSlice;
-    private ImageViewerPanelCanvas canvas;
-    private Map<ImageSliceIndex, ImageStatistics> statisticsMap = new HashMap<>();
     private final JLabel stackSliderLabel = new JLabel("Slice (Z)");
     private final JLabel channelSliderLabel = new JLabel("Channel (C)");
     private final JLabel frameSliderLabel = new JLabel("Frame (T)");
@@ -66,23 +62,26 @@ public class ImageViewerPanel extends JPanel {
     private final JToggleButton animationStackToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationChannelToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
-    private FormPanel bottomPanel;
-    private long lastTimeZoomed;
     private final JLabel imageInfoLabel = new JLabel();
-    private JScrollPane scrollPane;
     private final JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(250, 5, 10000, 1));
-    private int rotation = 0;
-    private JMenuItem exportAllSlicesItem;
-    private JMenuItem exportMovieItem;
     private final JToolBar toolBar = new JToolBar();
-    private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
-    private JButton rotateLeftButton;
-    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
-    private JButton rotateRightButton;
     private final JToggleButton enableSideBarButton = new JToggleButton();
-    private Component currentContentPanel;
     private final DocumentTabPane tabPane = new DocumentTabPane();
     private final Map<String, FormPanel> formPanels = new HashMap<>();
+    private ImagePlus image;
+    private ImageProcessor currentSlice;
+    private ImageViewerPanelCanvas canvas;
+    private Map<ImageSliceIndex, ImageStatistics> statisticsMap = new HashMap<>();
+    private FormPanel bottomPanel;
+    private long lastTimeZoomed;
+    private JScrollPane scrollPane;
+    private int rotation = 0;
+    private JMenuItem exportAllSlicesItem;
+    private JMenuItem exportMovieItem;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
+    private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
+    private JButton rotateLeftButton;
+    private JButton rotateRightButton;
+    private Component currentContentPanel;
     private boolean isUpdatingSliders = false;
     public ImageViewerPanel() {
         if (JIPipe.getInstance() != null) {
@@ -835,18 +834,17 @@ public class ImageViewerPanel extends JPanel {
     }
 
     public ImageStatistics getCurrentSliceStats() {
-        if(getImage() != null && getCurrentSliceIndex() != null) {
+        if (getImage() != null && getCurrentSliceIndex() != null) {
             return getSliceStats(getCurrentSliceIndex());
-        }
-        else {
+        } else {
             return null;
         }
     }
 
     public ImageStatistics getSliceStats(ImageSliceIndex sliceIndex) {
-        if(getImage() != null) {
+        if (getImage() != null) {
             ImageStatistics stats = statisticsMap.getOrDefault(sliceIndex, null);
-            if(stats == null) {
+            if (stats == null) {
                 ImageProcessor processor = ImageJUtils.getSliceZero(image, sliceIndex);
                 stats = processor.getStats();
                 statisticsMap.put(sliceIndex, stats);
@@ -855,5 +853,7 @@ public class ImageViewerPanel extends JPanel {
         }
         return null;
     }
+
+
 
 }

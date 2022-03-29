@@ -252,7 +252,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
      * Writes data to the specified folder
      *
      * @param dataTableList list of data tables the will be exported
-     * @param outputPath   the path where the files will be put
+     * @param outputPath    the path where the files will be put
      */
     public void writeToFolder(List<? extends JIPipeDataTable> dataTableList, Path outputPath, JIPipeProgressInfo progressInfo) {
         if (!Files.isDirectory(outputPath)) {

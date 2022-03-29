@@ -19,7 +19,6 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
-import java.nio.file.Path;
 import java.util.Collections;
 
 @JIPipeDocumentation(name = "Boolean input form", description = "A form element that allows the user to input a boolean (true/false) value")

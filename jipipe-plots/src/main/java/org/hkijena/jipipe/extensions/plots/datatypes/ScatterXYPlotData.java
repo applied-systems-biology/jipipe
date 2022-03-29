@@ -20,7 +20,6 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 
 import java.awt.*;
-import java.nio.file.Path;
 
 /**
  * A scatter XY plot

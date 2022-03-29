@@ -74,6 +74,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private final SearchBox<Object> navigator = new SearchBox<>();
     private final JIPipeHistoryJournal historyJournal;
     private final int flags;
+    private final JMenu graphMenu = new JMenu("Graph");
     protected JMenuBar menuBar = new JMenuBar();
     private JSplitPane splitPane;
     private JScrollPane scrollPane;
@@ -81,14 +82,13 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private Point panningScrollbarOffset = null;
     private boolean isPanning = false;
     private Set<JIPipeNodeInfo> addableAlgorithms = new HashSet<>();
-    private final JMenu graphMenu = new JMenu("Graph");
 
     /**
      * @param workbenchUI    the workbench
      * @param algorithmGraph the algorithm graph
      * @param compartment    the graph compartment to display. Set to null to display all compartments
      * @param historyJournal object that tracks the history of this graph. Set to null to disable the undo feature.
-     * @param flags additional flags
+     * @param flags          additional flags
      */
     public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment, JIPipeHistoryJournal historyJournal, GraphEditorUISettings settings, int flags) {
         super(workbenchUI);
@@ -115,14 +115,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      */
     public JIPipeGraphEditorUI(JIPipeWorkbench workbenchUI, JIPipeGraph algorithmGraph, UUID compartment, JIPipeHistoryJournal historyJournal) {
         this(workbenchUI, algorithmGraph, compartment, historyJournal, GraphEditorUISettings.getInstance(), JIPipeGraphEditorUI.FLAGS_NONE);
-    }
-
-    public int getFlags() {
-        return flags;
-    }
-
-    public JMenu getGraphMenu() {
-        return graphMenu;
     }
 
     private static int[] rankNavigationEntry(Object value, String[] searchStrings) {
@@ -178,7 +170,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 menu.addSeparator();
                 continue;
             }
-            if(action.isHidden())
+            if (action.isHidden())
                 continue;
             boolean matches = action.matches(selection);
             if (!matches && !action.disableOnNonMatch())
@@ -201,6 +193,14 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             toolBar.add(Box.createHorizontalStrut(4), 0);
             toolBar.add(button, 0);
         }
+    }
+
+    public int getFlags() {
+        return flags;
+    }
+
+    public JMenu getGraphMenu() {
+        return graphMenu;
     }
 
     public GraphEditorUISettings getGraphUISettings() {
@@ -264,11 +264,10 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         scrollPane.getHorizontalScrollBar().setUnitIncrement(25);
         scrollPane.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         scrollPane.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-        if(isFlagSet(FLAGS_SPLIT_PANE_SWITCH_CONTENT)) {
+        if (isFlagSet(FLAGS_SPLIT_PANE_SWITCH_CONTENT)) {
             splitPane.setRightComponent(scrollPane);
             splitPane.setLeftComponent(new JPanel());
-        }
-        else {
+        } else {
             splitPane.setLeftComponent(scrollPane);
             splitPane.setRightComponent(new JPanel());
         }
@@ -702,7 +701,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      * @param ui the algorithm
      */
     public void scrollToAlgorithm(JIPipeNodeUI ui) {
-        if(scrollPane == null)
+        if (scrollPane == null)
             return;
         int minViewX = scrollPane.getHorizontalScrollBar().getValue();
         int maxViewX = minViewX + scrollPane.getHorizontalScrollBar().getVisibleAmount();
@@ -753,10 +752,9 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      */
     protected void setPropertyPanel(Component content) {
         int dividerLocation = splitPane.getDividerLocation();
-        if(isFlagSet(FLAGS_SPLIT_PANE_SWITCH_CONTENT)) {
+        if (isFlagSet(FLAGS_SPLIT_PANE_SWITCH_CONTENT)) {
             splitPane.setLeftComponent(content);
-        }
-        else {
+        } else {
             splitPane.setRightComponent(content);
         }
         splitPane.setDividerLocation(dividerLocation);
@@ -900,14 +898,14 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
      */
     public void updateNavigation() {
         boolean canCreateNewNodes = graphUISettings.getSearchSettings().isSearchFindNewNodes();
-        if(canCreateNewNodes) {
+        if (canCreateNewNodes) {
             if (getWorkbench() instanceof JIPipeProjectWorkbench) {
                 canCreateNewNodes = !((JIPipeProjectWorkbench) getWorkbench()).getProject().getMetadata().getPermissions().isPreventAddingDeletingNodes();
             }
         }
         DefaultComboBoxModel<Object> model = new DefaultComboBoxModel<>();
         model.removeAllElements();
-        if(graphUISettings.getSearchSettings().isSearchFindExistingNodes()) {
+        if (graphUISettings.getSearchSettings().isSearchFindExistingNodes()) {
             for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values().stream().sorted(Comparator.comparing(ui -> ui.getNode().getName())).collect(Collectors.toList())) {
                 model.addElement(ui);
             }

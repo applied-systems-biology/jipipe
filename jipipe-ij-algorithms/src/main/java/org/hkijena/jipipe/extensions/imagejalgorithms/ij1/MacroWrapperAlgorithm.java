@@ -83,13 +83,10 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             Path.class,
             Boolean.class
     };
-
-    private ImageJMacro code = new ImageJMacro();
-    private JIPipeDynamicParameterCollection macroParameters = new JIPipeDynamicParameterCollection(ALLOWED_PARAMETER_CLASSES);
-
     private final List<ImagePlus> initiallyOpenedImages = new ArrayList<>();
     private final List<Window> initiallyOpenedWindows = new ArrayList<>();
-
+    private ImageJMacro code = new ImageJMacro();
+    private JIPipeDynamicParameterCollection macroParameters = new JIPipeDynamicParameterCollection(ALLOWED_PARAMETER_CLASSES);
     private InputSlotMapParameterCollection inputToImageJExporters;
     private OutputSlotMapParameterCollection outputFromImageJImporters;
 

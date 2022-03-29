@@ -32,7 +32,9 @@ import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Manages a single algorithm run
@@ -55,12 +57,21 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
         importOutputString(outputs);
     }
 
+    /**
+     * @param algorithm the algorithm to be run
+     */
+    public SingleImageJAlgorithmRunConfiguration(JIPipeGraphNode algorithm) {
+        this.algorithm = algorithm;
+        updateSlots();
+        algorithm.getEventBus().register(this);
+    }
+
     private void importInputString(String inputString) {
         JsonNode jsonNode = JsonUtils.readFromString(inputString, JsonNode.class);
         JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
 
         // Create/remove slots
-        if(slotConfiguration.canModifyInputSlots()) {
+        if (slotConfiguration.canModifyInputSlots()) {
             for (String slotName : Sets.symmetricDifference(ImmutableSet.copyOf(jsonNode.fieldNames()), algorithm.getInputSlotMap().keySet()).immutableCopy()) {
                 if (slotConfiguration.hasInputSlot(slotName)) {
                     // Need to remove it
@@ -77,7 +88,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
 
         // Set importer
         for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.fields())) {
-            if(slotConfiguration.hasInputSlot(entry.getKey())) {
+            if (slotConfiguration.hasInputSlot(entry.getKey())) {
                 // Parse
                 try {
                     ImageJDataImportOperation operation = JsonUtils.getObjectMapper().readerFor(ImageJDataImportOperation.class).readValue(entry.getValue());
@@ -94,7 +105,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
         JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) algorithm.getSlotConfiguration();
 
         // Create/remove slots
-        if(slotConfiguration.canAddOutputSlot()) {
+        if (slotConfiguration.canAddOutputSlot()) {
             for (String slotName : Sets.symmetricDifference(ImmutableSet.copyOf(jsonNode.fieldNames()), algorithm.getOutputSlotMap().keySet()).immutableCopy()) {
                 if (slotConfiguration.hasOutputSlot(slotName)) {
                     // Need to remove it
@@ -111,7 +122,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
 
         // Set importer
         for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.fields())) {
-            if(slotConfiguration.hasOutputSlot(entry.getKey())) {
+            if (slotConfiguration.hasOutputSlot(entry.getKey())) {
                 // Parse
                 try {
                     ImageJDataExportOperation operation = JsonUtils.getObjectMapper().readerFor(ImageJDataExportOperation.class).readValue(entry.getValue());
@@ -134,15 +145,6 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
 
     public void setNumThreads(int numThreads) {
         this.numThreads = numThreads;
-    }
-
-    /**
-     * @param algorithm the algorithm to be run
-     */
-    public SingleImageJAlgorithmRunConfiguration(JIPipeGraphNode algorithm) {
-        this.algorithm = algorithm;
-        updateSlots();
-        algorithm.getEventBus().register(this);
     }
 
     @Override
@@ -169,27 +171,25 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
 
     private void updateSlots() {
         for (String slotName : Sets.symmetricDifference(algorithm.getInputSlotMap().keySet(), inputSlotImporters.keySet()).immutableCopy()) {
-            if(algorithm.getInputSlotMap().containsKey(slotName)) {
+            if (algorithm.getInputSlotMap().containsKey(slotName)) {
                 // Need to add
                 ImageJDataImportOperation operation = new ImageJDataImportOperation(
                         JIPipe.getImageJAdapters().getDefaultImporterFor(algorithm.getInputSlot(slotName).getAcceptedDataType()));
                 inputSlotImporters.put(slotName, operation);
-            }
-            else {
+            } else {
                 // Need to remove
                 inputSlotImporters.remove(slotName);
             }
         }
         for (String slotName : Sets.symmetricDifference(algorithm.getOutputSlotMap().keySet(), outputSlotExporters.keySet()).immutableCopy()) {
-            if(algorithm.getOutputSlotMap().containsKey(slotName)) {
+            if (algorithm.getOutputSlotMap().containsKey(slotName)) {
                 // Need to add
                 ImageJDataExportOperation operation = new ImageJDataExportOperation(
                         JIPipe.getImageJAdapters().getDefaultExporterFor(algorithm.getOutputSlot(slotName).getAcceptedDataType()));
                 operation.setName(slotName);
                 operation.setActivate(true);
                 outputSlotExporters.put(slotName, operation);
-            }
-            else {
+            } else {
                 // Need to remove
                 outputSlotExporters.remove(slotName);
             }
@@ -198,6 +198,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
 
     /**
      * Pushes selected ImageJ data into the algorithm input slots
+     *
      * @param progressInfo
      */
     public void importInputsFromImageJ(JIPipeProgressInfo progressInfo) {
@@ -217,6 +218,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
 
     /**
      * Extracts algorithm output into ImageJ.
+     *
      * @param progressInfo
      */
     public void exportOutputToImageJ(JIPipeProgressInfo progressInfo) {

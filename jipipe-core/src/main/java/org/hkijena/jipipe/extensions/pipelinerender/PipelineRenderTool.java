@@ -11,7 +11,6 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
 import java.nio.file.Path;
 
 public class PipelineRenderTool extends JIPipeMenuExtension {
@@ -38,11 +37,11 @@ public class PipelineRenderTool extends JIPipeMenuExtension {
                 "Please check if you organized your compartments as compact as possible, to minimize computational load of generating a full resolution pipeline.");
         RenderPipelineRunSettings settings = LAST_SETTINGS;
 
-        if(ParameterPanel.showDialog(getWorkbench(),
+        if (ParameterPanel.showDialog(getWorkbench(),
                 settings,
                 document,
                 getText(),
-                ParameterPanel.WITH_SEARCH_BAR  | ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION)) {
+                ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION)) {
             Path path = FileChooserSettings.saveFile(getWorkbench().getWindow(), FileChooserSettings.LastDirectoryKey.External, getText(), UIUtils.EXTENSION_FILTER_PNG);
             if (path != null) {
                 JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), new RenderPipelineRun(project, path, settings));

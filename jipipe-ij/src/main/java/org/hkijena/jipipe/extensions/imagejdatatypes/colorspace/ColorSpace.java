@@ -44,12 +44,14 @@ public interface ColorSpace {
     /**
      * Returns the number of pixel channels.
      * For example, 3 for RGB colors
+     *
      * @return number of pixel channels
      */
     int getNChannels();
 
     /**
      * Returns the channel name for a given channel index
+     *
      * @param channelIndex the channel index
      * @return the channel name
      */
@@ -57,6 +59,7 @@ public interface ColorSpace {
 
     /**
      * Returns the channel name for a given channel index
+     *
      * @param channelIndex the channel index
      * @return the channel name
      */
@@ -64,6 +67,7 @@ public interface ColorSpace {
 
     /**
      * Converts an array of channel values into a pixel
+     *
      * @param channelValues the channel values. must have at least getNChannels() items
      * @return the pixel
      */
@@ -71,7 +75,8 @@ public interface ColorSpace {
 
     /**
      * Decomposes an integer pixel value into its channel values
-     * @param pixel the pixel
+     *
+     * @param pixel         the pixel
      * @param channelValues array with at least getNChannels() items. The values will be written into this array.
      */
     void decomposePixel(int pixel, int[] channelValues);

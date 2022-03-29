@@ -17,7 +17,6 @@ import net.imagej.ui.swing.updater.ViewOptions;
 import net.imagej.updater.FileObject;
 import net.imagej.updater.FilesCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.search.SearchTextFieldTableRowFilter;

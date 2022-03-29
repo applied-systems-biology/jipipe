@@ -28,7 +28,7 @@ public class DataTableImageJDataExporter implements ImageJDataExporter {
     @Override
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters properties, JIPipeProgressInfo progressInfo) {
         Path path = StringUtils.isNullOrEmpty(properties.getName()) ? RuntimeSettings.generateTempDirectory("data-table-export") : Paths.get(properties.getName());
-        if(!path.isAbsolute()) {
+        if (!path.isAbsolute()) {
             path = RuntimeSettings.generateTempDirectory("data-table-export").resolve(path);
         }
         try {
@@ -37,7 +37,7 @@ public class DataTableImageJDataExporter implements ImageJDataExporter {
             throw new RuntimeException(e);
         }
         dataTable.exportData(new JIPipeFileSystemWriteDataStorage(new JIPipeProgressInfo(), path), new JIPipeProgressInfo());
-        if(properties.isActivate()) {
+        if (properties.isActivate()) {
             ResultsTableData tableData = new ResultsTableData();
             tableData.addStringColumn("Path");
             tableData.addRow();

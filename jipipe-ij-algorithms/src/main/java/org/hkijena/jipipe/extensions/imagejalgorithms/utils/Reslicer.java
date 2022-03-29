@@ -37,8 +37,8 @@ public class Reslicer {
     private double[] dy;
 
     public ImagePlus reslice(ImagePlus imp) {
-        rgb = imp.getType()==ImagePlus.COLOR_RGB;
-        notFloat = !rgb && imp.getType()!=ImagePlus.GRAY32;
+        rgb = imp.getType() == ImagePlus.COLOR_RGB;
+        notFloat = !rgb && imp.getType() != ImagePlus.GRAY32;
         ImagePlus imp2;
         if (imp.isHyperStack())
             imp2 = resliceHyperstack(imp);

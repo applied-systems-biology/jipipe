@@ -320,11 +320,10 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
             g.setColor(UIManager.getColor("Label.foreground"));
 
             DecimalFormat format;
-            if(imageViewerPanelDisplayRangeControl.calibrationPlugin.getCurrentImage().getType() == ImagePlus.GRAY32) {
-                 format = DECIMAL_FORMAT_FLOAT;
-            }
-            else {
-                 format = DECIMAL_FORMAT_INT;
+            if (imageViewerPanelDisplayRangeControl.calibrationPlugin.getCurrentImage().getType() == ImagePlus.GRAY32) {
+                format = DECIMAL_FORMAT_FLOAT;
+            } else {
+                format = DECIMAL_FORMAT_INT;
             }
 
             // Draw the position bar
@@ -336,7 +335,7 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
             }
 
             // Draw the label text (requires statistics)
-            if(statistics != null) {
+            if (statistics != null) {
                 String valueMin = format.format(imageViewerPanelDisplayRangeControl.minSelectableValue + slider.getModel().getThumbAt(0).getPosition() *
                         (imageViewerPanelDisplayRangeControl.maxSelectableValue - imageViewerPanelDisplayRangeControl.minSelectableValue));
                 String valueMax = format.format(imageViewerPanelDisplayRangeControl.minSelectableValue + slider.getModel().getThumbAt(1).getPosition() *

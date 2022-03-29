@@ -15,6 +15,7 @@ import org.scijava.service.Service;
 public interface ImageJ2ModuleIO extends Service {
     /**
      * The class used to store data inside a module
+     *
      * @return the class
      */
     Class<?> getAcceptedModuleFieldClass();
@@ -25,24 +26,27 @@ public interface ImageJ2ModuleIO extends Service {
 
     /**
      * Applies changes to an {@link ImageJ2OpNodeInfo} required for this IO
-     * @param nodeInfo the node info
+     *
+     * @param nodeInfo   the node info
      * @param moduleItem the module
      */
     void install(ImageJ2OpNodeInfo nodeInfo, ModuleItem<?> moduleItem);
 
     /**
      * Applies changes to an {@link ImageJ2OpNode} required for this IO
-     * @param node the node info
+     *
+     * @param node       the node info
      * @param moduleItem the module
      */
     void install(ImageJ2OpNode node, ModuleItem<?> moduleItem);
 
     /**
      * Transfers data from JIPipe into the module
-     * @param node the JIPipe node
-     * @param dataBatch the data batch
-     * @param moduleItem the module item
-     * @param module the module
+     *
+     * @param node         the JIPipe node
+     * @param dataBatch    the data batch
+     * @param moduleItem   the module item
+     * @param module       the module
      * @param progressInfo the progress info
      * @return if successful
      */
@@ -50,12 +54,13 @@ public interface ImageJ2ModuleIO extends Service {
 
     /**
      * Transfers data from JIPipe from the module
-     * @param node the JIPipe node
-     * @param dataBatch the data batch
+     *
+     * @param node                   the JIPipe node
+     * @param dataBatch              the data batch
      * @param moduleOutputParameters
-     * @param moduleItem the module item
-     * @param module the module
-     * @param progressInfo the progress info
+     * @param moduleItem             the module item
+     * @param module                 the module
+     * @param progressInfo           the progress info
      * @return if successful
      */
     boolean transferToJIPipe(ImageJ2OpNode node, JIPipeDataBatch dataBatch, ParametersData moduleOutputParameters, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo);

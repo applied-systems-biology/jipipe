@@ -135,7 +135,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
             for (JIPipeNodeInfo info : JIPipeNodeInfo.getSortedList(entry.getValue())) {
                 if (info.isHidden())
                     continue;
-                if(subMenu.getMenuComponentCount() >= 30) {
+                if (subMenu.getMenuComponentCount() >= 30) {
                     JMenu moreMenu = new JMenu("More ...");
                     subMenu.add(moreMenu);
                     subMenu = moreMenu;

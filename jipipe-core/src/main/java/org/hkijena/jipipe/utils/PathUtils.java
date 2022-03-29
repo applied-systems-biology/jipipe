@@ -47,10 +47,11 @@ public class PathUtils {
     /**
      * Makes a file/directory executable
      * Does nothing if the OS is Windows
+     *
      * @param path the path
      */
     public static void makeUnixExecutable(Path path) {
-        if(SystemUtils.IS_OS_WINDOWS)
+        if (SystemUtils.IS_OS_WINDOWS)
             return;
         try {
             Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(path);

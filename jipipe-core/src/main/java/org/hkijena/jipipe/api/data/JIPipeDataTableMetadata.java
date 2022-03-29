@@ -30,7 +30,6 @@ import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -73,6 +72,7 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
     /**
      * Returns the format version for storage in the JSON file.
      * This might be used later to allow backward-compatibility
+     *
      * @return the format version
      */
     @JsonGetter("jipipe:data-table-format-version")
@@ -377,7 +377,7 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
 
     @Override
     public boolean remove(Object o) {
-        if(rowList.remove(o)) {
+        if (rowList.remove(o)) {
             dataAnnotationColumns = null;
             annotationColumns = null;
             return true;
@@ -408,7 +408,7 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
 
     @Override
     public boolean removeAll(@NotNull Collection<?> c) {
-        if(rowList.removeAll(c)) {
+        if (rowList.removeAll(c)) {
             dataAnnotationColumns = null;
             annotationColumns = null;
             return true;
@@ -418,7 +418,7 @@ public class JIPipeDataTableMetadata implements TableModel, List<JIPipeDataTable
 
     @Override
     public boolean retainAll(@NotNull Collection<?> c) {
-        if(rowList.retainAll(c)) {
+        if (rowList.retainAll(c)) {
             dataAnnotationColumns = null;
             annotationColumns = null;
             return true;

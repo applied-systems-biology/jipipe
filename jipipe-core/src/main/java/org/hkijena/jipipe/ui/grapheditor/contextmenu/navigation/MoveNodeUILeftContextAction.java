@@ -13,22 +13,16 @@
 
 package org.hkijena.jipipe.ui.grapheditor.contextmenu.navigation;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.datatransfer.Clipboard;
-import java.awt.datatransfer.StringSelection;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class MoveNodeUILeftContextAction implements NodeUIContextAction {
     @Override
@@ -42,10 +36,10 @@ public class MoveNodeUILeftContextAction implements NodeUIContextAction {
         int minY = Integer.MAX_VALUE;
         for (JIPipeNodeUI ui : selection) {
             Point point = ui.getStoredGridLocation();
-            minX = Math.min(point.x,minX);
+            minX = Math.min(point.x, minX);
             minY = Math.min(point.y, minY);
         }
-        canvasUI.expandLeftTop(minX <= 0 ? 1 : 0,0);
+        canvasUI.expandLeftTop(minX <= 0 ? 1 : 0, 0);
         for (JIPipeNodeUI ui : selection) {
             Point point = ui.getStoredGridLocation();
             ui.moveToGridLocation(new Point(point.x - 1, point.y), true, true);

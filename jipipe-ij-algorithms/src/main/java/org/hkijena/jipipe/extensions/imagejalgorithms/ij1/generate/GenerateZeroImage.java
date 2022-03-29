@@ -27,8 +27,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.filters.NonGenericImagePlusDataClassFilter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
-import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
+import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
@@ -91,7 +91,7 @@ public class GenerateZeroImage extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("data-type")
     public void setDataType(JIPipeDataInfoRef dataType) {
         this.dataType = dataType;
-        if(dataType.getInfo() != null) {
+        if (dataType.getInfo() != null) {
             getFirstOutputSlot().setAcceptedDataType(dataType.getInfo().getDataClass());
         }
     }

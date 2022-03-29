@@ -24,7 +24,6 @@ import org.hkijena.jipipe.api.registries.JIPipeExpressionRegistry;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.ui.DefaultExpressionParameterEditorUI;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;

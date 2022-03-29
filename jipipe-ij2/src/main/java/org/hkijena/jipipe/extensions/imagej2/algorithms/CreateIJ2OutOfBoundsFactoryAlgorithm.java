@@ -12,8 +12,8 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.EmptyImageJ2OutOfBoundsFactory;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.ImageJ2OutOfBoundsFactoryData;
-import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
+import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.utils.classfilters.NonGenericClassFilter;
 
 @JIPipeDocumentation(name = "Create Out Of Bounds factory", description = "Defines an ImageJ2 Out Of Bounds factory")
@@ -48,12 +48,11 @@ public class CreateIJ2OutOfBoundsFactoryAlgorithm extends JIPipeSimpleIteratingA
 
     @JIPipeParameter("factory-type")
     public void setFactoryType(JIPipeDataInfoRef factoryType) {
-        if(factoryType.getInfo() != this.factoryType.getInfo()) {
+        if (factoryType.getInfo() != this.factoryType.getInfo()) {
             this.factoryType = factoryType;
-            if(factoryType.getInfo() != null) {
+            if (factoryType.getInfo() != null) {
                 this.factoryData = (ImageJ2OutOfBoundsFactoryData) JIPipe.createData(factoryType.getInfo().getDataClass());
-            }
-            else {
+            } else {
                 this.factoryData = new EmptyImageJ2OutOfBoundsFactory();
             }
             triggerParameterStructureChange();

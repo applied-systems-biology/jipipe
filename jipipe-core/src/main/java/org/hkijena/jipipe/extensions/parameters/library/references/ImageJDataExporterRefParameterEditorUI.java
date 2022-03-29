@@ -81,7 +81,7 @@ public class ImageJDataExporterRefParameterEditorUI extends JIPipeParameterEdito
         Class<? extends JIPipeData> baseClass = JIPipeData.class;
         boolean includeConvertible = true;
         ImageJExporterParameterSettings annotation = getParameterAccess().getAnnotationOfType(ImageJExporterParameterSettings.class);
-        if(annotation != null) {
+        if (annotation != null) {
             baseClass = annotation.baseClass();
             includeConvertible = annotation.includeConvertible();
         }
@@ -90,7 +90,7 @@ public class ImageJDataExporterRefParameterEditorUI extends JIPipeParameterEdito
         ImageJDataExporter Exporter = JIPipe.getImageJAdapters().getExporterById(infoRef.getId());
         picker.setSelectedItem(Exporter);
         ImageJDataExporter result = picker.showDialog();
-        if(result != null) {
+        if (result != null) {
             setParameter(new ImageJDataExporterRef(JIPipe.getImageJAdapters().getIdOf(result)), true);
         }
     }

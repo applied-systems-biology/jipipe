@@ -31,6 +31,7 @@ public class StringList extends ListParameter<String> {
 
     /**
      * Creates a new list from the provided items
+     *
      * @param items the items to add
      */
     public StringList(String... items) {
@@ -40,6 +41,7 @@ public class StringList extends ListParameter<String> {
 
     /**
      * Creates a new list from the provided items
+     *
      * @param items the items to add
      */
     public StringList(Collection<String> items) {

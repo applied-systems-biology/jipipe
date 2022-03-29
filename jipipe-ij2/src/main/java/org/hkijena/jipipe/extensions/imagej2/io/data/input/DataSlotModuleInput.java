@@ -5,14 +5,13 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNode;
 import org.hkijena.jipipe.extensions.imagej2.ImageJ2OpNodeInfo;
-import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
 import org.hkijena.jipipe.extensions.imagej2.io.data.DataSlotModuleIO;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.scijava.module.Module;
 import org.scijava.module.ModuleItem;
 import org.scijava.service.AbstractService;
 
-public abstract class DataSlotModuleInput<ModuleDataType,JIPipeDataType extends JIPipeData> extends AbstractService implements DataSlotModuleIO {
+public abstract class DataSlotModuleInput<ModuleDataType, JIPipeDataType extends JIPipeData> extends AbstractService implements DataSlotModuleIO {
 
     @Override
     public Class<?> getAcceptedModuleFieldClass() {
@@ -42,12 +41,11 @@ public abstract class DataSlotModuleInput<ModuleDataType,JIPipeDataType extends 
     @Override
     public boolean transferFromJIPipe(ImageJ2OpNode node, JIPipeDataBatch dataBatch, ModuleItem moduleItem, Module module, JIPipeProgressInfo progressInfo) {
         String slotName = node.getModuleNodeInfo().getInputSlotName(moduleItem);
-        if(dataBatch.getInputRow(slotName) >= 0) {
+        if (dataBatch.getInputRow(slotName) >= 0) {
             JIPipeDataType obj = dataBatch.getInputData(slotName, getJIPipeDataType(), progressInfo);
             ModuleDataType converted = convertJIPipeToModuleData(obj);
             moduleItem.setValue(module, converted);
-        }
-        else {
+        } else {
             progressInfo.log("Input slot " + slotName + " is empty. Skipping.");
         }
         return true;

@@ -18,9 +18,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.JIPipeProjectCacheQuery;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -50,13 +50,13 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     private final JIPipeProject project;
     private final String displayName;
     private final String slotName;
+    private final JPanel contentPane = new JPanel(new BorderLayout());
     private JIPipeDataTableDataSource dataSource;
     private JIPipeCachedDataDisplayCacheControl cacheAwareToggle;
     private WeakReference<JIPipeVirtualData> lastVirtualData;
     private JButton previousRowButton;
     private JButton nextRowButton;
     private JLabel rowInfoLabel;
-    private final JPanel contentPane = new JPanel(new BorderLayout());
     private Function<JIPipeVirtualData, JIPipeVirtualData> dataConverterFunction;
 
     public JIPipeCacheDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
@@ -69,16 +69,14 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         initialize();
 
-        if(dataSource.getDataTable() instanceof JIPipeDataSlot) {
+        if (dataSource.getDataTable() instanceof JIPipeDataSlot) {
             JIPipeGraphNode node = ((JIPipeDataSlot) dataSource.getDataTable()).getNode();
-            if(node != null && node.getParentGraph() != null) {
+            if (node != null && node.getParentGraph() != null) {
                 this.algorithm = (JIPipeAlgorithm) project.getGraph().getEquivalentAlgorithm(node);
-            }
-            else {
+            } else {
                 this.algorithm = null;
             }
-        }
-        else {
+        } else {
             this.algorithm = null;
         }
 
@@ -160,7 +158,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         if (getAlgorithm() != null) {
             setTitle(getAlgorithm().getName() + "/" + getSlotName() + "/" + row + (dataSource.getDataAnnotation() != null ? "/$" + dataSource.getDataAnnotation() : ""));
         } else {
-            setTitle(getDisplayName() + "/" + row  + (dataSource.getDataAnnotation() != null ? "/$" + dataSource.getDataAnnotation() : ""));
+            setTitle(getDisplayName() + "/" + row + (dataSource.getDataAnnotation() != null ? "/$" + dataSource.getDataAnnotation() : ""));
         }
 
         removeDataControls();

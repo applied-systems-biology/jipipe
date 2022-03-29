@@ -16,15 +16,15 @@ public class JIPipeLogs {
     private final EventBus eventBus = new EventBus();
     private final List<LogEntry> logEntries = new ArrayList<>();
 
+    public JIPipeLogs() {
+        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+    }
+
     public static JIPipeLogs getInstance() {
-        if(INSTANCE == null) {
+        if (INSTANCE == null) {
             INSTANCE = new JIPipeLogs();
         }
         return INSTANCE;
-    }
-
-    public JIPipeLogs() {
-        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
     public List<LogEntry> getLogEntries() {
@@ -50,6 +50,16 @@ public class JIPipeLogs {
 
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    @Subscribe
+    public void onRunFinished(RunUIWorkerFinishedEvent event) {
+        pushToLog(event.getRun(), true);
+    }
+
+    @Subscribe
+    public void onRunCancelled(RunUIWorkerInterruptedEvent event) {
+        pushToLog(event.getRun(), false);
     }
 
     public static class LogClearedEvent {
@@ -80,16 +90,6 @@ public class JIPipeLogs {
         public LogEntry getEntry() {
             return entry;
         }
-    }
-
-    @Subscribe
-    public void onRunFinished(RunUIWorkerFinishedEvent event) {
-        pushToLog(event.getRun(), true);
-    }
-
-    @Subscribe
-    public void onRunCancelled(RunUIWorkerInterruptedEvent event) {
-        pushToLog(event.getRun(), false);
     }
 
     public static class LogEntry {

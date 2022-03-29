@@ -41,6 +41,7 @@ public class JIPipeExportedDataAnnotation {
 
     /**
      * ID of the data type stored in this data annotation
+     *
      * @return the data type ID
      */
     @JsonGetter("true-data-type")
@@ -55,6 +56,7 @@ public class JIPipeExportedDataAnnotation {
 
     /**
      * The name of this data annotation
+     *
      * @return the name
      */
     @JsonGetter("name")

@@ -1709,14 +1709,14 @@ public class JIPipeGraph implements JIPipeValidatable {
                     }
                 }
                 // Do we have a dummy loop start (branch merge?)
-                if(previousLoopStarts.size() > 1 && previousLoopStarts.contains(dummyLoopStart)) {
+                if (previousLoopStarts.size() > 1 && previousLoopStarts.contains(dummyLoopStart)) {
                     JIPipeGraphNode correctLoopStart = previousLoopStarts.stream().filter(start -> start != dummyLoopStart).findAny().get();
                     // We encounter a branch merge -> All predecessors that have a dummy loop start will be included into the current loop
                     for (JIPipeDataSlot target : targetNode.getInputSlots()) {
                         for (JIPipeDataSlot source : getInputIncomingSourceSlots(target)) {
                             JIPipeGraphNode sourceNode = source.getNode();
                             if (sourceNode instanceof JIPipeAlgorithm) {
-                                if(detectedLoopStarts.get(sourceNode) == dummyLoopStart) {
+                                if (detectedLoopStarts.get(sourceNode) == dummyLoopStart) {
                                     detectedLoopStarts.put(sourceNode, (LoopStartNode) correctLoopStart);
                                     detectedLoopDepths.put(sourceNode, previousLoopDepth);
                                     for (JIPipeGraphNode predecessor : predecessorSets.get(sourceNode)) {

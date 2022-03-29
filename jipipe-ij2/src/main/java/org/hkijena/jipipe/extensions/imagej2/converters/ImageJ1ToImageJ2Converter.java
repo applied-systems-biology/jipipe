@@ -18,6 +18,6 @@ public class ImageJ1ToImageJ2Converter implements JIPipeDataConverter {
 
     @Override
     public JIPipeData convert(JIPipeData input) {
-        return new ImageJ2DatasetData(((ImagePlusData)input).getImage());
+        return new ImageJ2DatasetData(((ImagePlusData) input).getImage());
     }
 }

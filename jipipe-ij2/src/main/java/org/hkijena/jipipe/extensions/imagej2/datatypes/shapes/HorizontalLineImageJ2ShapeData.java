@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imagej2.datatypes.shapes;
 
-import com.google.common.primitives.Ints;
 import net.imglib2.algorithm.neighborhood.HorizontalLineShape;
 import net.imglib2.algorithm.neighborhood.Shape;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -8,10 +7,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.list.IntegerList;
-import org.hkijena.jipipe.utils.json.JsonUtils;
-
-import java.nio.file.Path;
 
 @JIPipeDocumentation(name = "IJ2 Horizontal Line Shape", description = "A Shape representing finite, centered, symmetric lines, that are parallel to the image axes.")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
@@ -38,18 +33,18 @@ public class HorizontalLineImageJ2ShapeData extends ImageJ2ShapeData {
         this.skipCenter = shape.isSkippingCenter();
     }
 
-    @Override
-    public Shape createShape() {
-        return new HorizontalLineShape(span, lineDimension, skipCenter);
-    }
-
     public static HorizontalLineImageJ2ShapeData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         return (HorizontalLineImageJ2ShapeData) ImageJ2ShapeData.importData(storage, progressInfo);
     }
 
     @Override
+    public Shape createShape() {
+        return new HorizontalLineShape(span, lineDimension, skipCenter);
+    }
+
+    @Override
     public String toString() {
-        return "IJ2 Horizontal Line Shape (span=" + span + ", lineDimension=" + lineDimension + ",skipCenter=" + skipCenter+ ")";
+        return "IJ2 Horizontal Line Shape (span=" + span + ", lineDimension=" + lineDimension + ",skipCenter=" + skipCenter + ")";
     }
 
     @JIPipeDocumentation(name = "Span")

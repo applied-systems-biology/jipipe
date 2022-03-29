@@ -19,17 +19,10 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
@@ -39,7 +32,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
 public class ScaleRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-    
+
     private double scaleX = 1.0;
     private double scaleY = 1.0;
     private boolean centerScale = false;
@@ -69,7 +62,7 @@ public class ScaleRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ROIListData data = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate(progressInfo);
         for (int i = 0; i < data.size(); i++) {
             Roi roi = data.get(i);
-            if(scaleX != 1.0 || scaleY != 1.0) {
+            if (scaleX != 1.0 || scaleY != 1.0) {
                 roi = RoiScaler.scale(roi, scaleX, scaleY, centerScale);
                 data.set(i, roi);
             }

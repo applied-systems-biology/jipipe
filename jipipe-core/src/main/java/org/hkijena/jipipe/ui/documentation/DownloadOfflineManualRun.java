@@ -4,8 +4,8 @@ import ij.IJ;
 import ij.Prefs;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.utils.WebUtils;
 import org.hkijena.jipipe.utils.ArchiveUtils;
+import org.hkijena.jipipe.utils.WebUtils;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

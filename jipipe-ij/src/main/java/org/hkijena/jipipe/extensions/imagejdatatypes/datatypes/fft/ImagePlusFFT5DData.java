@@ -22,8 +22,6 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 
-import java.nio.file.Path;
-
 /**
  * 5D image in frequency space
  */

@@ -59,13 +59,14 @@ public class JIPipeAuthorMetadata implements JIPipeParameterCollection {
 
     /**
      * Initializes the instance
-     * @param title the title (can be empty)
-     * @param firstName    first name
-     * @param lastName     last name
-     * @param affiliations list of affiliations
-     * @param website optional website link
-     * @param contact contact information, e.g., an E-Mail address
-     * @param firstAuthor if the author is marked as first author
+     *
+     * @param title               the title (can be empty)
+     * @param firstName           first name
+     * @param lastName            last name
+     * @param affiliations        list of affiliations
+     * @param website             optional website link
+     * @param contact             contact information, e.g., an E-Mail address
+     * @param firstAuthor         if the author is marked as first author
      * @param correspondingAuthor if the author is marked as corresponding author
      */
     public JIPipeAuthorMetadata(String title, String firstName, String lastName, StringList affiliations, String website, String contact, boolean firstAuthor, boolean correspondingAuthor) {
@@ -88,6 +89,61 @@ public class JIPipeAuthorMetadata implements JIPipeParameterCollection {
         this.correspondingAuthor = other.correspondingAuthor;
         this.firstAuthor = other.firstAuthor;
         this.customText = new HTMLText(other.customText);
+    }
+
+    /**
+     * Opens a list of authors in a window that displays information about them.
+     *
+     * @param parent       the parent component
+     * @param authors      the list of authors
+     * @param targetAuthor the author to show first. Can be null.
+     * @return the window
+     */
+    public static JFrame openAuthorInfoWindow(Component parent, Collection<JIPipeAuthorMetadata> authors, JIPipeAuthorMetadata targetAuthor) {
+        DocumentTabPane tabPane = new DocumentTabPane();
+        for (JIPipeAuthorMetadata author : authors) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("<h1>").append(HtmlEscapers.htmlEscaper().escape(author.toString())).append("</h1>");
+            stringBuilder.append("<div><small><strong>*</strong> First author</small></div>");
+            stringBuilder.append("<div><small><strong>#</strong> Corresponding author</small></div>");
+            stringBuilder.append("<br/><br/>");
+            if (!StringUtils.isNullOrEmpty(author.getContact())) {
+                if (author.getContact().contains("@")) {
+                    stringBuilder.append("<div><strong>Contact:</strong> <a href=\"mailto:").append(author.getContact()).append("\">").append(author.getContact()).append("</a></div>");
+                } else {
+                    stringBuilder.append("<div><strong>Contact:</strong> ").append(HtmlEscapers.htmlEscaper().escape(author.getContact())).append("</div>");
+                }
+            }
+            if (!StringUtils.isNullOrEmpty(author.getWebsite())) {
+                stringBuilder.append("<div><strong>Website:</strong> <a href=\"").append(author.getWebsite()).append("\">").append(author.getWebsite()).append("</a></div>");
+            }
+            if (!author.getAffiliations().isEmpty()) {
+                stringBuilder.append("<h2>Affiliations</h2>");
+                stringBuilder.append("<ul>");
+                for (String affiliation : author.getAffiliations()) {
+                    stringBuilder.append("<li>").append(HtmlEscapers.htmlEscaper().escape(affiliation)).append("</li>");
+                }
+                stringBuilder.append("</ul>");
+            }
+            if (author.getCustomText() != null) {
+                stringBuilder.append("<br/><br/>");
+                stringBuilder.append(author.getCustomText().getBody());
+            }
+            MarkdownReader reader = new MarkdownReader(false, new MarkdownDocument(stringBuilder.toString()));
+            tabPane.addTab(author.toString(), UIUtils.getIconFromResources("actions/im-user.png"), reader, DocumentTabPane.CloseMode.withoutCloseButton);
+            if (author == targetAuthor) {
+                tabPane.switchToLastTab();
+            }
+        }
+        JFrame dialog = new JFrame();
+        dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        dialog.setContentPane(tabPane);
+        dialog.setTitle("Author information");
+        dialog.pack();
+        dialog.setSize(new Dimension(800, 600));
+        dialog.setLocationRelativeTo(parent);
+        dialog.setVisible(true);
+        return dialog;
     }
 
     @JIPipeParameter(value = "title", uiOrder = -1)
@@ -248,60 +304,5 @@ public class JIPipeAuthorMetadata implements JIPipeParameterCollection {
         public String toString() {
             return this.stream().map(JIPipeAuthorMetadata::toString).collect(Collectors.joining(", "));
         }
-    }
-
-    /**
-     * Opens a list of authors in a window that displays information about them.
-     * @param parent the parent component
-     * @param authors the list of authors
-     * @param targetAuthor the author to show first. Can be null.
-     * @return the window
-     */
-    public static JFrame openAuthorInfoWindow(Component parent, Collection<JIPipeAuthorMetadata> authors, JIPipeAuthorMetadata targetAuthor) {
-        DocumentTabPane tabPane = new DocumentTabPane();
-        for (JIPipeAuthorMetadata author : authors) {
-            StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("<h1>").append(HtmlEscapers.htmlEscaper().escape(author.toString())).append("</h1>");
-            stringBuilder.append("<div><small><strong>*</strong> First author</small></div>");
-            stringBuilder.append("<div><small><strong>#</strong> Corresponding author</small></div>");
-            stringBuilder.append("<br/><br/>");
-            if(!StringUtils.isNullOrEmpty(author.getContact())) {
-                if(author.getContact().contains("@")) {
-                    stringBuilder.append("<div><strong>Contact:</strong> <a href=\"mailto:").append(author.getContact()).append("\">").append(author.getContact()).append("</a></div>");
-                }
-                else {
-                    stringBuilder.append("<div><strong>Contact:</strong> ").append(HtmlEscapers.htmlEscaper().escape(author.getContact())).append("</div>");
-                }
-            }
-            if(!StringUtils.isNullOrEmpty(author.getWebsite())) {
-                stringBuilder.append("<div><strong>Website:</strong> <a href=\"").append(author.getWebsite()).append("\">").append(author.getWebsite()).append("</a></div>");
-            }
-            if(!author.getAffiliations().isEmpty()) {
-                stringBuilder.append("<h2>Affiliations</h2>");
-                stringBuilder.append("<ul>");
-                for (String affiliation : author.getAffiliations()) {
-                    stringBuilder.append("<li>").append(HtmlEscapers.htmlEscaper().escape(affiliation)).append("</li>");
-                }
-                stringBuilder.append("</ul>");
-            }
-            if(author.getCustomText() != null) {
-                stringBuilder.append("<br/><br/>");
-                stringBuilder.append(author.getCustomText().getBody());
-            }
-            MarkdownReader reader = new MarkdownReader(false, new MarkdownDocument(stringBuilder.toString()));
-            tabPane.addTab(author.toString(), UIUtils.getIconFromResources("actions/im-user.png"), reader, DocumentTabPane.CloseMode.withoutCloseButton);
-            if(author == targetAuthor) {
-                tabPane.switchToLastTab();
-            }
-        }
-        JFrame dialog = new JFrame();
-        dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        dialog.setContentPane(tabPane);
-        dialog.setTitle("Author information");
-        dialog.pack();
-        dialog.setSize(new Dimension(800, 600));
-        dialog.setLocationRelativeTo(parent);
-        dialog.setVisible(true);
-        return dialog;
     }
 }

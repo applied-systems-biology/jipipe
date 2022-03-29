@@ -22,7 +22,6 @@ import org.jfree.chart.renderer.category.BarRenderer;
 import org.jfree.chart.renderer.category.StandardBarPainter;
 
 import java.awt.*;
-import java.nio.file.Path;
 
 /**
  * A bar category plot

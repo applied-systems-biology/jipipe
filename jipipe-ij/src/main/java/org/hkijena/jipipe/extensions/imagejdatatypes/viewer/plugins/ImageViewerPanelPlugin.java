@@ -68,6 +68,7 @@ public abstract class ImageViewerPanelPlugin {
 
     /**
      * Called when the current slice is changed
+     *
      * @param deferUploadSlice if true, uploading the slice to the canvas should be deferred
      */
     public void onSliceChanged(boolean deferUploadSlice) {

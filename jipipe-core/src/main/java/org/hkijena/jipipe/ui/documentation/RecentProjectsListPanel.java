@@ -11,7 +11,7 @@ import org.hkijena.jipipe.ui.components.RecentProjectListCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Path;

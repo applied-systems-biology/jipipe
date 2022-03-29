@@ -31,7 +31,7 @@ public class DefaultJIPipeOutputSlot implements JIPipeOutputSlot {
     /**
      * @param value         the data class
      * @param slotName      the slot name
-     * @param description the description
+     * @param description   the description
      * @param inheritedSlot An optional inherited slot.
      * @param autoCreate    Automatically create the slot if supported by the algorithm
      */

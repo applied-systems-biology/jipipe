@@ -12,6 +12,7 @@ public interface JIPipeDataStorage extends AutoCloseable, Closeable {
 
     /**
      * Returns the {@link JIPipeProgressInfo} instance where information is logged
+     *
      * @return the {@link JIPipeProgressInfo} instance
      */
     JIPipeProgressInfo getProgressInfo();
@@ -20,6 +21,7 @@ public interface JIPipeDataStorage extends AutoCloseable, Closeable {
      * Returns true if the file system path is initialized.
      * For example, for certain storage modes, the storage backend might require to create such a storage, which slows
      * down the file operations.
+     *
      * @return if the file system path is initialized
      */
     boolean isFileSystemPathInitialized();
@@ -28,12 +30,14 @@ public interface JIPipeDataStorage extends AutoCloseable, Closeable {
      * Returns a path on the file system where data can be read/written
      * This path is always ensured to exist.
      * If possible, please use stream-based methods, as the backend might require additional operations to create a file system.
+     *
      * @return the path
      */
     Path getFileSystemPath();
 
     /**
      * The current path relative to the root storage
+     *
      * @return the path relative to the root storage
      */
     Path getInternalPath();

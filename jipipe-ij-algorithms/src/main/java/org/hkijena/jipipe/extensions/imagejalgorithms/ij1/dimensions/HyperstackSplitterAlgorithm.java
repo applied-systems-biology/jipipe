@@ -40,7 +40,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
                 .addOutputSlot("Output", "", ImagePlusData.class, "Input")
                 .sealInput()
                 .build());
-        this.outputIndices = new OutputSlotMapParameterCollection(OptionalIntegerRange.class, this,null, false);
+        this.outputIndices = new OutputSlotMapParameterCollection(OptionalIntegerRange.class, this, null, false);
         outputIndices.updateSlots();
         registerSubParameter(outputIndices);
     }

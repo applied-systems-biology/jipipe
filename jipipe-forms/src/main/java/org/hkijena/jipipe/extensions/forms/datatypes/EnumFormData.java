@@ -22,7 +22,6 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
-import java.nio.file.Path;
 import java.util.Collections;
 import java.util.stream.Collectors;
 

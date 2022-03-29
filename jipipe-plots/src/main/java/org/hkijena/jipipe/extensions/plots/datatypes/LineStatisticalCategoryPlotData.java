@@ -24,7 +24,6 @@ import org.jfree.chart.renderer.category.CategoryItemRenderer;
 import org.jfree.chart.renderer.category.StatisticalLineAndShapeRenderer;
 
 import java.awt.*;
-import java.nio.file.Path;
 
 /**
  * Generates a bar category plot

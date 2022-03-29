@@ -13,23 +13,18 @@
 
 package org.hkijena.jipipe.extensions.parameters.library.references;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.pickers.ImageJDataImporterPicker;
-import org.hkijena.jipipe.ui.components.pickers.JIPipeNodeInfoPicker;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
 
 /**
  * Parameter for {@link JIPipeNodeInfoRef}
@@ -86,7 +81,7 @@ public class ImageJDataImporterRefParameterEditorUI extends JIPipeParameterEdito
         Class<? extends JIPipeData> baseClass = JIPipeData.class;
         boolean includeConvertible = true;
         ImageJImporterParameterSettings annotation = getParameterAccess().getAnnotationOfType(ImageJImporterParameterSettings.class);
-        if(annotation != null) {
+        if (annotation != null) {
             baseClass = annotation.baseClass();
             includeConvertible = annotation.includeConvertible();
         }
@@ -95,7 +90,7 @@ public class ImageJDataImporterRefParameterEditorUI extends JIPipeParameterEdito
         ImageJDataImporter importer = JIPipe.getImageJAdapters().getImporterById(infoRef.getId());
         picker.setSelectedItem(importer);
         ImageJDataImporter result = picker.showDialog();
-        if(result != null) {
+        if (result != null) {
             setParameter(new ImageJDataImporterRef(JIPipe.getImageJAdapters().getIdOf(result)), true);
         }
     }

@@ -45,6 +45,24 @@ public class ImageJ2DatasetData implements JIPipeData {
         this.dataset = new DefaultDataset(JIPipe.getInstance().getContext(), new ImgPlus(ImageJFunctions.wrap(image)));
     }
 
+    public static ImageJ2DatasetData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        Path targetFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
+        if (targetFile == null) {
+            throw new UserFriendlyNullPointerException("Could not find a compatible image file in '" + storage + "'!",
+                    "Unable to find file in location '" + storage + "'",
+                    "ImagePlusData loading",
+                    "JIPipe needs to load the image from a folder, but it could not find any matching file.",
+                    "Please contact the JIPipe developers about this issue.");
+        }
+        DatasetIOService service = JIPipe.getInstance().getContext().getService(DatasetIOService.class);
+        try {
+            Dataset dataset = service.open(targetFile.toString());
+            return new ImageJ2DatasetData(dataset);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         wrap().exportData(storage, name, forceName, progressInfo);
@@ -74,14 +92,16 @@ public class ImageJ2DatasetData implements JIPipeData {
 
     /**
      * Wraps the IJ2 image to an IJ1 image data
+     *
      * @return the IJ1 data
      */
     public ImagePlusData wrap() {
-        return new ImagePlusData(ImageJFunctions.wrap((ImgPlus)dataset.getImgPlus(), dataset.getName()));
+        return new ImagePlusData(ImageJFunctions.wrap((ImgPlus) dataset.getImgPlus(), dataset.getName()));
     }
 
     /**
      * Gets the data set
+     *
      * @return the data set
      */
     public Dataset getDataset() {
@@ -91,23 +111,5 @@ public class ImageJ2DatasetData implements JIPipeData {
     @Override
     public String toString() {
         return dataset.toString();
-    }
-
-    public static ImageJ2DatasetData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        Path targetFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".tif", ".tiff", ".png", ".jpg", ".jpeg", ".bmp");
-        if (targetFile == null) {
-            throw new UserFriendlyNullPointerException("Could not find a compatible image file in '" + storage + "'!",
-                    "Unable to find file in location '" + storage + "'",
-                    "ImagePlusData loading",
-                    "JIPipe needs to load the image from a folder, but it could not find any matching file.",
-                    "Please contact the JIPipe developers about this issue.");
-        }
-        DatasetIOService service = JIPipe.getInstance().getContext().getService(DatasetIOService.class);
-        try {
-            Dataset dataset = service.open(targetFile.toString());
-            return new ImageJ2DatasetData(dataset);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

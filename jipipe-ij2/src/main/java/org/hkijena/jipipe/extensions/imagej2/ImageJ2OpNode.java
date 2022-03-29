@@ -1,7 +1,5 @@
 package org.hkijena.jipipe.extensions.imagej2;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import net.imagej.ops.Op;
 import net.imagej.ops.OpInfo;
 import net.imagej.ops.OpService;
@@ -17,7 +15,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.scijava.Initializable;
-import org.scijava.module.*;
+import org.scijava.module.Module;
+import org.scijava.module.ModuleItem;
+import org.scijava.module.ModuleService;
 
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -40,7 +40,7 @@ public class ImageJ2OpNode extends JIPipeIteratingAlgorithm {
         OpService opService = opNodeInfo.getContext().getService(OpService.class);
         ModuleService moduleService = opNodeInfo.getContext().getService(ModuleService.class);
         this.moduleInstance = moduleService.createModule(opInfo.cInfo());
-        Op op = (Op)moduleInstance.getDelegateObject();
+        Op op = (Op) moduleInstance.getDelegateObject();
         op.setEnvironment(opService);
 
         // Install the module IOs
@@ -50,6 +50,14 @@ public class ImageJ2OpNode extends JIPipeIteratingAlgorithm {
         for (Map.Entry<ModuleItem<?>, ImageJ2ModuleIO> entry : opNodeInfo.getOutputModuleIO().entrySet()) {
             entry.getValue().install(this, entry.getKey());
         }
+    }
+
+    public ImageJ2OpNode(ImageJ2OpNode other) {
+        super(other);
+        this.moduleInstance = other.getModuleInstance();
+        this.moduleParameters = new JIPipeDynamicParameterCollection(other.moduleParameters);
+        this.moduleItemToParameterAssignment.putAll(other.moduleItemToParameterAssignment);
+        this.parameterToModuleItemAssignment.putAll(other.parameterToModuleItemAssignment);
     }
 
     private static JIPipeSlotConfiguration createSlotConfiguration(JIPipeNodeInfo info) {
@@ -63,14 +71,6 @@ public class ImageJ2OpNode extends JIPipeIteratingAlgorithm {
         slotConfiguration.setInputSealed(true);
         slotConfiguration.setOutputSealed(true);
         return slotConfiguration;
-    }
-
-    public ImageJ2OpNode(ImageJ2OpNode other) {
-        super(other);
-        this.moduleInstance = other.getModuleInstance();
-        this.moduleParameters = new JIPipeDynamicParameterCollection(other.moduleParameters);
-        this.moduleItemToParameterAssignment.putAll(other.moduleItemToParameterAssignment);
-        this.parameterToModuleItemAssignment.putAll(other.parameterToModuleItemAssignment);
     }
 
     public ImageJ2OpNodeInfo getModuleNodeInfo() {
@@ -87,10 +87,10 @@ public class ImageJ2OpNode extends JIPipeIteratingAlgorithm {
         }
 
         // Run the initializer function
-        if(moduleInstance.getDelegateObject() instanceof Initializable) {
+        if (moduleInstance.getDelegateObject() instanceof Initializable) {
             ((Initializable) moduleInstance.getDelegateObject()).initialize();
         }
-        if(moduleInstance.getDelegateObject() instanceof net.imagej.ops.Initializable) {
+        if (moduleInstance.getDelegateObject() instanceof net.imagej.ops.Initializable) {
             ((net.imagej.ops.Initializable) moduleInstance.getDelegateObject()).initialize();
         }
 
@@ -101,7 +101,7 @@ public class ImageJ2OpNode extends JIPipeIteratingAlgorithm {
         for (Map.Entry<ModuleItem<?>, ImageJ2ModuleIO> entry : getModuleNodeInfo().getOutputModuleIO().entrySet()) {
             entry.getValue().transferToJIPipe(this, dataBatch, moduleOutputParameters, entry.getKey(), moduleInstance, progressInfo);
         }
-        if(getModuleNodeInfo().hasParameterDataOutputSlot()) {
+        if (getModuleNodeInfo().hasParameterDataOutputSlot()) {
             dataBatch.addOutputData(getModuleNodeInfo().getOrCreateParameterDataOutputSlot().slotName(), moduleOutputParameters, progressInfo);
         }
     }

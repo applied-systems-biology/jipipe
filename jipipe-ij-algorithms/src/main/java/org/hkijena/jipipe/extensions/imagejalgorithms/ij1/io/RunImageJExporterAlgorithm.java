@@ -12,7 +12,10 @@ import org.hkijena.jipipe.api.compat.ImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.ImageJExportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
+import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -59,7 +62,7 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-        if(exporterType.getInstance() == null) {
+        if (exporterType.getInstance() == null) {
             report.reportIsInvalid("No exporter type selected!", "No exporter type was selected", "Please select an exporter", this);
         }
         super.reportValidity(report);
@@ -69,7 +72,7 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/configure.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/configure.png")
     public void setExporterParametersFromUI(JIPipeWorkbench parent) {
-        if(exporterType.getInstance() == null) {
+        if (exporterType.getInstance() == null) {
             JOptionPane.showMessageDialog(parent.getWindow(),
                     "Please select an exporter type, first!",
                     "Set export parameters",
@@ -79,7 +82,7 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
         ImageJDataExportOperation operation = new ImageJDataExportOperation(exporterType.getInstance());
         this.exportParameters.copyTo(operation);
         ImageJDataExporterUI ui = JIPipe.getImageJAdapters().createUIForExportOperation(parent, operation);
-        if(JOptionPane.showConfirmDialog(parent.getWindow(), ui, "Set export parameters", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+        if (JOptionPane.showConfirmDialog(parent.getWindow(), ui, "Set export parameters", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             operation.copyTo(this.exportParameters);
             triggerParameterUIChange();
         }

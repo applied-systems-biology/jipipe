@@ -33,6 +33,18 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
         settingsPanel.getRun().getEventBus().register(this);
     }
 
+    private static JIPipeGraph createGraph(JIPipeGraphNode node) {
+        JIPipeGraph graph = new JIPipeGraph();
+        graph.insertNode(node);
+        return graph;
+    }
+
+    private static GraphEditorUISettings createSettings() {
+        GraphEditorUISettings settings = new GraphEditorUISettings();
+        settings.getSearchSettings().setEnableSearch(false);
+        return settings;
+    }
+
     private void initialize() {
         DocumentTabPane propertyPanel = new DocumentTabPane();
         propertyPanel.addTab("Inputs",
@@ -44,18 +56,6 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
                 outputsPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton);
         setPropertyPanel(propertyPanel);
-    }
-
-    private static JIPipeGraph createGraph(JIPipeGraphNode node) {
-        JIPipeGraph graph = new JIPipeGraph();
-        graph.insertNode(node);
-        return graph;
-    }
-
-    private static GraphEditorUISettings createSettings() {
-        GraphEditorUISettings settings = new GraphEditorUISettings();
-        settings.getSearchSettings().setEnableSearch(false);
-        return settings;
     }
 
     public RunSingleAlgorithmSettingsPanel getSettingsPanel() {
@@ -70,7 +70,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
     private void reloadPropertyPanel() {
         inputsPanel.clear();
         outputsPanel.clear();
-        if(!settingsPanel.getNode().getInputSlots().isEmpty()) {
+        if (!settingsPanel.getNode().getInputSlots().isEmpty()) {
 //            FormPanel.GroupHeaderPanel groupHeader = inputsPanel.addGroupHeader("Inputs", UIUtils.getIconFromResources("data-types/slot.png"));
 //            groupHeader.setDescription("Please use the following items to assign inputs to the node. " +
 //                    "Please note that JIPipe provides multiple options how JIPipe can acquire data from ImageJ. " +
@@ -85,7 +85,7 @@ public class RunSingleAlgorithmSettingsPanelIOEditor extends JIPipeGraphEditorUI
             }
         }
         inputsPanel.addVerticalGlue();
-        if(!settingsPanel.getNode().getOutputSlots().isEmpty()) {
+        if (!settingsPanel.getNode().getOutputSlots().isEmpty()) {
 //            FormPanel.GroupHeaderPanel groupHeader = inputsPanel.addGroupHeader("Outputs", UIUtils.getIconFromResources("data-types/slot.png"));
 //            groupHeader.setDescription("The following items refer to the generated outputs. " +
 //                    "Please note that JIPipe can export results back into ImageJ in multiple ways. " +

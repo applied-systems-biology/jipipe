@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
 
 import java.io.IOException;

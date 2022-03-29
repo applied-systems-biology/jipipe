@@ -30,8 +30,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
+import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 
 @JIPipeDocumentation(name = "Chamfer Distance Map 2D", description = "Computes the distance map from a binary image. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Math\nDistance map", nodeTypeCategory = ImagesNodeTypeCategory.class)

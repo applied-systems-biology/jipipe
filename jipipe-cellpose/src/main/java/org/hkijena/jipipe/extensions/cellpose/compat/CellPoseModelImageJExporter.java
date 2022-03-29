@@ -22,25 +22,23 @@ public class CellPoseModelImageJExporter implements ImageJDataExporter {
     @Override
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {
         Path path = Paths.get(parameters.getName());
-        if(!path.isAbsolute()) {
+        if (!path.isAbsolute()) {
             path = RuntimeSettings.generateTempDirectory("cellpose-export").resolve(path);
         }
-        if(Files.exists(path)) {
-            if(Files.isRegularFile(path)) {
+        if (Files.exists(path)) {
+            if (Files.isRegularFile(path)) {
                 throw new RuntimeException("You provided an existing file. This is not allowed for Cellpose models.");
             }
-        }
-        else {
+        } else {
             try {
                 Files.createDirectories(path);
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
         for (int i = 0; i < dataTable.getRowCount(); i++) {
             CellPoseModelData modelData = dataTable.getData(i, CellPoseModelData.class, progressInfo);
-            modelData.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path), "data", false,progressInfo);
+            modelData.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path), "data", false, progressInfo);
         }
         return Collections.emptyList();
     }

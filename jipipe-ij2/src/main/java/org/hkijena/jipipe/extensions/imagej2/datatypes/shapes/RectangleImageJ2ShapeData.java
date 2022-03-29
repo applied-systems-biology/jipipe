@@ -8,8 +8,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
-import java.nio.file.Path;
-
 @JIPipeDocumentation(name = "IJ2 Rectangle Shape", description = "A 2D rectangle shape")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
@@ -30,6 +28,10 @@ public class RectangleImageJ2ShapeData extends ImageJ2ShapeData {
     public RectangleImageJ2ShapeData(RectangleImageJ2ShapeData other) {
         this.span = other.span;
         this.skipCenter = other.skipCenter;
+    }
+
+    public static RectangleImageJ2ShapeData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return (RectangleImageJ2ShapeData) ImageJ2ShapeData.importData(storage, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Span")
@@ -57,10 +59,6 @@ public class RectangleImageJ2ShapeData extends ImageJ2ShapeData {
     @Override
     public Shape createShape() {
         return new RectangleShape(span, skipCenter);
-    }
-
-    public static RectangleImageJ2ShapeData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return (RectangleImageJ2ShapeData) ImageJ2ShapeData.importData(storage, progressInfo);
     }
 
     @Override

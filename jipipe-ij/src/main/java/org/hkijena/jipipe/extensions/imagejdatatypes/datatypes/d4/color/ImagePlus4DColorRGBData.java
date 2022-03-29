@@ -38,7 +38,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 @JIPipeNode(menuPath = "Images\n4D\nColor")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = RGBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 4)
-public class ImagePlus4DColorRGBData extends ImagePlus4DColorData  {
+public class ImagePlus4DColorRGBData extends ImagePlus4DColorData {
 
     /**
      * @param image wrapped image
@@ -53,6 +53,7 @@ public class ImagePlus4DColorRGBData extends ImagePlus4DColorData  {
 
     /**
      * Creates an empty image with given dimensions
+     *
      * @param dimensions the dimensions
      */
     public ImagePlus4DColorRGBData(ImageDimensions dimensions) {

@@ -18,7 +18,6 @@ import org.hkijena.jipipe.ui.components.ColorChooserButton;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
@@ -30,7 +29,6 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.lang.annotation.Annotation;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
@@ -46,6 +44,8 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     private final JPanel toolSelectionPanel = new JPanel();
     private final Map<MaskColor, JToggleButton> colorSelectionButtons = new HashMap<>();
     private final Map<MaskDrawerTool, JToggleButton> toolSelectionButtons = new HashMap<>();
+    private final JCheckBox showGuidesToggle = new JCheckBox("Show guide lines", true);
+    private final ButtonGroup toolButtonGroup = new ButtonGroup();
     private ImagePlus mask;
     private ImageProcessor currentMaskSlice;
     private BufferedImage currentMaskSlicePreview;
@@ -55,8 +55,6 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     private ColorChooserButton maskColorButton;
     private Color highlightColor = new Color(255, 255, 0, 128);
     private Color maskColor = new Color(255, 0, 0, 128);
-    private final JCheckBox showGuidesToggle = new JCheckBox("Show guide lines", true);
-    private final ButtonGroup toolButtonGroup = new ButtonGroup();
     private Function<ImagePlus, ImagePlus> maskGenerator;
     private FormPanel.GroupHeaderPanel currentGroupHeader;
 
@@ -180,7 +178,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         int t = Math.min(index.getT(), mask.getNFrames() - 1);
         ImageProcessor lastMaskSlice = currentMaskSlice;
         currentMaskSlice = ImageJUtils.getSliceZero(mask, c, z, t);
-        if(lastMaskSlice != currentMaskSlice) {
+        if (lastMaskSlice != currentMaskSlice) {
             recalculateMaskPreview();
         }
     }

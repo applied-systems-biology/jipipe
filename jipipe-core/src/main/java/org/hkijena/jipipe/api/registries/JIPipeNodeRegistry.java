@@ -45,10 +45,10 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     private final BiMap<String, JIPipeNodeTypeCategory> registeredCategories = HashBiMap.create();
     private final Map<JIPipeNodeInfo, URL> iconURLs = new HashMap<>();
     private final Map<JIPipeNodeInfo, ImageIcon> iconInstances = new HashMap<>();
-    private boolean stateChanged;
-    private boolean isRunning;
     private final EventBus eventBus = new EventBus();
     private final URL defaultIconURL;
+    private boolean stateChanged;
+    private boolean isRunning;
 
     /**
      * Creates a new registry

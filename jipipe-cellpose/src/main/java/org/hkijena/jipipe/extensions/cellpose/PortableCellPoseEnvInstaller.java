@@ -50,7 +50,7 @@ public class PortableCellPoseEnvInstaller extends BasicPortableEnvPythonInstalle
         JsonNode environment = downloadEnvironment();
         List<String> pipArguments = new ArrayList<>();
         for (JsonNode item : ImmutableList.copyOf(environment.get("dependencies").elements())) {
-            if(item.isObject() && item.has("pip")) {
+            if (item.isObject() && item.has("pip")) {
                 for (JsonNode pipItem : ImmutableList.copyOf(item.get("pip").elements())) {
                     pipArguments.add(pipItem.textValue());
                 }

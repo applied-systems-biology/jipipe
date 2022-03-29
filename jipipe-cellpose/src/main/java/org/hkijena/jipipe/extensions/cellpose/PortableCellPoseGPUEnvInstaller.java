@@ -40,12 +40,12 @@ public class PortableCellPoseGPUEnvInstaller extends PortableCellPoseEnvInstalle
     }
 
     public static class Configuration extends PortableCellPoseEnvInstaller.Configuration {
-       private String pyTorchPipPackage = "torch==1.10.2+cu102 torchvision==0.11.3+cu102 torchaudio===0.10.2+cu102 -f https://download.pytorch.org/whl/cu102/torch_stable.html";
+        private String pyTorchPipPackage = "torch==1.10.2+cu102 torchvision==0.11.3+cu102 torchaudio===0.10.2+cu102 -f https://download.pytorch.org/whl/cu102/torch_stable.html";
 
-       @JIPipeDocumentation(name = "PyTorch pip package", description = "The pip package that is used for installing PyTorch. " +
-               "To generate custom settings, visit https://pytorch.org/get-started/locally/ and copy the parts after 'pip3 install' into this field.")
-       @JIPipeParameter("pytorch-pip-package")
-       @StringParameterSettings(monospace = true)
+        @JIPipeDocumentation(name = "PyTorch pip package", description = "The pip package that is used for installing PyTorch. " +
+                "To generate custom settings, visit https://pytorch.org/get-started/locally/ and copy the parts after 'pip3 install' into this field.")
+        @JIPipeParameter("pytorch-pip-package")
+        @StringParameterSettings(monospace = true)
         public String getPyTorchPipPackage() {
             return pyTorchPipPackage;
         }

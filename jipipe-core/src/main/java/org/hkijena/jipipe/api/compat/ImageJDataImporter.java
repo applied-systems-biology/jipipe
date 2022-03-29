@@ -12,8 +12,8 @@ public interface ImageJDataImporter {
     /**
      * Imports JIPipe data from ImageJ
      *
-     * @param objects the ImageJ objects (if available)
-     * @param parameters Parameters of the adapter. Depends entirely on the adapter
+     * @param objects      the ImageJ objects (if available)
+     * @param parameters   Parameters of the adapter. Depends entirely on the adapter
      * @param progressInfo the progress info
      * @return Imported JIPipe data as table
      */
@@ -23,14 +23,14 @@ public interface ImageJDataImporter {
      * Imports JIPipe data from ImageJ.
      * Returns the first data, otherwise null.
      *
-     * @param object the ImageJ object (if available)
-     * @param parameters Parameters of the adapter. Depends entirely on the adapter
+     * @param object       the ImageJ object (if available)
+     * @param parameters   Parameters of the adapter. Depends entirely on the adapter
      * @param progressInfo the progress info
      * @return Imported JIPipe data
      */
     default JIPipeData importData(Object object, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
         JIPipeDataTable dataTable = importData(Collections.singletonList(object), parameters, progressInfo);
-        if(dataTable.isEmpty())
+        if (dataTable.isEmpty())
             return null;
         return dataTable.getData(0, JIPipeData.class, progressInfo);
     }
@@ -47,28 +47,28 @@ public interface ImageJDataImporter {
 
     /**
      * A documentation name. Utilizes a {@link org.hkijena.jipipe.api.JIPipeDocumentation} by default (if present). Otherwise, returns the class name.
+     *
      * @return the name of this operation
      */
     default String getName() {
         JIPipeDocumentation annotation = getClass().getAnnotation(JIPipeDocumentation.class);
-        if(annotation != null) {
+        if (annotation != null) {
             return annotation.name();
-        }
-        else {
+        } else {
             return getClass().getName();
         }
     }
 
     /**
      * A documentation description. Utilizes a {@link org.hkijena.jipipe.api.JIPipeDocumentation} by default (if present). Otherwise, returns an empty string.
+     *
      * @return the description of this operation
      */
     default String getDescription() {
         JIPipeDocumentation annotation = getClass().getAnnotation(JIPipeDocumentation.class);
-        if(annotation != null) {
+        if (annotation != null) {
             return annotation.description();
-        }
-        else {
+        } else {
             return "";
         }
     }

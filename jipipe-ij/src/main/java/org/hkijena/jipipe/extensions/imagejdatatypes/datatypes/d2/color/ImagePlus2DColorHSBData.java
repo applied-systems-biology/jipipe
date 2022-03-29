@@ -56,6 +56,7 @@ public class ImagePlus2DColorHSBData extends ImagePlus2DColorData {
 
     /**
      * Creates an empty image with given dimensions
+     *
      * @param dimensions the dimensions
      */
     public ImagePlus2DColorHSBData(ImageDimensions dimensions) {

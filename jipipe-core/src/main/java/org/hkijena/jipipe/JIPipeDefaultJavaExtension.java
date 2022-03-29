@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 import org.hkijena.jipipe.api.compat.ImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
+import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
@@ -44,7 +45,6 @@ import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterTypeInfo;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
-import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
@@ -527,34 +527,37 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * Sets the default ImageJ adapters
-     * @param dataClass the data type
+     *
+     * @param dataClass         the data type
      * @param defaultImporterId the ID of the importer. the importer must be registered. can be null (ignore value)
      * @param defaultExporterId the ID of the exporter. the exporter must be registered. can be null (ignore value)
      */
     public void configureDefaultImageJAdapters(Class<? extends JIPipeData> dataClass, String defaultImporterId, String defaultExporterId) {
-        if(!StringUtils.isNullOrEmpty(defaultImporterId))
+        if (!StringUtils.isNullOrEmpty(defaultImporterId))
             registry.getImageJDataAdapterRegistry().setDefaultImporterFor(dataClass, defaultImporterId);
-        if(!StringUtils.isNullOrEmpty(defaultExporterId))
-         registry.getImageJDataAdapterRegistry().setDefaultExporterFor(dataClass, defaultExporterId);
+        if (!StringUtils.isNullOrEmpty(defaultExporterId))
+            registry.getImageJDataAdapterRegistry().setDefaultExporterFor(dataClass, defaultExporterId);
     }
 
     /**
      * Sets the default ImageJ adapters
-     * @param dataClass the data type
+     *
+     * @param dataClass       the data type
      * @param defaultImporter the importer. the importer must be registered. can be null (ignore value)
      * @param defaultExporter the exporter. the exporter must be registered. can be null (ignore value)
      */
     public void configureDefaultImageJAdapters(Class<? extends JIPipeData> dataClass, ImageJDataImporter defaultImporter, ImageJDataExporter defaultExporter) {
-        if(defaultImporter != null)
+        if (defaultImporter != null)
             registry.getImageJDataAdapterRegistry().setDefaultImporterFor(dataClass, registry.getImageJDataAdapterRegistry().getIdOf(defaultImporter));
-        if(defaultExporter != null)
+        if (defaultExporter != null)
             registry.getImageJDataAdapterRegistry().setDefaultExporterFor(dataClass, registry.getImageJDataAdapterRegistry().getIdOf(defaultExporter));
     }
 
     /**
      * Registers an importer for data from ImageJ
-     * @param id the unique ID
-     * @param dataImporter the importer instance
+     *
+     * @param id              the unique ID
+     * @param dataImporter    the importer instance
      * @param importerUIClass the UI (can be null to fall back to {@link org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI})
      */
     public void registerImageJDataImporter(String id, ImageJDataImporter dataImporter, Class<? extends ImageJDataImporterUI> importerUIClass) {
@@ -563,9 +566,10 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * Registers an importer for data from ImageJ
-     * @param id the unique ID
+     *
+     * @param id           the unique ID
      * @param dataExporter the exporter instance
-     * @param uiClass the UI (can be null to fall back to {@link org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI})
+     * @param uiClass      the UI (can be null to fall back to {@link org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI})
      */
     public void registerImageJDataExporter(String id, ImageJDataExporter dataExporter, Class<? extends ImageJDataExporterUI> uiClass) {
         registry.getImageJDataAdapterRegistry().register(id, dataExporter, uiClass);

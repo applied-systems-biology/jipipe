@@ -12,8 +12,8 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.EmptyImageJ2ShapeData;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.ImageJ2ShapeData;
-import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
+import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.utils.classfilters.NonGenericClassFilter;
 
 @JIPipeDocumentation(name = "Create shape", description = "Defines an ImageJ2 shape")
@@ -48,12 +48,11 @@ public class CreateIJ2ShapeAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeParameter("shape-type")
     public void setShapeType(JIPipeDataInfoRef shapeType) {
-        if(shapeType.getInfo() != this.shapeType.getInfo()) {
+        if (shapeType.getInfo() != this.shapeType.getInfo()) {
             this.shapeType = shapeType;
-            if(shapeType.getInfo() != null) {
+            if (shapeType.getInfo() != null) {
                 this.shapeData = (ImageJ2ShapeData) JIPipe.createData(shapeType.getInfo().getDataClass());
-            }
-            else {
+            } else {
                 this.shapeData = new EmptyImageJ2ShapeData();
             }
             triggerParameterStructureChange();

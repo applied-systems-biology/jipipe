@@ -22,6 +22,7 @@ public class JIPipeDataAnnotation implements JIPipeAnnotation {
 
     /**
      * Fully duplicates the data
+     *
      * @return the copy
      */
     public JIPipeDataAnnotation duplicate(JIPipeProgressInfo progressInfo) {

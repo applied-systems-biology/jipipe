@@ -15,7 +15,7 @@ public class IgnoreColorSpace implements ColorSpace {
 
     @Override
     public void convert(ImagePlus img, ColorSpace imgSpace, JIPipeProgressInfo progressInfo) {
-       // Do nothing
+        // Do nothing
     }
 
     @Override

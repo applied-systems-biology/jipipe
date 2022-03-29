@@ -3,7 +3,6 @@ package org.hkijena.jipipe.extensions.imagej2.io.parameters.output;
 import net.imglib2.type.numeric.RealType;
 import net.imglib2.type.numeric.real.DoubleType;
 import org.hkijena.jipipe.extensions.imagej2.io.ImageJ2ModuleIO;
-import org.hkijena.jipipe.extensions.imagej2.io.parameters.input.ParameterImageJ2ModuleInput;
 import org.scijava.plugin.Plugin;
 
 @Plugin(type = ImageJ2ModuleIO.class)

@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -135,6 +134,7 @@ public interface JIPipeNodeInfo {
 
     /**
      * If the current node info contains a slot with given name
+     *
      * @param slotName the slot name
      * @return if there is an input slot with the name
      */
@@ -144,6 +144,7 @@ public interface JIPipeNodeInfo {
 
     /**
      * If the current node info contains a slot with given name
+     *
      * @param slotName the slot name
      * @return if there is an input slot with the name
      */

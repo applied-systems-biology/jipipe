@@ -1,13 +1,10 @@
 package org.hkijena.jipipe.extensions.imagej2.datatypes.shapes;
 
-import com.google.common.eventbus.EventBus;
 import net.imglib2.algorithm.neighborhood.Shape;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
-import org.hkijena.jipipe.api.data.JIPipeSerializedJsonObjectData;
 import org.hkijena.jipipe.api.data.JIPipeSerializedParameterCollectionData;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 @JIPipeDocumentation(name = "IJ2 Shape", description = "An ImageJ2 shape generator")

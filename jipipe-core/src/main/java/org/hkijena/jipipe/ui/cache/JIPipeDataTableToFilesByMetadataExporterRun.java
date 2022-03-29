@@ -24,7 +24,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
@@ -52,7 +51,7 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
 
     /**
      * @param workbench   the workbench
-     * @param dataTables       the slots to save
+     * @param dataTables  the slots to save
      * @param splitBySlot if slots should be split
      */
     public JIPipeDataTableToFilesByMetadataExporterRun(JIPipeWorkbench workbench, List<? extends JIPipeDataTable> dataTables, boolean splitBySlot) {

@@ -12,7 +12,10 @@ import org.hkijena.jipipe.api.compat.ImageJDataImporterUI;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -58,7 +61,7 @@ public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-        if(importerType.getInstance() == null) {
+        if (importerType.getInstance() == null) {
             report.reportIsInvalid("No importer type selected!", "No importer type was selected", "Please select an importer", this);
         }
         super.reportValidity(report);
@@ -68,7 +71,7 @@ public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/configure.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/configure.png")
     public void setImporterParametersFromUI(JIPipeWorkbench parent) {
-        if(importerType.getInstance() == null) {
+        if (importerType.getInstance() == null) {
             JOptionPane.showMessageDialog(parent.getWindow(),
                     "Please select an importer type, first!",
                     "Set import parameters",
@@ -78,7 +81,7 @@ public class RunImageJImporterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImageJDataImportOperation operation = new ImageJDataImportOperation(importerType.getInstance());
         this.importParameters.copyTo(operation);
         ImageJDataImporterUI ui = JIPipe.getImageJAdapters().createUIForImportOperation(parent, operation);
-        if(JOptionPane.showConfirmDialog(parent.getWindow(), ui, "Set import parameters", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
+        if (JOptionPane.showConfirmDialog(parent.getWindow(), ui, "Set import parameters", JOptionPane.OK_CANCEL_OPTION) == JOptionPane.OK_OPTION) {
             operation.copyTo(this.importParameters);
             triggerParameterUIChange();
         }

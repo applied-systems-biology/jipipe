@@ -179,7 +179,7 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
             variables.add(new ExpressionParameterVariable(table.getModel().getColumnName(i), "", table.getModel().getColumnName(i)));
         }
         String result = ExpressionBuilderUI.showDialog(getWorkbench().getWindow(), searchTextField.getText(), variables);
-        if(result != null) {
+        if (result != null) {
             searchTextField.setText(result);
         }
     }

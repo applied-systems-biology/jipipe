@@ -3,15 +3,9 @@ package org.hkijena.jipipe.extensions.filesystem.algorithms;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
@@ -76,7 +70,7 @@ public class AnnotateWithPathProperties extends JIPipeSimpleIteratingAlgorithm {
                 }
                 typeAnnotation.addAnnotationIfEnabled(annotations, value);
             }
-            if(lastModifiedTime.isEnabled()) {
+            if (lastModifiedTime.isEnabled()) {
                 String value = "Unknown";
                 try {
                     value = Files.getLastModifiedTime(path).toString();
@@ -84,12 +78,11 @@ public class AnnotateWithPathProperties extends JIPipeSimpleIteratingAlgorithm {
                 }
                 lastModifiedTime.addAnnotationIfEnabled(annotations, value);
             }
-            if(sizeAnnotation.isEnabled()) {
+            if (sizeAnnotation.isEnabled()) {
                 long[] size = new long[1];
-                if(Files.isRegularFile(path)) {
+                if (Files.isRegularFile(path)) {
                     size[0] = Files.size(path);
-                }
-                else {
+                } else {
                     Files.walkFileTree(path, new FileVisitor<Path>() {
                         @Override
                         public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
@@ -98,7 +91,7 @@ public class AnnotateWithPathProperties extends JIPipeSimpleIteratingAlgorithm {
 
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                            if(Files.isRegularFile(file))
+                            if (Files.isRegularFile(file))
                                 size[0] += Files.size(file);
                             return FileVisitResult.CONTINUE;
                         }
@@ -116,8 +109,7 @@ public class AnnotateWithPathProperties extends JIPipeSimpleIteratingAlgorithm {
                 }
                 sizeAnnotation.addAnnotationIfEnabled(annotations, "" + size[0]);
             }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             fileNameAnnotation.addAnnotationIfEnabled(annotations, "Error");
             parentPathAnnotation.addAnnotationIfEnabled(annotations, "Error");
             sizeAnnotation.addAnnotationIfEnabled(annotations, "Error");

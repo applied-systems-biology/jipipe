@@ -13,11 +13,8 @@
 
 package org.hkijena.jipipe.api.compat;
 
-import org.hkijena.jipipe.api.compat.ImageJDataImportOperation;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-
-import javax.swing.*;
 
 /**
  * User interface around a {@link ImageJDataImportOperation}

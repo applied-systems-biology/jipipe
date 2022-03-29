@@ -65,7 +65,7 @@ public class CalibrationPlugin extends GeneralImageViewerPanelPlugin {
                 getSelectedCalibration(),
                 displayRangeCalibrationControl.getCustomMin(),
                 displayRangeCalibrationControl.getCustomMax(),
-                getViewerPanel().getSliceStats(new ImageSliceIndex(c,z,t)));
+                getViewerPanel().getSliceStats(new ImageSliceIndex(c, z, t)));
         return processor;
     }
 

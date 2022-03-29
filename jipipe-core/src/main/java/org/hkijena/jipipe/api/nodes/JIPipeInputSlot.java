@@ -40,6 +40,7 @@ public @interface JIPipeInputSlot {
 
     /**
      * An optional description.
+     *
      * @return slot description
      */
     String description() default "";

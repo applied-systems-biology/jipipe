@@ -20,7 +20,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * Parameter that holds a value for each data slot

@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -71,7 +72,7 @@ public class ImportJIPipeSlotFolderAlgorithm extends GetJIPipeSlotFolderAlgorith
         Path dataFolder = outputData.toPath().resolve(getCompartmentId()).resolve(getNodeId()).resolve(getSlotName());
         if (ignoreInputTextAnnotations)
             dataBatch.setMergedTextAnnotations(new HashMap<>());
-        if(ignoreInputDataAnnotations)
+        if (ignoreInputDataAnnotations)
             dataBatch.setMergedDataAnnotations(new HashMap<>());
         if (!Files.exists(dataFolder.resolve("data-table.json"))) {
             throw new UserFriendlyRuntimeException("Missing data-table.json!",

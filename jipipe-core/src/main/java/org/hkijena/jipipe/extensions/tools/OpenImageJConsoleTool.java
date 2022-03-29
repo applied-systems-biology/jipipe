@@ -13,21 +13,14 @@
 
 package org.hkijena.jipipe.extensions.tools;
 
-import net.imagej.ImageJ;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.scijava.command.CommandService;
 import org.scijava.ui.UIService;
 import org.scijava.ui.UserInterface;
-import org.scijava.ui.console.ConsolePane;
-import org.scijava.ui.swing.console.ShowConsole;
 import org.scijava.ui.swing.console.SwingConsolePane;
-
-import java.awt.*;
 
 public class OpenImageJConsoleTool extends JIPipeMenuExtension {
     /**
@@ -46,10 +39,9 @@ public class OpenImageJConsoleTool extends JIPipeMenuExtension {
     private void showImageJ() {
         UIService uiService = getWorkbench().getContext().getService(UIService.class);
         final UserInterface ui = uiService.getDefaultUI();
-        if(ui != null && ui.getConsolePane() != null) {
+        if (ui != null && ui.getConsolePane() != null) {
             ui.show();
-        }
-        else {
+        } else {
             SwingConsolePane swingConsolePane = new SwingConsolePane(getWorkbench().getContext());
             getWorkbench().getDocumentTabPane().addTab("Console",
                     UIUtils.getIconFromResources("actions/akonadiconsole.png"),

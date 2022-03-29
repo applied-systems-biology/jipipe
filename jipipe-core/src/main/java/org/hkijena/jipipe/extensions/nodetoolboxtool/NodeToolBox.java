@@ -99,7 +99,7 @@ public class NodeToolBox extends JPanel {
         searchField.addActionListener(e -> reloadAlgorithmList());
         toolBar.add(searchField);
 
-        if(isDocked) {
+        if (isDocked) {
             JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
             openWindowButton.setToolTipText("Open in new window");
             openWindowButton.addActionListener(e -> openNewToolBoxWindow(SwingUtilities.getWindowAncestor(this)));

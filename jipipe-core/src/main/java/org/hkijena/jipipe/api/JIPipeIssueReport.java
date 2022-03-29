@@ -139,8 +139,7 @@ public class JIPipeIssueReport {
         String message = null;
         try {
             message = ReflectionToStringBuilder.toString(source, ToStringStyle.MULTI_LINE_STYLE);
-        }
-        catch (Exception | Error e) {
+        } catch (Exception | Error e) {
             message = "Unable to generate report due to following issue: " + e;
         }
         report(new Issue(what,

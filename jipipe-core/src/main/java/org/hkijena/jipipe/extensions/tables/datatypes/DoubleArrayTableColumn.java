@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.tables.MutableTableColumn;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 

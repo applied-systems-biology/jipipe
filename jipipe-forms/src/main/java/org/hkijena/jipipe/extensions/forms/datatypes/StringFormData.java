@@ -17,7 +17,6 @@ import org.hkijena.jipipe.extensions.forms.utils.SingleAnnotationIOSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.awt.*;
-import java.nio.file.Path;
 import java.util.Collections;
 
 @JIPipeDocumentation(name = "Text input form", description = "A form element that allows the user to input text")

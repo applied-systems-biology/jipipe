@@ -53,6 +53,7 @@ public class ImagePlus2DColorRGBData extends ImagePlus2DColorData {
 
     /**
      * Creates an empty image with given dimensions
+     *
      * @param dimensions the dimensions
      */
     public ImagePlus2DColorRGBData(ImageDimensions dimensions) {

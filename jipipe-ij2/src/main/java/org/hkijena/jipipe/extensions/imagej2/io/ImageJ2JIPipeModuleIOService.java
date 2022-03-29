@@ -8,6 +8,7 @@ import org.scijava.plugin.PTService;
 public interface ImageJ2JIPipeModuleIOService extends PTService<ImageJ2ModuleIO>, ImageJService {
     /**
      * Finds the best matching IO handler for the module item
+     *
      * @param moduleItem the module item
      * @param ioType
      * @return the {@link ImageJ2ModuleIO} or null

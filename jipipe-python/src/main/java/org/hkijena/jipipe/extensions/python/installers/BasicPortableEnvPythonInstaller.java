@@ -142,10 +142,9 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
     }
 
     public Path getPythonExecutable() {
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             return getConfiguration().getInstallationPath().resolve("python").resolve("Python.exe");
-        }
-        else {
+        } else {
             return getConfiguration().getInstallationPath().resolve("python").resolve("bin").resolve("python3");
         }
     }
@@ -201,7 +200,7 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
         progressInfo.log("The Python distribution was obtained from: https://github.com/indygreg/python-build-standalone/releases/");
         try {
             ArchiveUtils.decompressTarGZ(archivePath, configuration.installationPath.toAbsolutePath(), progressInfo.resolve("Extract Python"));
-            if(!SystemUtils.IS_OS_WINDOWS) {
+            if (!SystemUtils.IS_OS_WINDOWS) {
                 Files.list(configuration.installationPath.toAbsolutePath().resolve("python").resolve("bin")).forEach(PathUtils::makeUnixExecutable);
             }
         } catch (IOException e) {

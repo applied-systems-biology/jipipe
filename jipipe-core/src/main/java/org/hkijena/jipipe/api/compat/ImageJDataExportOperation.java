@@ -78,7 +78,7 @@ public class ImageJDataExportOperation extends ImageJExportParameters implements
     }
 
     public ImageJDataExporter getExporter() {
-        if(exporter == null) {
+        if (exporter == null) {
             return JIPipe.getImageJAdapters().getExporterById(getExporterId());
         }
         return exporter;

@@ -23,7 +23,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.HSBColorSpace;
-import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.RGBColorSpace;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImageTypeInfo;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ConverterWrapperImageSource;
@@ -54,6 +53,7 @@ public class ImagePlusColorHSBData extends ImagePlusColorData {
 
     /**
      * Creates an empty image with given dimensions
+     *
      * @param dimensions the dimensions
      */
     public ImagePlusColorHSBData(ImageDimensions dimensions) {
@@ -87,11 +87,10 @@ public class ImagePlusColorHSBData extends ImagePlusColorData {
                 // This will go through the standard method (greyscale -> RGB -> HSB)
                 return new ImagePlusColorHSBData(image);
             } else {
-                if(data.getColorSpace() instanceof HSBColorSpace) {
+                if (data.getColorSpace() instanceof HSBColorSpace) {
                     // No conversion needed
                     return new ImagePlusColorHSBData(image);
-                }
-                else {
+                } else {
                     ImagePlus copy = data.getDuplicateImage();
                     HSBColorSpace.INSTANCE.convert(copy, data.getColorSpace(), new JIPipeProgressInfo());
                     return new ImagePlusColorHSBData(copy);

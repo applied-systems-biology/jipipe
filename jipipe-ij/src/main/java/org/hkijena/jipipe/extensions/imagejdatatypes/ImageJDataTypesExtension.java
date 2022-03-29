@@ -334,7 +334,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
     }
 
     private void registerImageDataType(String id, Class<? extends ImagePlusData> dataClass, ImagePlusDataFromImageWindowImageJImporter imageImporter, ImagePlusDataToImageWindowImageJExporter imageExporter, String iconResource) {
-        if(dataClass.getAnnotation(ImageTypeInfo.class) == null) {
+        if (dataClass.getAnnotation(ImageTypeInfo.class) == null) {
             throw new IllegalArgumentException("Cannot register image data type '" + id + "' (" + dataClass + ") without ImageTypeInfo annotation!");
         }
         registerDatatype(id,

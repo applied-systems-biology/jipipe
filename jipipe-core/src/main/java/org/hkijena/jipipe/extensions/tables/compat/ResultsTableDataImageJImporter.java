@@ -16,12 +16,11 @@ public class ResultsTableDataImageJImporter implements ImageJDataImporter {
     @Override
     public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
         JIPipeDataTable dataTable = new JIPipeDataTable(ResultsTableData.class);
-        if(objects != null && !objects.isEmpty()) {
+        if (objects != null && !objects.isEmpty()) {
             for (Object object : objects) {
                 dataTable.addData(new ResultsTableData((ResultsTable) object), new JIPipeProgressInfo());
             }
-        }
-        else {
+        } else {
             dataTable.addData(new ResultsTableData((ResultsTable) ResultsTable.getResultsTable().clone()), new JIPipeProgressInfo());
         }
         return dataTable;

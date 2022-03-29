@@ -25,9 +25,11 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.cache.*;
+import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
+import org.hkijena.jipipe.ui.cache.JIPipeDataTableRowUI;
+import org.hkijena.jipipe.ui.cache.JIPipeDataTableToFilesByMetadataExporterRun;
+import org.hkijena.jipipe.ui.cache.JIPipeDataTableToOutputExporterRun;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PreviewControlUI;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeComponentCellRenderer;
@@ -59,16 +61,16 @@ import java.util.Set;
  */
 public class DataBatchTableUI2 extends JIPipeWorkbenchPanel {
 
+    private final SearchTextField searchTextField = new SearchTextField();
     private JIPipeDataTable dataTable;
     private JXTable table;
     private FormPanel rowUIList;
-    private final SearchTextField searchTextField = new SearchTextField();
     private DataBatchTableModel2 dataTableModel;
     private JScrollPane scrollPane;
 
     /**
      * @param workbenchUI the workbench UI
-     * @param dataTable        The slot
+     * @param dataTable   The slot
      */
     public DataBatchTableUI2(JIPipeWorkbench workbenchUI, JIPipeDataTable dataTable) {
         super(workbenchUI);
@@ -195,7 +197,7 @@ public class DataBatchTableUI2 extends JIPipeWorkbenchPanel {
         JPopupMenu windowMenu = UIUtils.addPopupMenuToComponent(openWindowButton);
 
         JMenuItem openReferenceWindowItem = new JMenuItem("Open in new tab", UIUtils.getIconFromResources("actions/tab.png"));
-        openReferenceWindowItem.addActionListener(e-> {
+        openReferenceWindowItem.addActionListener(e -> {
             String name = "Data batches: " + getDataTable().getDisplayName();
             getWorkbench().getDocumentTabPane().addTab(name,
                     UIUtils.getIconFromResources("actions/database.png"),
@@ -229,7 +231,7 @@ public class DataBatchTableUI2 extends JIPipeWorkbenchPanel {
             variables.add(new ExpressionParameterVariable(table.getModel().getColumnName(i), "", table.getModel().getColumnName(i)));
         }
         String result = ExpressionBuilderUI.showDialog(getWorkbench().getWindow(), searchTextField.getText(), variables);
-        if(result != null) {
+        if (result != null) {
             searchTextField.setText(result);
         }
     }

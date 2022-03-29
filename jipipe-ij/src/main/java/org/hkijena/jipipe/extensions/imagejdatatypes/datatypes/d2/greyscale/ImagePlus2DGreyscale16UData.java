@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.process.ByteProcessor;
 import ij.process.ShortProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
@@ -50,6 +49,7 @@ public class ImagePlus2DGreyscale16UData extends ImagePlus2DGreyscaleData {
 
     /**
      * Creates an empty image with given dimensions
+     *
      * @param dimensions the dimensions
      */
     public ImagePlus2DGreyscale16UData(ImageDimensions dimensions) {

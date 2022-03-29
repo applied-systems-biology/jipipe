@@ -34,7 +34,6 @@ import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PreviewControlUI;
@@ -81,7 +80,7 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
 
     /**
      * @param workbenchUI                 the workbench UI
-     * @param dataTables                       The slots
+     * @param dataTables                  The slots
      * @param withCompartmentAndAlgorithm if the compartment and algorithm are included as columns
      */
     public JIPipeExtendedMultiDataTableInfoUI(JIPipeWorkbench workbenchUI, List<? extends JIPipeDataTable> dataTables, boolean withCompartmentAndAlgorithm) {
@@ -212,13 +211,13 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
         JPopupMenu windowMenu = UIUtils.addPopupMenuToComponent(openWindowButton);
 
         JMenuItem openReferenceWindowItem = new JMenuItem("Open in new tab", UIUtils.getIconFromResources("actions/tab.png"));
-        openReferenceWindowItem.addActionListener(e-> {
+        openReferenceWindowItem.addActionListener(e -> {
             openTableInNewTab();
         });
         windowMenu.add(openReferenceWindowItem);
 
         JMenuItem openFilteredWindowItem = new JMenuItem("Apply filter", UIUtils.getIconFromResources("actions/filter.png"));
-        openFilteredWindowItem.addActionListener(e-> {
+        openFilteredWindowItem.addActionListener(e -> {
             openFilteredTableInNewTab();
         });
         windowMenu.add(openFilteredWindowItem);
@@ -243,14 +242,13 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
 
     private void openFilteredTableInNewTab() {
         String name = dataTables.stream().map(slot -> slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "")).distinct().collect(Collectors.joining(", "));
-        if(searchTextField.getSearchStrings().length > 0) {
+        if (searchTextField.getSearchStrings().length > 0) {
             name = "[Filtered] " + name;
-        }
-        else {
+        } else {
             name = "Copy of " + name;
         }
         JIPipeDataTable copy = new JIPipeDataTable(JIPipeData.class);
-        if(table.getRowFilter() != null) {
+        if (table.getRowFilter() != null) {
             for (int viewRow = 0; viewRow < table.getRowCount(); viewRow++) {
                 int modelRow = table.convertRowIndexToModel(viewRow);
                 JIPipeDataTable slot = multiSlotTable.getSlot(modelRow);
@@ -286,7 +284,7 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
             variables.add(new ExpressionParameterVariable(table.getModel().getColumnName(i), "", table.getModel().getColumnName(i)));
         }
         String result = ExpressionBuilderUI.showDialog(getWorkbench().getWindow(), searchTextField.getText(), variables);
-        if(result != null) {
+        if (result != null) {
             searchTextField.setText(result);
         }
     }
@@ -349,7 +347,7 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
         JIPipeDataTable slot = multiSlotTable.getSlot(multiRow);
         int row = multiSlotTable.getRow(multiRow);
         int dataAnnotationColumn = -1;
-        if(multiDataAnnotationColumn >= 0) {
+        if (multiDataAnnotationColumn >= 0) {
             String name = multiSlotTable.getDataAnnotationColumns().get(multiDataAnnotationColumn);
             dataAnnotationColumn = slot.getDataAnnotationColumns().indexOf(name);
         }
@@ -372,7 +370,7 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
             JIPipeDataTable slot = multiSlotTable.getSlot(multiRow);
             int row = multiSlotTable.getRow(multiRow);
             Class<? extends JIPipeData> dataClass = slot.getDataClass(row);
-            String name = slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "")+ "/" +
+            String name = slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "") + "/" +
                     slot.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row;
             JLabel nameLabel = new JLabel(name, JIPipe.getDataTypes().getIconFor(dataClass), JLabel.LEFT);
             nameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(slot));

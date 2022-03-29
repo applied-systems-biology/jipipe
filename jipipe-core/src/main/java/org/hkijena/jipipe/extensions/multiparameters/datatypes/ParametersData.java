@@ -51,7 +51,7 @@ import java.util.Map;
         "The JSON data is an object with keys being the parameter keys. The value is an object with two " +
         "items <code>value</code> and <code>type-id</code>. <code>value</code> contains the serialized parameter value." +
         " <code>type-id</code> contains the standardized parameter type ID.",
-jsonSchemaURL = "https://jipipe.org/schemas/datatypes/parameters-data.schema.json")
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/parameters-data.schema.json")
 public class ParametersData implements JIPipeData {
 
     private Map<String, Object> parameterData = new HashMap<>();
@@ -92,12 +92,11 @@ public class ParametersData implements JIPipeData {
 //        } catch (IOException e) {
 //            throw new RuntimeException(e);
 //        }
-        if(source instanceof JIPipeDataTableDataSource) {
+        if (source instanceof JIPipeDataTableDataSource) {
             CachedParametersDataViewerWindow window = new CachedParametersDataViewerWindow(workbench, (JIPipeDataTableDataSource) source, displayName);
             window.reloadDisplayedData();
             window.setVisible(true);
-        }
-        else {
+        } else {
             ParametersDataViewer viewer = new ParametersDataViewer(workbench);
             viewer.setParametersData(this);
             JFrame frame = new JFrame(displayName);

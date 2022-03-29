@@ -12,8 +12,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.IntegerList;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import java.nio.file.Path;
-
 @JIPipeDocumentation(name = "IJ2 Centered Rectangle Shape", description = "This specific factory differs to RectangleShape in that it allows non-isotropic rectangular shapes. However, it constrains the the neighborhood to be symmetric by its origin.\n" +
         "The size of the neighborhood is specified by an int[] span array, so that in every dimension d, the extent of the neighborhood is given by 2 × span[d] + 1.")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single JSON file that stores the status information.",
@@ -35,6 +33,10 @@ public class CenteredRectangleImageJ2ShapeData extends ImageJ2ShapeData {
     public CenteredRectangleImageJ2ShapeData(CenteredRectangleImageJ2ShapeData other) {
         this.span = other.span;
         this.skipCenter = other.skipCenter;
+    }
+
+    public static CenteredRectangleImageJ2ShapeData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        return (CenteredRectangleImageJ2ShapeData) ImageJ2ShapeData.importData(storage, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Span")
@@ -62,10 +64,6 @@ public class CenteredRectangleImageJ2ShapeData extends ImageJ2ShapeData {
     @Override
     public Shape createShape() {
         return new CenteredRectangleShape(Ints.toArray(span), skipCenter);
-    }
-
-    public static CenteredRectangleImageJ2ShapeData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return (CenteredRectangleImageJ2ShapeData) ImageJ2ShapeData.importData(storage, progressInfo);
     }
 
     @Override

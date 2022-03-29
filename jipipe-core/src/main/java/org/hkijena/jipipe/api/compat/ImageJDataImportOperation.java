@@ -46,7 +46,7 @@ public class ImageJDataImportOperation extends ImageJImportParameters implements
 
 
     public ImageJDataImporter getImporter() {
-        if(importer == null) {
+        if (importer == null) {
             importer = JIPipe.getImageJAdapters().getImporterById(getImporterId());
         }
         return importer;

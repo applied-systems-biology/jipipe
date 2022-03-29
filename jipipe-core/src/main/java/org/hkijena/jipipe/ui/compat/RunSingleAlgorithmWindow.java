@@ -54,14 +54,14 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
     public static final String HELP_URL = "https://www.jipipe.org/documentation/imagej-integration/#running-a-single-node";
 
     private final Context context;
+    private final JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
+    private final JCheckBox keepWindowToggle = new JCheckBox("Keep window open", true);
     private JList<JIPipeNodeInfo> algorithmList;
     private SearchTextField searchField;
     private JPanel settingsPanel;
     private RunSingleAlgorithmSettingsPanel currentRunSettingsPanel;
     private int numThreads = RuntimeSettings.getInstance().getDefaultRunThreads();
     private DocumentTabPane tabPane;
-    private final JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
-    private final JCheckBox keepWindowToggle = new JCheckBox("Keep window open", true);
 
     /**
      * @param context SciJava context
@@ -119,10 +119,10 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
         menuBar.add(Box.createHorizontalGlue());
 
         JMenu helpMenu = new JMenu("Help");
-        helpMenu.setPreferredSize(new Dimension(60,32));
+        helpMenu.setPreferredSize(new Dimension(60, 32));
         helpMenu.setIcon(UIUtils.getIconFromResources("actions/help.png"));
 
-        JMenuItem manualButton = new JMenuItem("Open online documentation",  UIUtils.getIconFromResources("actions/help.png"));
+        JMenuItem manualButton = new JMenuItem("Open online documentation", UIUtils.getIconFromResources("actions/help.png"));
         manualButton.setToolTipText("Opens the documentation for the single algorithm run feature. " + HELP_URL);
         manualButton.addActionListener(e -> {
             try {
@@ -183,11 +183,10 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
     private void selectNode(JIPipeNodeInfo info) {
         settingsPanel.removeAll();
         currentRunSettingsPanel = null;
-        if(info != null) {
+        if (info != null) {
             currentRunSettingsPanel = new RunSingleAlgorithmSettingsPanel(this, info);
             settingsPanel.add(currentRunSettingsPanel, BorderLayout.CENTER);
-        }
-        else {
+        } else {
 
         }
         revalidate();
@@ -411,7 +410,7 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
             UIUtils.openValidityReportDialog(this, report, false);
             return;
         }
-        if(!keepWindowToggle.isSelected())
+        if (!keepWindowToggle.isSelected())
             setVisible(false);
         String parameters = getRun().getParametersString();
         String inputs = getRun().getInputsString();

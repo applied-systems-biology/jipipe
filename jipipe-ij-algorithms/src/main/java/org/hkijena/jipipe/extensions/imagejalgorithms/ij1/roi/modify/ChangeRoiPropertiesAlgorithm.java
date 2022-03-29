@@ -24,7 +24,6 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
@@ -123,7 +122,7 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
                 roi.setStrokeWidth(lineWidth.getContent());
             if (roiName.isEnabled())
                 roi.setName(roiName.getContent());
-            if(scaleX != 1.0 || scaleY != 1.0) {
+            if (scaleX != 1.0 || scaleY != 1.0) {
                 roi = RoiScaler.scale(roi, scaleX, scaleY, centerScale);
                 data.set(i, roi);
             }

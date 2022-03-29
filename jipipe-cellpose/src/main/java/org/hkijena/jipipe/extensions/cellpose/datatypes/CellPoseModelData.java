@@ -21,7 +21,7 @@ import java.util.List;
  */
 @JIPipeDocumentation(name = "Cellpose model", description = "A Cellpose model")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "A single file without extension that contains the Cellpose model",
-jsonSchemaURL = "https://jipipe.org/schemas/datatypes/cellpose-model-data.schema.json")
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/cellpose-model-data.schema.json")
 public class CellPoseModelData implements JIPipeData {
 
     private final byte[] data;

@@ -17,7 +17,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.awt.*;
-import java.nio.file.Path;
 
 /**
  * Contains a CLIJ image

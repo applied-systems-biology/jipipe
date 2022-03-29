@@ -20,7 +20,6 @@ import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;

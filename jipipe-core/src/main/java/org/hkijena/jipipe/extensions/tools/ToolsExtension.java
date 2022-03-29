@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.pipelinerender.PipelineRenderTool;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 

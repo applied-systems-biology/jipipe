@@ -20,7 +20,7 @@ public class GreyscaleColorSpace implements ColorSpace {
     @Override
     public void convert(ImagePlus img, ColorSpace imgSpace, JIPipeProgressInfo progressInfo) {
         if (imgSpace.getClass() != GreyscaleColorSpace.class) {
-            if(img.getType() == ImagePlus.COLOR_RGB) {
+            if (img.getType() == ImagePlus.COLOR_RGB) {
                 // Make greyscale
                 ImageJUtils.convertToGreyscaleIfNeeded(img);
             }

@@ -124,8 +124,7 @@ public class JIPipeRowDataAnnotationMergedTableCellRenderer implements TableCell
                             component.renderPreview();
                         }
                     }
-                }
-                catch (IndexOutOfBoundsException e) {
+                } catch (IndexOutOfBoundsException e) {
                 }
             }
         }

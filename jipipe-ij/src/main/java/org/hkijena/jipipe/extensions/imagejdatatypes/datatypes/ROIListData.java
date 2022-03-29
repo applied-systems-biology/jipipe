@@ -32,10 +32,10 @@ import ij.process.ImageProcessor;
 import ij.process.LUT;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -429,8 +429,9 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     /**
      * Scales the ROI in this list and returns a new list containing the scaled instances
-     * @param scaleX the x-scale
-     * @param scaleY the y-scale
+     *
+     * @param scaleX   the x-scale
+     * @param scaleY   the y-scale
      * @param centered if the scaling expands from the ROI center
      */
     public ROIListData scale(double scaleX, double scaleY, boolean centered) {
@@ -542,12 +543,12 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      * Generates an RGB image from pure ROI data.
      * The ROI's reference images are ignored.
      *
-     * @param imageArea         modifications for the image area
-     * @param drawOutline       whether to draw an outline
-     * @param drawFilledOutline whether to fill the area
-     * @param defaultLineThickness     line thickness for drawing
-     * @param defaultFillColor the default fill color
-     * @param defaultLineColor the default line color
+     * @param imageArea            modifications for the image area
+     * @param drawOutline          whether to draw an outline
+     * @param drawFilledOutline    whether to fill the area
+     * @param defaultLineThickness line thickness for drawing
+     * @param defaultFillColor     the default fill color
+     * @param defaultLineColor     the default line color
      * @return the image
      */
     public ImagePlus toRGBImage(Margin imageArea, ROIElementDrawingMode drawOutline, ROIElementDrawingMode drawFilledOutline, int defaultLineThickness, Color defaultFillColor, Color defaultLineColor) {
@@ -701,15 +702,16 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     /**
      * Draw on top of an RGB image
-     * @param rgbImage the target image
-     * @param drawOutline draw an outline
-     * @param fillOutline fill the outline
-     * @param ignoreZ do not constrain Z
-     * @param ignoreC do not constrain channel
-     * @param ignoreT do not constrain frame
+     *
+     * @param rgbImage             the target image
+     * @param drawOutline          draw an outline
+     * @param fillOutline          fill the outline
+     * @param ignoreZ              do not constrain Z
+     * @param ignoreC              do not constrain channel
+     * @param ignoreT              do not constrain frame
      * @param defaultLineThickness default line thickness
-     * @param defaultFillColor default fill color
-     * @param defaultLineColor default line color
+     * @param defaultFillColor     default fill color
+     * @param defaultLineColor     default line color
      */
     public void draw(ImagePlus rgbImage, boolean ignoreZ, boolean ignoreC, boolean ignoreT, ROIElementDrawingMode drawOutline, ROIElementDrawingMode fillOutline, int defaultLineThickness, Color defaultFillColor, Color defaultLineColor) {
         ImageJUtils.forEachIndexedZCTSlice(rgbImage, (processor, index) -> {
@@ -741,18 +743,19 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     /**
      * Draw on top of an RGB processor with specified coordinates.
-     * @param processor the target processor
-     * @param currentIndex current index in the stack
-     * @param ignoreZ do not constrain Z
-     * @param ignoreC do not constrain channel
-     * @param ignoreT do not constrain frame
-     * @param drawOutline draw an outline
-     * @param fillOutline fill the outline
-     * @param drawLabel draw labels
+     *
+     * @param processor            the target processor
+     * @param currentIndex         current index in the stack
+     * @param ignoreZ              do not constrain Z
+     * @param ignoreC              do not constrain channel
+     * @param ignoreT              do not constrain frame
+     * @param drawOutline          draw an outline
+     * @param fillOutline          fill the outline
+     * @param drawLabel            draw labels
      * @param defaultLineThickness default line thickness
-     * @param defaultFillColor default fill color
-     * @param defaultLineColor default line color
-     * @param highlighted highlighted rois (other ones are drawn darker)
+     * @param defaultFillColor     default fill color
+     * @param defaultLineColor     default line color
+     * @param highlighted          highlighted rois (other ones are drawn darker)
      */
     public void draw(ImageProcessor processor, ImageSliceIndex currentIndex, boolean ignoreZ, boolean ignoreC, boolean ignoreT, boolean drawOutline, boolean fillOutline, boolean drawLabel, int defaultLineThickness, Color defaultFillColor, Color defaultLineColor, Collection<Roi> highlighted) {
         ImagePlus tmp = new ImagePlus("tmp", processor);

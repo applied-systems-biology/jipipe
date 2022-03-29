@@ -20,7 +20,8 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
@@ -65,7 +66,7 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         if (ignoreInputTextAnnotations)
             dataBatch.setMergedTextAnnotations(new HashMap<>());
-        if(ignoreInputDataAnnotations)
+        if (ignoreInputDataAnnotations)
             dataBatch.setMergedDataAnnotations(new HashMap<>());
         Path dataFolder = dataBatch.getInputData(getFirstInputSlot(), FolderData.class, progressInfo).toPath();
         if (!Files.exists(dataFolder.resolve("data-table.json"))) {

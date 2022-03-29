@@ -36,13 +36,13 @@ public class MoveNodeUIUpContextAction implements NodeUIContextAction {
         int minY = Integer.MAX_VALUE;
         for (JIPipeNodeUI ui : selection) {
             Point point = ui.getStoredGridLocation();
-            minX = Math.min(point.x,minX);
+            minX = Math.min(point.x, minX);
             minY = Math.min(point.y, minY);
         }
         canvasUI.expandLeftTop(0, minY <= 0 ? 1 : 0);
         for (JIPipeNodeUI ui : selection) {
             Point point = ui.getStoredGridLocation();
-            ui.moveToGridLocation(new Point(point.x, point.y-1), true, true);
+            ui.moveToGridLocation(new Point(point.x, point.y - 1), true, true);
         }
         canvasUI.repaint(50);
     }

@@ -56,12 +56,11 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
      * Contains {@link JIPipeNodeInfo} or {@link JIPipeGraphNode} instances
      */
     private final ArrayDeque<Object> infiniteScrollingQueue = new ArrayDeque<>();
+    private final JToggleButton findExistingNodesToggle = new JToggleButton(UIUtils.getIconFromResources("actions/find.png"));
+    private final JToggleButton createNodesToggle = new JToggleButton(UIUtils.getIconFromResources("actions/add.png"));
     private SearchTextField searchField;
     private FormPanel formPanel;
     private final Timer scrollToBeginTimer = new Timer(200, e -> scrollToBeginning());
-
-    private final JToggleButton findExistingNodesToggle = new JToggleButton(UIUtils.getIconFromResources("actions/find.png"));
-    private final JToggleButton createNodesToggle = new JToggleButton(UIUtils.getIconFromResources("actions/add.png"));
 
     /**
      * Creates a new UI
@@ -163,12 +162,12 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
         UIUtils.makeFlat25x25(createNodesToggle);
         findExistingNodesToggle.setToolTipText("Find existing nodes");
         createNodesToggle.setToolTipText("Create new nodes");
-        findExistingNodesToggle.addActionListener(e-> {
+        findExistingNodesToggle.addActionListener(e -> {
             GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().setSearchFindExistingNodes(findExistingNodesToggle.isSelected());
             JIPipe.getSettings().save();
             reloadAlgorithmList();
         });
-        createNodesToggle.addActionListener(e-> {
+        createNodesToggle.addActionListener(e -> {
             GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().setSearchFindNewNodes(createNodesToggle.isSelected());
             JIPipe.getSettings().save();
             reloadAlgorithmList();
@@ -191,11 +190,11 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
                 continue;
             String asString;
             if (content instanceof JIPipeNodeInfo) {
-                if(!createNodesToggle.isSelected())
+                if (!createNodesToggle.isSelected())
                     continue;
                 asString = ((JIPipeNodeInfo) content).getName();
             } else if (content instanceof JIPipeGraphNode) {
-                if(!findExistingNodesToggle.isSelected())
+                if (!findExistingNodesToggle.isSelected())
                     continue;
                 asString = ((JIPipeGraphNode) content).getName();
             } else {

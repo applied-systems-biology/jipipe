@@ -23,7 +23,6 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
 
 /**
  * Parameter that holds a value for each data slot
@@ -55,8 +54,8 @@ public class OutputSlotMapParameterCollection extends SlotMapParameterCollection
     /**
      * Creates a new instance
      *
-     * @param dataClass            the data type of the parameter assigned to each slot
-     * @param algorithm            the algorithm that contains the slots
+     * @param dataClass the data type of the parameter assigned to each slot
+     * @param algorithm the algorithm that contains the slots
      */
     public OutputSlotMapParameterCollection(Class<?> dataClass, JIPipeGraphNode algorithm) {
         super(dataClass, algorithm, null, false);

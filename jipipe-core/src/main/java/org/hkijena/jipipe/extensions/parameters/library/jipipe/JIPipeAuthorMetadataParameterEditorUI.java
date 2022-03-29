@@ -28,9 +28,9 @@ import javax.swing.event.DocumentEvent;
 
 public class JIPipeAuthorMetadataParameterEditorUI extends JIPipeParameterEditorUI {
 
-    private boolean isReloading = false;
     private final JXTextField firstNameEditor = new JXTextField("First name");
     private final JXTextField lastNameEditor = new JXTextField("Last name");
+    private boolean isReloading = false;
 
     /**
      * Creates new instance
@@ -50,11 +50,11 @@ public class JIPipeAuthorMetadataParameterEditorUI extends JIPipeParameterEditor
         firstNameEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
-            if(!isReloading) {
-                JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
-                parameter.setFirstName(firstNameEditor.getText());
-                setParameter(parameter, false);
-            }
+                if (!isReloading) {
+                    JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
+                    parameter.setFirstName(firstNameEditor.getText());
+                    setParameter(parameter, false);
+                }
             }
         });
         add(firstNameEditor);
@@ -64,7 +64,7 @@ public class JIPipeAuthorMetadataParameterEditorUI extends JIPipeParameterEditor
         lastNameEditor.getDocument().addDocumentListener(new DocumentChangeListener() {
             @Override
             public void changed(DocumentEvent documentEvent) {
-                if(!isReloading) {
+                if (!isReloading) {
                     JIPipeAuthorMetadata parameter = getParameter(JIPipeAuthorMetadata.class);
                     parameter.setLastName(lastNameEditor.getText());
                     setParameter(parameter, false);
@@ -102,8 +102,7 @@ public class JIPipeAuthorMetadataParameterEditorUI extends JIPipeParameterEditor
             isReloading = true;
             firstNameEditor.setText(parameter.getFirstName());
             lastNameEditor.setText(parameter.getLastName());
-        }
-        finally {
+        } finally {
             isReloading = false;
         }
     }

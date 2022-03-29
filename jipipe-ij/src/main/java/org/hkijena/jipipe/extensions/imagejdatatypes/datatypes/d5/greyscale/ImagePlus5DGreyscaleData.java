@@ -59,11 +59,6 @@ public class ImagePlus5DGreyscaleData extends ImagePlus5DData implements JIPipeD
         return new ImagePlus5DGreyscaleData(ImagePlusData.importImagePlusFrom(storage, progressInfo));
     }
 
-    @Override
-    public ColorSpace getColorSpace() {
-        return GreyscaleColorSpace.INSTANCE;
-    }
-
     /**
      * Converts the incoming image data into the current format.
      *
@@ -76,5 +71,10 @@ public class ImagePlus5DGreyscaleData extends ImagePlus5DData implements JIPipeD
         } else {
             return new ImagePlus5DGreyscaleData(data.getImageSource());
         }
+    }
+
+    @Override
+    public ColorSpace getColorSpace() {
+        return GreyscaleColorSpace.INSTANCE;
     }
 }

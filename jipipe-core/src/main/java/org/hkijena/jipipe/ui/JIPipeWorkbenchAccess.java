@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.ui;
 
-import javax.swing.*;
-
 /**
  * Interface for any class that needs access to a {@link JIPipeWorkbench}
  */

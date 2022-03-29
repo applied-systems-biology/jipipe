@@ -65,7 +65,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
 
         builder.append("This type can be trivially converted into following types:\n\n");
 
-        if(forJava) {
+        if (forJava) {
             builder.append("<table>");
             {
                 builder.append("<tr>");
@@ -87,8 +87,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
                 builder.append("</tr>");
             }
             builder.append("</table>\n\n");
-        }
-        else {
+        } else {
             builder.append("<ul>");
             {
                 int column = 0;
@@ -110,7 +109,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
         }
 
         builder.append("This type can be trivially converted from following types:\n\n");
-        if(forJava) {
+        if (forJava) {
             builder.append("<table>");
             {
                 builder.append("<tr>");
@@ -132,8 +131,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
                 builder.append("</tr>");
             }
             builder.append("</table>\n\n");
-        }
-        else {
+        } else {
             builder.append("<ul>");
             {
                 int column = 0;
@@ -158,7 +156,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
         builder.append("A non-trivial conversion is defined by the developer and might involve some more complex conversion operations. They are indicated as blue edge.\n\n");
 
         builder.append("This type can be also converted into following types:\n\n");
-        if(forJava) {
+        if (forJava) {
             builder.append("<table>");
             {
                 builder.append("<tr>");
@@ -180,8 +178,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
                 builder.append("</tr>");
             }
             builder.append("</table>\n\n");
-        }
-        else {
+        } else {
             builder.append("<ul>");
             {
 
@@ -204,7 +201,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
         }
 
         builder.append("This type can be also converted from following types:\n\n");
-        if(forJava) {
+        if (forJava) {
             builder.append("<table>");
             {
                 builder.append("<tr>");
@@ -226,8 +223,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
                 builder.append("</tr>");
             }
             builder.append("</table>\n\n");
-        }
-        else {
+        } else {
             builder.append("<ul>");
             {
                 int column = 0;

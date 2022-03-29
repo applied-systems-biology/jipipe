@@ -116,7 +116,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
     protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
         ImagePlus image;
         ROIListData rois = new ROIListData();
-        if(customDataLoader != null) {
+        if (customDataLoader != null) {
             customDataLoader.load(virtualData, progressInfo);
             image = customDataLoader.getImagePlus();
             rois = customDataLoader.getRois();

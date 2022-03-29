@@ -160,7 +160,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
         for (JIPipeGraphNode node : algorithmsWithMissingInput) {
             node.getOutputSlots().forEach(heavyIntermediateOutputs::remove);
         }
-        if(!heavyIntermediateOutputs.isEmpty()) {
+        if (!heavyIntermediateOutputs.isEmpty()) {
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Large intermediate results",
                     UIUtils.getIconFromResources("emblems/warning.png"));
             headerPanel.getDescriptionArea().setVisible(true);
@@ -169,7 +169,7 @@ public class JIPipeRunSettingsUI extends JIPipeProjectWorkbenchPanel {
             createOutputsManagerPanel(formPanel, heavyIntermediateOutputs);
         }
         Set<JIPipeDataSlot> remainingOutputs = getProject().getGraph().getSlotNodes().stream().filter(slot -> slot.getSlotType() == JIPipeSlotType.Output).collect(Collectors.toSet());
-        if(!remainingOutputs.isEmpty()) {
+        if (!remainingOutputs.isEmpty()) {
             FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("Saved results",
                     UIUtils.getIconFromResources("emblems/emblem-information.png"));
             headerPanel.getDescriptionArea().setVisible(true);

@@ -127,7 +127,7 @@ public class ChangeRoiPropertiesFromAnnotationsAlgorithm extends JIPipeSimpleIte
                 scaleY = NumberUtils.createDouble(dataBatch.getMergedTextAnnotation(this.scaleY.getContent()).getValue());
             if (this.centerScale.isEnabled())
                 centerScale = BooleanUtils.toBoolean(dataBatch.getMergedTextAnnotation(this.centerScale.getContent()).getValue());
-            if(scaleX != 1.0 || scaleY != 1.0) {
+            if (scaleX != 1.0 || scaleY != 1.0) {
                 roi = RoiScaler.scale(roi, scaleX, scaleY, centerScale);
                 data.set(i, roi);
             }

@@ -11,7 +11,7 @@ import java.awt.*;
 public class EmptyImageJDataExporterUI extends ImageJDataExporterUI {
     /**
      * @param workbench the workbench
-     * @param exporter the importer
+     * @param exporter  the importer
      */
     public EmptyImageJDataExporterUI(JIPipeWorkbench workbench, ImageJDataExportOperation exporter) {
         super(workbench, exporter);

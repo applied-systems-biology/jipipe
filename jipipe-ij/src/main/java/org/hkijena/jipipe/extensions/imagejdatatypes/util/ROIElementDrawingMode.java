@@ -10,7 +10,7 @@ public enum ROIElementDrawingMode {
 
     @Override
     public String toString() {
-        if(this == IfAvailable) {
+        if (this == IfAvailable) {
             return "If available";
         }
         return super.toString();

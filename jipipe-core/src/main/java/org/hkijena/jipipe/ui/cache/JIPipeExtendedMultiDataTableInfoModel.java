@@ -49,9 +49,9 @@ public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
     private final ArrayList<Integer> rowList = new ArrayList<>();
     private final List<Component> previewCache = new ArrayList<>();
     private final Map<String, List<Component>> dataAnnotationPreviewCache = new HashMap<>();
+    private final boolean withCompartmentAndAlgorithm;
     private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
     private JScrollPane scrollPane;
-    private final boolean withCompartmentAndAlgorithm;
 
     public JIPipeExtendedMultiDataTableInfoModel(JTable table, boolean withCompartmentAndAlgorithm) {
         this.table = table;

@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.batchassistant;
 
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataPreview;
@@ -46,8 +45,8 @@ public class DataBatchTableModel2 implements TableModel {
     /**
      * Creates a new instance
      *
-     * @param table the table
-     * @param dataTable  the wrapped slot
+     * @param table     the table
+     * @param dataTable the wrapped slot
      */
     public DataBatchTableModel2(JTable table, JIPipeDataTable dataTable) {
         this.table = table;
@@ -167,7 +166,7 @@ public class DataBatchTableModel2 implements TableModel {
                 }
             }
             return preview;
-        }  else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
+        } else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
             revalidatePreviewCache();
             String dataAnnotationName = dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
             Component preview = dataAnnotationPreviewCache.get(dataAnnotationName).get(rowIndex);
@@ -254,8 +253,7 @@ public class DataBatchTableModel2 implements TableModel {
                     component.renderPreview();
                 }
             }
-        }
-        catch (IndexOutOfBoundsException e) {
+        } catch (IndexOutOfBoundsException e) {
         }
     }
 }

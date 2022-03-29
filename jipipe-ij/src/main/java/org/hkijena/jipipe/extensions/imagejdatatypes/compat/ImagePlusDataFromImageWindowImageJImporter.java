@@ -27,13 +27,12 @@ public class ImagePlusDataFromImageWindowImageJImporter implements ImageJDataImp
     @Override
     public JIPipeDataTable importData(List<Object> objects, ImageJImportParameters parameters, JIPipeProgressInfo progressInfo) {
         ImagePlus imagePlus;
-        if(StringUtils.isNullOrEmpty(parameters.getName())) {
+        if (StringUtils.isNullOrEmpty(parameters.getName())) {
             imagePlus = IJ.getImage(); // The active image
-        }
-        else {
+        } else {
             imagePlus = WindowManager.getImage(parameters.getName());
         }
-        if(parameters.isDuplicate()) {
+        if (parameters.isDuplicate()) {
             String title = imagePlus.getTitle();
             imagePlus = imagePlus.duplicate();
             imagePlus.setTitle(title);
