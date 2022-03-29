@@ -37,7 +37,7 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
         CellPoseSettings settings = CellPoseSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        PythonCellPoseEnvInstaller installer = new PythonCellPoseEnvInstaller(workbench, parameterAccess);
+        PortableCellPoseEnvInstaller installer = new PortableCellPoseEnvInstaller(workbench, parameterAccess);
         JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
@@ -45,7 +45,7 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
         CellPoseSettings settings = CellPoseSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        PythonCellPoseGPUEnvInstaller installer = new PythonCellPoseGPUEnvInstaller(workbench, parameterAccess);
+        PortableCellPoseGPUEnvInstaller installer = new PortableCellPoseGPUEnvInstaller(workbench, parameterAccess);
         JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
@@ -97,8 +97,8 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
                 new CellPoseSettings());
         registerEnvironmentInstaller(PythonEnvironment.class, MinicondaCellPoseEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, MinicondaCellPoseGPUEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, PythonCellPoseEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, PythonCellPoseGPUEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, PortableCellPoseEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, PortableCellPoseGPUEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
 
         registerEnumParameterType("cellpose-model", CellPoseModel.class, "Cellpose model", "A Cellpose model");
         registerEnumParameterType("cellpose-pretrained-model", CellPosePretrainedModel.class, "Cellpose pre-trained model", "A pretrained model for Cellpose");

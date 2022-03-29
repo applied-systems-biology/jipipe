@@ -56,7 +56,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        PythonEnvPythonInstaller installer = new PythonEnvPythonInstaller(workbench, parameterAccess);
+        PortableEnvPythonInstaller installer = new PortableEnvPythonInstaller(workbench, parameterAccess);
         JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
@@ -126,7 +126,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 settings);
         registerEnvironmentInstaller(PythonEnvironment.class, MinicondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/browser-download.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, PythonEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/browser-download.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, PortableEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/browser-download.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectCondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectSystemPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectVirtualEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));

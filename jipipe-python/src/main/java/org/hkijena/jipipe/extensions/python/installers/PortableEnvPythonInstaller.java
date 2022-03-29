@@ -6,12 +6,12 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 @JIPipeDocumentation(name = "Install Python 3", description = "Installs Python 3")
-public class PythonEnvPythonInstaller extends BasicPythonEnvPythonInstaller {
+public class PortableEnvPythonInstaller extends BasicPortableEnvPythonInstaller {
     /**
      * @param workbench       the workbench
      * @param parameterAccess the parameter access that will receive the generated environment
      */
-    public PythonEnvPythonInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public PortableEnvPythonInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         this.setConfiguration(new Configuration());
     }
@@ -38,7 +38,7 @@ public class PythonEnvPythonInstaller extends BasicPythonEnvPythonInstaller {
         }
     }
 
-    public static class Configuration extends BasicPythonEnvPythonInstaller.Configuration {
+    public static class Configuration extends BasicPortableEnvPythonInstaller.Configuration {
         private boolean installNumpy = true;
         private boolean installScikitImage = true;
         private boolean installScikitLearn = true;

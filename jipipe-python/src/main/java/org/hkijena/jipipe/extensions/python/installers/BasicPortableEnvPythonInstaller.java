@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 @JIPipeDocumentation(name = "Install Python 3", description = "Installs Python 3")
-public class BasicPythonEnvPythonInstaller extends ExternalEnvironmentInstaller {
+public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstaller {
 
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private Configuration configuration = new Configuration();
@@ -46,7 +46,7 @@ public class BasicPythonEnvPythonInstaller extends ExternalEnvironmentInstaller 
      * @param workbench       the workbench
      * @param parameterAccess the parameter access that will receive the generated environment
      */
-    public BasicPythonEnvPythonInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public BasicPortableEnvPythonInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
     }
 
@@ -201,7 +201,9 @@ public class BasicPythonEnvPythonInstaller extends ExternalEnvironmentInstaller 
         progressInfo.log("The Python distribution was obtained from: https://github.com/indygreg/python-build-standalone/releases/");
         try {
             ArchiveUtils.decompressTarGZ(archivePath, configuration.installationPath.toAbsolutePath(), progressInfo.resolve("Extract Python"));
-            Files.list(configuration.installationPath.toAbsolutePath().resolve("python").resolve("bin")).forEach(PathUtils::makeUnixExecutable);
+            if(!SystemUtils.IS_OS_WINDOWS) {
+                Files.list(configuration.installationPath.toAbsolutePath().resolve("python").resolve("bin")).forEach(PathUtils::makeUnixExecutable);
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
