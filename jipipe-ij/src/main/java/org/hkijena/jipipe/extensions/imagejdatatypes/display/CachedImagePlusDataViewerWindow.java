@@ -207,6 +207,12 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
             this.rois = rois;
         }
 
+        /**
+         * The data loading operation.
+         * It should set the values of the current class
+         * @param virtualData the virtual data
+         * @param progressInfo the progress info
+         */
         public abstract void load(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo);
     }
 }

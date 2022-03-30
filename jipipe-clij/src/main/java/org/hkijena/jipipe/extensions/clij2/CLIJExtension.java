@@ -8,6 +8,10 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.clij2.algorithms.Clij2ExecuteKernelIterating;
+import org.hkijena.jipipe.extensions.clij2.algorithms.Clij2ExecuteKernelSimpleIterating;
+import org.hkijena.jipipe.extensions.clij2.algorithms.Clij2PullAlgorithm;
+import org.hkijena.jipipe.extensions.clij2.algorithms.Clij2PushAlgorithm;
 import org.hkijena.jipipe.extensions.clij2.compat.CLIIJ2DataToImageWindowImageJExporter;
 import org.hkijena.jipipe.extensions.clij2.compat.CLIJ2DataFromImageWindowImageJImporter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
@@ -87,6 +91,10 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerImageJDataImporter("clij2-image-from-window", new CLIJ2DataFromImageWindowImageJImporter(), ImagePlusWindowImageJImporterUI.class);
         registerImageJDataExporter("clij2-to-window", new CLIIJ2DataToImageWindowImageJExporter(), DefaultImageJDataExporterUI.class);
         registerAlgorithms(progressInfo);
+        registerNodeType("clij-execute-kernel-iterating", Clij2ExecuteKernelIterating.class, UIUtils.getIconURLFromResources("apps/clij.png"));
+        registerNodeType("clij-execute-kernel-simple-iterating", Clij2ExecuteKernelSimpleIterating.class, UIUtils.getIconURLFromResources("apps/clij.png"));
+        registerNodeType("clij-push-to-gpu", Clij2PushAlgorithm.class, UIUtils.getIconURLFromResources("apps/clij.png"));
+        registerNodeType("clij-pull-from-gpu", Clij2PullAlgorithm.class, UIUtils.getIconURLFromResources("apps/clij.png"));
 
         registerSettingsSheet(CLIJSettings.ID,
                 "CLIJ2",
@@ -108,10 +116,10 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
                     continue;
                 }
                 CLIJCommandNodeInfo nodeInfo = new CLIJCommandNodeInfo(getContext(), pluginInfo, moduleProgress);
-//                if (nodeInfo.getInputSlots().isEmpty() && nodeInfo.getOutputSlots().isEmpty()) {
-//                    progressInfo.log("Node has no data slots. Skipping.");
-//                    continue;
-//                }
+                if (nodeInfo.getInputSlots().isEmpty() && nodeInfo.getOutputSlots().isEmpty()) {
+                    progressInfo.log("Node has no data slots. Skipping.");
+                    continue;
+                }
                 registerNodeType(nodeInfo, UIUtils.getIconURLFromResources("apps/clij.png"));
             } catch (Exception e) {
                 moduleProgress.log("Unable to register module:");

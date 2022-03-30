@@ -178,7 +178,12 @@ public class ImageViewerPanel extends JPanel {
             ACTIVE_PANEL = null;
         }
         OPEN_PANELS.remove(this);
-        setImage(null);
+        try {
+            setImage(null);
+        }
+        catch (Exception |Error e) {
+            e.printStackTrace();
+        }
     }
 
     private void initialize() {

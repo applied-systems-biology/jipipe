@@ -2,7 +2,6 @@ package org.hkijena.jipipe.extensions.clij2;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import ij.IJ;
 import net.haesleinhuepf.clij.macro.AbstractCLIJPlugin;
 import net.haesleinhuepf.clij.macro.CLIJMacroPlugin;
 import net.haesleinhuepf.clij.macro.documentation.HTMLDocumentationTemplate;
@@ -17,27 +16,26 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
 import org.scijava.plugin.PluginInfo;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
 
     private final JIPipeNodeTypeCategory nodeTypeCategory = new ImagesNodeTypeCategory();
     private final String nodeId;
     private final String nodeName;
+    private final PluginInfo<CLIJMacroPlugin> pluginInfo;
     private final List<JIPipeInputSlot> inputSlots = new ArrayList<>();
     private final List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
     private final BiMap<String, Integer> inputSlotToArgIndexMap = HashBiMap.create();
     private final BiMap<String, Integer> outputSlotToArgIndexMap = HashBiMap.create();
     private final BiMap<String, Integer> parameterIdToArgIndexMap = HashBiMap.create();
+    private final Set<String> ioInputSlots = new HashSet<>();
+    private int numArgs = 0;
     private final JIPipeDynamicParameterCollection nodeParameters = new JIPipeDynamicParameterCollection(false);
     private String menuPath = "CLIJ";
     private final HTMLText nodeDescription;
@@ -45,25 +43,34 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
     public CLIJCommandNodeInfo(Context context, PluginInfo<CLIJMacroPlugin> pluginInfo, JIPipeProgressInfo moduleProgress) {
         this.nodeId = "clij:" + pluginInfo.getIdentifier();
         this.nodeName = createNodeName(pluginInfo);
+        this.pluginInfo = pluginInfo;
 
         // Information only available to an instance
         try {
-            CLIJMacroPlugin instance = pluginInfo.createInstance();
-            if(instance instanceof IsCategorized) {
-                menuPath = "CLIJ\n" + ((IsCategorized) instance).getCategories().replace(',', '\n');
+            CLIJMacroPlugin pluginInstance = pluginInfo.createInstance();
+            if(pluginInstance instanceof IsCategorized) {
+                menuPath = "CLIJ\n" + ((IsCategorized) pluginInstance).getCategories().replace(',', '\n');
             }
             String description = "";
             String availableForDimensions = "";
-            if(instance instanceof OffersDocumentation) {
-                description = ((OffersDocumentation) instance).getDescription();
-                availableForDimensions = ((OffersDocumentation) instance).getAvailableForDimensions();
+            if(pluginInstance instanceof OffersDocumentation) {
+                description = ((OffersDocumentation) pluginInstance).getDescription();
+                availableForDimensions = ((OffersDocumentation) pluginInstance).getAvailableForDimensions();
             }
-            nodeDescription = new HTMLText(new HTMLDocumentationTemplate(description, availableForDimensions, instance, true).toString(false));
+            nodeDescription = new HTMLText(new HTMLDocumentationTemplate(description, availableForDimensions, pluginInstance, true).toString(false));
 
-            importParameters(instance, moduleProgress);
+            importParameters(pluginInstance, moduleProgress);
         } catch (InstantiableException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public Set<String> getIoInputSlots() {
+        return ioInputSlots;
+    }
+
+    public PluginInfo<CLIJMacroPlugin> getPluginInfo() {
+        return pluginInfo;
     }
 
     /**
@@ -77,6 +84,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
         if(instance instanceof AbstractCLIJPlugin) {
             default_values = ((AbstractCLIJPlugin) instance).getDefaultValues();
         }
+        this.numArgs = parameters.length;
         if (parameters.length > 0 && parameters[0].length() > 0) {
             for (int i = 0; i < parameters.length; i++) {
                 String[] parameterParts = parameters[i].trim().split(" ");
@@ -89,52 +97,66 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
                     byRef = true;
                 }
 
-                if (parameterType.equals("Image")) {
-                    if (!(parameterName.contains("destination") || byRef)) {
-                        // Image input
-                        String slotName = createSlotName(parameterName);
-                        inputSlots.add(new DefaultJIPipeInputSlot(CLIJImageData.class, slotName, "", true, false));
-                        inputSlotToArgIndexMap.put(slotName, i);
+                switch (parameterType) {
+                    case "Image":
+                        if (!(parameterName.contains("destination") || byRef)) {
+                            // Image input
+                            String slotName = createSlotName(parameterName);
+                            inputSlots.add(new DefaultJIPipeInputSlot(CLIJImageData.class, slotName, "", true, false));
+                            inputSlotToArgIndexMap.put(slotName, i);
+                            if (byRef) {
+                                ioInputSlots.add(slotName);
+                            }
+                        } else {
+                            // Image output
+                            String slotName = createSlotName(parameterName);
+                            outputSlots.add(new DefaultJIPipeOutputSlot(CLIJImageData.class, slotName, "", null, true));
+                            outputSlotToArgIndexMap.put(slotName, i);
+                        }
+                        break;
+                    case "String": {
+                        String defaultValue = "";
+                        if (default_values != null) {
+                            defaultValue = (String) default_values[i];
+                        }
+                        // String parameter
+                        JIPipeMutableParameterAccess parameterAccess = nodeParameters.addParameter(parameterName, String.class);
+                        parameterAccess.setName(createParameterName(parameterName));
+                        parameterAccess.set(defaultValue);
+                        parameterIdToArgIndexMap.put(parameterName, i);
+                        break;
                     }
-                    else {
-                        // Image output
-                        String slotName = createSlotName(parameterName);
-                        outputSlots.add(new DefaultJIPipeOutputSlot(CLIJImageData.class, slotName, "", null, true));
-                        outputSlotToArgIndexMap.put(slotName, i);
+                    case "Boolean": {
+                        boolean defaultValue = true;
+                        if (default_values != null) {
+                            defaultValue = Boolean.parseBoolean("" + default_values[i]);
+                        }
+                        // Boolean parameter
+                        JIPipeMutableParameterAccess parameterAccess = nodeParameters.addParameter(parameterName, Boolean.class);
+                        parameterAccess.setName(createParameterName(parameterName));
+                        parameterAccess.set(defaultValue);
+                        parameterIdToArgIndexMap.put(parameterName, i);
+                        break;
                     }
-                } else if (parameterType.equals("String")) {
-                    String defaultValue = "";
-                    if (default_values != null) {
-                       defaultValue = (String)default_values[i];
+                    default: { // Number
+                        double defaultValue = 2.0;
+                        if (default_values != null) {
+                            defaultValue = Double.parseDouble("" + default_values[i]);
+                        }
+                        // Double parameter
+                        JIPipeMutableParameterAccess parameterAccess = nodeParameters.addParameter(parameterName, Double.class);
+                        parameterAccess.setName(createParameterName(parameterName));
+                        parameterAccess.set(defaultValue);
+                        parameterIdToArgIndexMap.put(parameterName, i);
+                        break;
                     }
-                     // String parameter
-                    JIPipeMutableParameterAccess parameterAccess = nodeParameters.addParameter(parameterName, String.class);
-                    parameterAccess.setName(createParameterName(parameterName));
-                    parameterAccess.set(defaultValue);
-                    parameterIdToArgIndexMap.put(parameterName, i);
-                } else if (parameterType.equals("Boolean")) {
-                    boolean defaultValue = true;
-                    if (default_values != null) {
-                        defaultValue = Boolean.parseBoolean("" + default_values[i]);
-                    }
-                    // Boolean parameter
-                    JIPipeMutableParameterAccess parameterAccess = nodeParameters.addParameter(parameterName, Boolean.class);
-                    parameterAccess.setName(createParameterName(parameterName));
-                    parameterAccess.set(defaultValue);
-                    parameterIdToArgIndexMap.put(parameterName, i);
-                } else { // Number
-                    double defaultValue = 2.0;
-                    if (default_values != null) {
-                       defaultValue = Double.parseDouble("" + default_values[i]);
-                    }
-                    // Double parameter
-                    JIPipeMutableParameterAccess parameterAccess = nodeParameters.addParameter(parameterName, Double.class);
-                    parameterAccess.setName(createParameterName(parameterName));
-                    parameterAccess.set(defaultValue);
-                    parameterIdToArgIndexMap.put(parameterName, i);
                 }
             }
         }
+    }
+
+    public int getNumArgs() {
+        return numArgs;
     }
 
     public BiMap<String, Integer> getInputSlotToArgIndexMap() {
