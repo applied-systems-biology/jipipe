@@ -16,6 +16,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
@@ -35,6 +36,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
     private final BiMap<String, Integer> outputSlotToArgIndexMap = HashBiMap.create();
     private final BiMap<String, Integer> parameterIdToArgIndexMap = HashBiMap.create();
     private final Set<String> ioInputSlots = new HashSet<>();
+    private final Set<OutputTableColumnInfo> outputTableColumnInfos = new HashSet<>();
     private int numArgs = 0;
     private final JIPipeDynamicParameterCollection nodeParameters = new JIPipeDynamicParameterCollection(false);
     private String menuPath = "CLIJ";
@@ -57,7 +59,9 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
                 description = ((OffersDocumentation) pluginInstance).getDescription();
                 availableForDimensions = ((OffersDocumentation) pluginInstance).getAvailableForDimensions();
             }
-            nodeDescription = new HTMLText(new HTMLDocumentationTemplate(description, availableForDimensions, pluginInstance, true).toString(false));
+            nodeDescription = new HTMLText(new HTMLDocumentationTemplate(description, availableForDimensions, pluginInstance, true).toString(false) +
+                    "<br/><br/><strong>Please be aware that this node was generated automatically by JIPipe from existing interfaces provided by CLIJ. " +
+                    "Please contact the JIPipe developers if you find any issues.</strong>");
 
             importParameters(pluginInstance, moduleProgress);
         } catch (InstantiableException e) {
@@ -124,6 +128,12 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
                         parameterAccess.setName(createParameterName(parameterName));
                         parameterAccess.set(defaultValue);
                         parameterIdToArgIndexMap.put(parameterName, i);
+
+                        if(byRef) {
+                            // Register as additional output
+                            outputTableColumnInfos.add(new OutputTableColumnInfo(i, parameterName, true));
+                        }
+
                         break;
                     }
                     case "Boolean": {
@@ -136,6 +146,11 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
                         parameterAccess.setName(createParameterName(parameterName));
                         parameterAccess.set(defaultValue);
                         parameterIdToArgIndexMap.put(parameterName, i);
+
+                        if(byRef) {
+                            // Register as additional output
+                            outputTableColumnInfos.add(new OutputTableColumnInfo(i, parameterName, true));
+                        }
                         break;
                     }
                     default: { // Number
@@ -148,11 +163,23 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
                         parameterAccess.setName(createParameterName(parameterName));
                         parameterAccess.set(defaultValue);
                         parameterIdToArgIndexMap.put(parameterName, i);
+
+                        if(byRef) {
+                            // Register as additional output
+                            outputTableColumnInfos.add(new OutputTableColumnInfo(i, parameterName, false));
+                        }
                         break;
                     }
                 }
             }
         }
+        if(!outputTableColumnInfos.isEmpty()) {
+            outputSlots.add(new DefaultJIPipeOutputSlot(ResultsTableData.class, "Results table", "", null, true));
+        }
+    }
+
+    public Set<OutputTableColumnInfo> getOutputTableColumnInfos() {
+        return outputTableColumnInfos;
     }
 
     public int getNumArgs() {
@@ -260,5 +287,29 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
     @Override
     public boolean isHidden() {
         return false;
+    }
+
+    public static class OutputTableColumnInfo {
+        private final int argIndex;
+        private final String name;
+        private final boolean stringColumn;
+
+        public OutputTableColumnInfo(int argIndex, String name, boolean stringColumn) {
+            this.argIndex = argIndex;
+            this.name = name;
+            this.stringColumn = stringColumn;
+        }
+
+        public int getArgIndex() {
+            return argIndex;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public boolean isStringColumn() {
+            return stringColumn;
+        }
     }
 }

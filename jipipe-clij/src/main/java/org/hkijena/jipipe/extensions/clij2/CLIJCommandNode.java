@@ -13,6 +13,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.scijava.InstantiableException;
 
 import java.util.HashMap;
@@ -92,6 +93,8 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
             if(outputs.containsKey(outputSlot.getName()))
                 continue;
+            if(outputSlot.getName().equals("Results table"))
+                continue;
             int argIndex = info.getOutputSlotToArgIndexMap().get(outputSlot.getName());
             ClearCLBuffer buffer = pluginInstance.createOutputBufferFromSource(referenceImage);
             args[argIndex] = buffer;
@@ -113,6 +116,20 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
             ClearCLBuffer buffer = outputs.get(outputSlot.getName());
             CLIJImageData imageData = new CLIJImageData(buffer);
             dataBatch.addOutputData(outputSlot, imageData, progressInfo);
+        }
+
+        // Extract outputs table
+        if(!info.getOutputTableColumnInfos().isEmpty()) {
+            ResultsTableData resultsTableData = new ResultsTableData();
+            for (CLIJCommandNodeInfo.OutputTableColumnInfo columnInfo : info.getOutputTableColumnInfos()) {
+                resultsTableData.addColumn(columnInfo.getName(), columnInfo.isStringColumn());
+            }
+            resultsTableData.addRow();
+            for (CLIJCommandNodeInfo.OutputTableColumnInfo columnInfo : info.getOutputTableColumnInfos()) {
+                Object value = args[columnInfo.getArgIndex()];
+                resultsTableData.setValueAt(value, 0, columnInfo.getName());
+            }
+            dataBatch.addOutputData("Results table", resultsTableData, progressInfo);
         }
     }
 }
