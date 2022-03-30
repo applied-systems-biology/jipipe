@@ -23,6 +23,7 @@ import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.MutableDataHolder;
 import com.vladsch.flexmark.util.data.MutableDataSet;
+import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.io.IOException;
@@ -182,6 +183,10 @@ public class MarkdownDocument {
 
     public String getRenderedHTML() {
         return renderedHTML;
+    }
+
+    public HTMLText getRenderedHTMLText() {
+        return new HTMLText(getRenderedHTML());
     }
 
     public String getMarkdown() {
