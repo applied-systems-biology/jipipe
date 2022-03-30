@@ -78,7 +78,7 @@ public class CLIJImageData implements JIPipeData {
     }
 
     @Override
-    public void finalize() throws Throwable {
+    protected void finalize() throws Throwable {
         image.close();
         image = null;
         super.finalize();
