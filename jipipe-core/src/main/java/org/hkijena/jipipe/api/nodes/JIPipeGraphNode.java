@@ -76,15 +76,17 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * Initializes this algorithm with a custom provided slot configuration
      *
      * @param info              Contains algorithm metadata
-     * @param slotConfiguration if null, generate the slot configuration
+     * @param slotConfiguration if null, generate the slot configuration automatically. Prefers the creation of slots via annotations. Alternatively, slots can also be created via the node info
      */
     public JIPipeGraphNode(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
         this.info = info;
         if (slotConfiguration == null) {
             JIPipeDefaultMutableSlotConfiguration.Builder builder = JIPipeDefaultMutableSlotConfiguration.builder();
 
+            boolean created = false;
             for (JIPipeInputSlot slot : getClass().getAnnotationsByType(JIPipeInputSlot.class)) {
                 if (slot.autoCreate()) {
+                    created = true;
                     builder.addInputSlot(slot.slotName(), slot.description(), slot.value(), slot.optional());
                 }
             }
@@ -92,7 +94,25 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
                 if (slot.autoCreate()) {
                     if (!slot.inheritedSlot().isEmpty())
                         builder.allowOutputSlotInheritance(true);
+                    created = true;
                     builder.addOutputSlot(slot.slotName(), slot.description(), slot.value(), slot.inheritedSlot());
+                }
+            }
+
+            if(!created) {
+                for (JIPipeInputSlot slot : info.getInputSlots()) {
+                    if (slot.autoCreate()) {
+                        created = true;
+                        builder.addInputSlot(slot.slotName(), slot.description(), slot.value(), slot.optional());
+                    }
+                }
+                for (JIPipeOutputSlot slot : info.getOutputSlots()) {
+                    if (slot.autoCreate()) {
+                        if (!StringUtils.isNullOrEmpty(slot.inheritedSlot()))
+                            builder.allowOutputSlotInheritance(true);
+                        created = true;
+                        builder.addOutputSlot(slot.slotName(), slot.description(), slot.value(), slot.inheritedSlot());
+                    }
                 }
             }
 
