@@ -157,7 +157,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
 
         batchesNodeCopy = algorithm.getInfo().duplicate(algorithm);
         // Pass cache as input slots
-        for (JIPipeDataSlot inputSlot : batchesNodeCopy.getEffectiveInputSlots()) {
+        for (JIPipeDataSlot inputSlot : batchesNodeCopy.getDataInputSlots()) {
             for (JIPipeDataSlot cacheSlot : currentCache.get(inputSlot.getName())) {
                 inputSlot.addData(cacheSlot, new JIPipeProgressInfo());
             }
@@ -187,7 +187,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
             boolean hasMultiple = false;
             DataBatchStatusData statusData = new DataBatchStatusData();
 
-            for (JIPipeDataSlot inputSlot : algorithm.getEffectiveInputSlots()) {
+            for (JIPipeDataSlot inputSlot : algorithm.getDataInputSlots()) {
                 List<JIPipeData> dataList = batch.getInputData(inputSlot, JIPipeData.class, progressInfo);
                 Map<String, Object> status = new HashMap<>();
                 JIPipeData singletonData;
@@ -380,7 +380,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
 
         @Override
         protected List<JIPipeMergingDataBatch> doInBackground() throws Exception {
-            List<JIPipeMergingDataBatch> batches = ((JIPipeDataBatchAlgorithm) algorithm).generateDataBatchesDryRun(algorithm.getEffectiveInputSlots(), progressInfo);
+            List<JIPipeMergingDataBatch> batches = ((JIPipeDataBatchAlgorithm) algorithm).generateDataBatchesDryRun(algorithm.getDataInputSlots(), progressInfo);
             if (batches == null)
                 batches = Collections.emptyList();
             return batches;

@@ -221,7 +221,7 @@ public class SimpleIteratingFormProcessorAlgorithm extends JIPipeAlgorithm imple
     }
 
     @Override
-    public List<JIPipeInputDataSlot> getEffectiveInputSlots() {
+    public List<JIPipeInputDataSlot> getDataInputSlots() {
         return Collections.singletonList(getInputSlot("Data"));
     }
 

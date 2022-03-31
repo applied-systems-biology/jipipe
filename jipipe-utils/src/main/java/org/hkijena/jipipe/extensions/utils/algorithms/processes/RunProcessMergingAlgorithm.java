@@ -55,7 +55,7 @@ public class RunProcessMergingAlgorithm extends JIPipeMergingAlgorithm {
         progressInfo.log("Outputs will be extracted from: " + outputPath);
 
         // Save all inputs
-        for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
+        for (JIPipeDataSlot slot : getDataInputSlots()) {
             JIPipeDataTable dummy = slot.slice(dataBatch.getInputRows(slot));
             dummy.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, inputPath.resolve(slot.getName())), progressInfo.resolve("Save inputs"));
         }

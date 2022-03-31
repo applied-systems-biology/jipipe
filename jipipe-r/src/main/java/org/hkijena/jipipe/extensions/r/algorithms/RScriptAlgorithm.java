@@ -117,7 +117,7 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         Path workDirectory = getNewScratch();
 
         Map<String, Path> inputSlotPaths = new HashMap<>();
-        for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
+        for (JIPipeDataSlot slot : getDataInputSlots()) {
             Path tempPath = workDirectory.resolve("inputs").resolve(slot.getName());
             try {
                 Files.createDirectories(tempPath);
@@ -129,7 +129,7 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
             inputSlotPaths.put(slot.getName(), tempPath);
         }
 
-        RUtils.inputSlotsToR(code, inputSlotPaths, getEffectiveInputSlots());
+        RUtils.inputSlotsToR(code, inputSlotPaths, getDataInputSlots());
         RUtils.installInputLoaderCode(code);
 
         Map<String, Path> outputSlotPaths = new HashMap<>();

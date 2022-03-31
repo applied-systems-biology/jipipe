@@ -83,7 +83,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
 
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
-        if (getEffectiveInputSlots().size() > 1)
+        if (getDataInputSlots().size() > 1)
             throw new UserFriendlyRuntimeException("Too many input slots for JIPipeSimpleIteratingAlgorithm!",
                     "Error in source code detected!",
                     "Algorithm '" + getName() + "'",
@@ -150,7 +150,7 @@ public abstract class JIPipeParameterlessSimpleIteratingAlgorithm extends JIPipe
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-        if (getEffectiveInputSlots().size() > 1) {
+        if (getDataInputSlots().size() > 1) {
             report.resolve("Internals").reportIsInvalid(
                     "Error in source code detected!",
                     "The developer of this algorithm chose the wrong node type. The one that was selected only supports at most one input.",

@@ -107,7 +107,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
         List<ImagePlus> inputImages = new ArrayList<>();
-        for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
+        for (JIPipeDataSlot slot : getDataInputSlots()) {
             ImagePlus img = ((ImagePlusData) dataBatch.getInputData(slot, targetType, progressInfo)).getImage();
             inputImages.add(img);
         }

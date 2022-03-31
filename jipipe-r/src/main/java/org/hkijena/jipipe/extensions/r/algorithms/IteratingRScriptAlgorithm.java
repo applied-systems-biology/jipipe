@@ -134,7 +134,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
         Map<String, Path> inputSlotPaths = new HashMap<>();
         List<JIPipeInputDataSlot> dummySlots = new ArrayList<>();
-        for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
+        for (JIPipeDataSlot slot : getDataInputSlots()) {
             Path tempPath = workDirectory.resolve("inputs").resolve(slot.getName());
             try {
                 Files.createDirectories(tempPath);

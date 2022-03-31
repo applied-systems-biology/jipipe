@@ -123,7 +123,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
             }
         } else {
             // Generate data batches and show the user interface
-            List<JIPipeMergingDataBatch> dataBatchList = generateDataBatchesDryRun(getEffectiveInputSlots(), progressInfo);
+            List<JIPipeMergingDataBatch> dataBatchList = generateDataBatchesDryRun(getDataInputSlots(), progressInfo);
 
             if (dataBatchList.isEmpty()) {
                 progressInfo.log("No data batches. Skipping.");
@@ -295,7 +295,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
     }
 
     @Override
-    public List<JIPipeInputDataSlot> getEffectiveInputSlots() {
+    public List<JIPipeInputDataSlot> getDataInputSlots() {
         return getInputSlots().stream().filter(slot -> !slot.getName().equals("Forms")).collect(Collectors.toList());
     }
 

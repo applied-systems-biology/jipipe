@@ -166,7 +166,7 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         Path workDirectory = getNewScratch();
 
         // Install input slots
-        Map<String, Path> inputSlotPaths = PythonUtils.installInputSlots(code, dataBatch, this, getEffectiveInputSlots(), workDirectory, progressInfo);
+        Map<String, Path> inputSlotPaths = PythonUtils.installInputSlots(code, dataBatch, this, getDataInputSlots(), workDirectory, progressInfo);
 
         // Install output slots
         Map<String, Path> outputSlotPaths = PythonUtils.installOutputSlots(code, getOutputSlots(), workDirectory, progressInfo);

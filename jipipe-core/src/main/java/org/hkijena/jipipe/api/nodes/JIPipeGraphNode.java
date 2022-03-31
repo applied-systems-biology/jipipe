@@ -45,6 +45,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * A node is a set of input and output data slots, and a run() function
@@ -381,11 +382,11 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Method that can be overwritten by child classes.
-     * Should return slots that are actually used as input.
+     * Should return slots that are actually used as data input.
      *
      * @return Input slots
      */
-    public List<JIPipeInputDataSlot> getEffectiveInputSlots() {
+    public List<JIPipeInputDataSlot> getDataInputSlots() {
         return getInputSlots();
     }
 
@@ -651,6 +652,24 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
             }
         }
         return result;
+    }
+
+    /**
+     * Gets all input slots that have the specified role
+     * @param role the role
+     * @return the list of input slots with the role. order is according to getInputSlots()
+     */
+    public List<JIPipeInputDataSlot> getInputSlotsWithRole(JIPipeDataSlotRole role) {
+        return inputSlots.stream().filter(slot -> slot.getInfo().getRole() == role).collect(Collectors.toList());
+    }
+
+    /**
+     * Gets all input slots that have the specified role
+     * @param role the role
+     * @return the list of input slots with the role. order is according to getOutputSlots()
+     */
+    public List<JIPipeOutputDataSlot> getOutputSlotsWithRole(JIPipeDataSlotRole role) {
+        return outputSlots.stream().filter(slot -> slot.getInfo().getRole() == role).collect(Collectors.toList());
     }
 
     /**

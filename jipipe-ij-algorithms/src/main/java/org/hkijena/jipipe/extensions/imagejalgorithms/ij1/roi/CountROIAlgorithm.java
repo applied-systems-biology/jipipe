@@ -65,7 +65,7 @@ public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
 
         // We do a custom merge into one final table
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-        for (JIPipeDataSlot inputSlot : getEffectiveInputSlots()) {
+        for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
             for (int row = 0; row < inputSlot.getRowCount(); row++) {
                 annotations.addAll(inputSlot.getTextAnnotations(row));
             }
@@ -78,7 +78,7 @@ public class CountROIAlgorithm extends JIPipeMergingAlgorithm {
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         // write into result
         int row = currentResult.addRow();
-        for (JIPipeDataSlot inputSlot : getEffectiveInputSlots()) {
+        for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
             List<ROIListData> rois = dataBatch.getInputData(inputSlot, ROIListData.class, progressInfo);
             long count = rois.stream().collect(Collectors.summarizingInt(ROIListData::size)).getSum();
             int col = currentResult.getOrCreateColumnIndex(inputSlot.getName(), false);

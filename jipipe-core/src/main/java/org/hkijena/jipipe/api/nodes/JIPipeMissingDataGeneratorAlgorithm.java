@@ -246,7 +246,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
      * @param progressInfo the progress info from the run
      */
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        for (JIPipeDataSlot inputSlot : getEffectiveInputSlots()) {
+        for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
             JIPipeDataSlot outputSlot = getCorrespondingOutputSlot(inputSlot);
             if (outputSlot == null)
                 continue;

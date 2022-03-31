@@ -86,7 +86,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public List<JIPipeInputDataSlot> getEffectiveInputSlots() {
+    public List<JIPipeInputDataSlot> getDataInputSlots() {
         return getNonParameterInputSlots();
     }
 

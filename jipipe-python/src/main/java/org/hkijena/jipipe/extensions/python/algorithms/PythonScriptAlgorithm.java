@@ -162,7 +162,7 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         Path workDirectory = getNewScratch();
 
         // Install input slots
-        Map<String, Path> inputSlotPaths = PythonUtils.installInputSlots(code, getEffectiveInputSlots(), workDirectory, progressInfo);
+        Map<String, Path> inputSlotPaths = PythonUtils.installInputSlots(code, getDataInputSlots(), workDirectory, progressInfo);
 
         // Install output slots
         Map<String, Path> outputSlotPaths = PythonUtils.installOutputSlots(code, getOutputSlots(), workDirectory, progressInfo);

@@ -72,7 +72,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
             outputDataSlot.addData(dataSlot, progressInfo);
         } else if (!dataSlot.isEmpty()) {
             // Generate data batches and show the user interface
-            List<JIPipeMergingDataBatch> dataBatchList = generateDataBatchesDryRun(getEffectiveInputSlots(), progressInfo);
+            List<JIPipeMergingDataBatch> dataBatchList = generateDataBatchesDryRun(getDataInputSlots(), progressInfo);
 
             if (dataBatchList.isEmpty()) {
                 progressInfo.log("No data batches selected (according to limit). Skipping.");
@@ -212,7 +212,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
     }
 
     @Override
-    public List<JIPipeInputDataSlot> getEffectiveInputSlots() {
+    public List<JIPipeInputDataSlot> getDataInputSlots() {
         return Collections.singletonList(getInputSlot("Data"));
     }
 

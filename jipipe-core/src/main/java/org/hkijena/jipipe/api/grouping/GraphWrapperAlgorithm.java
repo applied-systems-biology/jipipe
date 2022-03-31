@@ -153,11 +153,11 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     }
 
     private void runPerBatch(JIPipeProgressInfo progressInfo) {
-        if (getEffectiveInputSlots().isEmpty()) {
+        if (getDataInputSlots().isEmpty()) {
             runWithDataPassThrough(progressInfo);
             return;
         }
-        List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesDryRun(getEffectiveInputSlots(), progressInfo);
+        List<JIPipeMergingDataBatch> dataBatches = generateDataBatchesDryRun(getDataInputSlots(), progressInfo);
         for (int i = 0; i < dataBatches.size(); i++) {
             JIPipeProgressInfo batchProgress = progressInfo.resolveAndLog("Data batch", i, dataBatches.size());
             JIPipeMergingDataBatch dataBatch = dataBatches.get(i);
@@ -289,7 +289,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         if (iterationMode == IterationMode.PassThrough) {
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
-            for (JIPipeDataSlot inputSlot : getEffectiveInputSlots()) {
+            for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
                 for (int row = 0; row < inputSlot.getRowCount(); row++) {
                     dataBatch.addInputData(inputSlot, row);
                 }

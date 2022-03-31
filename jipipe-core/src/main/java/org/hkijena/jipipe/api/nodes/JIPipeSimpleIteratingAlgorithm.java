@@ -262,7 +262,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-        if (getEffectiveInputSlots().size() > 1) {
+        if (getDataInputSlots().size() > 1) {
             report.resolve("Internals").reportIsInvalid(
                     "Error in source code detected!",
                     "The developer of this algorithm chose the wrong node type. The one that was selected only supports at most one input.",

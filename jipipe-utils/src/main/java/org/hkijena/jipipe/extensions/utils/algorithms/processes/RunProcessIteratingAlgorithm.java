@@ -56,7 +56,7 @@ public class RunProcessIteratingAlgorithm extends JIPipeIteratingAlgorithm {
         progressInfo.log("Outputs will be extracted from: " + outputPath);
 
         // Save all inputs
-        for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
+        for (JIPipeDataSlot slot : getDataInputSlots()) {
             JIPipeDataTable dummy = slot.slice(Collections.singletonList(dataBatch.getInputRow(slot)));
             dummy.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, inputPath.resolve(slot.getName())), progressInfo.resolve("Save inputs"));
         }

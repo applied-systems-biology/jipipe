@@ -48,7 +48,7 @@ public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Map<String, ImagePlus> images = new HashMap<>();
-        for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
+        for (JIPipeDataSlot slot : getDataInputSlots()) {
             images.put(slot.getName(), dataBatch.getInputData(slot, ImagePlusGreyscale32FData.class, progressInfo).getImage());
         }
 
