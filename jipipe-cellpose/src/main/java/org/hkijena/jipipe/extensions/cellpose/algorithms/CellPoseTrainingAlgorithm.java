@@ -55,6 +55,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     private int numEpochs = 500;
     private double learningRate = 0.2;
     private int batchSize = 8;
+    private int minTrainMasks = 1;
     private boolean useResidualConnections = true;
     private boolean useStyleVector = true;
     private boolean concatenateDownsampledLayers = false;
@@ -88,6 +89,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.trainSizeModel = other.trainSizeModel;
         this.labelDataAnnotation = new DataAnnotationQueryExpression(other.labelDataAnnotation);
         this.generateConnectedComponents = other.generateConnectedComponents;
+        this.minTrainMasks = other.minTrainMasks;
         updateSlots();
     }
 
@@ -126,6 +128,18 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     @JIPipeParameter("generate-connected-components")
     public void setGenerateConnectedComponents(boolean generateConnectedComponents) {
         this.generateConnectedComponents = generateConnectedComponents;
+    }
+
+    @JIPipeDocumentation(name = "Minimum number of labels per image", description = "Minimum number of masks an image must have to use in training set. " +
+            "This value is by default 5 in the original Cellpose tool.")
+    @JIPipeParameter("min-train-masks")
+    public int getMinTrainMasks() {
+        return minTrainMasks;
+    }
+
+    @JIPipeParameter("min-train-masks")
+    public void setMinTrainMasks(int minTrainMasks) {
+        this.minTrainMasks = minTrainMasks;
     }
 
     @JIPipeDocumentation(name = "Train size model", description = "If enabled, also train a size model")
@@ -377,6 +391,8 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         arguments.add("-m");
         arguments.add("cellpose");
 
+        arguments.add("--verbose");
+
         arguments.add("--train");
 
         arguments.add("--dir");
@@ -391,7 +407,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         arguments.add("raw");
 
         arguments.add("--mask_filter");
-        arguments.add("mask");
+        arguments.add("masks");
 
         arguments.add("--chan");
         arguments.add("0");
@@ -441,6 +457,9 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         arguments.add("--concatenation");
         arguments.add(concatenateDownsampledLayers ? "1" : "0");
+
+        arguments.add("--min_train_masks");
+        arguments.add(minTrainMasks + "");
 
         // Run the module
         PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
@@ -519,7 +538,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
                 ImagePlus maskSliceImage = new ImagePlus("slice", maskSlice);
                 ImagePlus imageSliceImage = new ImagePlus("slice", ip);
                 Path imageFile = dir.resolve("i" + imageCounter + "_raw.tif");
-                Path maskFile = dir.resolve("i" + imageCounter + "_mask.tif");
+                Path maskFile = dir.resolve("i" + imageCounter + "_masks.tif");
                 imageCounter.getAndIncrement();
                 IJ.saveAs(maskSliceImage, "TIFF", imageFile.toString());
                 IJ.saveAs(imageSliceImage, "TIFF", maskFile.toString());
@@ -527,7 +546,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         } else {
             // Save as-is
             Path imageFile = dir.resolve("i" + imageCounter + "_raw.tif");
-            Path maskFile = dir.resolve("i" + imageCounter + "_mask.tif");
+            Path maskFile = dir.resolve("i" + imageCounter + "_masks.tif");
             imageCounter.getAndIncrement();
             IJ.saveAs(image, "TIFF", imageFile.toString());
             IJ.saveAs(mask, "TIFF", maskFile.toString());
