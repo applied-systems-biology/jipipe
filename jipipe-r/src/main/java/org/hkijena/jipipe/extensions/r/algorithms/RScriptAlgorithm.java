@@ -244,7 +244,7 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
     private enum Examples {
         LoadIris("Load IRIS data set", "library(datasets)\n\nJIPipe.AddOutputDataFrame(slot=\"Table\", data=iris)",
                 new JIPipeInputSlot[0], new JIPipeOutputSlot[]{
-                new DefaultJIPipeOutputSlot(ResultsTableData.class, "Table", "", null, false)
+                new DefaultJIPipeOutputSlot(ResultsTableData.class, "Table", "", null, false, JIPipeDataSlotRole.Data)
         }),
         PlotIris("Plot IRIS data set", "library(datasets)\n" +
                 "\n" +
@@ -257,12 +257,12 @@ public class RScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
                 "\n" +
                 "# JIPipe will automatically load the data",
                 new JIPipeInputSlot[0], new JIPipeOutputSlot[]{
-                new DefaultJIPipeOutputSlot(ImagePlusColorRGBData.class, "Plot", "", null, false)
+                new DefaultJIPipeOutputSlot(ImagePlusColorRGBData.class, "Plot", "", null, false, JIPipeDataSlotRole.Data)
         }),
         SummarizeTable("Summarize table", "input <- JIPipe.GetInputAsDataFrame(\"Input\")\n" +
                 "JIPipe.AddOutputDataFrame(slot=\"Output\", data=summary(input))",
-                new JIPipeInputSlot[]{new DefaultJIPipeInputSlot(ResultsTableData.class, "Input", "", false, false)},
-                new JIPipeOutputSlot[]{new DefaultJIPipeOutputSlot(ResultsTableData.class, "Output", "", null, false)});
+                new JIPipeInputSlot[]{new DefaultJIPipeInputSlot(ResultsTableData.class, "Input", "", false, false, JIPipeDataSlotRole.Data)},
+                new JIPipeOutputSlot[]{new DefaultJIPipeOutputSlot(ResultsTableData.class, "Output", "", null, false, JIPipeDataSlotRole.Data)});
 
         private final String name;
         private final String code;

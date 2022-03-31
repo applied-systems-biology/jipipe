@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 
 import java.lang.annotation.Annotation;
 
@@ -27,6 +28,7 @@ public class DefaultJIPipeOutputSlot implements JIPipeOutputSlot {
     private final String description;
     private final String inheritedSlot;
     private final boolean autoCreate;
+    private final JIPipeDataSlotRole role;
 
     /**
      * @param value         the data class
@@ -34,13 +36,20 @@ public class DefaultJIPipeOutputSlot implements JIPipeOutputSlot {
      * @param description   the description
      * @param inheritedSlot An optional inherited slot.
      * @param autoCreate    Automatically create the slot if supported by the algorithm
+     * @param role the role
      */
-    public DefaultJIPipeOutputSlot(Class<? extends JIPipeData> value, String slotName, String description, String inheritedSlot, boolean autoCreate) {
+    public DefaultJIPipeOutputSlot(Class<? extends JIPipeData> value, String slotName, String description, String inheritedSlot, boolean autoCreate, JIPipeDataSlotRole role) {
         this.value = value;
         this.slotName = slotName;
         this.description = description;
         this.inheritedSlot = inheritedSlot;
         this.autoCreate = autoCreate;
+        this.role = role;
+    }
+
+    @Override
+    public JIPipeDataSlotRole role() {
+        return role;
     }
 
     @Override

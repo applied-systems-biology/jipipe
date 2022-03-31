@@ -222,6 +222,28 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
     }
 
     /**
+     * Adds an input slot from an annotation
+     * @param slot the slot annotation
+     * @param user if the change was triggered by a user. If false, checks for slot modification, counts, etc. do not apply.
+     * @return the slot info
+     */
+    public JIPipeDataSlotInfo addSlot(JIPipeInputSlot slot, boolean user) {
+        JIPipeDataSlotInfo info = new JIPipeDataSlotInfo(slot);
+        return addSlot(info, user);
+    }
+
+    /**
+     * Adds an input slot from an annotation
+     * @param slot the slot annotation
+     * @param user if the change was triggered by a user. If false, checks for slot modification, counts, etc. do not apply.
+     * @return the slot info
+     */
+    public JIPipeDataSlotInfo addSlot(JIPipeOutputSlot slot, boolean user) {
+        JIPipeDataSlotInfo info = new JIPipeDataSlotInfo(slot);
+        return addSlot(info, user);
+    }
+
+    /**
      * Adds a new input slot
      *
      * @param name        the name
@@ -1018,12 +1040,12 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         public Builder addFromAnnotations(Class<? extends JIPipeGraphNode> klass) {
             for (JIPipeInputSlot slot : klass.getAnnotationsByType(JIPipeInputSlot.class)) {
                 if (slot.autoCreate() && !object.inputSlots.containsKey(slot.slotName())) {
-                    addInputSlot(slot.slotName(), slot.description(), slot.value());
+                    object.addSlot(slot, false);
                 }
             }
             for (JIPipeOutputSlot slot : klass.getAnnotationsByType(JIPipeOutputSlot.class)) {
                 if (slot.autoCreate() && !object.outputSlots.containsKey(slot.slotName())) {
-                    addOutputSlot(slot.slotName(), slot.description(), slot.value(), slot.inheritedSlot());
+                    object.addSlot(slot, false);
                 }
             }
             return this;

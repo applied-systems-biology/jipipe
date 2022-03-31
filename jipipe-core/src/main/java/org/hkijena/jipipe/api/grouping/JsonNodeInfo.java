@@ -23,10 +23,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
@@ -270,7 +267,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
             if (entry.getValue().getSlotType() == JIPipeSlotType.Input) {
                 inputSlots.add(new DefaultJIPipeInputSlot(entry.getValue().getDataClass(),
                         entry.getKey(),
-                        "", true, false));
+                        "", true, false, JIPipeDataSlotRole.Data));
                 usedSlotNames.add(entry.getKey());
             }
         }
@@ -280,7 +277,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
                     outputSlots.add(new DefaultJIPipeOutputSlot(entry.getValue().getDataClass(),
                             entry.getKey(),
                             "", null,
-                            true));
+                            true, JIPipeDataSlotRole.Data));
                 }
             }
         }

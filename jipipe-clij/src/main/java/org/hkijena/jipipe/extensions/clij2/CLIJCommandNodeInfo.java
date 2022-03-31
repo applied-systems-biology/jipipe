@@ -10,6 +10,7 @@ import net.haesleinhuepf.clij2.utilities.IsCategorized;
 import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
@@ -106,7 +107,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
                         if (!(parameterName.contains("destination") || byRef)) {
                             // Image input
                             String slotName = createSlotName(parameterName);
-                            inputSlots.add(new DefaultJIPipeInputSlot(CLIJImageData.class, slotName, "", true, false));
+                            inputSlots.add(new DefaultJIPipeInputSlot(CLIJImageData.class, slotName, "", true, false, JIPipeDataSlotRole.Data));
                             inputSlotToArgIndexMap.put(slotName, i);
                             if (byRef) {
                                 ioInputSlots.add(slotName);
@@ -114,7 +115,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
                         } else {
                             // Image output
                             String slotName = createSlotName(parameterName);
-                            outputSlots.add(new DefaultJIPipeOutputSlot(CLIJImageData.class, slotName, "", null, true));
+                            outputSlots.add(new DefaultJIPipeOutputSlot(CLIJImageData.class, slotName, "", null, true, JIPipeDataSlotRole.Data));
                             outputSlotToArgIndexMap.put(slotName, i);
                         }
                         break;
@@ -174,7 +175,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
             }
         }
         if(!outputTableColumnInfos.isEmpty()) {
-            outputSlots.add(new DefaultJIPipeOutputSlot(ResultsTableData.class, "Results table", "", null, true));
+            outputSlots.add(new DefaultJIPipeOutputSlot(ResultsTableData.class, "Results table", "", null, true, JIPipeDataSlotRole.Data));
         }
     }
 

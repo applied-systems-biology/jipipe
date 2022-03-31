@@ -24,9 +24,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
@@ -43,6 +41,7 @@ import java.util.*;
 @JsonDeserialize(using = JIPipeDataSlotInfo.Deserializer.class)
 public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
+    private JIPipeDataSlotRole role = JIPipeDataSlotRole.Data;
     private Class<? extends JIPipeData> dataClass;
     private JIPipeSlotType slotType;
     private String name;
@@ -96,7 +95,8 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      * @param slot Imported annotation
      */
     public JIPipeDataSlotInfo(JIPipeInputSlot slot) {
-        this(slot.value(), JIPipeSlotType.Input, slot.slotName(), null, null);
+        this(slot.value(), JIPipeSlotType.Input, slot.slotName(), slot.description(), null);
+        this.role = slot.role();
         this.optional = slot.optional();
     }
 
@@ -106,6 +106,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      */
     public JIPipeDataSlotInfo(JIPipeOutputSlot slot) {
         this(slot.value(), JIPipeSlotType.Output, slot.slotName(), null, slot.inheritedSlot());
+        this.role = slot.role();
     }
 
     /**
@@ -125,6 +126,30 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         this.saveOutputs = other.saveOutputs;
         this.optional = other.optional;
         this.userModifiable = other.userModifiable;
+        this.role = other.role;
+    }
+
+    /**
+     * Converts this info into the annotation form.
+     * Throws an {@link UnsupportedOperationException} if the info describes an output.
+     * @return the annotation
+     */
+    public JIPipeInputSlot toInputSlotAnnotation() {
+        return new DefaultJIPipeInputSlot(getDataClass(), getName(), getDescription(), false, isOptional(), getRole());
+    }
+
+
+    /**
+     * Converts this info into the annotation form.
+     * Throws an {@link UnsupportedOperationException} if the info describes an output.
+     * @return the annotation
+     */
+    public JIPipeOutputSlot toOutputSlotAnnotation() {
+        return new DefaultJIPipeOutputSlot(getDataClass(), getName(), getDescription(), getInheritedSlot(), false, getRole());
+    }
+
+    public void setRole(JIPipeDataSlotRole role) {
+        this.role = role;
     }
 
     public JIPipeDataSlot createInstance(JIPipeGraphNode node) {
@@ -393,6 +418,10 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public JIPipeDataSlotRole getRole() {
+        return role;
     }
 
     /**

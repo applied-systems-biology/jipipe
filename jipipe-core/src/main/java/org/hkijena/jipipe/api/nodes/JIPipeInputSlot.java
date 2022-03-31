@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 
 import java.lang.annotation.*;
 
@@ -59,4 +60,11 @@ public @interface JIPipeInputSlot {
      * @return if the input is optional
      */
     boolean optional() default false;
+
+    /**
+     * Assigns a role to the slot for internal usage within the node's code.
+     * For example, this allows to distinguish data and parametric inputs from each other
+     * @return the role. Leave at Data if there is no special role.
+     */
+    JIPipeDataSlotRole role() default JIPipeDataSlotRole.Data;
 }

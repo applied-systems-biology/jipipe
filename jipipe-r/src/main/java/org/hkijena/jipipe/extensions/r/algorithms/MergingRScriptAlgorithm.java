@@ -264,7 +264,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     private enum Examples {
         LoadIris("Load IRIS data set", "library(datasets)\n\nJIPipe.AddOutputDataFrame(slot=\"Table\", data=iris)",
                 new JIPipeInputSlot[0], new JIPipeOutputSlot[]{
-                new DefaultJIPipeOutputSlot(ResultsTableData.class, "Table", "", null, false)
+                new DefaultJIPipeOutputSlot(ResultsTableData.class, "Table", "", null, false, JIPipeDataSlotRole.Data)
         }),
         PlotIris("Plot IRIS data set", "library(datasets)\n" +
                 "\n" +
@@ -277,7 +277,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
                 "\n" +
                 "# JIPipe will automatically load the data",
                 new JIPipeInputSlot[0], new JIPipeOutputSlot[]{
-                new DefaultJIPipeOutputSlot(ImagePlusColorRGBData.class, "Plot", "", null, false)
+                new DefaultJIPipeOutputSlot(ImagePlusColorRGBData.class, "Plot", "", null, false, JIPipeDataSlotRole.Data)
         });
 
         private final String name;

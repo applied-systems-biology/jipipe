@@ -3,7 +3,7 @@ package org.hkijena.jipipe.api.data;
 /**
  * Assigns a role to the data table attached to the data slot.
  */
-public enum JIPipeInputDataSlotRole {
+public enum JIPipeDataSlotRole {
     /**
      * The data table contains data that need to be iterated/merged/processed.
      * This is the default option
