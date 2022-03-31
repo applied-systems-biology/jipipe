@@ -21,6 +21,7 @@ import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ImageStatistics;
 import ij.util.Tools;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
@@ -272,11 +273,27 @@ public class ImageViewerPanel extends JPanel {
         animationStackToggle.setSelected(false);
     }
 
-    private void addSliderToForm(JScrollBar slider, JLabel label, JToggleButton animation) {
+    private void addSliderToForm(JScrollBar slider, JLabel label, JToggleButton animation, String name) {
         UIUtils.makeFlat25x25(animation);
-        JPanel descriptionPanel = new JPanel(new BorderLayout());
-        descriptionPanel.add(animation, BorderLayout.WEST);
-        descriptionPanel.add(label, BorderLayout.CENTER);
+        JPanel descriptionPanel = new JPanel();
+        descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.X_AXIS));
+
+        JButton editButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
+        UIUtils.makeFlat25x25(editButton);
+        editButton.addActionListener(e-> {
+            String input = JOptionPane.showInputDialog(this,
+                    "Please input a new value for " + name + " (" + slider.getMinimum() + "-" + slider.getMaximum() + ")",
+                    slider.getValue());
+            if(!StringUtils.isNullOrEmpty(input)) {
+                Integer index = NumberUtils.createInteger(input);
+                index = Math.min(slider.getMaximum(), Math.max(slider.getMinimum(), index));
+                slider.setValue(index);
+            }
+        });
+        descriptionPanel.add(editButton);
+        descriptionPanel.add(animation);
+        descriptionPanel.add(label);
+
         bottomPanel.addToForm(slider, descriptionPanel, null);
     }
 
@@ -597,11 +614,11 @@ public class ImageViewerPanel extends JPanel {
                 bottomPanel.clear();
 
                 if (image.getNChannels() > 1)
-                    addSliderToForm(channelSlider, channelSliderLabel, animationChannelToggle);
+                    addSliderToForm(channelSlider, channelSliderLabel, animationChannelToggle, "Channel");
                 if (image.getNSlices() > 1)
-                    addSliderToForm(stackSlider, stackSliderLabel, animationStackToggle);
+                    addSliderToForm(stackSlider, stackSliderLabel, animationStackToggle, "Slice");
                 if (image.getNFrames() > 1)
-                    addSliderToForm(frameSlider, frameSliderLabel, animationFrameToggle);
+                    addSliderToForm(frameSlider, frameSliderLabel, animationFrameToggle, "Frame");
 
                 stackSlider.setMinimum(1);
                 stackSlider.setMaximum(image.getNSlices() + 1);
