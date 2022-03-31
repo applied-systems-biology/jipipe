@@ -69,7 +69,7 @@ public class FormsDialog extends JFrame {
     }
 
     private JIPipeDataSlot createFormsInstanceFor(int index, JIPipeProgressInfo progressInfo) {
-        JIPipeDataSlot copy = new JIPipeDataSlot(originalForms.getInfo(), originalForms.getNode());
+        JIPipeDataSlot copy = originalForms.getInfo().createInstance(originalForms.getNode());
         for (int row = 0; row < originalForms.getRowCount(); row++) {
             FormData formCopy = (FormData) originalForms.getData(row, FormData.class, progressInfo).duplicate(progressInfo);
             formCopy.loadData(dataBatchList.get(index));
@@ -498,7 +498,7 @@ public class FormsDialog extends JFrame {
     private void resetDataBatch(int i) {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         JIPipeDataSlot tmpCopy = createFormsInstanceFor(i, progressInfo);
-        JIPipeDataSlot copy = new JIPipeDataSlot(originalForms.getInfo(), originalForms.getNode());
+        JIPipeDataSlot copy = originalForms.getInfo().createInstance(originalForms.getNode());
         for (int row = 0; row < tmpCopy.getRowCount(); row++) {
             FormData src = tmpCopy.getData(row, FormData.class, progressInfo);
             FormData target = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);
@@ -549,7 +549,7 @@ public class FormsDialog extends JFrame {
                 continue;
 
             // Just copy the form
-            JIPipeDataSlot copy = new JIPipeDataSlot(forms.getInfo(), forms.getNode());
+            JIPipeDataSlot copy = forms.getInfo().createInstance(forms.getNode());
             for (int row = 0; row < forms.getRowCount(); row++) {
                 FormData srcData = forms.getData(row, FormData.class, progressInfo);
                 FormData targetData = dataBatchForms.get(i).getData(row, FormData.class, progressInfo);

@@ -153,7 +153,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     private void exportImages(OMEImageData image, List<JIPipeTextAnnotation> annotations, Path targetPath, JIPipeProgressInfo progressInfo) {
-        JIPipeDataSlot dummy = new JIPipeDataSlot(new JIPipeDataSlotInfo(OMEImageData.class, JIPipeSlotType.Input), this);
+        JIPipeDataSlot dummy = new JIPipeDataSlotInfo(OMEImageData.class, JIPipeSlotType.Input).createInstance(this);
         dummy.addData(image, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
 
         // Export to BioFormats
