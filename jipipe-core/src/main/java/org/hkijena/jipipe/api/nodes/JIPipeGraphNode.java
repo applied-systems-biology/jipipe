@@ -247,7 +247,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
             }
         }
         if (existing == null) {
-            existing = new JIPipeDataSlot(entry.getValue(), this);
+            existing = entry.getValue().createInstance(this);
             slotMap.put(entry.getKey(), existing);
             slots.add(existing);
             changed = true;

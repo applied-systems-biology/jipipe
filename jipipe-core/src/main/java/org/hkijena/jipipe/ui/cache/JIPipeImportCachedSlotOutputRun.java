@@ -60,7 +60,7 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
                 slotProgressInfo.log("Folder " + slotFolder + " does not contain data-table.json. Skipping.");
                 continue;
             }
-            JIPipeDataSlot tempSlot = new JIPipeDataSlot(outputSlot.getInfo(), graphNode);
+            JIPipeDataSlot tempSlot = outputSlot.getInfo().createInstance(graphNode);
             importIntoTempSlot(tempSlot, slotFolder, slotProgressInfo);
 
             loadedSlotMap.put(outputSlot.getName(), tempSlot);

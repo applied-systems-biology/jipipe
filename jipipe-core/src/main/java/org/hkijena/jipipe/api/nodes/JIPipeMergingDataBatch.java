@@ -636,7 +636,7 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
      * @return a new dummy slot
      */
     public JIPipeDataSlot toDummySlot(JIPipeDataSlotInfo info, JIPipeGraphNode node, JIPipeDataSlot sourceSlot) {
-        JIPipeDataSlot dummy = new JIPipeDataSlot(info, node);
+        JIPipeDataSlot dummy = info.createInstance(node);
         ArrayList<JIPipeTextAnnotation> annotations = new ArrayList<>(getMergedTextAnnotations().values());
         for (int row : getInputRows(sourceSlot.getName())) {
             dummy.addData(sourceSlot.getVirtualData(row), annotations, JIPipeTextAnnotationMergeMode.Merge);

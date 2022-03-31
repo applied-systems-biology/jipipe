@@ -27,7 +27,7 @@ import java.nio.file.Path;
  * A data slot holds an {@link JIPipeData} instance.
  * Slots are part of an {@link JIPipeGraphNode}
  */
-public class JIPipeDataSlot extends JIPipeDataTable {
+public abstract class JIPipeDataSlot extends JIPipeDataTable {
 
     /**
      * To be used with getLocation().
@@ -86,8 +86,8 @@ public class JIPipeDataSlot extends JIPipeDataTable {
      * @param data the data
      * @return the slot
      */
-    public static JIPipeDataSlot createSingletonSlot(JIPipeData data, JIPipeGraphNode node) {
-        JIPipeDataSlot slot = new JIPipeDataSlot(new JIPipeDataSlotInfo(data.getClass(),
+    public static JIPipeInputDataSlot createSingletonSlot(JIPipeData data, JIPipeGraphNode node) {
+        JIPipeInputDataSlot slot = new JIPipeInputDataSlot(new JIPipeDataSlotInfo(data.getClass(),
                 JIPipeSlotType.Input,
                 "Data",
                 "", null), node);

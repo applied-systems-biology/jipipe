@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
 import java.util.*;
@@ -53,6 +54,9 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
     private boolean saveOutputs = true;
     private boolean optional = false;
     private boolean userModifiable = true;
+
+    protected JIPipeDataSlotInfo() {
+    }
 
     /**
      * @param dataClass     slot data class
@@ -121,6 +125,18 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         this.saveOutputs = other.saveOutputs;
         this.optional = other.optional;
         this.userModifiable = other.userModifiable;
+    }
+
+    public JIPipeDataSlot createInstance(JIPipeGraphNode node) {
+        if(isInput()) {
+            return new JIPipeInputDataSlot(this, node);
+        }
+        else if(isOutput()) {
+            return new JIPipeOutputDataSlot(this, node);
+        }
+        else {
+            throw new UnsupportedOperationException("Invalid slot info state!");
+        }
     }
 
     /**
@@ -453,6 +469,98 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
                 definition.optional = isOptionalNode.asBoolean();
             }
             return definition;
+        }
+
+        public static Builder builder() {
+            return new Builder();
+        }
+
+        public static class Builder {
+            private JIPipeDataSlotInfo result = new JIPipeDataSlotInfo();
+
+            public Builder makeInput() {
+                result.slotType = JIPipeSlotType.Input;
+                return this;
+            }
+
+            public Builder makeOutput() {
+                result.slotType = JIPipeSlotType.Output;
+                return this;
+            }
+
+            public Builder setName(String name) {
+                result.name = name;
+                return this;
+            }
+
+            public Builder setDescription(String description) {
+                result.description = description;
+                return this;
+            }
+
+            public Builder setInheritedSlot(String slotName) {
+                result.inheritedSlot = slotName;
+                return this;
+            }
+
+            public Builder resetInheritedSlot() {
+                result.inheritedSlot = null;
+                return this;
+            }
+
+            public Builder setInheritanceConversions(Map<JIPipeDataInfo, JIPipeDataInfo> conversions) {
+                result.inheritanceConversions = conversions;
+                return this;
+            }
+
+            public Builder addInheritanceConversion(JIPipeDataInfo from, JIPipeDataInfo to) {
+                result.inheritanceConversions.put(from, to);
+                return this;
+            }
+
+            public Builder addInheritanceConversion(Class<? extends JIPipeData> from, Class<? extends JIPipeData> to) {
+               return addInheritanceConversion(JIPipeDataInfo.getInstance(from), JIPipeDataInfo.getInstance(to));
+            }
+
+            public Builder setCustomName(String name) {
+                result.customName = name;
+                return this;
+            }
+
+            public Builder resetCustomName() {
+                return setCustomName(null);
+            }
+
+            public Builder setUserModifiable(boolean userModifiable) {
+                result.userModifiable = userModifiable;
+                return this;
+            }
+
+            public Builder setFrom(JIPipeDataSlotInfo info) {
+                result = new JIPipeDataSlotInfo(info);
+                return this;
+            }
+
+            public boolean isValid() {
+                if(StringUtils.isNullOrEmpty(result.getName())) {
+                    return false;
+                }
+                if(!StringUtils.isFilesystemCompatible(result.getName()) && result.isOutput()) {
+                    return false;
+                }
+                return true;
+            }
+
+            public JIPipeDataSlotInfo build() {
+                if(StringUtils.isNullOrEmpty(result.getName())) {
+                    throw new IllegalArgumentException("The slot name is empty!");
+                }
+                if(!StringUtils.isFilesystemCompatible(result.getName()) && result.isOutput()) {
+                    throw new IllegalArgumentException("The output slot name '" + result.getName() + "' is not compatible to file systems!");
+                }
+                result.setVirtualByDataType();
+                return result;
+            }
         }
     }
 }
