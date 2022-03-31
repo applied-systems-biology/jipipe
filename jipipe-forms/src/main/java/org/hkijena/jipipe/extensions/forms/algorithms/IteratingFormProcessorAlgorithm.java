@@ -295,12 +295,12 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
     }
 
     @Override
-    public List<JIPipeDataSlot> getEffectiveInputSlots() {
+    public List<JIPipeInputDataSlot> getEffectiveInputSlots() {
         return getInputSlots().stream().filter(slot -> !slot.getName().equals("Forms")).collect(Collectors.toList());
     }
 
     @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setNode(this);
         builder.setSlots(slots);

@@ -13,6 +13,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -51,32 +52,6 @@ public class JIPipeMergingDataBatchBuilder {
 
     }
 
-    public static void main(String[] args) {
-        ImageJ imageJ = new ImageJ();
-        JIPipe jiPipe = JIPipe.createInstance(imageJ.context());
-        ExtensionSettings settings = new ExtensionSettings();
-        JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
-        jiPipe.initialize(settings, issues);
-        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-        JIPipeDataSlot slot1 = new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot1", "", null).createInstance(null);
-        slot1.addData(new StringData("A"), Arrays.asList(new JIPipeTextAnnotation("C1", "A"), new JIPipeTextAnnotation("C2", "X")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-        slot1.addData(new StringData("B"), Arrays.asList(new JIPipeTextAnnotation("C1", "B"), new JIPipeTextAnnotation("C2", "Y")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-        slot1.addData(new StringData("C"), Arrays.asList(new JIPipeTextAnnotation("C1", "C"), new JIPipeTextAnnotation("C3", "Z")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-
-        JIPipeDataSlot slot2 = new JIPipeDataSlotInfo(StringData.class, JIPipeSlotType.Input, "slot2", "", null).createInstance(null);
-        slot2.addData(new StringData("A"), Arrays.asList(new JIPipeTextAnnotation("C1", "A"), new JIPipeTextAnnotation("C2", "X")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-        slot2.addData(new StringData("B"), Arrays.asList(new JIPipeTextAnnotation("C1", "B"), new JIPipeTextAnnotation("C2", "Y")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-        slot2.addData(new StringData("C"), Arrays.asList(new JIPipeTextAnnotation("C1", "C"), new JIPipeTextAnnotation("C3", "Z")), JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-
-        JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
-        builder.setAnnotationMergeStrategy(JIPipeTextAnnotationMergeMode.Merge);
-        builder.setReferenceColumns(new HashSet<>(Arrays.asList("C1", "C2")));
-        builder.setSlots(Arrays.asList(slot1, slot2));
-        List<JIPipeMergingDataBatch> batches = builder.build(new JIPipeProgressInfo());
-
-        System.out.println(batches.size());
-    }
-
     /**
      * Builds a single data batch where each slot only can have one row
      *
@@ -105,7 +80,7 @@ public class JIPipeMergingDataBatchBuilder {
         return Collections.unmodifiableList(new ArrayList<>(slots.values()));
     }
 
-    public void setSlots(List<JIPipeDataSlot> slots) {
+    public void setSlots(List<JIPipeInputDataSlot> slots) {
         this.slots.clear();
         this.slotList.clear();
         this.slotList.addAll(slots);

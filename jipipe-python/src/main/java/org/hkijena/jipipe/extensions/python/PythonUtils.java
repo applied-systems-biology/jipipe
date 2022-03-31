@@ -7,10 +7,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
@@ -152,7 +149,7 @@ public class PythonUtils {
         }
     }
 
-    public static void outputSlotsToPython(StringBuilder code, List<JIPipeDataSlot> outputSlots, Map<String, Path> outputSlotPaths) {
+    public static void outputSlotsToPython(StringBuilder code, List<JIPipeOutputDataSlot> outputSlots, Map<String, Path> outputSlotPaths) {
         Map<String, JIPipeDataSlot> outputSlotMap = new HashMap<>();
         for (JIPipeDataSlot outputSlot : outputSlots) {
             outputSlotMap.put(outputSlot.getName(), outputSlot);
@@ -168,13 +165,13 @@ public class PythonUtils {
         }
     }
 
-    public static void addPostprocessorCode(StringBuilder code, List<JIPipeDataSlot> outputSlots) {
+    public static void addPostprocessorCode(StringBuilder code, List<JIPipeOutputDataSlot> outputSlots) {
         for (JIPipeDataSlot outputSlot : outputSlots) {
             code.append("jipipe_outputs[\"").append(MacroUtils.escapeString(outputSlot.getName())).append("\"].save()\n");
         }
     }
 
-    public static Map<String, Path> installInputSlots(StringBuilder code, JIPipeDataBatch dataBatch, JIPipeGraphNode node, List<JIPipeDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
+    public static Map<String, Path> installInputSlots(StringBuilder code, JIPipeDataBatch dataBatch, JIPipeGraphNode node, List<JIPipeInputDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
         Map<String, Path> inputSlotPaths = new HashMap<>();
         for (JIPipeDataSlot slot : effectiveInputSlots) {
             Path tempPath = workDirectory.resolve("inputs").resolve(slot.getName());
@@ -192,7 +189,7 @@ public class PythonUtils {
         return inputSlotPaths;
     }
 
-    public static Map<String, Path> installInputSlots(StringBuilder code, List<JIPipeDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
+    public static Map<String, Path> installInputSlots(StringBuilder code, List<JIPipeInputDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
         Map<String, Path> inputSlotPaths = new HashMap<>();
         for (JIPipeDataSlot slot : effectiveInputSlots) {
             Path tempPath = workDirectory.resolve("inputs").resolve(slot.getName());
@@ -209,7 +206,7 @@ public class PythonUtils {
         return inputSlotPaths;
     }
 
-    public static Map<String, Path> installInputSlots(StringBuilder code, JIPipeMergingDataBatch dataBatch, JIPipeGraphNode node, List<JIPipeDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
+    public static Map<String, Path> installInputSlots(StringBuilder code, JIPipeMergingDataBatch dataBatch, JIPipeGraphNode node, List<JIPipeInputDataSlot> effectiveInputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
         Map<String, Path> inputSlotPaths = new HashMap<>();
         for (JIPipeDataSlot slot : effectiveInputSlots) {
             Path tempPath = workDirectory.resolve("inputs").resolve(slot.getName());
@@ -238,7 +235,7 @@ public class PythonUtils {
         runPython(codeFilePath, environment, libraryPaths, progressInfo);
     }
 
-    public static void extractOutputs(JIPipeDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
+    public static void extractOutputs(JIPipeDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
             JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
@@ -251,7 +248,7 @@ public class PythonUtils {
         }
     }
 
-    public static void extractOutputs(JIPipeMergingDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
+    public static void extractOutputs(JIPipeMergingDataBatch dataBatch, Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeTextAnnotationMergeMode annotationMergeStrategy, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
             JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
@@ -264,7 +261,7 @@ public class PythonUtils {
         }
     }
 
-    public static void extractOutputs(Map<String, Path> outputSlotPaths, List<JIPipeDataSlot> outputSlots, JIPipeProgressInfo progressInfo) {
+    public static void extractOutputs(Map<String, Path> outputSlotPaths, List<JIPipeOutputDataSlot> outputSlots, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot outputSlot : outputSlots) {
             Path storagePath = outputSlotPaths.get(outputSlot.getName());
             JIPipeDataTableMetadata table = JIPipeDataTableMetadata.loadFromJson(outputSlotPaths.get(outputSlot.getName()).resolve("data-table.json"));
@@ -500,7 +497,7 @@ public class PythonUtils {
         }
     }
 
-    public static Map<String, Path> installOutputSlots(StringBuilder code, List<JIPipeDataSlot> outputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
+    public static Map<String, Path> installOutputSlots(StringBuilder code, List<JIPipeOutputDataSlot> outputSlots, Path workDirectory, JIPipeProgressInfo progressInfo) {
         Map<String, Path> outputSlotPaths = new HashMap<>();
         for (JIPipeDataSlot slot : outputSlots) {
             Path tempPath = workDirectory.resolve("outputs").resolve(slot.getName());

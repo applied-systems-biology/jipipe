@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 
 import java.util.List;
 
@@ -37,5 +37,5 @@ public interface JIPipeDataBatchAlgorithm {
      * @param progressInfo the progress
      * @return the batches
      */
-    List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots, JIPipeProgressInfo progressInfo);
+    List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo);
 }

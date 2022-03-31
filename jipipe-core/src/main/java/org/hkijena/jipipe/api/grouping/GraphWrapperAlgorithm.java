@@ -286,7 +286,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
     }
 
     @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         if (iterationMode == IterationMode.PassThrough) {
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             for (JIPipeDataSlot inputSlot : getEffectiveInputSlots()) {

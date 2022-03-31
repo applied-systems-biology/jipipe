@@ -73,7 +73,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
     }
 
     @Override
-    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    public List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         if (iterationMode == GraphWrapperAlgorithm.IterationMode.PassThrough) {
             JIPipeMergingDataBatch dataBatch = new JIPipeMergingDataBatch(this);
             for (JIPipeDataSlot inputSlot : getEffectiveInputSlots()) {

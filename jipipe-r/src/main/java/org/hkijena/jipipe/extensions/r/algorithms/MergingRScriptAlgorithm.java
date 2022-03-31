@@ -133,7 +133,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
         Path workDirectory = getNewScratch();
 
         Map<String, Path> inputSlotPaths = new HashMap<>();
-        List<JIPipeDataSlot> dummySlots = new ArrayList<>();
+        List<JIPipeInputDataSlot> dummySlots = new ArrayList<>();
         for (JIPipeDataSlot slot : getEffectiveInputSlots()) {
             Path tempPath = workDirectory.resolve("inputs").resolve(slot.getName());
             try {
@@ -142,7 +142,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
                 throw new RuntimeException(e);
             }
             progressInfo.log("Input slot '" + slot.getName() + "' is stored in " + tempPath);
-            JIPipeDataSlot dummy = dataBatch.toDummySlot(slot.getInfo(), this, slot);
+            JIPipeInputDataSlot dummy = (JIPipeInputDataSlot) dataBatch.toDummySlot(slot.getInfo(), this, slot);
             dummy.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, tempPath), progressInfo);
             inputSlotPaths.put(slot.getName(), tempPath);
             dummySlots.add(dummy);

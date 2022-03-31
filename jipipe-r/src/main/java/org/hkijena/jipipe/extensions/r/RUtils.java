@@ -8,6 +8,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -124,7 +126,7 @@ public class RUtils {
         }
     }
 
-    public static void inputSlotsToR(StringBuilder code, Map<String, Path> inputSlotPaths, List<JIPipeDataSlot> inputSlots) {
+    public static void inputSlotsToR(StringBuilder code, Map<String, Path> inputSlotPaths, List<JIPipeInputDataSlot> inputSlots) {
 
         Map<String, JIPipeDataSlot> inputSlotMap = new HashMap<>();
         for (JIPipeDataSlot outputSlot : inputSlots) {
@@ -164,7 +166,7 @@ public class RUtils {
                 "}\n");
     }
 
-    public static void outputSlotsToR(StringBuilder code, List<JIPipeDataSlot> outputSlots, Map<String, Path> outputSlotPaths) {
+    public static void outputSlotsToR(StringBuilder code, List<JIPipeOutputDataSlot> outputSlots, Map<String, Path> outputSlotPaths) {
 
         Map<String, JIPipeDataSlot> outputSlotMap = new HashMap<>();
         for (JIPipeDataSlot outputSlot : outputSlots) {

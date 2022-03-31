@@ -77,7 +77,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
         return effectiveSlotSize;
     }
 
-    public List<JIPipeDataSlot> getNonParameterInputSlots() {
+    public List<JIPipeInputDataSlot> getNonParameterInputSlots() {
         if (parameterSlotAlgorithmSettings.isHasParameterSlot()) {
             return getInputSlots().stream().filter(s -> s != getParameterSlot()).collect(Collectors.toList());
         } else {
@@ -86,13 +86,13 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
     }
 
     @Override
-    public List<JIPipeDataSlot> getEffectiveInputSlots() {
+    public List<JIPipeInputDataSlot> getEffectiveInputSlots() {
         return getNonParameterInputSlots();
     }
 
     @Override
-    public JIPipeDataSlot getFirstInputSlot() {
-        JIPipeDataSlot firstInputSlot = super.getFirstInputSlot();
+    public JIPipeInputDataSlot getFirstInputSlot() {
+        JIPipeInputDataSlot firstInputSlot = super.getFirstInputSlot();
         if (Objects.equals(firstInputSlot.getName(), SLOT_PARAMETERS)) {
             return getInputSlots().get(1);
         } else {

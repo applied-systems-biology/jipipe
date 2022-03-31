@@ -57,11 +57,11 @@ import java.util.*;
 public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParameterCollection {
     private JIPipeNodeInfo info;
     private JIPipeSlotConfiguration slotConfiguration;
-    private List<JIPipeDataSlot> inputSlots = new ArrayList<>();
-    private List<JIPipeDataSlot> outputSlots = new ArrayList<>();
-    private BiMap<String, JIPipeDataSlot> inputSlotMap = HashBiMap.create();
-    private BiMap<String, JIPipeDataSlot> outputSlotMap = HashBiMap.create();
-    private EventBus eventBus = new EventBus();
+    private final List<JIPipeInputDataSlot> inputSlots = new ArrayList<>();
+    private final List<JIPipeOutputDataSlot> outputSlots = new ArrayList<>();
+    private final BiMap<String, JIPipeInputDataSlot> inputSlotMap = HashBiMap.create();
+    private final BiMap<String, JIPipeOutputDataSlot> outputSlotMap = HashBiMap.create();
+    private final EventBus eventBus = new EventBus();
     private Map<String, Map<String, Point>> locations = new HashMap<>();
     private Path internalStoragePath;
     private Path storagePath;
@@ -197,7 +197,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         }
     }
 
-    private boolean updateSlotOrder(List<String> configurationOrder, BiMap<String, JIPipeDataSlot> slotMap, List<JIPipeDataSlot> slots) {
+    private <T extends JIPipeDataSlot> boolean updateSlotOrder(List<String> configurationOrder, BiMap<String, T> slotMap, List<T> slots) {
         if (configurationOrder.size() == slots.size()) {
             boolean noChanges = true;
             for (int i = 0; i < configurationOrder.size(); i++) {
@@ -214,18 +214,18 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         for (String name : configurationOrder) {
             JIPipeDataSlot instance = slotMap.getOrDefault(name, null);
             if (instance != null) {
-                slots.add(instance);
+                slots.add((T) instance);
             }
         }
         for (JIPipeDataSlot instance : slotMap.values()) {
             if (!slots.contains(instance)) {
-                slots.add(instance);
+                slots.add((T) instance);
             }
         }
         return true;
     }
 
-    private boolean updateRemoveSlots(boolean changed, Map<String, JIPipeDataSlotInfo> definedSlots, BiMap<String, JIPipeDataSlot> slotMap, List<JIPipeDataSlot> slots) {
+    private <T extends JIPipeDataSlot> boolean updateRemoveSlots(boolean changed, Map<String, JIPipeDataSlotInfo> definedSlots, BiMap<String, T> slotMap, List<T> slots) {
         for (String name : ImmutableList.copyOf(slotMap.keySet())) {
             if (!definedSlots.containsKey(name)) {
                 JIPipeDataSlot existing = slotMap.get(name);
@@ -237,7 +237,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         return changed;
     }
 
-    private boolean updateAddAndModifySlots(boolean changed, Map.Entry<String, JIPipeDataSlotInfo> entry, BiMap<String, JIPipeDataSlot> slotMap, List<JIPipeDataSlot> slots) {
+    private <T extends JIPipeDataSlot> boolean updateAddAndModifySlots(boolean changed, Map.Entry<String, JIPipeDataSlotInfo> entry, BiMap<String,T> slotMap, List<T> slots) {
         JIPipeDataSlot existing = slotMap.getOrDefault(entry.getKey(), null);
         if (existing != null) {
             if (!Objects.equals(existing.getInfo(), entry.getValue())) {
@@ -248,8 +248,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         }
         if (existing == null) {
             existing = entry.getValue().createInstance(this);
-            slotMap.put(entry.getKey(), existing);
-            slots.add(existing);
+            slotMap.put(entry.getKey(), (T) existing);
+            slots.add((T) existing);
             changed = true;
         }
         return changed;
@@ -375,7 +375,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return List of slots
      */
-    public List<JIPipeDataSlot> getInputSlots() {
+    public List<JIPipeInputDataSlot> getInputSlots() {
         return Collections.unmodifiableList(inputSlots);
     }
 
@@ -385,7 +385,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return Input slots
      */
-    public List<JIPipeDataSlot> getEffectiveInputSlots() {
+    public List<JIPipeInputDataSlot> getEffectiveInputSlots() {
         return getInputSlots();
     }
 
@@ -394,7 +394,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return List of slots
      */
-    public List<JIPipeDataSlot> getOutputSlots() {
+    public List<JIPipeOutputDataSlot> getOutputSlots() {
         return Collections.unmodifiableList(outputSlots);
     }
 
@@ -631,8 +631,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @param name Slot name
      * @return Slot instance
      */
-    public JIPipeDataSlot getInputSlot(String name) {
-        JIPipeDataSlot slot = inputSlotMap.get(name);
+    public JIPipeInputDataSlot getInputSlot(String name) {
+        JIPipeInputDataSlot slot = inputSlotMap.get(name);
         if (!slot.isInput())
             throw new IllegalArgumentException("The slot " + name + " is not an input slot!");
         return slot;
@@ -643,9 +643,9 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return List of slots
      */
-    public List<JIPipeDataSlot> getOpenInputSlots() {
-        List<JIPipeDataSlot> result = new ArrayList<>();
-        for (JIPipeDataSlot inputSlot : getInputSlots()) {
+    public List<JIPipeInputDataSlot> getOpenInputSlots() {
+        List<JIPipeInputDataSlot> result = new ArrayList<>();
+        for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
             if (parentGraph.getInputIncomingSourceSlots(inputSlot).isEmpty()) {
                 result.add(inputSlot);
             }
@@ -659,7 +659,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return Slot instance
      */
-    public JIPipeDataSlot getFirstOutputSlot() {
+    public JIPipeOutputDataSlot getFirstOutputSlot() {
         return getOutputSlots().get(0);
     }
 
@@ -669,7 +669,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return Slot instance
      */
-    public JIPipeDataSlot getFirstInputSlot() {
+    public JIPipeInputDataSlot getFirstInputSlot() {
         return getInputSlots().get(0);
     }
 
@@ -679,8 +679,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return Slot instance
      */
-    public JIPipeDataSlot getLastOutputSlot() {
-        List<JIPipeDataSlot> outputSlots = getOutputSlots();
+    public JIPipeOutputDataSlot getLastOutputSlot() {
+        List<JIPipeOutputDataSlot> outputSlots = getOutputSlots();
         return outputSlots.get(outputSlots.size() - 1);
     }
 
@@ -690,8 +690,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return Slot instance
      */
-    public JIPipeDataSlot getLastInputSlot() {
-        List<JIPipeDataSlot> inputSlots = getInputSlots();
+    public JIPipeInputDataSlot getLastInputSlot() {
+        List<JIPipeInputDataSlot> inputSlots = getInputSlots();
         return inputSlots.get(inputSlots.size() - 1);
     }
 

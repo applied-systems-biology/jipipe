@@ -17,9 +17,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -363,7 +361,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         int createdInputSlots = 0;
 
         if (createInputSlots && getNode().getInputSlots().size() > 0) {
-            List<JIPipeDataSlot> slots = getNode().getInputSlots();
+            List<JIPipeInputDataSlot> slots = getNode().getInputSlots();
             for (int i = 0; i < slots.size(); ++i) {
                 int rightBorder = 0;
                 if (i < displayedInputColumns - 1)
@@ -379,7 +377,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
             }
         }
         if (createOutputSlots && getNode().getOutputSlots().size() > 0) {
-            List<JIPipeDataSlot> slots = getNode().getOutputSlots();
+            List<JIPipeOutputDataSlot> slots = getNode().getOutputSlots();
             for (int i = 0; i < slots.size(); ++i) {
                 int rightBorder = 0;
                 if (i < displayedOutputColumns - 1)

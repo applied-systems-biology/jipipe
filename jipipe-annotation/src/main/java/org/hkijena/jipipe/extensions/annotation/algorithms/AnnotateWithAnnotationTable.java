@@ -7,10 +7,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -64,7 +61,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
         return tableMergeSettings;
     }
 
-    private List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeDataSlot> slots, JIPipeProgressInfo progressInfo) {
+    private List<JIPipeMergingDataBatch> generateDataBatchesDryRun(List<JIPipeInputDataSlot> slots, JIPipeProgressInfo progressInfo) {
         JIPipeMergingDataBatchBuilder builder = new JIPipeMergingDataBatchBuilder();
         builder.setNode(this);
         builder.setApplyMerging(false);
@@ -102,10 +99,10 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
             return;
         }
 
-        JIPipeDataSlot dataInputSlot = getInputSlot("Data");
+        JIPipeInputDataSlot dataInputSlot = getInputSlot("Data");
 
         // Create a dummy slot where we put the annotations
-        JIPipeDataSlot dummy =  new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input, "dummy", "", null).createInstance(this);
+        JIPipeInputDataSlot dummy = new JIPipeInputDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input, "dummy", "", null),this);
         JIPipeDataSlot annotationSlot = getInputSlot("Annotations");
         for (int i = 0; i < annotationSlot.getRowCount(); i++) {
             AnnotationTableData data = annotationSlot.getData(i, AnnotationTableData.class, progressInfo);
