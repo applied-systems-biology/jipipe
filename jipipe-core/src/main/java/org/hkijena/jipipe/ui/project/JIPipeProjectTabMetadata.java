@@ -45,7 +45,7 @@ public class JIPipeProjectTabMetadata {
         for (int i = 0; i < documentTabPane.getTabCount(); i++) {
             Component component = documentTabPane.getTabbedPane().getComponentAt(i);
             DocumentTabPane.DocumentTab tab = documentTabPane.getTabContainingContent(component);
-            String singletonTabId = documentTabPane.getSingletonTabs().inverse().getOrDefault(tab, null);
+            String singletonTabId = documentTabPane.getSingletonTabInstances().inverse().getOrDefault(tab, null);
             String id = null;
             if (singletonTabId != null) {
                 id = "singleton:" + singletonTabId;
@@ -68,6 +68,12 @@ public class JIPipeProjectTabMetadata {
         Map<String, DocumentTabPane.DocumentTab> tabIds = new ConcurrentHashMap<>();
         for (String id : openTabs) {
             restoreTab(id, tabIds, workbench);
+        }
+        if(!StringUtils.isNullOrEmpty(selectedTab)) {
+            DocumentTabPane.DocumentTab tab = tabIds.getOrDefault(selectedTab, null);
+            if(tab != null) {
+                workbench.getDocumentTabPane().switchToTab(tab);
+            }
         }
         workbench.documentTabPane.revalidate();
         workbench.documentTabPane.repaint();
@@ -92,9 +98,6 @@ public class JIPipeProjectTabMetadata {
                 }
             } catch (IllegalArgumentException e) {
             }
-        }
-        if (!StringUtils.isNullOrEmpty(selectedTab) && id.equals(selectedTab) && tab != null) {
-            documentTabPane.switchToContent(tab.getContent());
         }
     }
 
