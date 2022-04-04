@@ -51,13 +51,13 @@ public class SeededWatershedSegmentationAlgorithm extends JIPipeIteratingAlgorit
             ImagePlus resultImage = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.generateForEachIndexedZCTSlice(inputImage, (ip, index) -> {
                 ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(targetArea, dataBatch, index, progressInfo);
                 ImageProcessor seeds = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getSliceZero(seedImage, index);
-                return Watershed.computeWatershed(new ImagePlus("raw", ip), new ImagePlus("marker", seeds), new ImagePlus("mask", mask), connectivity.getNativeValue2D(), getDams).getProcessor();
+                return Watershed.computeWatershed(new ImagePlus("raw", ip), new ImagePlus("marker", seeds), new ImagePlus("mask", mask), connectivity.getNativeValue2D(), getDams, false).getProcessor();
             }, progressInfo);
             resultImage.copyScale(inputImage);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(resultImage), progressInfo);
         } else {
             ImagePlus mask = ImageJAlgorithmUtils.getMaskFromMaskOrROI(targetArea, dataBatch, "Image", progressInfo);
-            ImagePlus resultImage = Watershed.computeWatershed(inputImage, seedImage, mask, inputImage.getStackSize() == 1 ? connectivity.getNativeValue2D() : connectivity.getNativeValue3D(), getDams);
+            ImagePlus resultImage = Watershed.computeWatershed(inputImage, seedImage, mask, inputImage.getStackSize() == 1 ? connectivity.getNativeValue2D() : connectivity.getNativeValue3D(), getDams, false);
             resultImage.copyScale(inputImage);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus3DGreyscaleData(resultImage), progressInfo);
         }
