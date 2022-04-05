@@ -467,6 +467,9 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     private void injectCustomCellposeClass(StringBuilder code) {
+        if(code.indexOf("class CellposeCustom()") >= 0) {
+            return;
+        }
         // This is code that allows to embed a custom model
         code.append("\n\nclass CellposeCustom():\n" +
                 "    def __init__(self, gpu=False, pretrained_model=None, diam_mean=None, pretrained_size=None, net_avg=True, device=None, torch=True):\n" +
@@ -489,7 +492,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
                 "\n" +
                 "        self.cp = CellposeModel(device=self.device, gpu=self.gpu,\n" +
                 "                                pretrained_model=self.pretrained_model,\n" +
-                "                                diam_mean=self.diam_mean, torch=self.torch)\n" +
+                "                                diam_mean=self.diam_mean)\n" +
                 "        if pretrained_size is not None:\n" +
                 "            self.sz = SizeModel(device=self.device, pretrained_size=self.pretrained_size,\n" +
                 "                            cp_model=self.cp)\n" +
