@@ -471,7 +471,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
             return;
         }
         // This is code that allows to embed a custom model
-        code.append(CellPoseUtils.getCellposeCustomCode());
+        code.append("\n\n").append(CellPoseUtils.getCellposeCustomCode()).append("\n\n");
     }
 
     @JIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +
