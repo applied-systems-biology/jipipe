@@ -43,9 +43,10 @@ import org.hkijena.jipipe.api.registries.*;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.settings.*;
-import org.hkijena.jipipe.ui.ijupdater.IJProgressAdapter;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
+import org.hkijena.jipipe.ui.ijupdater.JIPipeProgressAdapter;
 import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
+import org.hkijena.jipipe.ui.running.JIPipeLogs;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
@@ -74,6 +75,7 @@ import java.net.Authenticator;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
@@ -84,19 +86,20 @@ import java.util.zip.GZIPInputStream;
 @Plugin(type = JIPipeRegistry.class)
 public class JIPipe extends AbstractService implements JIPipeRegistry {
     private static JIPipe instance;
+    private final JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private final EventBus eventBus = new EventBus();
     private final Set<String> registeredExtensionIds = new HashSet<>();
     private final List<JIPipeDependency> registeredExtensions = new ArrayList<>();
     private final List<JIPipeDependency> failedExtensions = new ArrayList<>();
-    private final JIPipeNodeRegistry nodeRegistry = new JIPipeNodeRegistry();
-    private final JIPipeDatatypeRegistry datatypeRegistry = new JIPipeDatatypeRegistry();
-    private final JIPipeImageJAdapterRegistry imageJDataAdapterRegistry = new JIPipeImageJAdapterRegistry();
-    private final JIPipeCustomMenuRegistry customMenuRegistry = new JIPipeCustomMenuRegistry();
-    private final JIPipeParameterTypeRegistry parameterTypeRegistry = new JIPipeParameterTypeRegistry();
-    private final JIPipeSettingsRegistry settingsRegistry = new JIPipeSettingsRegistry();
-    private final JIPipeExpressionRegistry tableOperationRegistry = new JIPipeExpressionRegistry();
-    private final JIPipeUtilityRegistry utilityRegistry = new JIPipeUtilityRegistry();
-    private final JIPipeExternalEnvironmentRegistry externalEnvironmentRegistry = new JIPipeExternalEnvironmentRegistry();
+    private final JIPipeNodeRegistry nodeRegistry;
+    private final JIPipeDatatypeRegistry datatypeRegistry;
+    private final JIPipeImageJAdapterRegistry imageJDataAdapterRegistry;
+    private final JIPipeCustomMenuRegistry customMenuRegistry;
+    private final JIPipeParameterTypeRegistry parameterTypeRegistry;
+    private final JIPipeSettingsRegistry settingsRegistry;
+    private final JIPipeExpressionRegistry tableOperationRegistry;
+    private final JIPipeUtilityRegistry utilityRegistry;
+    private final JIPipeExternalEnvironmentRegistry externalEnvironmentRegistry;
     private FilesCollection imageJPlugins = null;
     private boolean initializing = false;
 
@@ -107,6 +110,15 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     private PluginService pluginService;
 
     public JIPipe() {
+        nodeRegistry = new JIPipeNodeRegistry(this);
+        datatypeRegistry = new JIPipeDatatypeRegistry(this);
+        imageJDataAdapterRegistry = new JIPipeImageJAdapterRegistry(this);
+        customMenuRegistry = new JIPipeCustomMenuRegistry(this);
+        parameterTypeRegistry = new JIPipeParameterTypeRegistry(this);
+        settingsRegistry = new JIPipeSettingsRegistry(this);
+        tableOperationRegistry = new JIPipeExpressionRegistry(this);
+        utilityRegistry = new JIPipeUtilityRegistry(this);
+        externalEnvironmentRegistry = new JIPipeExternalEnvironmentRegistry(this);
     }
 
     /**
@@ -316,6 +328,10 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         return run;
     }
 
+    public JIPipeProgressInfo getProgressInfo() {
+        return progressInfo;
+    }
+
     /**
      * Creates a new node instance from its id
      *
@@ -402,7 +418,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     public void initialize(ExtensionSettings extensionSettings, JIPipeRegistryIssues issues) {
         initializing = true;
 
-        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+        progressInfo.setProgress(0, 5);
         progressInfo.getEventBus().register(new Object() {
             @Subscribe
             public void onProgressStatusUpdated(JIPipeProgressInfo.StatusUpdatedEvent event) {
@@ -415,7 +431,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         List<PluginInfo<JIPipeJavaExtension>> pluginList = pluginService.getPluginsOfType(JIPipeJavaExtension.class).stream()
                 .sorted(JIPipe::comparePlugins).collect(Collectors.toList());
         List<JIPipeDependency> javaExtensions = new ArrayList<>();
-        logService.info("[1/3] Pre-initialization phase ...");
+        progressInfo.setProgress(1);
+        progressInfo.log("Pre-initialization phase ...");
         for (int i = 0; i < pluginList.size(); ++i) {
             PluginInfo<JIPipeJavaExtension> info = pluginList.get(i);
             IJ.showProgress(i + 1, pluginList.size());
@@ -434,11 +451,12 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             }
         }
 
-        logService.info("[2/3] Registration-phase ...");
+        progressInfo.setProgress(2);
+        JIPipeProgressInfo registerFeaturesProgress = progressInfo.resolveAndLog("Register features");
         for (int i = 0; i < pluginList.size(); ++i) {
             PluginInfo<JIPipeJavaExtension> info = pluginList.get(i);
             IJ.showProgress(i + 1, pluginList.size());
-            logService.info("JIPipe: Registering plugin " + info);
+            registerFeaturesProgress.log("Registering plugin " + info);
             JIPipeJavaExtension extension = null;
             try {
                 extension = (JIPipeJavaExtension) javaExtensions.get(i);
@@ -456,25 +474,32 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
         for (JIPipeNodeRegistrationTask task : nodeRegistry.getScheduledRegistrationTasks()) {
             logService.error("Could not register: " + task.toString());
+            registerFeaturesProgress.log("Could not register: " + task);
         }
 
         // Check for errors
-        logService.info("[3/3] Error-checking-phase ...");
+
+        progressInfo.setProgress(3);
+        progressInfo.log("Error-checking-phase ...");
         validateDataTypes(issues);
         if (extensionSettings.isValidateNodeTypes()) {
             validateNodeTypes(issues);
         }
 
         // Check for update sites
-        if (extensionSettings.isValidateImageJDependencies())
-            checkUpdateSites(issues, javaExtensions, new IJProgressAdapter());
+        if (extensionSettings.isValidateImageJDependencies()) {
+            JIPipeProgressInfo dependencyProgress = progressInfo.resolve("ImageJ dependencies").detachProgress();
+            checkUpdateSites(issues, javaExtensions,
+                    new JIPipeProgressAdapter(dependencyProgress), dependencyProgress);
+        }
 
         // Create settings for default importers
         createDefaultImporterSettings();
         createDefaultCacheDisplaySettings();
 
         // Reload settings
-        logService.debug("Loading settings ...");
+        progressInfo.setProgress(4);
+        progressInfo.log("Loading settings ...");
         settingsRegistry.reload();
 
         // Required as the reload deletes the allowed values
@@ -482,15 +507,18 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         updateDefaultCacheDisplaySettings();
 
         // Postprocessing
+        progressInfo.setProgress(5);
+        JIPipeProgressInfo postprocessingProgress = progressInfo.resolveAndLog("Postprocessing");
         for (JIPipeDependency extension : registeredExtensions) {
             if (!failedExtensions.contains(extension) && extension instanceof JIPipeJavaExtension) {
-                logService.info("Postprocess: " + extension.getDependencyId());
+                postprocessingProgress.log(extension.getDependencyId());
                 ((JIPipeJavaExtension) extension).postprocess();
             }
         }
 
         // Check recent projects and backups
-        logService.info("Checking recent projects ...");
+        progressInfo.setProgress(6);
+        progressInfo.log("Checking recent projects ...");
         ProjectsSettings projectsSettings = ProjectsSettings.getInstance();
         List<Path> invalidRecentProjects = projectsSettings.getRecentProjects().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
         if (!invalidRecentProjects.isEmpty()) {
@@ -498,15 +526,23 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         }
 
         // Check the backups
-        logService.info("Checking backups ...");
+        progressInfo.setProgress(7);
+        progressInfo.log("Checking backups ...");
         AutoSaveSettings autoSaveSettings = AutoSaveSettings.getInstance();
         List<Path> invalidBackups = autoSaveSettings.getLastBackups().stream().filter(path -> !Files.exists(path)).collect(Collectors.toList());
         if (!invalidBackups.isEmpty()) {
             autoSaveSettings.getLastBackups().removeAll(invalidBackups);
         }
 
-        logService.info("JIPipe loading finished");
+        progressInfo.setProgress(8);
+        progressInfo.log("JIPipe loading finished");
         initializing = false;
+
+        // Push progress into log
+        JIPipeLogs.getInstance().pushToLog(new JIPipeLogs.LogEntry("JIPipe initialization",
+                LocalDateTime.now(),
+                progressInfo.getLog().toString(),
+                true));
     }
 
     private void validateDataTypes(JIPipeRegistryIssues issues) {
@@ -697,12 +733,12 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
     /**
      * Checks the update sites of all extensions and stores the results in the issues
-     *
-     * @param issues          the results
+     *  @param issues          the results
      * @param extensions      list of known extensions
      * @param progressAdapter the adapter that takes the progress
+     * @param progressInfo the progress info
      */
-    public void checkUpdateSites(JIPipeRegistryIssues issues, List<JIPipeDependency> extensions, Progress progressAdapter) {
+    public void checkUpdateSites(JIPipeRegistryIssues issues, List<JIPipeDependency> extensions, Progress progressAdapter, JIPipeProgressInfo progressInfo) {
         Set<JIPipeImageJUpdateSiteDependency> dependencies = new HashSet<>();
         Set<JIPipeImageJUpdateSiteDependency> missingSites = new HashSet<>();
         for (JIPipeDependency extension : extensions) {
@@ -710,9 +746,9 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             missingSites.addAll(extension.getImageJUpdateSiteDependencies());
         }
         if (!dependencies.isEmpty()) {
-            logService.info("Following ImageJ update site dependencies were requested: ");
+            progressInfo.log("Following ImageJ update site dependencies were requested: ");
             for (JIPipeImageJUpdateSiteDependency dependency : dependencies) {
-                logService.info("  - " + dependency.getName() + " @ " + dependency.getUrl());
+                progressInfo.log("  - " + dependency.getName() + " @ " + dependency.getUrl());
             }
 
             // Try to use the existing database
@@ -747,13 +783,13 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                     logService.error("Unable to check update sites!");
                     e.printStackTrace();
                     missingSites.clear();
-                    logService.info("No ImageJ update site check is applied.");
+                    progressInfo.log("No ImageJ update site check is applied.");
                 }
                 if (imageJPlugins != null) {
-                    logService.info("Following ImageJ update sites are currently active: ");
+                    progressInfo.log("Following ImageJ update sites are currently active: ");
                     for (UpdateSite updateSite : imageJPlugins.getUpdateSites(true)) {
                         if (updateSite.isActive()) {
-                            logService.info("  - " + updateSite.getName() + " @ " + updateSite.getURL());
+                            progressInfo.log("  - " + updateSite.getName() + " @ " + updateSite.getURL());
                             missingSites.removeIf(site -> Objects.equals(site.getName(), updateSite.getName()));
                         }
                     }
@@ -778,9 +814,10 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * Registers a JSON extension
      *
      * @param extension The extension
+     * @param progressInfo the progress info
      */
-    public void register(JIPipeJsonExtension extension) {
-        logService.info("JIPipe: Registering Json Extension " + extension.getDependencyId());
+    public void register(JIPipeJsonExtension extension, JIPipeProgressInfo progressInfo) {
+        progressInfo.log("Registering Json Extension " + extension.getDependencyId());
         extension.setRegistry(this);
         extension.register();
         registeredExtensions.add(extension);

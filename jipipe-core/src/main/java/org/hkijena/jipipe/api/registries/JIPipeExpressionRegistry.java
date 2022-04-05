@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.registries;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
@@ -25,8 +26,14 @@ import java.util.Map;
  * Registry for table operations and other functional expressions
  */
 public class JIPipeExpressionRegistry {
+    private final JIPipe jiPipe;
     private Map<String, ColumnOperationEntry> registeredTableColumnOperations = new HashMap<>();
     private Map<String, ExpressionFunctionEntry> registeredExpressionFunctions = new HashMap<>();
+
+    public JIPipeExpressionRegistry(JIPipe jiPipe) {
+
+        this.jiPipe = jiPipe;
+    }
 
     /**
      * The registered column operations. Column operations can work on arrays of {@link String} or {@link Double}
@@ -96,6 +103,10 @@ public class JIPipeExpressionRegistry {
         }
 
         return result;
+    }
+
+    public JIPipe getJIPipe() {
+        return jiPipe;
     }
 
     /**

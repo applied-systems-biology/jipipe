@@ -117,7 +117,7 @@ public class SplashScreen extends JWindow implements LogListener, Contextual {
         SwingUtilities.invokeLater(() -> this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING)));
     }
 
-    public JIPipe getJiPipe() {
+    public JIPipe getJIPipe() {
         return jiPipe;
     }
 

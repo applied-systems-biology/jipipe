@@ -2,6 +2,7 @@ package org.hkijena.jipipe.api.registries;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
@@ -17,8 +18,18 @@ import java.util.stream.Collectors;
  * A registry for external environments
  */
 public class JIPipeExternalEnvironmentRegistry {
-    private Multimap<Class<? extends ExternalEnvironment>, InstallerEntry> installers = HashMultimap.create();
-    private Map<Class<? extends ExternalEnvironment>, ExternalEnvironmentSettings> settings = new HashMap<>();
+    private final JIPipe jiPipe;
+    private final Multimap<Class<? extends ExternalEnvironment>, InstallerEntry> installers = HashMultimap.create();
+    private final Map<Class<? extends ExternalEnvironment>, ExternalEnvironmentSettings> settings = new HashMap<>();
+
+    public JIPipeExternalEnvironmentRegistry(JIPipe jiPipe) {
+
+        this.jiPipe = jiPipe;
+    }
+
+    public JIPipe getJIPipe() {
+        return jiPipe;
+    }
 
     /**
      * Registers an environment and its corresponding settings
@@ -28,6 +39,7 @@ public class JIPipeExternalEnvironmentRegistry {
      */
     public void registerEnvironment(Class<? extends ExternalEnvironment> environmentClass, ExternalEnvironmentSettings settings) {
         this.settings.put(environmentClass, settings);
+        getJIPipe().getProgressInfo().log("Registered environment " + environmentClass + " with settings class " + settings);
     }
 
     /**
@@ -39,6 +51,7 @@ public class JIPipeExternalEnvironmentRegistry {
      */
     public void registerInstaller(Class<? extends ExternalEnvironment> environmentClass, Class<? extends ExternalEnvironmentInstaller> installerClass, Icon icon) {
         installers.put(environmentClass, new InstallerEntry(installerClass, icon));
+        getJIPipe().getProgressInfo().log("Registered environment installer for " + environmentClass + " with installer class " + installerClass);
     }
 
     /**

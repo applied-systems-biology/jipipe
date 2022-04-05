@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.registries;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableBiMap;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterGenerator;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
@@ -33,6 +34,12 @@ public class JIPipeParameterTypeRegistry {
     private final BiMap<Class<?>, JIPipeParameterTypeInfo> registeredParameterClasses = HashBiMap.create();
     private final Map<Class<?>, Class<? extends JIPipeParameterEditorUI>> parameterTypesUIs = new HashMap<>();
     private final Map<Class<?>, Set<JIPipeParameterGenerator>> parameterGeneratorUIs = new HashMap<>();
+    private final JIPipe jiPipe;
+
+    public JIPipeParameterTypeRegistry(JIPipe jiPipe) {
+
+        this.jiPipe = jiPipe;
+    }
 
     /**
      * Registers a new parameter type
@@ -46,6 +53,7 @@ public class JIPipeParameterTypeRegistry {
             throw new RuntimeException("Parameter type with class '" + info.getFieldClass() + "' already exists!");
         registeredParameters.put(info.getId(), info);
         registeredParameterClasses.put(info.getFieldClass(), info);
+        getJIPipe().getProgressInfo().log("Registered parameter type id=" + info.getId() + " of type " + info.getFieldClass());
     }
 
     public BiMap<String, JIPipeParameterTypeInfo> getRegisteredParameters() {
@@ -143,5 +151,9 @@ public class JIPipeParameterTypeRegistry {
      */
     public Set<JIPipeParameterGenerator> getGeneratorsFor(Class<?> parameterClass) {
         return parameterGeneratorUIs.getOrDefault(parameterClass, Collections.emptySet());
+    }
+
+    public JIPipe getJIPipe() {
+        return jiPipe;
     }
 }

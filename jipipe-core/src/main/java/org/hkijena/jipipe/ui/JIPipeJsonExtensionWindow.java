@@ -205,7 +205,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
         // Install extension by reloading (to be sure)
         try {
             JIPipeJsonExtension loadedExtension = JsonUtils.getObjectMapper().readValue(selectedPath.toFile(), JIPipeJsonExtension.class);
-            JIPipe.getInstance().register(loadedExtension);
+            JIPipe.getInstance().register(loadedExtension, JIPipe.getInstance().getProgressInfo());
             if (!silent) {
                 JOptionPane.showMessageDialog(workbench.getWindow(), "The extension was installed. We recommend to restart ImageJ, " +
                         "especially if you updated an existing extension.", "Extension installed", JOptionPane.INFORMATION_MESSAGE);
@@ -222,7 +222,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
         JIPipeRegistryIssues issues = new JIPipeRegistryIssues();
         JIPipe.getInstance().checkUpdateSites(issues,
                 JIPipe.getInstance().getRegisteredExtensions(),
-                new ProgressDialog((Frame) workbench.getWindow(), "Checking dependencies ..."));
+                new ProgressDialog((Frame) workbench.getWindow(), "Checking dependencies ..."), JIPipe.getInstance().getProgressInfo());
         if (!issues.getMissingImageJSites().isEmpty()) {
             MissingUpdateSiteResolver resolver = new MissingUpdateSiteResolver(workbench.getContext(), issues);
             resolver.revalidate();

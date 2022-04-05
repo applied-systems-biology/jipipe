@@ -36,6 +36,11 @@ public class JIPipeLogs {
         eventBus.post(new LogClearedEvent(this));
     }
 
+    public void pushToLog(LogEntry entry) {
+        logEntries.add(entry);
+        eventBus.post(new LogEntryAddedEvent(this, entry));
+    }
+
     private void pushToLog(JIPipeRunnable run, boolean success) {
         StringBuilder log = run.getProgressInfo().getLog();
         if (log != null && log.length() > 0) {

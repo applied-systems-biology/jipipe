@@ -47,13 +47,16 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     private final Map<JIPipeNodeInfo, ImageIcon> iconInstances = new HashMap<>();
     private final EventBus eventBus = new EventBus();
     private final URL defaultIconURL;
+    private final JIPipe jiPipe;
     private boolean stateChanged;
     private boolean isRunning;
 
     /**
      * Creates a new registry
+     * @param jiPipe
      */
-    public JIPipeNodeRegistry() {
+    public JIPipeNodeRegistry(JIPipe jiPipe) {
+        this.jiPipe = jiPipe;
         this.defaultIconURL = ResourceUtils.getPluginResource("icons/actions/configure.png");
     }
 
@@ -112,7 +115,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
         registeredNodeClasses.put(info.getInstanceClass(), info);
         registeredNodeInfoSources.put(info.getId(), source);
         eventBus.post(new JIPipe.NodeInfoRegisteredEvent(info));
-        JIPipe.getInstance().getLogService().info("Registered algorithm '" + info.getName() + "' [" + info.getId() + "]");
+        getJIPipe().getProgressInfo().log("Registered node type '" + info.getName() + "' [" + info.getId() + "]");
         runRegistrationTasks();
     }
 
@@ -127,6 +130,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      */
     public void registerCategory(JIPipeNodeTypeCategory category) {
         registeredCategories.put(category.getId(), category);
+        getJIPipe().getProgressInfo().log("Registered node type category " + category);
     }
 
     /**
@@ -333,5 +337,9 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
         registeredNodeClasses.remove(info.getInstanceClass(), info);
         registeredNodeInfoSources.remove(id);
         iconURLs.remove(info);
+    }
+
+    public JIPipe getJIPipe() {
+        return jiPipe;
     }
 }

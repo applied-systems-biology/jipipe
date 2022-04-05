@@ -2,6 +2,7 @@ package org.hkijena.jipipe.api.registries;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
+import org.hkijena.jipipe.JIPipe;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,10 +11,16 @@ import java.util.Set;
  * A registry of additional utilities (e.g., installers for external environments)
  */
 public class JIPipeUtilityRegistry {
-    private Multimap<Class<?>, Class<?>> registeredItems = HashMultimap.create();
+    private final JIPipe jiPipe;
+    private final Multimap<Class<?>, Class<?>> registeredItems = HashMultimap.create();
 
-    public JIPipeUtilityRegistry() {
+    public JIPipeUtilityRegistry(JIPipe jiPipe) {
 
+        this.jiPipe = jiPipe;
+    }
+
+    public JIPipe getJIPipe() {
+        return jiPipe;
     }
 
     public Set<Class<?>> getUtilitiesFor(Class<?> categoryClass) {
@@ -28,6 +35,7 @@ public class JIPipeUtilityRegistry {
      */
     public void register(Class<?> categoryClass, Class<?> utilityClass) {
         registeredItems.put(categoryClass, utilityClass);
+        getJIPipe().getProgressInfo().log("Registered utility " + utilityClass + " of type " + categoryClass);
     }
 
     /**

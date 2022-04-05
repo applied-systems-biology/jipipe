@@ -60,11 +60,14 @@ public class JIPipeDatatypeRegistry {
     private final EventBus eventBus = new EventBus();
     private final URL defaultIconURL;
     private final ImageIcon defaultIcon;
+    private final JIPipe jiPipe;
 
     /**
      * Creates a new instance
+     * @param jiPipe
      */
-    public JIPipeDatatypeRegistry() {
+    public JIPipeDatatypeRegistry(JIPipe jiPipe) {
+        this.jiPipe = jiPipe;
         this.defaultIconURL = UIUtils.getIconURLFromResources("data-types/data-type.png");
         this.defaultIcon = UIUtils.getIconFromResources("data-types/data-type.png");
     }
@@ -136,6 +139,7 @@ public class JIPipeDatatypeRegistry {
                 JIPipeDataInfo.getInstance(converter.getOutputType()));
         conversionGraph.getEdge(JIPipeDataInfo.getInstance(converter.getInputType()),
                 JIPipeDataInfo.getInstance(converter.getOutputType())).setConverter(converter);
+        getJIPipe().getProgressInfo().log("Registered data type conversion from" + converter.getInputType() + " to " + converter.getOutputType());
     }
 
     public boolean isRegistered(Class<? extends JIPipeData> klass) {
@@ -242,6 +246,7 @@ public class JIPipeDatatypeRegistry {
         }
 
         eventBus.post(new JIPipe.DatatypeRegisteredEvent(id));
+        getJIPipe().getProgressInfo().log("Registered data type id=" + id + " of class " + klass);
     }
 
     /**
@@ -259,6 +264,7 @@ public class JIPipeDatatypeRegistry {
         if (existing.containsKey(operation.getId()))
             throw new RuntimeException("Import operation with ID '" + operation.getId() + "' already exists in data type '" + dataTypeId + "'");
         existing.put(operation.getId(), operation);
+        getJIPipe().getProgressInfo().log("Registered data import operation id=" + operation.getId() + " for data type " + dataTypeId);
     }
 
     /**
@@ -276,6 +282,7 @@ public class JIPipeDatatypeRegistry {
         if (existing.containsKey(operation.getId()))
             throw new RuntimeException("Display operation with ID '" + operation.getId() + "' already exists in data type '" + dataTypeId + "'");
         existing.put(operation.getId(), operation);
+        getJIPipe().getProgressInfo().log("Registered data display operation id=" + operation.getId() + " for data type " + dataTypeId);
     }
 
     public Map<String, JIPipeDataDisplayOperation> getAllRegisteredDisplayOperations(String dataTypeId) {
@@ -473,6 +480,7 @@ public class JIPipeDatatypeRegistry {
      */
     public void registerResultSlotUI(Class<? extends JIPipeData> klass, Class<? extends JIPipeResultDataSlotRowUI> uiClass) {
         resultUIs.put(klass, uiClass);
+        getJIPipe().getProgressInfo().log("Registered result slot UI for data type " + klass + " UIClass=" + uiClass);
     }
 
     /**
@@ -483,6 +491,7 @@ public class JIPipeDatatypeRegistry {
      */
     public void registerResultTableCellUI(Class<? extends JIPipeData> klass, Class<? extends JIPipeResultDataSlotPreview> renderer) {
         resultTableCellUIs.put(klass, renderer);
+        getJIPipe().getProgressInfo().log("Registered result table cell UI for data type " + klass + " RendererClass=" + renderer);
     }
 
     /**
@@ -561,6 +570,10 @@ public class JIPipeDatatypeRegistry {
      */
     public URL getIconURLFor(JIPipeDataInfo info) {
         return getIconURLFor(info.getDataClass());
+    }
+
+    public JIPipe getJIPipe() {
+        return jiPipe;
     }
 
     /**

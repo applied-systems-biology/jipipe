@@ -46,9 +46,15 @@ import java.util.Map;
  */
 public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipeCustomParameterCollection {
 
-    private EventBus eventBus = new EventBus();
-    private BiMap<String, Sheet> registeredSheets = HashBiMap.create();
+    private final JIPipe jiPipe;
+    private final EventBus eventBus = new EventBus();
+    private final BiMap<String, Sheet> registeredSheets = HashBiMap.create();
     private boolean isLoading = false;
+
+    public JIPipeSettingsRegistry(JIPipe jiPipe) {
+
+        this.jiPipe = jiPipe;
+    }
 
     /**
      * Gets the raw property files Json node
@@ -105,6 +111,7 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
         Sheet sheet = new Sheet(name, icon, category, categoryIcon, parameterCollection);
         parameterCollection.getEventBus().register(this);
         registeredSheets.put(id, sheet);
+        getJIPipe().getProgressInfo().log("Registered settings sheet id=" + id + " in category '" + category + "' object=" + parameterCollection);
     }
 
     /**
@@ -214,6 +221,10 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
      */
     public void reload() {
         load(getPropertyFile());
+    }
+
+    public JIPipe getJIPipe() {
+        return jiPipe;
     }
 
     /**

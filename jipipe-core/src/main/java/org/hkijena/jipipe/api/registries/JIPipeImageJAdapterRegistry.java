@@ -38,6 +38,12 @@ public class JIPipeImageJAdapterRegistry {
     private final Map<Class<? extends JIPipeData>, Set<ImageJDataExporter>> supportedConvertibleExporters = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, ImageJDataImporter> defaultImporters = new HashMap<>();
     private final Map<Class<? extends JIPipeData>, ImageJDataExporter> defaultExporters = new HashMap<>();
+    private final JIPipe jiPipe;
+
+    public JIPipeImageJAdapterRegistry(JIPipe jiPipe) {
+
+        this.jiPipe = jiPipe;
+    }
 
     /**
      * Registers an importer
@@ -51,6 +57,7 @@ public class JIPipeImageJAdapterRegistry {
         if (uiClass != null) {
             registeredImporterUIs.put(id, uiClass);
         }
+        getJIPipe().getProgressInfo().log("Registered ImageJ importer id=" + id + " object=" + importer + " ui=" + uiClass);
     }
 
     /**
@@ -65,6 +72,7 @@ public class JIPipeImageJAdapterRegistry {
         if (uiClass != null) {
             registeredExporterUIs.put(id, uiClass);
         }
+        getJIPipe().getProgressInfo().log("Registered ImageJ exporter id=" + id + " object=" + exporter + " ui=" + uiClass);
     }
 
     public String getIdOf(ImageJDataImporter importer) {
@@ -271,5 +279,9 @@ public class JIPipeImageJAdapterRegistry {
 
     public ImageJDataExporter getExporterById(String id) {
         return registeredExporters.get(id);
+    }
+
+    public JIPipe getJIPipe() {
+        return jiPipe;
     }
 }

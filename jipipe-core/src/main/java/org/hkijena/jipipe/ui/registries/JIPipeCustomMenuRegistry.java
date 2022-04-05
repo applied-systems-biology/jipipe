@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.registries;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
@@ -30,9 +31,15 @@ import java.util.*;
  * Registry for menu extensions
  */
 public class JIPipeCustomMenuRegistry {
-    private Map<JIPipeMenuExtensionTarget, List<Class<? extends JIPipeMenuExtension>>> registeredMenuExtensions = new HashMap<>();
-    private List<Class<? extends GraphEditorToolBarButtonExtension>> registeredGraphEditorToolBarExtensions = new ArrayList<>();
-    private List<NodeUIContextAction> registeredContextMenuActions = new ArrayList<>();
+    private final Map<JIPipeMenuExtensionTarget, List<Class<? extends JIPipeMenuExtension>>> registeredMenuExtensions = new HashMap<>();
+    private final List<Class<? extends GraphEditorToolBarButtonExtension>> registeredGraphEditorToolBarExtensions = new ArrayList<>();
+    private final List<NodeUIContextAction> registeredContextMenuActions = new ArrayList<>();
+    private final JIPipe jiPipe;
+
+    public JIPipeCustomMenuRegistry(JIPipe jiPipe) {
+
+        this.jiPipe = jiPipe;
+    }
 
     /**
      * Registers a new extension
@@ -49,6 +56,7 @@ public class JIPipeCustomMenuRegistry {
                 registeredMenuExtensions.put(instance.getMenuTarget(), list);
             }
             list.add(extension);
+            getJIPipe().getProgressInfo().log("Registered menu extension " + extension);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -112,5 +120,9 @@ public class JIPipeCustomMenuRegistry {
      */
     public List<NodeUIContextAction> getRegisteredContextMenuActions() {
         return registeredContextMenuActions;
+    }
+
+    public JIPipe getJIPipe() {
+        return jiPipe;
     }
 }
