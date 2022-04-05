@@ -55,6 +55,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     private Mode mode = Mode.Manual;
     private StringQueryExpression customName = new StringQueryExpression("SUMMARIZE_VARIABLES()");
     private StringQueryExpression customSubDirectory = new StringQueryExpression("\"\"");
+    private boolean forceName = false;
 
     public JIPipeDataByMetadataExporter() {
     }
@@ -73,6 +74,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         this.customName = new StringQueryExpression(other.customName);
         this.mode = other.mode;
         this.customSubDirectory = new StringQueryExpression(other.customSubDirectory);
+        this.forceName = other.forceName;
     }
 
     @Override
@@ -126,6 +128,17 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     public void setMode(Mode mode) {
         this.mode = mode;
         triggerParameterUIChange();
+    }
+
+    @JIPipeDocumentation(name = "Force name", description = "If true, the output files are forced to use the generated name. Otherwise, internal names.")
+    @JIPipeParameter("force-name")
+    public boolean isForceName() {
+        return forceName;
+    }
+
+    @JIPipeParameter("force-name")
+    public void setForceName(boolean forceName) {
+        this.forceName = forceName;
     }
 
     @JIPipeDocumentation(name = "Metadata key filters", description = "Only includes the metadata keys that match the filter. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
@@ -319,7 +332,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         outputPath = PathUtils.resolveAndMakeSubDirectory(outputPath, generateSubFolder(dataSlot, row));
         JIPipeData data = dataSlot.getData(row, JIPipeData.class, progressInfo);
         progressInfo.log("Saving " + data + " as " + metadataString + " into " + outputPath);
-        data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, outputPath), metadataString, true, progressInfo);
+        data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, outputPath), metadataString, forceName, progressInfo);
     }
 
     /**
