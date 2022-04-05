@@ -471,12 +471,9 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
         code.append("\n\nclass CellposeCustom():\n" +
                 "    def __init__(self, gpu=False, pretrained_model=None, diam_mean=None, pretrained_size=None, net_avg=True, device=None, torch=True):\n" +
                 "        super(CellposeCustom, self).__init__()\n" +
-                "        from cellpose.core import UnetModel, assign_device, check_mkl, use_gpu, MXNET_ENABLED, parse_model_string\n" +
+                "        from cellpose.core import UnetModel, assign_device, check_mkl, use_gpu, parse_model_string\n" +
                 "        from cellpose.models import CellposeModel, SizeModel\n\n" +
-                "        if not torch:\n" +
-                "            if not MXNET_ENABLED:\n" +
-                "                torch = True\n" +
-                "        self.torch = torch\n" +
+                "        self.torch = True\n" +
                 "        torch_str = ['','torch'][self.torch]\n" +
                 "        \n" +
                 "        # assign device (GPU or CPU)\n" +
