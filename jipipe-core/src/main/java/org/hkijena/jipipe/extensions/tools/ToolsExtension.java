@@ -59,6 +59,6 @@ public class ToolsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.69.0";
+        return "1.70.0";
     }
 }
