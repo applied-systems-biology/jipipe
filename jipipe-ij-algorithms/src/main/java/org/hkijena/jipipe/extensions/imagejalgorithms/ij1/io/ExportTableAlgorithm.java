@@ -14,6 +14,7 @@ import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -33,6 +34,7 @@ public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {
     private JIPipeDataByMetadataExporter exporter;
     private Path outputDirectory = Paths.get("exported-data");
     private FileFormat fileFormat = FileFormat.CSV;
+    private boolean relativeToProjectDir = false;
 
     public ExportTableAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -45,6 +47,7 @@ public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
         this.outputDirectory = other.outputDirectory;
         this.fileFormat = other.fileFormat;
+        this.relativeToProjectDir = other.relativeToProjectDir;
         registerSubParameter(exporter);
     }
 
@@ -58,7 +61,12 @@ public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
-            outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(outputDirectory);
+            if(relativeToProjectDir && getProjectDirectory() != null) {
+                outputPath = getProjectDirectory().resolve(StringUtils.nullToEmpty(outputDirectory));
+            }
+            else {
+                outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
+            }
         } else {
             outputPath = outputDirectory;
         }
@@ -90,6 +98,19 @@ public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputFile), progressInfo);
+    }
+
+    @JIPipeDocumentation(name = "Output relative to project directory", description = "If enabled, outputs will be preferably generated relative to the project directory. " +
+            "Otherwise, JIPipe will store the results in an automatically generated directory. " +
+            "Has no effect if an absolute path is provided.")
+    @JIPipeParameter("relative-to-project-dir")
+    public boolean isRelativeToProjectDir() {
+        return relativeToProjectDir;
+    }
+
+    @JIPipeParameter("relative-to-project-dir")
+    public void setRelativeToProjectDir(boolean relativeToProjectDir) {
+        this.relativeToProjectDir = relativeToProjectDir;
     }
 
     @JIPipeDocumentation(name = "File format", description = "The format of the exported file")

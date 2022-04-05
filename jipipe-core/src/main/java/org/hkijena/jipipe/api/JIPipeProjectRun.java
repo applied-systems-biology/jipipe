@@ -107,6 +107,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
             JIPipeProjectCompartment compartment = project.getCompartments().get(algorithm.getCompartmentUUIDInParentGraph());
             algorithm.setInternalStoragePath(Paths.get(StringUtils.safeJsonify(compartment.getAliasIdInParentGraph()))
                     .resolve(StringUtils.safeJsonify(copiedGraph.getAliasIdOf(algorithm))));
+            algorithm.setProjectDirectory(project.getWorkDirectory());
         }
     }
 

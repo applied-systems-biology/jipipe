@@ -36,6 +36,7 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
     private JIPipeDataByMetadataExporter exporter;
     private Path outputDirectory = Paths.get("exported-data");
     private boolean exportAsROIFile = false;
+    private boolean relativeToProjectDir = false;
 
     public ExportROIAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -48,6 +49,7 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
         this.outputDirectory = other.outputDirectory;
         this.exportAsROIFile = other.exportAsROIFile;
+        this.relativeToProjectDir = other.relativeToProjectDir;
         registerSubParameter(exporter);
     }
 
@@ -61,7 +63,12 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
-            outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(outputDirectory);
+            if(relativeToProjectDir && getProjectDirectory() != null) {
+                outputPath = getProjectDirectory().resolve(StringUtils.nullToEmpty(outputDirectory));
+            }
+            else {
+                outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
+            }
         } else {
             outputPath = outputDirectory;
         }
@@ -103,6 +110,19 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
                 dataBatch.addOutputData(getFirstOutputSlot(), new FileData(outputPath.resolve(baseName + ".zip")), progressInfo);
             }
         }
+    }
+
+    @JIPipeDocumentation(name = "Output relative to project directory", description = "If enabled, outputs will be preferably generated relative to the project directory. " +
+            "Otherwise, JIPipe will store the results in an automatically generated directory. " +
+            "Has no effect if an absolute path is provided.")
+    @JIPipeParameter("relative-to-project-dir")
+    public boolean isRelativeToProjectDir() {
+        return relativeToProjectDir;
+    }
+
+    @JIPipeParameter("relative-to-project-dir")
+    public void setRelativeToProjectDir(boolean relativeToProjectDir) {
+        this.relativeToProjectDir = relativeToProjectDir;
     }
 
     @JIPipeDocumentation(name = "Force exporting *.roi files", description = "If true, the exporter will always export *.roi files and if necessary split the ROI list.")
