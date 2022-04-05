@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
+import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -50,6 +51,7 @@ public class ExportDataTableByParameter extends JIPipeMergingAlgorithm {
 
     public ExportDataTableByParameter(JIPipeNodeInfo info) {
         super(info);
+        getDataBatchGenerationSettings().setColumnMatching(JIPipeColumMatching.MergeAll);
     }
 
     public ExportDataTableByParameter(ExportDataTableByParameter other) {
@@ -59,6 +61,10 @@ public class ExportDataTableByParameter extends JIPipeMergingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        Path outputDirectory = this.outputDirectory;
+        if(!outputDirectory.isAbsolute()) {
+            outputDirectory = getNewScratch().resolve(outputDirectory);
+        }
         if (!Files.exists(outputDirectory)) {
             try {
                 Files.createDirectories(outputDirectory);
