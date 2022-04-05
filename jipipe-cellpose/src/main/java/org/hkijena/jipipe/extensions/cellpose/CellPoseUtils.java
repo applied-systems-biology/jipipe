@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.cellpose;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.collect.ImmutableList;
+import com.google.common.io.Resources;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
 import ij.IJ;
@@ -17,9 +18,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
@@ -27,8 +30,22 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class CellPoseUtils {
+
+    private static String CELLPOSE_CUSTOM_CODE;
+
     private CellPoseUtils() {
 
+    }
+
+    public static String getCellposeCustomCode()  {
+        if(CELLPOSE_CUSTOM_CODE == null) {
+            try {
+                CELLPOSE_CUSTOM_CODE = Resources.toString(CellPoseUtils.class.getResource("/org/hkijena/jipipe/extensions/cellpose/cellpose-custom.py"), StandardCharsets.UTF_8);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return CELLPOSE_CUSTOM_CODE;
     }
 
     /**
