@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeColumMatching;
@@ -48,6 +47,7 @@ import java.nio.file.Paths;
 public class ExportDataTableByParameter extends JIPipeMergingAlgorithm {
 
     private Path outputDirectory = Paths.get("exported-data");
+    private boolean relativeToProjectDir = false;
 
     public ExportDataTableByParameter(JIPipeNodeInfo info) {
         super(info);
@@ -57,24 +57,30 @@ public class ExportDataTableByParameter extends JIPipeMergingAlgorithm {
     public ExportDataTableByParameter(ExportDataTableByParameter other) {
         super(other);
         this.outputDirectory = other.outputDirectory;
+        this.relativeToProjectDir = other.relativeToProjectDir;
     }
 
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Path outputDirectory = this.outputDirectory;
-        if(!outputDirectory.isAbsolute()) {
-            outputDirectory = getNewScratch().resolve(outputDirectory);
+        Path outputPath = this.outputDirectory;
+        if(!outputPath.isAbsolute()) {
+            if(relativeToProjectDir && getProjectDirectory() != null) {
+                outputPath = getProjectDirectory().resolve(StringUtils.nullToEmpty(outputDirectory));
+            }
+            else {
+                outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
+            }
         }
-        if (!Files.exists(outputDirectory)) {
+        if (!Files.exists(outputPath)) {
             try {
-                Files.createDirectories(outputDirectory);
+                Files.createDirectories(outputPath);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
         JIPipeDataSlot batchSlot = dataBatch.toDummySlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output, "Output", ""), this, getInputSlot("Data"));
-        batchSlot.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, outputDirectory), progressInfo);
-        dataBatch.addOutputData("Path", new PathData(outputDirectory), progressInfo);
+        batchSlot.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, outputPath), progressInfo);
+        dataBatch.addOutputData("Path", new PathData(outputPath), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +
@@ -88,6 +94,19 @@ public class ExportDataTableByParameter extends JIPipeMergingAlgorithm {
     @JIPipeParameter("output-directory")
     public void setOutputDirectory(Path outputDirectory) {
         this.outputDirectory = outputDirectory;
+    }
+
+    @JIPipeDocumentation(name = "Output relative to project directory", description = "If enabled, outputs will be preferably generated relative to the project directory. " +
+            "Otherwise, JIPipe will store the results in an automatically generated directory. " +
+            "Has no effect if an absolute path is provided.")
+    @JIPipeParameter("relative-to-project-dir")
+    public boolean isRelativeToProjectDir() {
+        return relativeToProjectDir;
+    }
+
+    @JIPipeParameter("relative-to-project-dir")
+    public void setRelativeToProjectDir(boolean relativeToProjectDir) {
+        this.relativeToProjectDir = relativeToProjectDir;
     }
 }
 

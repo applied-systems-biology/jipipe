@@ -87,14 +87,14 @@ public class ModifyAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-        JythonUtils.checkScriptValidity(code.getCode(getProjectWorkDirectory()), scriptParameters, report.resolve("Script"));
+        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, report.resolve("Script"));
         JythonUtils.checkScriptParametersValidity(scriptParameters, report.resolve("Script parameters"));
     }
 
     @Override
-    public void setProjectWorkDirectory(Path projectWorkDirectory) {
-        super.setProjectWorkDirectory(projectWorkDirectory);
-        code.makeExternalScriptFileRelative(projectWorkDirectory);
+    public void setBaseDirectory(Path baseDirectory) {
+        super.setBaseDirectory(baseDirectory);
+        code.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @Override
@@ -109,7 +109,7 @@ public class ModifyAnnotationScript extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         PyDictionary annotationDict = JIPipeTextAnnotation.annotationMapToPython(dataBatch.getMergedTextAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
-        pythonInterpreter.exec(code.getCode(getProjectWorkDirectory()));
+        pythonInterpreter.exec(code.getCode(getProjectDirectory()));
         annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 
         // Convert the results back into JIPipe

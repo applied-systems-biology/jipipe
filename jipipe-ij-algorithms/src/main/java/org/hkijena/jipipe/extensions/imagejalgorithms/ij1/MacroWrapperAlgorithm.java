@@ -213,7 +213,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
-        finalCode.append("\n").append(code.getCode(getProjectWorkDirectory()));
+        finalCode.append("\n").append(code.getCode(getProjectDirectory()));
 
         Interpreter interpreter = new Interpreter();
         try {
@@ -354,9 +354,9 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void setProjectWorkDirectory(Path projectWorkDirectory) {
-        super.setProjectWorkDirectory(projectWorkDirectory);
-        code.makeExternalScriptFileRelative(projectWorkDirectory);
+    public void setBaseDirectory(Path baseDirectory) {
+        super.setBaseDirectory(baseDirectory);
+        code.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @JIPipeDocumentation(name = "Code", description = "The macro code. " + "Images are opened as windows named according to the input slot. You have to select windows with " +

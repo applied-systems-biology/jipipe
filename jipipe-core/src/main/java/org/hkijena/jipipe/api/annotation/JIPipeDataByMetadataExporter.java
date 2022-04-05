@@ -55,7 +55,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     private Mode mode = Mode.Manual;
     private StringQueryExpression customName = new StringQueryExpression("SUMMARIZE_VARIABLES()");
     private StringQueryExpression customSubDirectory = new StringQueryExpression("\"\"");
-    private boolean forceName = false;
+    private boolean forceName = true;
 
     public JIPipeDataByMetadataExporter() {
     }
@@ -80,6 +80,8 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
         if (access.getKey().equals("mode"))
+            return true;
+        if (access.getKey().equals("force-name"))
             return true;
         if (mode == Mode.Automatic) {
             return !access.getKey().equals("custom-name") && !access.getKey().equals("custom-directory");

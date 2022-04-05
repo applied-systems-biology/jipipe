@@ -21,6 +21,7 @@ import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameter
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -50,6 +51,7 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
     private HyperstackDimension movieAnimatedDimension = HyperstackDimension.Frame;
     private AVICompression aviCompression = AVICompression.PNG;
     private int jpegQuality = 100;
+    private boolean relativeToProjectDir = false;
 
     public ExportImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -66,6 +68,7 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
         this.movieAnimatedDimension = other.movieAnimatedDimension;
         this.aviCompression = other.aviCompression;
         this.jpegQuality = other.jpegQuality;
+        this.relativeToProjectDir = other.relativeToProjectDir;
         registerSubParameter(exporter);
     }
 
@@ -79,7 +82,12 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
-            outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(outputDirectory);
+            if(relativeToProjectDir && getProjectDirectory() != null) {
+                outputPath = getProjectDirectory().resolve(StringUtils.nullToEmpty(outputDirectory));
+            }
+            else {
+                outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
+            }
         } else {
             outputPath = outputDirectory;
         }
@@ -214,6 +222,19 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
             return false;
         this.jpegQuality = jpegQuality;
         return true;
+    }
+
+    @JIPipeDocumentation(name = "Output relative to project directory", description = "If enabled, outputs will be preferably generated relative to the project directory. " +
+            "Otherwise, JIPipe will store the results in an automatically generated directory. " +
+            "Has no effect if an absolute path is provided.")
+    @JIPipeParameter("relative-to-project-dir")
+    public boolean isRelativeToProjectDir() {
+        return relativeToProjectDir;
+    }
+
+    @JIPipeParameter("relative-to-project-dir")
+    public void setRelativeToProjectDir(boolean relativeToProjectDir) {
+        this.relativeToProjectDir = relativeToProjectDir;
     }
 
     @Override

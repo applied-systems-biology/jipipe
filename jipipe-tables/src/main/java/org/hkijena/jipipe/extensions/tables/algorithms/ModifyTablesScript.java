@@ -89,14 +89,14 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-        JythonUtils.checkScriptValidity(code.getCode(getProjectWorkDirectory()), scriptParameters, report.resolve("Script"));
+        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, report.resolve("Script"));
         JythonUtils.checkScriptParametersValidity(scriptParameters, report.resolve("Script parameters"));
     }
 
     @Override
-    public void setProjectWorkDirectory(Path projectWorkDirectory) {
-        super.setProjectWorkDirectory(projectWorkDirectory);
-        code.makeExternalScriptFileRelative(projectWorkDirectory);
+    public void setBaseDirectory(Path baseDirectory) {
+        super.setBaseDirectory(baseDirectory);
+        code.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @Override
@@ -116,7 +116,7 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.set("table", tableDict);
         pythonInterpreter.set("nrow", inputData.getRowCount());
-        pythonInterpreter.exec(code.getCode(getProjectWorkDirectory()));
+        pythonInterpreter.exec(code.getCode(getProjectDirectory()));
         tableDict = (PyDictionary) pythonInterpreter.get("table");
         annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 

@@ -115,14 +115,14 @@ public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
-        JythonUtils.checkScriptValidity(code.getCode(getProjectWorkDirectory()), scriptParameters, report.resolve("Script"));
+        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, report.resolve("Script"));
         JythonUtils.checkScriptParametersValidity(scriptParameters, report.resolve("Script parameters"));
     }
 
     @Override
-    public void setProjectWorkDirectory(Path projectWorkDirectory) {
-        super.setProjectWorkDirectory(projectWorkDirectory);
-        code.makeExternalScriptFileRelative(projectWorkDirectory);
+    public void setBaseDirectory(Path baseDirectory) {
+        super.setBaseDirectory(baseDirectory);
+        code.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @Override
@@ -142,7 +142,7 @@ public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         pythonInterpreter.set("output_slots", new ArrayList<>(getOutputSlots()));
         pythonInterpreter.set("input_slot_map", inputSlotMap);
         pythonInterpreter.set("output_slot_map", outputSlotMap);
-        pythonInterpreter.exec(code.getCode(getProjectWorkDirectory()));
+        pythonInterpreter.exec(code.getCode(getProjectDirectory()));
     }
 
     @JIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations." +

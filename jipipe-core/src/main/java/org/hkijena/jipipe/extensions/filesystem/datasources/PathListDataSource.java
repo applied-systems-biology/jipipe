@@ -136,8 +136,8 @@ public class PathListDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void setProjectWorkDirectory(Path projectWorkDirectory) {
-        super.setProjectWorkDirectory(projectWorkDirectory);
+    public void setBaseDirectory(Path baseDirectory) {
+        super.setBaseDirectory(baseDirectory);
 
         boolean modified = false;
         for (int i = 0; i < paths.size(); ++i) {
@@ -148,8 +148,8 @@ public class PathListDataSource extends JIPipeAlgorithm {
                     if (currentWorkingDirectory != null) {
                         folderPath = currentWorkingDirectory.resolve(folderPath);
                         modified = true;
-                    } else if (projectWorkDirectory != null) {
-                        folderPath = projectWorkDirectory.resolve(folderPath);
+                    } else if (baseDirectory != null) {
+                        folderPath = baseDirectory.resolve(folderPath);
                         modified = true;
                     }
                 }
@@ -157,8 +157,8 @@ public class PathListDataSource extends JIPipeAlgorithm {
                 FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
                 if (settings == null || settings.isRelativizePaths()) {
                     if (folderPath.isAbsolute()) {
-                        if (projectWorkDirectory != null && folderPath.startsWith(projectWorkDirectory)) {
-                            folderPath = projectWorkDirectory.relativize(folderPath);
+                        if (baseDirectory != null && folderPath.startsWith(baseDirectory)) {
+                            folderPath = baseDirectory.relativize(folderPath);
                             modified = true;
                         }
                     }
@@ -168,6 +168,6 @@ public class PathListDataSource extends JIPipeAlgorithm {
                     this.paths.set(i, folderPath);
             }
         }
-        currentWorkingDirectory = projectWorkDirectory;
+        currentWorkingDirectory = baseDirectory;
     }
 }

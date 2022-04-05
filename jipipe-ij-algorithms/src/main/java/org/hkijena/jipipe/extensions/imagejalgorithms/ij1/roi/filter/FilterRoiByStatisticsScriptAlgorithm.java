@@ -152,7 +152,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
         PyDictionary annotationDict = JIPipeTextAnnotation.annotationMapToPython(dataBatch.getMergedTextAnnotations());
         pythonInterpreter.set("annotations", annotationDict);
         pythonInterpreter.set("roi_list", roiList);
-        pythonInterpreter.exec(code.getCode(getProjectWorkDirectory()));
+        pythonInterpreter.exec(code.getCode(getProjectDirectory()));
         roiList = (List<PyDictionary>) pythonInterpreter.get("roi_list").__tojava__(List.class);
         annotationDict = (PyDictionary) pythonInterpreter.get("annotations");
 
@@ -168,14 +168,14 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
     }
 
     @Override
-    public void setProjectWorkDirectory(Path projectWorkDirectory) {
-        super.setProjectWorkDirectory(projectWorkDirectory);
-        code.makeExternalScriptFileRelative(projectWorkDirectory);
+    public void setBaseDirectory(Path baseDirectory) {
+        super.setBaseDirectory(baseDirectory);
+        code.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-        JythonUtils.checkScriptValidity(code.getCode(getProjectWorkDirectory()), scriptParameters, report.resolve("Script"));
+        JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, report.resolve("Script"));
         JythonUtils.checkScriptParametersValidity(scriptParameters, report.resolve("Script parameters"));
     }
 

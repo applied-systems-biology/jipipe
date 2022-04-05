@@ -69,7 +69,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     private String customName;
     private HTMLText customDescription;
     private JIPipeGraph parentGraph;
-    private Path projectWorkDirectory;
+    private Path baseDirectory;
+    private Path projectDirectory;
     private Path scratchBaseDirectory;
     private boolean bookmarked;
 
@@ -150,6 +151,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         }
         this.customName = other.customName;
         this.customDescription = other.customDescription;
+        this.baseDirectory = other.baseDirectory;
+        this.projectDirectory = other.projectDirectory;
         updateGraphNodeSlots();
         slotConfiguration.getEventBus().register(this);
     }
@@ -788,23 +791,39 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     }
 
     /**
+     * Returns the current project directory.
+     * @return the project directory. Null if none was set.
+     */
+    public Path getProjectDirectory() {
+        return projectDirectory;
+    }
+
+    /**
+     * Sets the project directory. Can be null.
+     * @param projectDirectory the project directory. can be null.
+     */
+    public void setProjectDirectory(Path projectDirectory) {
+        this.projectDirectory = projectDirectory;
+    }
+
+    /**
      * Returns the current work directory of this algorithm. This is used internally to allow relative data paths.
      *
      * @return The current work directory or null.
      */
-    public Path getProjectWorkDirectory() {
-        return projectWorkDirectory;
+    public Path getBaseDirectory() {
+        return baseDirectory;
     }
 
     /**
      * Sets the current work directory of this algorithm. This is used internally to allow loading data from relative paths.
-     * This triggers a {@link JIPipeProject.WorkDirectoryChangedEvent} that can be received by {@link JIPipeDataSlot} instances to adapt to the work directory.
+     * This triggers a {@link BaseDirectoryChangedEvent} that can be received by {@link JIPipeDataSlot} instances to adapt to the work directory.
      *
-     * @param projectWorkDirectory The work directory. Can be null
+     * @param baseDirectory The work directory. Can be null
      */
-    public void setProjectWorkDirectory(Path projectWorkDirectory) {
-        this.projectWorkDirectory = projectWorkDirectory;
-        eventBus.post(new JIPipeProject.WorkDirectoryChangedEvent(projectWorkDirectory));
+    public void setBaseDirectory(Path baseDirectory) {
+        this.baseDirectory = baseDirectory;
+        eventBus.post(new BaseDirectoryChangedEvent(baseDirectory));
     }
 
     /**
@@ -1195,4 +1214,21 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         }
     }
 
+    /**
+     * Triggered when the base directory of a project or algorithm was changed
+     */
+    public static class BaseDirectoryChangedEvent {
+        private final Path baseDirectory;
+
+        /**
+         * @param baseDirectory the work directory
+         */
+        public BaseDirectoryChangedEvent(Path baseDirectory) {
+            this.baseDirectory = baseDirectory;
+        }
+
+        public Path getBaseDirectory() {
+            return baseDirectory;
+        }
+    }
 }

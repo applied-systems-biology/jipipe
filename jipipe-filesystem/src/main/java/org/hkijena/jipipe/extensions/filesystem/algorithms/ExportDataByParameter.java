@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -33,7 +32,6 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collections;
 
 @JIPipeDocumentation(name = "Export data", description = "Collects all incoming data into one or multiple folders that contain the raw output files. " +
         "The output files are named according to the metadata columns and can be easily processed by humans or third-party scripts. " +
@@ -44,8 +42,8 @@ import java.util.Collections;
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
 public class ExportDataByParameter extends JIPipeAlgorithm {
 
-    private boolean splitByInputSlots = true;
     private Path outputDirectory = Paths.get("exported-data");
+    private boolean relativeToProjectDir = false;
     private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
 
     public ExportDataByParameter(JIPipeNodeInfo info) {
@@ -55,9 +53,9 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
 
     public ExportDataByParameter(ExportDataByParameter other) {
         super(other);
-        this.splitByInputSlots = other.splitByInputSlots;
         this.outputDirectory = other.outputDirectory;
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
+        this.relativeToProjectDir = other.relativeToProjectDir;
         registerSubParameter(exporter);
     }
 
@@ -65,7 +63,12 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
     public void run(JIPipeProgressInfo progressInfo) {
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
-            outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
+            if(relativeToProjectDir && getProjectDirectory() != null) {
+                outputPath = getProjectDirectory().resolve(StringUtils.nullToEmpty(outputDirectory));
+            }
+            else {
+                outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
+            }
         } else {
             outputPath = outputDirectory;
         }
@@ -75,17 +78,8 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
             return;
         }
 
-        if (splitByInputSlots) {
-            for (JIPipeDataSlot inputSlot : getInputSlots()) {
-                if (progressInfo.isCancelled())
-                    return;
-                exporter.writeToFolder(Collections.singletonList(inputSlot), outputPath.resolve(StringUtils.makeFilesystemCompatible(inputSlot.getName())), progressInfo.resolve("Slot '" + inputSlot.getName() + "'"));
-                getFirstOutputSlot().addData(new FolderData(outputPath.resolve(inputSlot.getName())), progressInfo);
-            }
-        } else {
-            exporter.writeToFolder(getInputSlots(), outputPath, progressInfo);
-            getFirstOutputSlot().addData(new FolderData(outputPath), progressInfo);
-        }
+        exporter.writeToFolder(getInputSlots(), outputPath, progressInfo);
+        getFirstOutputSlot().addData(new FolderData(outputPath), progressInfo);
     }
 
     @Override
@@ -93,15 +87,17 @@ public class ExportDataByParameter extends JIPipeAlgorithm {
         return true;
     }
 
-    @JIPipeDocumentation(name = "Split by input slots", description = "If enabled, a folder for each input slot is created. Otherwise all output is stored within one folder.")
-    @JIPipeParameter("split-by-input-slots")
-    public boolean isSplitByInputSlots() {
-        return splitByInputSlots;
+    @JIPipeDocumentation(name = "Output relative to project directory", description = "If enabled, outputs will be preferably generated relative to the project directory. " +
+            "Otherwise, JIPipe will store the results in an automatically generated directory. " +
+            "Has no effect if an absolute path is provided.")
+    @JIPipeParameter("relative-to-project-dir")
+    public boolean isRelativeToProjectDir() {
+        return relativeToProjectDir;
     }
 
-    @JIPipeParameter("split-by-input-slots")
-    public void setSplitByInputSlots(boolean splitByInputSlots) {
-        this.splitByInputSlots = splitByInputSlots;
+    @JIPipeParameter("relative-to-project-dir")
+    public void setRelativeToProjectDir(boolean relativeToProjectDir) {
+        this.relativeToProjectDir = relativeToProjectDir;
     }
 
     @JIPipeDocumentation(name = "Output directory", description = "Can be a relative or absolute directory. All collected files will be put into this directory. " +

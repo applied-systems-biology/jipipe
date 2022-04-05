@@ -98,7 +98,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
 
     private void initializeRelativeDirectories() {
         for (JIPipeGraphNode algorithm : copiedGraph.getGraphNodes()) {
-            algorithm.setProjectWorkDirectory(null);
+            algorithm.setBaseDirectory(null);
         }
     }
 

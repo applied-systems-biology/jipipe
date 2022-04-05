@@ -136,8 +136,8 @@ public class FileListDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void setProjectWorkDirectory(Path projectWorkDirectory) {
-        super.setProjectWorkDirectory(projectWorkDirectory);
+    public void setBaseDirectory(Path baseDirectory) {
+        super.setBaseDirectory(baseDirectory);
 
         boolean modified = false;
         for (int i = 0; i < files.size(); ++i) {
@@ -148,8 +148,8 @@ public class FileListDataSource extends JIPipeAlgorithm {
                     if (currentWorkingDirectory != null) {
                         fileName = currentWorkingDirectory.resolve(fileName);
                         modified = true;
-                    } else if (projectWorkDirectory != null) {
-                        fileName = projectWorkDirectory.resolve(fileName);
+                    } else if (baseDirectory != null) {
+                        fileName = baseDirectory.resolve(fileName);
                         modified = true;
                     }
                 }
@@ -157,8 +157,8 @@ public class FileListDataSource extends JIPipeAlgorithm {
                 FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
                 if (settings == null || settings.isRelativizePaths()) {
                     if (fileName.isAbsolute()) {
-                        if (projectWorkDirectory != null && fileName.startsWith(projectWorkDirectory)) {
-                            fileName = projectWorkDirectory.relativize(fileName);
+                        if (baseDirectory != null && fileName.startsWith(baseDirectory)) {
+                            fileName = baseDirectory.relativize(fileName);
                             modified = true;
                         }
                     }
@@ -168,6 +168,6 @@ public class FileListDataSource extends JIPipeAlgorithm {
                     this.files.set(i, fileName);
             }
         }
-        currentWorkingDirectory = projectWorkDirectory;
+        currentWorkingDirectory = baseDirectory;
     }
 }

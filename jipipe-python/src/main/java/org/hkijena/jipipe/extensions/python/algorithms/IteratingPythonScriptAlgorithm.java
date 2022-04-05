@@ -169,7 +169,7 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         Map<String, Path> outputSlotPaths = PythonUtils.installOutputSlots(code, getOutputSlots(), workDirectory, progressInfo);
 
         // Add main code
-        code.append("\n").append(this.code.getCode(getProjectWorkDirectory())).append("\n");
+        code.append("\n").append(this.code.getCode(getProjectDirectory())).append("\n");
 
         // Add postprocessor code
         PythonUtils.addPostprocessorCode(code, getOutputSlots());
@@ -189,9 +189,9 @@ public class IteratingPythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void setProjectWorkDirectory(Path projectWorkDirectory) {
-        super.setProjectWorkDirectory(projectWorkDirectory);
-        code.makeExternalScriptFileRelative(projectWorkDirectory);
+    public void setBaseDirectory(Path baseDirectory) {
+        super.setBaseDirectory(baseDirectory);
+        code.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @JIPipeDocumentation(name = "Script", description = "The Python script to be executed. " +

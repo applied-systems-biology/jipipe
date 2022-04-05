@@ -133,29 +133,29 @@ public class PathDataSource extends JIPipeAlgorithm {
     }
 
     @Override
-    public void setProjectWorkDirectory(Path projectWorkDirectory) {
-        super.setProjectWorkDirectory(projectWorkDirectory);
+    public void setBaseDirectory(Path baseDirectory) {
+        super.setBaseDirectory(baseDirectory);
 
         if (path != null) {
             // Make absolute
             if (!path.isAbsolute()) {
                 if (currentWorkingDirectory != null) {
                     setPath(currentWorkingDirectory.resolve(path));
-                } else if (projectWorkDirectory != null) {
-                    setPath(projectWorkDirectory.resolve(path));
+                } else if (baseDirectory != null) {
+                    setPath(baseDirectory.resolve(path));
                 }
             }
             // Make relative if already absolute and workDirectory != null
             FilesystemExtensionSettings settings = FilesystemExtensionSettings.getInstance();
             if (settings == null || settings.isRelativizePaths()) {
                 if (path.isAbsolute()) {
-                    if (projectWorkDirectory != null && path.startsWith(projectWorkDirectory)) {
-                        setPath(projectWorkDirectory.relativize(path));
+                    if (baseDirectory != null && path.startsWith(baseDirectory)) {
+                        setPath(baseDirectory.relativize(path));
                     }
                 }
             }
         }
 
-        currentWorkingDirectory = projectWorkDirectory;
+        currentWorkingDirectory = baseDirectory;
     }
 }

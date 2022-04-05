@@ -416,10 +416,13 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public void setWorkDirectory(Path workDirectory) {
         this.workDirectory = workDirectory;
+
+        // Set this as base and project directory for the main nodes
         for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
-            algorithm.setProjectWorkDirectory(workDirectory);
+            algorithm.setBaseDirectory(workDirectory);
+            algorithm.setProjectDirectory(workDirectory);
         }
-        eventBus.post(new WorkDirectoryChangedEvent(workDirectory));
+        eventBus.post(new JIPipeGraphNode.BaseDirectoryChangedEvent(workDirectory));
     }
 
     /**
@@ -786,21 +789,4 @@ public class JIPipeProject implements JIPipeValidatable {
         }
     }
 
-    /**
-     * Triggered when the work directory of a project or algorithm was changed
-     */
-    public static class WorkDirectoryChangedEvent {
-        private final Path workDirectory;
-
-        /**
-         * @param workDirectory the work directory
-         */
-        public WorkDirectoryChangedEvent(Path workDirectory) {
-            this.workDirectory = workDirectory;
-        }
-
-        public Path getWorkDirectory() {
-            return workDirectory;
-        }
-    }
 }

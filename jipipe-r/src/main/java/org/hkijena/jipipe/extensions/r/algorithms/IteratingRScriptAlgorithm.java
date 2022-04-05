@@ -165,7 +165,7 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
         RUtils.outputSlotsToR(code, getOutputSlots(), outputSlotPaths);
         RUtils.installOutputGeneratorCode(code);
 
-        code.append("\n").append(script.getCode(getProjectWorkDirectory())).append("\n");
+        code.append("\n").append(script.getCode(getProjectDirectory())).append("\n");
         RUtils.installPostprocessorCode(code);
 
         progressInfo.log(code.toString());
@@ -193,9 +193,9 @@ public class IteratingRScriptAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @Override
-    public void setProjectWorkDirectory(Path projectWorkDirectory) {
-        super.setProjectWorkDirectory(projectWorkDirectory);
-        script.makeExternalScriptFileRelative(projectWorkDirectory);
+    public void setBaseDirectory(Path baseDirectory) {
+        super.setBaseDirectory(baseDirectory);
+        script.makeExternalScriptFileRelative(baseDirectory);
     }
 
     @JIPipeParameter("variables")
