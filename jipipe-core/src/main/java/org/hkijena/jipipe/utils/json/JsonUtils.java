@@ -15,14 +15,18 @@ package org.hkijena.jipipe.utils.json;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  * Global utilities for JSON data
@@ -43,7 +47,8 @@ public class JsonUtils {
 
             // Override standard behavior to serialize paths as URI
             SimpleModule m = new SimpleModule("PathToString");
-            m.addSerializer(Path.class, new ToStringSerializer());
+            m.addSerializer(Path.class, new ToNormalizedPathStringSerializer());
+            m.addDeserializer(Path.class, new FromNormalizedPathStringDeserializer());
             objectMapper.registerModule(m);
         }
         return objectMapper;
@@ -86,6 +91,31 @@ public class JsonUtils {
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(data);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static class ToNormalizedPathStringSerializer extends JsonSerializer<Path> {
+        @Override
+        public void serialize(Path value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
+            gen.writeString(StringUtils.nullToEmpty(value).replace('\\', '/'));
+        }
+    }
+
+    private static class FromNormalizedPathStringDeserializer extends JsonDeserializer<Path> {
+        @Override
+        public Path deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            String s = p.readValueAs(String.class);
+            if(StringUtils.isNullOrEmpty(s)) {
+                return Paths.get("");
+            }
+            else {
+                try {
+                    return Paths.get(s.replace('\\', '/'));
+                }
+                catch (InvalidPathException e) {
+                    return Paths.get("");
+                }
+            }
         }
     }
 }
