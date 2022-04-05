@@ -72,7 +72,7 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.70.0";
+        return "1.70.1";
     }
 
     @Override

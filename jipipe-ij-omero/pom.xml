@@ -5,11 +5,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.70.0</version>
+        <version>1.70.1</version>
     </parent>
 
     <artifactId>jipipe-ij-omero</artifactId>
-    <version>1.70.0</version>
+    <version>1.70.1</version>
 
     <name>jipipe-ij-omero</name>
     <description>JIPipe OMERO Integration</description>
@@ -78,12 +78,12 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>1.70.0</version>
+                <version>1.70.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij</artifactId>
-                <version>1.70.0</version>
+                <version>1.70.1</version>
             </dependency>
             <dependency>
                 <groupId>org.openmicroscopy</groupId>
