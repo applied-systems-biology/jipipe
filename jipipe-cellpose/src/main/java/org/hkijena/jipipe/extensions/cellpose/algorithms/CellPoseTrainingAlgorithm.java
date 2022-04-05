@@ -54,6 +54,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     private CellPosePretrainedModel pretrainedModel = CellPosePretrainedModel.Cytoplasm;
     private int numEpochs = 500;
     private double learningRate = 0.2;
+    private double weightDecay = 1e-05;
     private int batchSize = 8;
     private int minTrainMasks = 1;
     private boolean useResidualConnections = true;
@@ -90,6 +91,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.labelDataAnnotation = new DataAnnotationQueryExpression(other.labelDataAnnotation);
         this.generateConnectedComponents = other.generateConnectedComponents;
         this.minTrainMasks = other.minTrainMasks;
+        this.weightDecay = other.weightDecay;
         updateSlots();
     }
 
@@ -116,6 +118,17 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
                 slotConfiguration.addSlot("Size model", new JIPipeDataSlotInfo(CellPoseSizeModelData.class, JIPipeSlotType.Output), false);
             }
         }
+    }
+
+    @JIPipeDocumentation(name = "Weight decay", description = "The weight decay")
+    @JIPipeParameter("weight-decay")
+    public double getWeightDecay() {
+        return weightDecay;
+    }
+
+    @JIPipeParameter("weight-decay")
+    public void setWeightDecay(double weightDecay) {
+        this.weightDecay = weightDecay;
     }
 
     @JIPipeDocumentation(name = "Generate connected components", description = "If enabled, JIPipe will apply a connected component labeling to the annotated masks. If disabled, Cellpose is provided with " +
@@ -419,6 +432,8 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         if (pretrainedModel == CellPosePretrainedModel.Custom || pretrainedModel == CellPosePretrainedModel.None) {
             arguments.add("--diameter");
             arguments.add(diameter + "");
+            arguments.add("--diam_mean");
+            arguments.add(diameter + "");
         }
 
         switch (pretrainedModel) {
@@ -442,6 +457,9 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         arguments.add("--learning_rate");
         arguments.add(learningRate + "");
+
+        arguments.add("--weight_decay");
+        arguments.add(weightDecay + "");
 
         arguments.add("--n_epochs");
         arguments.add(numEpochs + "");
