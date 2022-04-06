@@ -312,7 +312,13 @@ public class JIPipeExtendedMultiDataTableInfoModel implements TableModel {
     private Component getDataAnnotationPreviewComponent(int rowIndex, int columnIndex) {
         revalidatePreviewCache();
         String dataAnnotationName = dataAnnotationColumns.get(toDataAnnotationColumnIndex(columnIndex));
-        Component preview = dataAnnotationPreviewCache.get(dataAnnotationName).get(rowIndex);
+        Component preview;
+        if(dataAnnotationPreviewCache.containsKey(dataAnnotationName) && rowIndex < dataAnnotationPreviewCache.get(dataAnnotationName).size()) {
+            preview = dataAnnotationPreviewCache.get(dataAnnotationName).get(rowIndex);
+        }
+        else {
+            return new JLabel("N/A");
+        }
         if (preview == null) {
             JIPipeDataAnnotation dataAnnotation = slotList.get(rowIndex).getDataAnnotation(rowList.get(rowIndex), dataAnnotationName);
             if (dataAnnotation != null && GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
