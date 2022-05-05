@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -55,8 +56,10 @@ public class TransformExpandCanvas2DAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         int wOld = imp.getWidth();
         int hOld = imp.getHeight();
-        int wNew = (int) xAxis.apply(wOld, parameters);
-        int hNew = (int) yAxis.apply(hOld, parameters);
+        ExpressionVariables variables = new ExpressionVariables();
+        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        int wNew = (int) xAxis.apply(wOld, variables);
+        int hNew = (int) yAxis.apply(hOld, variables);
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(ImageJUtils.expandImageCanvas(imp, backgroundColor, wNew, hNew, anchor)), progressInfo);
     }

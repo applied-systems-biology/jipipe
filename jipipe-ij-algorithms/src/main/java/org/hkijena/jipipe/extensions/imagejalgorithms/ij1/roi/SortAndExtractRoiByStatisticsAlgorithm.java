@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -137,7 +138,9 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
                 data = sortedData;
             }
 
-            int topN = (int) selection.apply(data.size(), parameters);
+            ExpressionVariables variables = new ExpressionVariables();
+            variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+            int topN = (int) selection.apply(data.size(), variables);
             if (autoClamp) {
                 topN = Math.min(topN, data.size());
             }
