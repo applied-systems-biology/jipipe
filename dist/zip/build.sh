@@ -232,11 +232,12 @@ if [ ! -e "./dependencies/LICENSE_mslinks.txt" ]; then
 fi
 
 rm -r package
+mkdir package
 for component in jipipe-core jipipe-clij jipipe-multiparameters jipipe-filesystem jipipe-ij jipipe-ij2 jipipe-ij-omero jipipe-ij-algorithms jipipe-ij-multi-template-matching jipipe-python jipipe-plots jipipe-tables jipipe-annotation jipipe-utils jipipe-strings jipipe-forms jipipe-r jipipe-cellpose jipipe-launcher jipipe-ij-updater-cli; do
 	cp -v ../../$component/target/$component-$JIPIPE_VERSION.jar package
 done
 
-cp -rv ./dependencies ./package
+cp -rv ./dependencies ./package/dependencies
 cp -v README.txt package
 cp -v ../../LICENSE package/LICENSE_JIPipe.txt
 rm -r JIPipe-$JIPIPE_VERSION.zip

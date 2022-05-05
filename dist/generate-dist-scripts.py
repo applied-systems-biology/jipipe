@@ -9,6 +9,7 @@ with open("dist-info.json", "r") as f:
 jipipe_version = json_data["jipipe-version"]
 
 # Generate ZIP shell script
+print("Generating ZIP script")
 with open("zip/build.sh", "w") as f:
     def wl(text="", tab=0):
         f.write(tab * "\t" + text + "\n")
@@ -29,7 +30,8 @@ with open("zip/build.sh", "w") as f:
     # Cleaning up old package
     wl()
     wl("rm -r package")
-    
+    wl("mkdir package")
+
     # Copy component jars
     wl("for component in " + " ".join(json_data["jipipe-modules"]) + "; do")
     wl("cp -v ../../$component/target/$component-$JIPIPE_VERSION.jar package", tab=1)
@@ -37,7 +39,7 @@ with open("zip/build.sh", "w") as f:
     wl()
 
     # Copy dependencies
-    wl("cp -rv ./dependencies ./package")
+    wl("cp -rv ./dependencies ./package/dependencies")
 
     # Copy other things
     wl("cp -v README.txt package")
