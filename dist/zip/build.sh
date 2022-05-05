@@ -170,21 +170,21 @@ if [ ! -e "./dependencies/omero/ice-3.6.5.jar" ]; then
 	mkdir -p "./dependencies/omero"
 	wget -O ./dependencies/omero/ice-3.6.5.jar https://maven.scijava.org/service/local/repositories/central/content/com/zeroc/ice/3.6.5/ice-3.6.5.jar
 fi
-if [ ! -e "./dependencies/omero/jna-platform-4.5.2.jar" ]; then
-	mkdir -p "./dependencies/omero"
-	wget -O ./dependencies/omero/jna-platform-4.5.2.jar https://maven.scijava.org/service/local/repositories/central/content/net/java/dev/jna/jna-platform/4.5.2/jna-platform-4.5.2.jar
+if [ ! -e "./dependencies/jna-platform-4.5.2.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jna-platform-4.5.2.jar https://maven.scijava.org/service/local/repositories/central/content/net/java/dev/jna/jna-platform/4.5.2/jna-platform-4.5.2.jar
 fi
-if [ ! -e "./dependencies/omero/ij_ridge_detect-1.4.1.jar" ]; then
-	mkdir -p "./dependencies/omero"
-	wget -O ./dependencies/omero/ij_ridge_detect-1.4.1.jar https://maven.scijava.org/service/local/repositories/releases/content/de/biomedical-imaging/imagej/ij_ridge_detect/1.4.1/ij_ridge_detect-1.4.1.jar
+if [ ! -e "./dependencies/ij_ridge_detect-1.4.1.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/ij_ridge_detect-1.4.1.jar https://maven.scijava.org/service/local/repositories/releases/content/de/biomedical-imaging/imagej/ij_ridge_detect/1.4.1/ij_ridge_detect-1.4.1.jar
 fi
-if [ ! -e "./dependencies/omero/commons-compress-1.20.jar" ]; then
-	mkdir -p "./dependencies/omero"
-	wget -O ./dependencies/omero/commons-compress-1.20.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/commons/commons-compress/1.20/commons-compress-1.20.jar
+if [ ! -e "./dependencies/commons-compress-1.20.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/commons-compress-1.20.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/commons/commons-compress/1.20/commons-compress-1.20.jar
 fi
-if [ ! -e "./dependencies/omero/jackson-dataformat-yaml-2.12.5.jar" ]; then
-	mkdir -p "./dependencies/omero"
-	wget -O ./dependencies/omero/jackson-dataformat-yaml-2.12.5.jar https://maven.scijava.org/service/local/repositories/central/content/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.12.5/jackson-dataformat-yaml-2.12.5.jar
+if [ ! -e "./dependencies/jackson-dataformat-yaml-2.12.5.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/jackson-dataformat-yaml-2.12.5.jar https://maven.scijava.org/service/local/repositories/central/content/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.12.5/jackson-dataformat-yaml-2.12.5.jar
 fi
 if [ ! -e "./dependencies/LICENSE_OMERO.txt" ]; then
 	mkdir -p "./dependencies"

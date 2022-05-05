@@ -33,3 +33,5 @@ function process_directory() {
 process_directory $PWD/fiji-linux/ JIPipe.app $PWD/zip/jipipe-full-$JIPIPE_VERSION-linux.zip
 process_directory $PWD/fiji-win/ JIPipe.app $PWD/zip/jipipe-full-$JIPIPE_VERSION-win.zip
 process_directory $PWD/fiji-osx/ JIPipe.app/Contents/Resources/Fiji.app $PWD/zip/jipipe-full-$JIPIPE_VERSION-macos.zip
+
+rm -r zip
