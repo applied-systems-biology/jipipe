@@ -19,6 +19,7 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 
@@ -229,15 +230,16 @@ public class Margin implements JIPipeParameterCollection {
      * If the rectangle is invalid, null is returned
      *
      * @param availableArea rectangle describing the available area.
+     * @param parameters additional expression variables
      * @return Rectangle within the area
      */
-    public Rectangle getInsideArea(Rectangle availableArea) {
-        final int left_ = (int) left.apply(availableArea.width);
-        final int top_ = (int) top.apply(availableArea.height);
-        final int right_ = (int) right.apply(availableArea.width);
-        final int bottom_ = (int) bottom.apply(availableArea.height);
-        final int width_ = (int) width.apply(availableArea.width);
-        final int height_ = (int) height.apply(availableArea.height);
+    public Rectangle getInsideArea(Rectangle availableArea, ExpressionVariables parameters) {
+        final int left_ = (int) left.apply(availableArea.width, parameters);
+        final int top_ = (int) top.apply(availableArea.height, parameters);
+        final int right_ = (int) right.apply(availableArea.width, parameters);
+        final int bottom_ = (int) bottom.apply(availableArea.height, parameters);
+        final int width_ = (int) width.apply(availableArea.width, parameters);
+        final int height_ = (int) height.apply(availableArea.height, parameters);
         final int aw = availableArea.width;
         final int ah = availableArea.height;
 

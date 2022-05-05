@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
@@ -74,8 +75,10 @@ public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgo
         Rectangle boundaries = new Rectangle(0, 0, reference.getWidth(), reference.getHeight());
 
         ROIListData currentData = new ROIListData();
+        ExpressionVariables variables = new ExpressionVariables();
+        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
         for (Margin margin : rectangles) {
-            Rectangle rectangle = margin.getInsideArea(boundaries);
+            Rectangle rectangle = margin.getInsideArea(boundaries, variables);
             currentData.add(new ShapeRoi(rectangle));
             if (split) {
                 getFirstOutputSlot().addData(currentData, progressInfo);

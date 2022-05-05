@@ -102,9 +102,7 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(new ExpressionParameterVariable("<Annotations>",
-                    "Annotations of the source ROI list are available (use Update Cache to find the list of annotations)",
-                    ""));
+            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             VARIABLES.add(new ExpressionParameterVariable("Number of items", "Number of items in the list", "count"));
             VARIABLES.add(new ExpressionParameterVariable("Bounding box X", "Top-left X coordinate of the bounding box around all ROIs (zero if empty list)", "x"));
             VARIABLES.add(new ExpressionParameterVariable("Bounding box Y", "Top-left Y coordinate of the bounding box around all ROIs (zero if empty list)", "y"));

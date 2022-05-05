@@ -136,7 +136,7 @@ public class ConditionalInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm
             VARIABLES.add(new ExpressionParameterVariable("Image title", "The title of the image", "title"));
             VARIABLES.add(new ExpressionParameterVariable("Number of white pixels", "Pixels with a value > 0", "num_white"));
             VARIABLES.add(new ExpressionParameterVariable("Number of black pixels", "Pixels with a value = 0", "num_black"));
-            VARIABLES.add(new ExpressionParameterVariable("<Annotations>", "Annotations of the current image", ""));
+            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
         }
 
         @Override

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.expressions;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -35,8 +36,7 @@ public class NumericFunctionExpression extends DefaultExpressionParameter {
         super(other.getExpression());
     }
 
-    public double apply(double x) {
-        ExpressionVariables parameters = new ExpressionVariables();
+    public double apply(double x, ExpressionVariables parameters) {
         parameters.set("x", x);
         return ((Number) evaluate(parameters)).doubleValue();
     }
@@ -63,9 +63,17 @@ public class NumericFunctionExpression extends DefaultExpressionParameter {
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {
+
+        private static final Set<ExpressionParameterVariable> VARIABLES = new HashSet<>();
+
+        static {
+            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
+            VARIABLES.add(new ExpressionParameterVariable("x", "The input value", "x"));
+        }
+
         @Override
         public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
-            return Collections.singleton(new ExpressionParameterVariable("x", "The input value", "x"));
+            return VARIABLES;
         }
     }
 }

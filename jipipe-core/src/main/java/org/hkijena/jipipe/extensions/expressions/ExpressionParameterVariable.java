@@ -16,6 +16,10 @@ package org.hkijena.jipipe.extensions.expressions;
 import java.util.Objects;
 
 public class ExpressionParameterVariable {
+
+    public static final ExpressionParameterVariable ANNOTATIONS_VARIABLE = new ExpressionParameterVariable("<Annotations>",
+            "Data annotations are available as variables named after their column names (use Update Cache to find the list of annotations)",
+            "");
     private final String name;
     private final String description;
     private final String key;

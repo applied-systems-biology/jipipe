@@ -137,7 +137,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
                 data = sortedData;
             }
 
-            int topN = (int) selection.apply(data.size());
+            int topN = (int) selection.apply(data.size(), parameters);
             if (autoClamp) {
                 topN = Math.min(topN, data.size());
             }

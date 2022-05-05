@@ -225,9 +225,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(new ExpressionParameterVariable("<Annotations>",
-                    "Data annotations of the incoming data are available as variables named after their column names (use Update Cache to find the list of annotations)",
-                    ""));
+            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
         }
 
         @Override

@@ -16,7 +16,7 @@ public class GreyscalePixel5DExpressionParameterVariableSource implements Expres
 
     static {
         VARIABLES = new HashSet<>();
-        VARIABLES.add(new ExpressionParameterVariable("<Annotations>", "Annotations of the current data batch", ""));
+        VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
         VARIABLES.add(new ExpressionParameterVariable("Image width", "The width of the image", "width"));
         VARIABLES.add(new ExpressionParameterVariable("Image height", "The height of the image", "height"));
         VARIABLES.add(new ExpressionParameterVariable("X coordinate", "The X coordinate within the image", "x"));

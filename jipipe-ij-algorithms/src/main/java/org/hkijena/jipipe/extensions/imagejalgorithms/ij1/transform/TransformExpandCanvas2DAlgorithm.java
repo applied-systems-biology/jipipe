@@ -55,8 +55,8 @@ public class TransformExpandCanvas2DAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         int wOld = imp.getWidth();
         int hOld = imp.getHeight();
-        int wNew = (int) xAxis.apply(wOld);
-        int hNew = (int) yAxis.apply(hOld);
+        int wNew = (int) xAxis.apply(wOld, parameters);
+        int hNew = (int) yAxis.apply(hOld, parameters);
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(ImageJUtils.expandImageCanvas(imp, backgroundColor, wNew, hNew, anchor)), progressInfo);
     }

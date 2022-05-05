@@ -346,9 +346,7 @@ public class CustomAutoThreshold2D8UAlgorithm extends JIPipeIteratingAlgorithm {
         @Override
         public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
             Set<ExpressionParameterVariable> result = new HashSet<>();
-            result.add(new ExpressionParameterVariable("<Annotations>",
-                    "Annotations of the input image are available (use Update Cache to find the list of annotations)",
-                    ""));
+            result.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             result.add(new ExpressionParameterVariable("Image width", "The width of the image", "width"));
             result.add(new ExpressionParameterVariable("Image height", "The height of the image", "height"));
             result.add(new ExpressionParameterVariable("Image Z slices", "The number of Z slices in the image", "size_z"));

@@ -484,9 +484,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(new ExpressionParameterVariable("<Annotations>",
-                    "Data annotations are available as variables named after their column names (use Update Cache to find the list of annotations)",
-                    ""));
+            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             VARIABLES.add(new ExpressionParameterVariable("Data string",
                     "The data stored as string",
                     "data_string"));

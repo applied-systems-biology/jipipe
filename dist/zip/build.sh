@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JIPIPE_VERSION=1.71.0
+JIPIPE_VERSION=1.72.0
 
 if [ ! -e "./dependencies" ]; then
   mkdir dependencies
@@ -44,6 +44,7 @@ if [ ! -e "./dependencies" ]; then
   wget "https://maven.scijava.org/service/local/repositories/ome-releases/content/org/openmicroscopy/omero-blitz/5.5.8/omero-blitz-5.5.8.jar"
   wget "https://maven.scijava.org/service/local/repositories/central/content/com/zeroc/icegrid/3.6.5/icegrid-3.6.5.jar"
   wget "https://maven.scijava.org/service/local/repositories/central/content/com/zeroc/glacier2/3.6.5/glacier2-3.6.5.jar"
+  wget "https://maven.scijava.org/service/local/repositories/central/content/com/zeroc/ice/3.6.5/ice-3.6.5.jar"
   wget "https://maven.scijava.org/service/local/repositories/central/content/net/java/dev/jna/jna-platform/4.5.2/jna-platform-4.5.2.jar"
   wget "https://maven.scijava.org/service/local/repositories/releases/content/de/biomedical-imaging/imagej/ij_ridge_detect/1.4.1/ij_ridge_detect-1.4.1.jar"
   wget "https://maven.scijava.org/service/local/repositories/central/content/org/apache/commons/commons-compress/1.20/commons-compress-1.20.jar"

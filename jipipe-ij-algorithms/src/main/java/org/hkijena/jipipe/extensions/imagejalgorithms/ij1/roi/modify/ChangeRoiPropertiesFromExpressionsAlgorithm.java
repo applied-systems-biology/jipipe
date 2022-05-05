@@ -342,7 +342,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
         private static final Set<ExpressionParameterVariable> VARIABLES = new HashSet<>();
 
         static {
-            VARIABLES.add(new ExpressionParameterVariable("<Annotations>", "The annotations of the current data batch", ""));
+            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             VARIABLES.add(new ExpressionParameterVariable("Fill color", "The fill color of the ROI", "fill_color"));
             VARIABLES.add(new ExpressionParameterVariable("Line color", "The line color of the ROI", "line_color"));
             VARIABLES.add(new ExpressionParameterVariable("Line width", "The line width", "line_width"));

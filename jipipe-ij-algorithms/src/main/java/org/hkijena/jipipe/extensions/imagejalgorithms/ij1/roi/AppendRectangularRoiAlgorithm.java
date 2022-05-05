@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
 
@@ -67,8 +68,10 @@ public class AppendRectangularRoiAlgorithm extends JIPipeSimpleIteratingAlgorith
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ROIListData currentData = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate(progressInfo);
         Rectangle bounds = currentData.getBounds();
+        ExpressionVariables variables = new ExpressionVariables();
+        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
         for (Margin margin : rectangles) {
-            currentData.add(new ShapeRoi(margin.getInsideArea(bounds)));
+            currentData.add(new ShapeRoi(margin.getInsideArea(bounds, variables)));
         }
         dataBatch.addOutputData(getFirstOutputSlot(), currentData, progressInfo);
     }

@@ -115,9 +115,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(new ExpressionParameterVariable("<Annotations>",
-                    "Annotations of the source ROI list are available (use Update Cache to find the list of annotations)",
-                    ""));
+            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             VARIABLES.add(new ExpressionParameterVariable("Data string",
                     "The data stored as string",
                     "data_string"));

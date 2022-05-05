@@ -21,7 +21,7 @@ public class ImagePlusPropertiesExpressionParameterVariableSource implements Exp
 
     static {
         VARIABLES = new HashSet<>();
-        VARIABLES.add(new ExpressionParameterVariable("<Annotations>", "Available annotations are available as variables", ""));
+        VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
         VARIABLES.add(new ExpressionParameterVariable("Image width", "The width of the image", "width"));
         VARIABLES.add(new ExpressionParameterVariable("Image height", "The height of the image", "height"));
         VARIABLES.add(new ExpressionParameterVariable("Number of channels", "Number of channel planes", "num_c"));

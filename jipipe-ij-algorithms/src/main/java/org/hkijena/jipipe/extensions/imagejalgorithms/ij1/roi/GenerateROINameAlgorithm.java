@@ -131,9 +131,7 @@ public class GenerateROINameAlgorithm extends ImageRoiProcessorAlgorithm {
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(new ExpressionParameterVariable("<Annotations>",
-                    "Annotations of the source ROI list are available (use Update Cache to find the list of annotations)",
-                    ""));
+            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             VARIABLES.add(new ExpressionParameterVariable("Name", "Current name of the ROI", "Name"));
             for (MeasurementColumn column : MeasurementColumn.values()) {
                 VARIABLES.add(new ExpressionParameterVariable(column.getName(), column.getDescription(), column.getColumnName()));

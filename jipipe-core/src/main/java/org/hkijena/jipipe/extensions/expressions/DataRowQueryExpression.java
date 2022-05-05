@@ -126,7 +126,7 @@ public class DataRowQueryExpression extends DefaultExpressionParameter {
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(new ExpressionParameterVariable("<Annotations>", "Annotations of each data row are available as variables", "key"));
+            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             VARIABLES.add(new ExpressionParameterVariable("Data string", "The string representation of the data", "data_string"));
         }
 

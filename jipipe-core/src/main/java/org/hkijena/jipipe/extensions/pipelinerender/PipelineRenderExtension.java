@@ -54,6 +54,6 @@ public class PipelineRenderExtension extends JIPipePrepackagedDefaultJavaExtensi
 
     @Override
     public String getDependencyVersion() {
-        return "1.71.0";
+        return "1.72.0";
     }
 }

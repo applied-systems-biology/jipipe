@@ -123,9 +123,7 @@ public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(new ExpressionParameterVariable("<Annotations>",
-                    "Annotations of the source table data are available (use Update Cache to find the list of annotations)",
-                    ""));
+            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows in the table", "num_rows"));
             VARIABLES.add(new ExpressionParameterVariable("Number of columns", "The number of columns in the table", "num_cols"));
             VARIABLES.add(new ExpressionParameterVariable("Column names", "Names of the table columns", "column_names"));
