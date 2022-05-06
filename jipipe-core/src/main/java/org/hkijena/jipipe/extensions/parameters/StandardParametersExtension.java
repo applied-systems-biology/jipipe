@@ -609,6 +609,16 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "ImageJ exporter",
                 "Operation that exports data into ImageJ",
                 ImageJDataExporterRefParameterEditorUI.class);
+        registerParameterType("imagej-importer-configurable",
+                ImageJDataImportOperationRef.class,
+                "ImageJ importer (configurable)",
+                "Operation that import data from ImageJ",
+                ImageJDataImportOperationRefParameterEditorUI.class);
+        registerParameterType("imagej-exporter-configurable",
+                ImageJDataExportOperationRef.class,
+                "ImageJ exporter (configurable)",
+                "Operation that exports data into ImageJ",
+                ImageJDataExportOperationRefParameterEditorUI.class);
 
         // Icon types
         registerParameterType("algorithm-type-icon",

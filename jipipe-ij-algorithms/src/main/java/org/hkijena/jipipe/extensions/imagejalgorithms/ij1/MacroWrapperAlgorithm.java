@@ -37,7 +37,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.library.graph.InputSlotMapParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.graph.OutputSlotMapParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.library.references.ImageJDataExportOperationRef;
 import org.hkijena.jipipe.extensions.parameters.library.references.ImageJDataExporterRef;
+import org.hkijena.jipipe.extensions.parameters.library.references.ImageJDataImportOperationRef;
 import org.hkijena.jipipe.extensions.parameters.library.references.ImageJDataImporterRef;
 import org.hkijena.jipipe.extensions.parameters.library.scripts.ImageJMacro;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -58,12 +60,18 @@ import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_AL
 /**
  * An algorithm that wraps around an ImageJ macro
  */
-@JIPipeDocumentation(name = "ImageJ Macro", description = "Runs a custom ImageJ macro. " +
-        "Images are opened as windows named according to the input slot. You have to select windows with " +
-        "the select() function or comparable functions. You have have one results table input which " +
-        "can be addressed via the global functions. Input ROI are merged into one ROI manager.\n\n" +
-        "You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data, named according to the slot name. " +
-        "Annotations can also be accessed via a function getJIPipeAnnotation(key), which returns the string value of the annotation or an empty string if no value was set." + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
+@JIPipeDocumentation(name = "ImageJ Macro", description = "Runs a custom ImageJ macro. JIPipe will iterate through the data batches and execute operations to convert JIPipe data into their ImageJ equivalent (see JIPipe to ImageJ parameter). Then the macro code is executed, followed by operations to import " +
+        "the result data into JIPipe data (see ImageJ to JIPipe parameter). Please feel free to click the 'Load example' button in the parameters to get started." +
+        "\n\nPlease keep in mind the following remarks:\n\n" +
+        "<ul>" +
+        "<li>Input images are opened as windows named according to the input slot. You have to select windows with the select() function or comparable functions.</li>" +
+        "<li>Output images are extracted by finding a window that is named according to the output slot. Ensure to rename() windows accordingly.</li>" +
+        "<li>To extract the 'Results' table output, add an output of type 'Results table' and set the name to 'Results'. Alternatively, you can configure the output in 'JIPipe to ImageJ' and override the name to 'Results'</li>" +
+        "<li>To import other tables, use a different slot name or set the appropriate configuration.</li>" +
+        "<li>Please note that there is only one ROI manager. This is a restriction of ImageJ.</li>" +
+        "<li>Annotations can also be accessed via a function getJIPipeAnnotation(key), which returns the string value of the annotation or an empty string if no value was set.</li>" +
+        "<li>You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data, named according to the slot name.</li>" +
+        "</ul>" + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(ImagePlusData.class)
 @JIPipeInputSlot(ROIListData.class)
@@ -100,12 +108,12 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         this.macroParameters.getEventBus().register(this);
 
         // Importer settings
-        inputToImageJExporters = new InputSlotMapParameterCollection(ImageJDataExporterRef.class, this, this::getDefaultExporterRef, false);
+        inputToImageJExporters = new InputSlotMapParameterCollection(ImageJDataExportOperationRef.class, this, this::getDefaultExporterRef, false);
         inputToImageJExporters.updateSlots();
         registerSubParameter(inputToImageJExporters);
 
         // Exporter settings
-        outputFromImageJImporters = new OutputSlotMapParameterCollection(ImageJDataImporterRef.class, this, this::getDefaultImporterRef, false);
+        outputFromImageJImporters = new OutputSlotMapParameterCollection(ImageJDataImportOperationRef.class, this, this::getDefaultImporterRef, false);
         outputFromImageJImporters.updateSlots();
         registerSubParameter(outputFromImageJImporters);
     }
@@ -145,11 +153,11 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private Object getDefaultExporterRef(JIPipeDataSlotInfo info) {
-        return new ImageJDataExporterRef(JIPipe.getImageJAdapters().getDefaultExporterFor(info.getDataClass()));
+        return new ImageJDataExportOperationRef(JIPipe.getImageJAdapters().getDefaultExporterFor(info.getDataClass()));
     }
 
     private Object getDefaultImporterRef(JIPipeDataSlotInfo info) {
-        return new ImageJDataImporterRef(JIPipe.getImageJAdapters().getDefaultImporterFor(info.getDataClass()));
+        return new ImageJDataImportOperationRef(JIPipe.getImageJAdapters().getDefaultImporterFor(info.getDataClass()));
     }
 
     @Override
@@ -228,9 +236,23 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
 
     private void passOutputData(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-            ImageJDataImporterRef ref = outputFromImageJImporters.get(outputSlot.getName()).get(ImageJDataImporterRef.class);
-            ImageJDataImporter importer = ref.getInstance();
-            JIPipeDataTable imported = importer.importData(null, new ImageJImportParameters(outputSlot.getName()), progressInfo);
+            Object configuration = outputFromImageJImporters.get(outputSlot.getName()).get(Object.class);
+            ImageJDataImporter importer;
+            ImageJImportParameters parameters = new ImageJImportParameters(outputSlot.getName());
+
+            if(configuration instanceof ImageJDataImporterRef) {
+                importer = ((ImageJDataImporterRef) configuration).getInstance();
+            }
+            else if(configuration instanceof ImageJDataImportOperationRef) {
+                ImageJDataImportOperationRef operationRef = (ImageJDataImportOperationRef) configuration;
+                importer = operationRef.getInstance();
+                operationRef.configure(parameters);
+            }
+            else {
+                throw new UnsupportedOperationException("Unknown parameter: " + parameters);
+            }
+
+            JIPipeDataTable imported = importer.importData(null, parameters, progressInfo);
             for (int row = 0; row < imported.getRowCount(); row++) {
                 dataBatch.addOutputData(outputSlot, imported.getData(row, JIPipeData.class, progressInfo).duplicate(progressInfo), progressInfo);
             }
@@ -307,9 +329,23 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         }
         for (JIPipeDataSlot inputSlot : getNonParameterInputSlots()) {
             JIPipeData data = dataBatch.getInputData(inputSlot, JIPipeData.class, progressInfo);
-            ImageJDataExporterRef ref = inputToImageJExporters.get(inputSlot.getName()).get(ImageJDataExporterRef.class);
-            ImageJDataExporter exporter = ref.getInstance();
-            exporter.exportData(data.duplicate(progressInfo), new ImageJExportParameters(true, false, false, inputSlot.getName()), progressInfo);
+            Object configuration = inputToImageJExporters.get(inputSlot.getName()).get(Object.class);
+            ImageJExportParameters parameters = new ImageJExportParameters(true, false, false, inputSlot.getName());
+            ImageJDataExporter exporter;
+
+            if(configuration instanceof ImageJDataExporterRef) {
+                exporter = ((ImageJDataExporterRef) configuration).getInstance();
+            }
+            else if(configuration instanceof ImageJDataExportOperationRef) {
+                ImageJDataExportOperationRef operationRef = (ImageJDataExportOperationRef) configuration;
+                exporter = operationRef.getInstance();
+                operationRef.configure(parameters);
+            }
+            else {
+                throw new UnsupportedOperationException("Unknown parameter: " + configuration);
+            }
+
+            exporter.exportData(data.duplicate(progressInfo), parameters, progressInfo);
         }
     }
 
@@ -317,8 +353,6 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     public void reportValidity(JIPipeIssueReport report) {
         long roiInputSlotCount = getNonParameterInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count();
         long roiOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count();
-        long resultsTableInputSlotCount = getNonParameterInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ResultsTableData.class).count();
-        long resultsTableOutputSlotCount = getOutputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ResultsTableData.class).count();
         if (roiInputSlotCount > 1) {
             report.reportIsInvalid("Too many ROI inputs!",
                     "ImageJ1 has no concept of multiple ROI Managers.",
@@ -329,18 +363,6 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             report.reportIsInvalid("Too many ROI outputs!",
                     "ImageJ1 has no concept of multiple ROI Managers.",
                     "Please make sure to only have at most one ROI data output.",
-                    this);
-        }
-        if (resultsTableInputSlotCount > 1) {
-            report.reportIsInvalid("Too many results table inputs!",
-                    "ImageJ1 has no concept of multiple result tables.",
-                    "Please make sure to only have at most one results table data input.",
-                    this);
-        }
-        if (resultsTableOutputSlotCount > 1) {
-            report.reportIsInvalid("Too many results table outputs!",
-                    "ImageJ1 has no concept of multiple result tables.",
-                    "Please make sure to only have at most one results table data output.",
                     this);
         }
         for (String key : macroParameters.getParameters().keySet()) {
