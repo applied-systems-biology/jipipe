@@ -5,6 +5,7 @@ org.hkijena.jipipe.api.compartments
 org.hkijena.jipipe.api.compartments.algorithms
 org.hkijena.jipipe.api.compartments.datatypes
 org.hkijena.jipipe.api.compat
+org.hkijena.jipipe.api.compat.ui
 org.hkijena.jipipe.api.data
 org.hkijena.jipipe.api.data.storage
 org.hkijena.jipipe.api.environments
@@ -26,6 +27,7 @@ org.hkijena.jipipe.extensions.annotation.datasources
 org.hkijena.jipipe.extensions.batchassistant
 org.hkijena.jipipe.extensions.cellpose
 org.hkijena.jipipe.extensions.cellpose.algorithms
+org.hkijena.jipipe.extensions.cellpose.compat
 org.hkijena.jipipe.extensions.cellpose.datatypes
 org.hkijena.jipipe.extensions.cellpose.parameters
 org.hkijena.jipipe.extensions.clij2

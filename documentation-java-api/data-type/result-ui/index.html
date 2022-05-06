@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-03-28T15:40:50 CEST">
+<meta name="revised" content="2022-05-07T00:03:20 CEST">
 <title>Result view :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -781,7 +781,7 @@ Any other operation must be added manually to each data type.</p>
 for displaying already loaded data from memory.
 The corresponding interfaces are <a href="../../../apidocs/org/hkijena/jipipe/api/data/JIPipeDataImportOperation.html">JIPipeDataImportOperation</a> and <a href="../../../apidocs/org/hkijena/jipipe/api/data/JIPipeDataDisplayOperation.html">JIPipeDataDisplayOperation</a>.</p>
 <p>You can implement one or both interfaces as shown here:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyOperation</span> <span style="color:#00a8c8">implements</span> <span style="color:#111">JIPipeDataImportOperation</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeDataDisplayOperation</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyOperation</span> <span style="color:#00a8c8">implements</span> <span style="color:#111">JIPipeDataImportOperation</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeDataDisplayOperation</span> <span style="color:#f92672">{</span>
     <span style="color:#75af00">@Override</span>
     <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">display</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeData</span> <span style="color:#111">data</span><span style="color:#f92672">,</span> <span style="color:#111">String</span> <span style="color:#111">displayName</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeWorkbench</span> <span style="color:#111">workbench</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
         <span style="color:#75715e">// Here you can pu a custom display function
@@ -833,7 +833,7 @@ The corresponding interfaces are <a href="../../../apidocs/org/hkijena/jipipe/ap
 <div class="notices warning" ><p><p>Currently you have to register all your operations per data type. It its not enough to register them for the base class only.</p>
 </p></div>
 
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
 <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
 
     <span style="color:#75715e">// ... See previous tutorial for other methods
@@ -865,7 +865,7 @@ The corresponding interfaces are <a href="../../../apidocs/org/hkijena/jipipe/ap
 <p>We recommend to inherit from <a href="../../../apidocs/org/hkijena/jipipe/ui/resultanalysis/JIPipeDefaultResultDataSlotRowUI.html">JIPipeDefaultResultDataSlotRowUI</a> that allows to inherit actions
 from inherited data types.</p>
 <p><a href="../../../apidocs/org/hkijena/jipipe/ui/resultanalysis/JIPipeDefaultResultDataSlotRowUI.html">JIPipeDefaultResultDataSlotRowUI</a> requires you to register actions with a name, description and function. The action that was added last is shown in the main UI and triggered by double-clicking the data row in the table. All other actions are put into the <code>...</code> menu.</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyDataDataSlotRowUI</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultResultDataSlotRowUI</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyDataDataSlotRowUI</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultResultDataSlotRowUI</span> <span style="color:#f92672">{</span>
 
     <span style="color:#00a8c8">public</span> <span style="color:#75af00">MyDataDataSlotRowUI</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeProjectWorkbench</span> <span style="color:#111">workbenchUI</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeDataSlot</span> <span style="color:#111">slot</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeExportedDataTable</span><span style="color:#f92672">.</span><span style="color:#75af00">Row</span> <span style="color:#111">row</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
         <span style="color:#00a8c8">super</span><span style="color:#f92672">(</span><span style="color:#111">workbenchUI</span><span style="color:#f92672">,</span> <span style="color:#111">slot</span><span style="color:#f92672">,</span> <span style="color:#111">row</span><span style="color:#f92672">);</span>
@@ -895,7 +895,7 @@ from inherited data types.</p>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>The UI class can be directly registered in <a href="../../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a>:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
 <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
 
     <span style="color:#75715e">// ... See previous tutorial for other methods

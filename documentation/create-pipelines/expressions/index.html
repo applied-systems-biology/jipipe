@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-03-28T15:40:50 CEST">
+<meta name="revised" content="2022-05-07T00:03:20 CEST">
 <title>Expression parameters :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -804,15 +804,15 @@ might put the pixel coordinates into them.</p>
 <p><strong>Example</strong>
 Here the node supplies the variables <code>x</code> and <code>y</code> and expects a number back. You can input a formula that will be
 automatically applied to ally <code>x</code> and <code>y</code> values:</p>
-<pre><code>(x + y) + x/y + 1
+<pre tabindex="0"><code>(x + y) + x/y + 1
 </code></pre>
 <div class="notices info" ><p><p>The expression builder shows a list of all variables. This list might be incomplete if variables are generated during the runtime (e.g., extracted from a table).</p>
 </p></div>
 
 <p>You can also set variables to re-use them in more complicated calculations by introducing multiple statements:</p>
-<pre><code>SET_VARIABLE(&quot;x&quot;, 5); PRINT(&quot;x=&quot;, x); SET_VARIABLE(&quot;y&quot;, x + 5); PRINT(&quot;y=&quot;, y); y + 15
+<pre tabindex="0"><code>SET_VARIABLE(&quot;x&quot;, 5); PRINT(&quot;x=&quot;, x); SET_VARIABLE(&quot;y&quot;, x + 5); PRINT(&quot;y=&quot;, y); y + 15
 </code></pre><p>The code above will run the operations from left to right and print into your console:</p>
-<pre><code>x=5
+<pre tabindex="0"><code>x=5
 y=10
 </code></pre><p>The return value will always be the right-most operation (here <code>15</code>)</p>
 
@@ -821,7 +821,7 @@ We recommend to not put statement operators into brackets and only use them to m
 </p></div>
 
 <p>As you can use new-lines in expression editors, we recommend to put each statement into a new line:</p>
-<pre><code>SET_VARIABLE(&quot;x&quot;, 5); 
+<pre tabindex="0"><code>SET_VARIABLE(&quot;x&quot;, 5); 
 PRINT(&quot;x=&quot;, x); 
 SET_VARIABLE(&quot;y&quot;, x + 5); 
 PRINT(&quot;y=&quot;, y); y + 15
@@ -838,12 +838,12 @@ PRINT(&quot;y=&quot;, y); y + 15
 </ul>
 <p><strong>Example</strong>
 You can combine various operators to do complex filtering. Here the node supplies variables <code>Area</code> and <code>MaxWidth</code>:</p>
-<pre><code>(Area &gt; 1000) AND ((MaxWidth^2 / Area &gt; 0.5))
+<pre tabindex="0"><code>(Area &gt; 1000) AND ((MaxWidth^2 / Area &gt; 0.5))
 </code></pre><h2 id="functions">Functions</h2>
 <p>The expression language comes with a large library of predefined functions that you can use for more complex tasks:</p>
 <p><strong>Example</strong>
 To find files, it can be useful to utilize a Glob-filter that can reliably test for the file extension. Here <code>name</code> is the file name and supplied by the node.</p>
-<pre><code>STRING_MATCHES_GLOB(name, &quot;*.tif&quot;) AND (&quot;data&quot; IN name)
+<pre tabindex="0"><code>STRING_MATCHES_GLOB(name, &quot;*.tif&quot;) AND (&quot;data&quot; IN name)
 </code></pre><h1 id="data-types">Data types</h1>
 <p>The expression language supports five basic data types: Numbers, strings, arrays, and maps</p>
 <h2 id="numbers">Numbers</h2>

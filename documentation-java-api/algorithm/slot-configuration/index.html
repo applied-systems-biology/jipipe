@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-03-28T15:40:50 CEST">
+<meta name="revised" content="2022-05-07T00:03:20 CEST">
 <title>Customizing slots :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -781,7 +781,7 @@ to automatically configure the slots.</p>
 <p>A custom <a href="../../../apidocs/org/hkijena/jipipe/api/data/JIPipeSlotConfiguration.html">JIPipeSlotConfiguration</a> can be used to implement such more advanced behaviors.</p>
 <p>For many cases, the default implementation <a href="../../../apidocs/org/hkijena/jipipe/api/data/JIPipeMutableSlotConfiguration.html">JIPipeMutableSlotConfiguration</a> is sufficient.</p>
 <p>The slot configuration can be overriden during instantiation of the algorithm:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#75af00">MyAlgorithm</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeNodeInfo</span> <span style="color:#111">info</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#75af00">MyAlgorithm</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeNodeInfo</span> <span style="color:#111">info</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     <span style="color:#00a8c8">super</span><span style="color:#f92672">(</span><span style="color:#111">info</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeMutableSlotConfiguration</span><span style="color:#f92672">.</span><span style="color:#75af00">builder</span><span style="color:#f92672">()</span>
     <span style="color:#f92672">.</span><span style="color:#75af00">addInputSlot</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;Input&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
     <span style="color:#f92672">.</span><span style="color:#75af00">restrictOutputTo</span><span style="color:#f92672">(</span><span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>

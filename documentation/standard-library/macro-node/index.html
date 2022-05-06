@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-03-28T15:40:50 CEST">
+<meta name="revised" content="2022-05-07T00:03:20 CEST">
 <title>Macro node :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -808,7 +808,7 @@ commonly used in macros.</p>
 <p><strong>As input:</strong> The image is opened as ImageJ image window, named according to the slot name. We recommend to use the macro command <code>select(&lt;window name&gt;)</code> to first select the image window before applying the processing.</p>
 <p><strong>As output:</strong> The image is extracted from an image window, named according to the slot name. Use the <code>rename()</code> command to rename outputs accordingly.</p>
 <p><strong>Example</strong> (for the node shown above)</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#75715e">// The input is created as window &#34;Input&#34;
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#75715e">// The input is created as window &#34;Input&#34;
 </span><span style="color:#75715e"></span><span style="color:#111">selectWindow</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">);</span>
 <span style="color:#111">run</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Gaussian Blur...&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;sigma=2&#34;</span><span style="color:#111">);</span>
 <span style="color:#75715e">// The node expects an image window &#34;Output&#34;
@@ -900,7 +900,7 @@ The values are converted as following:</p>
 </tbody>
 </table>
 <p>For example, a Gaussian blur node with a <code>Sigma</code> parameter will generate following code:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#75715e">// Code generated from parameters
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#75715e">// Code generated from parameters
 </span><span style="color:#75715e"></span><span style="color:#111">var</span> <span style="color:#111">sigma</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">2.0</span><span style="color:#111">;</span>
 
 <span style="color:#75715e">// Code written in the &#34;Code&#34; parameter
