@@ -41,12 +41,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiProcessorAlgorithm.ROI_PROCESSOR_DESCRIPTION;
-
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Extract ROI statistics", description = "Generates a results table containing ROI statistics." + "\n\n" + ROI_PROCESSOR_DESCRIPTION)
+@JIPipeDocumentation(name = "Extract ROI statistics", description = "Generates a results table containing ROI statistics.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference")

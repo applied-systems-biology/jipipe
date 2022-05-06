@@ -185,7 +185,7 @@ public class UploadOMEROImageAlgorithm extends JIPipeMergingAlgorithm {
         this.uploadAnnotations = uploadAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Uploaded annotations", description = "Determines which annotations should be uploaded. " + AnnotationQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Uploaded annotations", description = "Determines which annotations should be uploaded. ")
     @JIPipeParameter("uploaded-annotations")
     public AnnotationQueryExpression getUploadedAnnotationsFilter() {
         return uploadedAnnotationsFilter;

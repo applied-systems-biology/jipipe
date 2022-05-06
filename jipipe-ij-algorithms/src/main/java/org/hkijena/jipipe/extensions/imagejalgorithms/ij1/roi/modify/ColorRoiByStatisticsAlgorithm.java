@@ -38,12 +38,10 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.Map;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiProcessorAlgorithm.ROI_PROCESSOR_DESCRIPTION;
-
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Color ROI by statistics", description = "Sets the ROI item colors by measurements." + "\n\n" + ROI_PROCESSOR_DESCRIPTION)
+@JIPipeDocumentation(name = "Color ROI by statistics", description = "Sets the ROI item colors by measurements.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference")

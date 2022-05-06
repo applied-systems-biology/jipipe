@@ -29,14 +29,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
-import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
-
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @JIPipeDocumentation(name = "Convert ROI to mask", description = "Converts ROI lists to masks. " +
-        "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant."
-        + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
+        "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image")

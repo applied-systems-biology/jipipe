@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.nodes;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
@@ -44,12 +45,11 @@ import java.util.concurrent.Future;
  * and otherwise runs a generator function that generates missing data items.
  * Original annotations are preserved.
  */
+@JIPipeDocumentationDescription(description = "This algorithm groups the incoming data based on the annotations. " +
+        "Those groups can consist of one data item per slot. " +
+        "If items are missing, they will be generated according to this node's generator function. " +
+        "Otherwise data will be passed through.")
 public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm {
-
-    public static final String GENERATOR_ALGORITHM_DESCRIPTION = "This algorithm groups the incoming data based on the annotations. " +
-            "Those groups can consist of one data item per slot. " +
-            "If items are missing, they will be generated according to this node's generator function. " +
-            "Otherwise data will be passed through.";
 
     private JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings();
     private boolean parallelizationEnabled = true;

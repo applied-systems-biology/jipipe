@@ -82,7 +82,7 @@ public class ColumnsToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
-    @JIPipeDocumentation(name = "Filter", description = "Filters the columns and/or table cell values. " + TableCellValueQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Filter", description = "Filters the columns and/or table cell values. ")
     @JIPipeParameter("filter")
     public TableCellValueQueryExpression getFilter() {
         return filter;

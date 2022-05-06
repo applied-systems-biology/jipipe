@@ -67,7 +67,7 @@ public class ExtractDataAnnotation extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), dataAnnotation.getData(JIPipeData.class, progressInfo), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Extracted data annotation", description = "Determines which annotation is extracted. If multiple match, the first matching annotation column is used. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Extracted data annotation", description = "Determines which annotation is extracted. If multiple match, the first matching annotation column is used. ")
     @JIPipeParameter("annotation-name")
     public StringQueryExpression getAnnotationNameQuery() {
         return annotationNameQuery;

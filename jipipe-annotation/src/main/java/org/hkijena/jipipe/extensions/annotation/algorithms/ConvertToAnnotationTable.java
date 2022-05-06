@@ -27,13 +27,11 @@ import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 
 import java.util.Set;
 
-import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
-
 /**
  * Removes a specified annotation
  */
 @JIPipeDocumentation(name = "Convert to annotation table", description = "Converts data into an annotation table that contains " +
-        "all annotations of the data row. You can also add a string representation of the data." + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
+        "all annotations of the data row. You can also add a string representation of the data.")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = AnnotationTableData.class, slotName = "Output", autoCreate = true)

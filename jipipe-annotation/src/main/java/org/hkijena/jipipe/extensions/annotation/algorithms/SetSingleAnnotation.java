@@ -85,7 +85,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotation value", description = "The value of the generated annotation. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Annotation value", description = "The value of the generated annotation. ")
     @JIPipeParameter("annotation-value")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     public StringQueryExpression getAnnotationValue() {
@@ -97,7 +97,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
         this.annotationValue = annotationValue;
     }
 
-    @JIPipeDocumentation(name = "Annotation name", description = "The name of the generated annotation. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Annotation name", description = "The name of the generated annotation. ")
     @JIPipeParameter("annotation-name")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     public StringQueryExpression getAnnotationName() {

@@ -59,7 +59,7 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
     @Override
     public String getDescription() {
         if (getDocumentation() != null)
-            return DocumentationUtils.getDocumentationDescription(getDocumentation());
+            return DocumentationUtils.getDocumentationDescription(getDocumentation(), getFieldClass());
         return null;
     }
 

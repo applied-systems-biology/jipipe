@@ -115,7 +115,7 @@ public class JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings impl
     }
 
     @JIPipeDocumentation(name = "Custom grouping columns", description = "Only used if 'Grouping method' is set to 'Custom'. " +
-            "Determines which annotation columns are referred to group data sets. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+            "Determines which annotation columns are referred to group data sets. ")
     @JIPipeParameter(value = "custom-matched-columns-expression", uiOrder = 999)
     @StringParameterSettings(monospace = true, icon = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/annotation.png")
     public StringQueryExpression getCustomColumns() {
@@ -129,7 +129,7 @@ public class JIPipeIteratingMissingDataGeneratorDataBatchGenerationSettings impl
         this.customColumns = customColumns;
     }
 
-    @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.\n" + IntegerRange.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")
     @JIPipeParameter(value = "limit")
     public OptionalIntegerRange getLimit() {
         return limit;

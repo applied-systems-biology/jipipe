@@ -109,7 +109,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Column 'X1'", description = "The table column that is used for the X1 coordinate. " + TableColumnSourceExpressionParameter.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Column 'X1'", description = "The table column that is used for the X1 coordinate. ")
     @JIPipeParameter(value = "column-x1")
     @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
     public TableColumnSourceExpressionParameter getColumnX1() {
@@ -121,7 +121,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.columnX1 = columnX1;
     }
 
-    @JIPipeDocumentation(name = "Column 'Y1'", description = "The table column that is used for the Y1 coordinate. " + TableColumnSourceExpressionParameter.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Column 'Y1'", description = "The table column that is used for the Y1 coordinate. ")
     @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
     @JIPipeParameter(value = "column-y1")
     public TableColumnSourceExpressionParameter getColumnY1() {
@@ -133,7 +133,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         this.columnY1 = columnY1;
     }
 
-    @JIPipeDocumentation(name = "Column 'Radius'", description = "The table column that is used for the radius. " + TableColumnSourceExpressionParameter.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Column 'Radius'", description = "The table column that is used for the radius. ")
     @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
     @JIPipeParameter(value = "column-radius")
     public TableColumnSourceExpressionParameter getColumnRadius() {

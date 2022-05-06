@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.extensions.forms.datatypes.DoubleFormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 
-@JIPipeDocumentation(name = "Number input form", description = "Creates a real number input form. " + FormGeneratorAlgorithm.DOCUMENTATION_DESCRIPTION)
+@JIPipeDocumentation(name = "Number input form", description = "Creates a real number input form. " )
 @JIPipeInputSlot(value = FormData.class, slotName = "Existing")
 @JIPipeOutputSlot(value = FormData.class, slotName = "Combined")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)

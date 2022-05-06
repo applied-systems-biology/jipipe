@@ -87,7 +87,7 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotations", description = "Allows you to set the annotation to add/modify. " + AnnotationGeneratorExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Annotations", description = "Allows you to set the annotation to add/modify. ")
     @JIPipeParameter("generated-annotation")
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Name", singleRow = false)
     @StringParameterSettings(monospace = true)

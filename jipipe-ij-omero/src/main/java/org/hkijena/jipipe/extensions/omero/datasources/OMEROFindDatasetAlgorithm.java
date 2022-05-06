@@ -123,7 +123,7 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Dataset name filters", description = "Filters for the dataset name. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Dataset name filters", description = "Filters for the dataset name. ")
     @JIPipeParameter("dataset-name-filters")
     public StringQueryExpression getDatasetNameFilters() {
         return datasetNameFilters;
@@ -188,7 +188,7 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.addKeyValuePairsAsAnnotations = addKeyValuePairsAsAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Key-Value pair filters", description = "Filters projects by attached key value pairs. " + StringMapQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Key-Value pair filters", description = "Filters projects by attached key value pairs. ")
     @JIPipeParameter("key-value-pair-filters")
     public StringMapQueryExpression getKeyValuePairFilters() {
         return keyValuePairFilters;
@@ -199,7 +199,7 @@ public class OMEROFindDatasetAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.keyValuePairFilters = keyValuePairFilters;
     }
 
-    @JIPipeDocumentation(name = "Tag filters", description = "Filters by tag values. If no tag is matched, the data set is skipped. " + StringMapQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Tag filters", description = "Filters by tag values. If no tag is matched, the data set is skipped. ")
     @JIPipeParameter("tag-filters")
     public StringMapQueryExpression getTagFilters() {
         return tagFilters;

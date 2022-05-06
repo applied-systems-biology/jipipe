@@ -166,7 +166,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
                 parameterAccess.setFieldClass(TableColumnSourceExpressionParameter.class);
                 TableColumnSourceExpressionParameter initialValue = new TableColumnSourceExpressionParameter();
                 parameterAccess.set(initialValue);
-                parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)") + "\n\n" + TableColumnSourceExpressionParameter.DOCUMENTATION_DESCRIPTION);
+                parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)"));
                 inputColumns.addParameter(parameterAccess);
             }
         }

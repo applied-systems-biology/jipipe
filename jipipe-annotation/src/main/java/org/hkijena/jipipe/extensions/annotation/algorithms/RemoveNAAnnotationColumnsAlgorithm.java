@@ -64,7 +64,7 @@ public class RemoveNAAnnotationColumnsAlgorithm extends JIPipeParameterSlotAlgor
         }
     }
 
-    @JIPipeDocumentation(name = "Annotation column filter", description = "Allows to filter for specific annotation columns. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Annotation column filter", description = "Allows to filter for specific annotation columns. ")
     @JIPipeParameter("annotation-name-filter")
     public StringQueryExpression getAnnotationNameFilter() {
         return annotationNameFilter;

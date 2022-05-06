@@ -80,7 +80,7 @@ public class ExtractParametersAlgorithm extends JIPipeAlgorithm {
         this.nodeNameAnnotation = nodeNameAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Parameter key filter", description = "Allows to filter only specific parameter keys. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Parameter key filter", description = "Allows to filter only specific parameter keys. ")
     @JIPipeParameter("parameter-key-filter")
     public StringQueryExpression getParameterKeyFilter() {
         return parameterKeyFilter;

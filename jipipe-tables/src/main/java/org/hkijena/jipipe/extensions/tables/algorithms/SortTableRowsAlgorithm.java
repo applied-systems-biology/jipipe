@@ -155,7 +155,7 @@ public class SortTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Filters", description = "Allows you determine by which columns the table is sorted. The order determines the " +
-            "sorting priority. Columns can be matched multiple times. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+            "sorting priority. Columns can be matched multiple times. ")
     @JIPipeParameter("sort-order")
     @PairParameterSettings(singleRow = false)
     public StringQueryExpressionAndSortOrderPairParameter.List getSortOrderList() {

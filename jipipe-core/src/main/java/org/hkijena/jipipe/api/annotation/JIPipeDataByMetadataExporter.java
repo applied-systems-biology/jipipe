@@ -143,7 +143,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         this.forceName = forceName;
     }
 
-    @JIPipeDocumentation(name = "Metadata key filters", description = "Only includes the metadata keys that match the filter. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Metadata key filters", description = "Only includes the metadata keys that match the filter. ")
     @JIPipeParameter("metadata-key-filters")
     public StringQueryExpression getMetadataKeyFilter() {
         return metadataKeyFilter;

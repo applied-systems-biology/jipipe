@@ -55,8 +55,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
-
 /**
  * An algorithm that wraps around an ImageJ macro
  */
@@ -71,7 +69,7 @@ import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_AL
         "<li>Please note that there is only one ROI manager. This is a restriction of ImageJ.</li>" +
         "<li>Annotations can also be accessed via a function getJIPipeAnnotation(key), which returns the string value of the annotation or an empty string if no value was set.</li>" +
         "<li>You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data, named according to the slot name.</li>" +
-        "</ul>" + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
+        "</ul>")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(ImagePlusData.class)
 @JIPipeInputSlot(ROIListData.class)

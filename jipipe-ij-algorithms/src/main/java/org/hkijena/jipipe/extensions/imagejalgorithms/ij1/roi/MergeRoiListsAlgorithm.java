@@ -21,15 +21,13 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 
-import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
-
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @JIPipeDocumentation(name = "Merge ROI lists", description = "Merges multiple ROI lists by using data annotations. " +
         "By default, ROIs with equivalent annotations are put into the same group and merged into one ROI list for each group. " +
         "Use the parameters to control how groups are created. To merge all incoming ROI lists into just one list, set the matching strategy to 'Custom' and leave the list of " +
-        "annotation columns empty." + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
+        "annotation columns empty.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")

@@ -93,7 +93,7 @@ public class SplitTableByColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm
         }
     }
 
-    @JIPipeDocumentation(name = "Selected columns", description = "Expression that selects the columns. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Selected columns", description = "Expression that selects the columns. ")
     @JIPipeParameter("columns")
     public StringQueryExpression getColumns() {
         return columns;

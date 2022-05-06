@@ -31,13 +31,11 @@ import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
 
 import java.awt.*;
 
-import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
-
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @JIPipeDocumentation(name = "Remove ROI at borders", description = "Removes all ROI that intersect with image borders. Use the 'Border' parameter " +
-        "to define a rectangle inside of the image dimensions. If a ROI is not contained within this region, it is removed." + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
+        "to define a rectangle inside of the image dimensions. If a ROI is not contained within this region, it is removed.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image")

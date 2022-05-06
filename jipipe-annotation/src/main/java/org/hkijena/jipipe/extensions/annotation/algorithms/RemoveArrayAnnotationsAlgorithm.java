@@ -92,7 +92,7 @@ public class RemoveArrayAnnotationsAlgorithm extends JIPipeParameterSlotAlgorith
         this.removeColumn = removeColumn;
     }
 
-    @JIPipeDocumentation(name = "Annotation column filter", description = "Allows to filter for specific annotation columns. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Annotation column filter", description = "Allows to filter for specific annotation columns. ")
     @JIPipeParameter("annotation-name-filter")
     public StringQueryExpression getAnnotationNameFilter() {
         return annotationNameFilter;

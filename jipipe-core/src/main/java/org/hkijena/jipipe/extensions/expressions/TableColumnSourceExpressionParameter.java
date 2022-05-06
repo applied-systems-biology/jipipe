@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
+import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -34,15 +35,14 @@ import java.util.Set;
  */
 @ExpressionParameterSettings(variableSource = TableColumnSourceExpressionParameter.VariableSource.class)
 @PairParameterSettings(keyLabel = "Column source", valueLabel = "Column name/value")
+@JIPipeDocumentationDescription(description = "This parameter can be used to either select an existing column from a table or to generate a new column by providing a value for each row." +
+        "<ul>" +
+        "<li>Selecting columns by exact name: Type in the name of the column into the value field. Quotation marks are optional.</li>" +
+        "<li>Selecting columns by filtering: The value expression is called for each existing column and provided as variable 'value'. Return TRUE at any point to select the value. Example: <code>value == \"Mean\"</code></li>" +
+        "<li>Generating columns: The value expression is called for each row. Return a string or number. You have access to the other column values inside the row (as variables). Example: <code>Mean + 0.5 * X</code>. " +
+        "If you do not provide a valid expression, the expression itself is put in as column value (string)</li>" +
+        "</ul>")
 public class TableColumnSourceExpressionParameter extends PairParameter<TableColumnSourceExpressionParameter.TableSourceType, DefaultExpressionParameter> implements JIPipeValidatable {
-
-    public static final String DOCUMENTATION_DESCRIPTION = "This parameter can be used to either select an existing column from a table or to generate a new column by providing a value for each row." +
-            "<ul>" +
-            "<li>Selecting columns by exact name: Type in the name of the column into the value field. Quotation marks are optional.</li>" +
-            "<li>Selecting columns by filtering: The value expression is called for each existing column and provided as variable 'value'. Return TRUE at any point to select the value. Example: <code>value == \"Mean\"</code></li>" +
-            "<li>Generating columns: The value expression is called for each row. Return a string or number. You have access to the other column values inside the row (as variables). Example: <code>Mean + 0.5 * X</code>. " +
-            "If you do not provide a valid expression, the expression itself is put in as column value (string)</li>" +
-            "</ul>";
 
     public TableColumnSourceExpressionParameter() {
         super(TableColumnSourceExpressionParameter.TableSourceType.class, DefaultExpressionParameter.class);

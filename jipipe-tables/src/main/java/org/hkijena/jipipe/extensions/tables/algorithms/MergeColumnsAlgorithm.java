@@ -25,12 +25,10 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
-
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Merge columns", description = "Merges multiple table columns into a table." + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
+@JIPipeDocumentation(name = "Merge columns", description = "Merges multiple table columns into a table.")
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
 @JIPipeInputSlot(value = TableColumn.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)

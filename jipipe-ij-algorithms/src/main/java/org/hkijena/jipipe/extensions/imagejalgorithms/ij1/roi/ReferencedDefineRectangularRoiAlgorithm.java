@@ -29,13 +29,11 @@ import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
 
 import java.awt.*;
 
-import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
-
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @JIPipeDocumentation(name = "Define rectangular ROI (referenced)", description = "Manually defines a rectangular ROI. This algorithm requires a reference " +
-        "image, but also allows more flexibility in defining the rectangles." + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
+        "image, but also allows more flexibility in defining the rectangles.")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")

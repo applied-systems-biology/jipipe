@@ -20,13 +20,10 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
-
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Merge table rows", description = "Merges multiple tables into one table by merging the list of rows. Columns are automatically created if they do not exist."
-        + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
+@JIPipeDocumentation(name = "Merge table rows", description = "Merges multiple tables into one table by merging the list of rows. Columns are automatically created if they do not exist.")
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)

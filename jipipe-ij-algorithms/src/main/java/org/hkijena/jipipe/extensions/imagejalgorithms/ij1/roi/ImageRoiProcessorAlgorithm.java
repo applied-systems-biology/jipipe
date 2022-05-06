@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
@@ -38,11 +39,10 @@ import java.util.Optional;
  * or {@link org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData} and {@link org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData}
  * to the output data
  */
+@JIPipeDocumentationDescription(description = "This algorithm can process ROI lists with or without a reference image. " +
+        "The reference image provides information about the area where the ROI are located and can be used to extract statistics. " +
+        "You can choose to disable the reference image slot via the 'Require reference image' parameter.")
 public abstract class ImageRoiProcessorAlgorithm extends JIPipeIteratingAlgorithm {
-
-    public static final String ROI_PROCESSOR_DESCRIPTION = "This algorithm can process ROI lists with or without a reference image. " +
-            "The reference image provides information about the area where the ROI are located and can be used to extract statistics. " +
-            "You can choose to disable the reference image slot via the 'Require reference image' parameter.\n\n" + ITERATING_ALGORITHM_DESCRIPTION;
 
     private boolean overrideReferenceImage = true;
     private UnreferencedRoiToMaskAlgorithm toMaskAlgorithm;

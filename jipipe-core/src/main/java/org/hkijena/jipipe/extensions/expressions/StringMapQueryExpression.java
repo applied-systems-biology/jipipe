@@ -13,12 +13,14 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
+import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
+
 import java.util.Collection;
 import java.util.Map;
 
+@JIPipeDocumentationDescription(description = "The key value pair values are available as variables. If there are spaces or special characters inside the variable names, " +
+        "use 'GET_VARIABLE' to access the values. To check if a key is available, use the 'EXISTS' operator. Example: <pre>\"Aspergillus\" EXISTS AND \"Raw\" EXISTS</pre>")
 public class StringMapQueryExpression extends DefaultExpressionParameter {
-
-    public static final String DOCUMENTATION_DESCRIPTION = "The key value pair values are available as variables. If there are spaces or special characters inside the variable names, use 'GET_VARIABLE' to access the values. To check if a key is available, use the 'EXISTS' operator. Example: <pre>\"Aspergillus\" EXISTS AND \"Raw\" EXISTS</pre>";
 
     public StringMapQueryExpression() {
     }

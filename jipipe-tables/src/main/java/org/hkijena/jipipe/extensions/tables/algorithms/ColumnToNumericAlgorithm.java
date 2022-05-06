@@ -87,7 +87,7 @@ public class ColumnToNumericAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), table, progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Filters", description = "Filter expression that is used to find columns to be converted. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Filters", description = "Filter expression that is used to find columns to be converted. ")
     @JIPipeParameter("filters")
     public StringQueryExpression getFilters() {
         return filters;

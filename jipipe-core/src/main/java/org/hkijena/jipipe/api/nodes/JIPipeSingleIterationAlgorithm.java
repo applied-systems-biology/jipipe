@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -38,10 +39,9 @@ import java.util.*;
 /**
  * An {@link JIPipeAlgorithm} that applies a single iteration with a data batch containing all data.
  */
+@JIPipeDocumentationDescription(description = "This algorithm merges all annotations and data annotations. " +
+        "Use the data batch settings to determine how annotations and data annotations are merged")
 public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm {
-
-    public static final String SINGLE_ITERATION_ALGORITHM_DESCRIPTION = "This algorithm merges all annotations and data annotations. " +
-            "Use the data batch settings to determine how annotations and data annotations are merged";
 
     private boolean parallelizationEnabled = true;
     private JIPipeSingleIterationAlgorithmDataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeSingleIterationAlgorithmDataBatchGenerationSettings();

@@ -112,7 +112,7 @@ public class OMEROFindProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Project name filters", description = "Filters for the project name. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Project name filters", description = "Filters for the project name. ")
     @JIPipeParameter("project-name-filters")
     public StringQueryExpression getProjectNameFilters() {
         return projectNameFilters;
@@ -123,7 +123,7 @@ public class OMEROFindProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.projectNameFilters = projectNameFilters;
     }
 
-    @JIPipeDocumentation(name = "Key-Value pair filters", description = "Filters projects by attached key value pairs. " + StringMapQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Key-Value pair filters", description = "Filters projects by attached key value pairs. ")
     @JIPipeParameter("key-value-pair-filters")
     public StringMapQueryExpression getKeyValuePairFilters() {
         return keyValuePairFilters;
@@ -175,7 +175,7 @@ public class OMEROFindProjectAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.addKeyValuePairsAsAnnotations = addKeyValuePairsAsAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Tag filters", description = "Filters by tag values. " + StringMapQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Tag filters", description = "Filters by tag values. ")
     @JIPipeParameter("tag-filters")
     public StringMapQueryExpression getTagFilters() {
         return tagFilters;

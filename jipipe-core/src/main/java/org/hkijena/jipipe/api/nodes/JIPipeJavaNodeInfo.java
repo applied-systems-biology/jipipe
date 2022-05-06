@@ -87,13 +87,8 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      * @return The name
      */
     public static HTMLText getDescriptionOf(Class<? extends JIPipeGraphNode> klass) {
-        JIPipeDocumentation[] annotations = klass.getAnnotationsByType(JIPipeDocumentation.class);
-        if (annotations.length > 0) {
-            String rawDescription = DocumentationUtils.getDocumentationDescription(annotations[0]);
-            return new HTMLText(rawDescription.replace("\n", "<br/>"));
-        } else {
-            return null;
-        }
+        String rawDescription = DocumentationUtils.getDocumentationDescription(klass);
+        return new HTMLText(rawDescription.replace("\n", "<br/>"));
     }
 
     /**

@@ -38,7 +38,7 @@ public class RemoveDataAnnotations extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), dataBatch.getInputData(getFirstInputSlot(), JIPipeData.class, progressInfo), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Name filter", description = "Determines which data annotations are removed. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Name filter", description = "Determines which data annotations are removed. ")
     @JIPipeParameter("name-filter")
     public StringQueryExpression getNameFilter() {
         return nameFilter;

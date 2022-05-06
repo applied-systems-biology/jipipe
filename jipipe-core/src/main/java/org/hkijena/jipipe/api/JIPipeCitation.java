@@ -7,6 +7,7 @@ import java.lang.annotation.*;
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
+@Inherited
 @Repeatable(JIPipeCitations.class)
 public @interface JIPipeCitation {
     String value();

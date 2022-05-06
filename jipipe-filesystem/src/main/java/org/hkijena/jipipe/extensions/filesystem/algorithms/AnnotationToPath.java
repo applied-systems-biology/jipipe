@@ -68,7 +68,7 @@ public class AnnotationToPath extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new PathData(Paths.get(StringUtils.orElse(matchingAnnotation.getValue(), ""))), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotation", description = "An expression that determines which annotation is used. " + AnnotationQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Annotation", description = "An expression that determines which annotation is used. ")
     @JIPipeParameter("annotation")
     public AnnotationQueryExpression getAnnotationExpression() {
         return annotationExpression;

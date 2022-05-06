@@ -83,7 +83,7 @@ public class OMEROFindGroupAlgorithm extends JIPipeParameterSlotAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Group name filters", description = "Filters for the group name. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Group name filters", description = "Filters for the group name. ")
     @JIPipeParameter("group-name-filters")
     public StringQueryExpression getGroupNameFilters() {
         return groupNameFilters;

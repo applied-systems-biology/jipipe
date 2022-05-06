@@ -82,7 +82,7 @@ public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorith
         this.annotationPrefix = annotationPrefix;
     }
 
-    @JIPipeDocumentation(name = "Annotation name filter", description = "Filters the name of the added annotations. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Annotation name filter", description = "Filters the name of the added annotations. ")
     @JIPipeParameter("annotation-name-filter")
     public StringQueryExpression getAnnotationNameFilter() {
         return annotationNameFilter;

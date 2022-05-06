@@ -45,13 +45,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_COLOR_RGB_CONVERSION;
 
 /**
  * Wrapper around {@link ImageProcessor}
  */
-@JIPipeDocumentation(name = "Merge channels", description = "Merges each greyscale image plane into a multi-channel image. " + "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
+@JIPipeDocumentation(name = "Merge channels", description = "Merges each greyscale image plane into a multi-channel image. ")
 @JIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")

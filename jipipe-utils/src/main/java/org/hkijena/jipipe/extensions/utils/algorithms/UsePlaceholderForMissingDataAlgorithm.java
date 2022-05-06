@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
 @JIPipeDocumentation(name = "Use placeholder for missing data", description = "Creates a data batch of the reference and data inputs. " +
-        "If the data is missing for a reference, it is extracted from the items in the placeholder slot. " + JIPipeMissingDataGeneratorAlgorithm.GENERATOR_ALGORITHM_DESCRIPTION)
+        "If the data is missing for a reference, it is extracted from the items in the placeholder slot. ")
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Reference", autoCreate = true)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true, optional = true)

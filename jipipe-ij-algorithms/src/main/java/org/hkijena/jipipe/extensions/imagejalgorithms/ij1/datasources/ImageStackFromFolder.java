@@ -223,7 +223,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Slices to import", description = "Determines which files should be imported based on the sorted and filtered list of files. The first index is 0. Duplicates are allowed." +
-            " If left empty, all slices will be imported. " + IntegerRange.DOCUMENTATION_DESCRIPTION)
+            " If left empty, all slices will be imported. ")
     @JIPipeParameter("slice-indices")
     public IntegerRange getSlicesToImport() {
         return slicesToImport;

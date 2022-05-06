@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -47,10 +48,9 @@ import java.util.concurrent.Future;
  * If your algorithm only has one input and will never have more than one input slot, we recommend using {@link JIPipeSimpleIteratingAlgorithm}
  * instead that comes without the additional data set matching strategies
  */
+@JIPipeDocumentationDescription(description = "This algorithm groups the incoming data based on the annotations. " +
+        "Those groups can consist of one data item per slot.")
 public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm {
-
-    public static final String ITERATING_ALGORITHM_DESCRIPTION = "This algorithm groups the incoming data based on the annotations. " +
-            "Those groups can consist of one data item per slot.";
 
     private JIPipeIteratingAlgorithmDataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeIteratingAlgorithmDataBatchGenerationSettings();
     private JIPipeAdaptiveParameterSettings adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings();

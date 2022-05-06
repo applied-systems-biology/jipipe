@@ -17,6 +17,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -46,12 +47,10 @@ import java.util.concurrent.Future;
  * the runIteration() function. This is useful for merging algorithms.
  * Please note that the single-input case will still group the data into multiple groups, or just one group if no grouping could be acquired.
  */
+@JIPipeDocumentationDescription(description = "This algorithm groups the incoming data based on the annotations. " +
+        "Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and " +
+        "leave 'Data set matching annotations' empty.")
 public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm {
-
-    public static final String MERGING_ALGORITHM_DESCRIPTION = "This algorithm groups the incoming data based on the annotations. " +
-            "Those groups can consist of multiple data items. If you want to group all data into one output, set the matching strategy to 'Custom' and " +
-            "leave 'Data set matching annotations' empty.";
-
     private boolean parallelizationEnabled = true;
     private JIPipeMergingAlgorithmDataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeMergingAlgorithmDataBatchGenerationSettings();
     private JIPipeAdaptiveParameterSettings adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings();

@@ -127,7 +127,7 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Image name filters", description = "Filters for the image name. " + StringMapQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Image name filters", description = "Filters for the image name. ")
     @JIPipeParameter("image-name-filters")
     public StringQueryExpression getImageNameFilters() {
         return imageNameFilters;
@@ -206,7 +206,7 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.addKeyValuePairsAsAnnotations = addKeyValuePairsAsAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Key-Value pair filters", description = "Filters projects by attached key value pairs. " + StringMapQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Key-Value pair filters", description = "Filters projects by attached key value pairs. ")
     @JIPipeParameter("key-value-pair-filters")
     public StringMapQueryExpression getKeyValuePairFilters() {
         return keyValuePairFilters;
@@ -217,7 +217,7 @@ public class OMEROFindImageAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.keyValuePairFilters = keyValuePairFilters;
     }
 
-    @JIPipeDocumentation(name = "Tag filters", description = "Filters by tag values. If no tag is matched, the data set is skipped. " + StringMapQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Tag filters", description = "Filters by tag values. If no tag is matched, the data set is skipped. ")
     @JIPipeParameter("tag-filters")
     public StringMapQueryExpression getTagFilters() {
         return tagFilters;

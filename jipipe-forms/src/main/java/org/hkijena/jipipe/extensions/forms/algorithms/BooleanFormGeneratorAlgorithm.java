@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.extensions.forms.datatypes.BooleanFormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 
-@JIPipeDocumentation(name = "Boolean input form", description = "Creates a boolean input form (a checkbox). " + FormGeneratorAlgorithm.DOCUMENTATION_DESCRIPTION)
+@JIPipeDocumentation(name = "Boolean input form", description = "Creates a boolean input form (a checkbox). " )
 @JIPipeInputSlot(value = FormData.class, slotName = "Existing")
 @JIPipeOutputSlot(value = FormData.class, slotName = "Combined")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)

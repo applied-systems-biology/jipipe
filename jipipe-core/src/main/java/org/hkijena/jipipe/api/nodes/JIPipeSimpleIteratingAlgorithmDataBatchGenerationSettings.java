@@ -35,7 +35,7 @@ public class JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings implement
         return eventBus;
     }
 
-    @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.\n" + IntegerRange.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Limit", description = "Limits which data batches are generated. The first index is zero.")
     @JIPipeParameter(value = "limit")
     public OptionalIntegerRange getLimit() {
         return limit;

@@ -41,7 +41,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_ALGORITHM_DESCRIPTION;
 
 /**
  * Wrapper around {@link ImageProcessor}
@@ -49,8 +48,7 @@ import static org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm.ITERATING_AL
 @JIPipeDocumentation(name = "Merge stacks into dimension", description = "Merges multiple stacks that miss a dimension into the target dimension. " +
         "Requires that all incoming stacks have the same size and that there is only one slice in the created dimension. " +
         "The type of the output image is determined by the first input slot. " +
-        "This node has similar functionality to the 'Combine stacks' node." +
-        "\n\n" + ITERATING_ALGORITHM_DESCRIPTION)
+        "This node has similar functionality to the 'Combine stacks' node.")
 @JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)

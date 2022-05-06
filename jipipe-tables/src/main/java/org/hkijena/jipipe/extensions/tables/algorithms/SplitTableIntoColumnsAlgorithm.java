@@ -92,7 +92,7 @@ public class SplitTableIntoColumnsAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.generatedAnnotation = generatedAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Filters", description = "Allows you to filter only specific columns that will be extracted. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Filters", description = "Allows you to filter only specific columns that will be extracted. ")
     @JIPipeParameter("filters")
     public StringQueryExpression getColumnFilter() {
         return columnFilter;

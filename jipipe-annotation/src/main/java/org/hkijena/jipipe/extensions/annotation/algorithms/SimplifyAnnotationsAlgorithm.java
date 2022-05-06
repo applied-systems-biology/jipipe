@@ -88,7 +88,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
                 progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Annotation filter", description = "Determines which annotations will be combined. " + AnnotationQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Annotation filter", description = "Determines which annotations will be combined. ")
     @JIPipeParameter("annotation-filter")
     public AnnotationQueryExpression getAnnotationFilter() {
         return annotationFilter;
@@ -99,7 +99,7 @@ public class SimplifyAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm
         this.annotationFilter = annotationFilter;
     }
 
-    @JIPipeDocumentation(name = "Rename function", description = "The function is applied to the annotation name to determine its new name. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Rename function", description = "The function is applied to the annotation name to determine its new name. ")
     @JIPipeParameter(value = "rename-function", important = true)
     public StringQueryExpression getRenameFunction() {
         return renameFunction;

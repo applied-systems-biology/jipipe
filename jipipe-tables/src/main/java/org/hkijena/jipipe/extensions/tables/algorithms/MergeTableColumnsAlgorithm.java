@@ -29,16 +29,13 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm.MERGING_ALGORITHM_DESCRIPTION;
-
 /**
  * Algorithm that integrates columns
  */
 @JIPipeDocumentation(name = "Merge table columns", description = "Merges multiple tables into one table by merging the list of columns. " +
         "The generated table is sized according to the table with the most rows. In missing columns, the values are filled in. " +
         "This node allows the merging of columns (e.g. merging multiple time series tables by their time). To do this, determine such " +
-        "merged columns via a parameter."
-        + "\n\n" + MERGING_ALGORITHM_DESCRIPTION)
+        "merged columns via a parameter.")
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Merge")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
@@ -167,7 +164,7 @@ public class MergeTableColumnsAlgorithm extends JIPipeMergingAlgorithm {
         this.rowNormalization = rowNormalization;
     }
 
-    @JIPipeDocumentation(name = "Column filter", description = "Allows to filter the columns for their name. " + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Column filter", description = "Allows to filter the columns for their name. ")
     @JIPipeParameter("column-filter")
     public StringQueryExpression getColumnFilter() {
         return columnFilter;

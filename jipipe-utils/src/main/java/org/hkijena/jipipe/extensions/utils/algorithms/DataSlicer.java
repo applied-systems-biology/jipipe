@@ -50,7 +50,7 @@ public class DataSlicer extends JIPipeParameterSlotAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Slice range", description = "Only the data rows within this range are copied into the output. The first index is zero. " +
-            "Invalid indices are ignored.\n\n" + IntegerRange.DOCUMENTATION_DESCRIPTION)
+            "Invalid indices are ignored.")
     @JIPipeParameter("slice-range")
     public IntegerRange getSliceRange() {
         return sliceRange;

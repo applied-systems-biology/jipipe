@@ -99,8 +99,7 @@ public class SortRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Sort order", description = "Defines the order and sort order for the annotation columns. " +
-            "Undefined annotation names are ordered alphabetically and sorted according to the default sort order. "
-            + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+            "Undefined annotation names are ordered alphabetically and sorted according to the default sort order. ")
     @JIPipeParameter("sort-order")
     public StringQueryExpressionAndSortOrderPairParameter.List getSortOrderList() {
         return sortOrderList;

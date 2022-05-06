@@ -17,6 +17,7 @@ import com.google.common.collect.ImmutableList;
 import ij.ImagePlus;
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -50,9 +51,6 @@ import java.util.*;
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Components")
 public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgorithm {
-    public static final String DIMENSION_OPERATION_DESCRIPTION = "There are three different modes: <ul><li>Followed dimensions will be tracked</li>" +
-            "<li>ROI can be split across a dimension. The components are then generated per plane in this dimension.</li>" +
-            "<li>Merging is the opposite of splitting: If a dimension is merged, it will be collapsed during the calculation, meaning that all associated ROI will be put together</li></ul>";
     private DimensionOperation dimensionZOperation = DimensionOperation.Split;
     private DimensionOperation dimensionCOperation = DimensionOperation.Merge;
     private DimensionOperation dimensionTOperation = DimensionOperation.Follow;
@@ -398,7 +396,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         super.setPreferAssociatedImage(preferAssociatedImage);
     }
 
-    @JIPipeDocumentation(name = "Dimension Z", description = "Operation for the Z (Slice) dimension. " + DIMENSION_OPERATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Dimension Z", description = "Operation for the Z (Slice) dimension. ")
     @JIPipeParameter("operation-dimension-z")
     public DimensionOperation getDimensionZOperation() {
         return dimensionZOperation;
@@ -409,7 +407,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         this.dimensionZOperation = dimensionZOperation;
     }
 
-    @JIPipeDocumentation(name = "Dimension C", description = "Operation for the C (Channel) dimension. " + DIMENSION_OPERATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Dimension C", description = "Operation for the C (Channel) dimension. ")
     @JIPipeParameter("operation-dimension-c")
     public DimensionOperation getDimensionCOperation() {
         return dimensionCOperation;
@@ -420,7 +418,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         this.dimensionCOperation = dimensionCOperation;
     }
 
-    @JIPipeDocumentation(name = "Dimension T", description = "Operation for the T (Time) dimension. " + DIMENSION_OPERATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Dimension T", description = "Operation for the T (Time) dimension. ")
     @JIPipeParameter("operation-dimension-t")
     public DimensionOperation getDimensionTOperation() {
         return dimensionTOperation;
@@ -497,6 +495,9 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         this.trySolveJunctions = trySolveJunctions;
     }
 
+    @JIPipeDocumentationDescription(description = "There are three different modes: <ul><li>Followed dimensions will be tracked</li>" +
+            "<li>ROI can be split across a dimension. The components are then generated per plane in this dimension.</li>" +
+            "<li>Merging is the opposite of splitting: If a dimension is merged, it will be collapsed during the calculation, meaning that all associated ROI will be put together</li></ul>")
     public enum DimensionOperation {
         Merge,
         Follow,

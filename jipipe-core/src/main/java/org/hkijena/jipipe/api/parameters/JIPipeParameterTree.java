@@ -59,11 +59,11 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
      */
     public static final int IGNORE_CUSTOM = 4;
 
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private Node root = new Node(null, null);
-    private BiMap<JIPipeParameterCollection, Node> nodeMap = HashBiMap.create();
-    private BiMap<String, JIPipeParameterAccess> parameters = HashBiMap.create();
-    private PriorityQueue<JIPipeParameterAccess> parametersByPriority = new PriorityQueue<>(JIPipeParameterAccess::comparePriority);
+    private final BiMap<JIPipeParameterCollection, Node> nodeMap = HashBiMap.create();
+    private final BiMap<String, JIPipeParameterAccess> parameters = HashBiMap.create();
+    private final PriorityQueue<JIPipeParameterAccess> parametersByPriority = new PriorityQueue<>(JIPipeParameterAccess::comparePriority);
 
     private boolean ignoreReflectionParameters = false;
     private boolean ignoreCustomParameters = false;
@@ -286,7 +286,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                     Node childNode = add(subParameters, entry.getKey(), parent);
                     if (pair.getDocumentation() != null) {
                         childNode.setName(pair.getDocumentation().name());
-                        childNode.setDescription(new HTMLText(DocumentationUtils.getDocumentationDescription(pair.getDocumentation())));
+                        childNode.setDescription(new HTMLText(DocumentationUtils.getDocumentationDescription(pair.getDocumentation(), pair.getFieldClass())));
                     } else
                         childNode.setName(entry.getKey());
 

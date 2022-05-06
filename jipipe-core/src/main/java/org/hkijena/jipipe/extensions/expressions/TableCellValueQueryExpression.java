@@ -13,15 +13,15 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
+import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 /**
  * Expression for querying strings
  */
 @ExpressionParameterSettings(variableSource = TableCellValueExpressionParameterVariableSource.class)
+@JIPipeDocumentationDescription(description = "This parameter accesses all table cells. Please take a look at the expression builder for more information about the available variables.")
 public class TableCellValueQueryExpression extends DefaultExpressionParameter {
-
-    public static final String DOCUMENTATION_DESCRIPTION = "This parameter accesses all table cells. Please take a look at the expression builder for more information about the available variables.";
 
     public TableCellValueQueryExpression() {
     }

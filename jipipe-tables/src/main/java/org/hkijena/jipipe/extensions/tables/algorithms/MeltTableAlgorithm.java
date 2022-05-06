@@ -132,8 +132,7 @@ public class MeltTableAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Value columns", description = "Allows to select the value columns by their name via a filter expression. "
-            + StringQueryExpression.DOCUMENTATION_DESCRIPTION)
+    @JIPipeDocumentation(name = "Value columns", description = "Allows to select the value columns by their name via a filter expression. ")
     @JIPipeParameter("value-columns")
     public StringQueryExpression getValueColumns() {
         return valueColumns;

@@ -29,8 +29,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
  */
-@JIPipeDocumentation(name = "Generate missing image", description = "Generates an empty (black) image if it cannot be matched to a reference" +
-        JIPipeMissingDataGeneratorAlgorithm.GENERATOR_ALGORITHM_DESCRIPTION)
+@JIPipeDocumentation(name = "Generate missing image", description = "Generates an empty (black) image if it cannot be matched to a reference")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true, optional = true)

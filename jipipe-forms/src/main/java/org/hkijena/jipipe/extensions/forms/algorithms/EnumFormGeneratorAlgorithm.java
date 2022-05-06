@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.extensions.forms.datatypes.EnumFormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 
-@JIPipeDocumentation(name = "Selection input form", description = "Creates a selection input form (combo box). " + FormGeneratorAlgorithm.DOCUMENTATION_DESCRIPTION)
+@JIPipeDocumentation(name = "Selection input form", description = "Creates a selection input form (combo box). ")
 @JIPipeInputSlot(value = FormData.class, slotName = "Existing")
 @JIPipeOutputSlot(value = FormData.class, slotName = "Combined")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)

@@ -277,7 +277,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Label data annotation", description = "Determines which data annotation contains the labels. Please ensure that " +
-            "the appropriate label data is annotated to the raw input data.\n\n" + DataAnnotationQueryExpression.DOCUMENTATION_DESCRIPTION)
+            "the appropriate label data is annotated to the raw input data.")
     @JIPipeParameter("label-data-annotation")
     public DataAnnotationQueryExpression getLabelDataAnnotation() {
         return labelDataAnnotation;
