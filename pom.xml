@@ -204,7 +204,7 @@ See the LICENSE file provided with this code for the full license.
         <license.licenseName>bsd_2</license.licenseName>
         <license.copyrightOwners>N/A</license.copyrightOwners>
         <license.projectName>JIPipe</license.projectName>
-        <releaseProfiles>deploy-to-imagej</releaseProfiles>
+        <releaseProfiles>deploy-to-scijava</releaseProfiles>
     </properties>
 
     <modules>
