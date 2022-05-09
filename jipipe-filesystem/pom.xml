@@ -68,7 +68,7 @@
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <license.licenseName>BSD-2-Clause</license.licenseName>
+        <license.licenseName>bsd_2</license.licenseName>
         <license.copyrightOwners>N/A</license.copyrightOwners>
         <license.projectName>JIPipe-Filesystem</license.projectName>
     </properties>
