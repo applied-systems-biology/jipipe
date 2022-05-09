@@ -2,16 +2,16 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Running pipelines on JIPipe for ImageJ</title>
-    <link>https://www.jipipe.org/documentation/run-pipelines/</link>
+    <link>/documentation/run-pipelines.html</link>
     <description>Recent content in Running pipelines on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://www.jipipe.org/documentation/run-pipelines/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language><atom:link href="/documentation/run-pipelines/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Running the whole pipeline</title>
-      <link>https://www.jipipe.org/documentation/run-pipelines/run/</link>
+      <link>/documentation/run-pipelines/run.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/documentation/run-pipelines/run/</guid>
+      <guid>/documentation/run-pipelines/run.html</guid>
       <description>JIPipe stores its results in a user-defined output folder. After clicking  Run (located at the top right corner of a project window) JIPipe will query the output folder from you. You can also generate a random folder that will be located on your operating system&amp;rsquo;s temporary directory by clicking the button.
 After confirming the settings by clicking  Run now, JIPipe will start processing the pipeline.
 You can have as many runs as you want.</description>
@@ -19,20 +19,20 @@ You can have as many runs as you want.</description>
     
     <item>
       <title>Review results</title>
-      <link>https://www.jipipe.org/documentation/run-pipelines/result-analysis/</link>
+      <link>/documentation/run-pipelines/result-analysis.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/documentation/run-pipelines/result-analysis/</guid>
+      <guid>/documentation/run-pipelines/result-analysis.html</guid>
       <description>Running the whole pipeline or executing a quick run with HDD output will result in a folder that contains all output data and the current project file. JIPipe will automatically open an interface that allows you to navigate through the results, and import them back into ImageJ or JIPipe (if supported by the generated data type). You can also re-open these folders via Project &amp;gt; Open analysis output ....
 The UI has two main components:</description>
     </item>
     
     <item>
       <title>Use results in external software</title>
-      <link>https://www.jipipe.org/documentation/run-pipelines/connect-external-software/</link>
+      <link>/documentation/run-pipelines/connect-external-software.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/documentation/run-pipelines/connect-external-software/</guid>
+      <guid>/documentation/run-pipelines/connect-external-software.html</guid>
       <description>JIPipe stores outputs in a standardized format that can be easily read with third-party software. The output folder of always contains a file project.jip, which is the project that generated the output.
 This folder contains sub-folders named according to the graph compartment. The ID is the unique ID of the graph compartment and can be looked up in the project.jip file or the compartment graph editor.
 Each of these compartment folders contains a set of additional sub-folders based on unique ID of the node (also visible in the graph editor).</description>
@@ -40,10 +40,10 @@ Each of these compartment folders contains a set of additional sub-folders based
     
     <item>
       <title>Running a single node</title>
-      <link>https://www.jipipe.org/documentation/run-pipelines/quick-run/</link>
+      <link>/documentation/run-pipelines/quick-run.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/documentation/run-pipelines/quick-run/</guid>
+      <guid>/documentation/run-pipelines/quick-run.html</guid>
       <description>As an additional option to running the whole pipeline, JIPipe also allows you to run the workflow only up to the selected node. The most convenient way to run a single node can be accessed by clicking the green play button that is located inside each node.
 Here you will find following options:
  Update cache: Runs the pipeline up until the selected node. The result of the selected node will be stored inside a memory cache, which can be reviewed in the Cache browser tab (see below) Cache intermediate results: Runs the pipeline up until the selected node.</description>
@@ -51,10 +51,10 @@ Here you will find following options:
     
     <item>
       <title>Data caching</title>
-      <link>https://www.jipipe.org/documentation/run-pipelines/cache/</link>
+      <link>/documentation/run-pipelines/cache.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/documentation/run-pipelines/cache/</guid>
+      <guid>/documentation/run-pipelines/cache.html</guid>
       <description>JIPipe has a project-wide cache for generated results. This cache can be accessed by algorithms to prevent repeating previous calculation steps.
 Load data into the cache To cache data, right click a node and click  Update cache. This will execute a Quick run and store all results into the cache.
 Accessing the cache Cache items are assigned a unique identifier ( Snapshot) that is based on relevant algorithm parameters and the processing pipeline behind the data generation.</description>

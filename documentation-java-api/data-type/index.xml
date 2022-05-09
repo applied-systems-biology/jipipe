@@ -2,16 +2,16 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Creating a data type on JIPipe for ImageJ</title>
-    <link>https://www.jipipe.org/documentation-java-api/data-type/</link>
+    <link>/documentation-java-api/data-type.html</link>
     <description>Recent content in Creating a data type on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://www.jipipe.org/documentation-java-api/data-type/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language><atom:link href="/documentation-java-api/data-type/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Result view</title>
-      <link>https://www.jipipe.org/documentation-java-api/data-type/result-ui/</link>
+      <link>/documentation-java-api/data-type/result-ui.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/documentation-java-api/data-type/result-ui/</guid>
+      <guid>/documentation-java-api/data-type/result-ui.html</guid>
       <description>After processing, users should be able to continue processing the data from within JIPipe. The data instances are cleared from memory after processing, meaning that the data needs to be loaded from its output folder after processing.
 An user interface is shown when a user select a row in the results table. There are two ways to modify the user interface:
  Registering additional operations that will be available to users (recommended) Replacing the interface with a custom one  Adding custom operations JIPipe already comes with some default operations, such as opening the containing folder.</description>
@@ -19,10 +19,10 @@ An user interface is shown when a user select a row in the results table. There 
     
     <item>
       <title>Preview from results folder</title>
-      <link>https://www.jipipe.org/documentation-java-api/data-type/result-preview/</link>
+      <link>/documentation-java-api/data-type/result-preview.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/documentation-java-api/data-type/result-preview/</guid>
+      <guid>/documentation-java-api/data-type/result-preview.html</guid>
       <description>While JIPipeData allows you to define a custom function for previewing, this only works for data already present in memory. To allow previewing of data stored in a results folder, you need to suppy a JIPipeResultDataSlotPreviewUI that loads the data from disk and generates a preview. We recommend to use JIPipeAsyncResultDataPlotPreviewUI This class will offload the loading and preview generation into a separate thread to prevent the UI from freezing. By default it will use the already defined importFrom(Path) method present in the JIPipeData class and use its already defined preview function.</description>
     </item>
     

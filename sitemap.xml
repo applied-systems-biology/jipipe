@@ -2,191 +2,187 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://www.jipipe.org/documentation/basic-concepts/</loc>
+    <loc>/documentation/basic-concepts.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/create-pipelines/</loc>
+    <loc>/documentation/create-pipelines.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/run-pipelines/</loc>
+    <loc>/documentation/run-pipelines.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/faq/general/</loc>
+    <loc>/faq/general.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/_header/</loc>
+    <loc>/_header.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/faq/issues/</loc>
+    <loc>/faq/issues.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/faq/user-interface/</loc>
+    <loc>/faq/user-interface.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/faq/data-processing/</loc>
+    <loc>/faq/data-processing.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/faq/imagej-integration/</loc>
+    <loc>/faq/imagej-integration.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/faq/result-analysis/</loc>
+    <loc>/faq/result-analysis.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-data-api/data-table/</loc>
+    <loc>/documentation-data-api/data-table.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/download/</loc>
+    <loc>/documentation-json-api/graph-node.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-json-api/graph-node/</loc>
+    <loc>/documentation-java-api/algorithm/iterating-algorithms.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-java-api/algorithm/iterating-algorithms/</loc>
+    <loc>/tutorials/analysis.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/analysis/</loc>
+    <loc>/documentation-java-api/javadocs.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-java-api/javadocs/</loc>
+    <loc>/documentation/create-pipelines/pipeline-editor.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/create-pipelines/pipeline-editor/</loc>
+    <loc>/documentation/standard-library/python/api.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/standard-library/python/api/</loc>
+    <loc>/documentation-java-api/data-type/result-ui.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-java-api/data-type/result-ui/</loc>
+    <loc>/documentation/run-pipelines/run.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/run-pipelines/run/</loc>
+    <loc>/documentation/basic-concepts/visual-programming.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/basic-concepts/visual-programming/</loc>
+    <loc>/installation.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/installation/</loc>
+    <loc>/tutorials/analysis_video.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/examples/</loc>
+    <loc>/documentation-java-api/algorithm/merging-algorithms.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/analysis_video/</loc>
+    <loc>/documentation-json-api/algorithm.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-java-api/algorithm/merging-algorithms/</loc>
+    <loc>/documentation/basic-concepts/batch-processing.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-json-api/algorithm/</loc>
+    <loc>/tutorials/extension.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/basic-concepts/batch-processing/</loc>
+    <loc>/documentation-java-api/create-extension.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/extension/</loc>
+    <loc>/documentation-java-api/algorithm/slot-configuration.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-java-api/create-extension/</loc>
+    <loc>/documentation/create-pipelines/expressions.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-java-api/algorithm/slot-configuration/</loc>
+    <loc>/documentation/standard-library/imagej-integration.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/create-pipelines/expressions/</loc>
+    <loc>/tutorials/jipipe-for-imagej-users.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/standard-library/imagej-integration/</loc>
+    <loc>/documentation-java-api/data-type/result-preview.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/jipipe-for-imagej-users/</loc>
+    <loc>/documentation/run-pipelines/result-analysis.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-java-api/data-type/result-preview/</loc>
+    <loc>/documentation-data-api/row-folder.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/run-pipelines/result-analysis/</loc>
+    <loc>/tutorials.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-data-api/row-folder/</loc>
+    <loc>/documentation/standard-library/macro-node.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/</loc>
+    <loc>/tutorials/guide-user-interface.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/standard-library/macro-node/</loc>
+    <loc>/tutorials/guide-data-caches.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/guide-user-interface/</loc>
+    <loc>/tutorials/guide-graph-editor.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/guide-data-caches/</loc>
+    <loc>/tutorials/guide-batch-processing.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/guide-graph-editor/</loc>
+    <loc>/faq.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/guide-batch-processing/</loc>
+    <loc>/documentation-java-api/algorithm.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/faq/</loc>
+    <loc>/documentation-data-api/data-types.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-java-api/algorithm/</loc>
+    <loc>/documentation-json-api/dependency.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-data-api/data-types/</loc>
+    <loc>/documentation.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-json-api/dependency/</loc>
+    <loc>/documentation/standard-library/filesystem.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/</loc>
+    <loc>/documentation/create-pipelines/compartments.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/standard-library/filesystem/</loc>
+    <loc>/documentation/standard-library/multi-parameter.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/create-pipelines/compartments/</loc>
+    <loc>/documentation-java-api/algorithm/parameters.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/standard-library/multi-parameter/</loc>
+    <loc>/documentation/run-pipelines/connect-external-software.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-java-api/algorithm/parameters/</loc>
+    <loc>/documentation-java-api/algorithm/parallelization.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/run-pipelines/connect-external-software/</loc>
+    <loc>/documentation-java-api/algorithm/custom-info.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-java-api/algorithm/parallelization/</loc>
+    <loc>/documentation-json-api/graph-edge.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-java-api/algorithm/custom-info/</loc>
+    <loc>/documentation-java-api.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-json-api/graph-edge/</loc>
+    <loc>/documentation-java-api/algorithm/context-actions.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-java-api/</loc>
+    <loc>/documentation-java-api/data-type.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-java-api/algorithm/context-actions/</loc>
+    <loc>/documentation/standard-library/annotations.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-java-api/data-type/</loc>
+    <loc>/documentation-json-api/graph.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/standard-library/annotations/</loc>
+    <loc>/documentation-json-api.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-json-api/graph/</loc>
+    <loc>/documentation-data-api/pipeline-output.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-json-api/</loc>
+    <loc>/documentation/run-pipelines/quick-run.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-data-api/pipeline-output/</loc>
+    <loc>/documentation/run-pipelines/cache.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/run-pipelines/quick-run/</loc>
+    <loc>/documentation-java-api/parameter-type.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/run-pipelines/cache/</loc>
+    <loc>/documentation-data-api.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-java-api/parameter-type/</loc>
+    <loc>/documentation-json-api/json-extension.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-data-api/</loc>
+    <loc>/documentation/imagej-integration.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-json-api/json-extension/</loc>
+    <loc>/documentation/plugins.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/imagej-integration/</loc>
+    <loc>/documentation/standard-library/plots-tables.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/plugins/</loc>
+    <loc>/documentation/standard-library/jython.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/standard-library/plots-tables/</loc>
+    <loc>/documentation-json-api/metadata.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/standard-library/jython/</loc>
+    <loc>/documentation-java-api/usage-in-java.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-json-api/metadata/</loc>
+    <loc>/documentation/standard-library/python.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-java-api/usage-in-java/</loc>
+    <loc>/documentation-json-api/point.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/standard-library/python/</loc>
+    <loc>/documentation/standard-library/r-integration.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-json-api/point/</loc>
+    <loc>/documentation/standard-library.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/standard-library/r-integration/</loc>
+    <loc>/documentation/standard-library/cellpose.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/standard-library/</loc>
+    <loc>/documentation/create-json-extensions.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/standard-library/cellpose/</loc>
+    <loc>/documentation-json-api/project.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/create-json-extensions/</loc>
+    <loc>/citation.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-json-api/project/</loc>
+    <loc>/documentation/cli.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/citation/</loc>
+    <loc>/documentation/standard-library/deep-learning.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/cli/</loc>
+    <loc>/documentation/create-pipelines/groups.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/standard-library/deep-learning/</loc>
+    <loc>/documentation-json-api/slot-definition.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/create-pipelines/groups/</loc>
+    <loc>/documentation-json-api/data-table.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-json-api/slot-definition/</loc>
+    <loc>/documentation/create-pipelines/loops.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-json-api/data-table/</loc>
+    <loc>/documentation-json-api/data-table-row.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/create-pipelines/loops/</loc>
+    <loc>/documentation-json-api/annotation.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation-json-api/data-table-row/</loc>
-  </url><url>
-    <loc>https://www.jipipe.org/documentation-json-api/annotation/</loc>
-  </url><url>
-    <loc>https://www.jipipe.org/_footer/</loc>
+    <loc>/_footer.html</loc>
     <priority>0</priority>
   </url><url>
-    <loc>https://www.jipipe.org/categories/</loc>
+    <loc>/categories.html</loc>
   </url><url>
-    <loc>https://www.jipipe.org/</loc>
+    <loc>/</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tags/</loc>
+    <loc>/tags.html</loc>
   </url>
 </urlset>

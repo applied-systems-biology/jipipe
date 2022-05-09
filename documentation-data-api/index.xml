@@ -2,16 +2,16 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Data API documentation on JIPipe for ImageJ</title>
-    <link>https://www.jipipe.org/documentation-data-api/</link>
+    <link>/documentation-data-api.html</link>
     <description>Recent content in Data API documentation on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://www.jipipe.org/documentation-data-api/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language><atom:link href="/documentation-data-api/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Data table</title>
-      <link>https://www.jipipe.org/documentation-data-api/data-table/</link>
+      <link>/documentation-data-api/data-table.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/documentation-data-api/data-table/</guid>
+      <guid>/documentation-data-api/data-table.html</guid>
       <description>The data table structure is the smallest unit of the data API. Its purpose is to organize data of any supported kind into an annotated table and store all required metadata to recover the data from the file system.
 A data table is located in a directory within the file system and contains following parts:
    Element Description     data-table.json Metadata file for this data table.</description>
@@ -19,10 +19,10 @@ A data table is located in a directory within the file system and contains follo
     
     <item>
       <title>Row folder</title>
-      <link>https://www.jipipe.org/documentation-data-api/row-folder/</link>
+      <link>/documentation-data-api/row-folder.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/documentation-data-api/row-folder/</guid>
+      <guid>/documentation-data-api/row-folder.html</guid>
       <description>All data in a data table are stored in numeric folders called &amp;ldquo;row folders&amp;rdquo;, each containing the data of one table row.
 This data stores the raw serialized format, without metadata - metadata is located in data-table.json of the data table.
 The exact structure of a row folder depends on the data type. The current documentation can always be found by navigating to Help &amp;gt; Data type compendium within JIPipe. Alternatively, we uploaded a current database on this website.</description>
@@ -30,10 +30,10 @@ The exact structure of a row folder depends on the data type. The current docume
     
     <item>
       <title>Data types</title>
-      <link>https://www.jipipe.org/documentation-data-api/data-types/</link>
+      <link>/documentation-data-api/data-types.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/documentation-data-api/data-types/</guid>
+      <guid>/documentation-data-api/data-types.html</guid>
       <description>2D FFT Image Trivial conversions A trivial conversion involves no potentially expensive conversion operation. The data will directly match to input slots of the converted type. The edge has a dark-gray color.
 This type can be trivially converted into following types:
 Data FFT Image Image  This type can be trivially converted from following types:
@@ -42,10 +42,10 @@ Data FFT Image Image  This type can be trivially converted from following types:
     
     <item>
       <title>Pipeline output</title>
-      <link>https://www.jipipe.org/documentation-data-api/pipeline-output/</link>
+      <link>/documentation-data-api/pipeline-output.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/documentation-data-api/pipeline-output/</guid>
+      <guid>/documentation-data-api/pipeline-output.html</guid>
       <description>A pipeline output folder is generated on running a pipeline using the Run function or via other means of running the pipeline and saving the results to the hard drive.
 The generated folder follows a hierarchical structure that is based on the location of data within graph compartments, nodes, and slots. It also contains a copy of the project that generated the data in a file project.jip.
 mermaid.initialize({startOnLoad:true}); graph LR; Root[&#34;</description>

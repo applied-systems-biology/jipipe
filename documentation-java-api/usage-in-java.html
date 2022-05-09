@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JIPipe for ImageJ</title>
+    
+      <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="revised" content="2022-05-09T11:35:57 CEST">
+<title>Usage in Java :: JIPipe for ImageJ</title>
+<link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
+<link href="../css/font-awesome.min.css" rel="stylesheet">
+<link href="../css/nucleus.css" rel="stylesheet">
+<link href="../theme-flex/style.css" rel="stylesheet">
+
+<link rel="stylesheet" href="../css/bootstrap.min.css">
+<script src="../js/jquery-2.x.min.js"></script>
+<script type="text/javascript">
+      var baseurl = "";
+</script>
+<link rel="stylesheet" type="text/css" href="../css/custom.css">
+<link rel="stylesheet" type="text/css" href="../css/slick.css">
+<link rel="stylesheet" type="text/css" href="../css/slick-theme.css">
+
+
+    
+  </head>
+  <body data-url="../documentation-java-api/usage-in-java.html">
+    
+      <header>
+  <div class="logo">
+    
+	
+  
+    <p><a href="../" target="_self"><img src="../img/logo.svg" /></a></p>
+
+  
+
+
+  </div>
+  <div class="burger"><a href="javascript:void(0);" style="font-size:15px;">&#9776;</a></div>
+    <nav class="shortcuts">
+            <li class="" role="">
+                <a href="https://forum.image.sc/tag/jipipe"  rel="noopener">
+                  <i class='fa fa-comments'></i> <label>Community</label>
+                </a>
+            </li>
+            <li class="" role="">
+                <a href="../citation"  rel="noopener">
+                  <i class='fa fa-paragraph'></i> <label>Citation</label>
+                </a>
+            </li>
+    </nav>
+</header>
+<article>
+  <aside>
+    <ul class="menu">
+          <li data-nav-id="/" class="dd-item">
+          <a href="../">
+            <i class="fa fa-fw fa-home"></i>
+          </a>
+          </li>
+    <li data-nav-id="/installation.html" class="dd-item
+        ">
+      <div>
+      <a href="../installation.html">Installation</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+    <li data-nav-id="/tutorials.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../tutorials.html">Tutorials</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/tutorials/analysis.html" class="dd-item">
+        <div>
+          <a href="../tutorials/analysis.html">
+            Image analysis pipeline
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/tutorials/analysis_video.html" class="dd-item">
+        <div>
+          <a href="../tutorials/analysis_video.html">
+            Image analysis pipeline (Video)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/tutorials/extension.html" class="dd-item">
+        <div>
+          <a href="../tutorials/extension.html">
+            Creating an extension
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/tutorials/jipipe-for-imagej-users.html" class="dd-item">
+        <div>
+          <a href="../tutorials/jipipe-for-imagej-users.html">
+            JIPipe for ImageJ users (Video)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/tutorials/guide-user-interface.html" class="dd-item">
+        <div>
+          <a href="../tutorials/guide-user-interface.html">
+            User interface (Video)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/tutorials/guide-data-caches.html" class="dd-item">
+        <div>
+          <a href="../tutorials/guide-data-caches.html">
+            Data caches (Video)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/tutorials/guide-graph-editor.html" class="dd-item">
+        <div>
+          <a href="../tutorials/guide-graph-editor.html">
+            Graph editor user interface (Video)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/tutorials/guide-batch-processing.html" class="dd-item">
+        <div>
+          <a href="../tutorials/guide-batch-processing.html">
+            How to do batch processing (Video)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/faq.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../faq.html">Frequently asked questions</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/faq/general.html" class="dd-item">
+        <div>
+          <a href="../faq/general.html">
+            General questions
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/faq/issues.html" class="dd-item">
+        <div>
+          <a href="../faq/issues.html">
+            Common issues
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/faq/user-interface.html" class="dd-item">
+        <div>
+          <a href="../faq/user-interface.html">
+            User interface
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/faq/data-processing.html" class="dd-item">
+        <div>
+          <a href="../faq/data-processing.html">
+            Data processing
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/faq/imagej-integration.html" class="dd-item">
+        <div>
+          <a href="../faq/imagej-integration.html">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/faq/result-analysis.html" class="dd-item">
+        <div>
+          <a href="../faq/result-analysis.html">
+            Result analysis
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation.html">Documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+    <li data-nav-id="/documentation/basic-concepts.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation/basic-concepts.html">Basic concepts</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation/basic-concepts/visual-programming.html" class="dd-item">
+        <div>
+          <a href="../documentation/basic-concepts/visual-programming.html">
+            Visual programming
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/basic-concepts/batch-processing.html" class="dd-item">
+        <div>
+          <a href="../documentation/basic-concepts/batch-processing.html">
+            Batch processing
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation/create-pipelines.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation/create-pipelines.html">Creating pipelines</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation/create-pipelines/pipeline-editor.html" class="dd-item">
+        <div>
+          <a href="../documentation/create-pipelines/pipeline-editor.html">
+            Pipeline editor
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/create-pipelines/expressions.html" class="dd-item">
+        <div>
+          <a href="../documentation/create-pipelines/expressions.html">
+            Expression parameters
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/create-pipelines/compartments.html" class="dd-item">
+        <div>
+          <a href="../documentation/create-pipelines/compartments.html">
+            Graph compartments
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/create-pipelines/groups.html" class="dd-item">
+        <div>
+          <a href="../documentation/create-pipelines/groups.html">
+            Group nodes
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/create-pipelines/loops.html" class="dd-item">
+        <div>
+          <a href="../documentation/create-pipelines/loops.html">
+            Loop nodes
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation/run-pipelines.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation/run-pipelines.html">Running pipelines</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation/run-pipelines/run.html" class="dd-item">
+        <div>
+          <a href="../documentation/run-pipelines/run.html">
+            Running the whole pipeline
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/run-pipelines/result-analysis.html" class="dd-item">
+        <div>
+          <a href="../documentation/run-pipelines/result-analysis.html">
+            Review results
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/run-pipelines/connect-external-software.html" class="dd-item">
+        <div>
+          <a href="../documentation/run-pipelines/connect-external-software.html">
+            Use results in external software
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/run-pipelines/quick-run.html" class="dd-item">
+        <div>
+          <a href="../documentation/run-pipelines/quick-run.html">
+            Running a single node
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/run-pipelines/cache.html" class="dd-item">
+        <div>
+          <a href="../documentation/run-pipelines/cache.html">
+            Data caching
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+      <li data-nav-id="/documentation/imagej-integration.html" class="dd-item">
+        <div>
+          <a href="../documentation/imagej-integration.html">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/plugins.html" class="dd-item">
+        <div>
+          <a href="../documentation/plugins.html">
+            Managing plugins
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+    <li data-nav-id="/documentation/standard-library.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation/standard-library.html">Standard library</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation/standard-library/imagej-integration.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/imagej-integration.html">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/standard-library/macro-node.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/macro-node.html">
+            Macro node
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/standard-library/filesystem.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/filesystem.html">
+            Filesystem algorithms
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/standard-library/multi-parameter.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/multi-parameter.html">
+            Multi-parameter algorithms
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/standard-library/annotations.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/annotations.html">
+            Data annotation algorithms
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/standard-library/plots-tables.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/plots-tables.html">
+            Plots and tables
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/standard-library/jython.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/jython.html">
+            Jython integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+    <li data-nav-id="/documentation/standard-library/python.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation/standard-library/python.html">Python integration</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation/standard-library/python/api.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/python/api.html">
+            Python API
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+      <li data-nav-id="/documentation/standard-library/r-integration.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/r-integration.html">
+            R integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/standard-library/cellpose.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/cellpose.html">
+            Cellpose integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/standard-library/deep-learning.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/deep-learning.html">
+            Deep Learning
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation/create-json-extensions.html" class="dd-item
+        ">
+      <div>
+      <a href="../documentation/create-json-extensions.html">Extension builder</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+      <li data-nav-id="/documentation/cli.html" class="dd-item">
+        <div>
+          <a href="../documentation/cli.html">
+            Command Line Interface
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation-java-api.html" class="dd-item parent haschildren
+        ">
+      <div>
+      <a href="../documentation-java-api.html">Java API documentation</a>
+            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation-java-api/javadocs.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/javadocs.html">
+            JavaDocs
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/create-extension.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/create-extension.html">
+            Creating an extension project
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+    <li data-nav-id="/documentation-java-api/algorithm.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation-java-api/algorithm.html">Creating an algorithm</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation-java-api/algorithm/iterating-algorithms.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/algorithm/iterating-algorithms.html">
+            Handling multiple inputs
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/algorithm/merging-algorithms.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/algorithm/merging-algorithms.html">
+            Merging input data
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/algorithm/slot-configuration.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/algorithm/slot-configuration.html">
+            Customizing slots
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/algorithm/parameters.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/algorithm/parameters.html">
+            Parameters
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/algorithm/parallelization.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/algorithm/parallelization.html">
+            Parallelization
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/algorithm/custom-info.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/algorithm/custom-info.html">
+            Custom algorithm info
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/algorithm/context-actions.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/algorithm/context-actions.html">
+            Context actions
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation-java-api/data-type.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation-java-api/data-type.html">Creating a data type</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation-java-api/data-type/result-ui.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/data-type/result-ui.html">
+            Result view
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/data-type/result-preview.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/data-type/result-preview.html">
+            Preview from results folder
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation-java-api/parameter-type.html" class="dd-item
+        ">
+      <div>
+      <a href="../documentation-java-api/parameter-type.html">Creating a parameter type</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/usage-in-java.html" class="dd-item active">
+        <div>
+          <a href="../documentation-java-api/usage-in-java.html">
+            Usage in Java
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation-json-api.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation-json-api.html">JSON API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation-json-api/graph-node.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/graph-node.html">
+            Graph node
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/algorithm.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/algorithm.html">
+            Algorithm type
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/dependency.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/dependency.html">
+            Dependency
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/graph-edge.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/graph-edge.html">
+            Graph Edge
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/graph.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/graph.html">
+            Graph
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/json-extension.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/json-extension.html">
+            Extension
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/metadata.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/metadata.html">
+            Metadata
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/point.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/point.html">
+            Point
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/project.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/project.html">
+            Project
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/slot-definition.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/slot-definition.html">
+            Slot definition
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/data-table.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/data-table.html">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/data-table-row.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/data-table-row.html">
+            Data table row
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/annotation.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/annotation.html">
+            Annotation
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation-data-api.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation-data-api.html">Data API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation-data-api/data-table.html" class="dd-item">
+        <div>
+          <a href="../documentation-data-api/data-table.html">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-data-api/row-folder.html" class="dd-item">
+        <div>
+          <a href="../documentation-data-api/row-folder.html">
+            Row folder
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-data-api/data-types.html" class="dd-item">
+        <div>
+          <a href="../documentation-data-api/data-types.html">
+            Data types
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-data-api/pipeline-output.html" class="dd-item">
+        <div>
+          <a href="../documentation-data-api/pipeline-output.html">
+            Pipeline output
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/citation.html" class="dd-item
+        ">
+      <div>
+      <a href="../citation.html">Citation</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+
+
+
+
+    </ul>
+    <section>
+    </section>
+  </aside>
+  <section class="page">
+    
+    <div class="nav-select">
+      <center>Navigation : 
+        <select onchange="javascript:location.href = this.value;">
+          
+    <option value="/installation.html" >
+   Installation</option>
+    <option value="/tutorials.html" >
+   Tutorials</option>
+    <option value="/faq.html" >
+   Frequently asked questions</option>
+    <option value="/documentation.html" >
+   Documentation</option>
+    <option value="/documentation-java-api.html" >
+   Java API documentation</option> 
+      <option value="/documentation-java-api/javadocs.html" >- JavaDocs</option>
+      <option value="/documentation-java-api/create-extension.html" >- Creating an extension project</option>
+    <option value="/documentation-java-api/algorithm.html" >
+  - 
+   Creating an algorithm</option>
+    <option value="/documentation-java-api/data-type.html" >
+  - 
+   Creating a data type</option>
+    <option value="/documentation-java-api/parameter-type.html" >
+  - 
+   Creating a parameter type</option>
+      <option value="/documentation-java-api/usage-in-java.html"  selected>- Usage in Java</option>
+  
+    <option value="/documentation-json-api.html" >
+   JSON API documentation</option>
+    <option value="/documentation-data-api.html" >
+   Data API documentation</option>
+    <option value="/citation.html" >
+   Citation</option>
+
+
+
+        </select>
+      </center>
+    </div>
+      <div>
+        <div class="searchbox">
+          <input data-search-input id="search-by" type="text" placeholder="Search...">
+        </div>
+        <script type="text/javascript" src="../js/lunr.min.js"></script>
+        <script type="text/javascript" src="../js/auto-complete.js"></script>
+        <link href="../css/auto-complete.css" rel="stylesheet">
+        <script type="text/javascript">
+          
+              var baseurl = "";
+          
+        </script>
+        <script type="text/javascript" src="../js/search.js"></script>
+      </div>
+    
+
+    <h1>Usage in Java</h1>
+    
+    
+    
+    <p>The JIPipe API allows you to run algorithms, graphs, and projects in a pure Java environment
+without the need for a GUI or through ImageJ1 or ImageJ2 scripts.</p>
+<h1 id="prerequisites">Prerequisites</h1>
+<p>To use the JIPipe API JIPipe must be initialized first. This requires an ImageJ instance
+or any other way to load SciJava plugins. The following example shows how to initialize JIPipe manually from a main function.</p>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#75715e">// Just call this function before all others. It will create a new ImageJ instance and passes the context to JIPipe
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// If JIPipe is already initialized, the function has no effect
+</span><span style="color:#75715e"></span>  <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">ensureInstance</span><span style="color:#f92672">();</span>
+
+  <span style="color:#75715e">// If you already have a Context object: JIPipe.ensureInstance(context)
+</span><span style="color:#75715e"></span>
+  <span style="color:#75715e">// JIPipe is now ready to use
+</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</code></pre></div><h1 id="loading-and-running-a-project">Loading and running a project</h1>
+<p>You can load a <a href="../apidocs/org/hkijena/jipipe/api/JIPipeProject.html">project</a> via a static method.
+Running the project either involves enqueuing a <a href="../apidocs/org/hkijena/jipipe/api/JIPipeRun.html">run</a> into the <a href="../apidocs/org/hkijena/jipipe/ui/running/JIPipeRunnerQueue.html">global queue</a> or running it on the current thread.
+The run has a multitude of <a href="../apidocs/org/hkijena/jipipe/api/JIPipeRunSettings.html">settings</a> that control how/if output is written or how many threads are used.</p>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#75715e">// First initialize JIPipe before this line!
+</span><span style="color:#75715e"></span>
+  <span style="color:#75715e">// Load the project
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// JIPipe will put any non-exception errors or warnings into the report
+</span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeValidityReport</span> <span style="color:#111">report</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeValidityReport</span><span style="color:#f92672">();</span>
+  <span style="color:#111">JIPipeProject</span> <span style="color:#111">project</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeProject</span><span style="color:#f92672">.</span><span style="color:#75af00">loadProject</span><span style="color:#f92672">(</span><span style="color:#111">Paths</span><span style="color:#f92672">.</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-project.jip&#34;</span><span style="color:#f92672">),</span> <span style="color:#111">report</span><span style="color:#f92672">);</span>
+
+  <span style="color:#75715e">// Create a run that generates a deep-copy of the project&#39;s graph
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// The run is controlled by the JIPipeRunSettings instance that allows you to
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// have runs without caching or writing outputs if needed
+</span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeRunSettings</span> <span style="color:#111">settings</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeRunSettings</span><span style="color:#f92672">();</span>
+  <span style="color:#111">settings</span><span style="color:#f92672">.</span><span style="color:#75af00">setOutputPath</span><span style="color:#f92672">(</span><span style="color:#111">Paths</span><span style="color:#f92672">.</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/data/my-project-output&#34;</span><span style="color:#f92672">));</span>
+  <span style="color:#111">JIPipeRun</span> <span style="color:#111">run</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeRun</span><span style="color:#f92672">(</span><span style="color:#111">project</span><span style="color:#f92672">,</span> <span style="color:#111">settings</span><span style="color:#f92672">);</span>
+
+  <span style="color:#75715e">// Option 1: Run in separate thread (Async)
+</span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeRunnerQueue</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">enqueue</span><span style="color:#f92672">(</span><span style="color:#111">run</span><span style="color:#f92672">);</span>
+
+  <span style="color:#75715e">// Option 2: Run it on the current thread
+</span><span style="color:#75715e"></span>  <span style="color:#75715e">// The run itself has a property getProgressInfo() that allows access to the progress &amp; log
+</span><span style="color:#75715e"></span>  <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">run</span><span style="color:#f92672">();</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><h1 id="loading-a-result">Loading a result</h1>
+<p>To load an existing result folder, the <a href="../apidocs/org/hkijena/jipipe/api/JIPipeRun.html">run</a> is imported back into JIPipe.
+The run itself contains a <a href="../apidocs/org/hkijena/jipipe/api/nodes/JIPipeGraph.html">graph</a> instance with nodes that are aware
+of the data storage location. The storage location contains a <code>data-table.json</code> file that can be imported into an <a href="../apidocs/org/hkijena/jipipe/api/data/JIPipeExportedDataTable.html">exported data table</a>.
+This table contains all metadata and the relative storage location of each row.</p>
+<p>Row data is always stored in folders that correspond to the row index. For example, the first row&rsquo;s data is stored in a folder <code>0</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// First initialize JIPipe before this line!
+</span><span style="color:#75715e"></span>
+    <span style="color:#75715e">// Load the run
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// It will load the project as well
+</span><span style="color:#75715e"></span>    <span style="color:#111">Path</span> <span style="color:#111">path</span> <span style="color:#f92672">=</span> <span style="color:#111">Paths</span><span style="color:#f92672">.</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/data/my-project-output&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#111">JIPipeRun</span> <span style="color:#111">run</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeRun</span><span style="color:#f92672">.</span><span style="color:#75af00">loadFromFolder</span><span style="color:#f92672">(</span><span style="color:#111">path</span><span style="color:#f92672">,</span> <span style="color:#111">report</span><span style="color:#f92672">);</span>
+    <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">getProject</span><span style="color:#f92672">().</span><span style="color:#75af00">setWorkDirectory</span><span style="color:#f92672">(</span><span style="color:#111">path</span><span style="color:#f92672">);</span>
+
+    <span style="color:#75715e">// You can now access the run&#39;s graph and access the data slots
+</span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeDataSlot</span> <span style="color:#111">slot</span> <span style="color:#f92672">=</span> <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">getGraph</span><span style="color:#f92672">().</span><span style="color:#75af00">getNodes</span><span style="color:#f92672">().</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;some-node&#34;</span><span style="color:#f92672">).</span><span style="color:#75af00">getOutputSlot</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;Output&#34;</span><span style="color:#f92672">);</span>
+
+    <span style="color:#75715e">// Load the slot&#39;s data table
+</span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeExportedDataTable</span> <span style="color:#111">table</span> <span style="color:#f92672">=</span> <span style="color:#111">slot</span><span style="color:#f92672">.</span><span style="color:#75af00">getStorageDataTable</span><span style="color:#f92672">();</span>
+
+    <span style="color:#75715e">// Example: Get the folder where the first row stores its data
+</span><span style="color:#75715e"></span>    <span style="color:#111">Path</span> <span style="color:#111">firstRowStorage</span> <span style="color:#f92672">=</span> <span style="color:#111">slot</span><span style="color:#f92672">.</span><span style="color:#75af00">getRowStoragePath</span><span style="color:#f92672">(</span><span style="color:#111">0</span><span style="color:#f92672">);</span>
+  <span style="color:#f92672">}</span>
+</code></pre></div><h1 id="building-and-running-a-graph">Building and running a graph</h1>
+<p>JIPipe allows to create and run <a href="../apidocs/org/hkijena/jipipe/api/nodes/JIPipeGraph.html">graphs</a> without involving a project.
+A simple <a href="../apidocs/org/hkijena/jipipe/api/JIPipeGraphRunner.html">graph runner</a> is available to execute a graph.</p>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+    <span style="color:#75715e">// First initialize JIPipe before this line!
+</span><span style="color:#75715e"></span>
+    <span style="color:#111">JIPipeGraph</span> <span style="color:#111">graph</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeGraph</span><span style="color:#f92672">();</span>
+
+    <span style="color:#75715e">// There are multiple ways to instantiate a new node:
+</span><span style="color:#75715e"></span>
+    <span style="color:#75715e">// Option 1: Utility function
+</span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeGraphNode</span> <span style="color:#111">first</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">createNode</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;import-file&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeGraphNode</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
+
+    <span style="color:#75715e">// Option 2: Using the registry
+</span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeGraphNode</span> <span style="color:#111">second</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeNodeRegistry</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">getInfoById</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;import-imagej-imgplus-from-file&#34;</span><span style="color:#f92672">).</span><span style="color:#75af00">newInstance</span><span style="color:#f92672">();</span>
+
+
+    <span style="color:#75715e">// Add the nodes into the graph and connect them
+</span><span style="color:#75715e"></span>    <span style="color:#111">graph</span><span style="color:#f92672">.</span><span style="color:#75af00">insertNode</span><span style="color:#f92672">(</span><span style="color:#111">first</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeGraph</span><span style="color:#f92672">.</span><span style="color:#75af00">COMPARTMENT_DEFAULT</span><span style="color:#f92672">);</span>
+    <span style="color:#111">graph</span><span style="color:#f92672">.</span><span style="color:#75af00">insertNode</span><span style="color:#f92672">(</span><span style="color:#111">second</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeGraph</span><span style="color:#f92672">.</span><span style="color:#75af00">COMPARTMENT_DEFAULT</span><span style="color:#f92672">);</span>
+    <span style="color:#111">graph</span><span style="color:#f92672">.</span><span style="color:#75af00">connect</span><span style="color:#f92672">(</span><span style="color:#111">first</span><span style="color:#f92672">,</span> <span style="color:#111">second</span><span style="color:#f92672">);</span>
+
+
+    <span style="color:#75715e">// Use the graph runner
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// We always recommend to make a copy of the graph if it is used somehere else
+</span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeGraphRunner</span> <span style="color:#111">run</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeGraphRunner</span><span style="color:#f92672">(</span><span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeGraph</span><span style="color:#f92672">(</span><span style="color:#111">graph</span><span style="color:#f92672">));</span>
+
+    <span style="color:#75715e">// Option 1: Run in separate thread (Async)
+</span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeRunnerQueue</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">enqueue</span><span style="color:#f92672">(</span><span style="color:#111">run</span><span style="color:#f92672">);</span>
+
+    <span style="color:#75715e">// Option 2: Run it on the current thread
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// The run itself has a property getProgressInfo() that allows access to the progress &amp; log
+</span><span style="color:#75715e"></span>    <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">run</span><span style="color:#f92672">();</span>
+  <span style="color:#f92672">}</span>
+</code></pre></div><h1 id="running-a-single-node">Running a single node</h1>
+<p>You can run single algorithm nodes without involving a project or a graph:</p>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+  <span style="color:#75715e">// First initialize JIPipe before this line!
+</span><span style="color:#75715e"></span>
+  <span style="color:#111">JIPipeSimpleIteratingAlgorithm</span> <span style="color:#111">node</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">createNode</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;import-imagej-imgplus-from-file&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeSimpleIteratingAlgorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
+
+  <span style="color:#75715e">// The node requires a progress info 
+</span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeProgressInfo</span><span style="color:#f92672">();</span>
+
+  <span style="color:#75715e">// Always clear the node first (allows you to re-use it)
+</span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">clearSlotData</span><span style="color:#f92672">();</span>
+
+  <span style="color:#75715e">// Add inputs
+</span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">getFirstInputSlot</span><span style="color:#f92672">().</span><span style="color:#75af00">addData</span><span style="color:#f92672">(</span><span style="color:#00a8c8">new</span> <span style="color:#111">FileData</span><span style="color:#f92672">(</span><span style="color:#111">Paths</span><span style="color:#f92672">.</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/data/image.tif&#34;</span><span style="color:#f92672">)),</span> <span style="color:#111">progress</span><span style="color:#f92672">);</span>
+
+  <span style="color:#75715e">// Run the node
+</span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">run</span><span style="color:#f92672">(</span><span style="color:#111">progress</span><span style="color:#f92672">);</span>
+
+  <span style="color:#75715e">// Extract the output
+</span><span style="color:#75715e"></span>  <span style="color:#111">ImagePlusData</span> <span style="color:#111">image</span> <span style="color:#f92672">=</span> <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">getFirstOutputSlot</span><span style="color:#f92672">().</span><span style="color:#75af00">getData</span><span style="color:#f92672">(</span><span style="color:#111">0</span><span style="color:#f92672">,</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">progress</span><span style="color:#f92672">);</span>
+<span style="color:#f92672">}</span>
+</code></pre></div>
+
+    
+    
+        <div class="chevrons">
+    <div id="navigation">
+<a class="nav nav-prev" href="../documentation-java-api/parameter-type.html" title="Creating a parameter type"> <i class="fa fa-chevron-left"></i><label>Creating a parameter type</label></a>
+    <a class="nav nav-next" href="../documentation-json-api.html" title="JSON API documentation" style="margin-right: 0px;"><label>JSON API documentation</label><i class="fa fa-chevron-right"></i></a></div>
+  </div>
+
+  </section>
+</article>
+
+<footer>
+
+<div class="footline">
+    
+
+    
+    <div class="author">
+        <i class='fa fa-user'></i> <a href="mailto:ruman.gerst@leibniz-hki.de">Ruman Gerst</a>
+    </div>
+    
+
+    
+
+    
+  </div>
+
+
+	<div>
+
+
+  
+    <p>By <a href="https://www.leibniz-hki.de/en/applied-systems-biology.html">Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans Knöll Institute (HKI), Jena, Germany</a></p>
+
+  
+
+
+
+	</div>
+</footer>
+
+<script src="../js/clipboard.min.js"></script>
+
+<link href="../css/featherlight.min.css" rel="stylesheet">
+<script src="../js/featherlight.min.js"></script>
+
+
+
+<script src="../theme-flex/script.js"></script>
+
+
+    
+
+    
+    
+
+    <script type="text/javascript" src="../js/slick.min.js"></script>
+<script type="text/javascript" src="../js/custom.js"></script>
+
+  </body>
+</html>

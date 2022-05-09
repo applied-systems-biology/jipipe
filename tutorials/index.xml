@@ -2,79 +2,79 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Tutorials on JIPipe for ImageJ</title>
-    <link>https://www.jipipe.org/tutorials/</link>
+    <link>/tutorials.html</link>
     <description>Recent content in Tutorials on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="https://www.jipipe.org/tutorials/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language><atom:link href="/tutorials/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Image analysis pipeline</title>
-      <link>https://www.jipipe.org/tutorials/analysis/</link>
+      <link>/tutorials/analysis.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/tutorials/analysis/</guid>
+      <guid>/tutorials/analysis.html</guid>
       <description>This tutorial is also available as video.1. First startOn starting JIPipe, you will see such a screen: It contains a short introduction, the graph compartment editor,an three pre-defined graph compartments Preprocessing, Analysis, and Postprocessing. As described in the graph compartment documentation, youcan ignore graph graph compartments. But in this tutorial we will make use of its capabilities to clearly separate the pipeline into the mentioned tree steps.</description>
     </item>
     
     <item>
       <title>Image analysis pipeline (Video)</title>
-      <link>https://www.jipipe.org/tutorials/analysis_video/</link>
+      <link>/tutorials/analysis_video.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/tutorials/analysis_video/</guid>
+      <guid>/tutorials/analysis_video.html</guid>
       <description>This tutorial is also available as text tutorial.</description>
     </item>
     
     <item>
       <title>Creating an extension</title>
-      <link>https://www.jipipe.org/tutorials/extension/</link>
+      <link>/tutorials/extension.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/tutorials/extension/</guid>
+      <guid>/tutorials/extension.html</guid>
       <description>1. Existing pipelineIn this tutorial, we will create a custom algorithm extension based on parts of the pipeline created in the other tutorial.Please open the project file for the pipeline and navigate to the Preprocessing tab.2. Selecting the algorithmsPlease select the following algorithms (you can either do this by holding the Shift keyboard button and clicking the nodes or dragging a selection around the nodes):Folder listPath to annotationList filesImport imageAfter selecting the algorithms, right-click a selected node and click Export.</description>
     </item>
     
     <item>
       <title>JIPipe for ImageJ users (Video)</title>
-      <link>https://www.jipipe.org/tutorials/jipipe-for-imagej-users/</link>
+      <link>/tutorials/jipipe-for-imagej-users.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/tutorials/jipipe-for-imagej-users/</guid>
+      <guid>/tutorials/jipipe-for-imagej-users.html</guid>
       <description></description>
     </item>
     
     <item>
       <title>User interface (Video)</title>
-      <link>https://www.jipipe.org/tutorials/guide-user-interface/</link>
+      <link>/tutorials/guide-user-interface.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/tutorials/guide-user-interface/</guid>
+      <guid>/tutorials/guide-user-interface.html</guid>
       <description></description>
     </item>
     
     <item>
       <title>Data caches (Video)</title>
-      <link>https://www.jipipe.org/tutorials/guide-data-caches/</link>
+      <link>/tutorials/guide-data-caches.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/tutorials/guide-data-caches/</guid>
+      <guid>/tutorials/guide-data-caches.html</guid>
       <description></description>
     </item>
     
     <item>
       <title>Graph editor user interface (Video)</title>
-      <link>https://www.jipipe.org/tutorials/guide-graph-editor/</link>
+      <link>/tutorials/guide-graph-editor.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/tutorials/guide-graph-editor/</guid>
+      <guid>/tutorials/guide-graph-editor.html</guid>
       <description></description>
     </item>
     
     <item>
       <title>How to do batch processing (Video)</title>
-      <link>https://www.jipipe.org/tutorials/guide-batch-processing/</link>
+      <link>/tutorials/guide-batch-processing.html</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>https://www.jipipe.org/tutorials/guide-batch-processing/</guid>
+      <guid>/tutorials/guide-batch-processing.html</guid>
       <description></description>
     </item>
     

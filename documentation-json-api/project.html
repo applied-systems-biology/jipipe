@@ -1,0 +1,1712 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JIPipe for ImageJ</title>
+    
+      <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="revised" content="2022-05-09T11:35:57 CEST">
+<title>Project :: JIPipe for ImageJ</title>
+<link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
+<link href="../css/font-awesome.min.css" rel="stylesheet">
+<link href="../css/nucleus.css" rel="stylesheet">
+<link href="../theme-flex/style.css" rel="stylesheet">
+
+<link rel="stylesheet" href="../css/bootstrap.min.css">
+<script src="../js/jquery-2.x.min.js"></script>
+<script type="text/javascript">
+      var baseurl = "";
+</script>
+<link rel="stylesheet" type="text/css" href="../css/custom.css">
+<link rel="stylesheet" type="text/css" href="../css/slick.css">
+<link rel="stylesheet" type="text/css" href="../css/slick-theme.css">
+
+
+    
+  </head>
+  <body data-url="../documentation-json-api/project.html">
+    
+      <header>
+  <div class="logo">
+    
+	
+  
+    <p><a href="../" target="_self"><img src="../img/logo.svg" /></a></p>
+
+  
+
+
+  </div>
+  <div class="burger"><a href="javascript:void(0);" style="font-size:15px;">&#9776;</a></div>
+    <nav class="shortcuts">
+            <li class="" role="">
+                <a href="https://forum.image.sc/tag/jipipe"  rel="noopener">
+                  <i class='fa fa-comments'></i> <label>Community</label>
+                </a>
+            </li>
+            <li class="" role="">
+                <a href="../citation"  rel="noopener">
+                  <i class='fa fa-paragraph'></i> <label>Citation</label>
+                </a>
+            </li>
+    </nav>
+</header>
+<article>
+  <aside>
+    <ul class="menu">
+          <li data-nav-id="/" class="dd-item">
+          <a href="../">
+            <i class="fa fa-fw fa-home"></i>
+          </a>
+          </li>
+    <li data-nav-id="/installation.html" class="dd-item
+        ">
+      <div>
+      <a href="../installation.html">Installation</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+    <li data-nav-id="/tutorials.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../tutorials.html">Tutorials</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/tutorials/analysis.html" class="dd-item">
+        <div>
+          <a href="../tutorials/analysis.html">
+            Image analysis pipeline
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/tutorials/analysis_video.html" class="dd-item">
+        <div>
+          <a href="../tutorials/analysis_video.html">
+            Image analysis pipeline (Video)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/tutorials/extension.html" class="dd-item">
+        <div>
+          <a href="../tutorials/extension.html">
+            Creating an extension
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/tutorials/jipipe-for-imagej-users.html" class="dd-item">
+        <div>
+          <a href="../tutorials/jipipe-for-imagej-users.html">
+            JIPipe for ImageJ users (Video)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/tutorials/guide-user-interface.html" class="dd-item">
+        <div>
+          <a href="../tutorials/guide-user-interface.html">
+            User interface (Video)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/tutorials/guide-data-caches.html" class="dd-item">
+        <div>
+          <a href="../tutorials/guide-data-caches.html">
+            Data caches (Video)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/tutorials/guide-graph-editor.html" class="dd-item">
+        <div>
+          <a href="../tutorials/guide-graph-editor.html">
+            Graph editor user interface (Video)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/tutorials/guide-batch-processing.html" class="dd-item">
+        <div>
+          <a href="../tutorials/guide-batch-processing.html">
+            How to do batch processing (Video)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/faq.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../faq.html">Frequently asked questions</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/faq/general.html" class="dd-item">
+        <div>
+          <a href="../faq/general.html">
+            General questions
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/faq/issues.html" class="dd-item">
+        <div>
+          <a href="../faq/issues.html">
+            Common issues
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/faq/user-interface.html" class="dd-item">
+        <div>
+          <a href="../faq/user-interface.html">
+            User interface
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/faq/data-processing.html" class="dd-item">
+        <div>
+          <a href="../faq/data-processing.html">
+            Data processing
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/faq/imagej-integration.html" class="dd-item">
+        <div>
+          <a href="../faq/imagej-integration.html">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/faq/result-analysis.html" class="dd-item">
+        <div>
+          <a href="../faq/result-analysis.html">
+            Result analysis
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation.html">Documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+    <li data-nav-id="/documentation/basic-concepts.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation/basic-concepts.html">Basic concepts</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation/basic-concepts/visual-programming.html" class="dd-item">
+        <div>
+          <a href="../documentation/basic-concepts/visual-programming.html">
+            Visual programming
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/basic-concepts/batch-processing.html" class="dd-item">
+        <div>
+          <a href="../documentation/basic-concepts/batch-processing.html">
+            Batch processing
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation/create-pipelines.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation/create-pipelines.html">Creating pipelines</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation/create-pipelines/pipeline-editor.html" class="dd-item">
+        <div>
+          <a href="../documentation/create-pipelines/pipeline-editor.html">
+            Pipeline editor
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/create-pipelines/expressions.html" class="dd-item">
+        <div>
+          <a href="../documentation/create-pipelines/expressions.html">
+            Expression parameters
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/create-pipelines/compartments.html" class="dd-item">
+        <div>
+          <a href="../documentation/create-pipelines/compartments.html">
+            Graph compartments
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/create-pipelines/groups.html" class="dd-item">
+        <div>
+          <a href="../documentation/create-pipelines/groups.html">
+            Group nodes
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/create-pipelines/loops.html" class="dd-item">
+        <div>
+          <a href="../documentation/create-pipelines/loops.html">
+            Loop nodes
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation/run-pipelines.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation/run-pipelines.html">Running pipelines</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation/run-pipelines/run.html" class="dd-item">
+        <div>
+          <a href="../documentation/run-pipelines/run.html">
+            Running the whole pipeline
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/run-pipelines/result-analysis.html" class="dd-item">
+        <div>
+          <a href="../documentation/run-pipelines/result-analysis.html">
+            Review results
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/run-pipelines/connect-external-software.html" class="dd-item">
+        <div>
+          <a href="../documentation/run-pipelines/connect-external-software.html">
+            Use results in external software
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/run-pipelines/quick-run.html" class="dd-item">
+        <div>
+          <a href="../documentation/run-pipelines/quick-run.html">
+            Running a single node
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/run-pipelines/cache.html" class="dd-item">
+        <div>
+          <a href="../documentation/run-pipelines/cache.html">
+            Data caching
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+      <li data-nav-id="/documentation/imagej-integration.html" class="dd-item">
+        <div>
+          <a href="../documentation/imagej-integration.html">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/plugins.html" class="dd-item">
+        <div>
+          <a href="../documentation/plugins.html">
+            Managing plugins
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+    <li data-nav-id="/documentation/standard-library.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation/standard-library.html">Standard library</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation/standard-library/imagej-integration.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/imagej-integration.html">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/standard-library/macro-node.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/macro-node.html">
+            Macro node
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/standard-library/filesystem.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/filesystem.html">
+            Filesystem algorithms
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/standard-library/multi-parameter.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/multi-parameter.html">
+            Multi-parameter algorithms
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/standard-library/annotations.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/annotations.html">
+            Data annotation algorithms
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/standard-library/plots-tables.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/plots-tables.html">
+            Plots and tables
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/standard-library/jython.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/jython.html">
+            Jython integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+    <li data-nav-id="/documentation/standard-library/python.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation/standard-library/python.html">Python integration</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation/standard-library/python/api.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/python/api.html">
+            Python API
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+      <li data-nav-id="/documentation/standard-library/r-integration.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/r-integration.html">
+            R integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/standard-library/cellpose.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/cellpose.html">
+            Cellpose integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation/standard-library/deep-learning.html" class="dd-item">
+        <div>
+          <a href="../documentation/standard-library/deep-learning.html">
+            Deep Learning
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation/create-json-extensions.html" class="dd-item
+        ">
+      <div>
+      <a href="../documentation/create-json-extensions.html">Extension builder</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+      <li data-nav-id="/documentation/cli.html" class="dd-item">
+        <div>
+          <a href="../documentation/cli.html">
+            Command Line Interface
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation-java-api.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation-java-api.html">Java API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation-java-api/javadocs.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/javadocs.html">
+            JavaDocs
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/create-extension.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/create-extension.html">
+            Creating an extension project
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+    <li data-nav-id="/documentation-java-api/algorithm.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation-java-api/algorithm.html">Creating an algorithm</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation-java-api/algorithm/iterating-algorithms.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/algorithm/iterating-algorithms.html">
+            Handling multiple inputs
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/algorithm/merging-algorithms.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/algorithm/merging-algorithms.html">
+            Merging input data
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/algorithm/slot-configuration.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/algorithm/slot-configuration.html">
+            Customizing slots
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/algorithm/parameters.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/algorithm/parameters.html">
+            Parameters
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/algorithm/parallelization.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/algorithm/parallelization.html">
+            Parallelization
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/algorithm/custom-info.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/algorithm/custom-info.html">
+            Custom algorithm info
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/algorithm/context-actions.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/algorithm/context-actions.html">
+            Context actions
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation-java-api/data-type.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation-java-api/data-type.html">Creating a data type</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation-java-api/data-type/result-ui.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/data-type/result-ui.html">
+            Result view
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/data-type/result-preview.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/data-type/result-preview.html">
+            Preview from results folder
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation-java-api/parameter-type.html" class="dd-item
+        ">
+      <div>
+      <a href="../documentation-java-api/parameter-type.html">Creating a parameter type</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+      <li data-nav-id="/documentation-java-api/usage-in-java.html" class="dd-item">
+        <div>
+          <a href="../documentation-java-api/usage-in-java.html">
+            Usage in Java
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation-json-api.html" class="dd-item parent haschildren
+        ">
+      <div>
+      <a href="../documentation-json-api.html">JSON API documentation</a>
+            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation-json-api/graph-node.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/graph-node.html">
+            Graph node
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/algorithm.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/algorithm.html">
+            Algorithm type
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/dependency.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/dependency.html">
+            Dependency
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/graph-edge.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/graph-edge.html">
+            Graph Edge
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/graph.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/graph.html">
+            Graph
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/json-extension.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/json-extension.html">
+            Extension
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/metadata.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/metadata.html">
+            Metadata
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/point.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/point.html">
+            Point
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/project.html" class="dd-item active">
+        <div>
+          <a href="../documentation-json-api/project.html">
+            Project
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/slot-definition.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/slot-definition.html">
+            Slot definition
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/data-table.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/data-table.html">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/data-table-row.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/data-table-row.html">
+            Data table row
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-json-api/annotation.html" class="dd-item">
+        <div>
+          <a href="../documentation-json-api/annotation.html">
+            Annotation
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/documentation-data-api.html" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../documentation-data-api.html">Data API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="/documentation-data-api/data-table.html" class="dd-item">
+        <div>
+          <a href="../documentation-data-api/data-table.html">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-data-api/row-folder.html" class="dd-item">
+        <div>
+          <a href="../documentation-data-api/row-folder.html">
+            Row folder
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-data-api/data-types.html" class="dd-item">
+        <div>
+          <a href="../documentation-data-api/data-types.html">
+            Data types
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="/documentation-data-api/pipeline-output.html" class="dd-item">
+        <div>
+          <a href="../documentation-data-api/pipeline-output.html">
+            Pipeline output
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="/citation.html" class="dd-item
+        ">
+      <div>
+      <a href="../citation.html">Citation</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+
+
+
+
+    </ul>
+    <section>
+    </section>
+  </aside>
+  <section class="page">
+    
+    <div class="nav-select">
+      <center>Navigation : 
+        <select onchange="javascript:location.href = this.value;">
+          
+    <option value="/installation.html" >
+   Installation</option>
+    <option value="/tutorials.html" >
+   Tutorials</option>
+    <option value="/faq.html" >
+   Frequently asked questions</option>
+    <option value="/documentation.html" >
+   Documentation</option>
+    <option value="/documentation-java-api.html" >
+   Java API documentation</option>
+    <option value="/documentation-json-api.html" >
+   JSON API documentation</option> 
+      <option value="/documentation-json-api/graph-node.html" >- Graph node</option>
+      <option value="/documentation-json-api/algorithm.html" >- Algorithm type</option>
+      <option value="/documentation-json-api/dependency.html" >- Dependency</option>
+      <option value="/documentation-json-api/graph-edge.html" >- Graph Edge</option>
+      <option value="/documentation-json-api/graph.html" >- Graph</option>
+      <option value="/documentation-json-api/json-extension.html" >- Extension</option>
+      <option value="/documentation-json-api/metadata.html" >- Metadata</option>
+      <option value="/documentation-json-api/point.html" >- Point</option>
+      <option value="/documentation-json-api/project.html"  selected>- Project</option>
+      <option value="/documentation-json-api/slot-definition.html" >- Slot definition</option>
+      <option value="/documentation-json-api/data-table.html" >- Data table</option>
+      <option value="/documentation-json-api/data-table-row.html" >- Data table row</option>
+      <option value="/documentation-json-api/annotation.html" >- Annotation</option>
+  
+    <option value="/documentation-data-api.html" >
+   Data API documentation</option>
+    <option value="/citation.html" >
+   Citation</option>
+
+
+
+        </select>
+      </center>
+    </div>
+      <div>
+        <div class="searchbox">
+          <input data-search-input id="search-by" type="text" placeholder="Search...">
+        </div>
+        <script type="text/javascript" src="../js/lunr.min.js"></script>
+        <script type="text/javascript" src="../js/auto-complete.js"></script>
+        <link href="../css/auto-complete.css" rel="stylesheet">
+        <script type="text/javascript">
+          
+              var baseurl = "";
+          
+        </script>
+        <script type="text/javascript" src="../js/search.js"></script>
+      </div>
+    
+
+    <h1>Project</h1>
+    
+    
+    
+    <p>This document describes the properties of the JSON API object. You also can access
+the document in <a href="https://json-schema.org/">JSON Schema</a> format: <a href="https://jipipe.org/schemas/project.schema.json">project.schema.json</a></p>
+<div class="panel-body">
+ <section class="json-schema-description">
+  <p>
+   An analysis project
+  </p>
+ </section>
+ <section class="json-schema-properties">
+  <dl>
+   <dt data-property-name="jipipe:project-type">
+    <span class="json-property-name">
+     jipipe:project-type:
+    </span>
+    <span class="json-property-type">
+     string
+    </span>
+    <span class="json-property-enum" title="Possible values">
+     , x ∈ {
+     <span class="json-property-enum-item">
+      project
+     </span>
+     (default)
+                                                }
+    </span>
+    <span class="json-property-range" title="Value limits">
+    </span>
+    <span class="json-property-required">
+    </span>
+   </dt>
+   <dd>
+    <p>
+     Used to identify this JSON as JIPipe project
+    </p>
+    <div class="json-inner-schema">
+    </div>
+   </dd>
+   <dt data-property-name="metadata">
+    <span class="json-property-name">
+     metadata:
+    </span>
+    <span class="json-property-type">
+     <a class="json-schema-ref" href="https://jipipe.org/documentation-json-api/metadata">
+      See metadata
+     </a>
+    </span>
+    <span class="json-property-range" title="Value limits">
+    </span>
+    <span class="json-property-default-value">
+     [object Object]
+    </span>
+    <span class="json-property-required">
+    </span>
+   </dt>
+   <dd>
+    <p>
+     General information about the project
+    </p>
+    <div class="json-inner-schema">
+    </div>
+   </dd>
+   <dt data-property-name="dependencies">
+    <span class="json-property-name">
+     dependencies:
+    </span>
+    <span class="json-property-type">
+     object[]
+    </span>
+    <span class="json-property-range" title="Value limits">
+    </span>
+    <span class="json-property-required">
+    </span>
+   </dt>
+   <dd>
+    <p>
+     Dependencies of this project
+    </p>
+    <div class="json-inner-schema">
+     <section class="json-schema-array-items">
+      <span class="json-property-type">
+       <a class="json-schema-ref" href="https://jipipe.org/documentation-json-api/dependency">
+        See dependency
+       </a>
+      </span>
+      <span class="json-property-range" title="Value limits">
+      </span>
+      <div class="json-inner-schema">
+      </div>
+     </section>
+    </div>
+   </dd>
+   <dt data-property-name="graph">
+    <span class="json-property-name">
+     graph:
+    </span>
+    <span class="json-property-type">
+     <a class="json-schema-ref" href="https://jipipe.org/documentation-json-api/graph">
+      See graph
+     </a>
+    </span>
+    <span class="json-property-range" title="Value limits">
+    </span>
+    <span class="json-property-default-value">
+     [object Object]
+    </span>
+    <span class="json-property-required">
+    </span>
+   </dt>
+   <dd>
+    <p>
+     Contains the pipeline nodes
+    </p>
+    <div class="json-inner-schema">
+    </div>
+   </dd>
+   <dt data-property-name="compartments">
+    <span class="json-property-name">
+     compartments:
+    </span>
+    <span class="json-property-type">
+     object
+    </span>
+    <span class="json-property-range" title="Value limits">
+    </span>
+    <span class="json-property-default-value">
+     [object Object]
+    </span>
+    <span class="json-property-required">
+    </span>
+   </dt>
+   <dd>
+    <p>
+     For organization of compartments
+    </p>
+    <div class="json-inner-schema">
+     <section class="json-schema-properties">
+      <dl>
+       <dt data-property-name="compartment-graph">
+        <span class="json-property-name">
+         compartment-graph:
+        </span>
+        <span class="json-property-type">
+         <a class="json-schema-ref" href="https://jipipe.org/documentation-json-api/graph">
+          See graph
+         </a>
+        </span>
+        <span class="json-property-range" title="Value limits">
+        </span>
+        <span class="json-property-default-value">
+         [object Object]
+        </span>
+        <span class="json-property-required">
+        </span>
+       </dt>
+       <dd>
+        <p>
+         Structural graph of compartments
+        </p>
+        <div class="json-inner-schema">
+        </div>
+       </dd>
+      </dl>
+     </section>
+    </div>
+   </dd>
+  </dl>
+ </section>
+</div>
+<h1 id="example">Example</h1>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#111">{</span>
+  <span style="color:#f92672">&#34;jipipe:project-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;project&#34;</span><span style="color:#111">,</span>
+  <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+    <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Empty (3 compartments)&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;This template contains three compartments &#39;Preprocessing&#39;, &#39;Analysis&#39;, and &#39;Postprocessing&#39; that are connected to each other.&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;authors&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">],</span>
+    <span style="color:#f92672">&#34;website&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;license&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;citation&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span>
+  <span style="color:#111">},</span>
+  <span style="color:#f92672">&#34;dependencies&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
+    <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Standard plots&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Commonly used plot types&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;authors&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;first-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Zoltán&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;last-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Cseresnyés&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;affiliations&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany&#34;</span>
+      <span style="color:#111">},</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;first-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Ruman&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;last-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Gerst&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;affiliations&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany\nFaculty of Biological Sciences, Friedrich-Schiller-University Jena, Germany&#34;</span>
+      <span style="color:#111">}</span> <span style="color:#111">],</span>
+      <span style="color:#f92672">&#34;website&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;https://jipipe.org/&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;license&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;BSD 2-Clause&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;citation&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span>
+    <span style="color:#111">},</span>
+    <span style="color:#f92672">&#34;id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;org.hkijena.jipipe:plots&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;version&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;1.0.0&#34;</span>
+  <span style="color:#111">},</span> <span style="color:#111">{</span>
+    <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;ImageJ algorithms&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Integrates ImageJ algorithms into JIPipe&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;authors&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;first-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Zoltán&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;last-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Cseresnyés&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;affiliations&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany&#34;</span>
+      <span style="color:#111">},</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;first-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Ruman&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;last-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Gerst&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;affiliations&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany\nFaculty of Biological Sciences, Friedrich-Schiller-University Jena, Germany&#34;</span>
+      <span style="color:#111">}</span> <span style="color:#111">],</span>
+      <span style="color:#f92672">&#34;website&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;https://jipipe.org/&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;license&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;BSD 2-Clause&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;citation&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span>
+    <span style="color:#111">},</span>
+    <span style="color:#f92672">&#34;id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;org.hkijena.jipipe:imagej-algorithms&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;version&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;1.0.0&#34;</span>
+  <span style="color:#111">},</span> <span style="color:#111">{</span>
+    <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Filesystem types and algorithms&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Data types and algorithms for interacting with files and folders&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;authors&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;first-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Zoltán&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;last-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Cseresnyés&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;affiliations&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany&#34;</span>
+      <span style="color:#111">},</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;first-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Ruman&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;last-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Gerst&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;affiliations&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany\nFaculty of Biological Sciences, Friedrich-Schiller-University Jena, Germany&#34;</span>
+      <span style="color:#111">}</span> <span style="color:#111">],</span>
+      <span style="color:#f92672">&#34;website&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;https://jipipe.org/&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;license&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;BSD 2-Clause&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;citation&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span>
+    <span style="color:#111">},</span>
+    <span style="color:#f92672">&#34;id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;org.hkijena.jipipe:filesystem&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;version&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;1.0.0&#34;</span>
+  <span style="color:#111">},</span> <span style="color:#111">{</span>
+    <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Compartment management&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Data types required for graph compartment management&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;authors&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;first-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Zoltán&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;last-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Cseresnyés&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;affiliations&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany&#34;</span>
+      <span style="color:#111">},</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;first-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Ruman&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;last-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Gerst&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;affiliations&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany\nFaculty of Biological Sciences, Friedrich-Schiller-University Jena, Germany&#34;</span>
+      <span style="color:#111">}</span> <span style="color:#111">],</span>
+      <span style="color:#f92672">&#34;website&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;https://jipipe.org/&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;license&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;BSD 2-Clause&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;citation&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span>
+    <span style="color:#111">},</span>
+    <span style="color:#f92672">&#34;id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;org.hkijena.jipipe:compartments&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;version&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;1.0.0&#34;</span>
+  <span style="color:#111">},</span> <span style="color:#111">{</span>
+    <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;ImageJ integration&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Adds support for commonly used ImageJ data types&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;authors&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;first-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Zoltán&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;last-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Cseresnyés&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;affiliations&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany&#34;</span>
+      <span style="color:#111">},</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;first-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Ruman&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;last-name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Gerst&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;affiliations&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans-Knöll-Institute, Jena, Germany\nFaculty of Biological Sciences, Friedrich-Schiller-University Jena, Germany&#34;</span>
+      <span style="color:#111">}</span> <span style="color:#111">],</span>
+      <span style="color:#f92672">&#34;website&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;https://jipipe.org/&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;license&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;BSD 2-Clause&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;citation&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span>
+    <span style="color:#111">},</span>
+    <span style="color:#f92672">&#34;id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;org.hkijena.jipipe:imagej-integration&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;version&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;1.0.0&#34;</span>
+  <span style="color:#111">}</span> <span style="color:#111">],</span>
+  <span style="color:#f92672">&#34;additional-metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+    <span style="color:#f92672">&#34;pipeline-parameters&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;jipipe:type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;exported-parameters&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;parameter-reference-groups&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">]</span>
+      <span style="color:#111">}</span>
+    <span style="color:#111">},</span>
+    <span style="color:#f92672">&#34;org.hkijena.jipipe:pipeline-parameters&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;jipipe:type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;exported-parameters&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;parameter-reference-groups&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">]</span>
+      <span style="color:#111">}</span>
+    <span style="color:#111">},</span>
+    <span style="color:#f92672">&#34;org.hkijena.jipipe.ui:project-tabs&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;jipipe:type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;data&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;open-tabs&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#d88200">&#34;singleton:INTRODUCTION&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;singleton:COMPARTMENT_EDITOR&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;graph-compartment:preprocessing&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;graph-compartment:analysis&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;graph-compartment:postprocessing&#34;</span> <span style="color:#111">],</span>
+        <span style="color:#f92672">&#34;selected-tab&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span>
+      <span style="color:#111">}</span>
+    <span style="color:#111">}</span>
+  <span style="color:#111">},</span>
+  <span style="color:#f92672">&#34;graph&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+    <span style="color:#f92672">&#34;nodes&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;preprocessing-folder-list&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;preprocessing&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">400</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">300</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">}</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:node-info-id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;import-folder-list&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;preprocessing&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:save-outputs&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;folder-paths&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#d88200">&#34;ATTC_IµL_3rdReplicate-Experiment-5516&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;ATTC_IµL_3rdReplicate-Experiment-5517&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;ATTC_IµL_3rdReplicate-Experiment-5518&#34;</span> <span style="color:#111">],</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:pass-through&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Folder list&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span>
+      <span style="color:#111">},</span>
+      <span style="color:#f92672">&#34;preprocessing-path-to-annotation&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;preprocessing&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">400</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">500</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">}</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:node-info-id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;path-to-annotation-simple&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;preprocessing&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;annotation-merge-strategy&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;OverwriteExisting&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;remove-extensions&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:save-outputs&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parallelization:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;generated-annotation&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Dataset&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;full-path&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:pass-through&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Path to annotation&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/has-parameter-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/attach-parameter-annotations&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/parameter-annotations-prefix&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">},</span>
+      <span style="color:#f92672">&#34;preprocessing-list-files&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;preprocessing&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">425</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">700</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">}</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:node-info-id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;folder-list-files&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;preprocessing&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:save-outputs&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parallelization:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;subfolder&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;in&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;recursive-follows-links&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;filters&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;mode&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Glob&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;filter-string&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;*.tif&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;invert&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+        <span style="color:#111">}</span> <span style="color:#111">],</span>
+        <span style="color:#f92672">&#34;only-filenames&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:pass-through&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;recursive&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;List files&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/has-parameter-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/attach-parameter-annotations&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/parameter-annotations-prefix&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">},</span>
+      <span style="color:#f92672">&#34;preprocessing-import-image&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;preprocessing&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">425</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">900</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">}</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:node-info-id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;import-imagej-imgplus-from-file&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;preprocessing&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:save-outputs&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;generated-image-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;imagej-imgplus&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;title-annotation&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;content&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Image title&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parallelization:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:pass-through&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Import image&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/has-parameter-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/attach-parameter-annotations&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/parameter-annotations-prefix&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">},</span>
+      <span style="color:#f92672">&#34;preprocessing-preprocessing-output&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;input&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Data&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;imagej-imgplus-2d-greyscale&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Data&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;output&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Data&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;imagej-imgplus-2d-greyscale&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Data&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">}</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;preprocessing&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">425</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">1100</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;analysis&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">100</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">50</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">}</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:node-info-id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;jipipe:compartment-output&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;preprocessing&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:save-outputs&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:pass-through&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Preprocessing output&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span>
+      <span style="color:#111">},</span>
+      <span style="color:#f92672">&#34;analysis-gaussian-blur-2d&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;analysis&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">100</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">250</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">}</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:node-info-id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;ij1-blur-gaussian2d&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:save-outputs&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parallelization:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;sigma-y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">-1.0</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;sigma-x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">1.0</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:pass-through&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Gaussian blur 2D&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/has-parameter-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/attach-parameter-annotations&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/parameter-annotations-prefix&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">},</span>
+      <span style="color:#f92672">&#34;analysis-auto-threshold-2d&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;analysis&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">100</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">450</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">}</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:node-info-id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;ij1-threshold-auto2d&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:save-outputs&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;method&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Default&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parallelization:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;dark-background&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:pass-through&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Auto threshold 2D&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/has-parameter-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/attach-parameter-annotations&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/parameter-annotations-prefix&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">},</span>
+      <span style="color:#f92672">&#34;analysis-distance-transform-watershed-2d&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;analysis&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">100</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">650</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">}</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:node-info-id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;ij1-binary-dtwatershed2d&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:save-outputs&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parallelization:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:pass-through&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Distance transform watershed 2D&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/has-parameter-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/attach-parameter-annotations&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/parameter-annotations-prefix&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">},</span>
+      <span style="color:#f92672">&#34;analysis-find-particles-2d&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;analysis&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">100</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">850</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">}</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:node-info-id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;ij1-analyze-find-particles2d&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;min-particle-circularity&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">0.0</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parallelization:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:pass-through&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Find particles 2D&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;min-particle-size&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">0.0</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:save-outputs&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;annotation-type&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;content&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Image index&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;max-particle-circularity&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">1.0</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;split-slices&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;exclude-edges&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;measurements&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;values&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#d88200">&#34;Centroid&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;PixelValueMinMax&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;Area&#34;</span> <span style="color:#111">]</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;max-particle-size&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Infinity&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/has-parameter-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/attach-parameter-annotations&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/attach-only-non-default-parameter-annotations&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/parameter-annotations-prefix&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:parameter-slot-algorithm/parameter-annotations-use-internal-names&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">},</span>
+      <span style="color:#f92672">&#34;analysis-analysis-output&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;input&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Spore Mask&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;imagej-imgplus-2d-greyscale-mask&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Spore Mask&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+            <span style="color:#111">},</span>
+            <span style="color:#f92672">&#34;Spore ROI&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;imagej-roi&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Spore ROI&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+            <span style="color:#111">},</span>
+            <span style="color:#f92672">&#34;Spore measurements&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;imagej-results-table&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Spore measurements&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;output&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Spore Mask&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;imagej-imgplus-2d-greyscale-mask&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Spore Mask&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+            <span style="color:#111">},</span>
+            <span style="color:#f92672">&#34;Spore ROI&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;imagej-roi&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Spore ROI&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+            <span style="color:#111">},</span>
+            <span style="color:#f92672">&#34;Spore measurements&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;imagej-results-table&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Spore measurements&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">}</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;postprocessing&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">100</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">50</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;analysis&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">50</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">1050</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">}</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:node-info-id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;jipipe:compartment-output&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:save-outputs&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:pass-through&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Analysis output&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span>
+      <span style="color:#111">},</span>
+      <span style="color:#f92672">&#34;postprocessing-plot-tables&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;postprocessing&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">550</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">250</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">}</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:node-info-id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;plot-from-table&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;postprocessing&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;plot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;plot-histogram&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:save-outputs&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:pass-through&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Plot tables&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;plot-parameters/export-height&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">768</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;plot-parameters/value-axis-label&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Value&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;plot-parameters/bins&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">10</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;plot-parameters/export-width&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">1024</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;plot-parameters/bin-axis-label&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Bin&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;plot-parameters/histogram-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Frequency&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;plot-parameters/title&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Histogram plot&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;column-assignments&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;parameters&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Value&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Value&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Values to generate a histogram from. (Numeric column)&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;visibility&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;TransitiveVisible&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;field-class&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;org.hkijena.jipipe.extensions.tables.parameters.TableColumnSourceParameter&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;value&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+                <span style="color:#f92672">&#34;mode&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;PickColumn&#34;</span><span style="color:#111">,</span>
+                <span style="color:#f92672">&#34;column-source&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+                  <span style="color:#f92672">&#34;mode&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Equals&#34;</span><span style="color:#111">,</span>
+                  <span style="color:#f92672">&#34;filter-string&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Area&#34;</span><span style="color:#111">,</span>
+                  <span style="color:#f92672">&#34;invert&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+                <span style="color:#111">},</span>
+                <span style="color:#f92672">&#34;generator-source&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+                  <span style="color:#f92672">&#34;generator-type&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+                  <span style="color:#f92672">&#34;generated-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;NumericColumn&#34;</span>
+                <span style="color:#111">}</span>
+              <span style="color:#111">},</span>
+              <span style="color:#f92672">&#34;short-key&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Value&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;ui-order&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">0</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;field-class-id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;table-column-source&#34;</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">}</span>
+        <span style="color:#111">}</span>
+      <span style="color:#111">},</span>
+      <span style="color:#f92672">&#34;postprocessing-postprocessing-output&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;input&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;output&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;postprocessing&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">1100</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">50</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">}</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;jipipe:node-info-id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;jipipe:compartment-output&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;postprocessing&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:save-outputs&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:enabled&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:algorithm:pass-through&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Postprocessing output&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;jipipe:node:description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span>
+      <span style="color:#111">}</span>
+    <span style="color:#111">},</span>
+    <span style="color:#f92672">&#34;edges&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;source-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis-analysis-output&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;postprocessing-plot-tables&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;source-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Spore measurements&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;ui-hidden&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">}</span>
+    <span style="color:#111">},</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;source-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;preprocessing-import-image&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;preprocessing-preprocessing-output&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;source-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Image&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Data&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;ui-hidden&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">}</span>
+    <span style="color:#111">},</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;source-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis-gaussian-blur-2d&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis-auto-threshold-2d&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;source-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;ui-hidden&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">}</span>
+    <span style="color:#111">},</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;source-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis-distance-transform-watershed-2d&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis-analysis-output&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;source-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Spore Mask&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;ui-hidden&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span>
+      <span style="color:#111">}</span>
+    <span style="color:#111">},</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;source-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;preprocessing-list-files&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;preprocessing-import-image&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;source-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Files&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Files&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;ui-hidden&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">}</span>
+    <span style="color:#111">},</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;source-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;preprocessing-preprocessing-output&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis-gaussian-blur-2d&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;source-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Data&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;ui-hidden&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">}</span>
+    <span style="color:#111">},</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;source-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis-distance-transform-watershed-2d&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis-find-particles-2d&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;source-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Mask&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;ui-hidden&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">}</span>
+    <span style="color:#111">},</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;source-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis-auto-threshold-2d&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis-distance-transform-watershed-2d&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;source-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;ui-hidden&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">}</span>
+    <span style="color:#111">},</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;source-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;preprocessing-path-to-annotation&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;preprocessing-list-files&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;source-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Annotated paths&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Folders&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;ui-hidden&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">}</span>
+    <span style="color:#111">},</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;source-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis-find-particles-2d&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis-analysis-output&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;source-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Measurements&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Spore measurements&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;ui-hidden&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">}</span>
+    <span style="color:#111">},</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;source-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;preprocessing-folder-list&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;preprocessing-path-to-annotation&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;source-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Folder paths&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Paths&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;ui-hidden&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">}</span>
+    <span style="color:#111">},</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;source-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis-find-particles-2d&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis-analysis-output&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;source-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;ROI&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;target-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Spore ROI&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;ui-hidden&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+      <span style="color:#111">}</span>
+    <span style="color:#111">}</span> <span style="color:#111">]</span>
+  <span style="color:#111">},</span>
+  <span style="color:#f92672">&#34;compartments&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+    <span style="color:#f92672">&#34;compartment-graph&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;nodes&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;preprocessing&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;input&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+          <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;DEFAULT&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+                <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">50</span><span style="color:#111">,</span>
+                <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">50</span>
+              <span style="color:#111">}</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;jipipe:node-info-id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;jipipe:project-compartment&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;DEFAULT&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;jipipe:node:name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Preprocessing&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;jipipe:node:description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;analysis&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;input&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;Preprocessing&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+                <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;jipipe:compartment-output&#34;</span><span style="color:#111">,</span>
+                <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">,</span>
+                <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+                <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Preprocessing&#34;</span><span style="color:#111">,</span>
+                <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+                <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+              <span style="color:#111">}</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;DEFAULT&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+                <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">50</span><span style="color:#111">,</span>
+                <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">250</span>
+              <span style="color:#111">}</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;jipipe:node-info-id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;jipipe:project-compartment&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;DEFAULT&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;jipipe:node:name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Analysis&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;jipipe:node:description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;postprocessing&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;input&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;Analysis&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+                <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;jipipe:compartment-output&#34;</span><span style="color:#111">,</span>
+                <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">,</span>
+                <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+                <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Analysis&#34;</span><span style="color:#111">,</span>
+                <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+                <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+              <span style="color:#111">}</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;DEFAULT&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;Vertical&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+                <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">188</span><span style="color:#111">,</span>
+                <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">450</span>
+              <span style="color:#111">}</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;jipipe:node-info-id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;jipipe:project-compartment&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;DEFAULT&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;jipipe:node:name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Postprocessing&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;jipipe:node:description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span>
+        <span style="color:#111">}</span>
+      <span style="color:#111">},</span>
+      <span style="color:#f92672">&#34;edges&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;source-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;target-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;postprocessing&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;source-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;target-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Analysis&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;ui-hidden&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+        <span style="color:#111">}</span>
+      <span style="color:#111">},</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;source-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;preprocessing&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;target-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;analysis&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;source-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;target-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Preprocessing&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;ui-hidden&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">false</span>
+        <span style="color:#111">}</span>
+      <span style="color:#111">}</span> <span style="color:#111">]</span>
+    <span style="color:#111">}</span>
+  <span style="color:#111">}</span>
+<span style="color:#111">}</span>
+</code></pre></div>
+
+    
+    
+        <div class="chevrons">
+    <div id="navigation">
+<a class="nav nav-prev" href="../documentation-json-api/point.html" title="Point"> <i class="fa fa-chevron-left"></i><label>Point</label></a>
+    <a class="nav nav-next" href="../documentation-json-api/slot-definition.html" title="Slot definition" style="margin-right: 0px;"><label>Slot definition</label><i class="fa fa-chevron-right"></i></a></div>
+  </div>
+
+  </section>
+</article>
+
+<footer>
+
+<div class="footline">
+    
+
+    
+    <div class="author">
+        <i class='fa fa-user'></i> <a href="mailto:ruman.gerst@leibniz-hki.de">Ruman Gerst</a>
+    </div>
+    
+
+    
+
+    
+  </div>
+
+
+	<div>
+
+
+  
+    <p>By <a href="https://www.leibniz-hki.de/en/applied-systems-biology.html">Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans Knöll Institute (HKI), Jena, Germany</a></p>
+
+  
+
+
+
+	</div>
+</footer>
+
+<script src="../js/clipboard.min.js"></script>
+
+<link href="../css/featherlight.min.css" rel="stylesheet">
+<script src="../js/featherlight.min.js"></script>
+
+
+
+<script src="../theme-flex/script.js"></script>
+
+
+    
+
+    
+    
+
+    <script type="text/javascript" src="../js/slick.min.js"></script>
+<script type="text/javascript" src="../js/custom.js"></script>
+
+  </body>
+</html>
