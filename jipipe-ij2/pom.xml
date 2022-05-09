@@ -4,11 +4,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.72.1-SNAPSHOT</version>
+        <version>1.72.2-SNAPSHOT</version>
     </parent>
 
     <artifactId>jipipe-ij2</artifactId>
-    <version>1.72.1-SNAPSHOT</version>
+    <version>1.72.2-SNAPSHOT</version>
 
     <name>jipipe-ij2</name>
     <description>JIPipe ImageJ2 Algorithms</description>
@@ -77,12 +77,12 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>1.72.1-SNAPSHOT</version>
+                <version>1.72.2-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij</artifactId>
-                <version>1.72.1-SNAPSHOT</version>
+                <version>1.72.2-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

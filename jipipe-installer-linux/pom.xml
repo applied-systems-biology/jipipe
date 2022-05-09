@@ -4,7 +4,7 @@
 
     <groupId>org.hkijena</groupId>
     <artifactId>jipipe-installer-linux</artifactId>
-    <version>1.72.1-SNAPSHOT</version>
+    <version>1.72.2-SNAPSHOT</version>
 
     <name>jipipe-installer-linux</name>
     <description>JIPipe installer for Linux</description>
