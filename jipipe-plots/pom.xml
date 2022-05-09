@@ -4,11 +4,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.72.1-SNAPSHOT</version>
+        <version>1.72.1</version>
     </parent>
 
     <artifactId>jipipe-plots</artifactId>
-    <version>1.72.1-SNAPSHOT</version>
+    <version>1.72.1</version>
 
     <name>jipipe-plots</name>
     <description>JIPipe Plot Processing</description>
@@ -52,7 +52,7 @@
     <scm>
         <connection>scm:git:https://github.com/applied-systems-biology/jipipe.git</connection>
         <developerConnection>scm:git:https://github.com/applied-systems-biology/jipipe.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>pom-jipipe-1.72.1</tag>
         <url>https://github.com/applied-systems-biology/jipipe</url>
     </scm>
     <issueManagement>
@@ -77,12 +77,12 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>1.72.1-SNAPSHOT</version>
+                <version>1.72.1</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-tables</artifactId>
-                <version>1.72.1-SNAPSHOT</version>
+                <version>1.72.1</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
