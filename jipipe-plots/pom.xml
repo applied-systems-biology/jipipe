@@ -22,7 +22,7 @@
     </organization>
     <licenses>
         <license>
-            <name>BSD-2-Clause</name>
+            <name>bsd_2</name>
             <url>https://opensource.org/licenses/BSD-2-Clause</url>
             <distribution>repo</distribution>
         </license>
