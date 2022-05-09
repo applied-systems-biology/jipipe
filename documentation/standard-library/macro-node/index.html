@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-05-07T00:03:20 CEST">
+<meta name="revised" content="2022-05-09T11:33:59 CEST">
 <title>Macro node :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -814,17 +814,22 @@ commonly used in macros.</p>
 <span style="color:#75715e">// The node expects an image window &#34;Output&#34;
 </span><span style="color:#75715e"></span><span style="color:#111">rename</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">);</span>
 </code></pre></div><h2 id="results-table">Results table</h2>
-<p><strong>As input:</strong> The table data is opened as the main &ldquo;Results&rdquo; table. We recommend to have only one results table input, as the conversion overwrites the current table.</p>
-<p><strong>As output:</strong> The table data is extracted from the main &ldquo;Results&rdquo; table.</p>
+<p><strong>As input:</strong> The table is opened as ImageJ table window with the same name as the slot. If you set the slot name to <code>Results</code>, the special &ldquo;Results&rdquo; table is utilized.</p>
+<p><strong>As output:</strong> The table data is extracted from the table with the same name as the slot. If the slot name is <code>Results</code>, the special &ldquo;Results&rdquo; table is extracted. Please ensure that you use <code>table.rename(old, new)</code> to rename the output table to the slot name.</p>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#75715e">// The input is created as window &#34;Input&#34;
+</span><span style="color:#75715e"></span><span style="color:#111">selectWindow</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">);</span>
+<span style="color:#111">run</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Gaussian Blur...&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;sigma=2&#34;</span><span style="color:#111">);</span>
+<span style="color:#111">run</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Auto Threshold&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;method=Default white&#34;</span><span style="color:#111">);</span>
+<span style="color:#111">run</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Analyze Particles...&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;display clear include summarize add&#34;</span><span style="color:#111">);</span>
 
-<div class="notices warning" ><p><p>You should only have one results table input, as only the latest input is used. If you want to merge tables, use JIPipe nodes for this.</p>
-</p></div>
-
-<h2 id="roi-data">ROI data</h2>
-<p><strong>As input:</strong> The ROI are added to the ROI manager. Like with the results table data, the existing ROI manager is cleared.</p>
+<span style="color:#75715e">// Results table output &#34;Results&#34;
+</span><span style="color:#75715e">// Results table output &#34;Summary&#34;
+</span><span style="color:#75715e">// ROI list output &#34;ROIs&#34;
+</span></code></pre></div><h2 id="roi-data">ROI data</h2>
+<p><strong>As input:</strong> The ROI are added to the ROI manager. The existing ROI manager is cleared.</p>
 <p><strong>As output:</strong> The ROI are extracted from the ROI manager.</p>
 
-<div class="notices warning" ><p><p>You should only have one results ROI List data input, as only the latest input is used.</p>
+<div class="notices info" ><p><p>ImageJ currently only supports one ROI Manager. JIPipe cannot work around this issue.</p>
 </p></div>
 
 <h2 id="path-data">Path data</h2>
@@ -839,6 +844,7 @@ commonly used in macros.</p>
 <ol>
 <li>The macro code</li>
 <li>The list of variables</li>
+<li>Importer/exporter configurations</li>
 </ol>
 <p><img src="../../../img/documentation/macro_node_parameters.png" alt=""></p>
 <p>The <code>Code</code> parameter contains the macro code. You can hide it with <code>Collapse</code> or open
@@ -911,6 +917,18 @@ The values are converted as following:</p>
 <div class="notices info" ><p><p>Path inputs are converted in a similar way.</p>
 </p></div>
 
+<h2 id="importerexport-configurations">Importer/export configurations</h2>
+<p>JIPipe provides standardized components for the data exchange with ImageJ that support multiple options. These are also utilized in the macro node and can be configured in the <code>ImageJ to JIPipe</code> and <code>JIPipe to ImageJ</code> parameter sections.</p>
+<p>For each input and output, one item is generated that supports two options:</p>
+<ul>
+<li>Clicking the button or the &ldquo;Edit&rdquo; icon allows to change the importer/exporter type</li>
+<li>Clicking the configuration button allows to override the parameters passed to the importer/exporter</li>
+</ul>
+
+<div class="notices info" ><p><p>Override the name to transfer data independent of the slot name.</p>
+</p></div>
+
+<p><img src="../../../img/documentation/macro_node_importers_exporters.png" alt=""></p>
 
 
     
