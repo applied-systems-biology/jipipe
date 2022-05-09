@@ -4,7 +4,7 @@ A graphical batch processing language for image analysis.
 
 https://www.jipipe.org/
 
-Zoltán Cseresnyés, Ruman Gerst
+Zoltán Cseresnyés, Ruman Gerst, Marc Thilo Figge
 
 Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge\
 https://www.leibniz-hki.de/en/applied-systems-biology.html\
