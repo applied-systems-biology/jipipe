@@ -2,16 +2,16 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>JIPipe on JIPipe for ImageJ</title>
-    <link>/</link>
+    <link>https://www.jipipe.org/</link>
     <description>Recent content in JIPipe on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language><atom:link href="https://www.jipipe.org/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>General questions</title>
-      <link>/faq/general.html</link>
+      <link>https://www.jipipe.org/faq/general/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/faq/general.html</guid>
+      <guid>https://www.jipipe.org/faq/general/</guid>
       <description>Where do I find documentation? You can find all documentation pages in the Help  menu at the top right.
 There are also context-based documentations available if you select a node in the graph. Hover your mouse over a parameter to show documentations for this parameter only.
 Does JIPipe have a backup function? Yes. By default, JIPipe creates a backup every 3 minutes. You can recover it via Project &amp;gt; Restore Backup.</description>
@@ -19,29 +19,29 @@ Does JIPipe have a backup function? Yes. By default, JIPipe creates a backup eve
     
     <item>
       <title>Header</title>
-      <link>/_header.html</link>
+      <link>https://www.jipipe.org/_header/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/_header.html</guid>
+      <guid>https://www.jipipe.org/_header/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Common issues</title>
-      <link>/faq/issues.html</link>
+      <link>https://www.jipipe.org/faq/issues/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/faq/issues.html</guid>
+      <guid>https://www.jipipe.org/faq/issues/</guid>
       <description>JIPipe does not load. There can be multiple causes for issues:
   Error Cause Solution    Splash screen says &#34;Module threw error&#34;. Various ImageJ errors.   A dependency might be missing.   Please check if all JIPipe dependencies are installed. Please do not hesitate to contact us. Provide us a screenshot, and ideally the full set of error messages.     Splash screen says &#34;</description>
     </item>
     
     <item>
       <title>User interface</title>
-      <link>/faq/user-interface.html</link>
+      <link>https://www.jipipe.org/faq/user-interface/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/faq/user-interface.html</guid>
+      <guid>https://www.jipipe.org/faq/user-interface/</guid>
       <description>Does JIPipe have a dark mode? Yes, you can enable it in Project &amp;gt; Application settings &amp;gt; UI &amp;gt; General &amp;gt; Theme. Set the theme to Modern dark and restart JIPipe/ImageJ.
 The nodes are so large. Can they be more compact? Yes, there are multiple view modes available, including a horizontal and compact vertical mode. See here for more info.
 How can I make long connections without zooming out? Click the arrow button at the input/output slot.</description>
@@ -49,40 +49,40 @@ How can I make long connections without zooming out? Click the arrow button at t
     
     <item>
       <title>Data processing</title>
-      <link>/faq/data-processing.html</link>
+      <link>https://www.jipipe.org/faq/data-processing/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/faq/data-processing.html</guid>
+      <guid>https://www.jipipe.org/faq/data-processing/</guid>
       <description>What are those compartments for? Imagine you have a large complicated pipeline. Most certainly, you could split it into multiple sub-pipelines like &amp;ldquo;preprocessing&amp;rdquo; or &amp;ldquo;segmentation&amp;rdquo;. Compartments allow you to do exactly this.
 What is the difference between groups and compartments? If you use compartments, JIPipe is still aware of the whole pipeline. This allows it to run all dependency nodes via Update cache or Quick run. Groups are independent pipelines that are not aware where they are used.</description>
     </item>
     
     <item>
       <title>ImageJ integration</title>
-      <link>/faq/imagej-integration.html</link>
+      <link>https://www.jipipe.org/faq/imagej-integration/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/faq/imagej-integration.html</guid>
+      <guid>https://www.jipipe.org/faq/imagej-integration/</guid>
       <description>Can I use plugins from ImageJ in JIPipe? Yes. Either there is an integration available, or you just use the macro node and input the corresponding macro code that runs the plugin.
 Can I use existing ImageJ macros in JIPipe? Yes, use Images &amp;gt; ImageJ macro. The input slots are opened as image windows and can be addressed from within the macro with selectWindow(). You can also load an example that shows how to use the node.</description>
     </item>
     
     <item>
       <title>Result analysis</title>
-      <link>/faq/result-analysis.html</link>
+      <link>https://www.jipipe.org/faq/result-analysis/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/faq/result-analysis.html</guid>
+      <guid>https://www.jipipe.org/faq/result-analysis/</guid>
       <description>Can I open a table in ImageJ instead of JIPipe or vice versa? Yes, and even more: Depending on the data type there are multiple options on displaying data available. Select the data in the result view or cache browser and click the &amp;ldquo;More&amp;rdquo; button at the bottom. JIPipe will even remember the last setting for you.
 Can I save data by their metadata? Yes, use the node Miscellaneous &amp;gt; Export data.</description>
     </item>
     
     <item>
       <title>Data table</title>
-      <link>/documentation-data-api/data-table.html</link>
+      <link>https://www.jipipe.org/documentation-data-api/data-table/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-data-api/data-table.html</guid>
+      <guid>https://www.jipipe.org/documentation-data-api/data-table/</guid>
       <description>The data table structure is the smallest unit of the data API. Its purpose is to organize data of any supported kind into an annotated table and store all required metadata to recover the data from the file system.
 A data table is located in a directory within the file system and contains following parts:
    Element Description     data-table.json Metadata file for this data table.</description>
@@ -90,20 +90,20 @@ A data table is located in a directory within the file system and contains follo
     
     <item>
       <title>Graph node</title>
-      <link>/documentation-json-api/graph-node.html</link>
+      <link>https://www.jipipe.org/documentation-json-api/graph-node/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-json-api/graph-node.html</guid>
+      <guid>https://www.jipipe.org/documentation-json-api/graph-node/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: algorithm-node.schema.json
 Node in a graphjipipe:slot-configuration:object[object Object]User-defined slots. Might be ignored depending on the algorithm. The keys are the slot names.See slot-definitionjipipe:node-ui-location:object[object Object]Locations of this node within the UI.</description>
     </item>
     
     <item>
       <title>Handling multiple inputs</title>
-      <link>/documentation-java-api/algorithm/iterating-algorithms.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/algorithm/iterating-algorithms/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/algorithm/iterating-algorithms.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/algorithm/iterating-algorithms/</guid>
       <description>JIPipe data slots store multiple data rows. This means that algorithms have to iterate their workload for each input row and generate equivalent output in the respective output slots.
 There can be issues if data from multiple input slots need to be combined (e.g. merge channels into RGB, see user documentation). JIPipeAlgorithm has no capabilities to help with such cases.
 A solution can be JIPipeIteratingAlgorithm or JIPipeSimpleIteratingAlgorithm that use the annotation attached during processing to find data rows that belong to the same data set.</description>
@@ -111,38 +111,38 @@ A solution can be JIPipeIteratingAlgorithm or JIPipeSimpleIteratingAlgorithm tha
     
     <item>
       <title>Image analysis pipeline</title>
-      <link>/tutorials/analysis.html</link>
+      <link>https://www.jipipe.org/tutorials/analysis/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/tutorials/analysis.html</guid>
+      <guid>https://www.jipipe.org/tutorials/analysis/</guid>
       <description>This tutorial is also available as video.1. First startOn starting JIPipe, you will see such a screen: It contains a short introduction, the graph compartment editor,an three pre-defined graph compartments Preprocessing, Analysis, and Postprocessing. As described in the graph compartment documentation, youcan ignore graph graph compartments. But in this tutorial we will make use of its capabilities to clearly separate the pipeline into the mentioned tree steps.</description>
     </item>
     
     <item>
       <title>JavaDocs</title>
-      <link>/documentation-java-api/javadocs.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/javadocs/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/javadocs.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/javadocs/</guid>
       <description>The JavaDocs of the Java API can also be found here</description>
     </item>
     
     <item>
       <title>Pipeline editor</title>
-      <link>/documentation/create-pipelines/pipeline-editor.html</link>
+      <link>https://www.jipipe.org/documentation/create-pipelines/pipeline-editor/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/create-pipelines/pipeline-editor.html</guid>
+      <guid>https://www.jipipe.org/documentation/create-pipelines/pipeline-editor/</guid>
       <description>This guide is also available as video tutorial.  The graph editor (pipeline editor) allows you to edit the processing steps of a graph compartment. Its user interface is separated into three sections:
  The analysis graph contains the processing steps (also referred as algorithms) The settings panel shows the properties of the currently selected algorithms The toolbar allows you to add more algorithms into the graph, navigate to existing algorithms, change some behavior settings of the graph editor, and create screenshots  Analysis graph The analysis graph contains algorithms that are represented by rectangles.</description>
     </item>
     
     <item>
       <title>Python API</title>
-      <link>/documentation/standard-library/python/api.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/python/api/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/python/api.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/python/api/</guid>
       <description>jipipe 
 jipipe.data_slot This file provides functions that are used to manage the contents of a data slot
 Zoltán Cseresnyés, Ruman Gerst
@@ -152,10 +152,10 @@ The project code is licensed under BSD 2-Clause. See the LICENSE file provided w
     
     <item>
       <title>Result view</title>
-      <link>/documentation-java-api/data-type/result-ui.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/data-type/result-ui/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/data-type/result-ui.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/data-type/result-ui/</guid>
       <description>After processing, users should be able to continue processing the data from within JIPipe. The data instances are cleared from memory after processing, meaning that the data needs to be loaded from its output folder after processing.
 An user interface is shown when a user select a row in the results table. There are two ways to modify the user interface:
  Registering additional operations that will be available to users (recommended) Replacing the interface with a custom one  Adding custom operations JIPipe already comes with some default operations, such as opening the containing folder.</description>
@@ -163,10 +163,10 @@ An user interface is shown when a user select a row in the results table. There 
     
     <item>
       <title>Running the whole pipeline</title>
-      <link>/documentation/run-pipelines/run.html</link>
+      <link>https://www.jipipe.org/documentation/run-pipelines/run/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/run-pipelines/run.html</guid>
+      <guid>https://www.jipipe.org/documentation/run-pipelines/run/</guid>
       <description>JIPipe stores its results in a user-defined output folder. After clicking  Run (located at the top right corner of a project window) JIPipe will query the output folder from you. You can also generate a random folder that will be located on your operating system&amp;rsquo;s temporary directory by clicking the button.
 After confirming the settings by clicking  Run now, JIPipe will start processing the pipeline.
 You can have as many runs as you want.</description>
@@ -174,29 +174,29 @@ You can have as many runs as you want.</description>
     
     <item>
       <title>Visual programming</title>
-      <link>/documentation/basic-concepts/visual-programming.html</link>
+      <link>https://www.jipipe.org/documentation/basic-concepts/visual-programming/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/basic-concepts/visual-programming.html</guid>
+      <guid>https://www.jipipe.org/documentation/basic-concepts/visual-programming/</guid>
       <description>If you are familiar with ImageJ, you already know how processing is applied in this software: All operations are directly applied after selecting them in the graphical user interface (GUI). For example, a simple analysis protocol would consist of opening the image via File &amp;gt; Open, applying a Gaussian Blur filter, and then thresholding the image via Otsu&amp;rsquo;s method.
 This allows to easily develop image analysis protocols that can be manually adjusted if needed.</description>
     </item>
     
     <item>
       <title>Image analysis pipeline (Video)</title>
-      <link>/tutorials/analysis_video.html</link>
+      <link>https://www.jipipe.org/tutorials/analysis_video/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/tutorials/analysis_video.html</guid>
+      <guid>https://www.jipipe.org/tutorials/analysis_video/</guid>
       <description>This tutorial is also available as text tutorial.</description>
     </item>
     
     <item>
       <title>Merging input data</title>
-      <link>/documentation-java-api/algorithm/merging-algorithms.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/algorithm/merging-algorithms/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/algorithm/merging-algorithms.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/algorithm/merging-algorithms/</guid>
       <description>You might need to develop an algorithm that does not simply iterate through its input(s), but organize it into groups to be merged. JIPipe comes with JIPipeMergingAlgorithm that uses the annotation attached during processing to find data rows that belong to the same data set. The implementation creates JIPipeMergingDataBatch instances that represent multiple data rows merged into one group.
 Please access data via the data interface.
  The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
@@ -204,20 +204,20 @@ Please access data via the data interface.
     
     <item>
       <title>Algorithm type</title>
-      <link>/documentation-json-api/algorithm.html</link>
+      <link>https://www.jipipe.org/documentation-json-api/algorithm/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-json-api/algorithm.html</guid>
+      <guid>https://www.jipipe.org/documentation-json-api/algorithm/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: algorithm.schema.json
 Defines a new node typeid:stringUnique algorithm IDmetadata:See metadataGeneral algorithm metadatacategory:stringorg.hkijena.jipipe:miscellaneousThe categoryexported-parameters:object[object Object]List of parameters that will be exported to users of the nodegraph:See graphThis graph is executed when the algorithm is runmenu-path:stringOptional menu path within the category menujipipe:project-type:string, x ∈ {graph-wrapper-algorithm(default)}Identifies the JSON as algorithmExample { &amp;#34;id&amp;#34; : &amp;#34;folder-list-tif&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;List TIFF files&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Lists all TIFF files in a folder&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;license&amp;#34; : &amp;#34;BSD-2&amp;#34;, &amp;#34;citation&amp;#34; : &amp;#34;&amp;#34; }, &amp;#34;category&amp;#34; : &amp;#34;Converter&amp;#34;, &amp;#34;parameter-visibilities&amp;#34; : { &amp;#34;visible-keys&amp;#34; : [ ] }, &amp;#34;graph&amp;#34; : { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;jipipe:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;jipipe:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
     </item>
     
     <item>
       <title>Batch processing</title>
-      <link>/documentation/basic-concepts/batch-processing.html</link>
+      <link>https://www.jipipe.org/documentation/basic-concepts/batch-processing/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/basic-concepts/batch-processing.html</guid>
+      <guid>https://www.jipipe.org/documentation/basic-concepts/batch-processing/</guid>
       <description>JIPipe was designed to always process data in batches, meaning that algorithms always work on multiple data sets at once. This greatly reduces the required work to upscale a processing pipeline from one or few to a large amount of data sets.
 We will use this pipeline as example:
 mermaid.initialize({startOnLoad:true}); graph LR;A[File] -- B[Load image]B -- C[Apply gaussian] In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
@@ -225,29 +225,29 @@ mermaid.initialize({startOnLoad:true}); graph LR;A[File] -- B[Load image]B -- 
     
     <item>
       <title>Creating an extension</title>
-      <link>/tutorials/extension.html</link>
+      <link>https://www.jipipe.org/tutorials/extension/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/tutorials/extension.html</guid>
+      <guid>https://www.jipipe.org/tutorials/extension/</guid>
       <description>1. Existing pipelineIn this tutorial, we will create a custom algorithm extension based on parts of the pipeline created in the other tutorial.Please open the project file for the pipeline and navigate to the Preprocessing tab.2. Selecting the algorithmsPlease select the following algorithms (you can either do this by holding the Shift keyboard button and clicking the nodes or dragging a selection around the nodes):Folder listPath to annotationList filesImport imageAfter selecting the algorithms, right-click a selected node and click Export.</description>
     </item>
     
     <item>
       <title>Creating an extension project</title>
-      <link>/documentation-java-api/create-extension.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/create-extension/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/create-extension.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/create-extension/</guid>
       <description>Prerequisities  Java 8 (Java 9+ are not working)  If you are using Windows or a Linux distribution without Java 8, we recommend AdoptOpenJDK (Please choose OpenJDK 8)   Maven  Creating the project The project should have following structure:
 Project root└── pom.xml└── src└── main├── java└── resourcesBoth the java and resources folder should contain a folder structure that is equivalent the groupId and artifactId of the project.</description>
     </item>
     
     <item>
       <title>Customizing slots</title>
-      <link>/documentation-java-api/algorithm/slot-configuration.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/algorithm/slot-configuration/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/algorithm/slot-configuration.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/algorithm/slot-configuration/</guid>
       <description>In the previous examples, we used the @JIPipeInputSlot and @JIPipeOutputSlot annotations with autoCreate = true to automatically configure the slots.
 This is not sufficient for more complicated algorithms that require
  Restricting the number of slots Restricting the allowed data types Users to add more slots or remove existing ones  A custom JIPipeSlotConfiguration can be used to implement such more advanced behaviors.
@@ -256,19 +256,19 @@ For many cases, the default implementation JIPipeMutableSlotConfiguration is suf
     
     <item>
       <title>Expression parameters</title>
-      <link>/documentation/create-pipelines/expressions.html</link>
+      <link>https://www.jipipe.org/documentation/create-pipelines/expressions/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/create-pipelines/expressions.html</guid>
+      <guid>https://www.jipipe.org/documentation/create-pipelines/expressions/</guid>
       <description>When using nodes that filter or generate data, you might encounter a parameter type called &amp;ldquo;Expression&amp;rdquo;. This parameter allows to to write simple to complex functions that can test for one or multiple conditions or act as input for a generator node. The basic concept of this expression language is to mix string, boolean, and numeric operations into one simple but powerful language. It allows you for example to first calculate a numeric metric and use it for filtering objects within one line.</description>
     </item>
     
     <item>
       <title>ImageJ integration</title>
-      <link>/documentation/standard-library/imagej-integration.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/imagej-integration/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/imagej-integration.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/imagej-integration/</guid>
       <description>The ImageJ integration library integrates common data types from ImageJ into JIPipe:
  Multi-dimensional images (ImagePlus). The standard output file format are TIFF files. Result tables. They are serialized to CSV files. Region of interest (ROI Manager). JIPipe handles ROI as *.zip files.  The ImageJ data types are marked as accessible from outside JIPipe, meaning that algorithms that only use those types can be executed standalone
 Image data types Various ImageJ algorithms only work on data with a specific color type, or dimensionality.</description>
@@ -276,38 +276,38 @@ Image data types Various ImageJ algorithms only work on data with a specific col
     
     <item>
       <title>JIPipe for ImageJ users (Video)</title>
-      <link>/tutorials/jipipe-for-imagej-users.html</link>
+      <link>https://www.jipipe.org/tutorials/jipipe-for-imagej-users/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/tutorials/jipipe-for-imagej-users.html</guid>
+      <guid>https://www.jipipe.org/tutorials/jipipe-for-imagej-users/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Preview from results folder</title>
-      <link>/documentation-java-api/data-type/result-preview.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/data-type/result-preview/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/data-type/result-preview.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/data-type/result-preview/</guid>
       <description>While JIPipeData allows you to define a custom function for previewing, this only works for data already present in memory. To allow previewing of data stored in a results folder, you need to suppy a JIPipeResultDataSlotPreviewUI that loads the data from disk and generates a preview. We recommend to use JIPipeAsyncResultDataPlotPreviewUI This class will offload the loading and preview generation into a separate thread to prevent the UI from freezing. By default it will use the already defined importFrom(Path) method present in the JIPipeData class and use its already defined preview function.</description>
     </item>
     
     <item>
       <title>Review results</title>
-      <link>/documentation/run-pipelines/result-analysis.html</link>
+      <link>https://www.jipipe.org/documentation/run-pipelines/result-analysis/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/run-pipelines/result-analysis.html</guid>
+      <guid>https://www.jipipe.org/documentation/run-pipelines/result-analysis/</guid>
       <description>Running the whole pipeline or executing a quick run with HDD output will result in a folder that contains all output data and the current project file. JIPipe will automatically open an interface that allows you to navigate through the results, and import them back into ImageJ or JIPipe (if supported by the generated data type). You can also re-open these folders via Project &amp;gt; Open analysis output ....
 The UI has two main components:</description>
     </item>
     
     <item>
       <title>Row folder</title>
-      <link>/documentation-data-api/row-folder.html</link>
+      <link>https://www.jipipe.org/documentation-data-api/row-folder/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-data-api/row-folder.html</guid>
+      <guid>https://www.jipipe.org/documentation-data-api/row-folder/</guid>
       <description>All data in a data table are stored in numeric folders called &amp;ldquo;row folders&amp;rdquo;, each containing the data of one table row.
 This data stores the raw serialized format, without metadata - metadata is located in data-table.json of the data table.
 The exact structure of a row folder depends on the data type. The current documentation can always be found by navigating to Help &amp;gt; Data type compendium within JIPipe. Alternatively, we uploaded a current database on this website.</description>
@@ -315,10 +315,10 @@ The exact structure of a row folder depends on the data type. The current docume
     
     <item>
       <title>Macro node</title>
-      <link>/documentation/standard-library/macro-node.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/macro-node/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/macro-node.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/macro-node/</guid>
       <description>The macro node allows to run existing ImageJ macros or execute algorithms that are not directly available as JIPipe nodes. You will find it in Images &amp;gt; ImageJ Macro.
 Inputs and outputs By default, the node has no inputs and outputs. Use to the + button to add them. For example, if you want to process one image and output the processed result, create one input and one output.
 By default, there are four data types that can be used as input and output:</description>
@@ -326,46 +326,46 @@ By default, there are four data types that can be used as input and output:</des
     
     <item>
       <title>User interface (Video)</title>
-      <link>/tutorials/guide-user-interface.html</link>
+      <link>https://www.jipipe.org/tutorials/guide-user-interface/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/tutorials/guide-user-interface.html</guid>
+      <guid>https://www.jipipe.org/tutorials/guide-user-interface/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Data caches (Video)</title>
-      <link>/tutorials/guide-data-caches.html</link>
+      <link>https://www.jipipe.org/tutorials/guide-data-caches/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/tutorials/guide-data-caches.html</guid>
+      <guid>https://www.jipipe.org/tutorials/guide-data-caches/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Graph editor user interface (Video)</title>
-      <link>/tutorials/guide-graph-editor.html</link>
+      <link>https://www.jipipe.org/tutorials/guide-graph-editor/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/tutorials/guide-graph-editor.html</guid>
+      <guid>https://www.jipipe.org/tutorials/guide-graph-editor/</guid>
       <description></description>
     </item>
     
     <item>
       <title>How to do batch processing (Video)</title>
-      <link>/tutorials/guide-batch-processing.html</link>
+      <link>https://www.jipipe.org/tutorials/guide-batch-processing/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/tutorials/guide-batch-processing.html</guid>
+      <guid>https://www.jipipe.org/tutorials/guide-batch-processing/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Data types</title>
-      <link>/documentation-data-api/data-types.html</link>
+      <link>https://www.jipipe.org/documentation-data-api/data-types/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-data-api/data-types.html</guid>
+      <guid>https://www.jipipe.org/documentation-data-api/data-types/</guid>
       <description>2D FFT Image Trivial conversions A trivial conversion involves no potentially expensive conversion operation. The data will directly match to input slots of the converted type. The edge has a dark-gray color.
 This type can be trivially converted into following types:
 Data FFT Image Image  This type can be trivially converted from following types:
@@ -374,20 +374,20 @@ Data FFT Image Image  This type can be trivially converted from following types:
     
     <item>
       <title>Dependency</title>
-      <link>/documentation-json-api/dependency.html</link>
+      <link>https://www.jipipe.org/documentation-json-api/dependency/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-json-api/dependency.html</guid>
+      <guid>https://www.jipipe.org/documentation-json-api/dependency/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: dependency.schema.json
 Project or extension dependency. Refers to a JIPipe extension.metadata:See metadataid:stringUnique ID of this dependency should have format.:version:stringVersion of this dependencyExample { &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Filesystem types and algorithms&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Data types and algorithms for interacting with files and folders&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://jipipe.</description>
     </item>
     
     <item>
       <title>Filesystem algorithms</title>
-      <link>/documentation/standard-library/filesystem.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/filesystem/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/filesystem.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/filesystem/</guid>
       <description>The JIPipe standard library contains data types and algorithms to apply file system operations. The common use case is to extract the list of input files for the following algorithms.
 The filesystem library has two basic data types:
  A  File contains a path to a file A  Folder contains a path to a folder A Path contains a path to a file or folder  In the Add data menu you can define one file/folder or a list of files/folders.</description>
@@ -395,20 +395,20 @@ The filesystem library has two basic data types:
     
     <item>
       <title>Graph compartments</title>
-      <link>/documentation/create-pipelines/compartments.html</link>
+      <link>https://www.jipipe.org/documentation/create-pipelines/compartments/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/create-pipelines/compartments.html</guid>
+      <guid>https://www.jipipe.org/documentation/create-pipelines/compartments/</guid>
       <description>A common issue with graphical programming languages is that large graphs are hard to navigate. JIPipe solves this issue by separating the pipeline graph into sub-graphs. Each sub-graph has a predetermined output node that is visible to other compartments. Other nodes on the other hand are not visible to other compartments.
 The difference between compartments and simple node groups is that compartments only communicate with each other via the compartment output node.</description>
     </item>
     
     <item>
       <title>Multi-parameter algorithms</title>
-      <link>/documentation/standard-library/multi-parameter.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/multi-parameter/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/multi-parameter.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/multi-parameter/</guid>
       <description>Most algorithms allow handling of multiple parameters via an additional slot that can be optionally enabled. You can find the setting in an algorithm&amp;rsquo;s settings as Multiple parameters. On selecting the item, a new slot will appear that consumes parameter data.
 To define parameters, use the algorithms found in Add data &amp;gt; Parameters. There are currently two data source algorithms available:
  Define parameter defines a single set of parameters Define multiple parameters lets you define a table of parameters  Use Process &amp;gt; Merge &amp;gt; Merge slots to merge multiple parameter sets.</description>
@@ -416,10 +416,10 @@ To define parameters, use the algorithms found in Add data &amp;gt; Parameters. 
     
     <item>
       <title>Parameters</title>
-      <link>/documentation-java-api/algorithm/parameters.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/algorithm/parameters/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/algorithm/parameters.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/algorithm/parameters/</guid>
       <description>You can add parameters to your algorithm by creating a property with a getter and setter. Then you annotate the getter and setter with the same @JIPipeParameter keys. Also add an @JIPipeDocumentation annotation to either the getter or setter.
 Parameters are automatically serialized and deserialized.
 Please make sure to send an event when the parameter is set, so the UI can update.
@@ -428,10 +428,10 @@ Please make sure to send an event when the parameter is set, so the UI can updat
     
     <item>
       <title>Use results in external software</title>
-      <link>/documentation/run-pipelines/connect-external-software.html</link>
+      <link>https://www.jipipe.org/documentation/run-pipelines/connect-external-software/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/run-pipelines/connect-external-software.html</guid>
+      <guid>https://www.jipipe.org/documentation/run-pipelines/connect-external-software/</guid>
       <description>JIPipe stores outputs in a standardized format that can be easily read with third-party software. The output folder of always contains a file project.jip, which is the project that generated the output.
 This folder contains sub-folders named according to the graph compartment. The ID is the unique ID of the graph compartment and can be looked up in the project.jip file or the compartment graph editor.
 Each of these compartment folders contains a set of additional sub-folders based on unique ID of the node (also visible in the graph editor).</description>
@@ -439,10 +439,10 @@ Each of these compartment folders contains a set of additional sub-folders based
     
     <item>
       <title>Parallelization</title>
-      <link>/documentation-java-api/algorithm/parallelization.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/algorithm/parallelization/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/algorithm/parallelization.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/algorithm/parallelization/</guid>
       <description>The current version of JIPipe supports parallelization via a fixed thread pool. Parallelization is done on an per-algorithm-level, meaning that the algorithms are responsible for providing parallelization capabilities.
 The included base algorithms JIPipeIteratingAlgorithm, JIPipeSimpleIteratingAlgorithm, and JIPipeMergingAlgorithm already come with support for parallelization that has to be manually enabled via code. The inherit from JIPipeParallelizedAlgorithm and completely apply parallelization automatically.
 Automated parallelization (JIPipeParallelizedAlgorithm) The automated parallelization is controlled by three factors:</description>
@@ -450,60 +450,60 @@ Automated parallelization (JIPipeParallelizedAlgorithm) The automated paralleliz
     
     <item>
       <title>Custom algorithm info</title>
-      <link>/documentation-java-api/algorithm/custom-info.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/algorithm/custom-info/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/algorithm/custom-info.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/algorithm/custom-info/</guid>
       <description>In the previous tutorials we used the standard way of creating algorithms. This might not be sufficient if you want to generate algorithms, for example by importing ImageJ algorithms, loading algorithms from JSON or generate algorithms for an unknown list of data types.
 How algorithms are registered Algorithm instances are created by an JIPipeNodeInfo. This info is the object that is actually registered into JIPipe. It is able to create new instances of the declared algorithm, or copy it.</description>
     </item>
     
     <item>
       <title>Graph Edge</title>
-      <link>/documentation-json-api/graph-edge.html</link>
+      <link>https://www.jipipe.org/documentation-json-api/graph-edge/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-json-api/graph-edge.html</guid>
+      <guid>https://www.jipipe.org/documentation-json-api/graph-edge/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph-edge.schema.json
 Edge in a graphsource-node:stringAlgorithm ID of the edge sourcetarget-node:stringAlgorithm ID of the edge targetsource-slot:stringSlot name within the edge source algorithmtarget-slot:stringSlot name within the edge target algorithmExample { &amp;#34;source-node&amp;#34; : &amp;#34;default-preprocessing-list-files&amp;#34;, &amp;#34;target-node&amp;#34; : &amp;#34;default-preprocessing-filter-files&amp;#34;, &amp;#34;source-slot&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;target-slot&amp;#34; : &amp;#34;Files&amp;#34; } </description>
     </item>
     
     <item>
       <title>Context actions</title>
-      <link>/documentation-java-api/algorithm/context-actions.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/algorithm/context-actions/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/algorithm/context-actions.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/algorithm/context-actions/</guid>
       <description>Context actions allow you to add custom buttons into an algorithm&amp;rsquo;s parameter group that by default will also appear within a node&amp;rsquo;s context menu. They can be used for multiple purposes such as loading example data, applying an auto-configuration, opening websites, or displaying documentation or data in a new tab.
 To create one, annotate a public function with @JIPipeDocumentation and @JIPipeContextAction. The function should have one parameter: an instance of JIPipeWorkbench.</description>
     </item>
     
     <item>
       <title>Data annotation algorithms</title>
-      <link>/documentation/standard-library/annotations.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/annotations/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/annotations.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/annotations/</guid>
       <description>Data annotations allow JIPipe algorithms and users to assign an unique data set to the data located in a data slot. The standard library contains various algorithms that allow to generate, manipulate, and utilize those annotations.
 We recommend to use the algorithms in Annotation &amp;gt; Generate while setting up filesystem operations or any other import step to prevent issues in following algorithm steps.</description>
     </item>
     
     <item>
       <title>Graph</title>
-      <link>/documentation-json-api/graph.html</link>
+      <link>https://www.jipipe.org/documentation-json-api/graph/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-json-api/graph.html</guid>
+      <guid>https://www.jipipe.org/documentation-json-api/graph/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph.schema.json
 A graphadditional-metadata:object[object Object]Dict of additional metadataSee additional-metadatanodes:object[object Object]The nodes. Keys are the UUIDs.See graph-nodeedges:object[]The edges.</description>
     </item>
     
     <item>
       <title>Pipeline output</title>
-      <link>/documentation-data-api/pipeline-output.html</link>
+      <link>https://www.jipipe.org/documentation-data-api/pipeline-output/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-data-api/pipeline-output.html</guid>
+      <guid>https://www.jipipe.org/documentation-data-api/pipeline-output/</guid>
       <description>A pipeline output folder is generated on running a pipeline using the Run function or via other means of running the pipeline and saving the results to the hard drive.
 The generated folder follows a hierarchical structure that is based on the location of data within graph compartments, nodes, and slots. It also contains a copy of the project that generated the data in a file project.jip.
 mermaid.initialize({startOnLoad:true}); graph LR; Root[&#34;</description>
@@ -511,10 +511,10 @@ mermaid.initialize({startOnLoad:true}); graph LR; Root[&#34;</description>
     
     <item>
       <title>Running a single node</title>
-      <link>/documentation/run-pipelines/quick-run.html</link>
+      <link>https://www.jipipe.org/documentation/run-pipelines/quick-run/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/run-pipelines/quick-run.html</guid>
+      <guid>https://www.jipipe.org/documentation/run-pipelines/quick-run/</guid>
       <description>As an additional option to running the whole pipeline, JIPipe also allows you to run the workflow only up to the selected node. The most convenient way to run a single node can be accessed by clicking the green play button that is located inside each node.
 Here you will find following options:
  Update cache: Runs the pipeline up until the selected node. The result of the selected node will be stored inside a memory cache, which can be reviewed in the Cache browser tab (see below) Cache intermediate results: Runs the pipeline up until the selected node.</description>
@@ -522,10 +522,10 @@ Here you will find following options:
     
     <item>
       <title>Data caching</title>
-      <link>/documentation/run-pipelines/cache.html</link>
+      <link>https://www.jipipe.org/documentation/run-pipelines/cache/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/run-pipelines/cache.html</guid>
+      <guid>https://www.jipipe.org/documentation/run-pipelines/cache/</guid>
       <description>JIPipe has a project-wide cache for generated results. This cache can be accessed by algorithms to prevent repeating previous calculation steps.
 Load data into the cache To cache data, right click a node and click  Update cache. This will execute a Quick run and store all results into the cache.
 Accessing the cache Cache items are assigned a unique identifier ( Snapshot) that is based on relevant algorithm parameters and the processing pipeline behind the data generation.</description>
@@ -533,30 +533,30 @@ Accessing the cache Cache items are assigned a unique identifier ( Snapshot) tha
     
     <item>
       <title>Extension</title>
-      <link>/documentation-json-api/json-extension.html</link>
+      <link>https://www.jipipe.org/documentation-json-api/json-extension/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-json-api/json-extension.html</guid>
+      <guid>https://www.jipipe.org/documentation-json-api/json-extension/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: json-extension.schema.json
 An extension that can be put into the ImageJ plugin folderid:stringUnique ID of this extension. Should have format.:version:stringVersion of this extensionmetadata:See metadataGeneral metadata about the extensionalgorithms:object[]List of added algorithmsSee algorithmExample { &amp;#34;id&amp;#34; : &amp;#34;org.</description>
     </item>
     
     <item>
       <title>ImageJ integration</title>
-      <link>/documentation/imagej-integration.html</link>
+      <link>https://www.jipipe.org/documentation/imagej-integration/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/imagej-integration.html</guid>
+      <guid>https://www.jipipe.org/documentation/imagej-integration/</guid>
       <description>ImageJ to JIPipe JIPipe integrates commonly used data types and popular algorithms from ImageJ. If an algorithm is not available for JIPipe, you can still run them via the Macro node. There is also a Python script node available that behaves similar to the macro node.
 JIPipe to ImageJ JIPipe algorithms and pipelines can be executed from within an ImageJ environment. There are two ways JIPipe integrates back into ImageJ:</description>
     </item>
     
     <item>
       <title>Managing plugins</title>
-      <link>/documentation/plugins.html</link>
+      <link>https://www.jipipe.org/documentation/plugins/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/plugins.html</guid>
+      <guid>https://www.jipipe.org/documentation/plugins/</guid>
       <description>JIPipe has its own plugin (extension) system that is independent of the one provided by ImageJ/SciJava. You can find a list of plugins in Plugins &amp;gt; Manage plugins.
 JIPipe by default supports two types of extensions:
  Java extensions are similar to ImageJ plugins (*.jar) and are the most powerful plugin type. Just like ImageJ plugins, they are located in the plugins directory. JSON plugins are similar to ImageJ macros or scripts, as they are pure text files.</description>
@@ -564,10 +564,10 @@ JIPipe by default supports two types of extensions:
     
     <item>
       <title>Plots and tables</title>
-      <link>/documentation/standard-library/plots-tables.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/plots-tables/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/plots-tables.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/plots-tables/</guid>
       <description>The standard library contains algorithms and data types that allows to manipulate tables, and create plots. The table data type is the JIPipe wrapper for the ImageJ results table (see ImageJ integration).
 Manipulating tables Table manipulation operations are located in Process &amp;gt; Tables and allow you to add, remove, or replace columns.
 Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot tables algorithm that processes each incoming result table and produces an automatically generated plot.</description>
@@ -575,10 +575,10 @@ Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot 
     
     <item>
       <title>Jython integration</title>
-      <link>/documentation/standard-library/jython.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/jython/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/jython.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/jython/</guid>
       <description>The standard library contains nodes that allow to run Python scripts using the Jython library. Python scripts have access to all JIPipe and ImageJ APIs that are available at runtime.
  Due to restrictions in the Jython library, Python libraries that are built on a native backend (such as Numpy) will not work.
  As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on how to expand Jython with additional libraries.</description>
@@ -586,20 +586,20 @@ Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot 
     
     <item>
       <title>Metadata</title>
-      <link>/documentation-json-api/metadata.html</link>
+      <link>https://www.jipipe.org/documentation-json-api/metadata/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-json-api/metadata.html</guid>
+      <guid>https://www.jipipe.org/documentation-json-api/metadata/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: metadata.schema.json
 Commonly used metadata type in JIPipe.name:stringA namedescription:stringA descriptionauthors:stringComma-separated list of authorswebsite:stringWebsite of the projectlicense:stringName of the licensecitation:stringCitation for the publicationExample { &amp;#34;name&amp;#34; : &amp;#34;Image property annotations&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Commonly used annotations for describing image properties&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://jipipe.</description>
     </item>
     
     <item>
       <title>Usage in Java</title>
-      <link>/documentation-java-api/usage-in-java.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/usage-in-java/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/usage-in-java.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/usage-in-java/</guid>
       <description>The JIPipe API allows you to run algorithms, graphs, and projects in a pure Java environment without the need for a GUI or through ImageJ1 or ImageJ2 scripts.
 Prerequisites To use the JIPipe API JIPipe must be initialized first. This requires an ImageJ instance or any other way to load SciJava plugins. The following example shows how to initialize JIPipe manually from a main function.
 public static void main(String[] args) { // Just call this function before all others.</description>
@@ -607,20 +607,20 @@ public static void main(String[] args) { // Just call this function before all o
     
     <item>
       <title>Point</title>
-      <link>/documentation-json-api/point.html</link>
+      <link>https://www.jipipe.org/documentation-json-api/point/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-json-api/point.html</guid>
+      <guid>https://www.jipipe.org/documentation-json-api/point/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: point.schema.json
 A pointx:integerX coordinatey:integerY coordinateExample { &amp;#34;x&amp;#34; : 2900, &amp;#34;y&amp;#34; : 100 } </description>
     </item>
     
     <item>
       <title>R integration</title>
-      <link>/documentation/standard-library/r-integration.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/r-integration/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/r-integration.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/r-integration/</guid>
       <description>The standard library contains nodes that allow to run R scripts. This means that you will need to install a distribution of R.
 You will need to install R (https://www.r-project.org/) and setup JIPipe to find this installation.
  Setting up R You have the option to either select an existing R environment, or let JIPipe install a new R environment into a folder (only available on Windows).
@@ -629,10 +629,10 @@ To setup Python, navigate to Project &amp;gt; Application settings &amp;gt; Exte
     
     <item>
       <title>Cellpose integration</title>
-      <link>/documentation/standard-library/cellpose.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/cellpose/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/cellpose.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/cellpose/</guid>
       <description>JIPipe provides an integration of Cellpose that both can apply segmentation, and training from within JIPipe.
 Setting up Cellpose Cellpose is a Python library and is integrated via the Python library. This means that you will need to setup a Python environment with Cellpose installed (follow the documentation here: https://github.com/MouseLand/cellpose) and provide the appropriate settings to JIPipe.
 Alternatively, JIPipe provides automated installers (tested on Linux and Windows) that will download and setup Cellpose automatically.</description>
@@ -640,20 +640,20 @@ Alternatively, JIPipe provides automated installers (tested on Linux and Windows
     
     <item>
       <title>Project</title>
-      <link>/documentation-json-api/project.html</link>
+      <link>https://www.jipipe.org/documentation-json-api/project/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-json-api/project.html</guid>
+      <guid>https://www.jipipe.org/documentation-json-api/project/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: project.schema.json
 An analysis projectjipipe:project-type:string, x ∈ {project(default)}Used to identify this JSON as JIPipe projectmetadata:See metadata[object Object]General information about the projectdependencies:object[]Dependencies of this projectSee dependencygraph:See graph[object Object]Contains the pipeline nodescompartments:object[object Object]For organization of compartmentscompartment-graph:See graph[object Object]Structural graph of compartmentsExample { &amp;#34;jipipe:project-type&amp;#34; : &amp;#34;project&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Empty (3 compartments)&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;This template contains three compartments &amp;#39;Preprocessing&amp;#39;, &amp;#39;Analysis&amp;#39;, and &amp;#39;Postprocessing&amp;#39; that are connected to each other.</description>
     </item>
     
     <item>
       <title>Command Line Interface</title>
-      <link>/documentation/cli.html</link>
+      <link>https://www.jipipe.org/documentation/cli/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/cli.html</guid>
+      <guid>https://www.jipipe.org/documentation/cli/</guid>
       <description>You can run JIPipe pipelines without a graphical interface via the command line.
 Just run following command:
 ./ImageJ --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLI run --project &amp;lt;project file&amp;gt; --output-folder &amp;lt;output folder&amp;gt; Command line options ./ImageJ --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLI run &amp;lt;options&amp;gt;  --project &amp;lt;Project file&amp;gt; provides the project file to be executed --output-folder &amp;lt;folder&amp;gt; defines where outputs will be written. Outputs are in standard JIPipe format. Optional: --num-threads &amp;lt;N=1,2,3,...&amp;gt; lets you enable multi-threading Optional: --overwrite-parameters &amp;lt;JSON file&amp;gt; allows you to overwrite specific parameters without the need for changing the project file Optional: --P&amp;lt;Node ID&amp;gt;/&amp;lt;Parameter ID&amp;gt; &amp;lt;Parameter value JSON&amp;gt; overwrites a specific parameter with the specified value  Overwriting parameters The JIPipe project file contains all parameters of a project.</description>
@@ -661,10 +661,10 @@ Just run following command:
     
     <item>
       <title>Deep Learning</title>
-      <link>/documentation/standard-library/deep-learning.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/deep-learning/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/deep-learning.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/deep-learning/</guid>
       <description>JIPipe provides Deep Learning support via a standardized Python interface that allows to train/segment with different networks.
 Setting up Deep Learning Deep Learning requires a Python installation that comes with Tensorflow 2. To simplify this process, we included automated installers for this environment that can be accessed via Project &amp;gt; Application settings &amp;gt; Extensions &amp;gt; Deep learning. Here, click Select/install at the Tensorflow item.
 The installer will ask you to review various settings - these should be fine for most system configurations.</description>
@@ -672,70 +672,70 @@ The installer will ask you to review various settings - these should be fine for
     
     <item>
       <title>Group nodes</title>
-      <link>/documentation/create-pipelines/groups.html</link>
+      <link>https://www.jipipe.org/documentation/create-pipelines/groups/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/create-pipelines/groups.html</guid>
+      <guid>https://www.jipipe.org/documentation/create-pipelines/groups/</guid>
       <description>While compartments offer a simple way to structure pipelines into functional units, they are not suitable for creating &amp;ldquo;user-defined&amp;rdquo; nodes that can be re-used. Node groups cover this use case by providing a node that contains a dedicated pipeline inside of it. Data is communicated between the main and the inner pipeline via interface nodes that can be customized by users.
 The group node can be found in Miscellaneous &amp;gt; Group, or can be created from a set of selected nodes by right-clicking them and selecting the Group option (which will also create inputs and outputs that match the selection).</description>
     </item>
     
     <item>
       <title>Slot definition</title>
-      <link>/documentation-json-api/slot-definition.html</link>
+      <link>https://www.jipipe.org/documentation-json-api/slot-definition/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-json-api/slot-definition.html</guid>
+      <guid>https://www.jipipe.org/documentation-json-api/slot-definition/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: slot-definition.schema.json
 Defines a data slotslot-data-type:stringThe data type ID of the data stored in this slotslot-type:string, x ∈ {Input,Output}Determines if the slot is an input or an outputinherited-slot:objectOnly valid for output slot.</description>
     </item>
     
     <item>
       <title>Data table</title>
-      <link>/documentation-json-api/data-table.html</link>
+      <link>https://www.jipipe.org/documentation-json-api/data-table/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-json-api/data-table.html</guid>
+      <guid>https://www.jipipe.org/documentation-json-api/data-table/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: data-table.schema.json
  Defines a data table   node-id:  string      The node type ID that generated the data. Optional.   slot:  string      The slot name that generated the data. Optional.   rows:  object[]       The data row items See data-table-row        data-type:  string       The data type ID behind the row      Example { &amp;#34;node-id&amp;#34; : &amp;#34;ij1-fft-forward2d&amp;#34;, &amp;#34;slot&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;internal-path&amp;#34; : &amp;#34;/fastdata/projects/JIPipe/Output&amp;#34;, &amp;#34;rows&amp;#34; : [ { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } ], &amp;#34;data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
     </item>
     
     <item>
       <title>Loop nodes</title>
-      <link>/documentation/create-pipelines/loops.html</link>
+      <link>https://www.jipipe.org/documentation/create-pipelines/loops/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/create-pipelines/loops.html</guid>
+      <guid>https://www.jipipe.org/documentation/create-pipelines/loops/</guid>
       <description>JIPipe processes data node-per-node, meaning that a node always processes all available input data before passing the results to the next node. This is easy to understand and makes no assumptions about the structure of the data. The issue is that such a model allocates all memory required to process the data at once.
 Group nodes provide a feature that allows to loop the contained pipeline for each input data batch, reducing the memory allocated during the processing (if the groups are set up so that memory-intensive tasks are split).</description>
     </item>
     
     <item>
       <title>Data table row</title>
-      <link>/documentation-json-api/data-table-row.html</link>
+      <link>https://www.jipipe.org/documentation-json-api/data-table-row/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-json-api/data-table-row.html</guid>
+      <guid>https://www.jipipe.org/documentation-json-api/data-table-row/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: data-table-row.schema.json
  Defines a data table row   id:  number      Row index within the data table   annotations:  object[]       Annotations attached to the data row See annotation        true-data-type:  string       The true (not the slot) data type ID behind the row      Example { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
     </item>
     
     <item>
       <title>Annotation</title>
-      <link>/documentation-json-api/annotation.html</link>
+      <link>https://www.jipipe.org/documentation-json-api/annotation/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-json-api/annotation.html</guid>
+      <guid>https://www.jipipe.org/documentation-json-api/annotation/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: annotation.schema.json
  An annotation   name:  string       Name of the annotation   value:  string       Value of the annotation      Example { &amp;#34;name&amp;#34; : &amp;#34;#Dataset&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;Experiment 1&amp;#34; } </description>
     </item>
     
     <item>
       <title></title>
-      <link>/_footer.html</link>
+      <link>https://www.jipipe.org/_footer/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/_footer.html</guid>
+      <guid>https://www.jipipe.org/_footer/</guid>
       <description>By Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans Knöll Institute (HKI), Jena, Germany</description>
     </item>
     

@@ -2,16 +2,16 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Standard library on JIPipe for ImageJ</title>
-    <link>/documentation/standard-library.html</link>
+    <link>https://www.jipipe.org/documentation/standard-library/</link>
     <description>Recent content in Standard library on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="/documentation/standard-library/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language><atom:link href="https://www.jipipe.org/documentation/standard-library/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ImageJ integration</title>
-      <link>/documentation/standard-library/imagej-integration.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/imagej-integration/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/imagej-integration.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/imagej-integration/</guid>
       <description>The ImageJ integration library integrates common data types from ImageJ into JIPipe:
  Multi-dimensional images (ImagePlus). The standard output file format are TIFF files. Result tables. They are serialized to CSV files. Region of interest (ROI Manager). JIPipe handles ROI as *.zip files.  The ImageJ data types are marked as accessible from outside JIPipe, meaning that algorithms that only use those types can be executed standalone
 Image data types Various ImageJ algorithms only work on data with a specific color type, or dimensionality.</description>
@@ -19,10 +19,10 @@ Image data types Various ImageJ algorithms only work on data with a specific col
     
     <item>
       <title>Macro node</title>
-      <link>/documentation/standard-library/macro-node.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/macro-node/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/macro-node.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/macro-node/</guid>
       <description>The macro node allows to run existing ImageJ macros or execute algorithms that are not directly available as JIPipe nodes. You will find it in Images &amp;gt; ImageJ Macro.
 Inputs and outputs By default, the node has no inputs and outputs. Use to the + button to add them. For example, if you want to process one image and output the processed result, create one input and one output.
 By default, there are four data types that can be used as input and output:</description>
@@ -30,10 +30,10 @@ By default, there are four data types that can be used as input and output:</des
     
     <item>
       <title>Filesystem algorithms</title>
-      <link>/documentation/standard-library/filesystem.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/filesystem/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/filesystem.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/filesystem/</guid>
       <description>The JIPipe standard library contains data types and algorithms to apply file system operations. The common use case is to extract the list of input files for the following algorithms.
 The filesystem library has two basic data types:
  A  File contains a path to a file A  Folder contains a path to a folder A Path contains a path to a file or folder  In the Add data menu you can define one file/folder or a list of files/folders.</description>
@@ -41,10 +41,10 @@ The filesystem library has two basic data types:
     
     <item>
       <title>Multi-parameter algorithms</title>
-      <link>/documentation/standard-library/multi-parameter.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/multi-parameter/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/multi-parameter.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/multi-parameter/</guid>
       <description>Most algorithms allow handling of multiple parameters via an additional slot that can be optionally enabled. You can find the setting in an algorithm&amp;rsquo;s settings as Multiple parameters. On selecting the item, a new slot will appear that consumes parameter data.
 To define parameters, use the algorithms found in Add data &amp;gt; Parameters. There are currently two data source algorithms available:
  Define parameter defines a single set of parameters Define multiple parameters lets you define a table of parameters  Use Process &amp;gt; Merge &amp;gt; Merge slots to merge multiple parameter sets.</description>
@@ -52,20 +52,20 @@ To define parameters, use the algorithms found in Add data &amp;gt; Parameters. 
     
     <item>
       <title>Data annotation algorithms</title>
-      <link>/documentation/standard-library/annotations.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/annotations/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/annotations.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/annotations/</guid>
       <description>Data annotations allow JIPipe algorithms and users to assign an unique data set to the data located in a data slot. The standard library contains various algorithms that allow to generate, manipulate, and utilize those annotations.
 We recommend to use the algorithms in Annotation &amp;gt; Generate while setting up filesystem operations or any other import step to prevent issues in following algorithm steps.</description>
     </item>
     
     <item>
       <title>Plots and tables</title>
-      <link>/documentation/standard-library/plots-tables.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/plots-tables/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/plots-tables.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/plots-tables/</guid>
       <description>The standard library contains algorithms and data types that allows to manipulate tables, and create plots. The table data type is the JIPipe wrapper for the ImageJ results table (see ImageJ integration).
 Manipulating tables Table manipulation operations are located in Process &amp;gt; Tables and allow you to add, remove, or replace columns.
 Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot tables algorithm that processes each incoming result table and produces an automatically generated plot.</description>
@@ -73,10 +73,10 @@ Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot 
     
     <item>
       <title>Jython integration</title>
-      <link>/documentation/standard-library/jython.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/jython/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/jython.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/jython/</guid>
       <description>The standard library contains nodes that allow to run Python scripts using the Jython library. Python scripts have access to all JIPipe and ImageJ APIs that are available at runtime.
  Due to restrictions in the Jython library, Python libraries that are built on a native backend (such as Numpy) will not work.
  As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on how to expand Jython with additional libraries.</description>
@@ -84,10 +84,10 @@ Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot 
     
     <item>
       <title>R integration</title>
-      <link>/documentation/standard-library/r-integration.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/r-integration/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/r-integration.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/r-integration/</guid>
       <description>The standard library contains nodes that allow to run R scripts. This means that you will need to install a distribution of R.
 You will need to install R (https://www.r-project.org/) and setup JIPipe to find this installation.
  Setting up R You have the option to either select an existing R environment, or let JIPipe install a new R environment into a folder (only available on Windows).
@@ -96,10 +96,10 @@ To setup Python, navigate to Project &amp;gt; Application settings &amp;gt; Exte
     
     <item>
       <title>Cellpose integration</title>
-      <link>/documentation/standard-library/cellpose.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/cellpose/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/cellpose.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/cellpose/</guid>
       <description>JIPipe provides an integration of Cellpose that both can apply segmentation, and training from within JIPipe.
 Setting up Cellpose Cellpose is a Python library and is integrated via the Python library. This means that you will need to setup a Python environment with Cellpose installed (follow the documentation here: https://github.com/MouseLand/cellpose) and provide the appropriate settings to JIPipe.
 Alternatively, JIPipe provides automated installers (tested on Linux and Windows) that will download and setup Cellpose automatically.</description>
@@ -107,10 +107,10 @@ Alternatively, JIPipe provides automated installers (tested on Linux and Windows
     
     <item>
       <title>Deep Learning</title>
-      <link>/documentation/standard-library/deep-learning.html</link>
+      <link>https://www.jipipe.org/documentation/standard-library/deep-learning/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/standard-library/deep-learning.html</guid>
+      <guid>https://www.jipipe.org/documentation/standard-library/deep-learning/</guid>
       <description>JIPipe provides Deep Learning support via a standardized Python interface that allows to train/segment with different networks.
 Setting up Deep Learning Deep Learning requires a Python installation that comes with Tensorflow 2. To simplify this process, we included automated installers for this environment that can be accessed via Project &amp;gt; Application settings &amp;gt; Extensions &amp;gt; Deep learning. Here, click Select/install at the Tensorflow item.
 The installer will ask you to review various settings - these should be fine for most system configurations.</description>

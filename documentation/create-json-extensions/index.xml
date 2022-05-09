@@ -2,9 +2,9 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Extension builder on JIPipe for ImageJ</title>
-    <link>/documentation/create-json-extensions.html</link>
+    <link>https://www.jipipe.org/documentation/create-json-extensions/</link>
     <description>Recent content in Extension builder on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="/documentation/create-json-extensions/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language><atom:link href="https://www.jipipe.org/documentation/create-json-extensions/index.xml" rel="self" type="application/rss+xml" />
   </channel>
 </rss>

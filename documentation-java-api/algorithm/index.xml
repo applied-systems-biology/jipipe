@@ -2,16 +2,16 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Creating an algorithm on JIPipe for ImageJ</title>
-    <link>/documentation-java-api/algorithm.html</link>
+    <link>https://www.jipipe.org/documentation-java-api/algorithm/</link>
     <description>Recent content in Creating an algorithm on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="/documentation-java-api/algorithm/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language><atom:link href="https://www.jipipe.org/documentation-java-api/algorithm/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Handling multiple inputs</title>
-      <link>/documentation-java-api/algorithm/iterating-algorithms.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/algorithm/iterating-algorithms/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/algorithm/iterating-algorithms.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/algorithm/iterating-algorithms/</guid>
       <description>JIPipe data slots store multiple data rows. This means that algorithms have to iterate their workload for each input row and generate equivalent output in the respective output slots.
 There can be issues if data from multiple input slots need to be combined (e.g. merge channels into RGB, see user documentation). JIPipeAlgorithm has no capabilities to help with such cases.
 A solution can be JIPipeIteratingAlgorithm or JIPipeSimpleIteratingAlgorithm that use the annotation attached during processing to find data rows that belong to the same data set.</description>
@@ -19,10 +19,10 @@ A solution can be JIPipeIteratingAlgorithm or JIPipeSimpleIteratingAlgorithm tha
     
     <item>
       <title>Merging input data</title>
-      <link>/documentation-java-api/algorithm/merging-algorithms.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/algorithm/merging-algorithms/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/algorithm/merging-algorithms.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/algorithm/merging-algorithms/</guid>
       <description>You might need to develop an algorithm that does not simply iterate through its input(s), but organize it into groups to be merged. JIPipe comes with JIPipeMergingAlgorithm that uses the annotation attached during processing to find data rows that belong to the same data set. The implementation creates JIPipeMergingDataBatch instances that represent multiple data rows merged into one group.
 Please access data via the data interface.
  The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
@@ -30,10 +30,10 @@ Please access data via the data interface.
     
     <item>
       <title>Customizing slots</title>
-      <link>/documentation-java-api/algorithm/slot-configuration.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/algorithm/slot-configuration/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/algorithm/slot-configuration.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/algorithm/slot-configuration/</guid>
       <description>In the previous examples, we used the @JIPipeInputSlot and @JIPipeOutputSlot annotations with autoCreate = true to automatically configure the slots.
 This is not sufficient for more complicated algorithms that require
  Restricting the number of slots Restricting the allowed data types Users to add more slots or remove existing ones  A custom JIPipeSlotConfiguration can be used to implement such more advanced behaviors.
@@ -42,10 +42,10 @@ For many cases, the default implementation JIPipeMutableSlotConfiguration is suf
     
     <item>
       <title>Parameters</title>
-      <link>/documentation-java-api/algorithm/parameters.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/algorithm/parameters/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/algorithm/parameters.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/algorithm/parameters/</guid>
       <description>You can add parameters to your algorithm by creating a property with a getter and setter. Then you annotate the getter and setter with the same @JIPipeParameter keys. Also add an @JIPipeDocumentation annotation to either the getter or setter.
 Parameters are automatically serialized and deserialized.
 Please make sure to send an event when the parameter is set, so the UI can update.
@@ -54,10 +54,10 @@ Please make sure to send an event when the parameter is set, so the UI can updat
     
     <item>
       <title>Parallelization</title>
-      <link>/documentation-java-api/algorithm/parallelization.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/algorithm/parallelization/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/algorithm/parallelization.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/algorithm/parallelization/</guid>
       <description>The current version of JIPipe supports parallelization via a fixed thread pool. Parallelization is done on an per-algorithm-level, meaning that the algorithms are responsible for providing parallelization capabilities.
 The included base algorithms JIPipeIteratingAlgorithm, JIPipeSimpleIteratingAlgorithm, and JIPipeMergingAlgorithm already come with support for parallelization that has to be manually enabled via code. The inherit from JIPipeParallelizedAlgorithm and completely apply parallelization automatically.
 Automated parallelization (JIPipeParallelizedAlgorithm) The automated parallelization is controlled by three factors:</description>
@@ -65,20 +65,20 @@ Automated parallelization (JIPipeParallelizedAlgorithm) The automated paralleliz
     
     <item>
       <title>Custom algorithm info</title>
-      <link>/documentation-java-api/algorithm/custom-info.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/algorithm/custom-info/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/algorithm/custom-info.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/algorithm/custom-info/</guid>
       <description>In the previous tutorials we used the standard way of creating algorithms. This might not be sufficient if you want to generate algorithms, for example by importing ImageJ algorithms, loading algorithms from JSON or generate algorithms for an unknown list of data types.
 How algorithms are registered Algorithm instances are created by an JIPipeNodeInfo. This info is the object that is actually registered into JIPipe. It is able to create new instances of the declared algorithm, or copy it.</description>
     </item>
     
     <item>
       <title>Context actions</title>
-      <link>/documentation-java-api/algorithm/context-actions.html</link>
+      <link>https://www.jipipe.org/documentation-java-api/algorithm/context-actions/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation-java-api/algorithm/context-actions.html</guid>
+      <guid>https://www.jipipe.org/documentation-java-api/algorithm/context-actions/</guid>
       <description>Context actions allow you to add custom buttons into an algorithm&amp;rsquo;s parameter group that by default will also appear within a node&amp;rsquo;s context menu. They can be used for multiple purposes such as loading example data, applying an auto-configuration, opening websites, or displaying documentation or data in a new tab.
 To create one, annotate a public function with @JIPipeDocumentation and @JIPipeContextAction. The function should have one parameter: an instance of JIPipeWorkbench.</description>
     </item>

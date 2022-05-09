@@ -2,26 +2,26 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Basic concepts on JIPipe for ImageJ</title>
-    <link>/documentation/basic-concepts.html</link>
+    <link>https://www.jipipe.org/documentation/basic-concepts/</link>
     <description>Recent content in Basic concepts on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language><atom:link href="/documentation/basic-concepts/index.xml" rel="self" type="application/rss+xml" />
+    <language>en-us</language><atom:link href="https://www.jipipe.org/documentation/basic-concepts/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>Visual programming</title>
-      <link>/documentation/basic-concepts/visual-programming.html</link>
+      <link>https://www.jipipe.org/documentation/basic-concepts/visual-programming/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/basic-concepts/visual-programming.html</guid>
+      <guid>https://www.jipipe.org/documentation/basic-concepts/visual-programming/</guid>
       <description>If you are familiar with ImageJ, you already know how processing is applied in this software: All operations are directly applied after selecting them in the graphical user interface (GUI). For example, a simple analysis protocol would consist of opening the image via File &amp;gt; Open, applying a Gaussian Blur filter, and then thresholding the image via Otsu&amp;rsquo;s method.
 This allows to easily develop image analysis protocols that can be manually adjusted if needed.</description>
     </item>
     
     <item>
       <title>Batch processing</title>
-      <link>/documentation/basic-concepts/batch-processing.html</link>
+      <link>https://www.jipipe.org/documentation/basic-concepts/batch-processing/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
-      <guid>/documentation/basic-concepts/batch-processing.html</guid>
+      <guid>https://www.jipipe.org/documentation/basic-concepts/batch-processing/</guid>
       <description>JIPipe was designed to always process data in batches, meaning that algorithms always work on multiple data sets at once. This greatly reduces the required work to upscale a processing pipeline from one or few to a large amount of data sets.
 We will use this pipeline as example:
 mermaid.initialize({startOnLoad:true}); graph LR;A[File] -- B[Load image]B -- C[Apply gaussian] In the pipeline, a file is provided as input. Then the file is loaded as image.</description>

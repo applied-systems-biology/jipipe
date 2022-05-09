@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-05-09T11:33:59 CEST">
+<meta name="revised" content="2022-05-09T15:53:15 CEST">
 <title>Examples :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
 <link href="../css/font-awesome.min.css" rel="stylesheet">
@@ -749,7 +749,8 @@
     
     
 
-<p>To get started, you can take a look at some example pipelines and other kind of examples:</p>
+<p>To get started, we prepared example pipelines based on real biological data. Please note that you require appropriate hardware, for example sufficient system memory, or a graphics card to run certain pipelines.
+For larger projects, you can always try to reduce the number of input files before loading the data.</p>
 <div class="examples">
     
     <div class="example-item">
@@ -761,7 +762,9 @@
             <div class="example-item-description">Alveolar macrophages were confronted with various species of fungi, including <i>Aspergillus fumigatus</i> and various <i>Lichtheimia</i> species, followed either directly by microscopy, or first by tissue fixation and fluorescence labeling, and then confocal microscopy.</div>
             <div class="example-item-buttons">
                 
-                <a href="#" target="_self" class="btn btn-lg btn-success">Download</a>
+                <a href="https://asbdata.hki-jena.de/GerstCseresnyesEtAl2022_JIPipe/examples/protocols_only/Nematodes.zip" target="_self" class="btn btn-lg btn-success">Project &#43; Data (44 MB)</a>
+                
+                <a href="https://asbdata.hki-jena.de/GerstCseresnyesEtAl2022_JIPipe/examples/protocols_and_outputs/Nematodes.zip" target="_self" class="btn btn-lg btn-success">Project &#43; Data &#43; Outputs (293 MB)</a>
                 
                 <a href="https://onlinelibrary.wiley.com/doi/full/10.1002/cyto.a.23201" target="_blank" class="btn btn-lg btn-info">Publication</a>
                 
@@ -778,7 +781,9 @@
             <div class="example-item-description">Microfluidic droplets of approximately 100 micrometer diameter were filled with a solution containing E. coli bacteria and the bacterial growth was observed via brightfield transmitted light microscopy. This JIPipe workflow finds the droplets that show bacterial growth.</div>
             <div class="example-item-buttons">
                 
-                <a href="#" target="_self" class="btn btn-lg btn-success">Download</a>
+                <a href="https://asbdata.hki-jena.de/GerstCseresnyesEtAl2022_JIPipe/examples/protocols_only/Droplets.zip" target="_self" class="btn btn-lg btn-success">Project &#43; Data (92 MB)</a>
+                
+                <a href="https://asbdata.hki-jena.de/GerstCseresnyesEtAl2022_JIPipe/examples/protocols_and_outputs/Droplets.zip" target="_self" class="btn btn-lg btn-success">Project &#43; Data &#43; Outputs (186 MB)</a>
                 
                 <a href="#" target="_self" class="btn btn-lg btn-info">Publication</a>
                 
@@ -795,7 +800,9 @@
             <div class="example-item-description">This pipeline analyzes light-sheet fluorescence microscopy of whole murine kidney data. These images were generated with staining specific to glomeruli, functional units of kidney. Here, we reduced the size of the image stack from 700 to 20, which non-workstation computers can process without issues.</div>
             <div class="example-item-buttons">
                 
-                <a href="#" target="_self" class="btn btn-lg btn-success">Download</a>
+                <a href="https://asbdata.hki-jena.de/GerstCseresnyesEtAl2022_JIPipe/examples/protocols_only/Kidney.zip" target="_self" class="btn btn-lg btn-success">Project &#43; Data (26 MB)</a>
+                
+                <a href="https://asbdata.hki-jena.de/GerstCseresnyesEtAl2022_JIPipe/examples/protocols_and_outputs/Kidney.zip" target="_self" class="btn btn-lg btn-success">Project &#43; Data &#43; Outputs (295 MB)</a>
                 
                 <a href="https://jasn.asnjournals.org/content/28/2/452.short" target="_blank" class="btn btn-lg btn-info">Publication</a>
                 
@@ -812,9 +819,28 @@
             <div class="example-item-description">Micelle nanocarriers were injected into the circulatory system of the mouse vie the tail veins. Two-photon microscopy was utilized to image the cargo delivered by the micelles to the hepatocytes, sinusoids, canaliculi and liver-sinusoidal endothelial cells.</div>
             <div class="example-item-buttons">
                 
-                <a href="#" target="_self" class="btn btn-lg btn-success">Download</a>
+                <a href="https://asbdata.hki-jena.de/GerstCseresnyesEtAl2022_JIPipe/examples/protocols_only/Liver.zip" target="_self" class="btn btn-lg btn-success">Project &#43; Data (797 MB)</a>
+                
+                <a href="https://asbdata.hki-jena.de/GerstCseresnyesEtAl2022_JIPipe/examples/protocols_and_outputs/Liver.zip" target="_self" class="btn btn-lg btn-success">Project &#43; Data &#43; Outputs (4 GB)</a>
                 
                 <a href="https://pubs.acs.org/doi/abs/10.1021/acsnano.1c04213" target="_blank" class="btn btn-lg btn-info">Publication</a>
+                
+            </div>
+        </div>
+    </div>
+    
+    <div class="example-item">
+        <div class="example-item-thumbnail">
+            <img src="../img/examples/example-msot.png" />
+        </div>        
+        <div class="example-item-content" style="background-image: url('');">
+            <h2>Training of a fully automated pipeline for detecting tissue in MSOT data</h2>
+            <div class="example-item-description">For our 'MSOT cluster analysis toolkit' (MCAT), we developed a deep-learning-based approach for detecting the mouse tissue. The training was applied in JIPipe via our Cellpose nodes.</div>
+            <div class="example-item-buttons">
+                
+                <a href="https://doi.org/10.6084/m9.figshare.13567265.v3" target="_blank" class="btn btn-lg btn-success">Project &#43; Data (5 GB)</a>
+                
+                <a href="https://doi.org/10.1016/j.pacs.2022.100361" target="_blank" class="btn btn-lg btn-info">Publication</a>
                 
             </div>
         </div>
@@ -829,7 +855,9 @@
             <div class="example-item-description">Live worms of the species C. elegans were recorded via transmitted light microscopy. The resulting time-series images are analyzed by a JIPipe pipeline.</div>
             <div class="example-item-buttons">
                 
-                <a href="#" target="_self" class="btn btn-lg btn-success">Download</a>
+                <a href="https://asbdata.hki-jena.de/GerstCseresnyesEtAl2022_JIPipe/examples/protocols_only/Nematodes.zip" target="_self" class="btn btn-lg btn-success">Project &#43; Data (5 GB)</a>
+                
+                <a href="https://asbdata.hki-jena.de/GerstCseresnyesEtAl2022_JIPipe/examples/protocols_and_outputs/Nematodes.zip" target="_self" class="btn btn-lg btn-success">Project &#43; Data &#43; Outputs (8 GB)</a>
                 
                 <a href="https://www.pnas.org/content/118/37/e2110669118.short" target="_blank" class="btn btn-lg btn-info">Publication</a>
                 
@@ -869,64 +897,6 @@
       });
     }
 </script>
-<!-- <div class="examples-container">
-  <div class="examples">
-    <div>
-      <img src="../img/examples/example-spores.png" />
-      <div class="feature-description">
-        <h2>Segmenting spores</h2>
-        <span>This example applies auto-thresholding to segment spores from microscopy images.
-        It makes use of the particle analyzer to extract ROI and measurements and shows how to create an area histogram plot.
-        There are both offline and online versions available. The online version downloads all necessary images from GitHub on executing the pipeline.
-        This example is based on one of the tutorials.</span>
-      </div>
-      <div class="downloads">
-        <button class="btn btn-default btn-success" type="button" onclick="alert('Sorry, the download is not available, yet!')"> <i class="fa fa-download"></i> Download (Offline)</button>
-        <button class="btn btn-default btn-success" type="button" onclick="alert('Sorry, the download is not available, yet!')"> <i class="fa fa-download"></i> Download (Online)</button>
-        <a class="btn btn-default" href="../tutorials/analysis"> <i class="fa fa-graduation-cap"></i> Tutorial</a>
-      </div>
-    </div>
-    <div>
-      <img src="../img/examples/example-glomeruli.png" />
-      <div class="feature-description">
-        <h2>Segmenting glomeruli</h2>
-        <span>This example applies auto-thresholding and morphological operations to segment glomeruli in 2D slices of whole murine kidney light sheet microscopy images. This algorithm is part
-        of a 3D segmentation published by Klingberg et al. There are both offline and online versions available. The online version downloads all necessary images from GitHub on executing the pipeline.</span>
-      </div>
-      <div class="downloads">
-        <button class="btn btn-default btn-success" type="button" onclick="alert('Sorry, the download is not available, yet!')"> <i class="fa fa-download"></i> Download (Offline)</button>
-        <button class="btn btn-default btn-success" type="button" onclick="alert('Sorry, the download is not available, yet!')"> <i class="fa fa-download"></i> Download (Online)</button>
-        <a class="btn btn-default" href="https://pubmed.ncbi.nlm.nih.gov/27487796/" target="_blank"> <i class="fa fa-paragraph"></i> Publication</a>
-      </div>
-    </div>
-    <div>
-      <img src="../img/examples/example-unknown.png" />
-      <div class="feature-description">
-        <h2>Segmenting worms</h2>
-        <span>This example segments worms. This algorithm is part
-        of a 3D segmentation published by Klingberg et al. There are both offline and online versions available. The online version downloads all necessary images from GitHub on executing the pipeline.</span>
-      </div>
-      <div class="downloads">
-        <button class="btn btn-default btn-success" type="button" onclick="alert('Sorry, the download is not available, yet!')"> <i class="fa fa-download"></i> Download (Offline)</button>
-        <button class="btn btn-default btn-success" type="button" onclick="alert('Sorry, the download is not available, yet!')"> <i class="fa fa-download"></i> Download (Online)</button>
-        <a class="btn btn-default" href="https://pubmed.ncbi.nlm.nih.gov/27487796/" target="_blank"> <i class="fa fa-paragraph"></i> Publication</a>
-      </div>
-    </div>
-    <div>
-      <img src="../img/examples/example-unknown.png" />
-      <div class="feature-description">
-        <h2>Stack hypermontage</h2>
-        <span>A useful node that creates a montage of each incoming image stack and creates a montage of the montages. It is very useful when trying out different parameters for 3D analyses.
-        Just copy the node from this website and paste it into your JIPipe pipeline.</span>
-      </div>
-      <div class="downloads">
-        <button class="btn btn-default btn-success" type="button" onclick="copyMontageExample()"> <i class="fa fa-copy"></i> Copy</button>
-        <button class="btn btn-default" type="button" onclick="alert('Sorry, the download is not available, yet!')"> <i class="fa fa-download"></i> Download example pipeline</button>
-      </div>
-    </div>
-  </div>
-</div> --><blockquote>
-</blockquote>
 
 
 
