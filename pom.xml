@@ -27,7 +27,7 @@ See the LICENSE file provided with this code for the full license.
     </organization>
     <licenses>
         <license>
-            <name>bsd_2</name>
+            <name>BSD-2-Clause</name>
             <url>https://opensource.org/licenses/BSD-2-Clause</url>
             <distribution>repo</distribution>
         </license>
@@ -202,7 +202,7 @@ See the LICENSE file provided with this code for the full license.
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <license.licenseName>BSD-2-Clause</license.licenseName>
+        <license.licenseName>bsd_2</license.licenseName>
         <license.copyrightOwners>N/A</license.copyrightOwners>
         <license.projectName>JIPipe</license.projectName>
     </properties>
