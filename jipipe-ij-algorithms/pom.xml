@@ -108,7 +108,7 @@
             <dependency>
                 <groupId>fr.inra.ijpb</groupId>
                 <artifactId>MorphoLibJ_</artifactId>
-                <version>1.4.3-SNAPSHOT</version>
+                <version>1.5.0</version>
             </dependency>
             <dependency>
                 <groupId>sc.fiji</groupId>

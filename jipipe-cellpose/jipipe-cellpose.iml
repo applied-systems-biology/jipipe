@@ -6,6 +6,7 @@
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/target/generated-sources/license" isTestSource="false" generated="true" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
@@ -307,7 +308,7 @@
     <orderEntry type="library" name="Maven: edu.mines:mines-jtk:20151125" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:vecmath:1.6.0-scijava-2" level="project" />
     <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
-    <orderEntry type="library" name="Maven: fr.inra.ijpb:MorphoLibJ_:1.4.3-SNAPSHOT" level="project" />
+    <orderEntry type="library" name="Maven: fr.inra.ijpb:MorphoLibJ_:1.5.0" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:FeatureJ_:2.0.0" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:MTrackJ_:1.5.4" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:RandomJ_:2.0.0" level="project" />
