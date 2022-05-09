@@ -1,3 +1,5 @@
+[![](https://github.com/applied-systems-biology/jipipe/actions/workflows/build-main.yml/badge.svg)](https://github.com/applied-systems-biology/jipipe/actions/workflows/build-main.yml)
+
 # JIPipe
 
 A graphical batch processing language for image analysis.
