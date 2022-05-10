@@ -1,6 +1,6 @@
 #!/bin/bash
 
-JIPIPE_VERSION="1.72.0"
+JIPIPE_VERSION="1.72.2"
 PROJECT_DIR=$PWD/../../
 
 mkdir zip
@@ -18,7 +18,7 @@ function process_directory() {
     rm -rv ./plugins/JIPipe/*
     mkdir -p ./plugins/JIPipe
     for component in jipipe-core jipipe-clij jipipe-multiparameters jipipe-filesystem jipipe-ij jipipe-ij2 jipipe-ij-omero jipipe-ij-algorithms jipipe-ij-multi-template-matching jipipe-python jipipe-plots jipipe-tables jipipe-annotation jipipe-utils jipipe-strings jipipe-forms jipipe-r jipipe-cellpose jipipe-launcher jipipe-ij-updater-cli; do
-        cp -v $PROJECT_DIR/$component/target/$component-$JIPIPE_VERSION.jar ./plugins/JIPipe/
+        cp -v $PROJECT_DIR/$component/target/$component-$JIPIPE_VERSION-SNAPSHOT.jar ./plugins/JIPipe/$component-$JIPIPE_VERSION.jar
     done
     popd
 
