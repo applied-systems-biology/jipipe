@@ -4,7 +4,7 @@
 
     <groupId>org.hkijena</groupId>
     <artifactId>jipipe-installer-linux</artifactId>
-    <version>1.72.2-SNAPSHOT</version>
+    <version>1.72.2</version>
 
     <name>jipipe-installer-linux</name>
     <description>JIPipe installer for Linux</description>
@@ -48,7 +48,7 @@
     <scm>
         <connection>scm:git:https://github.com/applied-systems-biology/jipipe.git</connection>
         <developerConnection>scm:git:https://github.com/applied-systems-biology/jipipe.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>pom-jipipe-1.72.2</tag>
         <url>https://github.com/applied-systems-biology/jipipe</url>
     </scm>
     <issueManagement>

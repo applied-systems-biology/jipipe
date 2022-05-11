@@ -4,11 +4,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.72.2-SNAPSHOT</version>
+        <version>1.72.2</version>
     </parent>
 
     <artifactId>jipipe-cellpose</artifactId>
-    <version>1.72.2-SNAPSHOT</version>
+    <version>1.72.2</version>
 
     <name>jipipe-cellpose</name>
     <description>JIPipe CellPose Integration</description>
@@ -52,7 +52,7 @@
     <scm>
         <connection>scm:git:https://github.com/applied-systems-biology/jipipe.git</connection>
         <developerConnection>scm:git:https://github.com/applied-systems-biology/jipipe.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>pom-jipipe-1.72.2</tag>
         <url>https://github.com/applied-systems-biology/jipipe</url>
     </scm>
     <issueManagement>
@@ -77,22 +77,22 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>1.72.2-SNAPSHOT</version>
+                <version>1.72.2</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij</artifactId>
-                <version>1.72.2-SNAPSHOT</version>
+                <version>1.72.2</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-ij-algorithms</artifactId>
-                <version>1.72.2-SNAPSHOT</version>
+                <version>1.72.2</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-python</artifactId>
-                <version>1.72.2-SNAPSHOT</version>
+                <version>1.72.2</version>
             </dependency>
             <dependency>
                 <groupId>fr.inra.ijpb</groupId>
