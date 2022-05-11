@@ -75,6 +75,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 /**
  * UI around an {@link JIPipeProject}
@@ -294,12 +296,30 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         List<JIPipePipelineGraphEditorUI> result = new ArrayList<>();
         for (DocumentTabPane.DocumentTab tab : documentTabPane.getTabs()) {
             if (tab.getContent() instanceof JIPipePipelineGraphEditorUI) {
-                if (((JIPipePipelineGraphEditorUI) tab.getContent()).getCompartment() == compartment.getProjectCompartmentUUID())
+                if (Objects.equals(((JIPipePipelineGraphEditorUI) tab.getContent()).getCompartment(), compartment.getProjectCompartmentUUID()))
                     result.add((JIPipePipelineGraphEditorUI) tab.getContent());
             }
         }
         return result;
     }
+
+    /**
+     * Finds open {@link JIPipePipelineGraphEditorUI} tabs
+     *
+     * @param compartmentUUID Targeted compartment
+     * @return List of UIs
+     */
+    public List<JIPipePipelineGraphEditorUI> findOpenPipelineEditorTabs(UUID compartmentUUID) {
+        List<JIPipePipelineGraphEditorUI> result = new ArrayList<>();
+        for (DocumentTabPane.DocumentTab tab : documentTabPane.getTabs()) {
+            if (tab.getContent() instanceof JIPipePipelineGraphEditorUI) {
+                if (Objects.equals(((JIPipePipelineGraphEditorUI) tab.getContent()).getCompartment(), compartmentUUID))
+                    result.add((JIPipePipelineGraphEditorUI) tab.getContent());
+            }
+        }
+        return result;
+    }
+
 
     /**
      * Opens the graph editor for specified compartment
@@ -817,7 +837,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
      */
     @Subscribe
     public void onCompartmentRemoved(JIPipeProject.CompartmentRemovedEvent event) {
-        for (JIPipePipelineGraphEditorUI compartmentUI : findOpenPipelineEditorTabs(event.getCompartment())) {
+        for (JIPipePipelineGraphEditorUI compartmentUI : findOpenPipelineEditorTabs(event.getCompartmentUUID())) {
             documentTabPane.remove(compartmentUI);
         }
     }
