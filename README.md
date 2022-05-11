@@ -1,5 +1,3 @@
-[![](https://github.com/applied-systems-biology/jipipe/actions/workflows/build-main.yml/badge.svg)](https://github.com/applied-systems-biology/jipipe/actions/workflows/build-main.yml)
-
 # JIPipe
 
 A graphical batch processing language for image analysis.
@@ -16,6 +14,8 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany\
 
 The project code is licensed under BSD 2-Clause.\
 See the LICENSE file provided with the code for the full license.
+
+[![](https://github.com/applied-systems-biology/jipipe/actions/workflows/build-main.yml/badge.svg)](https://github.com/applied-systems-biology/jipipe/actions/workflows/build-main.yml)
 
 ## Project structure
 

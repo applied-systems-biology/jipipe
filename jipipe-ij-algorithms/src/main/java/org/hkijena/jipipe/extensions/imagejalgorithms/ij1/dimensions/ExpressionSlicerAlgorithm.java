@@ -27,7 +27,7 @@ import javax.swing.*;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Reduce & split stack (Expression)", description = "Uses expressions to create custom stacks. There are three expressions, one for each Z, channel and frame plane that " +
+@JIPipeDocumentation(name = "Reduce & split hyperstack (Expression)", description = "Uses expressions to create custom stacks. There are three expressions, one for each Z, channel and frame plane that " +
         "return numeric indices of slices that should be generated. You can optionally enable to iterate over all incoming slices of the image to generate multiple stacks. If no iteration is enabled (default)," +
         " each expression is only executed for z=0,c=0,t=0.")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
@@ -120,12 +120,15 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(),
                     numZ * numC * numT);
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-            for (int z = 0; z < numZ; z++) {
-                for (int c = 0; c < numC; c++) {
-                    for (int t = 0; t < numT; t++) {
-                        int sz = wrapNumber(indices.getZ().get(z), img.getNSlices());
-                        int sc = wrapNumber(indices.getC().get(c), img.getNChannels());
-                        int st = wrapNumber(indices.getT().get(t), img.getNFrames());
+            for (int i1 = 0; i1 < numZ; i1++) {
+                for (int i2 = 0; i2 < numC; i2++) {
+                    for (int i3 = 0; i3 < numT; i3++) {
+                        int z = indices.getZ().get(i1);
+                        int c = indices.getC().get(i2);
+                        int t = indices.getT().get(i3);
+                        int sz = wrapNumber(z, img.getNSlices());
+                        int sc = wrapNumber(c, img.getNChannels());
+                        int st = wrapNumber(t, img.getNFrames());
                         ImageProcessor processor = ImageJUtils.getSliceZero(img, sc, sz, st).duplicate();
                         stack.setProcessor(processor, img.getStackIndex(c + 1, z + 1, t + 1));
 
@@ -186,6 +189,7 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Generate Z slices", description = "Expression that is executed for each Z/C/T slice and generates an array of slice indices (or a single slice index) that " +
             "determine which Z indices are exported. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("expression-z")
+    @ExpressionParameterSettings(variableSource = VariableSource.class)
     public DefaultExpressionParameter getExpressionZ() {
         return expressionZ;
     }
@@ -223,7 +227,6 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Iterate incoming Z slices", description = "If enabled, all expressions are executed per Z slice.")
     @JIPipeParameter("iterate-per-z")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
     public boolean isIteratePerZ() {
         return iteratePerZ;
     }
