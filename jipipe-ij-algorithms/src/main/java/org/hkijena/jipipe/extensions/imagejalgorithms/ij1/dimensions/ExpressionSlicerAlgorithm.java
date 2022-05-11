@@ -120,17 +120,18 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(),
                     numZ * numC * numT);
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-            for (int i1 = 0; i1 < numZ; i1++) {
-                for (int i2 = 0; i2 < numC; i2++) {
-                    for (int i3 = 0; i3 < numT; i3++) {
-                        int z = indices.getZ().get(i1);
-                        int c = indices.getC().get(i2);
-                        int t = indices.getT().get(i3);
-                        int sz = wrapNumber(z, img.getNSlices());
-                        int sc = wrapNumber(c, img.getNChannels());
-                        int st = wrapNumber(t, img.getNFrames());
+            for (int z = 0; z < numZ; z++) {
+                for (int c = 0; c < numC; c++) {
+                    for (int t = 0; t < numT; t++) {
+                        int zSource = indices.getZ().get(z);
+                        int cSource = indices.getC().get(c);
+                        int tSource = indices.getT().get(t);
+                        int sz = wrapNumber(zSource, img.getNSlices());
+                        int sc = wrapNumber(cSource, img.getNChannels());
+                        int st = wrapNumber(tSource, img.getNFrames());
+                        int stackIndexResult = ImageJUtils.zeroSliceIndexToOneStackIndex(c, z, t, numC, numZ, numT);
                         ImageProcessor processor = ImageJUtils.getSliceZero(img, sc, sz, st).duplicate();
-                        stack.setProcessor(processor, img.getStackIndex(c + 1, z + 1, t + 1));
+                        stack.setProcessor(processor, stackIndexResult);
 
                         annotateZ.addAnnotationIfEnabled(annotations, sz + "");
                         annotateC.addAnnotationIfEnabled(annotations, sc + "");
