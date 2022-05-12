@@ -15,7 +15,11 @@ with open("zip/build.sh", "w") as f:
         f.write(tab * "\t" + text + "\n")
     wl("#!/bin/bash")
     wl()
-    wl("JIPIPE_VERSION=" + jipipe_version)
+    wl('JIPIPE_VERSION="Development"')
+    wl()
+    wl('pushd $PROJECT_DIR || exit')
+    wl('JIPIPE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed "s/-SNAPSHOT//g")')
+    wl('popd || exit')
     wl()
 
     # Download dependencies
@@ -47,8 +51,8 @@ with open("zip/build.sh", "w") as f:
 
     # ZIP package
     wl("rm -r JIPipe-$JIPIPE_VERSION.zip")
-    wl("pushd package")
+    wl("pushd package || exit")
     wl("zip -r ../JIPipe-$JIPIPE_VERSION.zip .", tab=1)
-    wl("popd")
+    wl("popd || exit")
     
 

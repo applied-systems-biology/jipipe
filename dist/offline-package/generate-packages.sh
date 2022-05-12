@@ -1,7 +1,11 @@
 #!/bin/bash
 
-JIPIPE_VERSION="1.72.2"
+JIPIPE_VERSION="Development"
 PROJECT_DIR=$PWD/../../
+
+pushd $PROJECT_DIR || exit
+JIPIPE_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout | sed "s/-SNAPSHOT//g")
+popd || exit
 
 mkdir zip
 
@@ -13,19 +17,19 @@ function process_directory() {
     cp -rv $APP_DIR/JIPipe.app tmp
     FIJI_DIR=tmp/$2
 
-    pushd $FIJI_DIR
+    pushd $FIJI_DIR || exit
     rm -rv ./jipipe
     rm -rv ./plugins/JIPipe/*
     mkdir -p ./plugins/JIPipe
     for component in jipipe-core jipipe-clij jipipe-multiparameters jipipe-filesystem jipipe-ij jipipe-ij2 jipipe-ij-omero jipipe-ij-algorithms jipipe-ij-multi-template-matching jipipe-python jipipe-plots jipipe-tables jipipe-annotation jipipe-utils jipipe-strings jipipe-forms jipipe-r jipipe-cellpose jipipe-launcher jipipe-ij-updater-cli; do
         cp -v $PROJECT_DIR/$component/target/$component-$JIPIPE_VERSION-SNAPSHOT.jar ./plugins/JIPipe/$component-$JIPIPE_VERSION.jar
     done
-    popd
+    popd || exit
 
-    pushd tmp
+    pushd tmp || exit
     rm $OUTPUT_ZIP
     zip -r $OUTPUT_ZIP .
-    popd
+    popd || exit
 
     rm -r tmp
 }
