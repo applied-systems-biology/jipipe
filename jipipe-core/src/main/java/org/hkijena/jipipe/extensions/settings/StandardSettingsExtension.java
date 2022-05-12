@@ -50,11 +50,6 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
     }
 
     @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
-
-    @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerSettingsSheet(RuntimeSettings.ID,
                 "Runtime",

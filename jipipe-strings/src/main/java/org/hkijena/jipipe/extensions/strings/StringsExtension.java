@@ -65,8 +65,4 @@ public class StringsExtension extends JIPipePrepackagedDefaultJavaExtension {
         return "org.hkijena.jipipe:strings";
     }
 
-    @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
 }

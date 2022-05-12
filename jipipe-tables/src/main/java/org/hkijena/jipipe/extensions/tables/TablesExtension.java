@@ -67,11 +67,6 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
-
-    @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
 
         // Register the two base column types

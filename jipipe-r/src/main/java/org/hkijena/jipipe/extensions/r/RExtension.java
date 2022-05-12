@@ -71,11 +71,6 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
-
-    @Override
     public List<ImageIcon> getSplashIcons() {
         return Arrays.asList(UIUtils.getIcon32FromResources("apps/rlogo_icon.png"));
     }

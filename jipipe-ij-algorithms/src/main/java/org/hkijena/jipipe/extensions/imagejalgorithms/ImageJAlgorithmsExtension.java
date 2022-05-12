@@ -1070,10 +1070,6 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         return "org.hkijena.jipipe:imagej-algorithms";
     }
 
-    @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
 }
 
 

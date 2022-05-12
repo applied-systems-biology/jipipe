@@ -119,8 +119,4 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         return "org.hkijena.jipipe:core";
     }
 
-    @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
 }

@@ -25,6 +25,7 @@ import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.VersionUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -129,7 +130,7 @@ public class JIPipeJsonExtensionInfoUI extends JIPipeJsonExtensionWorkbenchPanel
         technicalInfo.setOpaque(false);
         technicalInfo.getContentPanel().setOpaque(false);
 
-        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(StringUtils.orElse(getClass().getPackage().getImplementationVersion(), "Development")), new JLabel("Version"), null);
+        technicalInfo.addToForm(UIUtils.makeReadonlyBorderlessTextField(VersionUtils.getVersionString(getClass())), new JLabel("Version"), null);
         Attributes manifestAttributes = ReflectionUtils.getManifestAttributes();
         if (manifestAttributes != null) {
             String implementationDateString = manifestAttributes.getValue("Implementation-Date");

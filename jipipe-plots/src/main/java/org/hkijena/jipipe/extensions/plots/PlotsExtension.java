@@ -68,11 +68,6 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
-
-    @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
 
         // Register extension so users can create plots

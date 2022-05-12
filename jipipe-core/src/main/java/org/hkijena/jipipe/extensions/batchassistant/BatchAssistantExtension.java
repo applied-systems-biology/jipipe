@@ -33,11 +33,6 @@ public class BatchAssistantExtension extends JIPipePrepackagedDefaultJavaExtensi
     }
 
     @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
-
-    @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerDatatype("jipipe:data-batch-status", DataBatchStatusData.class, UIUtils.getIconURLFromResources("actions/help-info.png"));
     }

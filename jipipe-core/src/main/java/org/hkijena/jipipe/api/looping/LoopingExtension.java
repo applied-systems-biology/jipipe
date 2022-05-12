@@ -21,6 +21,7 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.VersionUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -54,10 +55,5 @@ public class LoopingExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public String getDependencyId() {
         return "org.hkijena.jipipe:looping";
-    }
-
-    @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
     }
 }

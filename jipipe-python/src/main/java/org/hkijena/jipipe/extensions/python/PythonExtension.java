@@ -191,8 +191,4 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         return "org.hkijena.jipipe:python";
     }
 
-    @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
 }

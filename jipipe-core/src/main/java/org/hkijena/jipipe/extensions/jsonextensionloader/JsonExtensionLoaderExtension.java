@@ -100,11 +100,6 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
         return "jipipe:json-extension-loader";
     }
 
-    @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
-
     /**
      * Tries to register more extensions waiting for dependencies
      */

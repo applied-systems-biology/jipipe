@@ -25,6 +25,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImagePlusDat
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.VersionUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
@@ -133,8 +134,4 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
         return "org.hkijena.jipipe:clij2-integration";
     }
 
-    @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
 }

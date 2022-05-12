@@ -69,8 +69,4 @@ public class MultiParameterAlgorithmsExtension extends JIPipePrepackagedDefaultJ
         return "org.hkijena.jipipe:multi-parameters-algorithms";
     }
 
-    @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
 }

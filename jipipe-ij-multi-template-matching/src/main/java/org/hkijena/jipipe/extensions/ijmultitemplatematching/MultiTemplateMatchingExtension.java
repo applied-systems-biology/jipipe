@@ -47,11 +47,6 @@ public class MultiTemplateMatchingExtension extends JIPipePrepackagedDefaultJava
     }
 
     @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
-
-    @Override
     public List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
         return Arrays.asList(new JIPipeImageJUpdateSiteDependency("IJ-OpenCV-plugins", "https://sites.imagej.net/IJ-OpenCV/"),
                 new JIPipeImageJUpdateSiteDependency("Multi-Template-Matching", "https://sites.imagej.net/Multi-Template-Matching/"));

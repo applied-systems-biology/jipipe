@@ -27,6 +27,7 @@ import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInImageJData
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInJIPipeTabDataOperation;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.VersionUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -103,10 +104,5 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
     @Override
     public String getDependencyId() {
         return "org.hkijena.jipipe:annotations";
-    }
-
-    @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
     }
 }

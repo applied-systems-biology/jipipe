@@ -57,8 +57,4 @@ public class ToolsExtension extends JIPipePrepackagedDefaultJavaExtension {
         return "org.hkijena.jipipe:tools";
     }
 
-    @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
 }

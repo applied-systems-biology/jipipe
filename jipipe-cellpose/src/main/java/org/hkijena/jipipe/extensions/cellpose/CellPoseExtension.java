@@ -30,6 +30,7 @@ import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.VersionUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -81,11 +82,6 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public String getDependencyId() {
         return "org.hkijena.jipipe:cellpose";
-    }
-
-    @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
     }
 
     @Override

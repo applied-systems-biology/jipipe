@@ -143,10 +143,6 @@ public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
         return "org.hkijena.jipipe:imagej2";
     }
 
-    @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
 }
 
 

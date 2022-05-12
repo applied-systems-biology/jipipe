@@ -125,11 +125,6 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
     }
 
     @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
-
-    @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         // Fallback editor for any parameter collection
         registerParameterEditor(JIPipeParameterCollection.class, JIPipeParameterCollectionParameterEditorUI.class);

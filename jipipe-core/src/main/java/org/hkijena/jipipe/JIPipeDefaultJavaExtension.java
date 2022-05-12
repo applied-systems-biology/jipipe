@@ -54,6 +54,7 @@ import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.VersionUtils;
 import org.scijava.service.AbstractService;
 
 import javax.swing.*;
@@ -137,6 +138,11 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     @Override
     public void reportValidity(JIPipeIssueReport report) {
 
+    }
+
+    @Override
+    public String getDependencyVersion() {
+        return VersionUtils.getVersionString(getClass());
     }
 
     @Override

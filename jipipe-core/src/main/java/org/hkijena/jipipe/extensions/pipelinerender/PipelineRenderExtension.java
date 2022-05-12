@@ -52,8 +52,4 @@ public class PipelineRenderExtension extends JIPipePrepackagedDefaultJavaExtensi
         return "org.hkijena.jipipe:pipeline-render";
     }
 
-    @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
 }

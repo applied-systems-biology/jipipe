@@ -63,11 +63,6 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
-
-    @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         // Register main data types
         registerDatatype("path", PathData.class, ResourceUtils.getPluginResource("icons/data-types/path.png"),

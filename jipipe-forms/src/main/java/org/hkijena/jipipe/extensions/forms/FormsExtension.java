@@ -46,11 +46,6 @@ public class FormsExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public String getDependencyVersion() {
-        return "1.72.2";
-    }
-
-    @Override
     public List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
         return Collections.emptyList();
     }
