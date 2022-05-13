@@ -25,10 +25,7 @@ import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.utils.PathIOMode;
-import org.hkijena.jipipe.utils.PathType;
-import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 import org.scijava.ui.swing.script.EditorPane;
 
 import javax.swing.*;
@@ -43,7 +40,7 @@ import java.util.Objects;
  */
 public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
 
-    private EditorPane textArea;
+    private CustomEditorPane textArea;
     private JLabel collapseInfoLabel;
     private boolean isCollapsed;
     private JToggleButton externalCodeToggle;
@@ -66,13 +63,14 @@ public class ScriptParameterEditorUI extends JIPipeParameterEditorUI {
                 UIUtils.getIconFromResources("actions/eye-slash.png"),
                 JLabel.LEFT);
         collapseInfoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
-        textArea = new EditorPane();
+        textArea = new CustomEditorPane();
         UIUtils.applyThemeToCodeEditor(textArea);
         textArea.setBackground(UIManager.getColor("TextArea.background"));
         textArea.setHighlightCurrentLine(false);
         if (code.getLanguage() != null) {
-            ReflectionUtils.invokeMethod(textArea, "setLanguage", code.getLanguage());
-            textArea.setAutoCompletionEnabled(true);
+            textArea.setLanguage(code.getLanguage());
+            // Temporarily removed for backwards compatibility
+//            textArea.setAutoCompletionEnabled(true);
         }
         textArea.setTabSize(4);
         getContext().inject(textArea);

@@ -19,6 +19,7 @@ import org.hkijena.jipipe.extensions.parameters.api.scripts.ScriptParameter;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.utils.CustomEditorPane;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.ui.swing.script.EditorPane;
@@ -33,7 +34,7 @@ import java.util.Objects;
  */
 public class LargeScriptParameterEditorUI extends JIPipeParameterEditorUI {
 
-    private EditorPane textArea;
+    private CustomEditorPane textArea;
 
     /**
      * Creates new instance
@@ -49,14 +50,15 @@ public class LargeScriptParameterEditorUI extends JIPipeParameterEditorUI {
     private void initialize() {
         setLayout(new BorderLayout());
         ScriptParameter code = getParameter(ScriptParameter.class);
-        textArea = new EditorPane();
+        textArea = new CustomEditorPane();
         UIUtils.applyThemeToCodeEditor(textArea);
         textArea.setHighlightCurrentLine(false);
         textArea.setBackground(UIManager.getColor("TextArea.background"));
         textArea.setCodeFoldingEnabled(true);
         if (code.getLanguage() != null) {
-            ReflectionUtils.invokeMethod(textArea, "setLanguage", code.getLanguage());
-            textArea.setAutoCompletionEnabled(true);
+            textArea.setLanguage(code.getLanguage());
+            // Temporarily removed for backwards compatibility
+//            textArea.setAutoCompletionEnabled(true);
         }
         textArea.setTabSize(4);
         getContext().inject(textArea);
