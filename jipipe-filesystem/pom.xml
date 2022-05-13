@@ -4,11 +4,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.72.3-SNAPSHOT</version>
+        <version>1.72.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>jipipe-filesystem</artifactId>
-    <version>1.72.3-SNAPSHOT</version>
+    <version>1.72.4-SNAPSHOT</version>
 
     <name>jipipe-filesystem</name>
     <description>JIPipe Filesystem Processing</description>
@@ -82,7 +82,7 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>1.72.3-SNAPSHOT</version>
+                <version>1.72.4-SNAPSHOT</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

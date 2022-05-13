@@ -4,11 +4,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.72.3-SNAPSHOT</version>
+        <version>1.72.4-SNAPSHOT</version>
     </parent>
 
     <artifactId>jipipe-tables</artifactId>
-    <version>1.72.3-SNAPSHOT</version>
+    <version>1.72.4-SNAPSHOT</version>
 
     <name>jipipe-tables</name>
     <description>JIPipe Table Processing</description>
@@ -82,12 +82,12 @@
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-core</artifactId>
-                <version>1.72.3-SNAPSHOT</version>
+                <version>1.72.4-SNAPSHOT</version>
             </dependency>
             <dependency>
                 <groupId>org.hkijena</groupId>
                 <artifactId>jipipe-annotation</artifactId>
-                <version>1.72.3-SNAPSHOT</version>
+                <version>1.72.4-SNAPSHOT</version>
                 <scope>compile</scope>
             </dependency>
         </dependencies>
