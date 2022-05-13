@@ -27,14 +27,14 @@ import java.util.List;
 @JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
-public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OutputSlotMapParameterCollection outputIndices;
     private HyperstackDimension targetDimension = HyperstackDimension.Channel;
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
     private OptionalAnnotationNameParameter targetDimensionAnnotation = new OptionalAnnotationNameParameter("Channel", true);
 
-    public HyperstackSplitterAlgorithm(JIPipeNodeInfo info) {
+    public SplitByDimensionAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", "", ImagePlusData.class)
                 .addOutputSlot("Output", "", ImagePlusData.class, "Input")
@@ -45,7 +45,7 @@ public class HyperstackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm 
         registerSubParameter(outputIndices);
     }
 
-    public HyperstackSplitterAlgorithm(HyperstackSplitterAlgorithm other) {
+    public SplitByDimensionAlgorithm(SplitByDimensionAlgorithm other) {
         super(other);
 
         this.targetDimension = other.targetDimension;

@@ -107,6 +107,6 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.72.0";
+        return "1.72.2";
     }
 }

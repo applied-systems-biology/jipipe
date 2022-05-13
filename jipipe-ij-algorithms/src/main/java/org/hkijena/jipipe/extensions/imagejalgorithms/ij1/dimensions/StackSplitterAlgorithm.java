@@ -42,8 +42,8 @@ import java.util.stream.Collectors;
 /**
  * Wrapper around {@link ChannelArranger}
  */
-@JIPipeDocumentation(name = "Reduce & split stacks", description = "Splits incoming stacks into a customizable amount of stacks based on stack indices. Add more output slots " +
-        "to create more groups.")
+@JIPipeDocumentation(name = "Reduce & split stacks (slice)", description = "Splits incoming stacks into a customizable amount of stacks based on stack indices. Add more output slots " +
+        "to create more groups. Please note that this node utilizes slice indices and cannot handle 5D images. Please use 'Reduce & split hyperstack' or 'Reduce & split hyperstack (Expression)' if you want to properly handle 5D images.")
 @JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
