@@ -1,9 +1,0 @@
-[Desktop Entry]
-Exec=jipipe-installer
-Icon=jipipe-installer
-Name=jipipe-installer
-Comment=Installer for JIPipe
-NoDisplay=false
-StartupNotify=true
-Type=Application
-Categories=Science;
