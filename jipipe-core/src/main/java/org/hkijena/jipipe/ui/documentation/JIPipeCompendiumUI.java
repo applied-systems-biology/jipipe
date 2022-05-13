@@ -174,7 +174,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
     /**
      * Returns the renderer for the items
      *
-     * @return
+     * @return the renderer
      */
     protected abstract ListCellRenderer<T> getItemListRenderer();
 

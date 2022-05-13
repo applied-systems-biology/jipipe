@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import java.util.Arrays;
 
 /**
- * This is the JIPipe version of the ImageJ plugin https://imagej.nih.gov/ij/plugins/canny/Canny_Edge_Detector.java
+ * This is the JIPipe version of the ImageJ plugin <a href="https://imagej.nih.gov/ij/plugins/canny/Canny_Edge_Detector.java">...</a>
  *
  * <p>This is a plugin version of Tom Gibara's implementation of the Canny edge detection algorithm in Java, available at: </p>
  * http://www.tomgibara.com/computer-vision/canny-edge-detector

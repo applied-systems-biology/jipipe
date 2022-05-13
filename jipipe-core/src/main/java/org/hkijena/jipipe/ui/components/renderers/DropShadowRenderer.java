@@ -151,9 +151,6 @@ public class DropShadowRenderer {
         image.flush();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public void paint(Graphics2D g2, int x, int y, int width, int height) {
 
         //The location and size of the shadows depends on which shadows are being
@@ -303,9 +300,6 @@ public class DropShadowRenderer {
         return ret;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public boolean isBorderOpaque() {
         return false;
     }

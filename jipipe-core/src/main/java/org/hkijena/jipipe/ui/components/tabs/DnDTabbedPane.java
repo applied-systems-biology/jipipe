@@ -12,7 +12,7 @@ import java.util.Optional;
 import java.util.stream.IntStream;
 
 /**
- * See https://github.com/aterai/java-swing-tips/blob/master/DnDTabbedPane/src/java/example/MainPanel.java
+ * See <a href="https://github.com/aterai/java-swing-tips/blob/master/DnDTabbedPane/src/java/example/MainPanel.java">...</a>
  */
 class DnDTabbedPane extends JTabbedPane {
     private static final int LINE_SIZE = 3;

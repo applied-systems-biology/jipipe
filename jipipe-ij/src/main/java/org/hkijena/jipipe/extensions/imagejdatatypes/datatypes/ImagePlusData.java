@@ -71,7 +71,7 @@ public class ImagePlusData implements JIPipeData {
     }
 
     /**
-     * Initializes this {@link ImagePlusData} with an image source, meaning that the image data is not loaded until necessary
+     * Initializes this  with an image source, meaning that the image data is not loaded until necessary
      *
      * @param imageSource the image source
      */
@@ -80,7 +80,7 @@ public class ImagePlusData implements JIPipeData {
     }
 
     /**
-     * Initializes this {@link ImagePlusData} with an image source, meaning that the image data is not loaded until necessary
+     * Initializes this  with an image source, meaning that the image data is not loaded until necessary
      *
      * @param imageSource the image source
      * @param colorSpace  the color space. please not that it is ignored if the image is greyscale
@@ -135,7 +135,7 @@ public class ImagePlusData implements JIPipeData {
     }
 
     /**
-     * Gets the dimensionality of {@link ImagePlusData}
+     * Gets the dimensionality of this
      *
      * @param klass the class
      * @return the dimensionality

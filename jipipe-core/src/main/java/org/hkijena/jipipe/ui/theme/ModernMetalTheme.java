@@ -69,7 +69,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
     static ColorUIResource WHITE = new ColorUIResource(255, 255, 255);
 
     /**
-     * Creates an instance of <code>OceanTheme</code>
+     * Creates an instance of {@code OceanTheme}
      */
     public ModernMetalTheme() {
     }

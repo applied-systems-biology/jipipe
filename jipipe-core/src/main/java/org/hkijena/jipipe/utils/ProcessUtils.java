@@ -147,10 +147,10 @@ public class ProcessUtils {
      * Queries standard output with a timeout.
      * Does not listen to cancellation signals
      *
-     * @param executable
-     * @param progressInfo
-     * @param args
-     * @return
+     * @param executable the executable
+     * @param progressInfo the progress info
+     * @param args executable args
+     * @return the stdout
      */
     public static String queryFast(Path executable, JIPipeProgressInfo progressInfo, String... args) {
         CommandLine commandLine = new CommandLine(executable.toFile());

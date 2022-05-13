@@ -569,7 +569,7 @@ public class TableEditor extends JIPipeWorkbenchPanel {
     /**
      * Gets the selected cells
      *
-     * @return
+     * @return the cell indices
      */
     private List<ResultsTableData.Index> getSelectedCells() {
         List<ResultsTableData.Index> result = new ArrayList<>();

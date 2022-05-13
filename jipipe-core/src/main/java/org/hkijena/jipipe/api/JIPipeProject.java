@@ -245,7 +245,7 @@ public class JIPipeProject implements JIPipeValidatable {
      * Adds an existing compartment instance
      *
      * @param compartment Compartment
-     * @param uuid
+     * @param uuid the UUID of the compartment
      * @return The compartment
      */
     public JIPipeProjectCompartment addCompartment(JIPipeProjectCompartment compartment, UUID uuid) {

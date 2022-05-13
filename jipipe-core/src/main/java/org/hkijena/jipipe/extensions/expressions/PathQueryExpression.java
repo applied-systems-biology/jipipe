@@ -98,7 +98,7 @@ public class PathQueryExpression extends DefaultExpressionParameter implements P
      * Returns true of one of the strings matches the query.
      *
      * @param strings             the strings
-     * @param expressionVariables
+     * @param expressionVariables expression variables
      * @return if one string matches
      */
     public boolean testAnyOf(Collection<Path> strings, ExpressionVariables expressionVariables) {

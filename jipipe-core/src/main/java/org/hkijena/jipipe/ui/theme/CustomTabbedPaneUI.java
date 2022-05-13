@@ -745,7 +745,7 @@ public class CustomTabbedPaneUI extends BasicTabbedPaneUI {
     }
 
     /**
-     * {@inheritDoc}
+     *
      *
      * @since 1.6
      */

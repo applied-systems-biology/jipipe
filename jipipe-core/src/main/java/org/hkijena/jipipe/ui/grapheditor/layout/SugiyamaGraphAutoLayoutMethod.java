@@ -32,7 +32,7 @@ import java.util.*;
  * Sugiyama, Kozo; Tagawa, Shôjirô; Toda, Mitsuhiko (1981), "Methods for visual understanding of hierarchical system structures",
  * IEEE Transactions on Systems, Man, and Cybernetics, SMC-11 (2): 109–125
  * <p>
- * Code was adapted from https://blog.disy.net/sugiyama-method/
+ * Code was adapted from <a href="https://blog.disy.net/sugiyama-method/">...</a>
  */
 public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
 

@@ -163,7 +163,7 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
         /**
          * Sets the priority
          *
-         * @param priority
+         * @param priority the priority
          * @return this
          */
         public Builder setPriority(double priority) {

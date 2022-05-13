@@ -65,7 +65,7 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
     static ColorUIResource BLACK = new ColorUIResource(0x222222);
 
     /**
-     * Creates an instance of <code>OceanTheme</code>
+     * Creates an instance of {@code OceanTheme}
      */
     public DarkModernMetalTheme() {
     }

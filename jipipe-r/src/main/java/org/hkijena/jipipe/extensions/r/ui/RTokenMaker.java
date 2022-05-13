@@ -6189,7 +6189,7 @@ public class RTokenMaker extends AbstractJFlexCTokenMaker {
                     "\3\1\1\0\1\1\1\0\3\1\1\0\1\1\1\0" +
                     "\12\1";
     /**
-     * ZZ_ATTRIBUTE[aState] contains the attributes of state <code>aState</code>
+     * ZZ_ATTRIBUTE[aState] contains the attributes of state {@code aState}
      */
     private static final int[] ZZ_ATTRIBUTE = zzUnpackAttribute();
     /**
@@ -6424,23 +6424,20 @@ public class RTokenMaker extends AbstractJFlexCTokenMaker {
         zzStartRead = zzMarkedPos;
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public String[] getLineCommentStartAndEnd(int languageIndex) {
         return new String[]{"#", null};
     }
 
     /**
      * Returns the first token in the linked list of tokens generated
-     * from <code>text</code>.  This method must be implemented by
+     * from {@code text}.  This method must be implemented by
      * subclasses so they can correctly implement syntax highlighting.
      *
      * @param text             The text from which to get tokens.
      * @param initialTokenType The token type we should start with.
      * @param startOffset      The offset into the document at which
-     *                         <code>text</code> starts.
-     * @return The first <code>Token</code> in a linked list representing
+     *                         {@code text} starts.
+     * @return The first {@code Token} in a linked list representing
      * the syntax highlighted text.
      */
     public Token getTokenList(Segment text, int initialTokenType, int startOffset) {
@@ -6472,8 +6469,8 @@ public class RTokenMaker extends AbstractJFlexCTokenMaker {
     /**
      * Refills the input buffer.
      *
-     * @return <code>true</code> if EOF was reached, otherwise
-     * <code>false</code>.
+     * @return {@code true} if EOF was reached, otherwise
+     * {@code false}.
      */
     private boolean zzRefill() {
         return zzCurrentPos >= s.offset + s.count;

@@ -31,36 +31,21 @@ import java.util.Map;
 @JIPipeDocumentation(name = "Annotation table", description = "A table that contains data annotations and other metadata")
 public class AnnotationTableData extends ResultsTableData {
 
-    /**
-     * {@inheritDoc}
-     */
     public AnnotationTableData() {
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public AnnotationTableData(Map<String, TableColumn> columns) {
         super(columns);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public AnnotationTableData(Collection<TableColumn> columns) {
         super(columns);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public AnnotationTableData(ResultsTable table) {
         super(table);
     }
 
-    /**
-     * {@inheritDoc}
-     */
     public AnnotationTableData(ResultsTableData other) {
         super(other);
     }

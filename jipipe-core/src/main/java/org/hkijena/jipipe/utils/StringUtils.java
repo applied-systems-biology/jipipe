@@ -346,9 +346,9 @@ public class StringUtils {
      * recognize strings which match the glob pattern.
      * <p>
      * See also, the POSIX Shell language:
-     * http://pubs.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.html#tag_02_13_01
+     * <a href="http://pubs.opengroup.org/onlinepubs/009695399/utilities/xcu_chap02.html#tag_02_13_01">...</a>
      * <p>
-     * See https://stackoverflow.com/questions/1247772/is-there-an-equivalent-of-java-util-regex-for-glob-type-patterns
+     * See <a href="https://stackoverflow.com/questions/1247772/is-there-an-equivalent-of-java-util-regex-for-glob-type-patterns">...</a>
      *
      * @param pattern A glob pattern.
      * @return A regex pattern to recognize the given glob pattern.

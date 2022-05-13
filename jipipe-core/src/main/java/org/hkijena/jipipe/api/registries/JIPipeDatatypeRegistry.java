@@ -64,7 +64,7 @@ public class JIPipeDatatypeRegistry {
 
     /**
      * Creates a new instance
-     * @param jiPipe
+     * @param jiPipe the JIPipe instance
      */
     public JIPipeDatatypeRegistry(JIPipe jiPipe) {
         this.jiPipe = jiPipe;

@@ -115,7 +115,7 @@ public class Margin implements JIPipeParameterCollection {
      * Finds the parameter keys that are relevant according to the current anchor setting
      * The anchor key 'anchor' is not part of the result.
      *
-     * @return
+     * @return the keys
      */
     public Set<String> getRelevantParameterKeys() {
         Set<String> result = new HashSet<>();

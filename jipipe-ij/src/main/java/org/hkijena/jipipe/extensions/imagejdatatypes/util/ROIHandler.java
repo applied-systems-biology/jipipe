@@ -57,8 +57,8 @@ public class ROIHandler {
      *
      * @param retrieve The OMEXML store.
      * @param images   The imageJ object.
-     * @param isOMERO  <code>true</code> if data stored in OMERO,
-     *                 <code>false</code> otherwise.
+     * @param isOMERO  {@code true} if data stored in OMERO,
+     *                 {@code false} otherwise.
      */
     public static ROIListData openROIs(IMetadata retrieve, ImagePlus[] images,
                                        boolean isOMERO) {

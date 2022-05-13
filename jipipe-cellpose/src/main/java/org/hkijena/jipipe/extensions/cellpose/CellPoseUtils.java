@@ -49,7 +49,7 @@ public class CellPoseUtils {
     }
 
     /**
-     * Converts a Cellpose ROI to {@link ROIListData} according to https://github.com/MouseLand/cellpose/blob/master/imagej_roi_converter.py
+     * Converts a Cellpose ROI to {@link ROIListData} according to <a href="https://github.com/MouseLand/cellpose/blob/master/imagej_roi_converter.py">...</a>
      *
      * @param file the Cellpose ROI
      * @return ImageJ ROI

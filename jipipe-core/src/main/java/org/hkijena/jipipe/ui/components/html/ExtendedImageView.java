@@ -44,7 +44,7 @@ import java.util.Dictionary;
 
 /**
  * {@link javax.swing.text.html.ImageView} capable of decoding Base64 images
- * See https://stackoverflow.com/a/20960589
+ * See <a href="https://stackoverflow.com/a/20960589">...</a>
  */
 public class ExtendedImageView extends View {
     /**
@@ -142,7 +142,7 @@ public class ExtendedImageView extends View {
     /**
      * Returns the text to display if the image can't be loaded. This is
      * obtained from the Elements attribute set with the attribute name
-     * <code>HTML.Attribute.ALT</code>.
+     * {@code HTML.Attribute.ALT}.
      */
     public String getAltText() {
         return (String) getElement().getAttributes().getAttribute
@@ -210,7 +210,7 @@ public class ExtendedImageView extends View {
     }
 
     /**
-     * Sets how the image is loaded. If <code>newValue</code> is true,
+     * Sets how the image is loaded. If {@code newValue} is true,
      * the image we be loaded when first asked for, otherwise it will
      * be loaded asynchronously. The default is to not load synchronously,
      * that is to load the image asynchronously.
@@ -245,8 +245,8 @@ public class ExtendedImageView extends View {
 
     /**
      * For images the tooltip text comes from text specified with the
-     * <code>ALT</code> attribute. This is overriden to return
-     * <code>getAltText</code>.
+     * {@code ALT} attribute. This is overriden to return
+     * {@code getAltText}.
      *
      * @see JTextComponent#getToolTipText
      */
@@ -337,7 +337,6 @@ public class ExtendedImageView extends View {
      *
      * @param g the rendering surface to use
      * @param a the allocated region to render into
-     * @see View#paint
      */
     public void paint(Graphics g, Shape a) {
         sync();
@@ -647,8 +646,8 @@ public class ExtendedImageView extends View {
 
     /**
      * Loads the image and updates the size accordingly. This should be
-     * invoked instead of invoking <code>loadImage</code> or
-     * <code>updateImageSize</code> directly.
+     * invoked instead of invoking {@code loadImage} or
+     * {@code updateImageSize} directly.
      */
     private void refreshImage() {
         synchronized (this) {
@@ -687,8 +686,8 @@ public class ExtendedImageView extends View {
     } // End getBASE64Image()...
 
     /**
-     * Loads the image from the URL <code>getImageURL</code>. This should
-     * only be invoked from <code>refreshImage</code>.
+     * Loads the image from the URL {@code getImageURL}. This should
+     * only be invoked from {@code refreshImage}.
      */
     private void loadImage() {
         URL src = getImageURL();
@@ -721,7 +720,7 @@ public class ExtendedImageView extends View {
 
     /**
      * Recreates and reloads the image.  This should
-     * only be invoked from <code>refreshImage</code>.
+     * only be invoked from {@code refreshImage}.
      */
     private void updateImageSize() {
         int newWidth = 0;
@@ -851,7 +850,7 @@ public class ExtendedImageView extends View {
     }
 
     /**
-     * Invokes <code>preferenceChanged</code> on the event displatching
+     * Invokes {@code preferenceChanged} on the event displatching
      * thread.
      */
     private void safePreferenceChanged() {
@@ -878,7 +877,7 @@ public class ExtendedImageView extends View {
         double proportion = 0.0;
         final int specifiedWidth = getIntAttr(HTML.Attribute.WIDTH, -1);
         final int specifiedHeight = getIntAttr(HTML.Attribute.HEIGHT, -1);
-        /**
+        /*
          * If either of the attributes are not specified, then calculate the
          * proportion for the specified dimension wrt actual value, and then
          * apply the same proportion to the unspecified dimension as well,
@@ -965,7 +964,7 @@ public class ExtendedImageView extends View {
                     changed |= 2;
                 }
 
-                /**
+                /*
                  * If the image properties (height and width) have been loaded,
                  * tehn figure out if scaling is necessary based on the
                  * specified HTML attributes.

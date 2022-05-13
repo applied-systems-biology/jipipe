@@ -153,9 +153,9 @@ public class Hough_Circle extends SwingWorker<Integer, String> {
     /**
      * Start all given threads and wait on each of them until all are done.
      * From Stephan Preibisch's Multithreading.java class. See:
-     * http://repo.or.cz/w/trakem2.git?a=blob;f=mpi/fruitfly/general/MultiThreading.java;hb=HEAD
+     * <a href="http://repo.or.cz/w/trakem2.git?a=blob;f=mpi/fruitfly/general/MultiThreading.java;hb=HEAD">...</a>
      *
-     * @param threads
+     * @param threads the threads
      */
     public static void startAndJoin(Thread[] threads) {
         for (int ithread = 0; ithread < threads.length; ++ithread) {
@@ -174,24 +174,24 @@ public class Hough_Circle extends SwingWorker<Integer, String> {
     /**
      * Import values from GUI class before starting the analysis thread
      *
-     * @param radiusMin
-     * @param radiusMax
-     * @param radiusInc
-     * @param minCircles
-     * @param maxCircles
-     * @param thresholdRatio
-     * @param resolution
-     * @param ratio
-     * @param searchBand
-     * @param searchRadius
-     * @param reduce
-     * @param local
-     * @param houghSeries
-     * @param showCircles
-     * @param showID
-     * @param showScores
-     * @param results
-     * @param isGUI
+     * @param radiusMin the min radius
+     * @param radiusMax the max radius
+     * @param radiusInc the radius increment
+     * @param minCircles the min circles
+     * @param maxCircles the max circles
+     * @param thresholdRatio the threshold ratio
+     * @param resolution the resolution
+     * @param ratio the ratio
+     * @param searchBand the search band
+     * @param searchRadius the search radius
+     * @param reduce if reduction is enabled
+     * @param local enable local search
+     * @param houghSeries enable hough series
+     * @param showCircles show circles
+     * @param showID show ID
+     * @param showScores show scores
+     * @param results the results
+     * @param isGUI if is in GUI
      */
     public void setParameters(int radiusMin, int radiusMax, int radiusInc, int minCircles, int maxCircles, double thresholdRatio, int resolution, double ratio, int searchBand,
                               int searchRadius, boolean reduce, boolean local, boolean houghSeries, boolean showCircles, boolean showID, boolean showScores, boolean results, boolean isGUI) {
@@ -1489,8 +1489,8 @@ public class Hough_Circle extends SwingWorker<Integer, String> {
      * Clear, from the Hough Space, all the counter that are near (radius/2) a previously found circle C.
      *
      * @param x The x coordinate of the circle C found.
-     * @param x The y coordinate of the circle C found.
-     * @param x The radius of the circle C found.
+     * @param y The y coordinate of the circle C found.
+     * @param radius The radius of the circle C found.
      */
     private void clearNeighbours(int x, int y, int radius) {
         // The following code just clean the points around the center of the circle found.
@@ -1528,7 +1528,7 @@ public class Hough_Circle extends SwingWorker<Integer, String> {
     /**
      * Create a Thread[] array as large as the number of processors available.
      * From Stephan Preibisch's Multithreading.java class. See:
-     * http://repo.or.cz/w/trakem2.git?a=blob;f=mpi/fruitfly/general/MultiThreading.java;hb=HEAD
+     * <a href="http://repo.or.cz/w/trakem2.git?a=blob;f=mpi/fruitfly/general/MultiThreading.java;hb=HEAD">...</a>
      */
     private Thread[] newThreadArray() {
         int n_cpus = Runtime.getRuntime().availableProcessors();

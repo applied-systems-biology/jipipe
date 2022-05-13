@@ -38,7 +38,7 @@ public abstract class FormGeneratorAlgorithm extends JIPipeAlgorithm {
      * This method should add new {@link FormData} elements into the combined slot.
      *
      * @param combined     the output slot
-     * @param progressInfo
+     * @param progressInfo the progress info
      */
     public abstract void run(JIPipeDataSlot combined, JIPipeProgressInfo progressInfo);
 

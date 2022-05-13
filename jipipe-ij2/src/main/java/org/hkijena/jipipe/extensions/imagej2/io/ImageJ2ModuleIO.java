@@ -57,7 +57,7 @@ public interface ImageJ2ModuleIO extends Service {
      *
      * @param node                   the JIPipe node
      * @param dataBatch              the data batch
-     * @param moduleOutputParameters
+     * @param moduleOutputParameters the module output parameters
      * @param moduleItem             the module item
      * @param module                 the module
      * @param progressInfo           the progress info

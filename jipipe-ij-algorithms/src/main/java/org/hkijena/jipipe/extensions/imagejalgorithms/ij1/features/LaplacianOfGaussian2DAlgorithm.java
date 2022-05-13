@@ -27,7 +27,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 /**
  * Based on code by Dimiter Prodanov
- * https://imagej.nih.gov/ij/plugins/mexican-hat/Mexican_Hat_Filter.java
+ * <a href="https://imagej.nih.gov/ij/plugins/mexican-hat/Mexican_Hat_Filter.java">...</a>
  */
 @JIPipeDocumentation(name = "Laplacian of Gaussian 2D", description = "Applies a Laplacian of Gaussian filter. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")

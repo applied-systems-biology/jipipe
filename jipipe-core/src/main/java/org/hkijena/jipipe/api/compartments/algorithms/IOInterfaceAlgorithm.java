@@ -82,7 +82,7 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
     }
 
     /**
-     * Replaces a {@link JIPipeCompartmentOutput} by an equivalent {@link IOInterfaceAlgorithm}
+     * Replaces a {@link JIPipeCompartmentOutput} by an equivalent interface
      *
      * @param compartmentOutput the output to be replaced
      */

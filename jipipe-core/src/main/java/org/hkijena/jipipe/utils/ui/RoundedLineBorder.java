@@ -5,7 +5,7 @@ import java.awt.*;
 
 /**
  * Rounded line border that actually works
- * https://stackoverflow.com/questions/52759203/rounded-lineborder-not-all-corners-are-rounded
+ * <a href="https://stackoverflow.com/questions/52759203/rounded-lineborder-not-all-corners-are-rounded">...</a>
  */
 public class RoundedLineBorder extends AbstractBorder {
     int lineSize, cornerSize;

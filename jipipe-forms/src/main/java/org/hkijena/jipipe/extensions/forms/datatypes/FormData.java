@@ -56,7 +56,7 @@ public abstract class FormData implements JIPipeData, JIPipeParameterCollection,
      * @param <T>          the form class
      * @param storage      the storage folder
      * @param klass        the form class
-     * @param progressInfo
+     * @param progressInfo the progress info
      * @return the deserialized form
      */
     public static <T extends FormData> T importData(JIPipeReadDataStorage storage, Class<T> klass, JIPipeProgressInfo progressInfo) {

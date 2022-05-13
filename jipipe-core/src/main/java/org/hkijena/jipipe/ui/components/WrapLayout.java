@@ -4,13 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Adapted from https://github.com/timabell/WrapLayout/blob/master/src/uk/co/timwise/wraplayout/WrapLayout.java
+ * Adapted from <a href="https://github.com/timabell/WrapLayout/blob/master/src/uk/co/timwise/wraplayout/WrapLayout.java">...</a>
  */
 public class WrapLayout extends FlowLayout {
     private Dimension preferredLayoutSize;
 
     /**
-     * Constructs a new <code>WrapLayout</code> with a left
+     * Constructs a new {@code WrapLayout} with a left
      * alignment and a default 5-unit horizontal and vertical gap.
      */
     public WrapLayout() {
@@ -18,11 +18,11 @@ public class WrapLayout extends FlowLayout {
     }
 
     /**
-     * Constructs a new <code>FlowLayout</code> with the specified
+     * Constructs a new {@code FlowLayout} with the specified
      * alignment and a default 5-unit horizontal and vertical gap.
      * The value of the alignment argument must be one of
-     * <code>WrapLayout</code>, <code>WrapLayout</code>,
-     * or <code>WrapLayout</code>.
+     * {@code WrapLayout}, {@code WrapLayout},
+     * or {@code WrapLayout}.
      *
      * @param align the alignment value
      */
@@ -35,8 +35,8 @@ public class WrapLayout extends FlowLayout {
      * and the indicated horizontal and vertical gaps.
      * <p>
      * The value of the alignment argument must be one of
-     * <code>WrapLayout</code>, <code>WrapLayout</code>,
-     * or <code>WrapLayout</code>.
+     * {@code WrapLayout}, {@code WrapLayout},
+     * or {@code WrapLayout}.
      *
      * @param align the alignment value
      * @param hgap  the horizontal gap between components

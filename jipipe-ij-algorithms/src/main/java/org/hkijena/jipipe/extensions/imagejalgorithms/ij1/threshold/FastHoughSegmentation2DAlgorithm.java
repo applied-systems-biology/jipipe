@@ -47,7 +47,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 
 /**
  * Segments using a Hough circle transform
- * This code is based on https://github.com/closms/detectcircles
+ * This code is based on <a href="https://github.com/closms/detectcircles">...</a>
  */
 @JIPipeDocumentation(name = "Hough segmentation 2D (fast)", description = "Finds circular 2D objects via a Hough transform. This implementation is based on code by Michael Closson and is generally faster than the other Hough-based segmentation. " +
         "It outputs the segmented mask, the maximum Hough accumulator image, and a table of all detected circles (x, y, Diameter, and Score)." +

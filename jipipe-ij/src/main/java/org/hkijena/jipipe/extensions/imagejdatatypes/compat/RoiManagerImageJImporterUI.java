@@ -21,10 +21,11 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Importer around {@link org.hkijena.jipipe.extensions.imagejdatatypes.compat.ROIDataImageJAdapter}
+ * Importer around {@link RoiManagerImageJImporter}
  */
 public class RoiManagerImageJImporterUI extends ImageJDataImporterUI {
     /**
+     * @param workbench the workbench
      * @param importer the importer
      */
     public RoiManagerImageJImporterUI(JIPipeWorkbench workbench, ImageJDataImportOperation importer) {

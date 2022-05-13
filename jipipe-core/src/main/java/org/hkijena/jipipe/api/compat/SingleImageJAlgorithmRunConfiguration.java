@@ -199,7 +199,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
     /**
      * Pushes selected ImageJ data into the algorithm input slots
      *
-     * @param progressInfo
+     * @param progressInfo the progress info
      */
     public void importInputsFromImageJ(JIPipeProgressInfo progressInfo) {
         for (Map.Entry<String, ImageJDataImportOperation> entry : inputSlotImporters.entrySet()) {
@@ -219,7 +219,7 @@ public class SingleImageJAlgorithmRunConfiguration implements JIPipeValidatable 
     /**
      * Extracts algorithm output into ImageJ.
      *
-     * @param progressInfo
+     * @param progressInfo the progress info
      */
     public void exportOutputToImageJ(JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
