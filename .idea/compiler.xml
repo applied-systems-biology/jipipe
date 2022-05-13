@@ -11,7 +11,6 @@
         <module name="jipipe-ij-omero" />
         <module name="jipipe-annotation" />
         <module name="jipipe-core" />
-        <module name="jipipe-ij-updater-cli" />
         <module name="jipipe-tables" />
         <module name="jipipe-strings" />
         <module name="jipipe-utils" />
