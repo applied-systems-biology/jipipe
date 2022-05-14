@@ -44,7 +44,7 @@ public class JIPipeAuthorMetadata implements JIPipeParameterCollection {
     private String title;
     private String firstName;
     private String lastName;
-    private StringList affiliations;
+    private StringList affiliations = new StringList();
     private String website;
     private String contact;
     private boolean firstAuthor;
@@ -192,6 +192,8 @@ public class JIPipeAuthorMetadata implements JIPipeParameterCollection {
     @StringParameterSettings(multiline = true, monospace = true)
     @JsonGetter("affiliations-list")
     public StringList getAffiliations() {
+        if(affiliations == null)
+            affiliations = new StringList();
         return affiliations;
     }
 

@@ -31,6 +31,8 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
     private String name = "New project";
     private HTMLText description = new HTMLText("A JIPipe project");
     private JIPipeAuthorMetadata.List authors = new JIPipeAuthorMetadata.List();
+
+    private JIPipeAuthorMetadata.List acknowledgements = new JIPipeAuthorMetadata.List();
     private String website = "";
     private String license = "";
     private String citation = "";
@@ -50,7 +52,8 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
     public JIPipeMetadata(JIPipeMetadata other) {
         this.name = other.name;
         this.description = other.description;
-        this.authors = other.authors;
+        this.authors = new JIPipeAuthorMetadata.List(other.authors);
+        this.acknowledgements = new JIPipeAuthorMetadata.List(other.acknowledgements);
         this.website = other.website;
         this.license = other.license;
         this.citation = other.citation;
@@ -123,10 +126,31 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
     }
 
     /**
+     * Gets the list of acknowledged authors
+     * @return list of acknowledged authors
+     */
+    @JIPipeDocumentation(name = "Acknowledgements", description = "List of authors to acknowledge")
+    @JIPipeParameter(value = "acknowledgements", uiOrder = 3)
+    @JsonGetter("acknowledgements")
+    public JIPipeAuthorMetadata.List getAcknowledgements() {
+        return acknowledgements;
+    }
+
+    /**
+     * Sets the list of acknowledged authors
+     * @param acknowledgements list of acknowledged authors
+     */
+    @JsonSetter("acknowledgements")
+    @JIPipeParameter("acknowledgements")
+    public void setAcknowledgements(JIPipeAuthorMetadata.List acknowledgements) {
+        this.acknowledgements = acknowledgements;
+    }
+
+    /**
      * @return the website
      */
     @JIPipeDocumentation(name = "Website", description = "The website")
-    @JIPipeParameter(value = "website", uiOrder = 3)
+    @JIPipeParameter(value = "website", uiOrder = 4)
     @JsonGetter("website")
     public String getWebsite() {
         return website;
@@ -149,7 +173,7 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
      * @return the license
      */
     @JIPipeDocumentation(name = "License", description = "A license name like GPL v2 or BSD 2-Clause. We recommend Open Source licenses.")
-    @JIPipeParameter(value = "license", uiOrder = 6)
+    @JIPipeParameter(value = "license", uiOrder = 7)
     @JsonGetter("license")
     public String getLicense() {
         return license;
@@ -171,7 +195,7 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
      * @return the citation
      */
     @JIPipeDocumentation(name = "Citation", description = "Reference to the work where the project is published")
-    @JIPipeParameter(value = "citation", uiOrder = 4)
+    @JIPipeParameter(value = "citation", uiOrder = 5)
     @StringParameterSettings(monospace = true)
     @JsonGetter("citation")
     public String getCitation() {
@@ -196,7 +220,7 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
     }
 
     @JIPipeDocumentation(name = "Dependency citations", description = "A list of external work to cite")
-    @JIPipeParameter(value = "dependency-citations", uiOrder = 5)
+    @JIPipeParameter(value = "dependency-citations", uiOrder = 6)
     @StringParameterSettings(monospace = true)
     public StringList getDependencyCitations() {
         return dependencyCitations;

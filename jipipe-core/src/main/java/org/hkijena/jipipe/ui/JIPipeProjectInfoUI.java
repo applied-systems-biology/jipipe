@@ -51,6 +51,8 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
     private JButton copyCitationButton;
     private JButton copyDependencyCitationsButton;
 
+    private JButton showAcknowledgedAuthorsButton;
+
     /**
      * Creates a new instance
      *
@@ -129,6 +131,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
             copyDependencyCitationsButton.setToolTipText(stringBuilder.toString());
             copyDependencyCitationsButton.setEnabled(true);
         }
+        showAcknowledgedAuthorsButton.setVisible(!getProject().getMetadata().getAcknowledgements().isEmpty());
     }
 
     private void refreshTechnicalInfo() {
@@ -262,6 +265,17 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         copyDependencyCitationsButton.setOpaque(false);
         copyDependencyCitationsButton.setBackground(new Color(0, 0, 0, 0));
         toolBar.add(copyDependencyCitationsButton);
+        toolBar.add(Box.createHorizontalStrut(4));
+
+        showAcknowledgedAuthorsButton = new JButton("Show acknowledgements", UIUtils.getIconFromResources("actions/view-process-users.png"));
+        showAcknowledgedAuthorsButton.addActionListener(e -> {
+            JIPipeAuthorMetadata.openAuthorInfoWindow(this,
+                    getProject().getMetadata().getAcknowledgements(),
+                    getProject().getMetadata().getAcknowledgements().get(0));
+        });
+        showAcknowledgedAuthorsButton.setOpaque(false);
+        showAcknowledgedAuthorsButton.setBackground(new Color(0, 0, 0, 0));
+        toolBar.add(showAcknowledgedAuthorsButton);
         toolBar.add(Box.createHorizontalStrut(4));
 
         toolBar.add(Box.createHorizontalGlue());
