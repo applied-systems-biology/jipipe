@@ -1,0 +1,50 @@
+{
+  "$id": "https://jipipe.org/schemas/datatypes/plot-data.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "Multiple metadata and data files containing the plot.",
+  "type": "object",
+  "properties": {
+    "plot-metadata.json": {
+      "$ref": "#/defs/plot-metadata",
+      "properties" : {
+        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+      }
+    }
+  },
+  "patternProperties": {
+    "^series\\d+\\.csv": {
+      "$ref": "#/$defs/series-csv"
+    }
+  },
+  "$defs": {
+    "series-csv": {
+      "type": "object",
+      "description": "A CSV file that contains the data of the series. The name contains an index and corresponds to the zero-based index of the series inside plot-metadata.json",
+      "properties": {
+        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
+      }
+    },
+    "plot-metadata": {
+      "type": "object",
+      "description": "Serialized information about the plot. The exact contents depend on the plot type.",
+      "properties": {
+        "title": {"type": "string", "description": "The plot title"},
+        "export-width": {"type": "number", "description": "The default export width"},
+        "export-height": {"type": "number", "description": "The default export height"},
+        "background-color": {"type": "string", "description": "The background color in HEX notation", "pattern": "^#[0-9A-Fa-f]{6}"},
+        "grid-color": {"type": "string", "description": "The grid color in HEX notation", "pattern": "^#[0-9A-Fa-f]{6}"},
+        "color-map": {"type": "string", "description": "The color map", "enum": ["Accent", "Dark2", "Paired", "Pastel1", "Pastel2", "Set1", "Set2", "Set3"]},
+        "plot-series": { "type": "array", "description": "The list of plot series. Please note that data is stored inside the CSV files. The index (zero-based) corresponds to the position in this array.", "items": { "$ref": "#/$defs/plot-series" } }
+      },
+      "additionalProperties": true
+    },
+    "plot-series": {
+        "type": "object",
+        "description": "A series of a plot",
+        "additionalProperties": true,
+        "properties": {
+          "name": { "type": "string", "description": "The name" }
+        }
+    }
+  }
+}
