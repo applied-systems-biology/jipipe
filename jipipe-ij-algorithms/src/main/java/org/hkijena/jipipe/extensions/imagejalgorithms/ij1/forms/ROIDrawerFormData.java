@@ -8,12 +8,14 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.CalibrationPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.LUTManagerPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.PixelInfoPlugin;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MaskDrawerPlugin;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ROIManagerPlugin;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MaskToROIDrawerPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementPlugin;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
@@ -22,35 +24,39 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Structural {@link FormData} for drawing masks
+ * Structural {@link FormData} for drawing ROIs
  */
-public class MaskDrawerFormData extends FormData {
+public class ROIDrawerFormData extends FormData {
 
     private final List<JIPipeMergingDataBatch> dataBatches;
-    private final DrawMaskAlgorithm drawMaskAlgorithm;
+    private final DrawROIAlgorithm drawROIAlgorithm;
     private ImageViewerPanel imageViewerPanel;
-    private MaskDrawerPlugin maskDrawerPlugin;
-    private ImagePlus lazyLoadedImage;
-    private ImagePlus lazyLoadedMask;
 
-    public MaskDrawerFormData(List<JIPipeMergingDataBatch> dataBatches, DrawMaskAlgorithm drawMaskAlgorithm) {
+    private ROIManagerPlugin roiManagerPlugin;
+    private MaskToROIDrawerPlugin maskDrawerPlugin;
+    private ImagePlus lazyLoadedImage;
+    private ROIListData lazyLoadedROIs;
+
+    public ROIDrawerFormData(List<JIPipeMergingDataBatch> dataBatches, DrawROIAlgorithm drawROIAlgorithm) {
         this.dataBatches = dataBatches;
-        this.drawMaskAlgorithm = drawMaskAlgorithm;
+        this.drawROIAlgorithm = drawROIAlgorithm;
     }
 
     private void initializeImageViewer() {
         imageViewerPanel = new ImageViewerPanel();
-        maskDrawerPlugin = new MaskDrawerPlugin(imageViewerPanel);
+        maskDrawerPlugin = new MaskToROIDrawerPlugin(imageViewerPanel);
+        roiManagerPlugin = new ROIManagerPlugin(imageViewerPanel);
         imageViewerPanel.setPlugins(Arrays.asList(new CalibrationPlugin(imageViewerPanel),
                 new PixelInfoPlugin(imageViewerPanel),
                 new LUTManagerPlugin(imageViewerPanel),
+                roiManagerPlugin,
                 maskDrawerPlugin,
                 new MeasurementPlugin(imageViewerPanel)));
         if (lazyLoadedImage != null) {
             imageViewerPanel.setImage(lazyLoadedImage);
-            maskDrawerPlugin.setMask(lazyLoadedMask);
+            roiManagerPlugin.setRois(lazyLoadedROIs, false);
             lazyLoadedImage = null;
-            lazyLoadedMask = null;
+            lazyLoadedROIs = null;
         }
     }
 
@@ -71,20 +77,9 @@ public class MaskDrawerFormData extends FormData {
         // Initialize the viewer
         getImageViewerPanel();
 
-        MaskDrawerFormData sourceData = (MaskDrawerFormData) source;
-        ImagePlus sourceMask = sourceData.maskDrawerPlugin.getMask();
-        ImagePlus targetMask = maskDrawerPlugin.getMask();
-
-        if (!ImageJUtils.imagesHaveSameSize(sourceMask, targetMask)) {
-            report.reportIsInvalid("Could not copy mask due to different sizes!",
-                    "The source mask is " + sourceMask + " and cannot be copied into the target " + targetMask,
-                    "Ensure that the masks have the same size",
-                    this);
-            return;
-        }
-
-        ImageJUtils.copyBetweenImages(sourceMask, targetMask, new JIPipeProgressInfo());
-        maskDrawerPlugin.recalculateMaskPreview();
+        ROIDrawerFormData sourceData = (ROIDrawerFormData) source;
+        ROIListData sourceROIs = sourceData.roiManagerPlugin.getRois();
+        roiManagerPlugin.setRois(new ROIListData(sourceROIs), false);
     }
 
     @Override
@@ -103,6 +98,8 @@ public class MaskDrawerFormData extends FormData {
             targetProcessor.fillRect(0, 0, targetProcessor.getWidth(), targetProcessor.getHeight());
         }, new JIPipeProgressInfo());
         maskDrawerPlugin.recalculateMaskPreview();
+
+        roiManagerPlugin.clearROIs(false);
     }
 
     @Override
@@ -114,7 +111,7 @@ public class MaskDrawerFormData extends FormData {
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
         // Initialize the viewer
         getImageViewerPanel();
-        return new MaskDrawerFormData(dataBatches, drawMaskAlgorithm);
+        return new ROIDrawerFormData(dataBatches, drawROIAlgorithm);
     }
 
     @Override
@@ -131,14 +128,14 @@ public class MaskDrawerFormData extends FormData {
     public void loadData(JIPipeMergingDataBatch dataBatch) {
         int row = dataBatches.indexOf(dataBatch);
         ImagePlus referenceImage = dataBatch.getInputData("Reference", ImagePlusData.class, new JIPipeProgressInfo()).get(0).getImage();
-        ImagePlus maskImage = drawMaskAlgorithm.getOutputSlot("Mask").getData(row, ImagePlusData.class, new JIPipeProgressInfo()).getImage();
+        ROIListData rois = drawROIAlgorithm.getOutputSlot("ROI").getData(row, ROIListData.class, new JIPipeProgressInfo());
 
         if (imageViewerPanel != null) {
             imageViewerPanel.setImage(referenceImage);
-            maskDrawerPlugin.setMask(maskImage);
+            roiManagerPlugin.setRois(rois, false);
         } else {
             lazyLoadedImage = referenceImage;
-            lazyLoadedMask = maskImage;
+            lazyLoadedROIs = rois;
         }
     }
 

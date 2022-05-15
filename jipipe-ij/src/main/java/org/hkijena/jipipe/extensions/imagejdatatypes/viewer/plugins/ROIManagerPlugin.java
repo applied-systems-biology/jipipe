@@ -9,6 +9,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.RoiListCellRenderer;
+import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MaskDrawerPlugin;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
@@ -417,6 +418,15 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     public void clearROIs(boolean deferUploadSlice) {
         rois.clear();
+        updateROIJList(deferUploadSlice);
+    }
+
+    public ROIListData getRois() {
+        return rois;
+    }
+
+    public void setRois(ROIListData rois, boolean deferUploadSlice) {
+        this.rois = rois;
         updateROIJList(deferUploadSlice);
     }
 

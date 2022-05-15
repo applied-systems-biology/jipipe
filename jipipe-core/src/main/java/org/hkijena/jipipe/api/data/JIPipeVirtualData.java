@@ -179,6 +179,9 @@ public class JIPipeVirtualData {
     }
 
     public String getStringRepresentation() {
+        if(data != null) {
+            return "" + data;
+        }
         return stringRepresentation;
     }
 
