@@ -362,7 +362,9 @@ New landing page
 
 .landing-features .slick-slide .feature-description {
   flex-grow: 1;
-  padding-right: 10px;
+  padding-left: 20px;
+  padding-right: 60px;
+  text-align: justify;
 }
 
 .landing-features .slick-slide span {
@@ -548,6 +550,26 @@ Examples page
   }
 }
 
+@keyframes slogan-land {
+  0% {
+    opacity: 0;
+    transform: scale(1.0);
+  }
+  10% {
+    opacity: 0;
+    transform: scale(1.0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.0);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1.0);
+  }
+}
+
+
 .jipipe-logo-index {
   opacity: 0;
   transform: scale(1.5);
@@ -556,4 +578,19 @@ Examples page
   animation-duration: 10s;
   animation-fill-mode: forwards;
   animation-name: logo-land;
+}
+
+.jipipe-slogan-index {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2em;
+  font-size: 3em;
+  color: #4d4d4d;
+  opacity: 0;
+  transform: scale(1.5);
+  animation-timing-function: ease-out;
+  animation-delay: 0.5s;
+  animation-duration: 10s;
+  animation-fill-mode: forwards;
+  animation-name: slogan-land;
 }
