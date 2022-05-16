@@ -210,6 +210,9 @@ See the LICENSE file provided with this code for the full license.
         <license.copyrightOwners>N/A</license.copyrightOwners>
         <license.projectName>JIPipe</license.projectName>
         <releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
+
+        <!-- Versions -->
+        <jipipe.version>${project.version}</jipipe.version>
     </properties>
 
     <modules>
