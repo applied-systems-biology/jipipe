@@ -23,15 +23,18 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.CopyPathDataOperation;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOperation;
+import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.utils.algorithms.*;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
 @Plugin(type = JIPipeJavaExtension.class)
 public class WekaExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    public static final String RESOURCE_BASE_PATH = "/org/hkijena/jipipe/extensions/ijweka";
+
     @Override
     public StringList getDependencyCitations() {
         StringList strings = new StringList();
@@ -53,6 +56,7 @@ public class WekaExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+        registerDatatype("weka-model", WekaModelData.class, getClass().getResource(RESOURCE_BASE_PATH + "/weka-model-data.png"));
     }
 
     @Override
