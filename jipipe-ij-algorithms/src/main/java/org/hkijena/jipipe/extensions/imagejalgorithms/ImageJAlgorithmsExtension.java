@@ -569,6 +569,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerEnumParameterType("ij1-label-color-maps:common-label-maps", ColorMaps.CommonLabelMaps.class, "Color map", "A color map for labels");
 
         registerNodeType("ij1-labels-to-rgb", LabelsToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colormanagement.png"));
+        registerNodeType("ij1-labels-to-roi", LabelsToROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
         registerNodeType("ij1-labels-get-label-boundaries", GetLabelBoundariesAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-stroke.png"));
         registerNodeType("ij1-labels-remove-border-labels", RemoveBorderLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-labels-replace-labels", ReplaceLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit.png"));
@@ -752,6 +753,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-roi-remove-overlay", RemoveOverlayAlgorithm.class, UIUtils.getIconURLFromResources("actions/editclear.png"));
         registerNodeType("ij1-roi-set-overlay", SetOverlayAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
         registerNodeType("ij1-roi-extract-overlay", ExtractOverlayAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
+        registerNodeType("ij1-roi-to-labels", ROIToLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
 
         registerEnumParameterType("ij1-roi-from-table-rectangular:anchor",
                 TableToRectangularROIAlgorithm.Anchor.class,
