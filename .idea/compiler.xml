@@ -7,6 +7,7 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="jipipe-ij-weka" />
         <module name="jipipe-ij2" />
         <module name="jipipe-ij-omero" />
         <module name="jipipe-annotation" />
@@ -42,6 +43,7 @@
       <module name="jipipe-ij-multi-template-matching" target="1.8" />
       <module name="jipipe-ij-omero" target="1.8" />
       <module name="jipipe-ij-updater-cli" target="1.8" />
+      <module name="jipipe-ij-weka" target="1.8" />
       <module name="jipipe-ij2" target="1.8" />
       <module name="jipipe-installer-linux" target="1.8" />
       <module name="jipipe-launcher" target="1.8" />

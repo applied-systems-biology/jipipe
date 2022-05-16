@@ -67,6 +67,7 @@
     "jipipe-ij2",
     "jipipe-ij-omero",
     "jipipe-ij-algorithms",
+    "jipipe-ij-weka",
     "jipipe-ij-multi-template-matching",
     "jipipe-python",
     "jipipe-plots",
