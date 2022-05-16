@@ -9,6 +9,9 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.StringUtils;
+import trainableSegmentation.WekaSegmentation;
+import weka.classifiers.AbstractClassifier;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -24,26 +27,19 @@ import java.util.List;
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/weka-model-data.schema.json")
 public class WekaModelData implements JIPipeData {
 
-    private final byte[] data;
-    private final String name;
+    private final WekaSegmentation segmentation;
 
-    public WekaModelData(Path file) {
-        this.name = file.getFileName().toString();
-        try {
-            data = Files.readAllBytes(file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    public WekaModelData(WekaSegmentation segmentation) {
+        this.segmentation = segmentation;
     }
 
-    public WekaModelData(byte[] data, String name) {
-        this.data = data;
-        this.name = name;
+    public WekaModelData(Path file) {
+        this.segmentation = new WekaSegmentation();
+        this.segmentation.loadClassifier(file.toString());
     }
 
     public WekaModelData(WekaModelData other) {
-        this.data = other.data;
-        this.name = other.name;
+        this.segmentation = other.segmentation;
     }
 
     public static WekaModelData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -51,23 +47,14 @@ public class WekaModelData implements JIPipeData {
         return new WekaModelData(files.get(0));
     }
 
-    public byte[] getData() {
-        return data;
-    }
-
-    public String getName() {
-        return name;
+    public WekaSegmentation getSegmentation() {
+        return segmentation;
     }
 
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        if (!forceName)
-            name = this.name;
-        try {
-            Files.write(storage.getFileSystemPath().resolve(name), data);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        Path outputPath = storage.getFileSystemPath().resolve(StringUtils.orElse(name, "classifier") + ".model");
+        segmentation.saveClassifier(outputPath.toString());
     }
 
     @Override
@@ -83,6 +70,6 @@ public class WekaModelData implements JIPipeData {
 
     @Override
     public String toString() {
-        return "Weka model: " + name + " (" + (data.length / 1024 / 1024) + " MB)";
+        return "Weka model: " + segmentation.getClassifier();
     }
 }

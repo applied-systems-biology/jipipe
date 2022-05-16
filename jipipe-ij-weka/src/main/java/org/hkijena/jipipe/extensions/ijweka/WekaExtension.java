@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
 import org.hkijena.jipipe.extensions.ijweka.nodes.ImportWekaModelFromFileAlgorithm;
+import org.hkijena.jipipe.extensions.ijweka.nodes.WekaTrainingROI2DAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
@@ -64,6 +65,7 @@ public class WekaExtension extends JIPipePrepackagedDefaultJavaExtension {
         URL wekaIcon = getClass().getResource(RESOURCE_BASE_PATH + "/weka.png");
         registerDatatype("weka-model", WekaModelData.class, wekaModelIcon);
         registerNodeType("import-weka-model-from-file", ImportWekaModelFromFileAlgorithm.class, wekaIcon);
+        registerNodeType("weka-training-roi-2d", WekaTrainingROI2DAlgorithm.class, wekaIcon);
     }
 
     @Override

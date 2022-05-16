@@ -18,7 +18,7 @@ public class ImportWekaModelFromFileAlgorithm extends JIPipeSimpleIteratingAlgor
         super(info);
     }
 
-    public ImportWekaModelFromFileAlgorithm(JIPipeSimpleIteratingAlgorithm other) {
+    public ImportWekaModelFromFileAlgorithm(ImportWekaModelFromFileAlgorithm other) {
         super(other);
     }
 
