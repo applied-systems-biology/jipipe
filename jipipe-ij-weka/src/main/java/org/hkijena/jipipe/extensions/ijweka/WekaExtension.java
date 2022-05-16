@@ -16,19 +16,18 @@ package org.hkijena.jipipe.extensions.utils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
-import org.hkijena.jipipe.api.grouping.NodeGroup;
-import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
-import org.hkijena.jipipe.extensions.filesystem.resultanalysis.CopyPathDataOperation;
-import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOperation;
 import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
+import org.hkijena.jipipe.extensions.ijweka.nodes.ImportWekaModelFromFileAlgorithm;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
+
+import javax.swing.*;
+import java.net.URL;
+import java.util.Collections;
+import java.util.List;
 
 @Plugin(type = JIPipeJavaExtension.class)
 public class WekaExtension extends JIPipePrepackagedDefaultJavaExtension {
@@ -55,8 +54,16 @@ public class WekaExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
+    public List<ImageIcon> getSplashIcons() {
+        return Collections.singletonList(new ImageIcon(getClass().getResource(RESOURCE_BASE_PATH + "/weka-32.png")));
+    }
+
+    @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerDatatype("weka-model", WekaModelData.class, getClass().getResource(RESOURCE_BASE_PATH + "/weka-model-data.png"));
+        URL wekaModelIcon = getClass().getResource(RESOURCE_BASE_PATH + "/weka-model-data.png");
+        URL wekaIcon = getClass().getResource(RESOURCE_BASE_PATH + "/weka.png");
+        registerDatatype("weka-model", WekaModelData.class, wekaModelIcon);
+        registerNodeType("import-weka-model-from-file", ImportWekaModelFromFileAlgorithm.class, wekaIcon);
     }
 
     @Override
