@@ -11,7 +11,9 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import trainableSegmentation.WekaSegmentation;
+import trainableSegmentation.Weka_Segmentation;
 import weka.classifiers.AbstractClassifier;
+import weka.core.Instances;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -33,18 +35,15 @@ public class WekaModelData implements JIPipeData {
         this.segmentation = segmentation;
     }
 
-    public WekaModelData(Path file) {
-        this.segmentation = new WekaSegmentation();
-        this.segmentation.loadClassifier(file.toString());
-    }
-
     public WekaModelData(WekaModelData other) {
         this.segmentation = other.segmentation;
     }
 
     public static WekaModelData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        List<Path> files = PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".model");
-        return new WekaModelData(files.get(0));
+        WekaSegmentation segmentation = new WekaSegmentation();
+        segmentation.loadTrainingData(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".arff").get(0).toString());
+        segmentation.loadClassifier(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".model").get(0).toString());
+        return new WekaModelData(segmentation);
     }
 
     public WekaSegmentation getSegmentation() {
@@ -53,8 +52,10 @@ public class WekaModelData implements JIPipeData {
 
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
-        Path outputPath = storage.getFileSystemPath().resolve(StringUtils.orElse(name, "classifier") + ".model");
-        segmentation.saveClassifier(outputPath.toString());
+        Path modelOutputPath = storage.getFileSystemPath().resolve(StringUtils.orElse(name, "classifier") + ".model");
+        Path dataOutputPath = storage.getFileSystemPath().resolve(StringUtils.orElse(name, "classifier") + ".arff");
+        segmentation.saveClassifier(modelOutputPath.toString());
+        segmentation.saveData(dataOutputPath.toString());
     }
 
     @Override
@@ -64,8 +65,18 @@ public class WekaModelData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        JOptionPane.showMessageDialog(workbench.getWindow(), "Visualizing the model is currently not supported.",
+//        JOptionPane.showMessageDialog(workbench.getWindow(), "Visualizing the model is currently not supported.",
+//                "Show Weka model", JOptionPane.ERROR_MESSAGE);
+        final Instances data;
+        if (segmentation.getTraceTrainingData() != null)
+            data = segmentation.getTraceTrainingData();
+        else
+            data = segmentation.getLoadedTrainingData();
+        if(data == null) {
+            JOptionPane.showMessageDialog(workbench.getWindow(), "The model has no data to visualize!",
                 "Show Weka model", JOptionPane.ERROR_MESSAGE);
+        }
+        Weka_Segmentation.displayGraphs(data, segmentation.getClassifier());
     }
 
     @Override
