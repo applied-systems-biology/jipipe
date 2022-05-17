@@ -68,7 +68,7 @@ public class WekaTrainingROI2DAlgorithm extends JIPipeMergingAlgorithm {
 
     @JIPipeDocumentation(name = "Class annotation", description = "The annotation of the ROI inputs that are used for determining the class. Ideally, annotations " +
             "should be numeric, beginning from zero (as required internally by the Weka training algorithm). Alternatively, JIPipe will assign classes automatically.")
-    @JIPipeParameter("class-annotation-name")
+    @JIPipeParameter(value = "class-annotation-name", important = true)
     public OptionalAnnotationNameParameter getClassAnnotationName() {
         return classAnnotationName;
     }
