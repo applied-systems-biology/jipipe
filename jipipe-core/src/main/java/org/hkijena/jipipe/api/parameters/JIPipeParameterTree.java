@@ -286,7 +286,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                     Node childNode = add(subParameters, entry.getKey(), parent);
                     if (pair.getDocumentation() != null) {
                         childNode.setName(pair.getDocumentation().name());
-                        childNode.setDescription(new HTMLText(DocumentationUtils.getDocumentationDescription(pair.getDocumentation(), pair.getFieldClass())));
+                        childNode.setDescription(new HTMLText(DocumentationUtils.getDocumentationDescription(pair.getDocumentation())));
                     } else
                         childNode.setName(entry.getKey());
 
