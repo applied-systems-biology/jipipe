@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import hr.irb.fastRandomForest.FastRandomForest;
+import org.hkijena.jipipe.utils.SerializationUtils;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 import weka.classifiers.AbstractClassifier;
@@ -47,17 +48,7 @@ public class WekaClassifierParameter {
         @Override
         public void serialize(WekaClassifierParameter value, JsonGenerator gen, SerializerProvider serializers) throws IOException {
             gen.writeStartObject();
-            String base64;
-            try (ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(bos);
-                objectOutputStream.writeObject(value.classifier);
-                objectOutputStream.flush();
-                objectOutputStream.close();
-                byte[] objectBytes = bos.toByteArray();
-                BASE64Encoder encoder = new BASE64Encoder();
-                base64 = encoder.encode(objectBytes);
-            }
-            gen.writeStringField("serialized-base64", base64);
+            gen.writeStringField("serialized-base64", SerializationUtils.objectToBase64(value.classifier));
             gen.writeEndObject();
         }
     }
@@ -68,14 +59,7 @@ public class WekaClassifierParameter {
             JsonNode node = p.readValueAsTree();
             String base64 = node.get("serialized-base64").textValue();
             WekaClassifierParameter parameter = new WekaClassifierParameter();
-            BASE64Decoder decoder = new BASE64Decoder();
-            byte[] bytes = decoder.decodeBuffer(base64);
-            try (ByteArrayInputStream bis = new ByteArrayInputStream(bytes)) {
-                ObjectInputStream ois = new ObjectInputStream(bis);
-                parameter.classifier = (AbstractClassifier) ois.readObject();
-            } catch (ClassNotFoundException e) {
-                throw new RuntimeException(e);
-            }
+            parameter.classifier = (Classifier) SerializationUtils.base64ToObject(base64);
             return parameter;
         }
     }
