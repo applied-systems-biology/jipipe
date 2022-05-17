@@ -1,12 +1,21 @@
 package org.hkijena.jipipe.extensions.ijweka;
 
+import ij.IJ;
+import ij.ImagePlus;
+import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import trainableSegmentation.FeatureStack3D;
+import trainableSegmentation.FeatureStackArray;
+import trainableSegmentation.WekaSegmentation;
+import weka.classifiers.AbstractClassifier;
+import weka.core.Instances;
 
 import java.util.*;
 import java.util.stream.Collectors;
