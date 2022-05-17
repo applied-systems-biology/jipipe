@@ -17,6 +17,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.ijweka.classifiers.FastRandomForestWekaClassifierData;
+import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaClassifierData;
 import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
 import org.hkijena.jipipe.extensions.ijweka.nodes.ImportWekaModelFromFileAlgorithm;
 import org.hkijena.jipipe.extensions.ijweka.nodes.WekaClassification2DAlgorithm;
@@ -64,11 +66,16 @@ public class WekaExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+        URL wekaModelIcon = getClass().getResource(RESOURCE_BASE_PATH + "/weka-model-data.png");
+        URL wekaClassifierIcon = getClass().getResource(RESOURCE_BASE_PATH + "/weka-classifier-data.png");
+        URL wekaIcon = getClass().getResource(RESOURCE_BASE_PATH + "/weka.png");
+
         registerEnumParameterType("weka-feature-2d", WekaFeature2D.class, "Weka Feature 2D", "A 2D Weka feature");
         registerParameterType("weka-feature-set-2d", WekaFeatureSet2D.class, "Weka Feature set 2D", "A collection of Weka features");
 
-        URL wekaModelIcon = getClass().getResource(RESOURCE_BASE_PATH + "/weka-model-data.png");
-        URL wekaIcon = getClass().getResource(RESOURCE_BASE_PATH + "/weka.png");
+        registerDatatype("weka-classifier", WekaClassifierData.class, wekaClassifierIcon);
+        registerDatatype("weka-classifier-fast-random-forest", FastRandomForestWekaClassifierData.class, wekaClassifierIcon);
+
         registerDatatype("weka-model", WekaModelData.class, wekaModelIcon);
         registerNodeType("import-weka-model-from-file", ImportWekaModelFromFileAlgorithm.class, wekaIcon);
         registerNodeType("weka-training-roi-2d", WekaTrainingROI2DAlgorithm.class, wekaIcon);
