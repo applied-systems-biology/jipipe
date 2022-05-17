@@ -21,6 +21,8 @@ import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
 import org.hkijena.jipipe.extensions.ijweka.nodes.ImportWekaModelFromFileAlgorithm;
 import org.hkijena.jipipe.extensions.ijweka.nodes.WekaClassification2DAlgorithm;
 import org.hkijena.jipipe.extensions.ijweka.nodes.WekaTrainingROI2DAlgorithm;
+import org.hkijena.jipipe.extensions.ijweka.parameters.WekaFeature2D;
+import org.hkijena.jipipe.extensions.ijweka.parameters.WekaFeatureSet2D;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
@@ -62,6 +64,9 @@ public class WekaExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+        registerEnumParameterType("weka-feature-2d", WekaFeature2D.class, "Weka Feature 2D", "A 2D Weka feature");
+        registerParameterType("weka-feature-set-2d", WekaFeatureSet2D.class, "Weka Feature set 2D", "A collection of Weka features");
+
         URL wekaModelIcon = getClass().getResource(RESOURCE_BASE_PATH + "/weka-model-data.png");
         URL wekaIcon = getClass().getResource(RESOURCE_BASE_PATH + "/weka.png");
         registerDatatype("weka-model", WekaModelData.class, wekaModelIcon);
