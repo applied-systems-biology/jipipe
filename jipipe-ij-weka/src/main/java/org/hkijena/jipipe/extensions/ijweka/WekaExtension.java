@@ -17,12 +17,12 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.ijweka.classifiers.FastRandomForestWekaClassifierData;
-import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaClassifierData;
 import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
 import org.hkijena.jipipe.extensions.ijweka.nodes.ImportWekaModelFromFileAlgorithm;
 import org.hkijena.jipipe.extensions.ijweka.nodes.WekaClassification2DAlgorithm;
 import org.hkijena.jipipe.extensions.ijweka.nodes.WekaTrainingROI2DAlgorithm;
+import org.hkijena.jipipe.extensions.ijweka.parameters.WekaClassifierParameter;
+import org.hkijena.jipipe.extensions.ijweka.parameters.WekaClassifierParameterEditorUI;
 import org.hkijena.jipipe.extensions.ijweka.parameters.WekaFeature2D;
 import org.hkijena.jipipe.extensions.ijweka.parameters.WekaFeatureSet2D;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -72,9 +72,7 @@ public class WekaExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerEnumParameterType("weka-feature-2d", WekaFeature2D.class, "Weka Feature 2D", "A 2D Weka feature");
         registerParameterType("weka-feature-set-2d", WekaFeatureSet2D.class, "Weka Feature set 2D", "A collection of Weka features");
-
-        registerDatatype("weka-classifier", WekaClassifierData.class, wekaClassifierIcon);
-        registerDatatype("weka-classifier-fast-random-forest", FastRandomForestWekaClassifierData.class, wekaClassifierIcon);
+        registerParameterType("weka-classifier", WekaClassifierParameter.class, "Weka classifier", "Settings for a Weka classifier", WekaClassifierParameterEditorUI.class);
 
         registerDatatype("weka-model", WekaModelData.class, wekaModelIcon);
         registerNodeType("import-weka-model-from-file", ImportWekaModelFromFileAlgorithm.class, wekaIcon);

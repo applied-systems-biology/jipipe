@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijweka.WekaUtils;
 import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
+import org.hkijena.jipipe.extensions.ijweka.parameters.WekaClassifierParameter;
 import org.hkijena.jipipe.extensions.ijweka.parameters.WekaFeature2D;
 import org.hkijena.jipipe.extensions.ijweka.parameters.WekaFeature2DParameters;
 import org.hkijena.jipipe.extensions.ijweka.parameters.WekaFeatureSet2D;
@@ -16,6 +17,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import trainableSegmentation.WekaSegmentation;
+import weka.classifiers.AbstractClassifier;
+import weka.classifiers.Classifier;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,7 +31,7 @@ import java.util.stream.Collectors;
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "The regions used for the training. " +
         "Please note that the ROI must be annotated according to the 'Class annotation' parameter", autoCreate = true)
 @JIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", autoCreate = true)
-public class WekaTrainingROI2DAlgorithm extends JIPipeMergingAlgorithm {
+public class WekaTrainingROI2DAlgorithm extends AbstractWekaTrainingAlgorithm {
 
     private OptionalAnnotationNameParameter classAnnotationName = new OptionalAnnotationNameParameter("Class", true);
     private WekaFeature2DParameters featureParameters = new WekaFeature2DParameters();
@@ -52,12 +55,14 @@ public class WekaTrainingROI2DAlgorithm extends JIPipeMergingAlgorithm {
 
         // Setup parameters
         ArrayList<String> selectedFeatureNames = new ArrayList<>(featureParameters.getTrainingFeatures().getValues().stream().map(WekaFeature2D::name).collect(Collectors.toList()));
+        Classifier classifier = (new WekaClassifierParameter(getClassifier())).getClassifier(); // This will make a copy of the classifier
 
         // Apply the training per image
         List<ImagePlus2DData> trainingImages = dataBatch.getInputData("Image", ImagePlus2DData.class, progressInfo);
         for (int i = 0; i < trainingImages.size(); i++) {
             JIPipeProgressInfo imageProgress = progressInfo.resolveAndLog("Image", i, trainingImages.size());
             WekaSegmentation wekaSegmentation = new WekaSegmentation(trainingImages.get(i).getImage());
+            wekaSegmentation.setClassifier((AbstractClassifier) classifier);
             wekaSegmentation.setFeatures(selectedFeatureNames);
             wekaSegmentation.setMembraneThickness(featureParameters.getMembraneSize());
             wekaSegmentation.setMembranePatchSize(featureParameters.getMembranePatchSize());
