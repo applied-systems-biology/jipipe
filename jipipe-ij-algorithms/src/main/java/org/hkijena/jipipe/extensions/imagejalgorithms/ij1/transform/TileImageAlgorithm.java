@@ -32,6 +32,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -51,12 +52,21 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalAnnotationNameParameter numTilesX = new OptionalAnnotationNameParameter("Num Tiles X", true);
     private OptionalAnnotationNameParameter numTilesY = new OptionalAnnotationNameParameter("Num Tiles Y", true);
 
+    private OptionalAnnotationNameParameter tileRealXAnnotation = new OptionalAnnotationNameParameter("Original X", true);
+
+    private OptionalAnnotationNameParameter tileRealYAnnotation = new OptionalAnnotationNameParameter("Original Y", true);
+
+    private OptionalAnnotationNameParameter imageWidthAnnotation = new OptionalAnnotationNameParameter("Original width", true);
+
+    private OptionalAnnotationNameParameter imageHeightAnnotation = new OptionalAnnotationNameParameter("Original height", true);
+
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     public TileImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
         scale2DAlgorithm = JIPipe.createNode(TransformScale2DAlgorithm.class);
         scale2DAlgorithm.setScaleMode(ScaleMode.Fit);
+        scale2DAlgorithm.setAnchor(Anchor.TopLeft);
         registerSubParameter(scale2DAlgorithm);
     }
 
@@ -68,6 +78,10 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.tileYAnnotation = new OptionalAnnotationNameParameter(other.tileYAnnotation);
         this.scale2DAlgorithm = new TransformScale2DAlgorithm(other.scale2DAlgorithm);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
+        this.tileRealXAnnotation = new OptionalAnnotationNameParameter(other.tileRealXAnnotation);
+        this.tileRealYAnnotation = new OptionalAnnotationNameParameter(other.tileRealYAnnotation);
+        this.imageWidthAnnotation = new OptionalAnnotationNameParameter(other.imageWidthAnnotation);
+        this.imageHeightAnnotation = new OptionalAnnotationNameParameter(other.imageHeightAnnotation);
         registerSubParameter(scale2DAlgorithm);
     }
 
@@ -107,6 +121,12 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 tileYAnnotation.addAnnotationIfEnabled(annotations, y + "");
                 numTilesX.addAnnotationIfEnabled(annotations, nTilesX + "");
                 numTilesY.addAnnotationIfEnabled(annotations, nTilesY + "");
+                imageWidthAnnotation.addAnnotationIfEnabled(annotations, img.getWidth() + "");
+                imageHeightAnnotation.addAnnotationIfEnabled(annotations, img.getHeight() + "");
+                if(scale2DAlgorithm.getAnchor() == Anchor.TopLeft) {
+                    tileRealXAnnotation.addAnnotationIfEnabled(annotations, x * tileX + "");
+                    tileRealYAnnotation.addAnnotationIfEnabled(annotations, y * tileY + "");
+                }
                 dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(tileImage), annotations, annotationMergeStrategy, tileProgress);
             }
         }
@@ -194,6 +214,50 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("tile-y")
     public void setTileY(int tileY) {
         this.tileY = tileY;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with original X location", description = "If true, annotate the tile with its location within the original image. Only works if the scaling anchor is top left")
+    @JIPipeParameter("tile-real-x-annotation")
+    public OptionalAnnotationNameParameter getTileRealXAnnotation() {
+        return tileRealXAnnotation;
+    }
+
+    @JIPipeParameter("tile-real-x-annotation")
+    public void setTileRealXAnnotation(OptionalAnnotationNameParameter tileRealXAnnotation) {
+        this.tileRealXAnnotation = tileRealXAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with original Y location", description = "If true, annotate the tile with its location within the original image. Only works if the scaling anchor is top left")
+    @JIPipeParameter("tile-real-y-annotation")
+    public OptionalAnnotationNameParameter getTileRealYAnnotation() {
+        return tileRealYAnnotation;
+    }
+
+    @JIPipeParameter("tile-real-y-annotation")
+    public void setTileRealYAnnotation(OptionalAnnotationNameParameter tileRealYAnnotation) {
+        this.tileRealYAnnotation = tileRealYAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with original width", description = "If true, annotate the tile with the width of the original image")
+    @JIPipeParameter("tile-original-width")
+    public OptionalAnnotationNameParameter getImageWidthAnnotation() {
+        return imageWidthAnnotation;
+    }
+
+    @JIPipeParameter("tile-original-width")
+    public void setImageWidthAnnotation(OptionalAnnotationNameParameter imageWidthAnnotation) {
+        this.imageWidthAnnotation = imageWidthAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with original height", description = "If true, annotate the tile with the height of the original image")
+    @JIPipeParameter("tile-original-height")
+    public OptionalAnnotationNameParameter getImageHeightAnnotation() {
+        return imageHeightAnnotation;
+    }
+
+    @JIPipeParameter("tile-original-height")
+    public void setImageHeightAnnotation(OptionalAnnotationNameParameter imageHeightAnnotation) {
+        this.imageHeightAnnotation = imageHeightAnnotation;
     }
 
     @JIPipeDocumentation(name = "Scaling", description = "The following settings determine how the image is scaled if it is not perfectly tileable.")
