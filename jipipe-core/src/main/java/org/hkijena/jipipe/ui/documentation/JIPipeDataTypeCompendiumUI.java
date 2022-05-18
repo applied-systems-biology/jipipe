@@ -302,7 +302,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
             builder.append("<tr><td><strong>Storage schema URL</strong></td><td><a href=\"").append(HtmlEscapers.htmlEscaper().escape(info.getStorageSchema()))
                     .append("\">").append(HtmlEscapers.htmlEscaper().escape(info.getStorageSchema())).append("</a></td></tr>");
             for (String dependencyCitation : info.getAdditionalCitations()) {
-                builder.append("<tr><td><strong>Data type additional citation</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(dependencyCitation)).append("</td></tr>");
+                builder.append("<tr><td><strong>Refer to/Cite also</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(dependencyCitation)).append("</td></tr>");
             }
             builder.append("<tr><td><strong>Plugin name</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getName())).append("</td></tr>");
             for (JIPipeAuthorMetadata author : source.getMetadata().getAuthors()) {
@@ -313,7 +313,7 @@ public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInf
             builder.append("<tr><td><strong>Plugin citation</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getCitation())).append("</td></tr>");
             builder.append("<tr><td><strong>Plugin license</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(source.getMetadata().getLicense())).append("</td></tr>");
             for (String dependencyCitation : source.getMetadata().getDependencyCitations()) {
-                builder.append("<tr><td><strong>Additional citation</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(dependencyCitation)).append("</td></tr>");
+                builder.append("<tr><td><strong>Also cite</strong></td><td>").append(HtmlEscapers.htmlEscaper().escape(dependencyCitation)).append("</td></tr>");
             }
             builder.append("</table>");
         }

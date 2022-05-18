@@ -77,7 +77,7 @@ public class JIPipeDependencyUI extends JPanel {
             formPanel.addToForm(UIUtils.makeReadonlyTextPane(StringUtils.wordWrappedHTML(dependency.getMetadata().getCitation(), 80)),
                     new JLabel("Citation"), null);
         for (String citation : dependency.getMetadata().getDependencyCitations()) {
-            formPanel.addToForm(UIUtils.makeReadonlyTextPane(StringUtils.wordWrappedHTML(citation, 80)), new JLabel("Dependent work"), null);
+            formPanel.addToForm(UIUtils.makeReadonlyTextPane(StringUtils.wordWrappedHTML(citation, 80)), new JLabel("Also cite"), null);
         }
         formPanel.addToForm(UIUtils.makeReadonlyTextField(dependency.getMetadata().getLicense()), new JLabel("License"), null);
         formPanel.addToForm(UIUtils.makeReadonlyTextField("" + dependency.getDependencyLocation()), new JLabel("Defining file"), null);
