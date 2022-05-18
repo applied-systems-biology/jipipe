@@ -12,6 +12,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeExtendedDataTableInfoUI;
@@ -276,6 +277,32 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         if (data == null)
             throw new NullPointerException("Data slots cannot accept null data!");
         return JIPipe.getDataTypes().isConvertible(klass, getAcceptedDataType());
+    }
+
+    /**
+     * Returns true if the slot can carry the provided data.
+     * This will only consider trivial conversions
+     *
+     * @param data Data
+     * @return True if the slot accepts the data
+     */
+    public boolean acceptsTrivially(JIPipeData data) {
+        if (data == null)
+            throw new NullPointerException("Data slots cannot accept null data!");
+        return JIPipeDatatypeRegistry.isTriviallyConvertible(data.getClass(), getAcceptedDataType());
+    }
+
+    /**
+     * Returns true if the slot can carry the provided data.
+     * This will also look up if the data can be converted
+     *
+     * @param klass Data class
+     * @return True if the slot accepts the data
+     */
+    public boolean acceptsTrivially(Class<? extends JIPipeData> klass) {
+        if (data == null)
+            throw new NullPointerException("Data slots cannot accept null data!");
+        return JIPipeDatatypeRegistry.isTriviallyConvertible(klass, getAcceptedDataType());
     }
 
     /**

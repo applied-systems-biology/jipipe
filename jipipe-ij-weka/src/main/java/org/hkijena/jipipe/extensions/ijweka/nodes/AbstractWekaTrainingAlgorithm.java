@@ -6,32 +6,28 @@ import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijweka.parameters.WekaClassifierParameter;
+import org.hkijena.jipipe.extensions.ijweka.parameters.WekaClassifierSettings;
 
 public abstract class AbstractWekaTrainingAlgorithm extends JIPipeMergingAlgorithm {
 
-    private WekaClassifierParameter classifier = new WekaClassifierParameter();
-
-    public AbstractWekaTrainingAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
-        super(info, slotConfiguration);
-    }
+    private WekaClassifierSettings classifierSettings = new WekaClassifierSettings();
 
     public AbstractWekaTrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
+    public AbstractWekaTrainingAlgorithm(JIPipeNodeInfo info, JIPipeSlotConfiguration slotConfiguration) {
+        super(info, slotConfiguration);
+    }
+
     public AbstractWekaTrainingAlgorithm(AbstractWekaTrainingAlgorithm other) {
         super(other);
-        this.classifier = new WekaClassifierParameter(other.classifier);
+        this.classifierSettings = new WekaClassifierSettings(other.classifierSettings);
     }
 
-    @JIPipeDocumentation(name = "Classifier", description = "The selected classifier")
-    @JIPipeParameter("classifier")
-    public WekaClassifierParameter getClassifier() {
-        return classifier;
-    }
-
-    @JIPipeParameter("classifier")
-    public void setClassifier(WekaClassifierParameter classifier) {
-        this.classifier = classifier;
+    @JIPipeDocumentation(name = "Classifier", description = "Settings for the classifier")
+    @JIPipeParameter("classifier-settings")
+    public WekaClassifierSettings getClassifierSettings() {
+        return classifierSettings;
     }
 }

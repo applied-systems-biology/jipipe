@@ -14,12 +14,14 @@
 package org.hkijena.jipipe.extensions.parameters.api.graph;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 
 import java.util.function.Function;
+import java.util.function.Predicate;
 
 /**
  * Parameter that holds a value for each data slot
@@ -28,6 +30,8 @@ public abstract class SlotMapParameterCollection extends JIPipeDynamicParameterC
     private JIPipeGraphNode algorithm;
     private Class<?> dataClass;
     private Function<JIPipeDataSlotInfo, Object> newInstanceGenerator;
+
+    private Predicate<JIPipeDataSlot> slotFilter;
 
     /**
      * Creates a new instance
@@ -45,6 +49,14 @@ public abstract class SlotMapParameterCollection extends JIPipeDynamicParameterC
         if (initialize)
             updateSlots();
         this.algorithm.getEventBus().register(this);
+    }
+
+    public Predicate<JIPipeDataSlot> getSlotFilter() {
+        return slotFilter;
+    }
+
+    public void setSlotFilter(Predicate<JIPipeDataSlot> slotFilter) {
+        this.slotFilter = slotFilter;
     }
 
     public JIPipeGraphNode getAlgorithm() {

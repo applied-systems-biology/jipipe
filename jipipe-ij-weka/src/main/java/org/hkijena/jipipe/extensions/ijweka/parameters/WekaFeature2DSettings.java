@@ -8,7 +8,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 /**
  * Settings related to features
  */
-public class WekaFeature2DParameters implements JIPipeParameterCollection {
+public class WekaFeature2DSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private WekaFeatureSet2D trainingFeatures = new WekaFeatureSet2D();
@@ -22,11 +22,11 @@ public class WekaFeature2DParameters implements JIPipeParameterCollection {
     private float minSigma = 1;
     private float maxSigma = 16;
 
-    public WekaFeature2DParameters() {
+    public WekaFeature2DSettings() {
 
     }
 
-    public WekaFeature2DParameters(WekaFeature2DParameters other) {
+    public WekaFeature2DSettings(WekaFeature2DSettings other) {
         this.trainingFeatures = new WekaFeatureSet2D(other.trainingFeatures);
         this.useNeighbors = other.useNeighbors;
         this.membraneSize = other.membraneSize;
