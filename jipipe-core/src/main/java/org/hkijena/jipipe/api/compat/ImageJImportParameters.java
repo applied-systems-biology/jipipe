@@ -60,4 +60,12 @@ public class ImageJImportParameters implements JIPipeParameterCollection {
         other.name = this.name;
         other.duplicate = this.duplicate;
     }
+
+    @Override
+    public String toString() {
+        return "ImageJImportParameters{" +
+                "name='" + name + '\'' +
+                ", duplicate=" + duplicate +
+                '}';
+    }
 }

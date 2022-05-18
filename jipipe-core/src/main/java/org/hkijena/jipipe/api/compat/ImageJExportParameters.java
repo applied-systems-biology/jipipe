@@ -111,4 +111,15 @@ public class ImageJExportParameters implements JIPipeParameterCollection {
         other.noWindows = this.noWindows;
         other.duplicate = this.duplicate;
     }
+
+    @Override
+    public String toString() {
+        return "ImageJExportParameters{" +
+                "activate=" + activate +
+                ", noWindows=" + noWindows +
+                ", append=" + append +
+                ", duplicate=" + duplicate +
+                ", name='" + name + '\'' +
+                '}';
+    }
 }
