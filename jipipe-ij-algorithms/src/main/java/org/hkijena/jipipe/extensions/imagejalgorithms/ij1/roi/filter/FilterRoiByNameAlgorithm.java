@@ -70,6 +70,7 @@ public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ROIListData outputRois = new ROIListData();
 
         ExpressionVariables parameters = new ExpressionVariables();
+        parameters.putAnnotations(dataBatch.getMergedTextAnnotations());
         for (Roi roi : inputRois) {
             parameters.set("name", StringUtils.nullToEmpty(roi.getName()));
             parameters.set("x", roi.getBounds().x);
@@ -124,6 +125,7 @@ public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         static {
             VARIABLES = new HashSet<>();
+            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             VARIABLES.add(new ExpressionParameterVariable("Name", "Name of the ROI (can be empty)", "name"));
             VARIABLES.add(new ExpressionParameterVariable("Bounding box X", "Top-left X coordinate of the bounding box around the ROI", "x"));
             VARIABLES.add(new ExpressionParameterVariable("Bounding box Y", "Top-left Y coordinate of the bounding box around around the ROI", "y"));
