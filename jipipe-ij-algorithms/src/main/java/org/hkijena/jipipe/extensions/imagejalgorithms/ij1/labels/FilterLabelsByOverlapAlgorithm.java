@@ -12,6 +12,7 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import inra.ijpb.label.LabelImages;
+import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipePercentageProgressInfo;
@@ -45,6 +46,8 @@ import java.util.Map;
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels 2", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels 1", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels 2", autoCreate = true)
+@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+        "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
 public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageStatisticsSetParameter overlapFilterMeasurements = new ImageStatisticsSetParameter();

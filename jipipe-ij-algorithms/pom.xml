@@ -159,6 +159,11 @@
                 <artifactId>ij_ridge_detect</artifactId>
                 <version>1.4.1</version>
             </dependency>
+            <dependency>
+                <groupId>sc.fiji</groupId>
+                <artifactId>AnalyzeSkeleton_</artifactId>
+                <version>3.4.2</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -226,6 +231,10 @@
         <dependency>
             <groupId>de.biomedical-imaging.imagej</groupId>
             <artifactId>ij_ridge_detect</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>AnalyzeSkeleton_</artifactId>
         </dependency>
     </dependencies>
 

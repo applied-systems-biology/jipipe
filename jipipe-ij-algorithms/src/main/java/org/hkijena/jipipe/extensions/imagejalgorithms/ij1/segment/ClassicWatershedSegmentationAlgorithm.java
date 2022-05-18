@@ -21,6 +21,8 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Segment")
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Labels", autoCreate = true)
+@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+        "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
 public class ClassicWatershedSegmentationAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Neighborhood2D3D connectivity = Neighborhood2D3D.NoDiagonals;
