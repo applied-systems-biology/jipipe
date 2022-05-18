@@ -34,7 +34,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus labelsImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
+        ImagePlus labelsImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         ROIListData rois = new ROIListData();
         ImageJUtils.forEachIndexedZCTSlice(labelsImage, (ip, index) -> {
             ImageProcessor copy = (ImageProcessor) ip.clone();
