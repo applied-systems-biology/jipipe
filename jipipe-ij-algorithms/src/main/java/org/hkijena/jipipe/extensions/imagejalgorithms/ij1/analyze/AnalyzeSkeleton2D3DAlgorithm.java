@@ -268,8 +268,6 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     private ResultsTable calculateSkeletonTable(SkeletonResult result) {
-        final ResultsTable rt = new ResultsTable();
-        rt.showRowNumbers( true );
 
         final String[] head = {"Skeleton", "# Branches","# Junctions", "# End-point voxels",
                 "# Junction voxels","# Slab voxels","Average Branch Length",
@@ -288,28 +286,32 @@ public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
         ArrayList<Double> shortestPathList = result.getShortestPathList();
         double[][] spStartPosition = result.getSpStartPosition();
 
+        ResultsTableData rt = new ResultsTableData();
+        for (String s : head) {
+            rt.addStringColumn(s);
+        }
+
         for(int i = 0 ; i < result.getNumOfTrees(); i++)
         {
-            rt.incrementCounter();
-
-            rt.addValue(head[ 1], numberOfBranches[i]);
-            rt.addValue(head[ 2], numberOfJunctions[i]);
-            rt.addValue(head[ 3], numberOfEndPoints[i]);
-            rt.addValue(head[ 4], numberOfJunctionVoxels[i]);
-            rt.addValue(head[ 5], numberOfSlabs[i]);
-            rt.addValue(head[ 6], averageBranchLength[i]);
-            rt.addValue(head[ 7], numberOfTriplePoints[i]);
-            rt.addValue(head[ 8], numberOfQuadruplePoints[i]);
-            rt.addValue(head[ 9], maximumBranchLength[i]);
-            if(null != shortestPathList)
-            {
-                rt.addValue(head[10],shortestPathList.get(i));
-                rt.addValue(head[11],spStartPosition[i][0]);
-                rt.addValue(head[12],spStartPosition[i][1]);
-                rt.addValue(head[13],spStartPosition[i][2]);
+           rt.addRow();
+           rt.setValueAt(i + 1, i, "Skeleton");
+            rt.setValueAt(numberOfBranches[i], i, "# Branches");
+            rt.setValueAt(numberOfJunctions[i], i, "# Junctions");
+            rt.setValueAt(numberOfEndPoints[i], i, "# End-point voxels");
+            rt.setValueAt(numberOfJunctionVoxels[i], i, "# Junction voxels");
+            rt.setValueAt(numberOfSlabs[i], i, "# Slab voxels");
+            rt.setValueAt(averageBranchLength[i], i, "Average Branch Length");
+            rt.setValueAt(numberOfTriplePoints[i], i, "# Triple points");
+            rt.setValueAt(numberOfQuadruplePoints[i], i, "# Quadruple points");
+            rt.setValueAt(maximumBranchLength[i], i, "Maximum Branch Length");
+            if(null != shortestPathList) {
+                rt.setValueAt(shortestPathList.get(i), i, "Longest Shortest Path");
+                rt.setValueAt(spStartPosition[i][0], i, "spx");
+                rt.setValueAt(spStartPosition[i][1], i, "spy");
+                rt.setValueAt(spStartPosition[i][2], i, "spz");
             }
         }
-        return rt;
+        return rt.getTable();
     }
 
     @JIPipeDocumentation(name = "Prune cycles method", description = "Allows the selection of a method to prune possible loops in the skeleton")
