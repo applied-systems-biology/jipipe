@@ -324,6 +324,7 @@
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.12.0" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:AnalyzeSkeleton_:3.4.2" level="project" />
     <orderEntry type="library" name="Maven: org.joml:joml:1.10.2" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:Skeletonize3D_:2.1.1" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.5" level="project" />
     <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.29" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter:5.7.0" level="project" />

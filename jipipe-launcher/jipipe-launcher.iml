@@ -321,6 +321,7 @@
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.12.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:AnalyzeSkeleton_:3.4.2" level="project" />
     <orderEntry type="library" name="Maven: org.joml:joml:1.10.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:Skeletonize3D_:2.1.1" level="project" />
     <orderEntry type="module" module-name="jipipe-ij-multi-template-matching" scope="RUNTIME" />
     <orderEntry type="module" module-name="jipipe-clij" scope="RUNTIME" />
     <orderEntry type="module" module-name="jipipe-strings" scope="RUNTIME" />

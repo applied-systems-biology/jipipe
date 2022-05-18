@@ -315,6 +315,16 @@ public class ImageJUtils {
     }
 
     /**
+     * Copies the hyperstack dimensions from one image to another
+     * src and target must have the same number of slices!
+     * @param src the source image
+     * @param target the target image
+     */
+    public static void copyHyperstackDimensions(ImagePlus src, ImagePlus target) {
+        target.setDimensions(src.getNChannels(), src.getNSlices(), src.getNFrames());
+    }
+
+    /**
      * Applies copy-scaling to ensure that the target image has the same size as the reference image
      * Will silently drop slices that are outside the range of the reference image
      *
