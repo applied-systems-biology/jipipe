@@ -23,6 +23,7 @@ import loci.plugins.in.ImporterOptions;
 import loci.plugins.util.WindowTools;
 import ome.xml.meta.OMEXMLMetadata;
 import ome.xml.model.enums.DimensionOrder;
+import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -57,6 +58,9 @@ import java.util.List;
 @JIPipeInputSlot(value = FileData.class, slotName = "Files")
 @JIPipeOutputSlot(value = OMEImageData.class, slotName = "Image")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeCitation("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +
+        "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
+        "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782")
 public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
 
     private OMEColorMode colorMode = OMEColorMode.Default;

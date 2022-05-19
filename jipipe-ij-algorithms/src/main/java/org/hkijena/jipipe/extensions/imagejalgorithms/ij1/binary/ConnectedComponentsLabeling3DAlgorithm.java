@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary;
 import ij.ImagePlus;
 import inra.ijpb.binary.BinaryImages;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -36,6 +37,8 @@ import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataPar
 @JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
+@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+        "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
 public class ConnectedComponentsLabeling3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Neighborhood2D connectivity = Neighborhood2D.EightConnected;

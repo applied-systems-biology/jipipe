@@ -18,6 +18,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
 @JIPipeCitation("https://imagej.net/plugins/morpholibj")
+@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+        "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
 @JIPipeCitation("Soille et al., 20012, Heneghan et al., 20023; Hendriks et al., 2003")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)

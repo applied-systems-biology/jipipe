@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 import gnu.trove.list.array.TIntArrayList;
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
+import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -35,6 +36,8 @@ import java.util.Set;
 @JIPipeNode(menuPath = "Labels\nFilter", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Output", autoCreate = true)
+@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+        "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
 public class FilterLabelsByExpression3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter expression = new DefaultExpressionParameter("id > 10 AND num_pixels > 50");

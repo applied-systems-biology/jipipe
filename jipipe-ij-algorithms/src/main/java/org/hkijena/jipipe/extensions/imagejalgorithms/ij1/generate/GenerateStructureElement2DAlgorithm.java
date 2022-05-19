@@ -18,6 +18,7 @@ import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
 import inra.ijpb.morphology.Morphology;
 import inra.ijpb.morphology.Strel;
+import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -38,6 +39,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.Imag
 @JIPipeDocumentation(name = "Generate structure element", description = "Generates a structure element that is consistent with the ones used by the 2D morphological operation.")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Kernel")
+@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+        "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
 public class GenerateStructureElement2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Strel.Shape element = Strel.Shape.DISK;

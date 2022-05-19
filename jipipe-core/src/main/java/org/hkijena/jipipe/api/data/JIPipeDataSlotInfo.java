@@ -63,14 +63,27 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      * @param name          unique slot name
      * @param description   description of the slot
      * @param inheritedSlot only relevant if output slot. Can be an input slot name or '*' to automatically select the first input slot
+     * @param optional only relevant if an input slot. marks the slot as optional input if true
      */
-    public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String name, String description, String inheritedSlot) {
+    public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String name, String description, String inheritedSlot, boolean optional) {
         this.dataClass = dataClass;
         this.slotType = slotType;
         this.name = name;
         this.description = description;
         this.inheritedSlot = inheritedSlot;
+        this.optional = optional;
         setVirtualByDataType();
+    }
+
+    /**
+     * @param dataClass     slot data class
+     * @param slotType      slot type
+     * @param name          unique slot name
+     * @param description   description of the slot
+     * @param inheritedSlot only relevant if output slot. Can be an input slot name or '*' to automatically select the first input slot
+     */
+    public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String name, String description, String inheritedSlot) {
+       this(dataClass, slotType, name, description, inheritedSlot, false);
     }
 
     /**

@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.algorithms;
 
+import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -42,6 +43,9 @@ import java.util.Set;
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
 @JIPipeInputSlot(value = OMEImageData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = FileData.class, slotName = "Output", autoCreate = true)
+@JIPipeCitation("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +
+        "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
+        "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782")
 public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();

@@ -17,6 +17,7 @@ import ij.IJ;
 import ij.ImagePlus;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -52,6 +53,9 @@ import java.util.List;
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(FileData.class)
 @JIPipeOutputSlot(ImagePlusData.class)
+@JIPipeCitation("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +
+        "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
+        "and Jason R. Swedlow (2010) Metadata matters: access to image data in the real world. The Journal of Cell Biology 189(5), 777-782")
 public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef generatedImageType = new JIPipeDataInfoRef("imagej-imgplus");

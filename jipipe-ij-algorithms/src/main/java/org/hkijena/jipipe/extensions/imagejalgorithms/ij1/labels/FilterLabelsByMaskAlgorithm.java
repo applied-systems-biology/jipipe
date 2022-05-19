@@ -8,6 +8,7 @@ import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
 import ij.process.ShortProcessor;
 import inra.ijpb.label.LabelImages;
+import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -26,6 +27,8 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParame
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels\nFilter", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", autoCreate = true)
+@JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
+        "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
 public class FilterLabelsByMaskAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean deleteMaskedLabels = false;
