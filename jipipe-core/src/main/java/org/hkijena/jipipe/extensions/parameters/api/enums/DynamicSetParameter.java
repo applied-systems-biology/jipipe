@@ -17,10 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
 import javax.swing.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Parameter that acts as dynamic enum where a set of items can be selected
@@ -30,7 +27,7 @@ import java.util.Set;
  */
 public abstract class DynamicSetParameter<T> {
     private Set<T> values = new HashSet<>();
-    private List<T> allowedValues = new ArrayList<>();
+    private Set<T> allowedValues = new TreeSet<>();
     private boolean collapsed = false;
 
     /**
@@ -69,12 +66,16 @@ public abstract class DynamicSetParameter<T> {
         this.collapsed = collapsed;
     }
 
-    public List<T> getAllowedValues() {
+    public Set<T> getAllowedValues() {
         return allowedValues;
     }
 
-    public void setAllowedValues(List<T> allowedValues) {
+    public void setAllowedValues(Set<T> allowedValues) {
         this.allowedValues = allowedValues;
+    }
+
+    public void setAllowedValues(List<T> allowedValues) {
+        this.allowedValues = new TreeSet<>(allowedValues);
     }
 
     /**

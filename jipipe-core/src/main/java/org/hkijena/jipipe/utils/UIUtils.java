@@ -827,6 +827,55 @@ public class UIUtils {
     }
 
     /**
+     * Shows a component in a JIPipe-styled dialog with OK and Cancel button
+     * @param workbench the workbench
+     * @param component the component
+     * @param title the title
+     * @return true of OK was pressed
+     */
+    public static boolean showOKCancelDialog(JIPipeWorkbench workbench, Component component, String title) {
+        JDialog dialog = new JDialog(workbench.getWindow());
+        dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+
+        JPanel panel = new JPanel(new BorderLayout(8, 8));
+        panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        panel.add(component, BorderLayout.CENTER);
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+        buttonPanel.add(Box.createHorizontalGlue());
+
+        AtomicBoolean clickedOK = new AtomicBoolean(false);
+
+        JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
+        cancelButton.addActionListener(e -> {
+            clickedOK.set(false);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(cancelButton);
+
+        JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/checkmark.png"));
+        confirmButton.addActionListener(e -> {
+            clickedOK.set(true);
+            dialog.setVisible(false);
+        });
+        buttonPanel.add(confirmButton);
+
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+
+        dialog.setContentPane(panel);
+        dialog.setTitle(title);
+        dialog.setModal(true);
+        dialog.pack();
+        dialog.setSize(new Dimension(800, 600));
+        dialog.setLocationRelativeTo(workbench.getWindow());
+        UIUtils.addEscapeListener(dialog);
+        dialog.setVisible(true);
+
+        return clickedOK.get();
+    }
+
+    /**
      * Converts a given Image into a BufferedImage
      *
      * @param img  The Image to be converted

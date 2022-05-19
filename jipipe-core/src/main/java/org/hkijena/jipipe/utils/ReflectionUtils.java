@@ -64,6 +64,108 @@ public class ReflectionUtils {
     /**
      * Gets the value of a field
      *
+     * @param fieldName    the field name
+     * @param instance the instance
+     * @return the return value
+     */
+    public static Object getDeclaredFieldValue(String fieldName, Object instance) {
+        try {
+            Field field = instance.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.get(instance);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Gets the value of a field
+     *
+     * @param fieldName    the field name
+     * @param klass the class
+     * @return the return value
+     */
+    public static Object getDeclaredStaticFieldValue(String fieldName, Class<?> klass) {
+        try {
+            Field field = klass.getDeclaredField(fieldName);
+            field.setAccessible(true);
+            return field.get(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Gets the value of a field
+     *
+     * @param fieldName    the field name
+     * @param klass the class
+     * @return the return value
+     */
+    public static Object getStaticFieldValue(String fieldName, Class<?> klass) {
+        try {
+            Field field = klass.getField(fieldName);
+            field.setAccessible(true);
+            return field.get(null);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Gets the value of a field
+     *
+     * @param fieldName    the field name
+     * @param instance the instance
+     * @return the return value
+     */
+    public static Object getFieldValue(String fieldName, Object instance) {
+        try {
+            Field field = instance.getClass().getField(fieldName);
+            field.setAccessible(true);
+            return field.get(instance);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Sets the field value
+     *
+     * @param instance  the object
+     * @param fieldName the field name
+     * @param value     the value
+     */
+    public static void setDeclaredFieldValue(Object instance, String fieldName, Object value) {
+        try {
+            Field field = instance.getClass().getDeclaredField(fieldName);
+            field.setAccessible(true);
+            field.set(instance, value);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Sets the field value
+     *
+     * @param instance  the object
+     * @param fieldName the field name
+     * @param value     the value
+     */
+    public static void setFieldValue(Object instance, String fieldName, Object value) {
+        try {
+            Field field = instance.getClass().getField(fieldName);
+            field.setAccessible(true);
+            field.set(instance, value);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Gets the value of a field
+     *
      * @param field    the field
      * @param instance the instance
      * @return the return value

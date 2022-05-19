@@ -150,7 +150,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
      * @param slotName     The slot name
      * @param dataClass    The data type that should be returned
      * @param progressInfo storage progress
-     * @return Input data with provided name
+     * @return Input data with provided name. Returns null if no data is available.
      */
     public <T extends JIPipeData> T getInputData(String slotName, Class<T> dataClass, JIPipeProgressInfo progressInfo) {
         return getInputData(node.getInputSlot(slotName), dataClass, progressInfo);
@@ -163,14 +163,19 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
      * @param slot         The slot
      * @param dataClass    The data type that should be returned
      * @param progressInfo storage progress
-     * @return Input data with provided name
+     * @return Input data with provided name. Returns null if no data is available
      */
     public <T extends JIPipeData> T getInputData(JIPipeDataSlot slot, Class<T> dataClass, JIPipeProgressInfo progressInfo) {
         if (slot.getNode() != node)
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isInput())
             throw new IllegalArgumentException("Slot is not an input slot!");
-        return slot.getData(inputSlotRows.get(slot), dataClass, progressInfo);
+        if(inputSlotRows.containsKey(slot)) {
+            return slot.getData(inputSlotRows.get(slot), dataClass, progressInfo);
+        }
+        else {
+            return null;
+        }
     }
 
     /**

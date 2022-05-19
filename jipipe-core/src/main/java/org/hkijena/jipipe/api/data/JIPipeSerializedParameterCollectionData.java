@@ -13,6 +13,9 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
@@ -60,6 +63,13 @@ public abstract class JIPipeSerializedParameterCollectionData implements JIPipeD
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         JsonUtils.saveToFile(this, storage.getFileSystemPath().resolve(StringUtils.orElse(name, "data") + ".json"));
+    }
+
+    @Override
+    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+        JIPipeData copy = duplicate(new JIPipeProgressInfo());
+        ParameterPanel.showDialog(workbench, (JIPipeParameterCollection) copy, new MarkdownDocument(""), displayName,
+                ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION);
     }
 
     @Override
