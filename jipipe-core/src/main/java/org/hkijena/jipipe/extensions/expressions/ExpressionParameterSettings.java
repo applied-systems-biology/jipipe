@@ -30,6 +30,10 @@ public @interface ExpressionParameterSettings {
     /**
      * Allows to give hints to the editor UI which variables are available.
      * The variable source instance has access to the {@link org.hkijena.jipipe.api.parameters.JIPipeParameterAccess}.
+     * <p>
+     * New: You can use as alternative multiple {@link ExpressionParameterSettingsVariable} annotations that also support inheritance from the field class and
+     * merging of multiple {@link ExpressionParameterVariableSource} instances.
+     * </p>
      *
      * @return the variable source class
      */

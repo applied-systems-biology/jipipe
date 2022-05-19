@@ -29,6 +29,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
@@ -36,6 +38,7 @@ import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Tile image", description = "Splits the image into tiles of a predefined size. If the image is not perfectly tileable, it is resized.")
@@ -44,7 +47,7 @@ import java.util.List;
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private TransformScale2DAlgorithm scale2DAlgorithm;
+    private CanvasEqualizer canvasEqualizer;
     private int tileX = 512;
     private int tileY = 512;
     private OptionalAnnotationNameParameter tileXAnnotation = new OptionalAnnotationNameParameter("Tile X", true);
@@ -64,10 +67,11 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public TileImageAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        scale2DAlgorithm = JIPipe.createNode(TransformScale2DAlgorithm.class);
-        scale2DAlgorithm.setScaleMode(ScaleMode.Fit);
-        scale2DAlgorithm.setAnchor(Anchor.TopLeft);
-        registerSubParameter(scale2DAlgorithm);
+        this.canvasEqualizer = new CanvasEqualizer();
+        canvasEqualizer.setxAxis(new DefaultExpressionParameter(""));
+        canvasEqualizer.setyAxis(new DefaultExpressionParameter(""));
+        canvasEqualizer.setAnchor(Anchor.TopLeft);
+        registerSubParameter(canvasEqualizer);
     }
 
     public TileImageAlgorithm(TileImageAlgorithm other) {
@@ -76,27 +80,28 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.tileY = other.tileY;
         this.tileXAnnotation = new OptionalAnnotationNameParameter(other.tileXAnnotation);
         this.tileYAnnotation = new OptionalAnnotationNameParameter(other.tileYAnnotation);
-        this.scale2DAlgorithm = new TransformScale2DAlgorithm(other.scale2DAlgorithm);
+        this.canvasEqualizer = new CanvasEqualizer(other.canvasEqualizer);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.tileRealXAnnotation = new OptionalAnnotationNameParameter(other.tileRealXAnnotation);
         this.tileRealYAnnotation = new OptionalAnnotationNameParameter(other.tileRealYAnnotation);
         this.imageWidthAnnotation = new OptionalAnnotationNameParameter(other.imageWidthAnnotation);
         this.imageHeightAnnotation = new OptionalAnnotationNameParameter(other.imageHeightAnnotation);
-        registerSubParameter(scale2DAlgorithm);
+        registerSubParameter(canvasEqualizer);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
+        ImagePlus originalImg = img;
         if (img.getWidth() % tileX != 0 || img.getHeight() % tileY != 0) {
-            JIPipeProgressInfo scaleProgress = progressInfo.resolveAndLog("Scaling to " + tileX + " x " + tileY);
-            scale2DAlgorithm.getxAxis().getContent().setExpression("CEIL(x / " + tileX + ") * " + tileX);
-            scale2DAlgorithm.getyAxis().getContent().setExpression("CEIL(x / " + tileY + ") * " + tileY);
-            scale2DAlgorithm.clearSlotData();
-            scale2DAlgorithm.getFirstInputSlot().addData(new ImagePlusData(img), scaleProgress);
-            scale2DAlgorithm.run(scaleProgress);
-            img = scale2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, scaleProgress).getImage();
-            scale2DAlgorithm.clearSlotData();
+            ExpressionVariables variables = new ExpressionVariables();
+            JIPipeProgressInfo scaleProgress = progressInfo.resolveAndLog("Expanding canvas to fit tiles of " + tileX + " x " + tileY);
+            CanvasEqualizer equalizer = new CanvasEqualizer(canvasEqualizer);
+            if(equalizer.getxAxis().isEmpty())
+                equalizer.getxAxis().setExpression("CEIL(width / " + tileX + ") * " + tileX);
+            if(equalizer.getyAxis().isEmpty())
+                equalizer.getyAxis().setExpression("CEIL(height / " + tileY + ") * " + tileY);
+            img = equalizer.equalize(Collections.singletonList(img), variables).get(0);
         }
         final int nTilesX = img.getWidth() / tileX;
         final int nTilesY = img.getHeight() / tileY;
@@ -121,9 +126,9 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 tileYAnnotation.addAnnotationIfEnabled(annotations, y + "");
                 numTilesX.addAnnotationIfEnabled(annotations, nTilesX + "");
                 numTilesY.addAnnotationIfEnabled(annotations, nTilesY + "");
-                imageWidthAnnotation.addAnnotationIfEnabled(annotations, img.getWidth() + "");
-                imageHeightAnnotation.addAnnotationIfEnabled(annotations, img.getHeight() + "");
-                if(scale2DAlgorithm.getAnchor() == Anchor.TopLeft) {
+                imageWidthAnnotation.addAnnotationIfEnabled(annotations, originalImg.getWidth() + "");
+                imageHeightAnnotation.addAnnotationIfEnabled(annotations, originalImg.getHeight() + "");
+                if(canvasEqualizer.getAnchor() == Anchor.TopLeft) {
                     tileRealXAnnotation.addAnnotationIfEnabled(annotations, x * tileX + "");
                     tileRealYAnnotation.addAnnotationIfEnabled(annotations, y * tileY + "");
                 }
@@ -260,20 +265,20 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.imageHeightAnnotation = imageHeightAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Scaling", description = "The following settings determine how the image is scaled if it is not perfectly tileable.")
-    @JIPipeParameter(value = "scale-algorithm")
-    public TransformScale2DAlgorithm getScale2DAlgorithm() {
-        return scale2DAlgorithm;
+    @JIPipeDocumentation(name = "Canvas expansion", description = "The following parameters allow you to set how the canvas is expanded if the tiles do not fit.")
+    @JIPipeParameter(value = "canvas-equalizer")
+    public CanvasEqualizer getCanvasEqualizer() {
+        return canvasEqualizer;
     }
 
-    @Override
-    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if ("x-axis".equals(access.getKey()) && access.getSource() == getScale2DAlgorithm()) {
-            return false;
-        }
-        if ("y-axis".equals(access.getKey()) && access.getSource() == getScale2DAlgorithm()) {
-            return false;
-        }
-        return super.isParameterUIVisible(tree, access);
-    }
+//    @Override
+//    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+//        if ("x-axis".equals(access.getKey()) && access.getSource() == getScale2DAlgorithm()) {
+//            return false;
+//        }
+//        if ("y-axis".equals(access.getKey()) && access.getSource() == getScale2DAlgorithm()) {
+//            return false;
+//        }
+//        return super.isParameterUIVisible(tree, access);
+//    }
 }

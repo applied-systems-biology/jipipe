@@ -1,6 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform;
 
+import ij.IJ;
 import ij.ImagePlus;
+import ij.process.ImageProcessor;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -11,6 +13,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 
 import java.awt.*;
@@ -44,10 +47,19 @@ public class UnTileImageAlgorithm extends JIPipeMergingAlgorithm {
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         int width = 0;
         int height = 0;
-        progressInfo.log("Analyzing annotations ..."); // TODO: Data type?
+        int nSlices = 0;
+        int nChannels = 0;
+        int nFrames = 0;
+        int bitDepth = 0;
+        progressInfo.log("Analyzing annotations ...");
         Map<ImagePlus, Point> imageLocations = new IdentityHashMap<>();
         for (int row : dataBatch.getInputRows(getFirstInputSlot())) {
             ImagePlus tile = getFirstInputSlot().getData(row, ImagePlusData.class, progressInfo).getImage();
+            if(bitDepth != 24)
+                bitDepth = Math.max(tile.getBitDepth(), bitDepth);
+            nChannels = Math.max(nChannels, tile.getNChannels());
+            nFrames = Math.max(nFrames, tile.getNFrames());
+            nSlices = Math.max(nSlices, tile.getNSlices());
             Map<String, String> annotations = JIPipeTextAnnotation.annotationListToMap(getFirstInputSlot().getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting);
             int x;
             int y;
@@ -92,7 +104,21 @@ public class UnTileImageAlgorithm extends JIPipeMergingAlgorithm {
             }
         }
 
-        // TODO: Data type! Create target image!
+        // Create initial image
+        ImagePlus mergedImage = IJ.createHyperStack("Un-tiled", width, height, nChannels, nSlices, nFrames, bitDepth);
+        progressInfo.log("Merged image: " + mergedImage);
+
+        for (Map.Entry<ImagePlus, Point> entry : imageLocations.entrySet()) {
+            ImagePlus tile = ImageJUtils.convertToSameTypeIfNeeded(entry.getKey(), mergedImage, true);
+            JIPipeProgressInfo tileProgress = progressInfo.resolveAndLog("Writing tile " + entry.getKey() + " [" + tile + "] " + " to " + entry.getValue());
+            ImageJUtils.forEachIndexedZCTSlice(tile, (sourceIp, index) -> {
+                ImageProcessor targetIp = ImageJUtils.getSliceZero(mergedImage, index);
+                targetIp.insert(sourceIp, entry.getValue().x, entry.getValue().y);
+            }, tileProgress);
+            tile.copyScale(mergedImage);
+        }
+
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(mergedImage), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Use original X location", description = "If true, use the annotation that contains the original X location. Currently mandatory.")

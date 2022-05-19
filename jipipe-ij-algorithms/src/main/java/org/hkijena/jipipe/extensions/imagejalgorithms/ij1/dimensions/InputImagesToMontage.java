@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.CanvasEqualizer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
@@ -89,7 +90,9 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
         List<String> labels = input.stream().map(labelledImages::get).collect(Collectors.toList());
 
         // Equalize canvas
-        List<ImagePlus> equalized = canvasEqualizer.equalize(input);
+        ExpressionVariables variables = new ExpressionVariables();
+        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        List<ImagePlus> equalized = canvasEqualizer.equalize(input, variables);
 
         // Determine number of rows & columns
         int columns;

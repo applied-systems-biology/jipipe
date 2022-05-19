@@ -19,11 +19,13 @@ import org.fife.ui.rsyntaxtextarea.TokenMaker;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.variables.UndefinedExpressionParameterVariableSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
 import org.hkijena.jipipe.ui.components.RSyntaxTextField;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -133,13 +135,45 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
 
     private void reloadVariables() {
         variables.clear();
-        ExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(ExpressionParameterSettings.class);
-        if (settings == null) {
-            settings = getParameterAccess().getFieldClass().getAnnotation(ExpressionParameterSettings.class);
+
+        // Read from parameter
+        Class<?> fieldClass = getParameterAccess().getFieldClass();
+        {
+            ExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(ExpressionParameterSettings.class);
+            if (settings == null) {
+                settings = fieldClass.getAnnotation(ExpressionParameterSettings.class);
+            }
+            if (settings != null && settings.variableSource() != UndefinedExpressionParameterVariableSource.class) {
+                ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(settings.variableSource());
+                variables.addAll(variableSource.getVariables(getParameterAccess()));
+            }
+            ExpressionParameterSettingsVariables annotationVariables = getParameterAccess().getAnnotationOfType(ExpressionParameterSettingsVariables.class);
+            if (annotationVariables != null) {
+                for (ExpressionParameterSettingsVariable variable : annotationVariables.value()) {
+                    if (!StringUtils.isNullOrEmpty(variable.name()) || !StringUtils.isNullOrEmpty(variable.description()) || !StringUtils.isNullOrEmpty(variable.key())) {
+                        variables.add(new ExpressionParameterVariable(variable.name(), variable.description(), variable.key()));
+                    }
+                    if (variable.fromClass() != UndefinedExpressionParameterVariableSource.class) {
+                        ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(variable.fromClass());
+                        variables.addAll(variableSource.getVariables(getParameterAccess()));
+                    }
+                }
+            }
         }
-        if (settings != null) {
-            ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(settings.variableSource());
-            variables.addAll(variableSource.getVariables(getParameterAccess()));
+        // Read from field class
+        {
+            ExpressionParameterSettingsVariables annotationVariables = fieldClass.getAnnotation(ExpressionParameterSettingsVariables.class);
+            if (annotationVariables != null) {
+                for (ExpressionParameterSettingsVariable variable : annotationVariables.value()) {
+                    if (!StringUtils.isNullOrEmpty(variable.name()) || !StringUtils.isNullOrEmpty(variable.description()) || !StringUtils.isNullOrEmpty(variable.key())) {
+                        variables.add(new ExpressionParameterVariable(variable.name(), variable.description(), variable.key()));
+                    }
+                    if (variable.fromClass() != UndefinedExpressionParameterVariableSource.class) {
+                        ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(variable.fromClass());
+                        variables.addAll(variableSource.getVariables(getParameterAccess()));
+                    }
+                }
+            }
         }
     }
 }

@@ -64,6 +64,14 @@ public abstract class ExpressionParameter {
     }
 
     /**
+     * Returns true if the expression is empty
+     * @return true if the expression is empty
+     */
+    public boolean isEmpty() {
+        return StringUtils.nullToEmpty(getExpression()).trim().length() == 0;
+    }
+
+    /**
      * Runs the expression and returns the numeric result. If no number is returned, an error is thrown.
      *
      * @param variables the variables

@@ -21,7 +21,8 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.expressions.NumericFunctionExpression;
+import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 
 import java.awt.*;
@@ -30,8 +31,8 @@ import java.util.List;
 
 public class CanvasEqualizer implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
-    private NumericFunctionExpression xAxis = new NumericFunctionExpression();
-    private NumericFunctionExpression yAxis = new NumericFunctionExpression();
+    private DefaultExpressionParameter xAxis = new DefaultExpressionParameter("");
+    private DefaultExpressionParameter yAxis = new DefaultExpressionParameter("");
     private Color backgroundColor = Color.BLACK;
     private Anchor anchor = Anchor.CenterCenter;
 
@@ -39,8 +40,8 @@ public class CanvasEqualizer implements JIPipeParameterCollection {
     }
 
     public CanvasEqualizer(CanvasEqualizer other) {
-        this.xAxis = new NumericFunctionExpression(other.xAxis);
-        this.yAxis = new NumericFunctionExpression(other.yAxis);
+        this.xAxis = new DefaultExpressionParameter(other.xAxis);
+        this.yAxis = new DefaultExpressionParameter(other.yAxis);
         this.backgroundColor = other.backgroundColor;
         this.anchor = other.anchor;
     }
@@ -50,15 +51,23 @@ public class CanvasEqualizer implements JIPipeParameterCollection {
         return eventBus;
     }
 
-    public List<ImagePlus> equalize(List<ImagePlus> input) {
-        if (input.size() < 2)
-            return input;
+    public List<ImagePlus> equalize(List<ImagePlus> input, ExpressionVariables variables) {
+
+        variables = new ExpressionVariables(variables);
+
         int wNew = 0;
         int hNew = 0;
         for (ImagePlus image : input) {
             wNew = Math.max(image.getWidth(), wNew);
             hNew = Math.max(image.getHeight(), hNew);
         }
+
+        variables.set("width", wNew);
+        variables.set("height", hNew);
+        if(!xAxis.isEmpty())
+            wNew =  (int) xAxis.evaluateToNumber(variables);
+        if(!yAxis.isEmpty())
+            hNew =  (int) yAxis.evaluateToNumber(variables);
 
         List<ImagePlus> result = new ArrayList<>();
         for (ImagePlus imp : input) {
@@ -156,24 +165,30 @@ public class CanvasEqualizer implements JIPipeParameterCollection {
     }
 
     @JIPipeDocumentation(name = "X axis", description = "Defines the size of the output canvas")
-    @JIPipeParameter("x-axis")
-    public NumericFunctionExpression getxAxis() {
+    @JIPipeParameter("x-axis-expression")
+    @ExpressionParameterSettingsVariable(key = "width", name = "Width", description = "Calculated width of the output image")
+    @ExpressionParameterSettingsVariable(key = "height", name = "Height", description = "Calculated height of the output image")
+    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    public DefaultExpressionParameter getxAxis() {
         return xAxis;
     }
 
-    @JIPipeParameter("x-axis")
-    public void setxAxis(NumericFunctionExpression xAxis) {
+    @JIPipeParameter("x-axis-expression")
+    public void setxAxis(DefaultExpressionParameter xAxis) {
         this.xAxis = xAxis;
     }
 
     @JIPipeDocumentation(name = "Y axis", description = "Defines the size of the output canvas")
-    @JIPipeParameter("y-axis")
-    public NumericFunctionExpression getyAxis() {
+    @JIPipeParameter("y-axis-expression")
+    @ExpressionParameterSettingsVariable(key = "width", name = "Width", description = "Calculated width of the output image")
+    @ExpressionParameterSettingsVariable(key = "height", name = "Height", description = "Calculated height of the output image")
+    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    public DefaultExpressionParameter getyAxis() {
         return yAxis;
     }
 
-    @JIPipeParameter("y-axis")
-    public void setyAxis(NumericFunctionExpression yAxis) {
+    @JIPipeParameter("y-axis-expression")
+    public void setyAxis(DefaultExpressionParameter yAxis) {
         this.yAxis = yAxis;
     }
 

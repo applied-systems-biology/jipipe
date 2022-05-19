@@ -12,6 +12,10 @@ public class ExpressionVariables extends HashMap<String, Object> {
     public ExpressionVariables() {
     }
 
+    public ExpressionVariables(ExpressionVariables other) {
+        putAll(other);
+    }
+
     /**
      * Sets a variable value.
      *
