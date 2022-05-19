@@ -17,7 +17,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 
 import java.awt.*;
-import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
@@ -25,7 +24,7 @@ import java.util.Map;
 @JIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-public class UnTileImageAlgorithm extends JIPipeMergingAlgorithm {
+public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
 
     private OptionalAnnotationNameParameter tileRealXAnnotation = new OptionalAnnotationNameParameter("Original X", true);
 
@@ -35,11 +34,11 @@ public class UnTileImageAlgorithm extends JIPipeMergingAlgorithm {
 
     private OptionalAnnotationNameParameter imageHeightAnnotation = new OptionalAnnotationNameParameter("Original height", true);
     
-    public UnTileImageAlgorithm(JIPipeNodeInfo info) {
+    public UnTileImage2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public UnTileImageAlgorithm(UnTileImageAlgorithm other) {
+    public UnTileImage2DAlgorithm(UnTileImage2DAlgorithm other) {
         super(other);
     }
 
@@ -115,7 +114,7 @@ public class UnTileImageAlgorithm extends JIPipeMergingAlgorithm {
                 ImageProcessor targetIp = ImageJUtils.getSliceZero(mergedImage, index);
                 targetIp.insert(sourceIp, entry.getValue().x, entry.getValue().y);
             }, tileProgress);
-            tile.copyScale(mergedImage);
+            mergedImage.copyScale(tile);
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(mergedImage), progressInfo);

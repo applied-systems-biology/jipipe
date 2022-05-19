@@ -793,8 +793,9 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-transform-set-dimensions", TransformSetHyperstackDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
         registerNodeType("ij1-transform-warp2d", Warp2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-rotate.png"));
         registerNodeType("ij1-overlay", MergeImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-image.png"));
-        registerNodeType("ij1-transform-tile", TileImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/grid-rectangular.png"));
-        registerNodeType("ij1-transform-un-tile", UnTileImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/grid-rectangular.png"));
+        registerNodeType("ij1-transform-tile-2d", TileImage2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/grid-rectangular.png"));
+        registerNodeType("ij1-transform-un-tile-2d", UnTileImage2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/grid-rectangular.png"));
+        registerNodeType("ij1-transform-add-border-2d", AddBorder2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/bordertool.png"));
 
         registerEnumParameterType("ij1-transform-flip2d:flip-mode", TransformFlip2DAlgorithm.FlipMode.class,
                 "Flip mode", "Available modes");
@@ -806,6 +807,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 ScaleMode.class,
                 "Scale mode",
                 "Determines how the image is scaled");
+        registerEnumParameterType("ij1-border-mode", BorderMode.class, "Border type", "Types of borders");
     }
 
     private void registerFFTAlgorithms() {

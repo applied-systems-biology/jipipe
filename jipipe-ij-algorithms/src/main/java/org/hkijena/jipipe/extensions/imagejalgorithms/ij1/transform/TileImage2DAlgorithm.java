@@ -17,7 +17,6 @@ import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -27,8 +26,6 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -45,7 +42,7 @@ import java.util.List;
 @JIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
-public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private CanvasEqualizer canvasEqualizer;
     private int tileX = 512;
@@ -65,7 +62,7 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
-    public TileImageAlgorithm(JIPipeNodeInfo info) {
+    public TileImage2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.canvasEqualizer = new CanvasEqualizer();
         canvasEqualizer.setxAxis(new DefaultExpressionParameter(""));
@@ -74,7 +71,7 @@ public class TileImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         registerSubParameter(canvasEqualizer);
     }
 
-    public TileImageAlgorithm(TileImageAlgorithm other) {
+    public TileImage2DAlgorithm(TileImage2DAlgorithm other) {
         super(other);
         this.tileX = other.tileX;
         this.tileY = other.tileY;

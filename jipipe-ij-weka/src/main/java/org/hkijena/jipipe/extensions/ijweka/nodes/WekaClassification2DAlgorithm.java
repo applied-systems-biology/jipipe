@@ -18,12 +18,19 @@ import trainableSegmentation.WekaSegmentation;
 @JIPipeInputSlot(value = WekaModelData.class, slotName = "Model", description = "The model", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Classified image", description = "The classified image", autoCreate = true)
 public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
+
+    private boolean applyTiling = true;
+    private int tileSizeX = 128;
+    private int tileSizeY = 128;
     public WekaClassification2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
     public WekaClassification2DAlgorithm(WekaClassification2DAlgorithm other) {
         super(other);
+        this.applyTiling = other.applyTiling;
+        this.tileSizeX = other.tileSizeX;
+        this.tileSizeY = other.tileSizeY;
     }
 
     @Override
@@ -40,5 +47,31 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
         }, progressInfo);
 
         dataBatch.addOutputData("Classified image", new ImagePlusData(new ImagePlus("Classified", stack)), progressInfo);
+    }
+
+    @JIPipeDocumentation(name = "Apply tiling", description = "If enabled, the input image is first split into tiles that are processed individually by the Weka segmentation. " +
+            "This can greatly reduce the ")
+    public boolean isApplyTiling() {
+        return applyTiling;
+    }
+
+    public void setApplyTiling(boolean applyTiling) {
+        this.applyTiling = applyTiling;
+    }
+
+    public int getTileSizeX() {
+        return tileSizeX;
+    }
+
+    public void setTileSizeX(int tileSizeX) {
+        this.tileSizeX = tileSizeX;
+    }
+
+    public int getTileSizeY() {
+        return tileSizeY;
+    }
+
+    public void setTileSizeY(int tileSizeY) {
+        this.tileSizeY = tileSizeY;
     }
 }
