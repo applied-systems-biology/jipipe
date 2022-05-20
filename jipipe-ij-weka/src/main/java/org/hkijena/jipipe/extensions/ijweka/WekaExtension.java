@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.utils;
+package org.hkijena.jipipe.extensions.ijweka;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
@@ -23,8 +23,10 @@ import org.hkijena.jipipe.extensions.ijweka.nodes.WekaClassification2DAlgorithm;
 import org.hkijena.jipipe.extensions.ijweka.nodes.WekaTrainingROI2DAlgorithm;
 import org.hkijena.jipipe.extensions.ijweka.parameters.WekaClassifierParameter;
 import org.hkijena.jipipe.extensions.ijweka.parameters.WekaClassifierParameterEditorUI;
-import org.hkijena.jipipe.extensions.ijweka.parameters.WekaFeature2D;
-import org.hkijena.jipipe.extensions.ijweka.parameters.WekaFeatureSet2D;
+import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeature2D;
+import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeature3D;
+import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeatureSet2D;
+import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeatureSet3D;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
@@ -67,14 +69,19 @@ public class WekaExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         URL wekaModelIcon = getClass().getResource(RESOURCE_BASE_PATH + "/weka-model-data.png");
-        URL wekaClassifierIcon = getClass().getResource(RESOURCE_BASE_PATH + "/weka-classifier-data.png");
         URL wekaIcon = getClass().getResource(RESOURCE_BASE_PATH + "/weka.png");
 
+        // Register new parameters
         registerEnumParameterType("weka-feature-2d", WekaFeature2D.class, "Weka Feature 2D", "A 2D Weka feature");
-        registerParameterType("weka-feature-set-2d", WekaFeatureSet2D.class, "Weka Feature set 2D", "A collection of Weka features");
+        registerParameterType("weka-feature-set-2d", WekaFeatureSet2D.class, "Weka Feature set 2D", "A collection of Weka 2D features");
+        registerEnumParameterType("weka-feature-3d", WekaFeature3D.class, "Weka Feature 3D", "A 2D Weka feature");
+        registerParameterType("weka-feature-set-3d", WekaFeatureSet3D.class, "Weka Feature set 3D", "A collection of Weka 3D features");
         registerParameterType("weka-classifier", WekaClassifierParameter.class, "Weka classifier", "Settings for a Weka classifier", WekaClassifierParameterEditorUI.class);
 
+        // Register data types
         registerDatatype("weka-model", WekaModelData.class, wekaModelIcon);
+
+        // Register nodes
         registerNodeType("import-weka-model-from-file", ImportWekaModelFromFileAlgorithm.class, wekaIcon);
         registerNodeType("weka-training-roi-2d", WekaTrainingROI2DAlgorithm.class, wekaIcon);
         registerNodeType("weka-classification", WekaClassification2DAlgorithm.class, wekaIcon);

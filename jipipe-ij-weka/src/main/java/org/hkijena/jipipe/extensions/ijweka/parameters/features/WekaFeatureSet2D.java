@@ -1,12 +1,27 @@
-package org.hkijena.jipipe.extensions.ijweka.parameters;
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ *
+ */
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.text.WordUtils;
+package org.hkijena.jipipe.extensions.ijweka.parameters.features;
+
+import com.google.common.collect.Sets;
 import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
-import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicSetParameter;
+
+import java.util.Arrays;
 
 /**
- * Enum of the standard {@link trainableSegmentation.WekaSegmentation} features supported by {@link trainableSegmentation.FeatureStack}
+ * Parameter that allows users to select a set of {@link WekaFeature2D}
  */
 @JIPipeDocumentationDescription(description = "<ul>" +
         "<li>Gaussian blur: performs \uD835\uDC5B individual convolutions with Gaussian kernels with the normal \uD835\uDC5B variations of \uD835\uDF0E. The larger the radius the more blurred the image becomes until the pixels are homogeneous.</li>" +
@@ -34,31 +49,19 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
         "<li>Neighbors: shifts the image in 8 directions by an certain number of pixel, \uD835\uDF0E. Therefore creates 8\uD835\uDC5B feature images.\n</li>" +
         "</ul>")
 @JIPipeDocumentationDescription(description = "More information: https://imagej.net/plugins/tws/")
-public enum WekaFeature2D {
-    Gaussian_blur,
-    Sobel_filter,
-    Hessian,
-    Difference_of_gaussians,
-    Membrane_projections,
-    Variance,
-    Mean,
-    Minimum,
-    Maximum,
-    Median,
-    Anisotropic_diffusion,
-    Bilateral,
-    Lipschitz,
-    Kuwahara,
-    Gabor,
-    Derivatives,
-    Laplacian,
-    Structure,
-    Entropy,
-    Neighbors;
+public class WekaFeatureSet2D extends DynamicSetParameter<WekaFeature2D> {
+    public WekaFeatureSet2D() {
+        setAllowedValues(Arrays.asList(WekaFeature2D.values()));
+        // Default features
+        setValues(Sets.newHashSet(WekaFeature2D.Gaussian_blur,
+                WekaFeature2D.Sobel_filter,
+                WekaFeature2D.Hessian,
+                WekaFeature2D.Difference_of_gaussians,
+                WekaFeature2D.Membrane_projections));
+        setCollapsed(true);
+    }
 
-
-    @Override
-    public String toString() {
-        return name().replace('_', ' ');
+    public WekaFeatureSet2D(WekaFeatureSet2D other) {
+        super(other);
     }
 }

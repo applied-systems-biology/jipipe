@@ -2,10 +2,12 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.Roi;
 import ij.measure.ResultsTable;
 import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.frame.RoiManager;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ROIManagerPlugin;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -64,6 +66,13 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
                 Double.POSITIVE_INFINITY);
         analyzer.analyze(new ImagePlus("mask", getCurrentMaskSlice()));
         ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
+
+        // Set slices
+        ImageSliceIndex index = getViewerPanel().getCurrentSliceIndex();
+        for (Roi roi : rois) {
+            roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
+        }
+
         ROIManagerPlugin roiManager = getViewerPanel().getPlugin(ROIManagerPlugin.class);
         roiManager.importROIs(rois, false);
         clearCurrentMask();
