@@ -191,7 +191,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
-
+        // Not supported
     }
 
     /**
@@ -368,6 +368,30 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     public void setVirtualDataAnnotation(int row, String column, JIPipeVirtualData virtualData) {
         List<JIPipeVirtualData> data = getOrCreateDataAnnotationColumnData(column);
         data.set(row, virtualData);
+    }
+
+    /**
+     * Sets the data of a specific row
+     * @param row the row
+     * @param data the data
+     */
+    public void setData(int row, JIPipeData data) {
+        if (!accepts(data))
+            throw new IllegalArgumentException("Tried to add data of type " + data.getClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
+
+        JIPipeVirtualData virtualData = new JIPipeVirtualData(JIPipe.getDataTypes().convert(data, getAcceptedDataType()));
+        this.data.set(row, virtualData);
+    }
+
+    /**
+     * Sets the data of a specific row
+     * @param row the row
+     * @param virtualData the data
+     */
+    public void setVirtualData(int row, JIPipeVirtualData virtualData) {
+        if (!accepts(virtualData.getDataClass()))
+            throw new IllegalArgumentException("Tried to add data of type " + virtualData.getDataClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
+        this.data.set(row, virtualData);
     }
 
     /**
