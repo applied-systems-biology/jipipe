@@ -91,13 +91,13 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
             int x;
             int y;
             if(tileRealXAnnotation.isEnabled()) {
-                x = NumberUtils.createInteger(annotations.get(tileRealXAnnotation.getContent()));
+                x = NumberUtils.createInteger(annotations.getOrDefault(tileRealXAnnotation.getContent(), "0"));
             }
             else {
                 throw new RuntimeException("No real X location available!");
             }
             if(tileRealYAnnotation.isEnabled()) {
-                y = NumberUtils.createInteger(annotations.get(tileRealYAnnotation.getContent()));
+                y = NumberUtils.createInteger(annotations.getOrDefault(tileRealYAnnotation.getContent(), "0"));
             }
             else {
                 throw new RuntimeException("No real Y location available!");
