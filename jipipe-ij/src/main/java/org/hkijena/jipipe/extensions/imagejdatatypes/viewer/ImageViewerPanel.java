@@ -310,8 +310,8 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.X_AXIS));
 
-        JButton editButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
-        editButton.setToolTipText("Set slice");
+        JButton editButton = new JButton(UIUtils.getIconFromResources("actions/go-jump.png"));
+        editButton.setToolTipText("Jump to slice");
         UIUtils.makeFlat25x25(editButton);
         editButton.addActionListener(e-> {
             String input = JOptionPane.showInputDialog(this,
