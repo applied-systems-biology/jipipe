@@ -119,6 +119,9 @@ public class WekaTrainingROI2DAlgorithm extends AbstractWekaTrainingAlgorithm {
             wekaSegmentation.setMinimumSigma(featureSettings.getMinSigma());
             wekaSegmentation.setMaximumSigma(featureSettings.getMaxSigma());
             wekaSegmentation.setUseNeighbors(featureSettings.isUseNeighbors());
+            while(wekaSegmentation.getNumOfClasses() < groupedROIs.size()) {
+                wekaSegmentation.addClass();
+            }
 
             for (Map.Entry<Integer, ROIListData> entry : groupedROIs.entrySet()) {
                 for (Roi roi : entry.getValue()) {
