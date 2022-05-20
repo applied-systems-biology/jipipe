@@ -367,6 +367,13 @@ New landing page
   text-align: justify;
 }
 
+@media screen and (max-width: 600px){
+  .landing-features .slick-slide .feature-description {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
 .landing-features .slick-slide span {
   opacity: 0;
   flex-grow: 1;
@@ -401,7 +408,7 @@ New landing page
 }
 
 .landing-page-try {
-  margin-top: 10rem;
+  margin-top: 4em;
   display: flex;
   flex-direction: column;
   align-content: center;
@@ -410,13 +417,13 @@ New landing page
 }
 
 .landing-page-try ol {
-  font-size: 2rem;
+  font-size: 2em;
   font-size: 2vw;
   list-style: none;
 }
 
 .landing-page-try ol li {
-  margin-top: 1rem;
+  margin-top: 1em;
   margin-top: 3vh;
   counter-increment: landing-page-try;
 }
@@ -424,8 +431,8 @@ New landing page
 .landing-page-try ol li::before {
   content: counter(landing-page-try);
   color: #5cb85c;
-  margin-top: 1.5rem;
-  margin-right: 1rem;
+  margin-top: 1.5em;
+  margin-right: 1em;
 }
 
 .landing-page-contact {
@@ -571,6 +578,7 @@ Examples page
 
 
 .jipipe-logo-index {
+  max-width: 600px;
   opacity: 0;
   transform: scale(1.5);
   animation-timing-function: ease-out;
@@ -585,6 +593,8 @@ Examples page
   justify-content: center;
   margin-bottom: 2em;
   font-size: 3em;
+  font-size: min(4vw,3em);
+  white-space: nowrap;
   color: #4d4d4d;
   opacity: 0;
   transform: scale(1.5);
@@ -593,4 +603,12 @@ Examples page
   animation-duration: 10s;
   animation-fill-mode: forwards;
   animation-name: slogan-land;
+}
+
+.button-row {
+  display: flex; 
+  justify-content: center;
+  gap: 1em; 
+  margin-top: 4rem;
+  flex-wrap: wrap;
 }
