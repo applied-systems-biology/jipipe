@@ -30,6 +30,10 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
 
     private OptionalAnnotationNameParameter tileRealYAnnotation = new OptionalAnnotationNameParameter("Original Y", true);
 
+    private OptionalAnnotationNameParameter tileInsetXAnnotation = new OptionalAnnotationNameParameter("Inset X", true);
+
+    private OptionalAnnotationNameParameter tileInsetYAnnotation = new OptionalAnnotationNameParameter("Inset Y", true);
+
     private OptionalAnnotationNameParameter imageWidthAnnotation = new OptionalAnnotationNameParameter("Original width", true);
 
     private OptionalAnnotationNameParameter imageHeightAnnotation = new OptionalAnnotationNameParameter("Original height", true);
@@ -40,6 +44,12 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
 
     public UnTileImage2DAlgorithm(UnTileImage2DAlgorithm other) {
         super(other);
+        this.tileRealXAnnotation = new OptionalAnnotationNameParameter(other.tileRealXAnnotation);
+        this.tileRealYAnnotation = new OptionalAnnotationNameParameter(other.tileRealYAnnotation);
+        this.tileInsetXAnnotation = new OptionalAnnotationNameParameter(other.tileInsetXAnnotation);
+        this.tileInsetYAnnotation = new OptionalAnnotationNameParameter(other.tileInsetYAnnotation);
+        this.imageWidthAnnotation = new OptionalAnnotationNameParameter(other.imageWidthAnnotation);
+        this.imageHeightAnnotation = new OptionalAnnotationNameParameter(other.imageHeightAnnotation);
     }
 
     @Override
@@ -53,13 +63,31 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
         progressInfo.log("Analyzing annotations ...");
         Map<ImagePlus, Point> imageLocations = new IdentityHashMap<>();
         for (int row : dataBatch.getInputRows(getFirstInputSlot())) {
+            Map<String, String> annotations = JIPipeTextAnnotation.annotationListToMap(getFirstInputSlot().getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting);
             ImagePlus tile = getFirstInputSlot().getData(row, ImagePlusData.class, progressInfo).getImage();
+
+            // Crop inset
+            int insetX = 0;
+            int insetY = 0;
+
+            if(tileInsetXAnnotation.isEnabled()) {
+                insetX = NumberUtils.createInteger(annotations.get(tileInsetXAnnotation.getContent()));
+            }
+            if(tileInsetYAnnotation.isEnabled()) {
+                insetY = NumberUtils.createInteger(annotations.get(tileInsetYAnnotation.getContent()));
+            }
+
+            if(insetX != 0 || insetY != 0) {
+                tile = TransformCrop2DAlgorithm.crop(progressInfo, tile, new Rectangle(insetX, insetY, tile.getWidth() - insetX * 2, tile.getHeight() - insetY * 2));
+            }
+
+            // Calculate dimensions
             if(bitDepth != 24)
                 bitDepth = Math.max(tile.getBitDepth(), bitDepth);
             nChannels = Math.max(nChannels, tile.getNChannels());
             nFrames = Math.max(nFrames, tile.getNFrames());
             nSlices = Math.max(nSlices, tile.getNSlices());
-            Map<String, String> annotations = JIPipeTextAnnotation.annotationListToMap(getFirstInputSlot().getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting);
+
             int x;
             int y;
             if(tileRealXAnnotation.isEnabled()) {
@@ -120,7 +148,7 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(mergedImage), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Use original X location", description = "If true, use the annotation that contains the original X location. Currently mandatory.")
+    @JIPipeDocumentation(name = "Use original X location", description = "If enabled, use the annotation that contains the original X location. Currently mandatory.")
     @JIPipeParameter("tile-real-x-annotation")
     public OptionalAnnotationNameParameter getTileRealXAnnotation() {
         return tileRealXAnnotation;
@@ -131,7 +159,7 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
         this.tileRealXAnnotation = tileRealXAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Use original Y location", description = "If true, use the annotation that contains the original Y location. Currently mandatory.")
+    @JIPipeDocumentation(name = "Use original Y location", description = "If enabled, use the annotation that contains the original Y location. Currently mandatory.")
     @JIPipeParameter("tile-real-y-annotation")
     public OptionalAnnotationNameParameter getTileRealYAnnotation() {
         return tileRealYAnnotation;
@@ -142,7 +170,7 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
         this.tileRealYAnnotation = tileRealYAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Use original width", description = "If true, use the original image width annotation. Otherwise, the output image size is calculated from the tiles.")
+    @JIPipeDocumentation(name = "Use original width", description = "If enabled, use the original image width annotation. Otherwise, the output image size is calculated from the tiles.")
     @JIPipeParameter("tile-original-width")
     public OptionalAnnotationNameParameter getImageWidthAnnotation() {
         return imageWidthAnnotation;
@@ -153,7 +181,7 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
         this.imageWidthAnnotation = imageWidthAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Use original height", description = "If true, use the original image height annotation. Otherwise, the output image size is calculated from the tiles.")
+    @JIPipeDocumentation(name = "Use original height", description = "If enabled, use the original image height annotation. Otherwise, the output image size is calculated from the tiles.")
     @JIPipeParameter("tile-original-height")
     public OptionalAnnotationNameParameter getImageHeightAnnotation() {
         return imageHeightAnnotation;
@@ -162,5 +190,27 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("tile-original-height")
     public void setImageHeightAnnotation(OptionalAnnotationNameParameter imageHeightAnnotation) {
         this.imageHeightAnnotation = imageHeightAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Use inset X", description = "If enabled, use the inset annotation. Otherwise the inset is assumed to be zero.")
+    @JIPipeParameter("tile-inset-x")
+    public OptionalAnnotationNameParameter getTileInsetXAnnotation() {
+        return tileInsetXAnnotation;
+    }
+
+    @JIPipeParameter("tile-inset-x")
+    public void setTileInsetXAnnotation(OptionalAnnotationNameParameter tileInsetXAnnotation) {
+        this.tileInsetXAnnotation = tileInsetXAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Use inset Y", description = "If enabled, use the inset annotation. Otherwise the inset is assumed to be zero.")
+    @JIPipeParameter("tile-inset-y")
+    public OptionalAnnotationNameParameter getTileInsetYAnnotation() {
+        return tileInsetYAnnotation;
+    }
+
+    @JIPipeParameter("tile-inset-y")
+    public void setTileInsetYAnnotation(OptionalAnnotationNameParameter tileInsetYAnnotation) {
+        this.tileInsetYAnnotation = tileInsetYAnnotation;
     }
 }

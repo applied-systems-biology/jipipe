@@ -100,6 +100,8 @@ public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         final int realTileSizeX = tileX + 2 * overlapX;
         final int realTileSizeY = tileY + 2 * overlapY;
+        final int nTilesX = (int) Math.ceil(1.0 * img.getWidth() / tileX);
+        final int nTilesY = (int) Math.ceil(1.0 * img.getHeight() / tileY);
 
        // Add border to image
         {
@@ -124,9 +126,6 @@ public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             int bottom = height - originalImg.getHeight() - top;
             img = AddBorder2DAlgorithm.addBorder(img, left, top, right, bottom, borderMode, 0, Color.BLACK, progressInfo.resolve("Adding border due to overlap"));
         }
-
-        final int nTilesX = img.getWidth() / realTileSizeX;
-        final int nTilesY = img.getHeight() / realTileSizeY;
 
         for (int y = 0; y < nTilesY; y++) {
             for (int x = 0; x < nTilesX; x++) {

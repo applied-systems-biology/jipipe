@@ -96,6 +96,13 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 //                    "Please check the parameters and ensure that you only crop ");
 //        }
 
+        ImagePlus croppedImg = crop(progressInfo, img, cropped);
+
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(croppedImg), progressInfo);
+    }
+
+    public static ImagePlus crop(JIPipeProgressInfo progressInfo, ImagePlus img, Rectangle cropped) {
+        ImagePlus croppedImg;
         if (img.isStack()) {
             ImageStack result = new ImageStack(cropped.width, cropped.height, img.getStackSize());
             ImageJUtils.forEachIndexedZCTSlice(img, (imp, index) -> {
@@ -104,19 +111,17 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 imp.resetRoi();
                 result.setProcessor(croppedImage, index.zeroSliceIndexToOneStackIndex(img));
             }, progressInfo);
-            ImagePlus croppedImg = new ImagePlus("Cropped", result);
+            croppedImg = new ImagePlus("Cropped", result);
             croppedImg.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
             croppedImg.copyScale(img);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(croppedImg), progressInfo);
         } else {
             ImageProcessor imp = img.getProcessor();
             imp.setRoi(cropped);
             ImageProcessor croppedImage = imp.crop();
             imp.resetRoi();
-            ImagePlus result = new ImagePlus("Cropped", croppedImage);
-            result.copyScale(img);
-            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+            croppedImg = new ImagePlus("Cropped", croppedImage);
         }
+        return croppedImg;
     }
 
     @JIPipeDocumentation(name = "ROI", description = "Defines the area to crop.")
