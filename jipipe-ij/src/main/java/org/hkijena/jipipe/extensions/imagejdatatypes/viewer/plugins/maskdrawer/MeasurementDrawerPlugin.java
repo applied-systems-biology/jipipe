@@ -68,9 +68,11 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
         ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
 
         // Set slices
-        ImageSliceIndex index = getViewerPanel().getCurrentSliceIndex();
-        for (Roi roi : rois) {
-            roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
+        if(getViewerPanel().getImage().getStackSize() > 1) {
+            ImageSliceIndex index = getViewerPanel().getCurrentSliceIndex();
+            for (Roi roi : rois) {
+                roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
+            }
         }
 
         ROIManagerPlugin roiManager = getViewerPanel().getPlugin(ROIManagerPlugin.class);
