@@ -354,7 +354,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         nextFrame.addActionListener(e -> {
             int value = stackSlider.getValue();
             int maximum = stackSlider.getMaximum();
-            int newIndex = ((value + 1) % maximum);
+            int newIndex = ((value) % maximum)  + 1;
             stackSlider.setValue(newIndex);
         });
         rightPanel.add(nextFrame);
@@ -686,11 +686,11 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
                     addSliderToForm(frameSlider, frameSliderLabel, animationFrameToggle, "Frame", "Frame (T) %d/%d");
 
                 stackSlider.setMinimum(1);
-                stackSlider.setMaximum(image.getNSlices() + 1);
+                stackSlider.setMaximum(image.getNSlices());
                 channelSlider.setMinimum(1);
-                channelSlider.setMaximum(image.getNChannels() + 1);
+                channelSlider.setMaximum(image.getNChannels());
                 frameSlider.setMinimum(1);
-                frameSlider.setMaximum(image.getNFrames() + 1);
+                frameSlider.setMaximum(image.getNFrames());
             } else {
                 bottomPanel.setVisible(false);
             }
