@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.ijweka.WekaUtils;
 import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
 import org.hkijena.jipipe.extensions.ijweka.parameters.WekaClassifierParameter;
 import org.hkijena.jipipe.extensions.ijweka.parameters.WekaClassifierSettings;
@@ -25,6 +26,7 @@ import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeature3D;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 import org.hkijena.jipipe.extensions.parameters.library.graph.InputSlotMapParameterCollection;
+import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import trainableSegmentation.WekaSegmentation;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
@@ -118,8 +120,7 @@ public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
         wekaSegmentation.setTrainingImage(trainingImage);
         wekaSegmentation.setClassifier((AbstractClassifier) classifier);
         wekaSegmentation.setDoClassBalance(getClassifierSettings().isBalanceClasses());
-        wekaSegmentation.setFeatures(selectedFeatureNames);
-        wekaSegmentation.setFeaturesDirty();
+        WekaUtils.set3DFeatures(wekaSegmentation, featureSettings.getTrainingFeatures().getValues());
         wekaSegmentation.setMembraneThickness(featureSettings.getMembraneSize());
         wekaSegmentation.setMembranePatchSize(featureSettings.getMembranePatchSize());
         wekaSegmentation.setMinimumSigma(featureSettings.getMinSigma());
@@ -135,8 +136,10 @@ public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
-        if (!wekaSegmentation.trainClassifier()) {
-            throw new RuntimeException("Weka training failed!");
+        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
+            if (!wekaSegmentation.trainClassifier()) {
+                throw new RuntimeException("Weka training failed!");
+            }
         }
 
         dataBatch.addOutputData("Trained model", new WekaModelData(wekaSegmentation), progressInfo);

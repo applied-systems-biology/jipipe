@@ -21,6 +21,7 @@ import org.hkijena.jipipe.extensions.ijweka.parameters.collections.WekaFeature2D
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.ImagePlus2DData;
 import org.hkijena.jipipe.extensions.parameters.library.graph.InputSlotMapParameterCollection;
+import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import trainableSegmentation.WekaSegmentation;
 import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
@@ -130,8 +131,10 @@ public class WekaTrainingROI2DAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
-        if (!wekaSegmentation.trainClassifier()) {
-            throw new RuntimeException("Weka training failed!");
+        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
+            if (!wekaSegmentation.trainClassifier()) {
+                throw new RuntimeException("Weka training failed!");
+            }
         }
 
         dataBatch.addOutputData("Trained model", new WekaModelData(wekaSegmentation), progressInfo);

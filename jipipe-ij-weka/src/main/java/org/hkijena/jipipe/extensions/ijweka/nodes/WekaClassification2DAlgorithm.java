@@ -18,6 +18,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
+import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import trainableSegmentation.WekaSegmentation;
 
 @JIPipeDocumentation(name = "Weka classifier 2D", description = "Classifies an image with a Weka model. If higher-dimensional data is provided, the classification is applied per slice. To obtain ROI from the generated labels, utilize the 'Labels to ROI' node.")
@@ -73,51 +74,51 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
         unTileImage2DAlgorithm.setImageHeightAnnotation(new OptionalAnnotationNameParameter("img_height", true));
 
         ImageStack stack = new ImageStack(image.getWidth(), image.getHeight(), image.getNSlices() * image.getNChannels() * image.getNChannels());
-        ImageJUtils.forEachIndexedZCTSlice(image.getImage(), (ip, index) -> {
-            ImagePlus wholeSlice = new ImagePlus(image.getImage().getTitle() + " " + index, ip);
-            ImagePlus classified;
-            if(tilingSettings.isApplyTiling()) {
-                if(tilingSettings.isUseWekaNativeTiling()) {
-                    int tilesX = (int) Math.ceil(1.0 * image.getWidth() / tilingSettings.getTileSizeX());
-                    int tilesY = (int) Math.ceil(1.0 * image.getHeight() / tilingSettings.getTileSizeY());
-                    progressInfo.log("Classifying with tiling (via Weka's native tiling)");
-                    classified = segmentation.applyClassifier(wholeSlice, new int[]{tilesX, tilesY}, numThreads.getContentOrDefault(0), outputProbabilityMaps);
-                }
-                else {
-                    progressInfo.log("Generating tiles for " + wholeSlice);
+        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
+            ImageJUtils.forEachIndexedZCTSlice(image.getImage(), (ip, index) -> {
+                ImagePlus wholeSlice = new ImagePlus(image.getImage().getTitle() + " " + index, ip);
+                ImagePlus classified;
+                if (tilingSettings.isApplyTiling()) {
+                    if (tilingSettings.isUseWekaNativeTiling()) {
+                        int tilesX = (int) Math.ceil(1.0 * image.getWidth() / tilingSettings.getTileSizeX());
+                        int tilesY = (int) Math.ceil(1.0 * image.getHeight() / tilingSettings.getTileSizeY());
+                        progressInfo.log("Classifying with tiling (via Weka's native tiling)");
+                        classified = segmentation.applyClassifier(wholeSlice, new int[]{tilesX, tilesY}, numThreads.getContentOrDefault(0), outputProbabilityMaps);
+                    } else {
+                        progressInfo.log("Generating tiles for " + wholeSlice);
 
-                    // Generate tiles
-                    tileImage2DAlgorithm.clearSlotData();
-                    tileImage2DAlgorithm.getFirstInputSlot().addData(new ImagePlusData(wholeSlice), progressInfo);
-                    tileImage2DAlgorithm.run(progressInfo.resolve("Generate tiles"));
+                        // Generate tiles
+                        tileImage2DAlgorithm.clearSlotData();
+                        tileImage2DAlgorithm.getFirstInputSlot().addData(new ImagePlusData(wholeSlice), progressInfo);
+                        tileImage2DAlgorithm.run(progressInfo.resolve("Generate tiles"));
 
-                    // Classify tiles
-                    JIPipeDataTable tileTable = tileImage2DAlgorithm.getFirstOutputSlot();
-                    for (int i = 0; i < tileTable.getRowCount(); i++) {
-                        JIPipeProgressInfo tileProgress = progressInfo.resolveAndLog("Classify tiles", i, tileTable.getRowCount());
-                        ImagePlus tileSlice = tileTable.getData(i, ImagePlusData.class, tileProgress).getImage();
-                        ImagePlus classifiedTileSlice = segmentation.applyClassifier(tileSlice, numThreads.getContentOrDefault(0), outputProbabilityMaps);
-                        tileTable.setData(i, new ImagePlusData(classifiedTileSlice));
+                        // Classify tiles
+                        JIPipeDataTable tileTable = tileImage2DAlgorithm.getFirstOutputSlot();
+                        for (int i = 0; i < tileTable.getRowCount(); i++) {
+                            JIPipeProgressInfo tileProgress = progressInfo.resolveAndLog("Classify tiles", i, tileTable.getRowCount());
+                            ImagePlus tileSlice = tileTable.getData(i, ImagePlusData.class, tileProgress).getImage();
+                            ImagePlus classifiedTileSlice = segmentation.applyClassifier(tileSlice, numThreads.getContentOrDefault(0), outputProbabilityMaps);
+                            tileTable.setData(i, new ImagePlusData(classifiedTileSlice));
+                        }
+
+                        // Merge tiles
+                        unTileImage2DAlgorithm.clearSlotData();
+                        unTileImage2DAlgorithm.getFirstInputSlot().addFromTable(tileTable, progressInfo);
+                        unTileImage2DAlgorithm.run(progressInfo.resolve("Merge tiles"));
+
+                        classified = unTileImage2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
+
+                        // Cleanup
+                        tileImage2DAlgorithm.clearSlotData();
+                        unTileImage2DAlgorithm.clearSlotData();
                     }
-
-                    // Merge tiles
-                    unTileImage2DAlgorithm.clearSlotData();
-                    unTileImage2DAlgorithm.getFirstInputSlot().addFromTable(tileTable, progressInfo);
-                    unTileImage2DAlgorithm.run(progressInfo.resolve("Merge tiles"));
-
-                    classified = unTileImage2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
-
-                    // Cleanup
-                    tileImage2DAlgorithm.clearSlotData();
-                    unTileImage2DAlgorithm.clearSlotData();
+                } else {
+                    progressInfo.log("Classifying whole image " + wholeSlice);
+                    classified = segmentation.applyClassifier(wholeSlice, numThreads.getContentOrDefault(0), outputProbabilityMaps);
                 }
-            }
-            else {
-                progressInfo.log("Classifying whole image " + wholeSlice);
-                classified = segmentation.applyClassifier(wholeSlice, numThreads.getContentOrDefault(0), outputProbabilityMaps);
-            }
-            stack.setProcessor(classified.getProcessor(), index.zeroSliceIndexToOneStackIndex(image.getImage()));
-        }, progressInfo);
+                stack.setProcessor(classified.getProcessor(), index.zeroSliceIndexToOneStackIndex(image.getImage()));
+            }, progressInfo);
+        }
 
         dataBatch.addOutputData("Classified image", new ImagePlusData(new ImagePlus("Classified", stack)), progressInfo);
     }

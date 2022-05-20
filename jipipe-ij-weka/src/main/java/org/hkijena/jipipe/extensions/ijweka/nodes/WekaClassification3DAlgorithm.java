@@ -21,6 +21,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
+import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import trainableSegmentation.WekaSegmentation;
 
 @JIPipeDocumentation(name = "Weka classifier 3D", description = "Classifies a 3D image with a Weka model. To obtain ROI from the generated labels, utilize the 'Labels to ROI' node.")
@@ -61,10 +62,14 @@ public class WekaClassification3DAlgorithm extends JIPipeIteratingAlgorithm {
             int tilesX = (int) Math.ceil(1.0 * image.getWidth() / tilingSettings.getTileSizeX());
             int tilesY = (int) Math.ceil(1.0 * image.getHeight() / tilingSettings.getTileSizeY());
             int tilesZ = (int) Math.ceil(1.0 * image.getNSlices() / tilingSettings.getTileSizeZ());
-            classified = segmentation.applyClassifier(wholeImage, new int[] { tilesX, tilesY, tilesZ }, numThreads.getContentOrDefault(0), outputProbabilityMaps);
+            try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
+                classified = segmentation.applyClassifier(wholeImage, new int[]{tilesX, tilesY, tilesZ}, numThreads.getContentOrDefault(0), outputProbabilityMaps);
+            }
         }
         else {
-            classified = segmentation.applyClassifier(wholeImage, numThreads.getContentOrDefault(0), outputProbabilityMaps);
+            try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
+                classified = segmentation.applyClassifier(wholeImage, numThreads.getContentOrDefault(0), outputProbabilityMaps);
+            }
         }
 
         dataBatch.addOutputData("Classified image", new ImagePlusData(classified), progressInfo);
@@ -74,6 +79,28 @@ public class WekaClassification3DAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("tiling-parameters")
     public WekaTiling3DSettings getTilingParameters() {
         return tilingSettings;
+    }
+
+    @JIPipeDocumentation(name = "Override number of threads", description = "If enabled, set the number of threads to be utilized. Set to zero for automated assignment of threads.")
+    @JIPipeParameter("num-threads")
+    public OptionalIntegerParameter getNumThreads() {
+        return numThreads;
+    }
+
+    @JIPipeParameter("num-threads")
+    public void setNumThreads(OptionalIntegerParameter numThreads) {
+        this.numThreads = numThreads;
+    }
+
+    @JIPipeDocumentation(name = "Output probability maps", description = "If enabled, output probability maps instead of class labels.")
+    @JIPipeParameter("output-probability-maps")
+    public boolean isOutputProbabilityMaps() {
+        return outputProbabilityMaps;
+    }
+
+    @JIPipeParameter("output-probability-maps")
+    public void setOutputProbabilityMaps(boolean outputProbabilityMaps) {
+        this.outputProbabilityMaps = outputProbabilityMaps;
     }
 
 }
