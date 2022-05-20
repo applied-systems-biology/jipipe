@@ -17,6 +17,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.PixelInfoPlu
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ROIManagerPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MaskToROIDrawerPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementPlugin;
+import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.awt.*;
@@ -43,7 +44,7 @@ public class ROIDrawerFormData extends FormData {
     }
 
     private void initializeImageViewer() {
-        imageViewerPanel = new ImageViewerPanel();
+        imageViewerPanel = new ImageViewerPanel(new JIPipeDummyWorkbench());
         maskDrawerPlugin = new MaskToROIDrawerPlugin(imageViewerPanel);
         roiManagerPlugin = new ROIManagerPlugin(imageViewerPanel);
         imageViewerPanel.setPlugins(Arrays.asList(new CalibrationPlugin(imageViewerPanel),

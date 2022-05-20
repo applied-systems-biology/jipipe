@@ -24,23 +24,6 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
         setMaskGenerator(this::generateMask);
     }
 
-    public static void main(String[] args) {
-//        ImagePlus img = IJ.openImage("E:\\Projects\\JIPipe\\testdata\\ATTC_IµL_3rdReplicate-Experiment-5516\\in\\data.tif");
-        ImagePlus img = IJ.openImage("/fastdata/projects/JIPipe/testdata/ATTC_IµL_3rdReplicate-Experiment-5518/in/data.tif");
-        JIPipeUITheme.ModernLight.install();
-        JFrame frame = new JFrame();
-        ImageViewerPanel panel = new ImageViewerPanel();
-        MeasurementDrawerPlugin maskDrawerPlugin = new MeasurementDrawerPlugin(panel);
-        MeasurementPlugin measurementPlugin = new MeasurementPlugin(panel);
-        panel.setPlugins(Arrays.asList(maskDrawerPlugin, measurementPlugin));
-        panel.setImage(img);
-//        maskDrawerPlugin.setMask(IJ.createImage("Mask", img.getWidth(), img.getHeight(), 1, 8));
-        frame.setContentPane(panel);
-        frame.pack();
-        frame.setSize(1280, 1024);
-        frame.setVisible(true);
-    }
-
     private ImagePlus generateMask(ImagePlus imagePlus) {
         return IJ.createHyperStack("Mask",
                 getCurrentImage().getWidth(),

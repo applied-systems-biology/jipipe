@@ -4,13 +4,15 @@ import ij.ImagePlus;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.components.FormPanel;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
-public abstract class ImageViewerPanelPlugin {
+public abstract class ImageViewerPanelPlugin implements JIPipeWorkbenchAccess {
     private final ImageViewerPanel viewerPanel;
 
     public ImageViewerPanelPlugin(ImageViewerPanel viewerPanel) {
@@ -35,6 +37,11 @@ public abstract class ImageViewerPanelPlugin {
 
     public ImageProcessor getCurrentSlice() {
         return viewerPanel.getCurrentSlice();
+    }
+
+    @Override
+    public JIPipeWorkbench getWorkbench() {
+        return getViewerPanel().getWorkbench();
     }
 
     /**

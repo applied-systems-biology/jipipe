@@ -19,7 +19,7 @@ import java.util.Set;
 
 public class ImagePlusDataImportIntoJIPipeOperation implements JIPipeDataImportOperation {
 
-    private Set<ImagePlusResultImportRun> knownRuns = new HashSet<>();
+    private final Set<ImagePlusResultImportRun> knownRuns = new HashSet<>();
 
     public ImagePlusDataImportIntoJIPipeOperation() {
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
@@ -64,7 +64,7 @@ public class ImagePlusDataImportIntoJIPipeOperation implements JIPipeDataImportO
             ImagePlusResultImportRun run = (ImagePlusResultImportRun) event.getRun();
             if (!knownRuns.contains(run))
                 return;
-            ImageViewerPanel.showImage(run.getImage(), run.getDisplayName());
+            ImageViewerPanel.showImage(run.getWorkbench() , run.getImage(), run.getDisplayName());
         }
     }
 }

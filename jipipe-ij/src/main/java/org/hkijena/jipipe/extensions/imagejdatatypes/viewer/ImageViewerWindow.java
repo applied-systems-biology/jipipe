@@ -13,22 +13,27 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
-public class ImageViewerWindow extends JFrame implements WindowListener {
+public class ImageViewerWindow extends JFrame implements WindowListener, JIPipeWorkbenchAccess {
+    private final JIPipeWorkbench workbench;
     private final ImageViewerPanel viewerPanel;
 
-    public ImageViewerWindow() {
-        this.viewerPanel = new ImageViewerPanel();
+    public ImageViewerWindow(JIPipeWorkbench workbench) {
+        this.workbench = workbench;
+        this.viewerPanel = new ImageViewerPanel(workbench);
         initialize();
     }
 
     public ImageViewerWindow(ImageViewerPanel panel) {
         this.viewerPanel = panel;
+        this.workbench = panel.getWorkbench();
         initialize();
     }
 
@@ -88,5 +93,10 @@ public class ImageViewerWindow extends JFrame implements WindowListener {
     @Override
     public void windowDeactivated(WindowEvent e) {
 
+    }
+
+    @Override
+    public JIPipeWorkbench getWorkbench() {
+        return workbench;
     }
 }

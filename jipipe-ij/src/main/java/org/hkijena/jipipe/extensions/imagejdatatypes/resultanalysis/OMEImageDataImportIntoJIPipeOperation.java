@@ -64,7 +64,7 @@ public class OMEImageDataImportIntoJIPipeOperation implements JIPipeDataImportOp
             OMEImageResultImportRun run = (OMEImageResultImportRun) event.getRun();
             if (!knownRuns.contains(run))
                 return;
-            ImageViewerPanel.showImage(run.getImage().getImage(), run.getDisplayName());
+            ImageViewerPanel.showImage(run.getWorkbench(), run.getImage().getImage(), run.getDisplayName());
         }
     }
 }

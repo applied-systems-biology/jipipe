@@ -86,7 +86,7 @@ public class WekaClassifierParameterEditorUI extends JIPipeParameterEditorUI {
                 "click the white area next to 'Choose'."), FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION);
         formPanel.addToForm(propertyPanel, new JLabel("Classifier"), null);
 
-        if(UIUtils.showOKCancelDialog(getWorkbench(), formPanel, "Edit classifier")) {
+        if(UIUtils.showOKCancelDialog(getWorkbench().getWindow(), formPanel, "Edit classifier")) {
             WekaClassifierParameter newParameter = new WekaClassifierParameter();
             newParameter.setClassifier((Classifier)editor.getValue());
             setParameter(newParameter, true);

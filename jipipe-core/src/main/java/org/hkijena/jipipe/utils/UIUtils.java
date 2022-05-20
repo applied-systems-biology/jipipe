@@ -828,13 +828,14 @@ public class UIUtils {
 
     /**
      * Shows a component in a JIPipe-styled dialog with OK and Cancel button
-     * @param workbench the workbench
+     *
+     * @param parent    the parent component
      * @param component the component
-     * @param title the title
+     * @param title     the title
      * @return true of OK was pressed
      */
-    public static boolean showOKCancelDialog(JIPipeWorkbench workbench, Component component, String title) {
-        JDialog dialog = new JDialog(workbench.getWindow());
+    public static boolean showOKCancelDialog(Component parent, Component component, String title) {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
         dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
 
         JPanel panel = new JPanel(new BorderLayout(8, 8));
@@ -868,7 +869,7 @@ public class UIUtils {
         dialog.setModal(true);
         dialog.pack();
         dialog.setSize(new Dimension(800, 600));
-        dialog.setLocationRelativeTo(workbench.getWindow());
+        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(parent));
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);
 

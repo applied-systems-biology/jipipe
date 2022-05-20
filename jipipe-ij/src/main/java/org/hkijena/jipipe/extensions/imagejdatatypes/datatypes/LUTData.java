@@ -194,7 +194,7 @@ public class LUTData implements JIPipeData {
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         ImagePlus image = toImage(256, 256);
-        ImageViewerPanel.showImage(image, displayName);
+        ImageViewerPanel.showImage(workbench, image, displayName);
     }
 
     @Override

@@ -50,7 +50,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
     }
 
     private void initialize() {
-        imageViewerPanel = new ImageViewerPanel();
+        imageViewerPanel = new ImageViewerPanel(getWorkbench());
         List<ImageViewerPanelPlugin> pluginList = new ArrayList<>();
         pluginList.add(new CalibrationPlugin(imageViewerPanel));
         pluginList.add(new PixelInfoPlugin(imageViewerPanel));

@@ -32,6 +32,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.M
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementPlugin;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PathEditor;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
@@ -49,7 +51,7 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 
-public class ImageViewerPanel extends JPanel {
+public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private static final Set<ImageViewerPanel> OPEN_PANELS = new HashSet<>();
     private static ImageViewerPanel ACTIVE_PANEL = null;
     private final JButton zoomStatusButton = new JButton();
@@ -69,6 +71,7 @@ public class ImageViewerPanel extends JPanel {
     private final JToggleButton enableSideBarButton = new JToggleButton();
     private final DocumentTabPane tabPane = new DocumentTabPane();
     private final Map<String, FormPanel> formPanels = new HashMap<>();
+    private final JIPipeWorkbench workbench;
     private ImagePlus image;
     private ImageProcessor currentSlice;
     private ImageViewerPanelCanvas canvas;
@@ -84,7 +87,13 @@ public class ImageViewerPanel extends JPanel {
     private JButton rotateRightButton;
     private Component currentContentPanel;
     private boolean isUpdatingSliders = false;
-    public ImageViewerPanel() {
+
+    /**
+     * Initializes a new image viewer
+     * @param workbench the workbench. Use {@link org.hkijena.jipipe.ui.JIPipeDummyWorkbench} if you do not have access to one.
+     */
+    public ImageViewerPanel(JIPipeWorkbench workbench) {
+        this.workbench = workbench;
         if (JIPipe.getInstance() != null) {
             settings = ImageViewerUISettings.getInstance();
         } else {
@@ -102,15 +111,21 @@ public class ImageViewerPanel extends JPanel {
         return OPEN_PANELS;
     }
 
+    @Override
+    public JIPipeWorkbench getWorkbench() {
+        return workbench;
+    }
+
     /**
      * Opens the image in a new frame
      *
-     * @param image the image
-     * @param title the title
+     * @param workbench the workbench
+     * @param image     the image
+     * @param title     the title
      * @return the panel
      */
-    public static ImageViewerPanel showImage(ImagePlus image, String title) {
-        ImageViewerPanel dataDisplay = new ImageViewerPanel();
+    public static ImageViewerPanel showImage(JIPipeWorkbench workbench, ImagePlus image, String title) {
+        ImageViewerPanel dataDisplay = new ImageViewerPanel(workbench);
         List<ImageViewerPanelPlugin> pluginList = new ArrayList<>();
         pluginList.add(new CalibrationPlugin(dataDisplay));
         pluginList.add(new PixelInfoPlugin(dataDisplay));

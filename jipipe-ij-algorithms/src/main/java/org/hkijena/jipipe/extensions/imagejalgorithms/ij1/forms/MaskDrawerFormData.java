@@ -15,6 +15,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.LUTManagerPl
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.PixelInfoPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MaskDrawerPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MeasurementPlugin;
+import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.awt.*;
@@ -39,7 +40,7 @@ public class MaskDrawerFormData extends FormData {
     }
 
     private void initializeImageViewer() {
-        imageViewerPanel = new ImageViewerPanel();
+        imageViewerPanel = new ImageViewerPanel(new JIPipeDummyWorkbench());
         maskDrawerPlugin = new MaskDrawerPlugin(imageViewerPanel);
         imageViewerPanel.setPlugins(Arrays.asList(new CalibrationPlugin(imageViewerPanel),
                 new PixelInfoPlugin(imageViewerPanel),

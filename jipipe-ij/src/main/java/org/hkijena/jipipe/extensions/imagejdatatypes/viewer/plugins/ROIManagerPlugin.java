@@ -6,13 +6,17 @@ import ij.plugin.frame.RoiManager;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIEditor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.RoiListCellRenderer;
-import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer.MaskDrawerPlugin;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -24,11 +28,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ROIManagerPlugin extends ImageViewerPanelPlugin {
-    private final ImageViewerPanel viewerPanel;
     private ROIListData rois = new ROIListData();
-    private ROIListData overlayRois = new ROIListData();
-    private JList<Roi> roiJList = new JList<>();
-    private JLabel roiInfoLabel = new JLabel();
+    private final ROIListData overlayRois = new ROIListData();
+    private final JList<Roi> roiJList = new JList<>();
+    private final JLabel roiInfoLabel = new JLabel();
     private boolean roiSeeThroughZ = false;
     private boolean roiSeeThroughC = false;
     private boolean roiSeeThroughT = false;
@@ -39,7 +42,6 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     public ROIManagerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
-        this.viewerPanel = viewerPanel;
         initialize();
     }
 
@@ -65,170 +67,254 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     public void createPalettePanel(FormPanel formPanel) {
         if (getCurrentImage() == null)
             return;
-        FormPanel.GroupHeaderPanel headerPanel = formPanel.addGroupHeader("ROI", UIUtils.getIconFromResources("data-types/roi.png"));
-        JButton importROIsButton = new JButton("Import", UIUtils.getIconFromResources("actions/document-import.png"));
-        JPopupMenu importMenu = UIUtils.addPopupMenuToComponent(importROIsButton);
-
-        JMenuItem importDataManagerItem = new JMenuItem("Import from ImageJ ROI Manager", UIUtils.getIconFromResources("apps/imagej.png"));
-        importDataManagerItem.addActionListener(e -> importROIsFromManager(false));
-        importMenu.add(importDataManagerItem);
-
-        JMenuItem importDataFileItem = new JMenuItem("Import from file", UIUtils.getIconFromResources("actions/fileopen.png"));
-        importDataFileItem.addActionListener(e -> importROIsFromFile());
-        importMenu.add(importDataFileItem);
-
-        headerPanel.addColumn(importROIsButton);
-
-        JButton exportROIsButton = new JButton("Export", UIUtils.getIconFromResources("actions/document-export.png"));
-        JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportROIsButton);
-
-        JMenuItem exportToManagerItem = new JMenuItem("Export to ImageJ ROI Manager", UIUtils.getIconFromResources("apps/imagej.png"));
-        exportToManagerItem.addActionListener(e -> exportROIsToManager());
-        exportMenu.add(exportToManagerItem);
-
-        JMenuItem exportToFileItem = new JMenuItem("Export to file", UIUtils.getIconFromResources("actions/save.png"));
-        exportToFileItem.addActionListener(e -> exportROIsToFile());
-        exportMenu.add(exportToFileItem);
-
-        headerPanel.addColumn(exportROIsButton);
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.setMinimumSize(new Dimension(100, 300));
         panel.setBorder(BorderFactory.createEtchedBorder());
-        JToolBar listToolBar = new JToolBar();
-        listToolBar.setFloatable(false);
-        panel.add(listToolBar, BorderLayout.NORTH);
 
-        listToolBar.add(roiInfoLabel);
-        listToolBar.add(Box.createHorizontalGlue());
+        JMenuBar listMenuBar = new JMenuBar();
+        panel.add(listMenuBar, BorderLayout.NORTH);
+
+        createViewMenu(listMenuBar);
+        createSelectionMenu(listMenuBar);
+        createImportExportMenu(listMenuBar);
+
+        listMenuBar.add(Box.createHorizontalGlue());
+        createButtons(listMenuBar);
+
+        JScrollPane scrollPane = new JScrollPane(roiJList);
+        panel.add(scrollPane, BorderLayout.CENTER);
+
+        // Info (bottom toolbar)
+        createInfoToolbar(panel);
+
+        formPanel.addVerticalGlue(panel, null);
+    }
+
+    private void createImportExportMenu(JMenuBar menuBar) {
+        JMenu ioMenu = new JMenu("Import/Export");
+        menuBar.add(ioMenu);
+        // Import items
+        {
+            JMenuItem item = new JMenuItem("Import from file", UIUtils.getIconFromResources("actions/fileopen.png"));
+            item.addActionListener(e -> importROIsFromFile());
+            ioMenu.add(item);
+        }
+        // Separator
+        ioMenu.addSeparator();
+        // Export items
+        {
+            JMenuItem item = new JMenuItem("Export to ImageJ ROI Manager", UIUtils.getIconFromResources("apps/imagej.png"));
+            item.addActionListener(e -> {
+                if(rois.isEmpty()) {
+                    JOptionPane.showMessageDialog(getViewerPanel(), "No ROI to export.", "Export ROI", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                ROIListData result = getSelectedROIOrAll("Export ROI", "Do you want to export all ROI or only the selected ones?");
+                if(result != null) {
+                    exportROIsToManager(result);
+                }
+            });
+            ioMenu.add(item);
+        }
+        {
+            JMenuItem item = new JMenuItem("Export to file", UIUtils.getIconFromResources("actions/save.png"));
+            item.addActionListener(e -> {
+                if(rois.isEmpty()) {
+                    JOptionPane.showMessageDialog(getViewerPanel(), "No ROI to export.", "Export ROI", JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                ROIListData result = getSelectedROIOrAll("Export ROI", "Do you want to export all ROI or only the selected ones?");
+                if(result != null) {
+                    exportROIsToFile(result);
+                }
+            });
+            ioMenu.add(item);
+        }
+    }
+
+    public ROIListData getSelectedROIOrAll(String title, String message) {
+        if(!roiJList.getSelectedValuesList().isEmpty()) {
+            int result = JOptionPane.showOptionDialog(getViewerPanel(),
+                    message,
+                    title,
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    new Object[]{"All ROI (" + rois.size() + ")", "Selected ROI (" + roiJList.getSelectedValuesList().size() + ")", "Cancel"},
+                    "All ROI (" + rois.size() + ")");
+            if(result == JOptionPane.CANCEL_OPTION)
+                return null;
+            else if(result == JOptionPane.YES_OPTION)
+                return rois;
+            else
+                return new ROIListData(roiJList.getSelectedValuesList());
+        }
+        return rois;
+    }
+
+    private void createSelectionMenu(JMenuBar menuBar) {
+        JMenu selectionMenu = new JMenu("Selection");
+        menuBar.add(selectionMenu);
 
         {
-            JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/eye.png"));
-            toggle.setToolTipText("Show only visible ROI");
+            JMenuItem selectAllButton = new JMenuItem("Select all", UIUtils.getIconFromResources("actions/edit-select-all.png"));
+            selectAllButton.addActionListener(e -> {
+                roiJList.setSelectionInterval(0, roiJList.getModel().getSize() - 1);
+            });
+            selectionMenu.add(selectAllButton);
+        }
+        {
+            JMenuItem deselectAllButton = new JMenuItem("Clear selection", UIUtils.getIconFromResources("actions/edit-select-none.png"));
+            deselectAllButton.addActionListener(e -> {
+                roiJList.clearSelection();
+            });
+            selectionMenu.add(deselectAllButton);
+        }
+        {
+            JMenuItem invertSelectionButton = new JMenuItem("Invert selection", UIUtils.getIconFromResources("actions/object-inverse.png"));
+            invertSelectionButton.addActionListener(e -> {
+                Set<Integer> selectedIndices = Arrays.stream(roiJList.getSelectedIndices()).boxed().collect(Collectors.toSet());
+                roiJList.clearSelection();
+                Set<Integer> newSelectedIndices = new HashSet<>();
+                for (int i = 0; i < roiJList.getModel().getSize(); i++) {
+                    if (!selectedIndices.contains(i))
+                        newSelectedIndices.add(i);
+                }
+                roiJList.setSelectedIndices(Ints.toArray(newSelectedIndices));
+            });
+            selectionMenu.add(invertSelectionButton);
+        }
+    }
+
+    private void createInfoToolbar(JPanel panel) {
+        JToolBar infoToolBar = new JToolBar();
+        infoToolBar.setFloatable(false);
+
+        roiInfoLabel.setIcon(UIUtils.getIconFromResources("data-types/roi.png"));
+        roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        infoToolBar.add(roiInfoLabel);
+        infoToolBar.add(Box.createHorizontalGlue());
+
+        panel.add(infoToolBar, BorderLayout.SOUTH);
+    }
+
+    private void createButtons(JMenuBar menuBar) {
+        {
+            JButton removeButton = new JButton("Delete", UIUtils.getIconFromResources("actions/delete.png"));
+            removeButton.setToolTipText("Remove selected ROIs");
+            removeButton.addActionListener(e -> {
+                if(roiJList.getSelectedValuesList().isEmpty())
+                    return;
+                if(JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + roiJList.getSelectedValuesList().size() + "ROI?", "Edit ROI", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    removeSelectedROIs(false);
+                }
+            });
+            menuBar.add(removeButton);
+        }
+        {
+            JButton editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
+            JPopupMenu editMenu = new JPopupMenu();
+            UIUtils.addReloadablePopupMenuToComponent(editButton,editMenu, () -> reloadEditRoiMenu(editMenu) );
+            menuBar.add(editButton);
+        }
+    }
+
+    private void editROIInDialog() {
+        List<Roi> selected = roiJList.getSelectedValuesList();
+        if(selected.isEmpty()) {
+            JOptionPane.showMessageDialog(getViewerPanel(), "You have not selected ROI to edit.", "Edit ROI", JOptionPane.ERROR_MESSAGE);
+        }
+        if(selected.size() > 5) {
+            if(JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to edit " + selected.size() + "ROI?", "Edit ROI", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+                return;
+            }
+        }
+        DocumentTabPane documentTabPane = new DocumentTabPane();
+        List<ROIEditor> editors = new ArrayList<>();
+        for (Roi roi : selected) {
+            ROIEditor editor = new ROIEditor(roi);
+            ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(), editor, new MarkdownDocument("# Edit ROI"), ParameterPanel.WITH_SEARCH_BAR | FormPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION);
+            documentTabPane.addTab(roi.getName() + "", UIUtils.getIconFromResources("data-types/roi.png"), parameterPanel, DocumentTabPane.CloseMode.withoutCloseButton, true);
+            editors.add(editor);
+        }
+        if(UIUtils.showOKCancelDialog(getViewerPanel(), documentTabPane, "Edit ROI")) {
+            for (int i = 0; i < selected.size(); i++) {
+                Roi roi = editors.get(i).applyToRoi(selected.get(i));
+                rois.set(i, roi);
+            }
+            updateROIJList(false);
+        }
+    }
+
+    private void createViewMenu(JMenuBar menuBar) {
+        JMenu viewMenu = new JMenu("View");
+        menuBar.add(viewMenu);
+        {
+            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Show only visible ROI in list", UIUtils.getIconFromResources("actions/eye.png"));
             toggle.setSelected(roiFilterList);
             toggle.addActionListener(e -> {
                 roiFilterList = toggle.isSelected();
                 updateROIJList(false);
             });
-            listToolBar.add(toggle);
+            viewMenu.add(toggle);
         }
-        listToolBar.addSeparator();
-
-        JButton selectAllButton = new JButton(UIUtils.getIconFromResources("actions/edit-select-all.png"));
-        selectAllButton.setToolTipText("Select all");
-        selectAllButton.addActionListener(e -> {
-            roiJList.setSelectionInterval(0, roiJList.getModel().getSize() - 1);
-        });
-        listToolBar.add(selectAllButton);
-
-        JButton deselectAllButton = new JButton(UIUtils.getIconFromResources("actions/edit-select-none.png"));
-        deselectAllButton.setToolTipText("Clear selection");
-        deselectAllButton.addActionListener(e -> {
-            roiJList.clearSelection();
-        });
-        listToolBar.add(deselectAllButton);
-
-        JButton invertSelectionButton = new JButton(UIUtils.getIconFromResources("actions/object-inverse.png"));
-        invertSelectionButton.setToolTipText("Invert selection");
-        invertSelectionButton.addActionListener(e -> {
-            Set<Integer> selectedIndices = Arrays.stream(roiJList.getSelectedIndices()).boxed().collect(Collectors.toSet());
-            roiJList.clearSelection();
-            Set<Integer> newSelectedIndices = new HashSet<>();
-            for (int i = 0; i < roiJList.getModel().getSize(); i++) {
-                if (!selectedIndices.contains(i))
-                    newSelectedIndices.add(i);
-            }
-            roiJList.setSelectedIndices(Ints.toArray(newSelectedIndices));
-        });
-        listToolBar.add(invertSelectionButton);
-
-        listToolBar.addSeparator();
-
-        JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/delete.png"));
-        removeButton.setToolTipText("Remove selected ROIs");
-        removeButton.addActionListener(e -> removeSelectedROIs(false));
-        listToolBar.add(removeButton);
-
-        JScrollPane scrollPane = new JScrollPane(roiJList);
-        panel.add(scrollPane, BorderLayout.CENTER);
-
-        JToolBar viewToolBar = new JToolBar();
-        viewToolBar.setFloatable(false);
-
+        viewMenu.addSeparator();
         {
-            JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/object-stroke.png"));
-            toggle.setToolTipText("Draw outline");
+            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Draw ROI outline", UIUtils.getIconFromResources("actions/object-stroke.png"));
             toggle.setSelected(roiDrawOutline);
             toggle.addActionListener(e -> {
                 roiDrawOutline = toggle.isSelected();
                 uploadSliceToCanvas();
             });
-            viewToolBar.add(toggle);
+            viewMenu.add(toggle);
         }
         {
-            JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/object-fill.png"));
-            toggle.setToolTipText("Fill outline");
+            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Fill ROI outline", UIUtils.getIconFromResources("actions/object-fill.png"));
             toggle.setSelected(roiFillOutline);
             toggle.addActionListener(e -> {
                 roiFillOutline = toggle.isSelected();
                 uploadSliceToCanvas();
             });
-            viewToolBar.add(toggle);
+            viewMenu.add(toggle);
         }
         {
-            JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/edit-select-text.png"));
-            toggle.setToolTipText("Draw labels");
+            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Draw ROI labels",UIUtils.getIconFromResources( "actions/edit-select-text.png"));
             toggle.setSelected(roiDrawLabels);
             toggle.addActionListener(e -> {
                 roiDrawLabels = toggle.isSelected();
                 uploadSliceToCanvas();
             });
-            viewToolBar.add(toggle);
+            viewMenu.add(toggle);
         }
-
-        viewToolBar.addSeparator();
-
-        JButton editButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
-        JPopupMenu editMenu = new JPopupMenu();
-        UIUtils.addReloadablePopupMenuToComponent(editButton, editMenu, () -> reloadEditRoiMenu(editMenu));
-        viewToolBar.add(editButton);
-
-        viewToolBar.add(Box.createHorizontalGlue());
-
+        viewMenu.addSeparator();
         {
-            JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/layer-flatten-z.png"));
-            toggle.setToolTipText("Show all ROIs regardless of Z axis.");
+            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Draw ROI: Ignore Z axis", UIUtils.getIconFromResources("actions/layer-flatten-z.png"));
             toggle.setSelected(roiSeeThroughZ);
             toggle.addActionListener(e -> {
                 roiSeeThroughZ = toggle.isSelected();
                 uploadSliceToCanvas();
             });
-            viewToolBar.add(toggle);
+            viewMenu.add(toggle);
         }
         {
-            JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/layer-flatten-t.png"));
-            toggle.setToolTipText("Show all ROIs regardless of time axis.");
+            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Draw ROI: Ignore time/frame axis", UIUtils.getIconFromResources("actions/layer-flatten-t.png"));
             toggle.setSelected(roiSeeThroughT);
             toggle.addActionListener(e -> {
                 roiSeeThroughT = toggle.isSelected();
                 uploadSliceToCanvas();
             });
-            viewToolBar.add(toggle);
+            viewMenu.add(toggle);
         }
         {
-            JToggleButton toggle = new JToggleButton(UIUtils.getIconFromResources("actions/layer-flatten-c.png"));
-            toggle.setToolTipText("Show all ROIs regardless of channel axis.");
+            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Draw ROI: Ignore channel axis", UIUtils.getIconFromResources("actions/layer-flatten-c.png"));
             toggle.setSelected(roiSeeThroughC);
             toggle.addActionListener(e -> {
                 roiSeeThroughC = toggle.isSelected();
                 uploadSliceToCanvas();
             });
-            viewToolBar.add(toggle);
+            viewMenu.add(toggle);
         }
-
-        panel.add(viewToolBar, BorderLayout.SOUTH);
-
-        formPanel.addVerticalGlue(panel, null);
     }
 
     private void importROIsFromFile() {
@@ -239,7 +325,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         }
     }
 
-    private void exportROIsToFile() {
+    private void exportROIsToFile(ROIListData rois) {
         FileNameExtensionFilter[] fileNameExtensionFilters;
         if (rois.size() == 1) {
             fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ROI, UIUtils.EXTENSION_FILTER_ROI_ZIP};
@@ -430,7 +516,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         updateROIJList(deferUploadSlice);
     }
 
-    public void exportROIsToManager() {
+    public void exportROIsToManager(ROIListData rois) {
         rois.addToRoiManager(RoiManager.getRoiManager());
     }
 
