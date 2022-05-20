@@ -72,7 +72,7 @@ public class SerializationUtils {
      */
     public static void objectToFile(Object obj, Path file) {
         try(FileOutputStream fos = new FileOutputStream(file.toFile())) {
-            
+
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
