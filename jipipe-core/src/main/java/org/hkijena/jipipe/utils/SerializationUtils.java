@@ -66,14 +66,29 @@ public class SerializationUtils {
     }
 
     /**
-     * Serializes a Java object into a file via ObjectOutputStream
+     * Serializes a Java object into a file via {@link ObjectOutputStream}
      * @param obj the object
      * @param file the file
      */
-    public static void objectToFile(Object obj, Path file) {
+    public static void objectToBinaryFile(Object obj, Path file) {
         try(FileOutputStream fos = new FileOutputStream(file.toFile())) {
-
+            ObjectOutputStream objectOutputStream = new ObjectOutputStream(fos);
+            objectOutputStream.writeObject(obj);
         } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Deserializes a Java object from a binary file via {@link ObjectInputStream}
+     * @param file the file
+     * @return the object
+     */
+    public static Object binaryFileToObject(Path file) {
+        try(FileInputStream fis = new FileInputStream(file.toFile())) {
+            ObjectInputStream objectInputStream = new ObjectInputStream(fis);
+            return objectInputStream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }

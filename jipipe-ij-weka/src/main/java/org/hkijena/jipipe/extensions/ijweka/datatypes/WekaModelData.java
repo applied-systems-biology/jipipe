@@ -15,6 +15,7 @@ import trainableSegmentation.WekaSegmentation;
 import trainableSegmentation.Weka_Segmentation;
 import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
+import weka.gui.GenericObjectEditor;
 
 import javax.swing.*;
 import java.io.IOException;
@@ -37,20 +38,18 @@ public class WekaModelData implements JIPipeData {
     }
 
     public WekaModelData(WekaModelData other) {
-        this.segmentation = other.segmentation;
+        try {
+            this.segmentation = (WekaSegmentation) GenericObjectEditor.makeCopy(other.segmentation);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static WekaModelData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         WekaSegmentation segmentation;
-        List<Path> files = PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".weka_segmentation");
-        if(files.isEmpty()) {
-            segmentation = new WekaSegmentation();
-            segmentation.loadTrainingData(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".arff").get(0).toString());
-            segmentation.loadClassifier(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".model").get(0).toString());
-        }
-        else {
-            SerializationUtils.objectToBase64()
-        }
+        segmentation = new WekaSegmentation();
+        segmentation.loadClassifier(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".model").get(0).toString());
+        segmentation.loadTrainingData(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".arff").get(0).toString());
 
         return new WekaModelData(segmentation);
     }
@@ -62,7 +61,7 @@ public class WekaModelData implements JIPipeData {
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         Path modelOutputPath = storage.getFileSystemPath().resolve(StringUtils.orElse(name, "classifier") + ".model");
-        Path dataOutputPath = storage.getFileSystemPath().resolve(StringUtils.orElse(name, "classifier") + ".arff");
+        Path dataOutputPath = storage.getFileSystemPath().resolve(StringUtils.orElse(name, "data") + ".arff");
         segmentation.saveClassifier(modelOutputPath.toString());
         segmentation.saveData(dataOutputPath.toString());
     }
