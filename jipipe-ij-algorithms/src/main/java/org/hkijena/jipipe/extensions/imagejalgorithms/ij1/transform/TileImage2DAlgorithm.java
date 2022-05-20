@@ -44,13 +44,18 @@ import java.util.List;
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private CanvasEqualizer canvasEqualizer;
     private int tileX = 512;
     private int tileY = 512;
+
+    private int overlapX = 0;
+
+    private int overlapY = 0;
     private OptionalAnnotationNameParameter tileXAnnotation = new OptionalAnnotationNameParameter("Tile X", true);
     private OptionalAnnotationNameParameter tileYAnnotation = new OptionalAnnotationNameParameter("Tile Y", true);
     private OptionalAnnotationNameParameter numTilesX = new OptionalAnnotationNameParameter("Num Tiles X", true);
     private OptionalAnnotationNameParameter numTilesY = new OptionalAnnotationNameParameter("Num Tiles Y", true);
+
+    private BorderMode borderMode = BorderMode.Constant;
 
     private OptionalAnnotationNameParameter tileRealXAnnotation = new OptionalAnnotationNameParameter("Original X", true);
 
@@ -60,15 +65,14 @@ public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalAnnotationNameParameter imageHeightAnnotation = new OptionalAnnotationNameParameter("Original height", true);
 
+    private OptionalAnnotationNameParameter tileInsetXAnnotation = new OptionalAnnotationNameParameter("Inset X", true);
+
+    private OptionalAnnotationNameParameter tileInsetYAnnotation = new OptionalAnnotationNameParameter("Inset Y", true);
+
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
 
     public TileImage2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.canvasEqualizer = new CanvasEqualizer();
-        canvasEqualizer.setxAxis(new DefaultExpressionParameter(""));
-        canvasEqualizer.setyAxis(new DefaultExpressionParameter(""));
-        canvasEqualizer.setAnchor(Anchor.TopLeft);
-        registerSubParameter(canvasEqualizer);
     }
 
     public TileImage2DAlgorithm(TileImage2DAlgorithm other) {
@@ -77,36 +81,58 @@ public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.tileY = other.tileY;
         this.tileXAnnotation = new OptionalAnnotationNameParameter(other.tileXAnnotation);
         this.tileYAnnotation = new OptionalAnnotationNameParameter(other.tileYAnnotation);
-        this.canvasEqualizer = new CanvasEqualizer(other.canvasEqualizer);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
         this.tileRealXAnnotation = new OptionalAnnotationNameParameter(other.tileRealXAnnotation);
         this.tileRealYAnnotation = new OptionalAnnotationNameParameter(other.tileRealYAnnotation);
         this.imageWidthAnnotation = new OptionalAnnotationNameParameter(other.imageWidthAnnotation);
         this.imageHeightAnnotation = new OptionalAnnotationNameParameter(other.imageHeightAnnotation);
-        registerSubParameter(canvasEqualizer);
+        this.tileInsetXAnnotation = new OptionalAnnotationNameParameter(other.tileInsetXAnnotation);
+        this.tileInsetYAnnotation = new OptionalAnnotationNameParameter(other.tileInsetYAnnotation);
+        this.overlapX = other.overlapX;
+        this.overlapY = other.overlapY;
+        this.borderMode = other.borderMode;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ImagePlus originalImg = img;
-        if (img.getWidth() % tileX != 0 || img.getHeight() % tileY != 0) {
-            ExpressionVariables variables = new ExpressionVariables();
-            JIPipeProgressInfo scaleProgress = progressInfo.resolveAndLog("Expanding canvas to fit tiles of " + tileX + " x " + tileY);
-            CanvasEqualizer equalizer = new CanvasEqualizer(canvasEqualizer);
-            if(equalizer.getxAxis().isEmpty())
-                equalizer.getxAxis().setExpression("CEIL(width / " + tileX + ") * " + tileX);
-            if(equalizer.getyAxis().isEmpty())
-                equalizer.getyAxis().setExpression("CEIL(height / " + tileY + ") * " + tileY);
-            img = equalizer.equalize(Collections.singletonList(img), variables).get(0);
+
+        final int realTileSizeX = tileX + 2 * overlapX;
+        final int realTileSizeY = tileY + 2 * overlapY;
+
+       // Add border to image
+        {
+            int width = img.getWidth();
+            int height = img.getHeight();
+
+            // First correct the tile size assuming no overlap
+            if((width % tileX) != 0) {
+                width = (int) (Math.ceil(1.0 * width /  tileX) * tileX);
+            }
+            if((height % tileY) != 0) {
+                height = (int) (Math.ceil(1.0 * height /  tileY) * tileY);
+            }
+
+            // Insert overlap
+            width += 2*overlapX;
+            height += 2*overlapY;
+
+            int left = overlapX;
+            int top = overlapY;
+            int right = width - originalImg.getWidth() - left;
+            int bottom = height - originalImg.getHeight() - top;
+            img = AddBorder2DAlgorithm.addBorder(img, left, top, right, bottom, borderMode, 0, Color.BLACK, progressInfo.resolve("Adding border due to overlap"));
         }
-        final int nTilesX = img.getWidth() / tileX;
-        final int nTilesY = img.getHeight() / tileY;
+
+        final int nTilesX = img.getWidth() / realTileSizeX;
+        final int nTilesY = img.getHeight() / realTileSizeY;
+
         for (int y = 0; y < nTilesY; y++) {
             for (int x = 0; x < nTilesX; x++) {
-                Rectangle roi = new Rectangle(x * tileX, y * tileY, tileX, tileY);
+                Rectangle roi = new Rectangle(x * tileX, y * tileY, realTileSizeX, realTileSizeY);
                 JIPipeProgressInfo tileProgress = progressInfo.resolveAndLog("Tile", x + y * nTilesX, nTilesX * nTilesY);
-                ImageStack tileStack = new ImageStack(tileX, tileY, img.getStackSize());
+                ImageStack tileStack = new ImageStack(realTileSizeX, realTileSizeY, img.getStackSize());
                 ImagePlus finalImg = img;
                 ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                     ip.setRoi(roi);
@@ -125,10 +151,10 @@ public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 numTilesY.addAnnotationIfEnabled(annotations, nTilesY + "");
                 imageWidthAnnotation.addAnnotationIfEnabled(annotations, originalImg.getWidth() + "");
                 imageHeightAnnotation.addAnnotationIfEnabled(annotations, originalImg.getHeight() + "");
-                if(canvasEqualizer.getAnchor() == Anchor.TopLeft) {
-                    tileRealXAnnotation.addAnnotationIfEnabled(annotations, x * tileX + "");
-                    tileRealYAnnotation.addAnnotationIfEnabled(annotations, y * tileY + "");
-                }
+                tileRealXAnnotation.addAnnotationIfEnabled(annotations, x * tileX + "");
+                tileRealYAnnotation.addAnnotationIfEnabled(annotations, y * tileY + "");
+                tileInsetXAnnotation.addAnnotationIfEnabled(annotations, overlapX + "");
+                tileInsetYAnnotation.addAnnotationIfEnabled(annotations, overlapY + "");
                 dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(tileImage), annotations, annotationMergeStrategy, tileProgress);
             }
         }
@@ -241,41 +267,82 @@ public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Annotate with original width", description = "If true, annotate the tile with the width of the original image")
-    @JIPipeParameter("tile-original-width")
+    @JIPipeParameter("tile-original-width-annotation")
     public OptionalAnnotationNameParameter getImageWidthAnnotation() {
         return imageWidthAnnotation;
     }
 
-    @JIPipeParameter("tile-original-width")
+    @JIPipeParameter("tile-original-width-annotation")
     public void setImageWidthAnnotation(OptionalAnnotationNameParameter imageWidthAnnotation) {
         this.imageWidthAnnotation = imageWidthAnnotation;
     }
 
     @JIPipeDocumentation(name = "Annotate with original height", description = "If true, annotate the tile with the height of the original image")
-    @JIPipeParameter("tile-original-height")
+    @JIPipeParameter("tile-original-height-annotation")
     public OptionalAnnotationNameParameter getImageHeightAnnotation() {
         return imageHeightAnnotation;
     }
 
-    @JIPipeParameter("tile-original-height")
+    @JIPipeParameter("tile-original-height-annotation")
     public void setImageHeightAnnotation(OptionalAnnotationNameParameter imageHeightAnnotation) {
         this.imageHeightAnnotation = imageHeightAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Canvas expansion", description = "The following parameters allow you to set how the canvas is expanded if the tiles do not fit.")
-    @JIPipeParameter(value = "canvas-equalizer")
-    public CanvasEqualizer getCanvasEqualizer() {
-        return canvasEqualizer;
+    @JIPipeDocumentation(name = "Overlap (X)", description = "Sets the overlap of the tiles. Please note that the size of the tiles will increase.")
+    @JIPipeParameter("overlap-x")
+    public int getOverlapX() {
+        return overlapX;
     }
 
-//    @Override
-//    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-//        if ("x-axis".equals(access.getKey()) && access.getSource() == getScale2DAlgorithm()) {
-//            return false;
-//        }
-//        if ("y-axis".equals(access.getKey()) && access.getSource() == getScale2DAlgorithm()) {
-//            return false;
-//        }
-//        return super.isParameterUIVisible(tree, access);
-//    }
+    @JIPipeParameter("overlap-x")
+    public boolean setOverlapX(int overlapX) {
+        if(overlapX < 0)
+            return false;
+        this.overlapX = overlapX;
+        return true;
+    }
+
+    @JIPipeDocumentation(name = "Overlap (Y)", description = "Sets the overlap of the tiles. Please note that the size of the tiles will increase.")
+    @JIPipeParameter("overlap-y")
+    public int getOverlapY() {
+        return overlapY;
+    }
+
+    @JIPipeParameter("overlap-y")
+    public void setOverlapY(int overlapY) {
+        this.overlapY = overlapY;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with tile inset (X)", description = "If enabled, each tile is annotated with its inset, meaning the overlap in the X direction. This value can be utilized to remove the overlap at a later point.")
+    @JIPipeParameter("tile-inset-x-annotation")
+    public OptionalAnnotationNameParameter getTileInsetXAnnotation() {
+        return tileInsetXAnnotation;
+    }
+
+    @JIPipeParameter("tile-inset-x-annotation")
+    public void setTileInsetXAnnotation(OptionalAnnotationNameParameter tileInsetXAnnotation) {
+        this.tileInsetXAnnotation = tileInsetXAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Annotate with tile inset (Y)", description = "If enabled, each tile is annotated with its inset, meaning the overlap in the Y direction. This value can be utilized to remove the overlap at a later point.")
+    @JIPipeParameter("tile-inset-y-annotation")
+    public OptionalAnnotationNameParameter getTileInsetYAnnotation() {
+        return tileInsetYAnnotation;
+    }
+
+    @JIPipeParameter("tile-inset-y-annotation")
+    public void setTileInsetYAnnotation(OptionalAnnotationNameParameter tileInsetYAnnotation) {
+        this.tileInsetYAnnotation = tileInsetYAnnotation;
+    }
+
+    @JIPipeDocumentation(name = "Border mode", description = "Determines how the image is expanded with borders. Only applicable if an overlap is set.")
+    @JIPipeParameter("border-mode")
+    public BorderMode getBorderMode() {
+        return borderMode;
+    }
+
+    @JIPipeParameter("border-mode")
+    public void setBorderMode(BorderMode borderMode) {
+        this.borderMode = borderMode;
+    }
 }
