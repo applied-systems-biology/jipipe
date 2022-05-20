@@ -113,6 +113,7 @@ public class WekaTrainingROI2DAlgorithm extends AbstractWekaTrainingAlgorithm {
             wekaSegmentation.setClassifier((AbstractClassifier) classifier);
             wekaSegmentation.setDoClassBalance(getClassifierSettings().isBalanceClasses());
             wekaSegmentation.setFeatures(selectedFeatureNames);
+            wekaSegmentation.setFeaturesDirty();
             wekaSegmentation.setMembraneThickness(featureSettings.getMembraneSize());
             wekaSegmentation.setMembranePatchSize(featureSettings.getMembranePatchSize());
             wekaSegmentation.setMinimumSigma(featureSettings.getMinSigma());

@@ -26,16 +26,12 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
-import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 
 import java.awt.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Tile image", description = "Splits the image into tiles of a predefined size. If the image is not perfectly tileable, it is resized.")
@@ -44,8 +40,8 @@ import java.util.List;
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private int tileX = 512;
-    private int tileY = 512;
+    private int tileSizeX = 512;
+    private int tileSizeY = 512;
 
     private int overlapX = 0;
 
@@ -77,8 +73,8 @@ public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public TileImage2DAlgorithm(TileImage2DAlgorithm other) {
         super(other);
-        this.tileX = other.tileX;
-        this.tileY = other.tileY;
+        this.tileSizeX = other.tileSizeX;
+        this.tileSizeY = other.tileSizeY;
         this.tileXAnnotation = new OptionalAnnotationNameParameter(other.tileXAnnotation);
         this.tileYAnnotation = new OptionalAnnotationNameParameter(other.tileYAnnotation);
         this.annotationMergeStrategy = other.annotationMergeStrategy;
@@ -98,10 +94,10 @@ public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ImagePlus originalImg = img;
 
-        final int realTileSizeX = tileX + 2 * overlapX;
-        final int realTileSizeY = tileY + 2 * overlapY;
-        final int nTilesX = (int) Math.ceil(1.0 * img.getWidth() / tileX);
-        final int nTilesY = (int) Math.ceil(1.0 * img.getHeight() / tileY);
+        final int realTileSizeX = tileSizeX + 2 * overlapX;
+        final int realTileSizeY = tileSizeY + 2 * overlapY;
+        final int nTilesX = (int) Math.ceil(1.0 * img.getWidth() / tileSizeX);
+        final int nTilesY = (int) Math.ceil(1.0 * img.getHeight() / tileSizeY);
 
        // Add border to image
         {
@@ -109,11 +105,11 @@ public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             int height = img.getHeight();
 
             // First correct the tile size assuming no overlap
-            if((width % tileX) != 0) {
-                width = (int) (Math.ceil(1.0 * width /  tileX) * tileX);
+            if((width % tileSizeX) != 0) {
+                width = (int) (Math.ceil(1.0 * width / tileSizeX) * tileSizeX);
             }
-            if((height % tileY) != 0) {
-                height = (int) (Math.ceil(1.0 * height /  tileY) * tileY);
+            if((height % tileSizeY) != 0) {
+                height = (int) (Math.ceil(1.0 * height / tileSizeY) * tileSizeY);
             }
 
             // Insert overlap
@@ -129,7 +125,7 @@ public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         for (int y = 0; y < nTilesY; y++) {
             for (int x = 0; x < nTilesX; x++) {
-                Rectangle roi = new Rectangle(x * tileX, y * tileY, realTileSizeX, realTileSizeY);
+                Rectangle roi = new Rectangle(x * tileSizeX, y * tileSizeY, realTileSizeX, realTileSizeY);
                 JIPipeProgressInfo tileProgress = progressInfo.resolveAndLog("Tile", x + y * nTilesX, nTilesX * nTilesY);
                 ImageStack tileStack = new ImageStack(realTileSizeX, realTileSizeY, img.getStackSize());
                 ImagePlus finalImg = img;
@@ -150,8 +146,8 @@ public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 numTilesY.addAnnotationIfEnabled(annotations, nTilesY + "");
                 imageWidthAnnotation.addAnnotationIfEnabled(annotations, originalImg.getWidth() + "");
                 imageHeightAnnotation.addAnnotationIfEnabled(annotations, originalImg.getHeight() + "");
-                tileRealXAnnotation.addAnnotationIfEnabled(annotations, x * tileX + "");
-                tileRealYAnnotation.addAnnotationIfEnabled(annotations, y * tileY + "");
+                tileRealXAnnotation.addAnnotationIfEnabled(annotations, x * tileSizeX + "");
+                tileRealYAnnotation.addAnnotationIfEnabled(annotations, y * tileSizeY + "");
                 tileInsetXAnnotation.addAnnotationIfEnabled(annotations, overlapX + "");
                 tileInsetYAnnotation.addAnnotationIfEnabled(annotations, overlapY + "");
                 dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(tileImage), annotations, annotationMergeStrategy, tileProgress);
@@ -173,8 +169,8 @@ public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
-        report.resolve("Tile width").checkIfWithin(this, tileX, 0, Double.POSITIVE_INFINITY, false, false);
-        report.resolve("Tile height").checkIfWithin(this, tileY, 0, Double.POSITIVE_INFINITY, false, false);
+        report.resolve("Tile width").checkIfWithin(this, tileSizeX, 0, Double.POSITIVE_INFINITY, false, false);
+        report.resolve("Tile height").checkIfWithin(this, tileSizeY, 0, Double.POSITIVE_INFINITY, false, false);
     }
 
     @JIPipeDocumentation(name = "Annotate with tile X", description = "If true, annotate each tile with its X location (in tile coordinates)")
@@ -223,24 +219,24 @@ public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Tile width", description = "The width of a tile")
     @JIPipeParameter("tile-x")
-    public int getTileX() {
-        return tileX;
+    public int getTileSizeX() {
+        return tileSizeX;
     }
 
     @JIPipeParameter("tile-x")
-    public void setTileX(int tileX) {
-        this.tileX = tileX;
+    public void setTileSizeX(int tileSizeX) {
+        this.tileSizeX = tileSizeX;
     }
 
     @JIPipeDocumentation(name = "Tile height", description = "The height of a tile")
     @JIPipeParameter("tile-y")
-    public int getTileY() {
-        return tileY;
+    public int getTileSizeY() {
+        return tileSizeY;
     }
 
     @JIPipeParameter("tile-y")
-    public void setTileY(int tileY) {
-        this.tileY = tileY;
+    public void setTileSizeY(int tileSizeY) {
+        this.tileSizeY = tileSizeY;
     }
 
     @JIPipeDocumentation(name = "Annotate with original X location", description = "If true, annotate the tile with its location within the original image. Only works if the scaling anchor is top left")

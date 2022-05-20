@@ -634,6 +634,18 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     }
 
     /**
+     * Merges the data from the source table into the current one
+     * @param table the source table
+     * @param progressInfo the progress
+     */
+    public synchronized void addFromTable(JIPipeDataTable table, JIPipeProgressInfo progressInfo) {
+        for (int row = 0; row < table.getRowCount(); row++) {
+            progressInfo.resolveAndLog("Add data from table", row, table.getRowCount());
+            addData(table.getVirtualData(row), table.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting, table.getDataAnnotations(row), JIPipeDataAnnotationMergeMode.OverwriteExisting);
+        }
+    }
+
+    /**
      * Finds the row that matches the given annotations
      *
      * @param annotations A valid annotation list with size equals to getRowCount()
