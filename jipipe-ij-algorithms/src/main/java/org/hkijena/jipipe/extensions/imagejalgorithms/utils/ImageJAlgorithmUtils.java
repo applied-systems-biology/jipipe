@@ -24,6 +24,66 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 public class ImageJAlgorithmUtils {
 
+    public static ByteProcessor getLabelMask(ImageProcessor processor, int label) {
+        ByteProcessor result = new ByteProcessor(processor.getWidth(), processor.getHeight());
+        byte[] resultPixels = (byte[]) result.getPixels();
+        if (processor instanceof ByteProcessor) {
+            byte[] pixels = (byte[]) processor.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                if ((pixels[i] & 0xff) == label) {
+                    resultPixels[i] = (byte) 255;
+                }
+            }
+        } else if (processor instanceof ShortProcessor) {
+            short[] pixels = (short[]) processor.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                if ((pixels[i] & 0xffff) == label) {
+                    resultPixels[i] = (byte) 255;
+                }
+            }
+        } else if (processor instanceof FloatProcessor) {
+            float[] pixels = (float[]) processor.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                if ((int)pixels[i] == label) {
+                    resultPixels[i] = (byte) 255;
+                }
+            }
+        } else {
+            throw new UnsupportedOperationException("Unsupported label type!");
+        }
+        return result;
+    }
+
+    public static ByteProcessor getThresholdMask(ImageProcessor processor, float minThreshold) {
+        ByteProcessor result = new ByteProcessor(processor.getWidth(), processor.getHeight());
+        byte[] resultPixels = (byte[]) result.getPixels();
+        if (processor instanceof ByteProcessor) {
+            byte[] pixels = (byte[]) processor.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                if ((pixels[i] & 0xff) >= minThreshold) {
+                    resultPixels[i] = (byte) 255;
+                }
+            }
+        } else if (processor instanceof ShortProcessor) {
+            short[] pixels = (short[]) processor.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                if ((pixels[i] & 0xffff) >= minThreshold) {
+                    resultPixels[i] = (byte) 255;
+                }
+            }
+        } else if (processor instanceof FloatProcessor) {
+            float[] pixels = (float[]) processor.getPixels();
+            for (int i = 0; i < pixels.length; i++) {
+                if (pixels[i] >= minThreshold) {
+                    resultPixels[i] = (byte) 255;
+                }
+            }
+        } else {
+            throw new UnsupportedOperationException("Unsupported label type!");
+        }
+        return result;
+    }
+
     public static void removeLabelsExcept(ImageProcessor processor, int[] labelsToKeep) {
         TIntSet labelsToKeep_ = new TIntHashSet();
         for (int i : labelsToKeep) {

@@ -568,6 +568,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
     private void registerLabelAlgorithms() {
         registerEnumParameterType("ij1-label-color-maps:common-label-maps", ColorMaps.CommonLabelMaps.class, "Color map", "A color map for labels");
+        registerEnumParameterType("ij1-labels-to-roi:method", LabelsToROIAlgorithm.Method.class, "Label to ROI method", "A method that converts a label image to ROI");
 
         registerNodeType("ij1-labels-to-rgb", LabelsToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colormanagement.png"));
         registerNodeType("ij1-labels-to-roi", LabelsToROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));

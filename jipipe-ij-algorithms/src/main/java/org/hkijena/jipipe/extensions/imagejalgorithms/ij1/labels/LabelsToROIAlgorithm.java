@@ -3,25 +3,27 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
+import ij.process.ByteProcessor;
 import ij.process.ImageProcessor;
-import org.hkijena.jipipe.api.JIPipeCitation;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import inra.ijpb.binary.BinaryImages;
+import inra.ijpb.label.LabelImages;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -36,6 +38,9 @@ import java.util.Set;
 public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter labelNameExpression = new DefaultExpressionParameter("\"label-\" + TO_INTEGER(index)");
+    private Method method = Method.Floodfill;
+
+    private Neighborhood2D connectivity = Neighborhood2D.FourConnected;
 
     public LabelsToROIAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -43,6 +48,8 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public LabelsToROIAlgorithm(LabelsToROIAlgorithm other) {
         super(other);
+        this.method = other.method;
+        this.connectivity = other.connectivity;
         this.labelNameExpression = new DefaultExpressionParameter(other.labelNameExpression);
     }
 
@@ -55,21 +62,40 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
 
         ImageJUtils.forEachIndexedZCTSlice(labelsImage, (ip, index) -> {
+            if(method == Method.ProtectedFloodfill)
+                executeProtectedFloodfill(rois,variables, ip,index, progressInfo);
+            else
+                executeFloodfill(rois, variables, ip, index);
+        }, progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
+    }
+
+    private void executeProtectedFloodfill(ROIListData outputList, ExpressionVariables variables, ImageProcessor ip, ImageSliceIndex index, JIPipeProgressInfo progressInfo) {
+        for (int targetLabel : LabelImages.findAllLabels(ip)) {
+            if(progressInfo.isCancelled())
+                return;
+
             ImageProcessor copy = (ImageProcessor) ip.clone();
-            ImagePlus wrapper = new ImagePlus("slice", copy);
-            for (int y = 0; y < copy.getHeight(); y++) {
-                for (int x = 0; x < copy.getWidth(); x++) {
-                    float value = copy.getf(x, y);
+            ByteProcessor mask = ImageJAlgorithmUtils.getLabelMask(copy, targetLabel);
+            ImageProcessor components = BinaryImages.componentsLabeling(mask, connectivity.getNativeValue(), 32);
+
+            // Continue with floodfill, but with a custom deleter
+            ImagePlus wrapper = new ImagePlus("slice", components);
+            for (int y = 0; y < components.getHeight(); y++) {
+                for (int x = 0; x < components.getWidth(); x++) {
+                    float value = components.getf(x, y);
                     if(value > 0) {
-                        IJ.doWand(wrapper, x, y, 0, "Legacy smooth");
+                        IJ.doWand(wrapper, x, y, 0, connectivity.getNativeValue() + " smooth");
                         Roi roi = wrapper.getRoi();
-                        rois.add(roi);
-                        copy.setColor(0);
-                        copy.fill(roi);
+                        outputList.add(roi);
+
+                        // Delete the label
+                        LabelImages.replaceLabels(components, new int[] { (int)value }, 0);
+
                         wrapper.setRoi((Roi) null);
                         roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
 
-                        variables.set("index", value);
+                        variables.set("index", targetLabel);
                         variables.set("x", roi.getBounds().x);
                         variables.set("y", roi.getBounds().y);
                         variables.set("width", roi.getBounds().width);
@@ -80,8 +106,35 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     }
                 }
             }
-        }, progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
+        }
+    }
+
+    private void executeFloodfill(ROIListData outputList, ExpressionVariables variables, ImageProcessor ip, ImageSliceIndex index) {
+        ImageProcessor copy = (ImageProcessor) ip.clone();
+        ImagePlus wrapper = new ImagePlus("slice", copy);
+        for (int y = 0; y < copy.getHeight(); y++) {
+            for (int x = 0; x < copy.getWidth(); x++) {
+                float value = copy.getf(x, y);
+                if(value > 0) {
+                    IJ.doWand(wrapper, x, y, 0, "Legacy smooth");
+                    Roi roi = wrapper.getRoi();
+                    outputList.add(roi);
+                    copy.setColor(0);
+                    copy.fill(roi);
+                    wrapper.setRoi((Roi) null);
+                    roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
+
+                    variables.set("index", value);
+                    variables.set("x", roi.getBounds().x);
+                    variables.set("y", roi.getBounds().y);
+                    variables.set("width", roi.getBounds().width);
+                    variables.set("height", roi.getBounds().height);
+
+                    String name = labelNameExpression.evaluateToString(variables);
+                    roi.setName(name);
+                }
+            }
+        }
     }
 
     @JIPipeDocumentation(name = "Label name", description = "Expression for the generation of the label name")
@@ -94,6 +147,55 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("label-name-expression")
     public void setLabelNameExpression(DefaultExpressionParameter labelNameExpression) {
         this.labelNameExpression = labelNameExpression;
+    }
+
+    @JIPipeDocumentation(name = "Method", description = "The algorithm responsible for converting labels into ROI")
+    @JIPipeParameter(value = "method", important = true)
+    public Method getMethod() {
+        return method;
+    }
+
+    @JIPipeParameter("method")
+    public void setMethod(Method method) {
+        this.method = method;
+        triggerParameterUIChange();
+    }
+
+    @JIPipeDocumentation(name = "Connectivity", description = "The connectivity for the connected components algorithm")
+    @JIPipeParameter("connectivity")
+    public Neighborhood2D getConnectivity() {
+        return connectivity;
+    }
+
+    @JIPipeParameter("connectivity")
+    public void setConnectivity(Neighborhood2D connectivity) {
+        this.connectivity = connectivity;
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if("connectivity".equals(access.getKey()) && method != Method.ProtectedFloodfill)
+            return false;
+        return super.isParameterUIVisible(tree, access);
+    }
+
+    @JIPipeDocumentationDescription(description = "<ul>" +
+            "<li>Floodfill: Original implementation by Waisman et al. that applies flood filling for each pixel and removes all labels within the detected area. This is a fast algorithm " +
+            "suitable to detect labels that are not nested.</li>" +
+            "<li>Protected floodfill: Modified algorithm that utilizes an additional connected components operation to prevent accidental removals. These can happen if one label is encased within another (e.g., structures within a tissue). " +
+            "Please note that this algorithm is considerably slower than the 'Floodfill' method, especially for images with many different labels.</li>" +
+            "</ul>")
+    public enum Method {
+        Floodfill,
+        ProtectedFloodfill;
+
+
+        @Override
+        public String toString() {
+            if(this == ProtectedFloodfill)
+                return "Protected floodfill";
+            return super.toString();
+        }
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {
