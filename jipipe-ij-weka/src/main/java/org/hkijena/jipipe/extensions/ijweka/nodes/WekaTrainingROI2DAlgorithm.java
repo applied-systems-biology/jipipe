@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Train Weka model (2D)", description = "Trains a Weka model on 2D image data")
+@JIPipeDocumentation(name = "Train Weka model from ROI (2D)", description = "Trains a Weka model on 2D image data. The inputs are ROI that are assigned to the classes and trained on the input image.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
 @JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Image", description = "Image on which the training should be applied", autoCreate = true)
 @JIPipeInputSlot(value = ROIListData.class)
@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 public class WekaTrainingROI2DAlgorithm extends AbstractWekaTrainingAlgorithm {
 
     private WekaFeature2DSettings featureSettings = new WekaFeature2DSettings();
-    private InputSlotMapParameterCollection classAssignment;
+    private final InputSlotMapParameterCollection classAssignment;
 
 
     public WekaTrainingROI2DAlgorithm(JIPipeNodeInfo info) {
@@ -102,7 +102,7 @@ public class WekaTrainingROI2DAlgorithm extends AbstractWekaTrainingAlgorithm {
 
 
         // Setup parameters
-        ArrayList<String> selectedFeatureNames = new ArrayList<>(featureSettings.getTrainingFeatures().getValues().stream().map(WekaFeature2D::name).collect(Collectors.toList()));
+        ArrayList<String> selectedFeatureNames = featureSettings.getTrainingFeatures().getValues().stream().map(WekaFeature2D::name).collect(Collectors.toCollection(ArrayList::new));
         Classifier classifier = (new WekaClassifierParameter(getClassifierSettings().getClassifier())).getClassifier(); // This will make a copy of the classifier
 
         // Apply the training per image
