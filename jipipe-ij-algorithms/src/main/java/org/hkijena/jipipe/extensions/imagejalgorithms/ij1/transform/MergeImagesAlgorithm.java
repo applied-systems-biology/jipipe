@@ -15,7 +15,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
-@JIPipeDocumentation(name = "Overlay images", description = "Overlays the target image with the source image according to a mask or ROI.")
+@JIPipeDocumentation(name = "Insert image (masked)", description = "Overlays the target image with the source image according to a mask or ROI.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Source", autoCreate = true)
