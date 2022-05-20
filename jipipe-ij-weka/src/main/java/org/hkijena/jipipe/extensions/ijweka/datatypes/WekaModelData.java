@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.extensions.ijweka.datatypes;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -11,6 +13,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.SerializationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import trainableSegmentation.WekaSegmentation;
 import trainableSegmentation.Weka_Segmentation;
 import weka.classifiers.AbstractClassifier;
@@ -27,11 +30,13 @@ import java.util.List;
  * Wrapper around Cellpose models
  */
 @JIPipeDocumentation(name = "Weka model", description = "A model for the Trainable Weka Filter")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "A single file with the *.model extension",
+@JIPipeDataStorageDocumentation(humanReadableDescription = "A file with *.json extension containing metadata. A *.model file that contains the classifier. " +
+        "An optional *.arff file that contains the data used to train the model.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/weka-model-data.schema.json")
 public class WekaModelData implements JIPipeData {
 
     private final WekaSegmentation segmentation;
+
 
     public WekaModelData(WekaSegmentation segmentation) {
         this.segmentation = segmentation;
@@ -47,7 +52,10 @@ public class WekaModelData implements JIPipeData {
 
     public static WekaModelData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         WekaSegmentation segmentation;
-        segmentation = new WekaSegmentation();
+
+        Metadata metadata = JsonUtils.readFromFile(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".json").get(0), Metadata.class);
+
+        segmentation = new WekaSegmentation(metadata.isProcessing3D());
         segmentation.loadClassifier(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".model").get(0).toString());
         segmentation.loadTrainingData(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".arff").get(0).toString());
 
@@ -62,8 +70,10 @@ public class WekaModelData implements JIPipeData {
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         Path modelOutputPath = storage.getFileSystemPath().resolve(StringUtils.orElse(name, "classifier") + ".model");
         Path dataOutputPath = storage.getFileSystemPath().resolve(StringUtils.orElse(name, "data") + ".arff");
+        Path metadataOutputPath = storage.getFileSystemPath().resolve(StringUtils.orElse(name, "metadata") + ".json");
         segmentation.saveClassifier(modelOutputPath.toString());
         segmentation.saveData(dataOutputPath.toString());
+        JsonUtils.saveToFile(new Metadata(segmentation), metadataOutputPath);
     }
 
     @Override
@@ -89,6 +99,30 @@ public class WekaModelData implements JIPipeData {
 
     @Override
     public String toString() {
-        return "Weka model: " + segmentation.getClassifier();
+        return (segmentation.isProcessing3D() ? "3D" : "2D") + " Weka model: " + segmentation.getClassifier();
+    }
+
+    /**
+     * Additional metada required for the correct deserialization of the model
+     */
+    public static class Metadata {
+        private boolean processing3D;
+
+        public Metadata() {
+        }
+
+        public Metadata(WekaSegmentation segmentation) {
+            this.processing3D = segmentation.isProcessing3D();
+        }
+
+        @JsonGetter("is-processing-3d")
+        public boolean isProcessing3D() {
+            return processing3D;
+        }
+
+        @JsonSetter("is-processing-3d")
+        public void setProcessing3D(boolean processing3D) {
+            this.processing3D = processing3D;
+        }
     }
 }

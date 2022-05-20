@@ -110,7 +110,7 @@ public class WekaTrainingROI2DAlgorithm extends JIPipeIteratingAlgorithm {
         Classifier classifier = (new WekaClassifierParameter(getClassifierSettings().getClassifier())).getClassifier(); // This will make a copy of the classifier
 
         // Apply the training
-        ImagePlus trainingImage = dataBatch.getInputData("Image", ImagePlus2DData.class, progressInfo).getImage();
+        ImagePlus trainingImage = dataBatch.getInputData("Image", ImagePlus2DData.class, progressInfo).getDuplicateImage();
         WekaSegmentation wekaSegmentation = new WekaSegmentation(trainingImage);
         wekaSegmentation.setClassifier((AbstractClassifier) classifier);
         wekaSegmentation.setDoClassBalance(getClassifierSettings().isBalanceClasses());

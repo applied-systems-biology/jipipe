@@ -48,7 +48,7 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData image = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo);
+        ImagePlus image = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getDuplicateImage();
         WekaModelData modelData = dataBatch.getInputData("Model", WekaModelData.class, progressInfo);
         WekaSegmentation segmentation = modelData.getSegmentation();
 
@@ -75,8 +75,8 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
 
         ImageStack stack = new ImageStack(image.getWidth(), image.getHeight(), image.getNSlices() * image.getNChannels() * image.getNChannels());
         try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
-            ImageJUtils.forEachIndexedZCTSlice(image.getImage(), (ip, index) -> {
-                ImagePlus wholeSlice = new ImagePlus(image.getImage().getTitle() + " " + index, ip);
+            ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
+                ImagePlus wholeSlice = new ImagePlus(image.getTitle() + " " + index, ip);
                 ImagePlus classified;
                 if (tilingSettings.isApplyTiling()) {
                     if (tilingSettings.isUseWekaNativeTiling()) {
@@ -116,7 +116,7 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
                     progressInfo.log("Classifying whole image " + wholeSlice);
                     classified = segmentation.applyClassifier(wholeSlice, numThreads.getContentOrDefault(0), outputProbabilityMaps);
                 }
-                stack.setProcessor(classified.getProcessor(), index.zeroSliceIndexToOneStackIndex(image.getImage()));
+                stack.setProcessor(classified.getProcessor(), index.zeroSliceIndexToOneStackIndex(image));
             }, progressInfo);
         }
 

@@ -55,7 +55,7 @@ public class WekaClassification3DAlgorithm extends JIPipeIteratingAlgorithm {
         WekaModelData modelData = dataBatch.getInputData("Model", WekaModelData.class, progressInfo);
         WekaSegmentation segmentation = modelData.getSegmentation();
 
-        ImagePlus wholeImage = image.getImage();
+        ImagePlus wholeImage = image.getDuplicateImage();
         ImagePlus classified;
 
         if(tilingSettings.isApplyTiling()) {
