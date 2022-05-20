@@ -59,9 +59,10 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private final JLabel stackSliderLabel = new JLabel("Slice (Z)");
     private final JLabel channelSliderLabel = new JLabel("Channel (C)");
     private final JLabel frameSliderLabel = new JLabel("Frame (T)");
-    private final JScrollBar stackSlider = new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, 100);
-    private final JScrollBar channelSlider = new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, 100);
-    private final JScrollBar frameSlider = new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, 100);
+//    private final Adjustable stackSlider = new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, 100);
+    private final JSlider stackSlider = new JSlider(1,100,1);
+    private final JSlider channelSlider = new JSlider(1,100,1);
+    private final JSlider frameSlider = new JSlider(1,100,1);
     private final JToggleButton animationStackToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationChannelToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
@@ -231,15 +232,15 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         add(bottomPanel, BorderLayout.SOUTH);
 
         // Register slider events
-        stackSlider.addAdjustmentListener(e -> {
+        stackSlider.addChangeListener(e -> {
             if (!isUpdatingSliders)
                 refreshSlice();
         });
-        channelSlider.addAdjustmentListener(e -> {
+        channelSlider.addChangeListener(e -> {
             if (!isUpdatingSliders)
                 refreshSlice();
         });
-        frameSlider.addAdjustmentListener(e -> {
+        frameSlider.addChangeListener(e -> {
             if (!isUpdatingSliders)
                 refreshSlice();
         });
@@ -288,12 +289,29 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         animationStackToggle.setSelected(false);
     }
 
-    private void addSliderToForm(JScrollBar slider, JLabel label, JToggleButton animation, String name) {
+    private void addSliderToForm(JSlider slider, JLabel label, JToggleButton animation, String name, String labelFormat) {
+
+        // configure slider
+        slider.setMajorTickSpacing(10);
+        slider.setMinorTickSpacing(1);
+        slider.setPaintTicks(false);
+
+        // fix label glitch
+        {
+            String maxFormat = String.format(labelFormat, slider.getMaximum(), slider.getMaximum());
+            int stringWidth = label.getFontMetrics(label.getFont()).stringWidth(maxFormat);
+            int bufferedSw = (int)(stringWidth + stringWidth * 0.2);
+            label.setMinimumSize(new Dimension(bufferedSw, 16));
+            label.setPreferredSize(new Dimension(bufferedSw, 16));
+        }
+
+        animation.setToolTipText("Toggle animation");
         UIUtils.makeFlat25x25(animation);
         JPanel descriptionPanel = new JPanel();
         descriptionPanel.setLayout(new BoxLayout(descriptionPanel, BoxLayout.X_AXIS));
 
         JButton editButton = new JButton(UIUtils.getIconFromResources("actions/edit.png"));
+        editButton.setToolTipText("Set slice");
         UIUtils.makeFlat25x25(editButton);
         editButton.addActionListener(e-> {
             String input = JOptionPane.showInputDialog(this,
@@ -309,7 +327,39 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         descriptionPanel.add(animation);
         descriptionPanel.add(label);
 
-        bottomPanel.addToForm(slider, descriptionPanel, null);
+        JPanel contentPanel = new JPanel(new BorderLayout());
+        contentPanel.setOpaque(false);
+        contentPanel.add(slider, BorderLayout.CENTER);
+
+        JPanel rightPanel = new JPanel();
+        rightPanel.setLayout(new BoxLayout(rightPanel, BoxLayout.X_AXIS));
+        contentPanel.add(rightPanel, BorderLayout.EAST);
+
+        JButton lastFrame = new JButton(UIUtils.getIconFromResources("actions/arrow-left.png"));
+        UIUtils.makeFlat25x25(lastFrame);
+        lastFrame.setToolTipText("Go one slice back");
+        lastFrame.addActionListener(e -> {
+            int value = stackSlider.getValue();
+            int maximum = stackSlider.getMaximum();
+            int newIndex = value - 1;
+            if(newIndex < 1)
+                newIndex += maximum;
+            stackSlider.setValue(newIndex);
+        });
+        rightPanel.add(lastFrame);
+
+        JButton nextFrame = new JButton(UIUtils.getIconFromResources("actions/arrow-right.png"));
+        UIUtils.makeFlat25x25(nextFrame);
+        nextFrame.setToolTipText("Go one slice forward");
+        nextFrame.addActionListener(e -> {
+            int value = stackSlider.getValue();
+            int maximum = stackSlider.getMaximum();
+            int newIndex = ((value + 1) % maximum);
+            stackSlider.setValue(newIndex);
+        });
+        rightPanel.add(nextFrame);
+
+        bottomPanel.addToForm(contentPanel, descriptionPanel, null);
     }
 
     public JToolBar getToolBar() {
@@ -629,11 +679,11 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
                 bottomPanel.clear();
 
                 if (image.getNChannels() > 1)
-                    addSliderToForm(channelSlider, channelSliderLabel, animationChannelToggle, "Channel");
+                    addSliderToForm(channelSlider, channelSliderLabel, animationChannelToggle, "Channel", "Channel (C) %d/%d");
                 if (image.getNSlices() > 1)
-                    addSliderToForm(stackSlider, stackSliderLabel, animationStackToggle, "Slice");
+                    addSliderToForm(stackSlider, stackSliderLabel, animationStackToggle, "Slice", "Slice (Z) %d/%d");
                 if (image.getNFrames() > 1)
-                    addSliderToForm(frameSlider, frameSliderLabel, animationFrameToggle, "Frame");
+                    addSliderToForm(frameSlider, frameSliderLabel, animationFrameToggle, "Frame", "Frame (T) %d/%d");
 
                 stackSlider.setMinimum(1);
                 stackSlider.setMaximum(image.getNSlices() + 1);

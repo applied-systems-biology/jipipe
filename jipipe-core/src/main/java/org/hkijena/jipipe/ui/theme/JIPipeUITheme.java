@@ -67,6 +67,7 @@ public enum JIPipeUITheme {
                     UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                     UIManager.put("swing.boldMetal", Boolean.FALSE);
                     UIManager.put("ScrollBarUI", ArrowLessScrollBarUI.class.getName());
+                    UIManager.put("SliderUI", ModernSliderUI.class.getName());
                     UIManager.put("SpinnerUI", ModernSpinnerUI.class.getName());
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
                     e.printStackTrace();
@@ -78,6 +79,7 @@ public enum JIPipeUITheme {
                     UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                     UIManager.put("swing.boldMetal", Boolean.FALSE);
                     UIManager.put("ScrollBarUI", ArrowLessScrollBarUI.class.getName());
+                    UIManager.put("SliderUI", ModernSliderUI.class.getName());
                     UIManager.put("SpinnerUI", ModernSpinnerUI.class.getName());
                 } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
                     e.printStackTrace();
