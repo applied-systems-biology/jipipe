@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
+import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import trainableSegmentation.WekaSegmentation;
 
 @JIPipeDocumentation(name = "Import Weka model", description = "Imports a Trainable Weka Segmentation model from a *.model/*.arff file")
@@ -28,12 +29,15 @@ public class ImportWekaModelFromFileAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FileData modelFileData = dataBatch.getInputData("Model file", FileData.class, progressInfo);
         FileData dataFileData = dataBatch.getInputData("Data file", FileData.class, progressInfo);
-        WekaSegmentation segmentation = new WekaSegmentation();
-        if(dataFileData != null) {
-            segmentation.loadTrainingData(dataFileData.getPath());
+        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+            WekaSegmentation segmentation = new WekaSegmentation();
+            if (dataFileData != null) {
+                segmentation.loadTrainingData(dataFileData.getPath());
+            }
+            segmentation.loadClassifier(modelFileData.getPath());
+            WekaModelData modelData = new WekaModelData(segmentation);
+            dataBatch.addOutputData(getFirstOutputSlot(), modelData, progressInfo);
         }
-        segmentation.loadClassifier(modelFileData.getPath());
-        WekaModelData modelData = new WekaModelData(segmentation);
-        dataBatch.addOutputData(getFirstOutputSlot(), modelData, progressInfo);
+
     }
 }

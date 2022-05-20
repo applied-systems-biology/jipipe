@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.SerializationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -55,9 +56,11 @@ public class WekaModelData implements JIPipeData {
 
         Metadata metadata = JsonUtils.readFromFile(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".json").get(0), Metadata.class);
 
-        segmentation = new WekaSegmentation(metadata.isProcessing3D());
-        segmentation.loadClassifier(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".model").get(0).toString());
-        segmentation.loadTrainingData(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".arff").get(0).toString());
+        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+            segmentation = new WekaSegmentation(metadata.isProcessing3D());
+            segmentation.loadClassifier(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".model").get(0).toString());
+            segmentation.loadTrainingData(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".arff").get(0).toString());
+        }
 
         return new WekaModelData(segmentation);
     }
@@ -71,8 +74,10 @@ public class WekaModelData implements JIPipeData {
         Path modelOutputPath = storage.getFileSystemPath().resolve(StringUtils.orElse(name, "classifier") + ".model");
         Path dataOutputPath = storage.getFileSystemPath().resolve(StringUtils.orElse(name, "data") + ".arff");
         Path metadataOutputPath = storage.getFileSystemPath().resolve(StringUtils.orElse(name, "metadata") + ".json");
-        segmentation.saveClassifier(modelOutputPath.toString());
-        segmentation.saveData(dataOutputPath.toString());
+        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+            segmentation.saveClassifier(modelOutputPath.toString());
+            segmentation.saveData(dataOutputPath.toString());
+        }
         JsonUtils.saveToFile(new Metadata(segmentation), metadataOutputPath);
     }
 
