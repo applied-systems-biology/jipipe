@@ -11,6 +11,7 @@ import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
 import java.io.*;
+import java.nio.file.Path;
 
 /**
  * Utils for serializing objects
@@ -62,6 +63,19 @@ public class SerializationUtils {
     public static void jsonStringToParameterCollection(JIPipeParameterCollection target, String json) {
         JsonNode node = jsonStringToObject(json, JsonNode.class);
         ParameterUtils.deserializeParametersFromJson(target, node, new JIPipeIssueReport());
+    }
+
+    /**
+     * Serializes a Java object into a file via ObjectOutputStream
+     * @param obj the object
+     * @param file the file
+     */
+    public static void objectToFile(Object obj, Path file) {
+        try(FileOutputStream fos = new FileOutputStream(file.toFile())) {
+            
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

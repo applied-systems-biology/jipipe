@@ -20,7 +20,9 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
 import org.hkijena.jipipe.extensions.ijweka.nodes.ImportWekaModelFromFileAlgorithm;
 import org.hkijena.jipipe.extensions.ijweka.nodes.WekaClassification2DAlgorithm;
+import org.hkijena.jipipe.extensions.ijweka.nodes.WekaClassification3DAlgorithm;
 import org.hkijena.jipipe.extensions.ijweka.nodes.WekaTrainingROI2DAlgorithm;
+import org.hkijena.jipipe.extensions.ijweka.nodes.WekaTrainingROI3DAlgorithm;
 import org.hkijena.jipipe.extensions.ijweka.parameters.WekaClassifierParameter;
 import org.hkijena.jipipe.extensions.ijweka.parameters.WekaClassifierParameterEditorUI;
 import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeature2D;
@@ -84,7 +86,9 @@ public class WekaExtension extends JIPipePrepackagedDefaultJavaExtension {
         // Register nodes
         registerNodeType("import-weka-model-from-file", ImportWekaModelFromFileAlgorithm.class, wekaIcon);
         registerNodeType("weka-training-roi-2d", WekaTrainingROI2DAlgorithm.class, wekaIcon);
-        registerNodeType("weka-classification", WekaClassification2DAlgorithm.class, wekaIcon);
+        registerNodeType("weka-training-roi-3d", WekaTrainingROI3DAlgorithm.class, wekaIcon);
+        registerNodeType("weka-classification-2d", WekaClassification2DAlgorithm.class, wekaIcon);
+        registerNodeType("weka-classification-3d", WekaClassification3DAlgorithm.class, wekaIcon);
     }
 
     @Override

@@ -92,6 +92,15 @@ public abstract class OptionalParameter<T> {
         this.content = content;
     }
 
+    /**
+     * Returns the content if enabled, otherwise the default value
+     * @param defaultValue the default value
+     * @return the content if enabled, otherwise the default value
+     */
+    public T getContentOrDefault(T defaultValue) {
+        return isEnabled() ? getContent() : defaultValue;
+    }
+
     @Override
     public String toString() {
         if (enabled)

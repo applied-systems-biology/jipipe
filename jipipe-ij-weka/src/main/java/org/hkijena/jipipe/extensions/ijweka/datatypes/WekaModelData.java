@@ -9,6 +9,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.SerializationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import trainableSegmentation.WekaSegmentation;
 import trainableSegmentation.Weka_Segmentation;
@@ -40,9 +41,17 @@ public class WekaModelData implements JIPipeData {
     }
 
     public static WekaModelData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        WekaSegmentation segmentation = new WekaSegmentation();
-        segmentation.loadTrainingData(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".arff").get(0).toString());
-        segmentation.loadClassifier(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".model").get(0).toString());
+        WekaSegmentation segmentation;
+        List<Path> files = PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".weka_segmentation");
+        if(files.isEmpty()) {
+            segmentation = new WekaSegmentation();
+            segmentation.loadTrainingData(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".arff").get(0).toString());
+            segmentation.loadClassifier(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".model").get(0).toString());
+        }
+        else {
+            SerializationUtils.objectToBase64()
+        }
+
         return new WekaModelData(segmentation);
     }
 
