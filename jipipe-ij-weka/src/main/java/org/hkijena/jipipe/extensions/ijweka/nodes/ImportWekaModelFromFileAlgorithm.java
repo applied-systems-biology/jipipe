@@ -5,6 +5,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
@@ -17,12 +18,15 @@ import trainableSegmentation.WekaSegmentation;
 @JIPipeOutputSlot(value = WekaModelData.class, slotName = "Output", description = "The model", autoCreate = true)
 public class ImportWekaModelFromFileAlgorithm extends JIPipeIteratingAlgorithm {
 
+    private boolean processing3D;
+
     public ImportWekaModelFromFileAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
     public ImportWekaModelFromFileAlgorithm(ImportWekaModelFromFileAlgorithm other) {
         super(other);
+        this.processing3D = other.processing3D;
     }
 
     @Override
@@ -30,7 +34,7 @@ public class ImportWekaModelFromFileAlgorithm extends JIPipeIteratingAlgorithm {
         FileData modelFileData = dataBatch.getInputData("Model file", FileData.class, progressInfo);
         FileData dataFileData = dataBatch.getInputData("Data file", FileData.class, progressInfo);
         try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
-            WekaSegmentation segmentation = new WekaSegmentation();
+            WekaSegmentation segmentation = new WekaSegmentation(processing3D);
             if (dataFileData != null) {
                 segmentation.loadTrainingData(dataFileData.getPath());
             }
@@ -39,5 +43,17 @@ public class ImportWekaModelFromFileAlgorithm extends JIPipeIteratingAlgorithm {
             dataBatch.addOutputData(getFirstOutputSlot(), modelData, progressInfo);
         }
 
+    }
+
+    @JIPipeDocumentation(name = "Is processing 3D data", description = "If enabled, indicates that the model is a 3D model. <strong>Please ensure to set the correct value; otherwise " +
+            "the Weka model will fail to import or behave in unexpected ways</strong>")
+    @JIPipeParameter(value = "is-processing-3d", important = true)
+    public boolean isProcessing3D() {
+        return processing3D;
+    }
+
+    @JIPipeParameter("is-processing-3d")
+    public void setProcessing3D(boolean processing3D) {
+        this.processing3D = processing3D;
     }
 }
