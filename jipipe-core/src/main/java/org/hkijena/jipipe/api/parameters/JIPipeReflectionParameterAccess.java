@@ -22,6 +22,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * {@link JIPipeParameterAccess} generated from reflection
@@ -83,6 +84,21 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
         if (annotation != null)
             return annotation;
         return getFieldClass().getAnnotation(klass);
+    }
+
+    @Override
+    public <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
+        List<T> result = new ArrayList<>();
+        for (T t : getter.getAnnotationsByType(klass)) {
+            result.add(t);
+        }
+        for (T t : setter.getAnnotationsByType(klass)) {
+            result.add(t);
+        }
+        for (T t : getFieldClass().getAnnotationsByType(klass)) {
+            result.add(t);
+        }
+        return result;
     }
 
     @Override

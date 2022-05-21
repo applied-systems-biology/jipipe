@@ -77,6 +77,11 @@ public class ListParameterItemParameterAccess<T> implements JIPipeParameterAcces
     }
 
     @Override
+    public <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
+        return parent.getAnnotationsOfType(klass);
+    }
+
+    @Override
     public Collection<Annotation> getAnnotations() {
         return parent.getAnnotations();
     }

@@ -20,6 +20,7 @@ import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Parameter access for the key entry in {@link PairParameter}
@@ -72,6 +73,11 @@ public class OptionalParameterContentAccess<T> implements JIPipeParameterAccess 
     @Override
     public <U extends Annotation> U getAnnotationOfType(Class<U> klass) {
         return parent.getAnnotationOfType(klass);
+    }
+
+    @Override
+    public <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
+        return getParent().getAnnotationsOfType(klass);
     }
 
     @Override

@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -80,6 +81,11 @@ public class GraphNodeParameterReferenceAccess implements JIPipeParameterAccess 
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         return target.getAnnotationOfType(klass);
+    }
+
+    @Override
+    public <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
+        return target.getAnnotationsOfType(klass);
     }
 
     @Override

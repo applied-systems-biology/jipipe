@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Implements the access to table cell
@@ -73,6 +74,11 @@ public class ParameterTableCellAccess implements JIPipeParameterAccess {
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         return null;
+    }
+
+    @Override
+    public <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
+        return Collections.emptyList();
     }
 
     @Override

@@ -13,25 +13,26 @@
 
 package org.hkijena.jipipe.api.parameters;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * A custom parameter access
  */
 public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
 
-    private final Map<Class<? extends Annotation>, Annotation> annotations = new HashMap<>();
+    private final Multimap<Class<? extends Annotation>, Annotation> annotations = HashMultimap.create();
     private String key;
     private String name;
     private String description;
@@ -81,13 +82,19 @@ public class JIPipeManualParameterAccess implements JIPipeParameterAccess {
 
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
-        Annotation result = annotations.getOrDefault(klass, null);
+        Collection<Annotation> available = annotations.get(klass);
+        Annotation result = available.isEmpty() ? null : (Annotation) available.iterator().next();
         if (result == null && annotationSupplier != null)
             result = annotationSupplier.apply(klass);
         if (result != null)
             return (T) result;
         else
             return null;
+    }
+
+    @Override
+    public <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
+        return annotations.get(klass).stream().map(ann -> (T)ann).collect(Collectors.toList());
     }
 
     @Override

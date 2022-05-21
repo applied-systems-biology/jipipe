@@ -21,6 +21,8 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -29,9 +31,9 @@ import org.scijava.Priority;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * A mutable implementation of {@link JIPipeParameterAccess}
@@ -50,7 +52,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
     private Class<?> fieldClass;
     private Object value;
     private double priority = Priority.NORMAL;
-    private Map<Class<? extends Annotation>, Annotation> annotationMap = new HashMap<>();
+    private Multimap<Class<? extends Annotation>, Annotation> annotationMap = HashMultimap.create();
     private String shortKey;
     private int uiOrder;
     private JIPipeParameterPersistence persistence = JIPipeParameterPersistence.Collection;
@@ -183,7 +185,10 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
 
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
-        return (T) annotationMap.getOrDefault(klass, null);
+        Collection<Annotation> collection = annotationMap.get(klass);
+        if(collection.isEmpty())
+            return null;
+        return (T) collection.iterator().next();
     }
 
     @Override
@@ -272,11 +277,16 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
      *
      * @return access to the annotations
      */
-    public Map<Class<? extends Annotation>, Annotation> getAnnotationMap() {
+    public Multimap<Class<? extends Annotation>, Annotation> getAnnotationMap() {
         return annotationMap;
     }
 
-    public void setAnnotationMap(Map<Class<? extends Annotation>, Annotation> annotationMap) {
+    @Override
+    public <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
+        return annotationMap.get(klass).stream().map(ann -> (T)ann).collect(Collectors.toList());
+    }
+
+    public void setAnnotationMap(Multimap<Class<? extends Annotation>, Annotation> annotationMap) {
         this.annotationMap = annotationMap;
     }
 

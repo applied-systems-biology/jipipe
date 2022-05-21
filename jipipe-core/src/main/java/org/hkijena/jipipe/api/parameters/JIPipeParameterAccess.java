@@ -17,6 +17,7 @@ import org.scijava.Priority;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Interface around accessing a parameter
@@ -70,13 +71,21 @@ public interface JIPipeParameterAccess {
     boolean isImportant();
 
     /**
-     * Finds an annotation for this parameter
+     * Gets an annotation for this parameter
      *
      * @param klass Annotation class
      * @param <T>   Annotation type
      * @return Annotation or null if not found
      */
     <T extends Annotation> T getAnnotationOfType(Class<T> klass);
+
+    /**
+     * Gets annotations for this parameter (including the field class)
+     * @param klass the annotation class
+     * @return the list of annotations
+     * @param <T> the annotation class
+     */
+    <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass);
 
     /**
      * Gets all available annotations for this parameter

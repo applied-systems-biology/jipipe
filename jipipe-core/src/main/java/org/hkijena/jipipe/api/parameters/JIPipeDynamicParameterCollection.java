@@ -21,9 +21,7 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
@@ -351,7 +349,7 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
         }
         parameterAccess.setName(name);
         parameterAccess.setDescription(description);
-        Map<Class<? extends Annotation>, Annotation> annotationMap = new HashMap<>();
+        Multimap<Class<? extends Annotation>, Annotation> annotationMap = HashMultimap.create();
         for (Annotation annotation : annotations) {
             annotationMap.put(annotation.annotationType(), annotation);
         }

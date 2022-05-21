@@ -51,6 +51,11 @@ public class JIPipeMultiParameterAccess implements JIPipeParameterAccess {
     }
 
     @Override
+    public <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
+        return getFirstAccess().getAnnotationsOfType(klass);
+    }
+
+    @Override
     public Collection<Annotation> getAnnotations() {
         return getFirstAccess().getAnnotations();
     }

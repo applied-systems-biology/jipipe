@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.List;
 
 /**
  * Access to a {@link FunctionParameter} output
@@ -64,6 +65,11 @@ public class FunctionParameterOutputAccess<I, P, O> implements JIPipeParameterAc
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         return parent.getAnnotationOfType(klass);
+    }
+
+    @Override
+    public <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
+        return getParent().getAnnotationsOfType(klass);
     }
 
     @Override
