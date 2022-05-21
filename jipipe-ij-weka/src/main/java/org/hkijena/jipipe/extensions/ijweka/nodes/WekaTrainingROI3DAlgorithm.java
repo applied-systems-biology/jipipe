@@ -115,34 +115,35 @@ public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
         Classifier classifier = (new WekaClassifierParameter(getClassifierSettings().getClassifier())).getClassifier(); // This will make a copy of the classifier
 
         // Apply the training
-        ImagePlus trainingImage = dataBatch.getInputData("Image", ImagePlus3DData.class, progressInfo).getDuplicateImage();
-        WekaSegmentation wekaSegmentation = new WekaSegmentation(true);
-        wekaSegmentation.setTrainingImage(trainingImage);
-        wekaSegmentation.setClassifier((AbstractClassifier) classifier);
-        wekaSegmentation.setDoClassBalance(getClassifierSettings().isBalanceClasses());
-        WekaUtils.set3DFeatures(wekaSegmentation, featureSettings.getTrainingFeatures().getValues());
-        wekaSegmentation.setMembraneThickness(featureSettings.getMembraneSize());
-        wekaSegmentation.setMembranePatchSize(featureSettings.getMembranePatchSize());
-        wekaSegmentation.setMinimumSigma(featureSettings.getMinSigma());
-        wekaSegmentation.setMaximumSigma(featureSettings.getMaxSigma());
-        wekaSegmentation.setUseNeighbors(featureSettings.isUseNeighbors());
-        while(wekaSegmentation.getNumOfClasses() < groupedROIs.size()) {
-            wekaSegmentation.addClass();
-        }
-
-        for (Map.Entry<Integer, ROIListData> entry : groupedROIs.entrySet()) {
-            for (Roi roi : entry.getValue()) {
-                wekaSegmentation.addExample(entry.getKey(), roi, 1);
-            }
-        }
-
         try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
+            ImagePlus trainingImage = dataBatch.getInputData("Image", ImagePlus3DData.class, progressInfo).getDuplicateImage();
+            WekaSegmentation wekaSegmentation = new WekaSegmentation(true);
+            wekaSegmentation.setTrainingImage(trainingImage);
+            wekaSegmentation.setClassifier((AbstractClassifier) classifier);
+            wekaSegmentation.setDoClassBalance(getClassifierSettings().isBalanceClasses());
+            WekaUtils.set3DFeatures(wekaSegmentation, featureSettings.getTrainingFeatures().getValues());
+            wekaSegmentation.setMembraneThickness(featureSettings.getMembraneSize());
+            wekaSegmentation.setMembranePatchSize(featureSettings.getMembranePatchSize());
+            wekaSegmentation.setMinimumSigma(featureSettings.getMinSigma());
+            wekaSegmentation.setMaximumSigma(featureSettings.getMaxSigma());
+            wekaSegmentation.setUseNeighbors(featureSettings.isUseNeighbors());
+            while (wekaSegmentation.getNumOfClasses() < groupedROIs.size()) {
+                wekaSegmentation.addClass();
+            }
+
+            for (Map.Entry<Integer, ROIListData> entry : groupedROIs.entrySet()) {
+                for (Roi roi : entry.getValue()) {
+                    wekaSegmentation.addExample(entry.getKey(), roi, 1);
+                }
+            }
+
+
             if (!wekaSegmentation.trainClassifier()) {
                 throw new RuntimeException("Weka training failed!");
             }
-        }
 
-        dataBatch.addOutputData("Trained model", new WekaModelData(wekaSegmentation), progressInfo);
+            dataBatch.addOutputData("Trained model", new WekaModelData(wekaSegmentation), progressInfo);
+        }
     }
 
     @Override

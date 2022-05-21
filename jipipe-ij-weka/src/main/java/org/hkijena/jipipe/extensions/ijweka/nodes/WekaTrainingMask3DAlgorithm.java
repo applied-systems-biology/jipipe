@@ -57,26 +57,27 @@ public class WekaTrainingMask3DAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus trainingImage = dataBatch.getInputData("Image", ImagePlus3DData.class, progressInfo).getDuplicateImage();
         ImagePlus maskImage = dataBatch.getInputData("Mask", ImagePlus3DGreyscaleMaskData.class, progressInfo).getDuplicateImage();
 
-        WekaSegmentation wekaSegmentation = new WekaSegmentation(trainingImage);
-        wekaSegmentation.setClassifier((AbstractClassifier) classifier);
-        wekaSegmentation.setDoClassBalance(getClassifierSettings().isBalanceClasses());
-        wekaSegmentation.setFeatures(selectedFeatureNames);
-        wekaSegmentation.setFeaturesDirty();
-        wekaSegmentation.setMembraneThickness(featureSettings.getMembraneSize());
-        wekaSegmentation.setMembranePatchSize(featureSettings.getMembranePatchSize());
-        wekaSegmentation.setMinimumSigma(featureSettings.getMinSigma());
-        wekaSegmentation.setMaximumSigma(featureSettings.getMaxSigma());
-        wekaSegmentation.setUseNeighbors(featureSettings.isUseNeighbors());
-
-        wekaSegmentation.addBinaryData(maskImage, 0, "class 2", "class 1");
-
         try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
+            WekaSegmentation wekaSegmentation = new WekaSegmentation(trainingImage);
+            wekaSegmentation.setClassifier((AbstractClassifier) classifier);
+            wekaSegmentation.setDoClassBalance(getClassifierSettings().isBalanceClasses());
+            wekaSegmentation.setFeatures(selectedFeatureNames);
+            wekaSegmentation.setFeaturesDirty();
+            wekaSegmentation.setMembraneThickness(featureSettings.getMembraneSize());
+            wekaSegmentation.setMembranePatchSize(featureSettings.getMembranePatchSize());
+            wekaSegmentation.setMinimumSigma(featureSettings.getMinSigma());
+            wekaSegmentation.setMaximumSigma(featureSettings.getMaxSigma());
+            wekaSegmentation.setUseNeighbors(featureSettings.isUseNeighbors());
+
+            wekaSegmentation.addBinaryData(maskImage, 0, "class 2", "class 1");
+
+
             if (!wekaSegmentation.trainClassifier()) {
                 throw new RuntimeException("Weka training failed!");
             }
-        }
 
-        dataBatch.addOutputData("Trained model", new WekaModelData(wekaSegmentation), progressInfo);
+            dataBatch.addOutputData("Trained model", new WekaModelData(wekaSegmentation), progressInfo);
+        }
     }
 
     @JIPipeDocumentation(name = "Classifier", description = "Settings for the classifier")
