@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.ijweka.nodes;
 
 import ij.ImagePlus;
+import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -23,10 +24,10 @@ import weka.classifiers.Classifier;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Train Weka model from labels (2D)", description = "Trains a Weka model on 2D image data that classified via a label image.")
+@JIPipeDocumentation(name = "Train Weka model from labels (2D)", description = "Trains a Weka model on 2D image data that classified by a label image.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Weka")
 @JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Image", description = "Image on which the training should be applied", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Labels", description = "The labels image", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlus2DGreyscaleData.class, slotName = "Labels", description = "A labels image", autoCreate = true)
 @JIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", autoCreate = true)
 public class WekaTrainingLabels2DAlgorithm extends JIPipeIteratingAlgorithm {
 
@@ -56,7 +57,12 @@ public class WekaTrainingLabels2DAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Apply the training
         ImagePlus trainingImage = dataBatch.getInputData("Image", ImagePlus2DData.class, progressInfo).getDuplicateImage();
-        ImagePlus labelsImage = dataBatch.getInputData("Labels", ImagePlus2DGreyscaleMaskData.class, progressInfo).getDuplicateImage();
+        ImagePlus labelImage = dataBatch.getInputData("Labels", ImagePlus2DGreyscaleData.class, progressInfo).getDuplicateImage();
+
+        int numLabels = LabelImages.findAllLabels(labelImage).length;
+        if(labelImage.getProcessor().getStats().min == 0) {
+            numLabels += 1;
+        }
 
         try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
             WekaSegmentation wekaSegmentation = new WekaSegmentation(trainingImage);
@@ -70,7 +76,11 @@ public class WekaTrainingLabels2DAlgorithm extends JIPipeIteratingAlgorithm {
             wekaSegmentation.setMaximumSigma(featureSettings.getMaxSigma());
             wekaSegmentation.setUseNeighbors(featureSettings.isUseNeighbors());
 
-            wekaSegmentation.addBinaryData(labelsImage, 0, "class 2", "class 1");
+            while(wekaSegmentation.getNumOfClasses() < numLabels) {
+                wekaSegmentation.addClass();
+            }
+
+            wekaSegmentation.addLabeledData(trainingImage, labelImage);
 
             if (!wekaSegmentation.trainClassifier()) {
                 throw new RuntimeException("Weka training failed!");
