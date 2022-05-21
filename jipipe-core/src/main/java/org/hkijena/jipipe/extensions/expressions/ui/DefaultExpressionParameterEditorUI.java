@@ -147,31 +147,25 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
                 ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(settings.variableSource());
                 variables.addAll(variableSource.getVariables(getParameterAccess()));
             }
-            ExpressionParameterSettingsVariables annotationVariables = getParameterAccess().getAnnotationOfType(ExpressionParameterSettingsVariables.class);
-            if (annotationVariables != null) {
-                for (ExpressionParameterSettingsVariable variable : annotationVariables.value()) {
-                    if (!StringUtils.isNullOrEmpty(variable.name()) || !StringUtils.isNullOrEmpty(variable.description()) || !StringUtils.isNullOrEmpty(variable.key())) {
-                        variables.add(new ExpressionParameterVariable(variable.name(), variable.description(), variable.key()));
-                    }
-                    if (variable.fromClass() != UndefinedExpressionParameterVariableSource.class) {
-                        ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(variable.fromClass());
-                        variables.addAll(variableSource.getVariables(getParameterAccess()));
-                    }
+            for (ExpressionParameterSettingsVariable variable : getParameterAccess().getAnnotationsOfType(ExpressionParameterSettingsVariable.class)) {
+                if (!StringUtils.isNullOrEmpty(variable.name()) || !StringUtils.isNullOrEmpty(variable.description()) || !StringUtils.isNullOrEmpty(variable.key())) {
+                    variables.add(new ExpressionParameterVariable(variable.name(), variable.description(), variable.key()));
+                }
+                if (variable.fromClass() != UndefinedExpressionParameterVariableSource.class) {
+                    ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(variable.fromClass());
+                    variables.addAll(variableSource.getVariables(getParameterAccess()));
                 }
             }
         }
         // Read from field class
         {
-            ExpressionParameterSettingsVariables annotationVariables = fieldClass.getAnnotation(ExpressionParameterSettingsVariables.class);
-            if (annotationVariables != null) {
-                for (ExpressionParameterSettingsVariable variable : annotationVariables.value()) {
-                    if (!StringUtils.isNullOrEmpty(variable.name()) || !StringUtils.isNullOrEmpty(variable.description()) || !StringUtils.isNullOrEmpty(variable.key())) {
-                        variables.add(new ExpressionParameterVariable(variable.name(), variable.description(), variable.key()));
-                    }
-                    if (variable.fromClass() != UndefinedExpressionParameterVariableSource.class) {
-                        ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(variable.fromClass());
-                        variables.addAll(variableSource.getVariables(getParameterAccess()));
-                    }
+            for (ExpressionParameterSettingsVariable variable : fieldClass.getAnnotationsByType(ExpressionParameterSettingsVariable.class)) {
+                if (!StringUtils.isNullOrEmpty(variable.name()) || !StringUtils.isNullOrEmpty(variable.description()) || !StringUtils.isNullOrEmpty(variable.key())) {
+                    variables.add(new ExpressionParameterVariable(variable.name(), variable.description(), variable.key()));
+                }
+                if (variable.fromClass() != UndefinedExpressionParameterVariableSource.class) {
+                    ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(variable.fromClass());
+                    variables.addAll(variableSource.getVariables(getParameterAccess()));
                 }
             }
         }
