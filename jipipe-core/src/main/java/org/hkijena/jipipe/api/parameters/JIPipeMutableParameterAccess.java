@@ -35,6 +35,7 @@ import java.util.Objects;
 
 /**
  * A mutable implementation of {@link JIPipeParameterAccess}
+ * The class is partially JSON-serializable (Annotations, for example, are excluded)
  */
 @JsonDeserialize(using = JIPipeMutableParameterAccess.Deserializer.class)
 public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
@@ -109,6 +110,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.value = other.value;
         this.priority = other.priority;
         this.persistence = other.persistence;
+        this.uiOrder = other.uiOrder;
     }
 
     @Override
@@ -121,6 +123,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
     }
 
     @Override
+    @JsonGetter("key")
     public String getKey() {
         return key;
     }
@@ -130,6 +133,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
      *
      * @param key key of this access
      */
+    @JsonSetter("key")
     public void setKey(String key) {
         this.key = key;
     }
@@ -249,7 +253,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
      *
      * @param parameterHolder The object that holds the parameter
      */
-    public void setParameterHolder(JIPipeParameterCollection parameterHolder) {
+    public void setSource(JIPipeParameterCollection parameterHolder) {
         this.parameterHolder = parameterHolder;
     }
 

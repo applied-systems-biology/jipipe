@@ -30,6 +30,7 @@ import java.io.IOException;
 /**
  * A parameter that allows to model a function with an input, an output, and parameters.
  * This can be used if {@link PairParameter} is not sufficient
+ * We suggest to use {@link org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList} if applicable, due to its greater flexibility.
  */
 @JsonSerialize(using = FunctionParameter.Serializer.class)
 @JsonDeserialize(using = FunctionParameter.Deserializer.class)

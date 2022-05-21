@@ -46,6 +46,10 @@ public class MarkdownDocument {
     private String markdown;
     private String renderedHTML;
 
+    public MarkdownDocument() {
+       this("");
+    }
+
     /**
      * @param markdown markdown text
      */

@@ -15,7 +15,12 @@ package org.hkijena.jipipe.api.parameters;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableList;
@@ -35,22 +40,18 @@ import java.util.function.Function;
 /**
  * Holds a user-definable set of parameters
  */
+@JsonDeserialize(using = JIPipeDynamicParameterCollection.Deserializer.class)
 public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCollection, JIPipeValidatable, JsonDeserializable {
 
     private final EventBus eventBus = new EventBus();
     private final BiMap<String, JIPipeMutableParameterAccess> dynamicParameters = HashBiMap.create();
     private Set<Class<?>> allowedTypes = new HashSet<>();
     private Function<UserParameterDefinition, JIPipeMutableParameterAccess> instanceGenerator;
-    private boolean allowUserModification = true;
+    private boolean allowUserModification = false;
     private boolean delayEvents = false;
 
-    /**
-     * Creates a new instance with user modification enabled
-     *
-     * @param allowedTypes The parameter types that can be added
-     */
-    public JIPipeDynamicParameterCollection(Class<?>... allowedTypes) {
-        this.allowedTypes.addAll(Arrays.asList(allowedTypes));
+    public JIPipeDynamicParameterCollection() {
+
     }
 
     /**
@@ -75,7 +76,7 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
         this.instanceGenerator = other.instanceGenerator;
         for (Map.Entry<String, JIPipeMutableParameterAccess> entry : other.dynamicParameters.entrySet()) {
             JIPipeMutableParameterAccess parameterAccess = new JIPipeMutableParameterAccess(entry.getValue());
-            parameterAccess.setParameterHolder(this);
+            parameterAccess.setSource(this);
             dynamicParameters.put(entry.getKey(), parameterAccess);
         }
     }
@@ -122,7 +123,7 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
             // Set default
             parameterAccess.set(JIPipe.getParameterTypes().getInfoByFieldClass(parameterAccess.getFieldClass()).newInstance());
         }
-        parameterAccess.setParameterHolder(this);
+        parameterAccess.setSource(this);
         ParameterAddingEvent event = new ParameterAddingEvent(this, parameterAccess);
         eventBus.post(event);
         if (event.isCancel())
@@ -235,7 +236,7 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
             try {
                 JIPipeMutableParameterAccess parameterAccess = JsonUtils.getObjectMapper().readerFor(JIPipeMutableParameterAccess.class).readValue(entry.getValue());
                 parameterAccess.setKey(entry.getKey());
-                parameterAccess.setParameterHolder(this);
+                parameterAccess.setSource(this);
                 dynamicParameters.put(entry.getKey(), parameterAccess);
             } catch (IOException e) {
                 throw new UserFriendlyRuntimeException(e, "Unable to read parameter from JSON!", "User-modifiable parameters", "There is essential information missing in the JSON data.",
@@ -416,6 +417,15 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
 
         public void setCancel(boolean cancel) {
             this.cancel = cancel;
+        }
+    }
+
+    public static class Deserializer extends JsonDeserializer<JIPipeDynamicParameterCollection> {
+        @Override
+        public JIPipeDynamicParameterCollection deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+            JIPipeDynamicParameterCollection result = new JIPipeDynamicParameterCollection();
+            result.fromJson(p.readValueAsTree());
+            return result;
         }
     }
 }

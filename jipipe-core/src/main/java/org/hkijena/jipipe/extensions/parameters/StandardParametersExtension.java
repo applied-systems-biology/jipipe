@@ -46,6 +46,7 @@ import org.hkijena.jipipe.extensions.parameters.api.scripts.ScriptParameter;
 import org.hkijena.jipipe.extensions.parameters.api.scripts.ScriptParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameter;
 import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.parameters.library.colors.*;
 import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileParameterEditorUI;
@@ -268,6 +269,8 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
     private void registerCollectionParameters() {
         // Collection parameters
         registerParameterEditor(ListParameter.class, ListParameterEditorUI.class);
+
+        registerParameterType("parameter-collection-list", ParameterCollectionList.class, "Parameter collection list", "A list of parameter collections");
     }
 
     private void registerMiscParameters() {

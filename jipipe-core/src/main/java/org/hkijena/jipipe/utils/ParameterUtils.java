@@ -85,6 +85,7 @@ public class ParameterUtils {
                                     v = JsonUtils.getObjectMapper().readerFor(parameterAccess.getFieldClass()).readValue(node.get(key));
                                     parameterAccess.set(v);
                                 } catch (Exception | Error e) {
+                                    e.printStackTrace();
                                     issues.resolve(key).reportIsInvalid("Could not load parameter '" + key + "'!",
                                             "The data might be not compatible with your operating system or from an older or newer JIPipe version.",
                                             "Please check the value of the parameter.",

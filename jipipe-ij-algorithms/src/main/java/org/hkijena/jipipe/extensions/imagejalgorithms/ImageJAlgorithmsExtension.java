@@ -756,7 +756,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-roi-remove-overlay", RemoveOverlayAlgorithm.class, UIUtils.getIconURLFromResources("actions/editclear.png"));
         registerNodeType("ij1-roi-set-overlay", SetOverlayAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
         registerNodeType("ij1-roi-extract-overlay", ExtractOverlayAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
-        registerNodeType("ij1-roi-to-labels", ROIToLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
+        registerNodeType("ij1-roi-to-labels-expression", ROIToLabelsExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
+        registerNodeType("ij1-roi-to-labels-name", ROIToLabelsByNameAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
 
         registerEnumParameterType("ij1-roi-from-table-rectangular:anchor",
                 TableToRectangularROIAlgorithm.Anchor.class,

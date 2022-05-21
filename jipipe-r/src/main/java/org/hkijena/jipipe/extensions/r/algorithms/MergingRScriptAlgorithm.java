@@ -66,7 +66,7 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
 
     private RScriptParameter script = new RScriptParameter();
     private JIPipeTextAnnotationMergeMode annotationMergeStrategy = JIPipeTextAnnotationMergeMode.Merge;
-    private JIPipeDynamicParameterCollection variables = new JIPipeDynamicParameterCollection(RUtils.ALLOWED_PARAMETER_CLASSES);
+    private JIPipeDynamicParameterCollection variables = new JIPipeDynamicParameterCollection(true, RUtils.ALLOWED_PARAMETER_CLASSES);
     private boolean cleanUpAfterwards = true;
     private OptionalREnvironment overrideEnvironment = new OptionalREnvironment();
 
