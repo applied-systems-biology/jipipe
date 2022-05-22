@@ -15,7 +15,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class ImportImageJPathDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
+public class ImportImageJPathDataOperation implements JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         UIUtils.openFileInNative(((PathData) data).toPath());
@@ -61,36 +61,4 @@ public class ImportImageJPathDataOperation implements JIPipeDataImportOperation,
         return "jipipe:import-image-into-imagej";
     }
 
-    @Override
-    public boolean canShow(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, Path rowStorageFolder) {
-        Path targetPath = getTargetPath(rowStorageFolder);
-        if (targetPath == null)
-            return false;
-        if (Files.isRegularFile(targetPath)) {
-            String fileType = Opener.getFileFormat(targetPath.toString());
-            switch (fileType) {
-                case "tif":
-                case "dcm":
-                case "fits":
-                case "pgm":
-                case "jpg":
-                case "gif":
-                case "lut":
-                case "bmp":
-                case "roi": {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
-        Path targetPath = getTargetPath(rowStorageFolder);
-        if (targetPath == null)
-            return null;
-        IJ.open(targetPath.toString());
-        return null;
-    }
 }

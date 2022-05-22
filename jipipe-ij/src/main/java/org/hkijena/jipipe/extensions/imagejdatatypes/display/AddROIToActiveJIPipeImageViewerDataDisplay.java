@@ -27,7 +27,7 @@ import javax.swing.*;
 import java.nio.file.Path;
 import java.util.stream.Collectors;
 
-public class AddROIToActiveJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOperation, JIPipeDataImportOperation {
+public class AddROIToActiveJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         ImageViewerPanel viewerPanel = ImageViewerPanel.getActiveViewerPanel();
@@ -44,13 +44,6 @@ public class AddROIToActiveJIPipeImageViewerDataDisplay implements JIPipeDataDis
     @Override
     public String getId() {
         return "jipipe:add-roi-to-active-jipipe-image-viewer";
-    }
-
-    @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
-        ROIListData rois = ROIListData.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), progressInfo);
-        display(rois, displayName, workbench, new JIPipeResultSlotDataSource(slot, row, rowStorageFolder));
-        return rois;
     }
 
     @Override

@@ -515,6 +515,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                 ((JIPipeJavaExtension) extension).postprocess();
             }
         }
+        datatypeRegistry.convertDisplayOperationsToImportOperations();
 
         // Check recent projects and backups
         progressInfo.setProgress(6);

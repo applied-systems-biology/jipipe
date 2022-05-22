@@ -34,7 +34,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOperation, JIPipeDataImportOperation {
+public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         List<ImageViewerPanel> viewerPanels = new ArrayList<>(ImageViewerPanel.getOpenViewerPanels());
@@ -60,13 +60,6 @@ public class AddROIToJIPipeImageViewerDataDisplay implements JIPipeDataDisplayOp
                 ((ROIManagerPlugin) plugin).importROIs((ROIListData) data, false);
             }
         }
-    }
-
-    @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
-        ROIListData rois = ROIListData.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), progressInfo);
-        display(rois, displayName, workbench, new JIPipeResultSlotDataSource(slot, row, rowStorageFolder));
-        return rois;
     }
 
     @Override

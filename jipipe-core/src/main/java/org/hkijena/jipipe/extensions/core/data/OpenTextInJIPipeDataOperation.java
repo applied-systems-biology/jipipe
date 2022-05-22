@@ -14,7 +14,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class OpenTextInJIPipeDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
+public class OpenTextInJIPipeDataOperation implements JIPipeDataDisplayOperation {
 
     private final String[] extensions;
 
@@ -50,20 +50,5 @@ public class OpenTextInJIPipeDataOperation implements JIPipeDataImportOperation,
     @Override
     public Icon getIcon() {
         return UIUtils.getIconFromResources("apps/jipipe.png");
-    }
-
-    @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
-        if (rowStorageFolder == null || !Files.isDirectory(rowStorageFolder))
-            return null;
-        Path textFile = PathUtils.findFileByExtensionIn(rowStorageFolder, extensions);
-        try {
-            String data = new String(Files.readAllBytes(textFile), Charsets.UTF_8);
-            JIPipeTextEditor editor = JIPipeTextEditor.openInNewTab(workbench, displayName);
-            editor.setText(data);
-            return new StringData(data);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 }

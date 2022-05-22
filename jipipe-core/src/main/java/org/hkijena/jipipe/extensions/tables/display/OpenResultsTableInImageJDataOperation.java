@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class OpenResultsTableInImageJDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
+public class OpenResultsTableInImageJDataOperation implements JIPipeDataDisplayOperation {
 
     @Override
     public String getId() {
@@ -56,22 +56,5 @@ public class OpenResultsTableInImageJDataOperation implements JIPipeDataImportOp
     @Override
     public Icon getIcon() {
         return UIUtils.getIconFromResources("apps/imagej.png");
-    }
-
-    @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
-        if (rowStorageFolder == null || !Files.isDirectory(rowStorageFolder))
-            return null;
-        Path csvFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".csv");
-        if (csvFile != null) {
-            try {
-                ResultsTableData tableData = new ResultsTableData(ResultsTable.open(csvFile.toString()));
-                tableData.getTable().show(displayName);
-                return tableData;
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        return null;
     }
 }

@@ -21,11 +21,9 @@ import org.hkijena.jipipe.extensions.clij2.parameters.OpenCLKernelScript;
 import org.hkijena.jipipe.extensions.clij2.ui.CLIJControlPanelJIPipeMenuExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusWindowImageJImporterUI;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImagePlusDataImportIntoImageJOperation;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.VersionUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
@@ -85,8 +83,7 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
                 null);
         registerDatatype("clij2-image",
                 CLIJImageData.class,
-                UIUtils.getIconURLFromResources("data-types/clij2-image.png"),
-                new ImagePlusDataImportIntoImageJOperation());
+                UIUtils.getIconURLFromResources("data-types/clij2-image.png"));
         registerDatatypeConversion(new CLIJImageToImagePlusDataConverter(ImagePlusData.class));
         registerDatatypeConversion(new ImagePlusDataToCLIJImageDataConverter());
         registerImageJDataImporter("clij2-image-from-window", new CLIJ2DataFromImageWindowImageJImporter(), ImagePlusWindowImageJImporterUI.class);

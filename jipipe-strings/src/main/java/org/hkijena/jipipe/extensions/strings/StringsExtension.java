@@ -18,7 +18,6 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
-import org.hkijena.jipipe.extensions.core.data.OpenTextInJIPipeDataOperation;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.strings.datasources.StringDefinitionDataSource;
@@ -49,11 +48,11 @@ public class StringsExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerDatatype("string", StringData.class, UIUtils.getIconURLFromResources("data-types/string.png"),
-                new OpenInNativeApplicationDataImportOperation(".txt"), new OpenTextInJIPipeDataOperation(".txt"));
+                new OpenInNativeApplicationDataImportOperation(".txt"));
         registerDatatype("xml", XMLData.class, UIUtils.getIconURLFromResources("data-types/xml.png"),
-                new OpenInNativeApplicationDataImportOperation(".xml"), new OpenTextInJIPipeDataOperation(".xml"));
+                new OpenInNativeApplicationDataImportOperation(".xml"));
         registerDatatype("json", JsonData.class, UIUtils.getIconURLFromResources("data-types/json.png"),
-                new OpenInNativeApplicationDataImportOperation(".json"), new OpenTextInJIPipeDataOperation(".json"));
+                new OpenInNativeApplicationDataImportOperation(".json"));
         registerDatatypeConversion(new StringDataConverter(XMLData.class));
         registerDatatypeConversion(new StringDataConverter(JsonData.class));
 

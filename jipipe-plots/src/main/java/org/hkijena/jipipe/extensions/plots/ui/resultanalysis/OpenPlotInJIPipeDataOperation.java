@@ -11,7 +11,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.nio.file.Path;
 
-public class OpenPlotInJIPipeDataOperation implements JIPipeDataDisplayOperation, JIPipeDataImportOperation {
+public class OpenPlotInJIPipeDataOperation implements JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         data.display(displayName, workbench, source);
@@ -20,17 +20,6 @@ public class OpenPlotInJIPipeDataOperation implements JIPipeDataDisplayOperation
     @Override
     public String getId() {
         return "jipipe:opne-plot-in-jipipe";
-    }
-
-    @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
-        PlotData plotData = PlotData.fromFolder(rowStorageFolder);
-        PlotEditor plotBuilderUI = new PlotEditor(workbench);
-        plotBuilderUI.importExistingPlot(plotData);
-        workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/data-type-plot.png"),
-                plotBuilderUI, DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-        workbench.getDocumentTabPane().switchToLastTab();
-        return plotData;
     }
 
     @Override

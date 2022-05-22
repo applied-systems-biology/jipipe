@@ -62,6 +62,7 @@ public class CopyContainingFolderDataImportOperation implements JIPipeDataImport
         StringSelection selection = new StringSelection(rowStorageFolder.toString());
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, selection);
+        workbench.sendStatusBarText("Copied '" + rowStorageFolder + "' into the clipboard");
         return null;
     }
 }

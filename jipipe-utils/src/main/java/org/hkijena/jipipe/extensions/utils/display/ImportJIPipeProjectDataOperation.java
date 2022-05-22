@@ -25,7 +25,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.nio.file.Path;
 
-public class ImportJIPipeProjectDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
+public class ImportJIPipeProjectDataOperation implements JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         Path folderPath = ((PathData) data).toPath();
@@ -36,14 +36,6 @@ public class ImportJIPipeProjectDataOperation implements JIPipeDataImportOperati
     @Override
     public String getId() {
         return "jipipe:open-analysis-output-in-jipipe";
-    }
-
-    @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
-        JIPipeOutputData data = JIPipeOutputData.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), progressInfo);
-        JIPipeProjectWindow window = (JIPipeProjectWindow) workbench.getWindow();
-        window.openProject(data.toPath());
-        return data;
     }
 
     @Override

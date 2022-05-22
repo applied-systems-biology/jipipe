@@ -577,6 +577,19 @@ public class JIPipeDatatypeRegistry {
     }
 
     /**
+     * Converts all registered {@link JIPipeDataDisplayOperation} entries into {@link JIPipeDataImportOperation}
+     */
+    public void convertDisplayOperationsToImportOperations() {
+        for (Map.Entry<String, Map<String, JIPipeDataDisplayOperation>> dataTypeEntry : registeredDisplayOperations.entrySet()) {
+            String dataTypeId = dataTypeEntry.getKey();
+            for (Map.Entry<String, JIPipeDataDisplayOperation> entry : dataTypeEntry.getValue().entrySet()) {
+                JIPipeDataDisplayWrapperImportOperation operation = new JIPipeDataDisplayWrapperImportOperation(entry.getValue());
+                registerImportOperation(dataTypeId, operation);
+            }
+        }
+    }
+
+    /**
      * Edge between {@link JIPipeDataInfo} instances that indicate a conversion
      */
     public static class DataConverterEdge extends DefaultWeightedEdge {

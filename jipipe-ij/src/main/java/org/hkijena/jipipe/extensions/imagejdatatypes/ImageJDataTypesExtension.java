@@ -166,10 +166,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 UIUtils.getIconURLFromResources("data-types/bioformats.png"),
                 null,
                 OMEImageDataPreview.class,
-                new OMEImageDataImportIntoImageJOperation(),
-                new OpenInImageJDataDisplay(),
-                new OMEImageDataImportViaBioFormatsOperation(),
-                new OMEImageDataImportIntoJIPipeOperation());
+                new OpenInImageJDataDisplay());
         registerImageJDataImporter("ome-image-from-image-window", new OMEImageFromImageWindowImageJImporter(), ImagePlusWindowImageJImporterUI.class);
         registerImageJDataExporter("ome-image-to-image-window", new OMEImageToImageWindowImageJExporter(), DefaultImageJDataExporterUI.class);
 
@@ -233,7 +230,6 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
 
         registerDatatype("imagej-roi", ROIListData.class, ResourceUtils.getPluginResource("icons/data-types/roi.png"),
                 null, ROIDataPreview.class,
-                new ROIDataImportIntoImageOperation(),
                 new AddToROIManagerDataDisplay(),
                 new AddROIToActiveJIPipeImageViewerDataDisplay(),
                 new AddROIToJIPipeImageViewerDataDisplay());
@@ -337,10 +333,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
                 ResourceUtils.getPluginResource(iconResource),
                 null,
                 ImageDataPreview.class,
-                new ImagePlusDataImportIntoJIPipeOperation(),
-                new ImagePlusDataImportIntoImageJOperation(),
-                new OpenInImageJDataDisplay(),
-                new OMEImageDataImportViaBioFormatsOperation());
+                new OpenInImageJDataDisplay());
         configureDefaultImageJAdapters(dataClass, imageImporter, imageExporter);
 //        registerImageJDataImporter("import-" + id, new ImagePlusDataFromImageWindowImageJImporter(dataClass), ImagePlusWindowImageJImporterUI.class);
     }

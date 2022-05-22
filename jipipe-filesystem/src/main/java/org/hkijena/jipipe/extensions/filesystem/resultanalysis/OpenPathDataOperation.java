@@ -10,7 +10,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.nio.file.Path;
 
-public class OpenPathDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
+public class OpenPathDataOperation implements JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         UIUtils.openFileInNative(((PathData) data).toPath());
@@ -39,12 +39,5 @@ public class OpenPathDataOperation implements JIPipeDataImportOperation, JIPipeD
     @Override
     public Icon getIcon() {
         return UIUtils.getIconFromResources("actions/folder-open.png");
-    }
-
-    @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
-        PathData pathData = PathData.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), progressInfo);
-        UIUtils.openFileInNative(pathData.toPath());
-        return null;
     }
 }

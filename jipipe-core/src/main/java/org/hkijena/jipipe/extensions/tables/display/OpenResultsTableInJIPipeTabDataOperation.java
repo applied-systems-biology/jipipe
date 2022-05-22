@@ -26,7 +26,7 @@ import javax.swing.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
-public class OpenResultsTableInJIPipeTabDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
+public class OpenResultsTableInJIPipeTabDataOperation implements JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         data.display(displayName, workbench, source);
@@ -55,18 +55,5 @@ public class OpenResultsTableInJIPipeTabDataOperation implements JIPipeDataImpor
     @Override
     public Icon getIcon() {
         return UIUtils.getIconFromResources("apps/jipipe.png");
-    }
-
-    @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
-        if (rowStorageFolder == null || !Files.isDirectory(rowStorageFolder))
-            return null;
-        Path csvFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".csv");
-        if (csvFile != null) {
-            ResultsTableData result = TableEditor.importTableFromCSV(csvFile, (JIPipeProjectWorkbench) workbench);
-            workbench.getDocumentTabPane().switchToLastTab();
-            return result;
-        }
-        return null;
     }
 }

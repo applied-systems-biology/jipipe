@@ -14,7 +14,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.nio.file.Path;
 
-public class CopyPathDataOperation implements JIPipeDataImportOperation, JIPipeDataDisplayOperation {
+public class CopyPathDataOperation implements JIPipeDataDisplayOperation {
 
     @Override
     public String getId() {
@@ -47,18 +47,5 @@ public class CopyPathDataOperation implements JIPipeDataImportOperation, JIPipeD
         StringSelection selection = new StringSelection(string);
         Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
         clipboard.setContents(selection, selection);
-    }
-
-    @Override
-    public JIPipeData show(JIPipeDataSlot slot, JIPipeDataTableMetadataRow row, String dataAnnotationName, Path rowStorageFolder, String compartmentName, String algorithmName, String displayName, JIPipeWorkbench workbench, JIPipeProgressInfo progressInfo) {
-        Path listFile = PathUtils.findFileByExtensionIn(rowStorageFolder, ".json");
-        if (listFile != null) {
-            PathData pathData = PathData.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), progressInfo);
-            StringSelection selection = new StringSelection(pathData.getPath());
-            Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-            clipboard.setContents(selection, selection);
-            return pathData;
-        }
-        return null;
     }
 }
