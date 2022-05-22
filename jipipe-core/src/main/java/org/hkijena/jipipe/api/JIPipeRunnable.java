@@ -13,6 +13,11 @@
 
 package org.hkijena.jipipe.api;
 
+import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.ui.running.*;
+
+import java.util.function.Consumer;
+
 /**
  * Runnable that can be scheduled, canceled, and reports progress
  */
@@ -38,4 +43,68 @@ public interface JIPipeRunnable extends Runnable {
      * @return the name
      */
     String getTaskLabel();
+
+    /**
+     * Registers an event subscriber into {@link org.hkijena.jipipe.ui.running.JIPipeRunnerQueue} that listens for when
+     * this run finishes
+     * @param function the method to execute when the run finishes (successfully or not successfully)
+     */
+    default void onFinished(Consumer<RunUIWorkerFinishedEvent> function) {
+        JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
+            @Subscribe
+            public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+                if (event.getRun() == JIPipeRunnable.this) {
+                    function.accept(event);
+                }
+            }
+        });
+    }
+
+    /**
+     * Registers an event subscriber into {@link org.hkijena.jipipe.ui.running.JIPipeRunnerQueue} that listens for when
+     * this run is interrupted
+     * @param function the method to execute when the run is interrupted (due to error or user cancel)
+     */
+    default void onInterrupted(Consumer<RunUIWorkerInterruptedEvent> function) {
+        JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
+            @Subscribe
+            public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
+                if (event.getRun() == JIPipeRunnable.this) {
+                    function.accept(event);
+                }
+            }
+        });
+    }
+
+    /**
+     * Registers an event subscriber into {@link org.hkijena.jipipe.ui.running.JIPipeRunnerQueue} that listens for when
+     * this run is started
+     * @param function the method to execute when the run starts
+     */
+    default void onStarted(Consumer<RunUIWorkerStartedEvent> function) {
+        JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
+            @Subscribe
+            public void onWorkerStarted(RunUIWorkerStartedEvent event) {
+                if (event.getRun() == JIPipeRunnable.this) {
+                    function.accept(event);
+                }
+            }
+        });
+    }
+
+    /**
+     * Registers an event subscriber into {@link org.hkijena.jipipe.ui.running.JIPipeRunnerQueue} that listens for when
+     * this run is progressing
+     * @param function the method to execute when the run progresses
+     */
+    default void onProgress(Consumer<RunUIWorkerProgressEvent> function) {
+        JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
+            @Subscribe
+            public void onWorkerStarted(RunUIWorkerProgressEvent event) {
+                if (event.getRun() == JIPipeRunnable.this) {
+                    function.accept(event);
+                }
+            }
+        });
+    }
 }
