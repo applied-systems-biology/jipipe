@@ -81,5 +81,5 @@
     "jipipe-launcher",
     "jipipe-ij-updater-cli"
   ],
-  "jipipe-version": "1.72.2"
+  "jipipe-version": "1.73.0"
 }

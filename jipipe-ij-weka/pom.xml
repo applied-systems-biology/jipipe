@@ -108,6 +108,12 @@
                 <groupId>sc.fiji</groupId>
                 <artifactId>Trainable_Segmentation</artifactId>
                 <version>3.3.2</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>jakarta.activation</groupId>
+                        <artifactId>jakarta.activation-api</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
         </dependencies>
     </dependencyManagement>

@@ -31,3 +31,5 @@ target
 /dist/*.zip
 **/__pycache__/
 
+/tree.txt
+/test.png

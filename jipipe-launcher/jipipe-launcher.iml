@@ -337,7 +337,6 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.fracpete:jfilechooser-bookmarks:0.1.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.fracpete:jclipboardhelper:0.1.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.sun.istack:istack-commons-runtime:3.0.11" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: jakarta.activation:jakarta.activation-api:1.2.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: jakarta.xml.bind:jakarta.xml.bind-api:2.3.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.glassfish.jaxb:jaxb-runtime:2.3.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.glassfish.jaxb:txw2:2.3.3" level="project" />
