@@ -69,6 +69,12 @@ org.hkijena.jipipe.extensions.forms.datatypes
 org.hkijena.jipipe.extensions.forms.ui
 org.hkijena.jipipe.extensions.forms.utils
 org.hkijena.jipipe.extensions.ijmultitemplatematching
+org.hkijena.jipipe.extensions.ijweka
+org.hkijena.jipipe.extensions.ijweka.datatypes
+org.hkijena.jipipe.extensions.ijweka.nodes
+org.hkijena.jipipe.extensions.ijweka.parameters
+org.hkijena.jipipe.extensions.ijweka.parameters.collections
+org.hkijena.jipipe.extensions.ijweka.parameters.features
 org.hkijena.jipipe.extensions.imagej2
 org.hkijena.jipipe.extensions.imagej2.algorithms
 org.hkijena.jipipe.extensions.imagej2.compat
@@ -182,6 +188,7 @@ org.hkijena.jipipe.extensions.parameters.api.optional
 org.hkijena.jipipe.extensions.parameters.api.pairs
 org.hkijena.jipipe.extensions.parameters.api.scripts
 org.hkijena.jipipe.extensions.parameters.library.auth
+org.hkijena.jipipe.extensions.parameters.library.collections
 org.hkijena.jipipe.extensions.parameters.library.colors
 org.hkijena.jipipe.extensions.parameters.library.editors
 org.hkijena.jipipe.extensions.parameters.library.filesystem
@@ -242,12 +249,6 @@ org.hkijena.jipipe.extensions.utils.algorithms.processes
 org.hkijena.jipipe.extensions.utils.contextmenu
 org.hkijena.jipipe.extensions.utils.datatypes
 org.hkijena.jipipe.extensions.utils.display
-org.hkijena.jipipe.ijupdatercli
-org.hkijena.jipipe.installer.linux
-org.hkijena.jipipe.installer.linux.api
-org.hkijena.jipipe.installer.linux.ui
-org.hkijena.jipipe.installer.linux.ui.events
-org.hkijena.jipipe.installer.linux.ui.utils
 org.hkijena.jipipe.ui
 org.hkijena.jipipe.ui.batchassistant
 org.hkijena.jipipe.ui.bookmarks

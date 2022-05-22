@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-09-15T12:56:51 CEST">
+<meta name="revised" content="2021-04-28T11:57:31 CEST">
 <title>Running a single node :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -330,20 +330,6 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/cellpose/" class="dd-item">
-        <div>
-          <a href="../../documentation/standard-library/cellpose/">
-            Cellpose integration
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/deep-learning/" class="dd-item">
-        <div>
-          <a href="../../documentation/standard-library/deep-learning/">
-            Deep Learning
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
         </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/documentation/create-json-extensions/" class="dd-item
@@ -351,13 +337,6 @@
       <div>
       <a href="../../documentation/create-json-extensions/">Extension builder</a><i class="fa fa-circle-thin read-icon"></i>
       </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation/cli/" class="dd-item">
-        <div>
-          <a href="../../documentation/cli/">
-            Command Line Interface
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
     </li>
         </ul>
     </li>
@@ -648,7 +627,6 @@
     <option value="/documentation/create-json-extensions/" >
   - 
    Extension builder</option>
-      <option value="/documentation/cli/" >- Command Line Interface</option>
   
     <option value="/documentation-java-api/" >
    Java API documentation</option>
@@ -695,16 +673,14 @@ you can leave the folder as is - but if you expect to generate large amounts
 of output data, you should select a folder on a drive that can store as much data.
 Click <span class="fa fa-cog"  style="font-size:medium" aria-hidden="true"></span> <strong>Run &amp; open results</strong> to create the testbench.
 JIPipe then will run the pipeline up until the selected algorithm and open a new tab.</p>
-
-<div class="notices info" ><p><p>The Quick Run expects that all relevant algorithms are valid and will tell you
-if it finds issues. Please fix the issues and click &ldquo;Retry&rdquo;.</p>
+<div class="notices info" ><p>
+The Quick Run expects that all relevant algorithms are valid and will tell you
+if it finds issues. Please fix the issues and click "Retry".
 </p></div>
-
-
-<div class="notices tip" ><p><p>You can also do a Quick Run from an algorithm&rsquo;s right-click context menu.
-Here you will also find a related option called &ldquo;Update cache&rdquo; that just updates the cache of the selected node.</p>
+<div class="notices tip" ><p>
+You can also do a Quick Run from an algorithm's right-click context menu.
+Here you will also find a related option called "Update cache" that just updates the cache of the selected node.
 </p></div>
-
 <p>If you click <span class="fa fa-cog"  style="font-size:medium" aria-hidden="true"></span> <strong>Run</strong>, the results will <strong>not</strong> be shown.
 Instead, if enabled, data will just be stored into the <a href="https://www.jipipe.org/documentation/cache/">Cache</a></p>
 <p><img src="../../img/documentation/testbench-ui.png" alt="Testbench UI"></p>

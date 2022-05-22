@@ -5,8 +5,8 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-05-20T16:08:36 CEST">
-<title>Result view :: JIPipe for ImageJ</title>
+<meta name="revised" content="2022-05-22T17:59:27 CEST">
+<title>Displaying data :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
 <link href="../../../css/nucleus.css" rel="stylesheet">
@@ -520,7 +520,7 @@
       <li data-nav-id="https://www.jipipe.org/documentation-java-api/data-type/result-ui/" class="dd-item active">
         <div>
           <a href="../../../documentation-java-api/data-type/result-ui/">
-            Result view
+            Displaying data
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -725,7 +725,7 @@
     <option value="/documentation-java-api/data-type/" >
   - 
    Creating a data type</option> 
-      <option value="/documentation-java-api/data-type/result-ui/"  selected>-- Result view</option>
+      <option value="/documentation-java-api/data-type/result-ui/"  selected>-- Displaying data</option>
       <option value="/documentation-java-api/data-type/result-preview/" >-- Preview from results folder</option>
   
     <option value="/documentation-java-api/parameter-type/" >
@@ -761,7 +761,7 @@
       </div>
     
 
-    <h1>Result view</h1>
+    <h1>Displaying data</h1>
     
     
     
@@ -775,13 +775,14 @@ There are two ways to modify the user interface:</p>
 <li>Replacing the interface with a custom one</li>
 </ol>
 <h1 id="adding-custom-operations">Adding custom operations</h1>
-<p>JIPipe already comes with some default operations, such as opening the containing folder.
-Any other operation must be added manually to each data type.</p>
-<p>There are two types of operations: one for importing data written into a results folder, and one
-for displaying already loaded data from memory.
-The corresponding interfaces are <a href="../../../apidocs/org/hkijena/jipipe/api/data/JIPipeDataImportOperation.html">JIPipeDataImportOperation</a> and <a href="../../../apidocs/org/hkijena/jipipe/api/data/JIPipeDataDisplayOperation.html">JIPipeDataDisplayOperation</a>.</p>
-<p>You can implement one or both interfaces as shown here:</p>
-<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyOperation</span> <span style="color:#00a8c8">implements</span> <span style="color:#111">JIPipeDataImportOperation</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeDataDisplayOperation</span> <span style="color:#f92672">{</span>
+<p>JIPipe already comes with some default operations, including as opening the containing folder. There are two types of operations: one for importing data written into a results folder, and one for displaying already loaded data from memory.</p>
+
+<div class="notices info" ><p><p>Change in JIPipe 1.73.0: Display operations (the operations available in the cache browser) are automatically made available as 
+import operation. We recommend to just create a JIPipeDataDisplayOperation unless you require operations on the output files.</p>
+</p></div>
+
+<p>To add an operation on already loaded data, implement <a href="../../../apidocs/org/hkijena/jipipe/api/data/JIPipeDataDisplayOperation.html">JIPipeDataDisplayOperation</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyDisplayOperation</span> <span style="color:#00a8c8">implements</span> <span style="color:#111">JIPipeDataDisplayOperation</span> <span style="color:#f92672">{</span>
     <span style="color:#75af00">@Override</span>
     <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">display</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeData</span> <span style="color:#111">data</span><span style="color:#f92672">,</span> <span style="color:#111">String</span> <span style="color:#111">displayName</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeWorkbench</span> <span style="color:#111">workbench</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
         <span style="color:#75715e">// Here you can pu a custom display function
@@ -789,6 +790,33 @@ The corresponding interfaces are <a href="../../../apidocs/org/hkijena/jipipe/ap
 </span><span style="color:#75715e"></span>        <span style="color:#111">data</span><span style="color:#f92672">.</span><span style="color:#75af00">display</span><span style="color:#f92672">(</span><span style="color:#111">displayName</span><span style="color:#f92672">,</span> <span style="color:#111">workbench</span><span style="color:#f92672">);</span>
     <span style="color:#f92672">}</span>
 
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getName</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// Name as shown in the menu
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// The name should be unique
+</span><span style="color:#75715e"></span>        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;Open in JIPipe&#34;</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getDescription</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;Opens the table in JIPipe&#34;</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">int</span> <span style="color:#75af00">getOrder</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// The lower the order the higher it is placed in the menu
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// The lowest ist used as default
+</span><span style="color:#75715e"></span>        <span style="color:#00a8c8">return</span> <span style="color:#111">100</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">Icon</span> <span style="color:#75af00">getIcon</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#111">UIUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">getIconFromResources</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;apps/jipipe.png&#34;</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div><p>With JIPipe 1.73.0 all display operations are automatically made available as import operation. If you want to create an operation on the output files, inherit from <a href="../../../apidocs/org/hkijena/jipipe/api/data/JIPipeDataImportOperation.html">JIPipeDataImportOperation</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyImportOperation</span> <span style="color:#00a8c8">implements</span> <span style="color:#111">JIPipeDataImportOperation</span> <span style="color:#f92672">{</span>
+  
     <span style="color:#75af00">@Override</span>
     <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getName</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
         <span style="color:#75715e">// Name as shown in the menu
@@ -828,7 +856,11 @@ The corresponding interfaces are <a href="../../../apidocs/org/hkijena/jipipe/ap
         <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">null</span><span style="color:#f92672">;</span>
     <span style="color:#f92672">}</span>
 <span style="color:#f92672">}</span>
-</code></pre></div><p>The operations must be registered in <a href="../../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a> either via the data type ID or when registering a new data type.</p>
+</code></pre></div>
+<div class="notices warning" ><p><p>We do not recommend to inherit both from JIPipeDataImportOperation and JIPipeDataDisplayOperation due to the automated import introduced in JIPipe version 1.73.0</p>
+</p></div>
+
+<p>The operations must be registered in <a href="../../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a> either via the data type ID or when registering a new data type.</p>
 
 <div class="notices warning" ><p><p>Currently you have to register all your operations per data type. It its not enough to register them for the base class only.</p>
 </p></div>

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-05-20T16:08:36 CEST">
+<meta name="revised" content="2022-05-22T17:59:27 CEST">
 <title>Creating a parameter type :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -519,7 +519,7 @@
       <li data-nav-id="https://www.jipipe.org/documentation-java-api/data-type/result-ui/" class="dd-item">
         <div>
           <a href="../../documentation-java-api/data-type/result-ui/">
-            Result view
+            Displaying data
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -765,6 +765,10 @@
 
 <p>JIPipe requires you to register custom parameter types, where they are assigned an unique
 identifier. This is done to allow future refactoring without breaking a user&rsquo;s project.</p>
+
+<div class="notices info" ><p><p>If you just want custom lists of compound parameters, consider the usage of ParameterCollectionList (since JIPipe 1.73.0)</p>
+</p></div>
+
 <p>A custom parameter type must be JSON-serializable via the <a href="https://github.com/FasterXML/jackson">Jackson</a> library.
 It is associated to an editor UI that is responsible for updating the parameter value from the GUI.</p>
 

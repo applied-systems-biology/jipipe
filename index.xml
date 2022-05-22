@@ -33,7 +33,7 @@ Does JIPipe have a backup function? Yes. By default, JIPipe creates a backup eve
       
       <guid>https://www.jipipe.org/faq/issues/</guid>
       <description>JIPipe does not load. There can be multiple causes for issues:
-  Error Cause Solution    Splash screen says &#34;Module threw error&#34;. Various ImageJ errors.   A dependency might be missing.   Please check if all JIPipe dependencies are installed. Please do not hesitate to contact us. Provide us a screenshot, and ideally the full set of error messages.     Splash screen says &#34;</description>
+ErrorCauseSolutionSplash screen says &#34;Module threw error&#34;. Various ImageJ errors.A dependency might be missing. Please check if all JIPipe dependencies are installed. Please do not hesitate to contact us. Provide us a screenshot, and ideally the full set of error messages.Splash screen says &#34;</description>
     </item>
     
     <item>
@@ -86,6 +86,17 @@ Can I save data by their metadata? Yes, use the node Miscellaneous &amp;gt; Expo
       <description>The data table structure is the smallest unit of the data API. Its purpose is to organize data of any supported kind into an annotated table and store all required metadata to recover the data from the file system.
 A data table is located in a directory within the file system and contains following parts:
    Element Description     data-table.json Metadata file for this data table.</description>
+    </item>
+    
+    <item>
+      <title>Displaying data</title>
+      <link>https://www.jipipe.org/documentation-java-api/data-type/result-ui/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/documentation-java-api/data-type/result-ui/</guid>
+      <description>After processing, users should be able to continue processing the data from within JIPipe. The data instances are cleared from memory after processing, meaning that the data needs to be loaded from its output folder after processing.
+An user interface is shown when a user select a row in the results table. There are two ways to modify the user interface:
+ Registering additional operations that will be available to users (recommended) Replacing the interface with a custom one  Adding custom operations JIPipe already comes with some default operations, including as opening the containing folder.</description>
     </item>
     
     <item>
@@ -151,17 +162,6 @@ The project code is licensed under BSD 2-Clause. See the LICENSE file provided w
     </item>
     
     <item>
-      <title>Result view</title>
-      <link>https://www.jipipe.org/documentation-java-api/data-type/result-ui/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/documentation-java-api/data-type/result-ui/</guid>
-      <description>After processing, users should be able to continue processing the data from within JIPipe. The data instances are cleared from memory after processing, meaning that the data needs to be loaded from its output folder after processing.
-An user interface is shown when a user select a row in the results table. There are two ways to modify the user interface:
- Registering additional operations that will be available to users (recommended) Replacing the interface with a custom one  Adding custom operations JIPipe already comes with some default operations, such as opening the containing folder.</description>
-    </item>
-    
-    <item>
       <title>Running the whole pipeline</title>
       <link>https://www.jipipe.org/documentation/run-pipelines/run/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -220,7 +220,7 @@ Please access data via the data interface.
       <guid>https://www.jipipe.org/documentation/basic-concepts/batch-processing/</guid>
       <description>JIPipe was designed to always process data in batches, meaning that algorithms always work on multiple data sets at once. This greatly reduces the required work to upscale a processing pipeline from one or few to a large amount of data sets.
 We will use this pipeline as example:
-mermaid.initialize({startOnLoad:true}); graph LR;A[File] -- B[Load image]B -- C[Apply gaussian] In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
+mermaid.initialize({startOnLoad:true}); graph LR; A[File] -- B[Load image] B -- C[Apply gaussian]  In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
     </item>
     
     <item>
@@ -697,7 +697,7 @@ The group node can be found in Miscellaneous &amp;gt; Group, or can be created f
       
       <guid>https://www.jipipe.org/documentation-json-api/data-table/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: data-table.schema.json
- Defines a data table   node-id:  string      The node type ID that generated the data. Optional.   slot:  string      The slot name that generated the data. Optional.   rows:  object[]       The data row items See data-table-row        data-type:  string       The data type ID behind the row      Example { &amp;#34;node-id&amp;#34; : &amp;#34;ij1-fft-forward2d&amp;#34;, &amp;#34;slot&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;internal-path&amp;#34; : &amp;#34;/fastdata/projects/JIPipe/Output&amp;#34;, &amp;#34;rows&amp;#34; : [ { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } ], &amp;#34;data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
+Defines a data tablenode-id:stringThe node type ID that generated the data. Optional.slot:stringThe slot name that generated the data. Optional.rows:object[]The data row itemsSee data-table-rowdata-type:stringThe data type ID behind the rowExample { &amp;#34;node-id&amp;#34; : &amp;#34;ij1-fft-forward2d&amp;#34;, &amp;#34;slot&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;internal-path&amp;#34; : &amp;#34;/fastdata/projects/JIPipe/Output&amp;#34;, &amp;#34;rows&amp;#34; : [ { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } ], &amp;#34;data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
     </item>
     
     <item>
@@ -717,7 +717,7 @@ Group nodes provide a feature that allows to loop the contained pipeline for eac
       
       <guid>https://www.jipipe.org/documentation-json-api/data-table-row/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: data-table-row.schema.json
- Defines a data table row   id:  number      Row index within the data table   annotations:  object[]       Annotations attached to the data row See annotation        true-data-type:  string       The true (not the slot) data type ID behind the row      Example { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
+Defines a data table rowid:numberRow index within the data tableannotations:object[]Annotations attached to the data rowSee annotationtrue-data-type:stringThe true (not the slot) data type ID behind the rowExample { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
     </item>
     
     <item>
@@ -727,7 +727,7 @@ Group nodes provide a feature that allows to loop the contained pipeline for eac
       
       <guid>https://www.jipipe.org/documentation-json-api/annotation/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: annotation.schema.json
- An annotation   name:  string       Name of the annotation   value:  string       Value of the annotation      Example { &amp;#34;name&amp;#34; : &amp;#34;#Dataset&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;Experiment 1&amp;#34; } </description>
+An annotationname:stringName of the annotationvalue:stringValue of the annotationExample { &amp;#34;name&amp;#34; : &amp;#34;#Dataset&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;Experiment 1&amp;#34; } </description>
     </item>
     
     <item>
