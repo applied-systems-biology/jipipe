@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-05-22T17:59:27 CEST">
+<meta name="revised" content="2022-05-23T11:51:57 CEST">
 <title>Parameters :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -900,7 +900,7 @@ This will work for parameters and parameter groups.</p>
 </p></div>
 
 <h1 id="user-defined-parameters">User-defined parameters</h1>
-<p>If you want to make it possible for users to create custom parameters, create an <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeDynamicParameterHolder.html">JIPipeDynamicParameterHolder</a> as sub-parameter.
+<p>If you want to make it possible for users to create custom parameters, create an <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeDynamicParameterCollection.html">JIPipeDynamicParameterCollection</a> as sub-parameter.
 You can control the list of allowed parameter types and other settings.</p>
 <div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// Field that initializes the dynamic parameter collection with all supported parameter types
 </span><span style="color:#75715e"></span><span style="color:#00a8c8">private</span> <span style="color:#111">JIPipeDynamicParameterCollection</span> <span style="color:#111">scriptParameters</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeDynamicParameterCollection</span><span style="color:#f92672">(</span><span style="color:#00a8c8">true</span><span style="color:#f92672">,</span>
@@ -921,7 +921,7 @@ You can control the list of allowed parameter types and other settings.</p>
     <span style="color:#00a8c8">return</span> <span style="color:#111">scriptParameters</span><span style="color:#f92672">;</span>
 <span style="color:#f92672">}</span>
 </code></pre></div><p>
-<div class="notices warning" ><p><p>Do not forget to deep-copy the JIPipeDynamicParameterHolder. The class has a copy constructor for
+<div class="notices warning" ><p><p>Do not forget to deep-copy the JIPipeDynamicParameterCollection. The class has a copy constructor for
 such an operation.</p>
 </p></div>
 
@@ -936,7 +936,7 @@ de-serializing the parameter and lose all settings.</p>
 </p></div>
 </p>
 <h1 id="full-control">Full control</h1>
-<p>You can inherit from <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeCustomParameterHolder.html">JIPipeCustomParameterHolder</a> to define all parameters manually without the need for an <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeDynamicParameterHolder.html">JIPipeDynamicParameterHolder</a> or annotations.</p>
+<p>You can inherit from <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeCustomParameterCollection.html">JIPipeCustomParameterCollection</a> to define all parameters manually without the need for an <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeDynamicParameterCollection.html">JIPipeDynamicParameterCollection</a> or annotations.</p>
 
 
     

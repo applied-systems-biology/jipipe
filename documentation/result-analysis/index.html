@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2021-04-28T11:57:31 CEST">
+<meta name="revised" content="2021-09-15T12:56:51 CEST">
 <title>Running a pipeline :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -330,6 +330,20 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/cellpose/" class="dd-item">
+        <div>
+          <a href="../../documentation/standard-library/cellpose/">
+            Cellpose integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/deep-learning/" class="dd-item">
+        <div>
+          <a href="../../documentation/standard-library/deep-learning/">
+            Deep Learning
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
         </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/documentation/create-json-extensions/" class="dd-item
@@ -337,6 +351,13 @@
       <div>
       <a href="../../documentation/create-json-extensions/">Extension builder</a><i class="fa fa-circle-thin read-icon"></i>
       </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/cli/" class="dd-item">
+        <div>
+          <a href="../../documentation/cli/">
+            Command Line Interface
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
     </li>
         </ul>
     </li>
@@ -627,6 +648,7 @@
     <option value="/documentation/create-json-extensions/" >
   - 
    Extension builder</option>
+      <option value="/documentation/cli/" >- Command Line Interface</option>
   
     <option value="/documentation-java-api/" >
    Java API documentation</option>
@@ -670,14 +692,16 @@ by clicking the <img class="inline-image" src="../../img/icons/random.png" /> bu
 <p>After confirming the settings by clicking <span class="fa fa-cog"  style="font-size:medium" aria-hidden="true"></span> <strong>Run now</strong>,
 JIPipe will start processing the pipeline.</p>
 <p><img src="../../img/documentation/run-ui.png" alt="Run settings UI"></p>
-<div class="notices tip" ><p>
-You can have as many runs as you want. Runs will not execute in parallel, but be scheduled to wait
-until the current run finishes.
+
+<div class="notices tip" ><p><p>You can have as many runs as you want. Runs will not execute in parallel, but be scheduled to wait
+until the current run finishes.</p>
 </p></div>
-<div class="notices tip" ><p>
-The JIPipe output folder is automatically organized in a standardized way, so JIPipe can open a result folder.
-You find the "Open analysis output ..."  button in the "Project" menu.
+
+
+<div class="notices tip" ><p><p>The JIPipe output folder is automatically organized in a standardized way, so JIPipe can open a result folder.
+You find the &ldquo;Open analysis output &hellip;&rdquo;  button in the &ldquo;Project&rdquo; menu.</p>
 </p></div>
+
 <h1 id="result-analysis">Result analysis</h1>
 <p>After all results are generated, the result analysis UI will be automatically opened.
 It allows you to navigate through the results, and import them back into ImageJ (if supported by the generated data type).</p>
@@ -699,9 +723,10 @@ The table has following columns:</p>
 <h2 id="importing-results-back-into-jipipeimagej">Importing results back into JIPipe/ImageJ/&hellip;</h2>
 <p>On selecting one or multiple rows, additional UI elements are displayed below the table. They contain various actions that can be applied to the output data, such
 as opening the results directory, importing the data back into ImageJ or JIPipe, or any other operation.</p>
-<div class="notices tip" ><p>
-Double-click a row to execute the default action, which is the one most commonly used.
+
+<div class="notices tip" ><p><p>Double-click a row to execute the default action, which is the one most commonly used.</p>
 </p></div>
+
 <!-- <p><video src="../../img/documentation/result-analysis-navigation.webm" controls loop/></p> -->
 <h2 id="using-third-party-software-for-further-analysis">Using third-party software for further analysis</h2>
 <p>JIPipe stores outputs in a standardized format that can be easily read with third-party software.
@@ -716,20 +741,24 @@ to not save the output slot.</p>
 including the data type and annotations. The metadata is also usually available as <code>data-table.csv</code> file that can be
 read more easily. The folder contains sub-folders with numeric names that correspond to the table rows. The contents of
 each of these folders is determined by the standardized storage format of the data type (<code>true-data-type</code> in the data table).</p>
-<div class="notices tip" ><p>
-You can open existing project folders in JIPipe. Just go to Project > Open analysis output and select the folder that
-contains the project.jip file.
+
+<div class="notices tip" ><p><p>You can open existing project folders in JIPipe. Just go to Project &gt; Open analysis output and select the folder that
+contains the project.jip file.</p>
 </p></div>
-<div class="notices info" ><p>
-We recommend to always copy the whole project folder. This will ensure the highest reproducibility.
+
+
+<div class="notices info" ><p><p>We recommend to always copy the whole project folder. This will ensure the highest reproducibility.</p>
 </p></div>
-<div class="notices info" ><p>
-Slot output folders are used beyond result analysis for importing/exporting cache states and to communicate
-with external applications like Python or R. Only the JSON file carries the metadata.
+
+
+<div class="notices info" ><p><p>Slot output folders are used beyond result analysis for importing/exporting cache states and to communicate
+with external applications like Python or R. Only the JSON file carries the metadata.</p>
 </p></div>
-<div class="notices info" ><p>
-A description of the contents of a table row folder can be viewed in the data type compendium (help menu).
+
+
+<div class="notices info" ><p><p>A description of the contents of a table row folder can be viewed in the data type compendium (help menu).</p>
 </p></div>
+
 <p><img src="../../img/documentation/output-format.png" width="20%" /></p>
 
 
