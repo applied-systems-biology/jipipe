@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
 import ij.gui.OvalRoi;
+import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
@@ -34,7 +35,7 @@ import java.awt.*;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Table to rectangular/oval ROIs", description = "Converts data from a table to rectangular or oval ROIs")
+@JIPipeDocumentation(name = "Table to rectangular/oval ROIs", description = "Converts data from a table to rectangular or oval ROIs. This node provides more options than the 'Table to circular ROIs' node.")
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
@@ -46,6 +47,14 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     private TableColumnSourceExpressionParameter columnY2 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Y2\"");
     private TableColumnSourceExpressionParameter columnWidth = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Width\"");
     private TableColumnSourceExpressionParameter columnHeight = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"Height\"");
+
+    private TableColumnSourceExpressionParameter columnZ = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "0");
+
+    private TableColumnSourceExpressionParameter columnC = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "0");
+
+    private TableColumnSourceExpressionParameter columnT = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.Generate, "0");
+
+    private boolean oneBasedPositions = true;
     private Anchor anchor = Anchor.TopLeft;
     private Mode mode = Mode.Rectangle;
 
@@ -77,6 +86,10 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.columnY2 = new TableColumnSourceExpressionParameter(other.columnY2);
         this.columnWidth = new TableColumnSourceExpressionParameter(other.columnWidth);
         this.columnHeight = new TableColumnSourceExpressionParameter(other.columnHeight);
+        this.columnC = new TableColumnSourceExpressionParameter(other.columnC);
+        this.columnZ = new TableColumnSourceExpressionParameter(other.columnZ);
+        this.columnT = new TableColumnSourceExpressionParameter(other.columnT);
+        this.oneBasedPositions = other.oneBasedPositions;
     }
 
     @Override
@@ -101,40 +114,23 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
 
         TableColumn colX1 = columnX1.pickOrGenerateColumn(table);
         TableColumn colY1 = columnY1.pickOrGenerateColumn(table);
-        if (colX1 == null) {
-            throw new UserFriendlyRuntimeException("Could not find column for X1!",
-                    "The algorithm requires a column that provides coordinate X1.",
-                    getName() + ", table " + table,
-                    "A column reference or generator is required that supplies the coordinates.",
-                    "Please check if the settings are correct and if your table contains the requested column.");
-        }
-        if (colY1 == null) {
-            throw new UserFriendlyRuntimeException("Could not find column for Y1!",
-                    "The algorithm requires a column that provides coordinate Y1.",
-                    getName() + ", table " + table,
-                    "A column reference or generator is required that supplies the coordinates.",
-                    "Please check if the settings are correct and if your table contains the requested column.");
-        }
+        TableColumn colZ = columnZ.pickOrGenerateColumn(table);
+        TableColumn colC = columnC.pickOrGenerateColumn(table);
+        TableColumn colT = columnT.pickOrGenerateColumn(table);
+
+        ensureColumnExists(colX1, table, "X1");
+        ensureColumnExists(colY1, table, "Y1");
+        ensureColumnExists(colZ, table, "Z");
+        ensureColumnExists(colC, table, "C");
+        ensureColumnExists(colT, table, "T");
 
         if (anchor == Anchor.TopLeft || anchor == Anchor.Center) {
 
             TableColumn colWidth = columnWidth.pickOrGenerateColumn(table);
             TableColumn colHeight = columnHeight.pickOrGenerateColumn(table);
 
-            if (colWidth == null) {
-                throw new UserFriendlyRuntimeException("Could not find column for width!",
-                        "The algorithm requires a column that provides the width.",
-                        getName() + ", table " + table,
-                        "A column reference or generator is required that supplies the width.",
-                        "Please check if the settings are correct and if your table contains the requested column.");
-            }
-            if (colHeight == null) {
-                throw new UserFriendlyRuntimeException("Could not find column for height!",
-                        "The algorithm requires a column that provides the height.",
-                        getName() + ", table " + table,
-                        "A column reference or generator is required that supplies the height.",
-                        "Please check if the settings are correct and if your table contains the requested column.");
-            }
+            ensureColumnExists(colWidth, table, "Width");
+            ensureColumnExists(colHeight, table, "Height");
 
             for (int row = 0; row < table.getRowCount(); row++) {
                 int x1 = (int) colX1.getRowAsDouble(row);
@@ -150,66 +146,75 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
                     x = x1 - w / 2;
                     y = y1 - h / 2;
                 }
-                createROI(rois, w, h, x, y);
+                int z = (int) colZ.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
+                int c = (int) colC.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
+                int t = (int) colT.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
+                createROI(rois, w, h, x, y, z, c, t);
             }
         } else {
             TableColumn colX2 = columnX2.pickOrGenerateColumn(table);
             TableColumn colY2 = columnY2.pickOrGenerateColumn(table);
-            if (colX2 == null) {
-                throw new UserFriendlyRuntimeException("Could not find column for X2!",
-                        "The algorithm requires a column that provides coordinate X2.",
-                        getName() + ", table " + table,
-                        "A column reference or generator is required that supplies the coordinates.",
-                        "Please check if the settings are correct and if your table contains the requested column.");
-            }
-            if (colY2 == null) {
-                throw new UserFriendlyRuntimeException("Could not find column for Y2!",
-                        "The algorithm requires a column that provides coordinate Y2.",
-                        getName() + ", table " + table,
-                        "A column reference or generator is required that supplies the coordinates.",
-                        "Please check if the settings are correct and if your table contains the requested column.");
-            }
+
+            ensureColumnExists(colX2, table, "X1");
+            ensureColumnExists(colY2, table, "Y1");
 
             for (int row = 0; row < table.getRowCount(); row++) {
                 int x1 = (int) colX1.getRowAsDouble(row);
                 int y1 = (int) colY1.getRowAsDouble(row);
                 int x2 = (int) colX2.getRowAsDouble(row);
-                int y2 = (int) colX2.getRowAsDouble(row);
+                int y2 = (int) colY2.getRowAsDouble(row);
                 int w = Math.abs(x1 - x2);
                 int h = Math.abs(y1 - y2);
                 int x = Math.min(x1, x2);
                 int y = Math.min(y1, y2);
-                createROI(rois, w, h, x, y);
+                int z = (int) colZ.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
+                int c = (int) colC.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
+                int t = (int) colT.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
+                createROI(rois, w, h, x, y, z, c, t);
             }
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
-    private void createROI(ROIListData rois, int w, int h, int x, int y) {
+    private void createROI(ROIListData rois, int w, int h, int x, int y, int z, int c, int t) {
+        Roi roi;
         switch (mode) {
             case Rectangle:
-                rois.add(new ShapeRoi(new Rectangle(x, y, w, h)));
+                roi = new ShapeRoi(new Rectangle(x, y, w, h));
                 break;
             case Oval:
-                rois.add(new OvalRoi(x, y, w, h));
+                roi = new OvalRoi(x, y, w, h);
                 break;
             case MinCircle: {
                 int d = Math.min(w, h);
                 int cx = x + w / 2 - d / 2;
                 int cy = y + h / 2 - d / 2;
-                rois.add(new OvalRoi(cx, cy, d, d));
+                roi = new OvalRoi(cx, cy, d, d);
             }
             break;
             case MaxCircle: {
                 int d = Math.max(w, h);
                 int cx = x + w / 2 - d / 2;
                 int cy = y + h / 2 - d / 2;
-                rois.add(new OvalRoi(cx, cy, d, d));
+                roi = new OvalRoi(cx, cy, d, d);
             }
             break;
+            default:
+                throw new UnsupportedOperationException();
         }
+        roi.setPosition(c,z,t);
+        rois.add(roi);
+    }
 
+    private void ensureColumnExists(TableColumn column, ResultsTableData table, String name) {
+        if(column == null) {
+            throw new UserFriendlyRuntimeException("Could not find column for " + name + "!",
+                    "The algorithm requires a column that provides coordinate " + name + ".",
+                    getName() + ", table " + table,
+                    "A column reference or generator is required that supplies the coordinates.",
+                    "Please check if the settings are correct and if your table contains the requested column.");
+        }
     }
 
     @JIPipeDocumentation(name = "Column 'X1'", description = "The table column that is used for the X1 coordinate.")
@@ -308,6 +313,50 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     @JIPipeParameter("mode")
     public void setMode(Mode mode) {
         this.mode = mode;
+    }
+
+    @JIPipeDocumentation(name = "Column 'Z'", description = "Table column that determines the Z location. For one-based positions, 0 indicates that the ROI is present in all Z-slices. For zero-based positions the value is -1 or lower.")
+    @JIPipeParameter("column-z")
+    public TableColumnSourceExpressionParameter getColumnZ() {
+        return columnZ;
+    }
+
+    @JIPipeParameter("column-z")
+    public void setColumnZ(TableColumnSourceExpressionParameter columnZ) {
+        this.columnZ = columnZ;
+    }
+
+    @JIPipeDocumentation(name = "Column 'C'", description = "Table column that determines the channel location. For one-based positions, 0 indicates that the ROI is present in all channel-slices. For zero-based positions the value is -1 or lower.")
+    @JIPipeParameter("column-c")
+    public TableColumnSourceExpressionParameter getColumnC() {
+        return columnC;
+    }
+
+    @JIPipeParameter("column-c")
+    public void setColumnC(TableColumnSourceExpressionParameter columnC) {
+        this.columnC = columnC;
+    }
+
+    @JIPipeDocumentation(name = "Column 'T'", description = "Table column that determines the frame location. For one-based positions, 0 indicates that the ROI is present in all frame-slices. For zero-based positions the value is -1 or lower.")
+    @JIPipeParameter("column-t")
+    public TableColumnSourceExpressionParameter getColumnT() {
+        return columnT;
+    }
+
+    @JIPipeParameter("column-t")
+    public void setColumnT(TableColumnSourceExpressionParameter columnT) {
+        this.columnT = columnT;
+    }
+
+    @JIPipeDocumentation(name = "Use one-based positions", description = "If enabled, the first slice is 1. Otherwise, the first slice is zero.")
+    @JIPipeParameter(value = "one-based-positions", important = true)
+    public boolean isOneBasedPositions() {
+        return oneBasedPositions;
+    }
+
+    @JIPipeParameter("one-based-positions")
+    public void setOneBasedPositions(boolean oneBasedPositions) {
+        this.oneBasedPositions = oneBasedPositions;
     }
 
     /**
