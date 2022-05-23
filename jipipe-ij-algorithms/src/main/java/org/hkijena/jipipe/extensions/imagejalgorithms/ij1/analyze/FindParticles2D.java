@@ -36,6 +36,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatistic
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.ArrayList;
@@ -119,107 +120,109 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusGreyscaleMaskData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
 
-        // Update the analyzer to extract the measurements we want
-        statisticsParameters.updateAnalyzer();
+        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+            // Update the analyzer to extract the measurements we want
+            statisticsParameters.updateAnalyzer();
 
-        // Otherwise we might get issues
-        Prefs.blackBackground = this.blackBackground;
+            // Otherwise we might get issues
+            Prefs.blackBackground = this.blackBackground;
 
-        int options = 0;
-        if (includeHoles) {
-            options |= ParticleAnalyzer.INCLUDE_HOLES;
-        }
-        if (excludeEdges) {
-            options |= ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
-        }
-        if (neighborhood == Neighborhood2D.FourConnected) {
-            options |= ParticleAnalyzer.FOUR_CONNECTED;
-        }
+            int options = 0;
+            if (includeHoles) {
+                options |= ParticleAnalyzer.INCLUDE_HOLES;
+            }
+            if (excludeEdges) {
+                options |= ParticleAnalyzer.EXCLUDE_EDGE_PARTICLES;
+            }
+            if (neighborhood == Neighborhood2D.FourConnected) {
+                options |= ParticleAnalyzer.FOUR_CONNECTED;
+            }
 
-        if (splitSlices) {
-            int finalOptions = options;
-            ImageJUtils.forEachIndexedZCTSlice(inputData.getImage(), (ip, index) -> {
-                RoiManager manager = new RoiManager(true);
-                ResultsTable table = new ResultsTable();
-                ParticleAnalyzer.setRoiManager(manager);
-                ParticleAnalyzer.setResultsTable(table);
-                ParticleAnalyzer analyzer = new ParticleAnalyzer(finalOptions,
-                        0,
-                        table,
-                        minParticleSize,
-                        maxParticleSize,
-                        minParticleCircularity,
-                        maxParticleCircularity);
-                ImagePlus sliceImage = new ImagePlus(inputData.getImage().getTitle() + "_" + index, ip);
-                analyzer.analyze(sliceImage, ip);
+            if (splitSlices) {
+                int finalOptions = options;
+                ImageJUtils.forEachIndexedZCTSlice(inputData.getImage(), (ip, index) -> {
+                    RoiManager manager = new RoiManager(true);
+                    ResultsTable table = new ResultsTable();
+                    ParticleAnalyzer.setRoiManager(manager);
+                    ParticleAnalyzer.setResultsTable(table);
+                    ParticleAnalyzer analyzer = new ParticleAnalyzer(finalOptions,
+                            0,
+                            table,
+                            minParticleSize,
+                            maxParticleSize,
+                            minParticleCircularity,
+                            maxParticleCircularity);
+                    ImagePlus sliceImage = new ImagePlus(inputData.getImage().getTitle() + "_" + index, ip);
+                    analyzer.analyze(sliceImage, ip);
 
-                // Override for "Slice"
-                if (statisticsParameters.getValues().contains(Measurement.StackPosition)) {
-                    for (int i = 0; i < table.getCounter(); i++) {
-                        table.setValue("Slice", i, index.zeroSliceIndexToOneStackIndex(inputData.getImage()));
-                        table.setValue("SliceZ", i, index.getZ());
-                        table.setValue("SliceC", i, index.getC());
-                        table.setValue("SliceT", i, index.getT());
+                    // Override for "Slice"
+                    if (statisticsParameters.getValues().contains(Measurement.StackPosition)) {
+                        for (int i = 0; i < table.getCounter(); i++) {
+                            table.setValue("Slice", i, index.zeroSliceIndexToOneStackIndex(inputData.getImage()));
+                            table.setValue("SliceZ", i, index.getZ());
+                            table.setValue("SliceC", i, index.getC());
+                            table.setValue("SliceT", i, index.getT());
+                        }
                     }
-                }
 
-                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-                if (annotationType.isEnabled() && !StringUtils.isNullOrEmpty(annotationType.getContent())) {
-                    annotations.add(new JIPipeTextAnnotation(annotationType.getContent(), "" + index));
-                }
-                ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
-                ImagePlus roiReferenceImage = new ImagePlus(inputData.getImage().getTitle(), ip.duplicate());
-                for (Roi roi : rois) {
-                    roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
-                    roi.setImage(roiReferenceImage);
-                }
-
-                dataBatch.addOutputData("ROI", rois, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-                dataBatch.addOutputData("Measurements", new ResultsTableData(table), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
-            }, progressInfo);
-        } else {
-            ResultsTableData mergedResultsTable = new ResultsTableData(new ResultsTable());
-            ROIListData mergedROI = new ROIListData(new ArrayList<>());
-            ImagePlus roiReferenceImage = inputData.getDuplicateImage();
-
-            int finalOptions = options;
-            ImageJUtils.forEachIndexedZCTSlice(inputData.getImage(), (ip, index) -> {
-                RoiManager manager = new RoiManager(true);
-                ResultsTable table = new ResultsTable();
-                ParticleAnalyzer.setRoiManager(manager);
-                ParticleAnalyzer.setResultsTable(table);
-                ParticleAnalyzer analyzer = new ParticleAnalyzer(finalOptions,
-                        0,
-                        table,
-                        minParticleSize,
-                        maxParticleSize,
-                        minParticleCircularity,
-                        maxParticleCircularity);
-                ImagePlus sliceImage = new ImagePlus(inputData.getImage().getTitle() + "_" + index, ip);
-                analyzer.analyze(sliceImage, ip);
-
-                // Override for "Slice"
-                if (statisticsParameters.getValues().contains(Measurement.StackPosition)) {
-                    for (int i = 0; i < table.getCounter(); i++) {
-                        table.setValue("Slice", i, index.zeroSliceIndexToOneStackIndex(inputData.getImage()));
-                        table.setValue("SliceZ", i, index.getZ());
-                        table.setValue("SliceC", i, index.getC());
-                        table.setValue("SliceT", i, index.getT());
+                    List<JIPipeTextAnnotation> annotations = new ArrayList<>();
+                    if (annotationType.isEnabled() && !StringUtils.isNullOrEmpty(annotationType.getContent())) {
+                        annotations.add(new JIPipeTextAnnotation(annotationType.getContent(), "" + index));
                     }
-                }
-                ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
-                for (Roi roi : rois) {
-                    roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
-                    roi.setImage(roiReferenceImage);
-                }
+                    ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
+                    ImagePlus roiReferenceImage = new ImagePlus(inputData.getImage().getTitle(), ip.duplicate());
+                    for (Roi roi : rois) {
+                        roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
+                        roi.setImage(roiReferenceImage);
+                    }
 
-                // Merge into one result
-                mergedResultsTable.addRows(new ResultsTableData(table));
-                mergedROI.mergeWith(rois);
-            }, progressInfo);
+                    dataBatch.addOutputData("ROI", rois, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+                    dataBatch.addOutputData("Measurements", new ResultsTableData(table), annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+                }, progressInfo);
+            } else {
+                ResultsTableData mergedResultsTable = new ResultsTableData(new ResultsTable());
+                ROIListData mergedROI = new ROIListData(new ArrayList<>());
+                ImagePlus roiReferenceImage = inputData.getDuplicateImage();
 
-            dataBatch.addOutputData("ROI", mergedROI, progressInfo);
-            dataBatch.addOutputData("Measurements", mergedResultsTable, progressInfo);
+                int finalOptions = options;
+                ImageJUtils.forEachIndexedZCTSlice(inputData.getImage(), (ip, index) -> {
+                    RoiManager manager = new RoiManager(true);
+                    ResultsTable table = new ResultsTable();
+                    ParticleAnalyzer.setRoiManager(manager);
+                    ParticleAnalyzer.setResultsTable(table);
+                    ParticleAnalyzer analyzer = new ParticleAnalyzer(finalOptions,
+                            0,
+                            table,
+                            minParticleSize,
+                            maxParticleSize,
+                            minParticleCircularity,
+                            maxParticleCircularity);
+                    ImagePlus sliceImage = new ImagePlus(inputData.getImage().getTitle() + "_" + index, ip);
+                    analyzer.analyze(sliceImage, ip);
+
+                    // Override for "Slice"
+                    if (statisticsParameters.getValues().contains(Measurement.StackPosition)) {
+                        for (int i = 0; i < table.getCounter(); i++) {
+                            table.setValue("Slice", i, index.zeroSliceIndexToOneStackIndex(inputData.getImage()));
+                            table.setValue("SliceZ", i, index.getZ());
+                            table.setValue("SliceC", i, index.getC());
+                            table.setValue("SliceT", i, index.getT());
+                        }
+                    }
+                    ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
+                    for (Roi roi : rois) {
+                        roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
+                        roi.setImage(roiReferenceImage);
+                    }
+
+                    // Merge into one result
+                    mergedResultsTable.addRows(new ResultsTableData(table));
+                    mergedROI.mergeWith(rois);
+                }, progressInfo);
+
+                dataBatch.addOutputData("ROI", mergedROI, progressInfo);
+                dataBatch.addOutputData("Measurements", mergedResultsTable, progressInfo);
+            }
         }
     }
 
