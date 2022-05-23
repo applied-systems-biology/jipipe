@@ -127,7 +127,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @JIPipeDocumentation(name = "Column 'X1'", description = "The table column that is used for the X1 coordinate. ")
-    @JIPipeParameter(value = "column-x1")
+    @JIPipeParameter(value = "column-x1", uiOrder = -100)
     @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
     public TableColumnSourceExpressionParameter getColumnX1() {
         return columnX1;
@@ -140,7 +140,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     @JIPipeDocumentation(name = "Column 'Y1'", description = "The table column that is used for the Y1 coordinate. ")
     @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
-    @JIPipeParameter(value = "column-y1")
+    @JIPipeParameter(value = "column-y1", uiOrder = -90)
     public TableColumnSourceExpressionParameter getColumnY1() {
         return columnY1;
     }
@@ -152,7 +152,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
 
     @JIPipeDocumentation(name = "Column 'Radius'", description = "The table column that is used for the radius. ")
     @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
-    @JIPipeParameter(value = "column-radius")
+    @JIPipeParameter(value = "column-radius", uiOrder = -80)
     public TableColumnSourceExpressionParameter getColumnRadius() {
         return columnRadius;
     }
@@ -163,7 +163,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @JIPipeDocumentation(name = "Column 'Z'", description = "Table column that determines the Z location. For one-based positions, 0 indicates that the ROI is present in all Z-slices. For zero-based positions the value is -1 or lower.")
-    @JIPipeParameter("column-z")
+    @JIPipeParameter(value = "column-z", uiOrder = -70)
     public TableColumnSourceExpressionParameter getColumnZ() {
         return columnZ;
     }
@@ -174,7 +174,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @JIPipeDocumentation(name = "Column 'C'", description = "Table column that determines the channel location. For one-based positions, 0 indicates that the ROI is present in all channel-slices. For zero-based positions the value is -1 or lower.")
-    @JIPipeParameter("column-c")
+    @JIPipeParameter(value = "column-c", uiOrder = -60)
     public TableColumnSourceExpressionParameter getColumnC() {
         return columnC;
     }
@@ -185,7 +185,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     @JIPipeDocumentation(name = "Column 'T'", description = "Table column that determines the frame location. For one-based positions, 0 indicates that the ROI is present in all frame-slices. For zero-based positions the value is -1 or lower.")
-    @JIPipeParameter("column-t")
+    @JIPipeParameter(value = "column-t", uiOrder = -50)
     public TableColumnSourceExpressionParameter getColumnT() {
         return columnT;
     }

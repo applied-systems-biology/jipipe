@@ -218,7 +218,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @JIPipeDocumentation(name = "Column 'X1'", description = "The table column that is used for the X1 coordinate.")
-    @JIPipeParameter(value = "column-x1")
+    @JIPipeParameter(value = "column-x1", uiOrder = -100)
     public TableColumnSourceExpressionParameter getColumnX1() {
         return columnX1;
     }
@@ -229,7 +229,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @JIPipeDocumentation(name = "Column 'Y1'", description = "The table column that is used for the Y1 coordinate.")
-    @JIPipeParameter(value = "column-y1")
+    @JIPipeParameter(value = "column-y1", uiOrder = -90)
     public TableColumnSourceExpressionParameter getColumnY1() {
         return columnY1;
     }
@@ -241,7 +241,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @JIPipeDocumentation(name = "Column 'X2'", description = "The table column that is used for the X2 coordinate. " +
             "The usage of this column depends on the current 'Anchor' setting.")
-    @JIPipeParameter(value = "column-x2")
+    @JIPipeParameter(value = "column-x2", uiOrder = -80)
     public TableColumnSourceExpressionParameter getColumnX2() {
         return columnX2;
     }
@@ -253,7 +253,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @JIPipeDocumentation(name = "Column 'Y2'", description = "The table column that is used for the Y2 coordinate. " +
             "The usage of this column depends on the current 'Anchor' setting.")
-    @JIPipeParameter(value = "column-y2")
+    @JIPipeParameter(value = "column-y2", uiOrder = -70)
     public TableColumnSourceExpressionParameter getColumnY2() {
         return columnY2;
     }
@@ -265,7 +265,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @JIPipeDocumentation(name = "Column 'Width'", description = "The table column that is used for the width. " +
             "The usage of this column depends on the current 'Anchor' setting.")
-    @JIPipeParameter(value = "column-width")
+    @JIPipeParameter(value = "column-width", uiOrder = -60)
     public TableColumnSourceExpressionParameter getColumnWidth() {
         return columnWidth;
     }
@@ -277,7 +277,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
 
     @JIPipeDocumentation(name = "Column 'Height'", description = "The table column that is used for the height. " +
             "The usage of this column depends on the current 'Anchor' setting.")
-    @JIPipeParameter(value = "column-height")
+    @JIPipeParameter(value = "column-height", uiOrder = -50)
     public TableColumnSourceExpressionParameter getColumnHeight() {
         return columnHeight;
     }
@@ -316,7 +316,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @JIPipeDocumentation(name = "Column 'Z'", description = "Table column that determines the Z location. For one-based positions, 0 indicates that the ROI is present in all Z-slices. For zero-based positions the value is -1 or lower.")
-    @JIPipeParameter("column-z")
+    @JIPipeParameter(value = "column-z", uiOrder = -40)
     public TableColumnSourceExpressionParameter getColumnZ() {
         return columnZ;
     }
@@ -327,7 +327,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @JIPipeDocumentation(name = "Column 'C'", description = "Table column that determines the channel location. For one-based positions, 0 indicates that the ROI is present in all channel-slices. For zero-based positions the value is -1 or lower.")
-    @JIPipeParameter("column-c")
+    @JIPipeParameter(value = "column-c", uiOrder = -30)
     public TableColumnSourceExpressionParameter getColumnC() {
         return columnC;
     }
@@ -338,7 +338,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
     }
 
     @JIPipeDocumentation(name = "Column 'T'", description = "Table column that determines the frame location. For one-based positions, 0 indicates that the ROI is present in all frame-slices. For zero-based positions the value is -1 or lower.")
-    @JIPipeParameter("column-t")
+    @JIPipeParameter(value = "column-t", uiOrder = -20)
     public TableColumnSourceExpressionParameter getColumnT() {
         return columnT;
     }
