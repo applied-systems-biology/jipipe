@@ -262,6 +262,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerNodeType("import-imagej-results-table-from-file", ResultsTableFromFile.class);
         registerNodeType("import-imagej-imgplus-from-file", ImagePlusFromFile.class);
         registerNodeType("import-imagej-bioformats", BioFormatsImporter.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));
+        registerNodeType("import-imagej-lut-from-file-as-rgb", ImportLUTAsRGBFromFile.class, ResourceUtils.getPluginResource("icons/data-types/lut.png"));
 
         // Register algorithms
         registerNodeType("convert-imagej-image", ImageTypeConverter.class, UIUtils.getIconURLFromResources("actions/viewimage.png"));

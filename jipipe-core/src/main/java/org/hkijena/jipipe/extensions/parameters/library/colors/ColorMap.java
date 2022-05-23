@@ -80,7 +80,43 @@ public enum ColorMap {
     seismic,
     twilight,
     twilight_shifted,
-    hsv;
+    hsv,
+    _16_colors,
+    _5_ramps,
+    _6_shades,
+    blue_orange_icb,
+    brgbcmyw,
+    Cyan_Hot,
+    edges,
+    gem,
+    glasbey_inverted,
+    glasbey_on_dark,
+    glasbey,
+    glow,
+    Green_Fire_Blue,
+    HiLo,
+    Hi,
+    ICA2,
+    ICA3,
+    ICA,
+    Magenta_Hot,
+    mpl_inferno,
+    mpl_magma,
+    mpl_plasma,
+    mpl_viridis,
+    Orange_Hot,
+    phase,
+    physics,
+    Rainbow_RGB,
+    Red_Hot,
+    royal,
+    sepia,
+    smart,
+    thallium,
+    thal,
+    Thermal,
+    unionjack,
+    Yellow_Hot;
 
     private final BufferedImage mapImage;
 
@@ -103,7 +139,7 @@ public enum ColorMap {
      * @return the color
      */
     public Color apply(double value) {
-        int pixel = Math.max(0, Math.min(511, (int) (value * 512)));
+        int pixel = (int) ((mapImage.getWidth() - 1)* Math.max(0, Math.min(1, value)));
         return new Color(mapImage.getRGB(pixel, 0));
     }
 
@@ -118,7 +154,7 @@ public enum ColorMap {
         byte[] bLut = new byte[256];
 
         for (int i = 0; i < 256; i++) {
-            int lutIndex = i * 2;
+            int lutIndex = (int) ((i / 255.0) * (mapImage.getWidth() - 1));
             Color color = new Color(mapImage.getRGB(lutIndex, 0));
             rLut[i] = (byte) color.getRed();
             gLut[i] = (byte) color.getGreen();
