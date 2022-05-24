@@ -339,12 +339,12 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         UIUtils.makeFlat25x25(lastFrame);
         lastFrame.setToolTipText("Go one slice back");
         lastFrame.addActionListener(e -> {
-            int value = stackSlider.getValue();
-            int maximum = stackSlider.getMaximum();
+            int value = slider.getValue();
+            int maximum = slider.getMaximum();
             int newIndex = value - 1;
             if(newIndex < 1)
                 newIndex += maximum;
-            stackSlider.setValue(newIndex);
+            slider.setValue(newIndex);
         });
         rightPanel.add(lastFrame);
 
@@ -352,10 +352,10 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         UIUtils.makeFlat25x25(nextFrame);
         nextFrame.setToolTipText("Go one slice forward");
         nextFrame.addActionListener(e -> {
-            int value = stackSlider.getValue();
-            int maximum = stackSlider.getMaximum();
+            int value = slider.getValue();
+            int maximum = slider.getMaximum();
             int newIndex = ((value) % maximum)  + 1;
-            stackSlider.setValue(newIndex);
+            slider.setValue(newIndex);
         });
         rightPanel.add(nextFrame);
 
