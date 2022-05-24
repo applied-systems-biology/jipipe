@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-05-23T11:51:57 CEST">
+<meta name="revised" content="2022-05-24T13:21:14 CEST">
 <title>Creating an algorithm :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -813,6 +813,11 @@
 </tbody>
 </table>
 <p>Any algorithm should have the following basic structure:</p>
+
+<div class="notices warning" ><p><p>Commonly, you would utilize more higher-order algorithm classes instead of JIPipeAlgorithm.
+Usually you would choose a JIPipeSimpleIteratingAlgorithm (for single inputs), JIPipeIteratingAlgorithm (for multiple inputs), or JIPipeMergingAlgorithm (for merging single/multiple inputs). These classes provide the automated organization of data, multiple parameters, adaptive parameters, and more.</p>
+</p></div>
+
 <div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// Annotates documentation to the algorithm
 </span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;My Algorithm&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Does something&#34;</span><span style="color:#f92672">)</span>
 
@@ -820,8 +825,8 @@
 </span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeNode</span><span style="color:#f92672">(</span><span style="color:#111">nodeTypeCategory</span> <span style="color:#f92672">=</span> <span style="color:#111">MiscellaneousNodeTypeCategory</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
 
 <span style="color:#75715e">// Input and output slots autoCreate automatically creates the slots if set to true and no slot configuration was provided
-</span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeInputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
-<span style="color:#75af00">@JIPipeOutputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
+</span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeInputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;The input&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
+<span style="color:#75af00">@JIPipeOutputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;The input&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
 
 <span style="color:#75715e">// You can add multiple JIPipeCitation annotations to provide citations for this node only
 </span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeCitation</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;Additional citation&#34;</span><span style="color:#f92672">)</span>
