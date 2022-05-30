@@ -17,6 +17,7 @@ import org.scijava.Priority;
 
 import java.lang.annotation.Annotation;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -85,7 +86,13 @@ public interface JIPipeParameterAccess {
      * @return the list of annotations
      * @param <T> the annotation class
      */
-    <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass);
+    default <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
+        T annotation = getAnnotationOfType(klass);
+        if(annotation != null)
+            return Collections.singletonList(annotation);
+        else
+            return Collections.emptyList();
+    }
 
     /**
      * Gets all available annotations for this parameter
