@@ -6,7 +6,7 @@
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <meta name="revised" content="2022-05-31T17:41:36 CEST">
-<title>Installation :: JIPipe for ImageJ</title>
+<title>Supplementary information :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
 <link href="../css/font-awesome.min.css" rel="stylesheet">
 <link href="../css/nucleus.css" rel="stylesheet">
@@ -24,7 +24,7 @@
 
     
   </head>
-  <body data-url="../installation/">
+  <body data-url="../supplementary-information/">
     
       <header>
   <div class="logo">
@@ -70,7 +70,7 @@
       <a href="../download/">Download</a><i class="fa fa-circle-thin read-icon"></i>
       </div>
     </li>
-    <li data-nav-id="https://www.jipipe.org/installation/" class="dd-item parent active
+    <li data-nav-id="https://www.jipipe.org/installation/" class="dd-item
         ">
       <div>
       <a href="../installation/">Installation</a><i class="fa fa-circle-thin read-icon"></i>
@@ -687,7 +687,7 @@
       <a href="../citation/">Citation</a><i class="fa fa-circle-thin read-icon"></i>
       </div>
     </li>
-    <li data-nav-id="https://www.jipipe.org/supplementary-information/" class="dd-item
+    <li data-nav-id="https://www.jipipe.org/supplementary-information/" class="dd-item parent active
         ">
       <div>
       <a href="../supplementary-information/">Supplementary information</a><i class="fa fa-circle-thin read-icon"></i>
@@ -709,9 +709,8 @@
           
     <option value="/download/" >
    Download</option>
-    <option value="/installation/"  selected>
-   Installation</option> 
-  
+    <option value="/installation/" >
+   Installation</option>
     <option value="/examples/" >
    Examples</option>
     <option value="/tutorials/" >
@@ -728,8 +727,9 @@
    Data API documentation</option>
     <option value="/citation/" >
    Citation</option>
-    <option value="/supplementary-information/" >
-   Supplementary information</option>
+    <option value="/supplementary-information/"  selected>
+   Supplementary information</option> 
+  
 
 
 
@@ -752,102 +752,25 @@
       </div>
     
 
-    <h1>Installation</h1>
+    <h1>Supplementary information</h1>
     
     
     
 
-<p>JIPipe can be installed in multiple ways:</p>
-<ol>
-<li>Install JIPipe via the ImageJ update manager <strong>(currently not available)</strong></li>
-<li>Use our pre-packaged JIPipe distributions</li>
-<li>Use the online installer <strong>(currently not available)</strong></li>
-<li>Install JIPipe manually</li>
-</ol>
-<p>After a successful installation, JIPipe will warn you about <a href="../installation/#third-party-software">third-party software</a> (Python, R, &hellip;).</p>
-<h1 id="installation-with-the-update-manager">Installation with the update manager</h1>
-
-<div class="notices info" ><p><p>This option is currently not available, as we are preparing the upload to the update manager.</p>
-</p></div>
-
-
-<div class="notices info" ><p><p>Internet access is required during the installation.</p>
-</p></div>
-
-<ol>
-<li>Start ImageJ/Fiji</li>
-<li>Go to <strong>Help &gt; Update&hellip;</strong></li>
-<li>Click <strong>Manage update sites</strong></li>
-<li>Select <code>JIPipe</code> and close the manage window</li>
-<li>Click <strong>Apply changes</strong></li>
-<li>Restart ImageJ</li>
-<li>You can find JIPipe here: <code>Plugins &gt; JIPipe &gt; JIPipe GUI</code> (or use the search)</li>
-</ol>
-<h1 id="pre-packaged-jipipe-distributions">Pre-packaged JIPipe distributions</h1>
-<ol>
-<li><a href="../download">Download</a> a pre-packaged JIPipe distribution</li>
-<li>Extract the ZIP file</li>
-<li><strong>Windows:</strong> Run ImageJ-win64.exe</li>
-<li><strong>Linux:</strong> Run ImageJ-linux64</li>
-<li><strong>MacOS:</strong> Run the JIPipe app</li>
-<li>You can find JIPipe here: <code>Plugins &gt; JIPipe &gt; JIPipe GUI</code> (or use the search)</li>
-</ol>
-
-<div class="notices info" ><p><p>We currently have only limited capabilities of testing the MacOS version and appreciate any help of creating a smooth experience. Feel free to contact us!</p>
-</p></div>
-
-<h1 id="online-installer">Online installer</h1>
-
-<div class="notices info" ><p><p>This option is currently not available, as we are preparing the upload to the ImageJ update system.</p>
-</p></div>
-
-
-<div class="notices info" ><p><p>Internet access is required during the installation.</p>
-</p></div>
-
-<ol>
-<li><a href="../download">Download</a> the online installer</li>
-<li><strong>Windows:</strong> Run the setup and follow the instructions</li>
-<li><strong>Linux:</strong> Set the executable flag of the setup and run it. Follow the instructions.</li>
-<li><strong>MacOS:</strong> Extract the ZIP file. Run the app. The setup will automatically download all software.</li>
-<li>You can start JIPipe directly from your Desktop/Menu</li>
-</ol>
-<h1 id="manual-installation">Manual installation</h1>
-<p>This requires an existing ImageJ installation. Please download the appropriate package from <a href="https://fiji.sc">https://fiji.sc</a> to get ImageJ. 
-We <strong>strongly</strong> recommend to update ImageJ (via <code>Help &gt; Update...</code>) before installing JIPipe.</p>
-<ol>
-<li><a href="../download">Download</a> the JAR files</li>
-<li><strong>Windows/Linux:</strong> Navigate to the ImageJ directory. <strong>MacOS:</strong> Right-click the app and click <code>Show Package Contents</code>.</li>
-<li>Go into the <code>plugins</code> directory</li>
-<li>Extract the downloaded JAR files</li>
-<li>Copy the JAR files into the ImageJ <code>plugins</code> directory. Do not copy the <code>dependencies</code> directory.</li>
-<li>Copy the contents of <code>dependencies</code> into the ImageJ <code>jars</code> directory (you can click &ldquo;Skip&rdquo; if there are existing files)</li>
-<li>Start ImageJ</li>
-<li>Run <code>Plugins &gt; JIPipe &gt; JIPipe GUI</code> (or use the search) to open the JIPipe GUI</li>
-</ol>
-<p>JIPipe might complain about missing plugins and show a list of missing dependencies. This is expected and caused by missing plugins.</p>
-<ol>
-<li>Click the <code>Resolve</code> button and wait until the missing dependencies were detected</li>
-<li>Click <code>Apply changes</code></li>
-<li>Click <code>Close ImageJ</code> and restart ImageJ afterwards</li>
-<li>Run JIPipe again. No error should be present, anymore.</li>
-</ol>
-<p><img src="../img/installation/missing_dependencies.png" alt="Missing dependencies">
-<img src="../img/installation/missing_dependencies_apply_changes.png" alt="Missing dependencies">
-<img src="../img/installation/missing_dependencies_close_imagej.png" alt="Missing dependencies"></p>
-<h1 id="third-party-software">Third-party software</h1>
-<p>JIPipe relies on additional third-party software to provide some functionality. This includes the integration of Python, R, and Cellpose.
-At the first start, these are not known to JIPipe, which in return will notify about these issues.</p>
-<p>To open the notifications tab, click the blinking notification button at the top right.</p>
-<p>You will be offered various options to resolve each notification:</p>
+<p>On this page, you can find the supplementary information of the <a href="https://www.researchsquare.com/article/rs-1641739/v1">JIPipe publication</a>.</p>
+<object data="/documents/JIPipe-Supplementary-Information.pdf" type="application/pdf" style="width: 100%; height: 100vw; max-height: 1024px;">
+    <div>No online PDF viewer installed</div>
+</object>
 <ul>
-<li>You can dismiss it temporarily (click <span class="fa fa-times-circle"  style="font-size:medium" aria-hidden="true"></span>)</li>
-<li>You can dismiss it permanently (click <span class="fa fa-eye-slash"  style="font-size:medium" aria-hidden="true"></span>). You can undo this by going to <code>Project &gt; Application settings &gt; UI &gt; Notifications</code></li>
-<li>You can apply a notification-related action (e.g., installation of a Python environment)</li>
+<li><a href="../documents/JIPipe-Supplementary-Information.pdf">Download</a> the supplementary information</li>
 </ul>
-<p>In the case of Python, R, and Cellpose, JIPipe directly offers installers that automatically handle the correct setup of these environments. In this case, you don&rsquo;t need to configure anything else.
-If you want to enter settings manually or use alternative options (e.g., selecting an existing Python environment), click the configuration item.</p>
-<p><img src="../img/installation/notifications.png" alt="Notifications"></p>
+<h1 id="other-supplementary-material">Other supplementary material</h1>
+<ul>
+<li><strong>Current source code:</strong> <a href="https://www.github.com/applied-systems-biology/JIPipe/">https://www.github.com/applied-systems-biology/JIPipe/</a></li>
+<li><strong>Source code (DOI):</strong> <a href="https://doi.org/10.5281/zenodo.6532719">https://doi.org/10.5281/zenodo.6532719</a></li>
+<li><strong>Current example projects:</strong> <a href="https://www.jipipe.org/examples/">https://www.jipipe.org/examples/</a></li>
+<li><strong>Example projects (DOI):</strong> <a href="https://doi.org/10.6084/m9.figshare.19733320.v1">https://doi.org/10.6084/m9.figshare.19733320.v1</a></li>
+</ul>
 
 
 
@@ -855,8 +778,8 @@ If you want to enter settings manually or use alternative options (e.g., selecti
     
         <div class="chevrons">
     <div id="navigation">
-<a class="nav nav-prev" href="../download/" title="Download"> <i class="fa fa-chevron-left"></i><label>Download</label></a>
-    <a class="nav nav-next" href="../examples/" title="Examples" style="margin-right: 0px;"><label>Examples</label><i class="fa fa-chevron-right"></i></a></div>
+<a class="nav nav-prev" href="../citation/" title="Citation"> <i class="fa fa-chevron-left"></i><label>Citation</label></a>
+    <a class="nav nav-next" href="../download/" title="Download" style="margin-right: 0px;"><label>Download</label><i class="fa fa-chevron-right"></i></a></div>
   </div>
 
   </section>
