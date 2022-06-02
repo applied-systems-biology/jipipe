@@ -136,6 +136,7 @@ public class MergingJythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         pythonInterpreter.set("output_slots", new ArrayList<>(getOutputSlots()));
         pythonInterpreter.set("input_slot_map", inputSlotMap);
         pythonInterpreter.set("output_slot_map", outputSlotMap);
+        pythonInterpreter.set("progress_info", progressInfo);
         pythonInterpreter.exec(code.getCode(getProjectDirectory()));
     }
 

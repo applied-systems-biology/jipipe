@@ -148,6 +148,7 @@ public class SimpleIteratingJythonScriptAlgorithm extends JIPipeSimpleIteratingA
         if (!getNonParameterInputSlots().isEmpty()) {
             pythonInterpreter.set("input_slot", getFirstInputSlot());
         }
+        pythonInterpreter.set("progress_info", progressInfo);
         pythonInterpreter.exec(code.getCode(getProjectDirectory()));
     }
 
