@@ -210,6 +210,8 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public void clearData() {
         for (JIPipeVirtualData item : data) {
+            if(item == null)
+                continue;
             item.removeUser(this);
             if(item.canClose()) {
                 try {
@@ -221,6 +223,8 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         }
         for (Map.Entry<String, ArrayList<JIPipeVirtualData>> entry : dataAnnotations.entrySet()) {
             for (JIPipeVirtualData item : entry.getValue()) {
+                if(item == null)
+                    continue;
                 item.removeUser(this);
                 if(item.canClose()) {
                     try {
@@ -844,6 +848,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         if (!annotations.isEmpty()) {
             annotations = mergeStrategy.merge(annotations);
         }
+        virtualData.addUser(this);
         data.add(virtualData);
         for (JIPipeTextAnnotation annotation : annotations) {
             List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnData(annotation.getName());
@@ -954,7 +959,9 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     public void destroyData() {
         for (int i = 0; i < data.size(); ++i) {
             try {
-                data.get(i).close();
+                data.get(i).removeUser(this);
+                if(data.get(i).canClose())
+                    data.get(i).close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -963,7 +970,9 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         for (ArrayList<JIPipeVirtualData> list : dataAnnotations.values()) {
             for (int i = 0; i < list.size(); i++) {
                 try {
-                    list.get(i).close();
+                    list.get(i).removeUser(this);
+                    if(list.get(i).canClose())
+                        list.get(i).close();
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
@@ -1035,6 +1044,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             annotations = mergeStrategy.merge(annotations);
         }
         data.add(virtualData);
+        virtualData.addUser(this);
         for (JIPipeTextAnnotation annotation : annotations) {
             List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnData(annotation.getName());
             annotationArray.set(getRowCount() - 1, annotation);
@@ -1059,7 +1069,9 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         if (!annotations.isEmpty()) {
             annotations = mergeStrategy.merge(annotations);
         }
-        this.data.add(new JIPipeVirtualData(data));
+        JIPipeVirtualData virtualData = new JIPipeVirtualData(data);
+        this.data.add(virtualData);
+        virtualData.addUser(this);
         for (JIPipeTextAnnotation annotation : annotations) {
             List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnData(annotation.getName());
             annotationArray.set(getRowCount() - 1, annotation);
