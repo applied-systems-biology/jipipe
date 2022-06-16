@@ -423,7 +423,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
         }
         if (slot.isInput()) {
             progressInfo.resolve("GC").log("Clearing input slot " + slot.getDisplayName());
-            slot.destroy();
+            slot.destroyData();
         } else if (slot.isOutput()) {
             if (configuration.isStoreToCache() && !configuration.getDisableStoreToCacheNodes().contains(slot.getNode())) {
                 JIPipeGraphNode runAlgorithm = slot.getNode();

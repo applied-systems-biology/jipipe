@@ -206,13 +206,20 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     }
 
     /**
-     * Removes all data from this slot
+     * Removes all rows from this table
      */
     public void clearData() {
         data.clear();
         annotationColumns.clear();
         annotations.clear();
 //        System.gc();
+    }
+
+    /**
+     * Removes all rows from this table
+     */
+    public void clear() {
+        clearData();
     }
 
     /**
@@ -878,10 +885,12 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     }
 
     /**
-     * Similar to flush(), but only destroys the data.
-     * This will keep the annotations, and replace all data items by null
+     * Closes all data and data annotations and replaces their values in the table by null. Text annotations are left unchanged.
+     * This method is internally used for exporting data. Please be careful, as {@link JIPipeVirtualData} items that might be present in
+     * other tables might be destroyed.
+     * Use clearData() as alternative
      */
-    public void destroy() {
+    public void destroyData() {
         for (int i = 0; i < data.size(); ++i) {
             try {
                 data.get(i).close();

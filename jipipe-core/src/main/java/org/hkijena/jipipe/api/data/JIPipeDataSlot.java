@@ -173,7 +173,7 @@ public abstract class JIPipeDataSlot extends JIPipeDataTable {
         } else {
             exportToSlotStoragePath(saveProgress);
         }
-        destroy();
+        destroyData();
     }
 
     /**
