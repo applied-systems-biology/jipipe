@@ -214,9 +214,8 @@ public class ResultsTableData implements JIPipeData, TableModel {
             return new ResultsTableData();
         if (text.startsWith("Error:"))
             throw new RuntimeException(new IOException("Error opening " + path));
-        boolean csv = path.endsWith(".csv") || path.endsWith(".CSV");
         boolean commasReplaced = false;
-        if (csv && text.contains("\"")) {
+        if (text.contains("\"")) {
             text = replaceQuotedCommas(text);
             commasReplaced = true;
         }
