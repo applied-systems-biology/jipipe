@@ -209,9 +209,33 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * Removes all rows from this table
      */
     public void clearData() {
+        for (JIPipeVirtualData item : data) {
+            item.removeUser(this);
+            if(item.canClose()) {
+                try {
+                    item.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        for (Map.Entry<String, ArrayList<JIPipeVirtualData>> entry : dataAnnotations.entrySet()) {
+            for (JIPipeVirtualData item : entry.getValue()) {
+                item.removeUser(this);
+                if(item.canClose()) {
+                    try {
+                        item.close();
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+            }
+        }
         data.clear();
         annotationColumns.clear();
         annotations.clear();
+        dataAnnotations.clear();
+        dataAnnotationColumns.clear();
 //        System.gc();
     }
 
@@ -374,6 +398,19 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public void setVirtualDataAnnotation(int row, String column, JIPipeVirtualData virtualData) {
         List<JIPipeVirtualData> data = getOrCreateDataAnnotationColumnData(column);
+        if(virtualData != null)
+            virtualData.addUser(this);
+        JIPipeVirtualData existing = data.get(row);
+        if(existing != null) {
+            existing.removeUser(this);
+            if(existing.canClose()) {
+                try {
+                    existing.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
         data.set(row, virtualData);
     }
 
@@ -385,8 +422,19 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     public void setData(int row, JIPipeData data) {
         if (!accepts(data))
             throw new IllegalArgumentException("Tried to add data of type " + data.getClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
-
+        JIPipeVirtualData existing = this.data.get(row);
+        if(existing != null) {
+            existing.removeUser(this);
+            if(existing.canClose()) {
+                try {
+                    existing.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
         JIPipeVirtualData virtualData = new JIPipeVirtualData(JIPipe.getDataTypes().convert(data, getAcceptedDataType()));
+        virtualData.addUser(this);
         this.data.set(row, virtualData);
     }
 
@@ -398,7 +446,19 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     public void setVirtualData(int row, JIPipeVirtualData virtualData) {
         if (!accepts(virtualData.getDataClass()))
             throw new IllegalArgumentException("Tried to add data of type " + virtualData.getDataClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
+        JIPipeVirtualData existing = this.data.get(row);
+        if(existing != null) {
+            existing.removeUser(this);
+            if(existing.canClose()) {
+                try {
+                    existing.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
         this.data.set(row, virtualData);
+        virtualData.addUser(this);
     }
 
     /**
@@ -591,6 +651,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             annotations = mergeStrategy.merge(annotations);
         }
         JIPipeVirtualData virtualData = new JIPipeVirtualData(JIPipe.getDataTypes().convert(value, getAcceptedDataType()));
+        virtualData.addUser(this);
         data.add(virtualData);
         for (JIPipeTextAnnotation annotation : annotations) {
             List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnData(annotation.getName());

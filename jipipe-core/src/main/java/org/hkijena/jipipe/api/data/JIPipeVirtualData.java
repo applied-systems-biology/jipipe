@@ -24,6 +24,7 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.file.Path;
+import java.util.WeakHashMap;
 
 /**
  * Manages virtual data
@@ -36,6 +37,10 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
     private WeakReference<JIPipeData> dataReference;
     private PathContainer virtualStoragePath = new PathContainer();
     private String stringRepresentation;
+
+    private WeakHashMap<Object, Boolean> users = new WeakHashMap<>();
+
+    private boolean closed = false;
 
     /**
      * Create virtual data from data
@@ -68,6 +73,8 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
      * @return the copy
      */
     public JIPipeVirtualData duplicate(JIPipeProgressInfo progressInfo) {
+        if(closed)
+            throw new IllegalStateException("The data object is already destroyed (use-after-free)");
         JIPipeData data = getData(progressInfo).duplicate(progressInfo);
         JIPipeVirtualData virtualData = new JIPipeVirtualData(data);
         if (isVirtual()) {
@@ -76,8 +83,20 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
         return virtualData;
     }
 
+    /**
+     * Returns true if the object is virtual
+     * @return if the object is virtual
+     */
     public synchronized boolean isVirtual() {
         return data == null;
+    }
+
+    /**
+     * Returns true if this object is closed and thus should not be used anymore
+     * @return if the object is closed
+     */
+    public boolean isClosed() {
+        return closed;
     }
 
     /**
@@ -87,6 +106,8 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
      * @param discard      if existing data should be saved or discarded. Discard has no effect if data was not saved, yet.
      */
     public synchronized void makeVirtual(JIPipeProgressInfo progressInfo, boolean discard) {
+        if(closed)
+            throw new IllegalStateException("The data object is already destroyed (use-after-free)");
         if (!isVirtual()) {
             if (JIPipe.getInstance() != null && !VirtualDataSettings.getInstance().isVirtualMode())
                 return;
@@ -107,6 +128,8 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
     }
 
     public synchronized void makeNonVirtual(JIPipeProgressInfo progressInfo, boolean removeVirtualDataStorage) {
+        if(closed)
+            throw new IllegalStateException("The data object is already destroyed (use-after-free)");
         if (isVirtual()) {
             if (virtualStoragePath.getPath() == null) {
                 throw new UnsupportedOperationException("Tried to load virtual data, but no path is set. This should not be possible.");
@@ -148,6 +171,8 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
      * @return the data
      */
     public synchronized JIPipeData getData(JIPipeProgressInfo progressInfo) {
+        if(closed)
+            throw new IllegalStateException("The data object is already destroyed (use-after-free)");
         boolean shouldBeVirtual = isVirtual();
         if (dataReference != null) {
             JIPipeData existing = dataReference.get();
@@ -173,8 +198,36 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
         return dataClass;
     }
 
+    /**
+     * Marks the provided object as user of this data
+     * @param obj the object
+     */
+    public synchronized void addUser(Object obj) {
+        users.put(obj, true);
+    }
+
+    /**
+     * Un-marks the provided objects as user of this data
+     * @param obj the object
+     */
+    public synchronized void removeUser(Object obj) {
+        users.remove(obj);
+    }
+
+    /**
+     * Returns true if the data has no users and thus can be closed
+     * @return if the data has no users
+     */
+    public synchronized boolean canClose() {
+        return users.isEmpty();
+    }
+
     @Override
-    public void close() throws IOException {
+    public synchronized void close() throws IOException {
+        if(closed)
+            return;
+        System.out.println("Closing " + this);
+        closed = true;
         if (virtualStoragePath != null && virtualStoragePath.getPath() != null) {
             try {
                 PathUtils.deleteDirectoryRecursively(virtualStoragePath.getPath(), new JIPipeProgressInfo());
@@ -191,6 +244,7 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
             virtualStoragePath.setPath(null);
             virtualStoragePath = null;
         }
+        users.clear();
     }
 
     private static class PathContainer {
