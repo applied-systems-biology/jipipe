@@ -110,7 +110,7 @@ public class JIPipeZIPWriteDataStorage implements JIPipeWriteDataStorage {
     }
 
     @Override
-    public JIPipeWriteDataStorage resolve(Path path) {
+    public JIPipeZIPWriteDataStorage resolve(Path path) {
         JIPipeZIPWriteDataStorage result = new JIPipeZIPWriteDataStorage(progressInfo, zipFilePath, internalPath.resolve(path));
         result.fileOutputStream = fileOutputStream;
         result.zipOutputStream = zipOutputStream;
