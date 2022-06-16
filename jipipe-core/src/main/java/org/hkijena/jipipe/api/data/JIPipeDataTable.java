@@ -884,15 +884,19 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     public void destroy() {
         for (int i = 0; i < data.size(); ++i) {
             try {
-                // We have to call it explicitly or Java
-                data.get(i).finalize();
-            } catch (Throwable e) {
+                data.get(i).close();
+            } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             data.set(i, null);
         }
         for (ArrayList<JIPipeVirtualData> list : dataAnnotations.values()) {
             for (int i = 0; i < list.size(); i++) {
+                try {
+                    list.get(i).close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
                 list.set(i, null);
             }
         }
