@@ -21,6 +21,8 @@ import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
+import java.io.Closeable;
+import java.io.IOException;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -31,11 +33,13 @@ import java.util.stream.Collectors;
  * Additionally, there must be an annotation of type {@link JIPipeDataStorageDocumentation} that describes the structure of a valid row storage folder for humans.
  * The static importData(Path) method and the {@link JIPipeDataStorageDocumentation} annotation can be omitted for abstract data types or interfaces.
  * {@link JIPipeDataStorageDocumentation} can be inherited from parent classes.
+ *
+ * Update: 1.74.0: The class is now closable, which is useful for handling external resources. {@link JIPipeDataTable} and {@link JIPipeVirtualData} were adapted to handle the close() automatically.
  */
 @JIPipeDocumentation(name = "Data", description = "Generic data")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Unknown storage schema (generic data)",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
-public interface JIPipeData {
+public interface JIPipeData extends Closeable, AutoCloseable {
 
     /**
      * Returns the name of a data type
@@ -236,4 +240,8 @@ public interface JIPipeData {
         return toString();
     }
 
+    @Override
+    default void close() {
+
+    }
 }

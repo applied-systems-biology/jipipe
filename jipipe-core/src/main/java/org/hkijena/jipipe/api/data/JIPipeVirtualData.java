@@ -20,13 +20,17 @@ import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.nio.file.Path;
 
 /**
  * Manages virtual data
+ * This class can store data in memory or in a temporary path.
+ * Please note that the temporary data is not automatically cleaned up by finalize()! Please call close() to remove any files.
  */
-public class JIPipeVirtualData {
+public class JIPipeVirtualData implements AutoCloseable, Closeable {
     private final Class<? extends JIPipeData> dataClass;
     private JIPipeData data;
     private WeakReference<JIPipeData> dataReference;
@@ -74,26 +78,6 @@ public class JIPipeVirtualData {
 
     public synchronized boolean isVirtual() {
         return data == null;
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-
-        if (virtualStoragePath != null && virtualStoragePath.getPath() != null) {
-            try {
-                PathUtils.deleteDirectoryRecursively(virtualStoragePath.getPath(), new JIPipeProgressInfo());
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-        data = null;
-        dataReference = null;
-        if (virtualStoragePath != null) {
-            virtualStoragePath.setPath(null);
-            virtualStoragePath = null;
-        }
-
-        super.finalize();
     }
 
     /**
@@ -187,6 +171,26 @@ public class JIPipeVirtualData {
 
     public Class<? extends JIPipeData> getDataClass() {
         return dataClass;
+    }
+
+    @Override
+    public void close() throws IOException {
+        if (virtualStoragePath != null && virtualStoragePath.getPath() != null) {
+            try {
+                PathUtils.deleteDirectoryRecursively(virtualStoragePath.getPath(), new JIPipeProgressInfo());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        if(data != null) {
+            data.close();
+        }
+        data = null;
+        dataReference = null;
+        if (virtualStoragePath != null) {
+            virtualStoragePath.setPath(null);
+            virtualStoragePath = null;
+        }
     }
 
     private static class PathContainer {

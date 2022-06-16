@@ -158,11 +158,6 @@ public class FormPanel extends JXPanel {
         return scrollPane;
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        super.finalize();
-    }
-
     private void documentComponent(Component component, MarkdownDocument componentDocument) {
         if (componentDocument != null) {
             Toolkit.getDefaultToolkit().addAWTEventListener(new ComponentDocumentationHandler(this, component, componentDocument),

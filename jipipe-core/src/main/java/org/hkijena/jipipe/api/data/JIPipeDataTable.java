@@ -883,6 +883,12 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public void destroy() {
         for (int i = 0; i < data.size(); ++i) {
+            try {
+                // We have to call it explicitly or Java
+                data.get(i).finalize();
+            } catch (Throwable e) {
+                throw new RuntimeException(e);
+            }
             data.set(i, null);
         }
         for (ArrayList<JIPipeVirtualData> list : dataAnnotations.values()) {
