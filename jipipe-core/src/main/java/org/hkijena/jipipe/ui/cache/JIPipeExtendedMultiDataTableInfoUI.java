@@ -196,9 +196,13 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
         exportAsCsvItem.addActionListener(e -> exportAsCSV());
         exportMenu.add(exportAsCsvItem);
 
-        JMenuItem exportStandardizedSlotItem = new JMenuItem("Data as JIPipe data table", UIUtils.getIconFromResources("apps/jipipe.png"));
-        exportStandardizedSlotItem.addActionListener(e -> exportAsJIPipeSlot());
-        exportMenu.add(exportStandardizedSlotItem);
+        JMenuItem exportStandardizedSlotDirectoryItem = new JMenuItem("Data as JIPipe data table (directory)", UIUtils.getIconFromResources("apps/jipipe.png"));
+        exportStandardizedSlotDirectoryItem.addActionListener(e -> exportAsJIPipeSlotDirectory());
+        exportMenu.add(exportStandardizedSlotDirectoryItem);
+
+        JMenuItem exportStandardizedSlotZIPItem = new JMenuItem("Data as JIPipe data table (*.zip)", UIUtils.getIconFromResources("apps/jipipe.png"));
+        exportStandardizedSlotZIPItem.addActionListener(e -> exportAsJIPipeSlotZIP());
+        exportMenu.add(exportStandardizedSlotZIPItem);
 
         JMenuItem exportByMetadataExporterItem = new JMenuItem("Data as files", UIUtils.getIconFromResources("actions/save.png"));
         exportByMetadataExporterItem.addActionListener(e -> exportByMetadataExporter());
@@ -296,7 +300,7 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
         }
     }
 
-    private void exportAsJIPipeSlot() {
+    private void exportAsJIPipeSlotDirectory() {
         Path directory = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table");
         if (directory != null) {
             try {
@@ -314,6 +318,18 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
                     true,
                     true);
             JIPipeRunnerQueue.getInstance().enqueue(run);
+        }
+    }
+
+    private void exportAsJIPipeSlotZIP() {
+        for (JIPipeDataTable dataTable : dataTables) {
+            Path outputZipFile = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", UIUtils.EXTENSION_FILTER_ZIP);
+            if (outputZipFile != null) {
+                JIPipeDataTableToZIPExporterRun run = new JIPipeDataTableToZIPExporterRun(getWorkbench(),
+                        outputZipFile,
+                        dataTable);
+                JIPipeRunnerQueue.getInstance().enqueue(run);
+            }
         }
     }
 
