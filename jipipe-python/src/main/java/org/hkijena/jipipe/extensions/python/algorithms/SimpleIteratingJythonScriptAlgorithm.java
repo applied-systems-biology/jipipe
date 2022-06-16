@@ -33,6 +33,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
@@ -149,7 +150,9 @@ public class SimpleIteratingJythonScriptAlgorithm extends JIPipeSimpleIteratingA
             pythonInterpreter.set("input_slot", getFirstInputSlot());
         }
         pythonInterpreter.set("progress_info", progressInfo);
-        pythonInterpreter.exec(code.getCode(getProjectDirectory()));
+        try(IJLogToJIPipeProgressInfoPump ignored = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+            pythonInterpreter.exec(code.getCode(getProjectDirectory()));
+        }
     }
 
     @JIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations." +

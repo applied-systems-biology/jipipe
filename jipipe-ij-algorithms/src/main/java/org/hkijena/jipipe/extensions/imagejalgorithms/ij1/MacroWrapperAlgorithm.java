@@ -44,6 +44,7 @@ import org.hkijena.jipipe.extensions.parameters.library.references.ImageJDataImp
 import org.hkijena.jipipe.extensions.parameters.library.scripts.ImageJMacro;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
@@ -260,10 +261,11 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
 
             finalCode.append("\n").append(code.getCode(getProjectDirectory()));
 
-            Interpreter interpreter = new Interpreter();
-            try {
+
+            try(IJLogToJIPipeProgressInfoPump ignored = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
                 progressInfo.log("Executing macro: \n\n" + finalCode);
 
+                Interpreter interpreter = new Interpreter();
                 interpreter.run(finalCode.toString());
 
                 if(importDelay > 0) {

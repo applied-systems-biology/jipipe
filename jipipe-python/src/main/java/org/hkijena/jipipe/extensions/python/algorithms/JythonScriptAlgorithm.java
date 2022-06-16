@@ -33,6 +33,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.parameters.library.scripts.PythonScript;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.scripting.JythonUtils;
@@ -128,7 +129,9 @@ public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         pythonInterpreter.set("output_slot_map", outputSlotMap);
         pythonInterpreter.set("progress_info", progressInfo);
 
-        pythonInterpreter.exec(code.getCode(getProjectDirectory()));
+        try(IJLogToJIPipeProgressInfoPump ignored = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+            pythonInterpreter.exec(code.getCode(getProjectDirectory()));
+        }
     }
 
     @Override
