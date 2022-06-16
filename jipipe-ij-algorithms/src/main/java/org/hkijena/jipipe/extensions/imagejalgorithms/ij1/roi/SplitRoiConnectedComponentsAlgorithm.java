@@ -331,18 +331,18 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
 
     private void putMeasurementsIntoVariable(ResultsTableData inputMeasurements, int first, int second, ImagePlus referenceImage, ExpressionVariables variableSet, Roi overlap, ROIListData temp, Roi roi1, Roi roi2) {
 
-        variableSet.set("First.z", roi1.getZPosition());
-        variableSet.set("First.c", roi1.getCPosition());
-        variableSet.set("First.t", roi1.getTPosition());
-        variableSet.set("First.name", roi1.getName());
-        variableSet.set("Second.z", roi2.getZPosition());
-        variableSet.set("Second.c", roi2.getCPosition());
-        variableSet.set("Second.t", roi2.getTPosition());
-        variableSet.set("Second.name", roi2.getName());
+        variableSet.set("ROI1.z", roi1.getZPosition());
+        variableSet.set("ROI1.c", roi1.getCPosition());
+        variableSet.set("ROI1.t", roi1.getTPosition());
+        variableSet.set("ROI1.name", roi1.getName());
+        variableSet.set("ROI2.z", roi2.getZPosition());
+        variableSet.set("ROI2.c", roi2.getCPosition());
+        variableSet.set("ROI2.t", roi2.getTPosition());
+        variableSet.set("ROI2.name", roi2.getName());
 
         for (int col = 0; col < inputMeasurements.getColumnCount(); col++) {
-            variableSet.set("First." + inputMeasurements.getColumnName(col), inputMeasurements.getValueAt(first, col));
-            variableSet.set("Second." + inputMeasurements.getColumnName(col), inputMeasurements.getValueAt(second, col));
+            variableSet.set("ROI1." + inputMeasurements.getColumnName(col), inputMeasurements.getValueAt(first, col));
+            variableSet.set("ROI2." + inputMeasurements.getColumnName(col), inputMeasurements.getValueAt(second, col));
         }
 
         // Measure overlap
