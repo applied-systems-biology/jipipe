@@ -66,9 +66,7 @@ public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
      * @param info the info
      */
     public JythonScriptAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addOutputSlot("Table", "", ResultsTableData.class, null)
-                .build());
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().build());
         registerSubParameter(scriptParameters);
     }
 
@@ -93,7 +91,7 @@ public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
             slotConfiguration.clearOutputSlots(true);
             slotConfiguration.addSlot("Table", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output), true);
             code.setCode("from org.hkijena.jipipe.extensions.tables.datatypes import ResultsTableData\n" +
-                    "from org.hkijena.jipipe.api.data import JIPipeTextAnnotation\n" +
+                    "from org.hkijena.jipipe.api.annotation import JIPipeTextAnnotation, JIPipeTextAnnotationMergeMode\n" +
                     "from random import random\n" +
                     "\n" +
                     "# We generate a table of 10 values\n" +
@@ -106,7 +104,7 @@ public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
                     "\n" +
                     "# The output is written into the output slot\n" +
                     "# You can add annotations via an overload of addData()\n" +
-                    "output_Table.addData(table, [JIPipeTextAnnotation(\"Dataset\", \"Generated\")])\n");
+                    "output_slot_map[\"Table\"].addData(table, [JIPipeTextAnnotation(\"Dataset\", \"Generated\")], JIPipeTextAnnotationMergeMode.OverwriteExisting, progress_info)\n");
             getEventBus().post(new ParameterChangedEvent(this, "code"));
         }
     }
@@ -146,7 +144,8 @@ public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         code.makeExternalScriptFileRelative(baseDirectory);
     }
 
-    @JIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations.")
+    @JIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations. " +
+            "A variable 'progress_info' provides the current progress logger instance.")
     @JIPipeParameter("code")
     public PythonScript getCode() {
         return code;

@@ -94,7 +94,7 @@ public class SimpleIteratingJythonScriptAlgorithm extends JIPipeSimpleIteratingA
             code.setCode("from org.hkijena.jipipe.extensions.tables.datatypes import ResultsTableData\n" +
                     "\n" +
                     "# Fetch the input table from the first input slot\n" +
-                    "input_table = data_batch.getInputData(input_slot, ResultsTableData)\n" +
+                    "input_table = data_batch.getInputData(input_slot, ResultsTableData, progress_info)\n" +
                     "\n" +
                     "table = ResultsTableData()\n" +
                     "\n" +
@@ -110,7 +110,7 @@ public class SimpleIteratingJythonScriptAlgorithm extends JIPipeSimpleIteratingA
                     "\n" +
                     "# Write the generated data\n" +
                     "# Annotations are automatically transferred\n" +
-                    "data_batch.addOutputData(output_slots[0], table)\n");
+                    "data_batch.addOutputData(output_slots[0], table, progress_info)\n");
             getEventBus().post(new ParameterChangedEvent(this, "code"));
         }
     }
@@ -155,7 +155,8 @@ public class SimpleIteratingJythonScriptAlgorithm extends JIPipeSimpleIteratingA
     @JIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations." +
             "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
             "The first (and only) input slot is also accessible via the 'input_slot' variable. " +
-            "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).")
+            "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot). " +
+            "A variable 'progress_info' provides the current progress logger instance.")
     @JIPipeParameter("code")
     public PythonScript getCode() {
         return code;

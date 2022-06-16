@@ -92,16 +92,16 @@ public class MergingJythonScriptAlgorithm extends JIPipeMergingAlgorithm {
             code.setCode("from org.hkijena.jipipe.extensions.tables.datatypes import ResultsTableData\n" +
                     "\n" +
                     "# Fetch the input tables\n" +
-                    "input_tables = data_batch.getInputData(input_slots[0], ResultsTableData)\n" +
+                    "input_tables = data_batch.getInputData(input_slots[0], ResultsTableData, progress_info)\n" +
                     "\n" +
                     "# Merge them into one table\n" +
                     "output_table = ResultsTableData()\n" +
                     "\n" +
                     "for input_table in input_tables:\n" +
-                    "\toutput_table.mergeWith(input_table)\n" +
+                    "\toutput_table.addRows(input_table)\n" +
                     "\n" +
                     "# Add into the output slot\n" +
-                    "data_batch.addOutputData(output_slots[0], output_table)\n");
+                    "data_batch.addOutputData(output_slots[0], output_table, progress_info)\n");
             getEventBus().post(new ParameterChangedEvent(this, "code"));
         }
     }
@@ -142,7 +142,8 @@ public class MergingJythonScriptAlgorithm extends JIPipeMergingAlgorithm {
 
     @JIPipeDocumentation(name = "Script", description = "Access to the data batch is done via a variable 'data_batch' that provides access to all input and output data, as well as annotations." +
             "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
-            "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot).")
+            "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot). " +
+            "A variable 'progress_info' provides the current progress logger instance.")
     @JIPipeParameter("code")
     public PythonScript getCode() {
         return code;
