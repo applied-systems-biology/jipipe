@@ -140,6 +140,8 @@ public class JIPipeZIPWriteDataStorage implements JIPipeWriteDataStorage {
         if(temporaryStorage != null) {
             try(Stream<Path> stream = Files.walk(temporaryStorage)) {
                 stream.forEach(path -> {
+                    if(Files.isDirectory(path))
+                        return;
                     Path relativePath = temporaryStorage.relativize(path);
                     getProgressInfo().log("ZIP " + path + " -> " + relativePath);
                     try {

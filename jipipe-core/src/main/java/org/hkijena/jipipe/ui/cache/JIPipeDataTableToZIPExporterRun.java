@@ -59,17 +59,17 @@ public class JIPipeDataTableToZIPExporterRun extends JIPipeWorkbenchPanel implem
 
     @Override
     public void run() {
-        Set<String> existing = new HashSet<>();
         progressInfo.setMaxProgress(1);
 
-        try {
-            JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, outputZipFile);
+        try( JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, outputZipFile)) {
             dataTable.exportData(storage, progressInfo);
         } catch (Exception e) {
             IJ.handleException(e);
             progressInfo.log(ExceptionUtils.getStackTrace(e));
             throw new RuntimeException(e);
         }
+
+        progressInfo.incrementProgress();
     }
 
     @Subscribe

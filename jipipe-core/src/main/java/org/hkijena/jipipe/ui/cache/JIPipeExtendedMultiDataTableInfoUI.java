@@ -325,6 +325,14 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
         for (JIPipeDataTable dataTable : dataTables) {
             Path outputZipFile = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", UIUtils.EXTENSION_FILTER_ZIP);
             if (outputZipFile != null) {
+                if(Files.isRegularFile(outputZipFile)) {
+                    if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
+                            "The file '" + outputZipFile + "' already exists. Do you want to overwrite the file?",
+                            "Export *.zip",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION)
+                        return;
+                }
                 JIPipeDataTableToZIPExporterRun run = new JIPipeDataTableToZIPExporterRun(getWorkbench(),
                         outputZipFile,
                         dataTable);
