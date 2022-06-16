@@ -226,7 +226,7 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
     public synchronized void close() throws IOException {
         if(closed)
             return;
-        System.out.println("Closing " + getStringRepresentation());
+//        System.out.println("Closing " + getStringRepresentation());
         closed = true;
         if (virtualStoragePath != null && virtualStoragePath.getPath() != null) {
             try {
