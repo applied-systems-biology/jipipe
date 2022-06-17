@@ -5,6 +5,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.pairs.IntegerAndIntegerPairParameter;
 
 public class GeneralDataSettings implements JIPipeParameterCollection {
     public static String ID = "general-data";
@@ -17,6 +19,14 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
     private boolean generateCachePreviews = true;
     private boolean generateResultPreviews = true;
     private boolean autoRemoveOutdatedCachedData = true;
+
+    private IntegerAndIntegerPairParameter.List exportedPreviewSizes = new IntegerAndIntegerPairParameter.List();
+
+    public GeneralDataSettings() {
+        exportedPreviewSizes.add(new IntegerAndIntegerPairParameter(64,64));
+        exportedPreviewSizes.add(new IntegerAndIntegerPairParameter(128,128));
+        exportedPreviewSizes.add(new IntegerAndIntegerPairParameter(256,256));
+    }
 
     public static GeneralDataSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GeneralDataSettings.class);
@@ -104,5 +114,17 @@ public class GeneralDataSettings implements JIPipeParameterCollection {
     @JIPipeParameter("auto-remove-outdated-cached-data")
     public void setAutoRemoveOutdatedCachedData(boolean autoRemoveOutdatedCachedData) {
         this.autoRemoveOutdatedCachedData = autoRemoveOutdatedCachedData;
+    }
+
+    @JIPipeDocumentation(name = "Exported preview sizes", description = "The preview sizes to be exported on exporting data/results")
+    @JIPipeParameter("exported-preview-sizes")
+    @PairParameterSettings(keyLabel = "Width", valueLabel = "Height")
+    public IntegerAndIntegerPairParameter.List getExportedPreviewSizes() {
+        return exportedPreviewSizes;
+    }
+
+    @JIPipeParameter("exported-preview-sizes")
+    public void setExportedPreviewSizes(IntegerAndIntegerPairParameter.List exportedPreviewSizes) {
+        this.exportedPreviewSizes = exportedPreviewSizes;
     }
 }

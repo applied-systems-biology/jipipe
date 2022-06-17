@@ -17,6 +17,7 @@ package org.hkijena.jipipe.api.data;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
+import java.awt.Dimension;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.List;
 public class JIPipeDataThumbnailsMetadata {
 
     private List<Thumbnail> thumbnails = new ArrayList<>();
+    private Path target;
 
     public JIPipeDataThumbnailsMetadata() {
     }
@@ -41,15 +43,25 @@ public class JIPipeDataThumbnailsMetadata {
         this.thumbnails = thumbnails;
     }
 
+    @JsonGetter("target")
+    public Path getTarget() {
+        return target;
+    }
+
+    @JsonSetter("target")
+    public void setTarget(Path target) {
+        this.target = target;
+    }
+
     public static class Thumbnail {
         private String name;
-        private int size;
+        private Dimension size;
         private List<Path> files;
 
         public Thumbnail() {
         }
 
-        public Thumbnail(String name, int size, List<Path> files) {
+        public Thumbnail(String name, Dimension size, List<Path> files) {
             this.name = name;
             this.size = size;
             this.files = files;
@@ -61,7 +73,7 @@ public class JIPipeDataThumbnailsMetadata {
             this.files = new ArrayList<>(other.files);
         }
 
-        @JsonSetter("name")
+        @JsonGetter("name")
         public String getName() {
             return name;
         }
@@ -72,12 +84,12 @@ public class JIPipeDataThumbnailsMetadata {
         }
 
         @JsonGetter("size")
-        public int getSize() {
+        public Dimension getSize() {
             return size;
         }
 
         @JsonSetter("size")
-        public void setSize(int size) {
+        public void setSize(Dimension size) {
             this.size = size;
         }
 

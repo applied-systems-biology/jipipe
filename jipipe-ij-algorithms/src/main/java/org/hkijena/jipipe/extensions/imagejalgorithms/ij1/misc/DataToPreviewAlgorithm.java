@@ -45,6 +45,8 @@ public class DataToPreviewAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                     preview.setSize(previewWidth, previewHeight);
                     BufferedImage image = new BufferedImage(previewWidth, previewHeight, BufferedImage.TYPE_INT_ARGB);
                     Graphics2D g = (Graphics2D) image.getGraphics();
+                    g.setColor(Color.WHITE);
+                    g.fillRect(0,0,previewWidth, previewHeight);
                     preview.print(g);
                     dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlus2DColorRGBData(new ImagePlus("Preview of " + data, image)), progressInfo);
                 });

@@ -28,6 +28,12 @@ public class IntegerAndIntegerPairParameter extends PairParameter<Integer, Integ
         super(Integer.class, Integer.class);
     }
 
+    public IntegerAndIntegerPairParameter(int key, int value) {
+        super(Integer.class, Integer.class);
+        setKey(key);
+        setValue(value);
+    }
+
     /**
      * Creates a copy
      *

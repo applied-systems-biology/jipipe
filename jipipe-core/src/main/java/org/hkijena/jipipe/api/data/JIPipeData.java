@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.api.data;
 
+import ij.ImagePlus;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -20,9 +21,16 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.Closeable;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -246,13 +254,43 @@ public interface JIPipeData extends Closeable, AutoCloseable {
     }
 
     /**
-     * Exports the thumbnail/preview of this data into the provided storage
+     * Exports the thumbnails/previews of this data into the provided storage
      *
-     * @param storage    the storage
-     * @param target    the location of the data (as internal path within the data table) that is described by the thumbnail
-     * @param sizes      the sizes to save (in pixels)
+     * @param storage      the storage
+     * @param target       the location of the data (as internal path within the data table) that is described by the thumbnails
+     * @param sizes        the sizes to save (in pixels)
+     * @param progressInfo the progress info
      */
-    default void exportThumbnails(JIPipeWriteDataStorage storage, Path target, List<Integer> sizes) {
-
+    default void exportThumbnails(JIPipeWriteDataStorage storage, Path target, List<Dimension> sizes, JIPipeProgressInfo progressInfo) {
+        JIPipeDataThumbnailsMetadata metadata = new JIPipeDataThumbnailsMetadata();
+        metadata.setTarget(target);
+        for (int i = 0; i < sizes.size(); i++) {
+            Dimension size = sizes.get(i);
+            progressInfo.resolveAndLog(size.width + "x" + size.height, i, sizes.size());
+            Component component = preview(size.width, size.height);
+            if (component == null)
+                continue;
+            int trueWidth = Math.max(component.getWidth(), size.width);
+            int trueHeight = Math.max(component.getHeight(), size.height);
+            try {
+                SwingUtilities.invokeAndWait(() -> {
+                    component.setSize(trueWidth, trueHeight);
+                    BufferedImage image = new BufferedImage(trueWidth, trueHeight, BufferedImage.TYPE_INT_ARGB);
+                    Graphics2D g = (Graphics2D) image.getGraphics();
+                    component.print(g);
+                    try(OutputStream stream = storage.write(size.width + "x" + size.height + ".png")) {
+                        ImageIO.write(image, "PNG", stream);
+                        metadata.getThumbnails().add(new JIPipeDataThumbnailsMetadata.Thumbnail(size.width + "x" + size.height, size, Arrays.asList(Paths.get(size.width + "x" + size.height + ".png"))));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                });
+            } catch (InterruptedException | InvocationTargetException e) {
+                e.printStackTrace();
+            }
+        }
+        if(!metadata.getThumbnails().isEmpty()) {
+            storage.writeJSON(Paths.get("thumbnails.json"), metadata);
+        }
     }
 }

@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import java.awt.Dimension;
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -49,6 +50,8 @@ public class JsonUtils {
             SimpleModule m = new SimpleModule("PathToString");
             m.addSerializer(Path.class, new ToNormalizedPathStringSerializer());
             m.addDeserializer(Path.class, new FromNormalizedPathStringDeserializer());
+            m.addSerializer(Dimension.class, new DimensionSerializer());
+            m.addDeserializer(Dimension.class, new DimensionDeserializer());
             objectMapper.registerModule(m);
         }
         return objectMapper;
@@ -91,6 +94,24 @@ public class JsonUtils {
             return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(data);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private static class DimensionSerializer extends JsonSerializer<Dimension> {
+        @Override
+        public void serialize(Dimension dimension, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException {
+            jsonGenerator.writeStartObject();
+            jsonGenerator.writeNumberField("width", dimension.width);
+            jsonGenerator.writeNumberField("height", dimension.height);
+            jsonGenerator.writeEndObject();
+        }
+    }
+
+    private static class DimensionDeserializer extends JsonDeserializer<Dimension> {
+        @Override
+        public Dimension deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
+            JsonNode node = jsonParser.readValueAsTree();
+            return new Dimension(node.get("width").asInt(), node.get("height").asInt());
         }
     }
 

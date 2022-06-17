@@ -13,6 +13,8 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
+import org.hkijena.jipipe.extensions.parameters.library.pairs.IntegerAndIntegerPairParameter;
+import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeExtendedDataTableInfoUI;
@@ -761,6 +763,12 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         JIPipeDataTableMetadata dataTableMetadata = new JIPipeDataTableMetadata();
         dataTableMetadata.setAcceptedDataTypeId(JIPipe.getDataTypes().getIdOf(getAcceptedDataType()));
 
+        // Calculate the preview sizes
+        List<Dimension> previewSizes = new ArrayList<>();
+        for (IntegerAndIntegerPairParameter entry : GeneralDataSettings.getInstance().getExportedPreviewSizes()) {
+            previewSizes.add(new Dimension(entry.getKey(), entry.getValue()));
+        }
+
         // We need to create unique and filesystem-safe mappings for data annotation column names
         Map<String, String> dataAnnotationColumnNameMapping = new HashMap<>();
         for (String dataAnnotationColumn : getDataAnnotationColumns()) {
@@ -777,10 +785,10 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             rowMetadata.setTrueDataType(JIPipe.getDataTypes().getIdOf(getVirtualData(row).getDataClass()));
             rowMetadata.setTextAnnotations(getTextAnnotations(row));
             JIPipeProgressInfo rowProgress = saveProgress.resolveAndLog("Row", row, getRowCount());
-            saveDataRow(storage, row, rowProgress);
+            saveDataRow(storage, row, previewSizes, rowProgress);
             for (JIPipeDataAnnotation dataAnnotation : getDataAnnotations(row)) {
                 JIPipeProgressInfo dataAnnotationProgress = rowProgress.resolveAndLog("Data annotation '" + dataAnnotation.getName() + "'");
-                JIPipeWriteDataStorage dataAnnotationStore = saveDataAnnotationRow(storage, dataAnnotationProgress, row, rowProgress, dataAnnotation, dataAnnotationColumnNameMapping);
+                JIPipeWriteDataStorage dataAnnotationStore = saveDataAnnotationRow(storage, dataAnnotationProgress, row, previewSizes, rowProgress, dataAnnotation, dataAnnotationColumnNameMapping);
                 JIPipeExportedDataAnnotation dataAnnotationMetadata = new JIPipeExportedDataAnnotation(dataAnnotation.getName(),
                         dataAnnotationStore.getInternalPath(),
                         JIPipe.getDataTypes().getIdOf(dataAnnotation.getDataClass()),
@@ -800,23 +808,32 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         }
     }
 
-    private JIPipeWriteDataStorage saveDataAnnotationRow(JIPipeWriteDataStorage storage, JIPipeProgressInfo saveProgress, int row, JIPipeProgressInfo rowProgress, JIPipeDataAnnotation dataAnnotation, Map<String, String> dataAnnotationColumnNameMapping) {
+    private JIPipeWriteDataStorage saveDataAnnotationRow(JIPipeWriteDataStorage storage, JIPipeProgressInfo saveProgress, int row, List<Dimension> previewSizes, JIPipeProgressInfo rowProgress, JIPipeDataAnnotation dataAnnotation, Map<String, String> dataAnnotationColumnNameMapping) {
         JIPipeWriteDataStorage dataAnnotationsStore = storage.resolve("data-annotations").resolve("" + row).resolve(dataAnnotationColumnNameMapping.get(dataAnnotation.getName()));
-        dataAnnotation.getData(JIPipeData.class, saveProgress.resolve("Load virtual data")).exportData(dataAnnotationsStore,
+        JIPipeData dataToExport = dataAnnotation.getData(JIPipeData.class, saveProgress.resolve("Load virtual data"));
+        dataToExport.exportData(dataAnnotationsStore,
                 dataAnnotationColumnNameMapping.get(dataAnnotation.getName()),
                 false,
                 rowProgress);
+
+        // Generate and save thumbnail
+        Path thumbnailPath = Paths.get("thumbnail").resolve("data-annotations").resolve("" + row).resolve(dataAnnotationColumnNameMapping.get(dataAnnotation.getName()));
+        dataToExport.exportThumbnails(storage.resolve(thumbnailPath),
+                Paths.get("data-annotations").resolve("" + row).resolve(dataAnnotationColumnNameMapping.get(dataAnnotation.getName())),
+                previewSizes,
+                rowProgress.resolve("Thumbnail"));
+
         return dataAnnotationsStore;
     }
 
-    private void saveDataRow(JIPipeWriteDataStorage storage, int row, JIPipeProgressInfo rowProgress) {
+    private void saveDataRow(JIPipeWriteDataStorage storage, int row, List<Dimension> previewSizes, JIPipeProgressInfo rowProgress) {
         JIPipeWriteDataStorage rowStorage = storage.resolve("" + row);
         JIPipeData dataToExport = data.get(row).getData(rowProgress.resolve("Load virtual data"));
         dataToExport.exportData(rowStorage, "data", false, rowProgress);
 
         // Generate and save thumbnail
         Path thumbnailPath = Paths.get("thumbnail").resolve("" + row);
-        dataToExport.exportThumbnails(storage.resolve(thumbnailPath), Paths.get("" + row), Arrays.asList(64, 128, 256));
+        dataToExport.exportThumbnails(storage.resolve(thumbnailPath), Paths.get("" + row), previewSizes, rowProgress.resolve("Thumbnail"));
     }
 
     /**
