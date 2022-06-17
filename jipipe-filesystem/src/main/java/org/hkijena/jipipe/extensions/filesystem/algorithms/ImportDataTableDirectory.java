@@ -35,11 +35,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Import data table", description = "Imports data from a data table back into JIPipe. The folder contains a data-table.json file and multiple folders with numeric names.")
+@JIPipeDocumentation(name = "Import data table (directory)", description = "Imports a data table directory. The folder contains a data-table.json file and multiple folders with numeric names.")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = FolderData.class, slotName = "Data table folder", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-public class ImportData extends JIPipeSimpleIteratingAlgorithm {
+public class ImportDataTableDirectory extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean ignoreInputTextAnnotations = false;
     private boolean ignoreInputDataAnnotations = false;
@@ -48,11 +48,11 @@ public class ImportData extends JIPipeSimpleIteratingAlgorithm {
     private JIPipeTextAnnotationMergeMode textAnnotationMergeMode = JIPipeTextAnnotationMergeMode.Merge;
     private JIPipeDataAnnotationMergeMode dataAnnotationMergeMode = JIPipeDataAnnotationMergeMode.OverwriteExisting;
 
-    public ImportData(JIPipeNodeInfo info) {
+    public ImportDataTableDirectory(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ImportData(ImportData other) {
+    public ImportDataTableDirectory(ImportDataTableDirectory other) {
         super(other);
         this.ignoreInputTextAnnotations = other.ignoreInputTextAnnotations;
         this.ignoreInputDataAnnotations = other.ignoreInputDataAnnotations;
