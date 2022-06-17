@@ -22,7 +22,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 import java.io.Closeable;
-import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -242,6 +242,17 @@ public interface JIPipeData extends Closeable, AutoCloseable {
 
     @Override
     default void close() {
+
+    }
+
+    /**
+     * Exports the thumbnail/preview of this data into the provided storage
+     *
+     * @param storage    the storage
+     * @param target    the location of the data (as internal path within the data table) that is described by the thumbnail
+     * @param sizes      the sizes to save (in pixels)
+     */
+    default void exportThumbnails(JIPipeWriteDataStorage storage, Path target, List<Integer> sizes) {
 
     }
 }

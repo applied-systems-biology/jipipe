@@ -26,6 +26,7 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.*;
 
@@ -810,7 +811,12 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     private void saveDataRow(JIPipeWriteDataStorage storage, int row, JIPipeProgressInfo rowProgress) {
         JIPipeWriteDataStorage rowStorage = storage.resolve("" + row);
-        data.get(row).getData(rowProgress.resolve("Load virtual data")).exportData(rowStorage, "data", false, rowProgress);
+        JIPipeData dataToExport = data.get(row).getData(rowProgress.resolve("Load virtual data"));
+        dataToExport.exportData(rowStorage, "data", false, rowProgress);
+
+        // Generate and save thumbnail
+        Path thumbnailPath = Paths.get("thumbnail").resolve("" + row);
+        dataToExport.exportThumbnails(storage.resolve(thumbnailPath), Paths.get("" + row), Arrays.asList(64, 128, 256));
     }
 
     /**
