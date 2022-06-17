@@ -53,24 +53,50 @@ public class JIPipeDataThumbnailsMetadata {
         this.target = target;
     }
 
+    /**
+     * Selects the best fitting thumbnail entry with respect to the size
+     * @param size the selected size
+     * @return the thumbnail or null if no thumbnail is available
+     */
+    public Thumbnail selectBestThumbnail(Dimension size) {
+        Thumbnail selected = null;
+        final int targetWidth = size.width;
+        final int targetHeight = size.height;
+        int selectedWidth = 0;
+        int selectedHeight = 0;
+        for (Thumbnail thumbnail : thumbnails) {
+            if((selectedWidth < targetWidth && thumbnail.size.width >= targetWidth) || (selectedHeight < targetHeight && thumbnail.size.height >= targetHeight)) {
+                selected = thumbnail;
+                selectedWidth = thumbnail.size.width;
+                selectedHeight = thumbnail.size.height;
+            }
+        }
+        return selected;
+    }
+
     public static class Thumbnail {
         private String name;
         private Dimension size;
-        private List<Path> files;
+
+        private Path imageFile;
+
+        private List<Path> additionalFiles;
 
         public Thumbnail() {
         }
 
-        public Thumbnail(String name, Dimension size, List<Path> files) {
+        public Thumbnail(String name, Dimension size, Path imageFile, List<Path> additionalFiles) {
             this.name = name;
             this.size = size;
-            this.files = files;
+            this.imageFile = imageFile;
+            this.additionalFiles = additionalFiles;
         }
 
         public Thumbnail(Thumbnail other) {
             this.name = other.name;
             this.size = other.size;
-            this.files = new ArrayList<>(other.files);
+            this.imageFile = other.imageFile;
+            this.additionalFiles = new ArrayList<>(other.additionalFiles);
         }
 
         @JsonGetter("name")
@@ -93,14 +119,24 @@ public class JIPipeDataThumbnailsMetadata {
             this.size = size;
         }
 
-        @JsonGetter("files")
-        public List<Path> getFiles() {
-            return files;
+        @JsonGetter("image-file")
+        public Path getImageFile() {
+            return imageFile;
         }
 
-        @JsonSetter("files")
-        public void setFiles(List<Path> files) {
-            this.files = files;
+        @JsonSetter("image-file")
+        public void setImageFile(Path imageFile) {
+            this.imageFile = imageFile;
+        }
+
+        @JsonGetter("additional-files")
+        public List<Path> getAdditionalFiles() {
+            return additionalFiles;
+        }
+
+        @JsonSetter("additional-files")
+        public void setAdditionalFiles(List<Path> additionalFiles) {
+            this.additionalFiles = additionalFiles;
         }
     }
 }

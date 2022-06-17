@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.api.data;
 
-import ij.ImagePlus;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -280,7 +279,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
                     component.print(g);
                     try(OutputStream stream = storage.write(size.width + "x" + size.height + ".png")) {
                         ImageIO.write(image, "PNG", stream);
-                        metadata.getThumbnails().add(new JIPipeDataThumbnailsMetadata.Thumbnail(size.width + "x" + size.height, size, Arrays.asList(Paths.get(size.width + "x" + size.height + ".png"))));
+                        metadata.getThumbnails().add(new JIPipeDataThumbnailsMetadata.Thumbnail(size.width + "x" + size.height, size, Paths.get(size.width + "x" + size.height + ".png"), new ArrayList<>()));
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

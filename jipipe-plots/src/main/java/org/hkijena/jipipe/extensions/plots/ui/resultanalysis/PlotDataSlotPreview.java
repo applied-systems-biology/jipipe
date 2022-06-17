@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeAsyncResultDataPlotPreview;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeAsyncResultDataSlotPreview;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -27,7 +27,7 @@ import java.nio.file.Path;
 /**
  * Renders a plot data as table cell
  */
-public class PlotDataSlotPreview extends JIPipeAsyncResultDataPlotPreview {
+public class PlotDataSlotPreview extends JIPipeAsyncResultDataSlotPreview {
 
     /**
      * Creates a new renderer

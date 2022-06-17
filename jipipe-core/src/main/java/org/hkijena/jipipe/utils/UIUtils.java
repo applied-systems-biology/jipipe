@@ -104,6 +104,21 @@ public class UIUtils {
     private static Theme RSYNTAX_THEME_DEFAULT;
     private static Theme RSYNTAX_THEME_DARK;
 
+    public static BufferedImage scaleImageToFit(BufferedImage image, int maxWidth, int maxHeight) {
+        double scale = 1.0;
+        if (maxWidth > 0) {
+            scale = 1.0 * maxWidth / image.getWidth();
+        }
+        if (maxHeight > 0) {
+            scale = Math.min(1.0 * maxHeight / image.getHeight(), scale);
+        }
+        if (scale != 1.0) {
+            Image scaledInstance = image.getScaledInstance((int) (image.getWidth() * scale), (int) (image.getHeight() * scale), Image.SCALE_DEFAULT);
+            image = UIUtils.toBufferedImage(scaledInstance, BufferedImage.TYPE_INT_ARGB);
+        }
+        return image;
+    }
+
     public static void registerHyperlinkHandler(JTextPane content) {
         content.addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
