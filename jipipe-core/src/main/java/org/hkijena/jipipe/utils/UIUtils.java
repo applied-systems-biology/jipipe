@@ -113,7 +113,7 @@ public class UIUtils {
             scale = Math.min(1.0 * maxHeight / image.getHeight(), scale);
         }
         if (scale != 1.0) {
-            Image scaledInstance = image.getScaledInstance((int) (image.getWidth() * scale), (int) (image.getHeight() * scale), Image.SCALE_DEFAULT);
+            Image scaledInstance = image.getScaledInstance((int) (image.getWidth() * scale), (int) (image.getHeight() * scale), Image.SCALE_SMOOTH);
             image = UIUtils.toBufferedImage(scaledInstance, BufferedImage.TYPE_INT_ARGB);
         }
         return image;
