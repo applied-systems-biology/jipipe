@@ -17,6 +17,7 @@ package org.hkijena.jipipe.api.data.storage;
 import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.utils.OutputStreamWrapper;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.FileInputStream;
@@ -121,12 +122,13 @@ public class JIPipeZIPWriteDataStorage implements JIPipeWriteDataStorage {
     @Override
     public OutputStream write(Path path) {
         try {
-            getProgressInfo().log("Creating ZIP entry " + FilenameUtils.separatorsToUnix(path.toString()));
-            zipOutputStream.putNextEntry(new ZipEntry(FilenameUtils.separatorsToUnix(path.toString())));
+            Path fullPath = internalPath.resolve(path);
+            getProgressInfo().log("Creating ZIP entry " + FilenameUtils.separatorsToUnix(fullPath.toString()));
+            zipOutputStream.putNextEntry(new ZipEntry(FilenameUtils.separatorsToUnix(fullPath.toString())));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return zipOutputStream;
+        return new OutputStreamWrapper(zipOutputStream);
     }
 
     @Override
