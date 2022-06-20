@@ -130,7 +130,6 @@
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-cache:1.0.0-beta-16" level="project" />
     <orderEntry type="library" name="Maven: com.github.ben-manes.caffeine:caffeine:2.4.0" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-optional:1.0.1" level="project" />
-    <orderEntry type="library" name="Maven: net.imagej:ij:1.53r" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-legacy:0.38.1" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:ij1-patcher:1.2.2" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-realtransform:3.1.2" level="project" />
@@ -306,7 +305,6 @@
     <orderEntry type="library" name="Maven: sc.fiji:Feature_Detection:2.0.2" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:legacy-imglib1:1.1.9" level="project" />
     <orderEntry type="library" name="Maven: edu.mines:mines-jtk:20151125" level="project" />
-    <orderEntry type="library" name="Maven: org.scijava:vecmath:1.6.0-scijava-2" level="project" />
     <orderEntry type="library" name="Maven: gov.nist.math:jama:1.0.3" level="project" />
     <orderEntry type="library" name="Maven: fr.inra.ijpb:MorphoLibJ_:1.4.2.1" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:FeatureJ_:2.0.0" level="project" />
@@ -324,6 +322,31 @@
     <orderEntry type="library" name="Maven: org.joml:joml:1.10.2" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:Skeletonize3D_:2.1.1" level="project" />
     <orderEntry type="module" module-name="jipipe-multiparameters" />
+    <orderEntry type="library" name="Maven: com.github.mcib3d:mcib3d-core:4.0.1" level="project" />
+    <orderEntry type="library" name="Maven: net.imagej:ij:1.53r" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:3D_Viewer:4.0.3" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:VIB-lib:2.2.0" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:pal-optimization:2.0.1" level="project" />
+    <orderEntry type="library" name="Maven: org.scijava:j3dutils:1.6.0-scijava-2" level="project" />
+    <orderEntry type="library" name="Maven: org.scijava:vecmath:1.6.0-scijava-2" level="project" />
+    <orderEntry type="library" name="Maven: org.scijava:j3dcore:1.6.0-scijava-2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.gluegen:gluegen-rt:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: org.jogamp.jogl:jogl-all:2.3.2" level="project" />
+    <orderEntry type="library" name="Maven: com.googlecode.combinatoricslib:combinatoricslib:2.0" level="project" />
+    <orderEntry type="library" name="Maven: com.github.quickhull3d:quickhull3d:1.0.0" level="project" />
+    <orderEntry type="library" name="Maven: nz.ac.waikato.cms.weka:weka-dev:3.9.5" level="project" />
+    <orderEntry type="library" name="Maven: com.github.vbmacher:java-cup:11b-20160615" level="project" />
+    <orderEntry type="library" name="Maven: nz.ac.waikato.cms.weka.thirdparty:bounce:0.18" level="project" />
+    <orderEntry type="library" name="Maven: com.googlecode.matrix-toolkits-java:mtj:1.0.4" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fracpete:jfilechooser-bookmarks:0.1.6" level="project" />
+    <orderEntry type="library" name="Maven: com.github.fracpete:jclipboardhelper:0.1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.sun.istack:istack-commons-runtime:3.0.11" level="project" />
+    <orderEntry type="library" name="Maven: jakarta.activation:jakarta.activation-api:1.2.2" level="project" />
+    <orderEntry type="library" name="Maven: jakarta.xml.bind:jakarta.xml.bind-api:2.3.3" level="project" />
+    <orderEntry type="library" name="Maven: org.glassfish.jaxb:jaxb-runtime:2.3.3" level="project" />
+    <orderEntry type="library" name="Maven: org.glassfish.jaxb:txw2:2.3.3" level="project" />
+    <orderEntry type="library" name="Maven: com.github.mcib3d:mcib3d-plugins:3.96.3" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:imageware:2.0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter:5.7.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.8.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.2.0" level="project" />
