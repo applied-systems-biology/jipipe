@@ -151,7 +151,7 @@ public class JIPipeGraphRunner implements JIPipeRunnable {
                     // Encountered a loop
                     if (!executedLoops.contains(loop)) {
                         int loopNumber = loopGroups.indexOf(loop) + 1;
-                        subProgress = progressInfo.resolveAndLog("Loop #" + loopNumber);
+                        subProgress = progressInfo.resolveAndLog("Loop id=" + loopNumber);
                         JIPipeGraph loopGraph = algorithmGraph.extract(loop.getNodes(), true);
                         NodeGroup group = new NodeGroup(loopGraph, false, false, true);
                         group.setInternalStoragePath(Paths.get("loop" + loopNumber));
