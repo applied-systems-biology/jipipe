@@ -56,6 +56,10 @@ public class RemoveBorderRoisAlgorithm extends JIPipeIteratingAlgorithm {
                 .addOutputSlot("Cleaned ROI", "The cleaned ROI", ROIListData.class, null)
                 .seal()
                 .build());
+        borderDefinition.getLeft().setExactValue(1);
+        borderDefinition.getTop().setExactValue(1);
+        borderDefinition.getRight().setExactValue(1);
+        borderDefinition.getBottom().setExactValue(1);
         borderDefinition.setAnchor(Anchor.CenterCenter);
     }
 
