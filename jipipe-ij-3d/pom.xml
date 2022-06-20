@@ -105,14 +105,14 @@
                 <version>1.74.0-SNAPSHOT</version>
             </dependency>
             <dependency>
-                <groupId>com.github.mcib3d</groupId>
+                <groupId>org.framagit.mcib3d</groupId>
                 <artifactId>mcib3d-core</artifactId>
-                <version>4.0.1</version>
+                <version>4.0.87</version>
             </dependency>
             <dependency>
-                <groupId>com.github.mcib3d</groupId>
+                <groupId>org.framagit.mcib3d</groupId>
                 <artifactId>mcib3d-plugins</artifactId>
-                <version>3.96.3</version>
+                <version>4.0.63</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -139,11 +139,11 @@
             <artifactId>jipipe-multiparameters</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.mcib3d</groupId>
+            <groupId>org.framagit.mcib3d</groupId>
             <artifactId>mcib3d-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.github.mcib3d</groupId>
+            <groupId>org.framagit.mcib3d</groupId>
             <artifactId>mcib3d-plugins</artifactId>
         </dependency>
     </dependencies>
