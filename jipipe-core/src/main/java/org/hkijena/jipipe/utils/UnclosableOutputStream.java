@@ -20,11 +20,11 @@ import java.io.OutputStream;
 /**
  * Wrapper around an {@link OutputStream} that prevents closing
  */
-public class OutputStreamWrapper extends OutputStream {
+public class UnclosableOutputStream extends OutputStream {
 
     private final OutputStream wrappedStream;
 
-    public OutputStreamWrapper(OutputStream wrappedStream) {
+    public UnclosableOutputStream(OutputStream wrappedStream) {
         this.wrappedStream = wrappedStream;
     }
 

@@ -26,9 +26,10 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.ij3d.IJ3DUtils;
 import org.hkijena.jipipe.extensions.ij3d.utils.ExtendedObject3DVoxels;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.UnclosableInputStream;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UnclosableOutputStream;
 
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -117,7 +118,7 @@ public class ROI3DListData extends Objects3DPopulation implements JIPipeData {
                 // create object
                 ExtendedObject3DVoxels obj = new ExtendedObject3DVoxels();
                 obj.setValue(1);
-                obj.loadObjectFromStream(zipinputstream, entryName);
+                obj.loadObjectFromStream(new UnclosableInputStream(zipinputstream), entryName);
                 obj.setName(entryName.substring(0, entryName.length() - 6));
 
                 zipinputstream.closeEntry();
@@ -170,7 +171,7 @@ public class ROI3DListData extends Objects3DPopulation implements JIPipeData {
                 else {
                     voxels = new ExtendedObject3DVoxels(object);
                 }
-                voxels.saveObjectToStream(zip);
+                voxels.saveObjectToStream(new UnclosableOutputStream(zip));
                 zip.closeEntry();
             }
             zip.close();
