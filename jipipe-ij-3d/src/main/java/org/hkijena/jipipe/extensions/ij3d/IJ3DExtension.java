@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.ij3d;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
@@ -24,6 +25,9 @@ import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
+
+import java.util.Collections;
+import java.util.List;
 
 @Plugin(type = JIPipeJavaExtension.class)
 public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
@@ -51,6 +55,12 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
 //    public List<ImageIcon> getSplashIcons() {
 //        return Collections.singletonList(new ImageIcon(getClass().getResource(RESOURCE_BASE_PATH + "/weka-32.png")));
 //    }
+
+
+    @Override
+    public List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
+        return Collections.singletonList(new JIPipeImageJUpdateSiteDependency("3D ImageJ Suite", "https://sites.imagej.net/Tboudier/"));
+    }
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
