@@ -14,6 +14,7 @@
 
 package org.hkijena.jipipe.extensions.ij3d.display;
 
+import ij.Prefs;
 import mcib_plugins.tools.RoiManager3D_2;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
@@ -28,12 +29,15 @@ import javax.swing.*;
 public class AddROI3DToManagerOperation implements JIPipeDataDisplayOperation {
     @Override
     public void display(JIPipeData data, String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        Object obj = ReflectionUtils.getDeclaredStaticFieldValue("manager3d", RoiManager3D_2.class);
-        RoiManager3D_2 manager3D;
-        if(obj instanceof RoiManager3D_2) {
-            manager3D = (RoiManager3D_2) obj;
+        RoiManager3D_2 manager3D = null;
+        boolean multiple = Prefs.get("RoiManager3D-Options_UseMultiple.boolean", false);
+        if (!multiple) {
+            Object obj = ReflectionUtils.getDeclaredStaticFieldValue("manager3d", RoiManager3D_2.class);
+            if (obj instanceof RoiManager3D_2) {
+                manager3D = (RoiManager3D_2) obj;
+            }
         }
-        else {
+        if (manager3D == null) {
             manager3D = new RoiManager3D_2();
             manager3D.create3DManager();
         }
