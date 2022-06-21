@@ -17,15 +17,12 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.ij3d.datatypes.ROI3DListData;
+import org.hkijena.jipipe.extensions.ij3d.nodes.ImportROI3D;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
-
-import javax.swing.*;
-import java.net.URL;
-import java.util.Collections;
-import java.util.List;
 
 @Plugin(type = JIPipeJavaExtension.class)
 public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
@@ -41,12 +38,12 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getName() {
-        return "IJ Trainable Weka Filter integration";
+        return "3D ImageJ Suite integration";
     }
 
     @Override
     public HTMLText getDescription() {
-        return new HTMLText("Integrates the Trainable Weka Filter into JIPipe");
+        return new HTMLText("Integrates the 3D ImageJ Suite into JIPipe");
     }
 
 //    @Override
@@ -56,6 +53,8 @@ public class IJ3DExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+        registerDatatype("roi-3d-list", ROI3DListData.class, getClass().getResource(RESOURCE_BASE_PATH + "/icons/data-type-roi3d.png"));
+        registerNodeType("import-roi-3d", ImportROI3D.class);
     }
 
     @Override
