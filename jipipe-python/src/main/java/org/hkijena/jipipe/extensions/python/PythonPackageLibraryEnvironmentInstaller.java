@@ -84,7 +84,7 @@ public abstract class PythonPackageLibraryEnvironmentInstaller<T extends PythonP
             return;
 
         Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
-        environment.setLibraryDirectory(installationPath);
+        environment.setLibraryDirectory(getConfiguration().getInstallationPath());
         if (Files.exists(installationPath)) {
             PathUtils.deleteDirectoryRecursively(installationPath,
                     progressInfo.resolve("Cleanup"));
