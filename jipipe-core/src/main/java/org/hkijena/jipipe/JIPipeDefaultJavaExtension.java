@@ -53,7 +53,9 @@ import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.VersionUtils;
 import org.scijava.service.AbstractService;
 
@@ -133,7 +135,9 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     /**
      * @return The extension logo
      */
-    public abstract URL getLogo();
+    public URL getLogo() {
+        return ResourceUtils.getPluginResource("logo-400.png");
+    }
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
