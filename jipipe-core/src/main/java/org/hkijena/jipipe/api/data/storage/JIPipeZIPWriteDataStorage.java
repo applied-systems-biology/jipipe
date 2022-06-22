@@ -17,17 +17,15 @@ package org.hkijena.jipipe.api.data.storage;
 import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
-import org.hkijena.jipipe.utils.OutputStreamWrapper;
+import org.hkijena.jipipe.utils.UnclosableOutputStream;
 import org.hkijena.jipipe.utils.PathUtils;
 
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -128,7 +126,7 @@ public class JIPipeZIPWriteDataStorage implements JIPipeWriteDataStorage {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return new OutputStreamWrapper(zipOutputStream);
+        return new UnclosableOutputStream(zipOutputStream);
     }
 
     @Override

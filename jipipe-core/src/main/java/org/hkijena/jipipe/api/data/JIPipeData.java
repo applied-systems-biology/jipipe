@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
  * Base class for any JIPipe data wrapper class
  * There must be a static function importData({@link org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage}, JIPipeProgressInfo) that imports the data from a row storage folder.
  * Additionally, there must be an annotation of type {@link JIPipeDataStorageDocumentation} that describes the structure of a valid row storage folder for humans.
- * The static importData(Path) method and the {@link JIPipeDataStorageDocumentation} annotation can be omitted for abstract data types or interfaces.
+ * The static importData(@link org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage}, JIPipeProgressInfo) method and the {@link JIPipeDataStorageDocumentation} annotation can be omitted for abstract data types or interfaces.
  * {@link JIPipeDataStorageDocumentation} can be inherited from parent classes.
  *
  * Update: 1.74.0: The class is now closable, which is useful for handling external resources. {@link JIPipeDataTable} and {@link JIPipeVirtualData} were adapted to handle the close() automatically.
