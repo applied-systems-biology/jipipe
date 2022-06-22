@@ -67,7 +67,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private final JToggleButton animationChannelToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JLabel imageInfoLabel = new JLabel();
-    private final JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(250, 5, 10000, 1));
+    private final JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(125, 5, 10000, 1));
     private final JToolBar toolBar = new JToolBar();
     private final JToggleButton enableSideBarButton = new JToggleButton();
     private final DocumentTabPane tabPane = new DocumentTabPane();

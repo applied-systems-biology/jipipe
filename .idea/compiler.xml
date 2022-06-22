@@ -22,7 +22,6 @@
         <module name="jipipe-ij-multi-template-matching" />
         <module name="jipipe-clij" />
         <module name="jipipe-python" />
-        <module name="jipipe-installer-linux" />
         <module name="jipipe-r" />
         <module name="jipipe-ij-algorithms" />
         <module name="jipipe-multiparameters" />
