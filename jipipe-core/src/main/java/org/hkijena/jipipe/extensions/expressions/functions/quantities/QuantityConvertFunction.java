@@ -23,6 +23,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Convert quantity", description = "Converts a quantity string '[value] [unit]' to another unit. Will throw an error if the unit is unknown. Supported are length, time, and weight units (metric).")
 public class QuantityConvertFunction extends ExpressionFunction {
@@ -36,6 +37,7 @@ public class QuantityConvertFunction extends ExpressionFunction {
     public static final Map<String, Double> UNITS_FACTORS = new HashMap<>();
 
     static {
+        // Length
         UNITS_FACTORS.put("nm", 1e-9);
         UNITS_FACTORS.put("µm", 1e-6);
         UNITS_FACTORS.put("micron", 1e-6);
@@ -47,6 +49,16 @@ public class QuantityConvertFunction extends ExpressionFunction {
         UNITS_FACTORS.put("m", 1.0);
         UNITS_FACTORS.put("km", 1000.0);
 
+        UNITS_FACTORS.put("inch", 0.0254);
+        UNITS_FACTORS.put("in", 0.0254);
+        UNITS_FACTORS.put("foot", 0.3048);
+        UNITS_FACTORS.put("ft", 0.3048);
+        UNITS_FACTORS.put("yard", 0.9144);
+        UNITS_FACTORS.put("yd", 0.9144);
+        UNITS_FACTORS.put("mile", 1609.34);
+        UNITS_FACTORS.put("mi", 1609.34);
+
+        // Weight
         UNITS_FACTORS.put("ng", 1e-9);
         UNITS_FACTORS.put("µg", 1e-6);
         UNITS_FACTORS.put("ug", 1e-6);
@@ -55,6 +67,12 @@ public class QuantityConvertFunction extends ExpressionFunction {
         UNITS_FACTORS.put("kg", 1000.0);
         UNITS_FACTORS.put("t", 1000000.0);
 
+        UNITS_FACTORS.put("Da", 1.66054e-24);
+
+        UNITS_FACTORS.put("oz", 28.3495);
+        UNITS_FACTORS.put("lb", 453.592);
+
+        // Time
         UNITS_FACTORS.put("ns", 1e-9);
         UNITS_FACTORS.put("µs", 1e-6);
         UNITS_FACTORS.put("us", 1e-6);
@@ -85,8 +103,19 @@ public class QuantityConvertFunction extends ExpressionFunction {
         Object value = parameters.get(0);
         Quantity quantity = Quantity.parse(value.toString());
 
-        double sourceFactor = UNITS_FACTORS.get(quantity.getUnit());
-        double targetFactor = UNITS_FACTORS.get(StringUtils.nullToEmpty(parameters.get(1)));
+        if(quantity == null) {
+            throw new RuntimeException("Invalid quantity: '" + value + "'. Must be [number] [unit]");
+        }
+
+        Double sourceFactor = UNITS_FACTORS.getOrDefault(quantity.getUnit(), null);
+        Double targetFactor = UNITS_FACTORS.getOrDefault(StringUtils.nullToEmpty(parameters.get(1)), null);
+
+        if(sourceFactor == null) {
+            throw new RuntimeException(getName() + ": Unknown unit " + quantity.getUnit() + ". Supported are: " + String.join(", ", UNITS_FACTORS.keySet()));
+        }
+        if(targetFactor == null) {
+            throw new RuntimeException(getName() + ": Unknown unit " + parameters.get(1) + ". Supported are: " + String.join(", ", UNITS_FACTORS.keySet()));
+        }
 
         return ((quantity.getValue() * sourceFactor) / targetFactor) + " " + parameters.get(1);
     }

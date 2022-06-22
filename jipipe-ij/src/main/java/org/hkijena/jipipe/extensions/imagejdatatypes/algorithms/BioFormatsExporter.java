@@ -96,7 +96,7 @@ public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
             throw new RuntimeException(e);
         }
 
-        String baseName = StringUtils.nullToEmpty(exporter.generateMetadataString(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata));
+        String baseName = StringUtils.nullToEmpty(exporter.generateName(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata));
         if (!baseName.endsWith(".ome.tif") && !baseName.endsWith(".ome.tiff")) {
             baseName = baseName + ".ome.tif";
         }

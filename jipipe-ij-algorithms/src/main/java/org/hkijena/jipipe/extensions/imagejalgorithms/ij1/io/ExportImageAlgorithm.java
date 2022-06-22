@@ -105,7 +105,7 @@ public class ExportImageAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
-        String baseName = exporter.generateMetadataString(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
+        String baseName = exporter.generateName(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
         Path outputFile;
         switch (fileFormat) {
             case JPEG: {

@@ -86,7 +86,7 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         ROIListData rois = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
-        String baseName = exporter.generateMetadataString(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
+        String baseName = exporter.generateName(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
         if (exportAsROIFile && rois.size() > 1) {
             Set<String> existing = new HashSet<>();

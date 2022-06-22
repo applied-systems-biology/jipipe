@@ -142,7 +142,7 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
                 JIPipeDataTableMetadata dataTable = JIPipeDataTableMetadata.loadFromJson(slot.getSlotStoragePath().resolve("data-table.json"));
                 for (int row = 0; row < dataTable.getRowCount(); row++) {
                     JIPipeProgressInfo rowSubStatus = subStatus.resolveAndLog("Row", row, dataTable.getRowCount());
-                    String metadataString = exporter.generateMetadataString(dataTable, row, existingMetadata);
+                    String metadataString = exporter.generateName(dataTable, row, existingMetadata);
 
                     Path rowStoragePath = slot.getRowStoragePath(row);
                     Path finalTargetPath = targetPath;
@@ -154,9 +154,9 @@ public class JIPipeResultCopyFilesByMetadataExporterRun extends JIPipeWorkbenchP
 
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
-                            String newFileName = metadataString + exporter.getSeparatorString() + file.getFileName().toString();
+                            String newFileName = metadataString + "_" + file.getFileName().toString();
                             String uniqueMetadataPath = file.getParent().resolve(newFileName).toString();
-                            uniqueMetadataPath = StringUtils.makeUniqueString(uniqueMetadataPath, exporter.getSeparatorString(), existingFiles);
+                            uniqueMetadataPath = StringUtils.makeUniqueString(uniqueMetadataPath, "_", existingFiles);
 
                             Path rowInternalPath = rowStoragePath.relativize(file.getParent());
                             Path newTargetPath = finalTargetPath.resolve(rowInternalPath);

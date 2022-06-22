@@ -223,6 +223,7 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new StringToUpperCaseFunction());
         registerExpressionFunction(new StringSliceFunction());
         registerExpressionFunction(new StringSliceBeforeFunction());
+        registerExpressionFunction(new StringTruncateFunction());
         registerExpressionFunction(new ClampFunction());
         registerExpressionFunction(new GetVariableKeysFunction());
         registerExpressionFunction(new GetVariableValuesFunction());

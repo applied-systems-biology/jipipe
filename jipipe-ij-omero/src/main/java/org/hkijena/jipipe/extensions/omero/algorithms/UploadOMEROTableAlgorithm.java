@@ -77,7 +77,7 @@ public class UploadOMEROTableAlgorithm extends JIPipeMergingAlgorithm {
             Set<String> existingFileNames = new HashSet<>();
             List<String> fileNames = new ArrayList<>();
             for (int i = 0; i < dummy.getRowCount(); i++) {
-                String fileName = exporter.generateMetadataString(dummy, i, existingFileNames);
+                String fileName = exporter.generateName(dummy, i, existingFileNames);
                 fileNames.add(fileName + ".csv");
                 progressInfo.log("Will add table: " + fileName + ".csv");
             }

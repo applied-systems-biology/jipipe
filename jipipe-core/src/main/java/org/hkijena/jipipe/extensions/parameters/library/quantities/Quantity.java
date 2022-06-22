@@ -14,13 +14,16 @@ public class Quantity {
     public static final Pattern PARSE_QUANTITY_PATTERN = Pattern.compile("([+-]?\\d+[,.]?\\d*)(.*)");
     public static final String UNIT_NO_UNIT = "";
     public static final String[] KNOWN_UNITS_IMAGE_DIMENSIONS = new String[]{
-            "pixel", "nm", "µm", "microns", "mm", "cm", "dm", "m", "km"
+            "pixel", "nm", "µm", "microns", "mm", "cm", "dm", "m", "km",
+            "inch", "in", "foot", "ft", "yard", "yd"
     };
     public static final String[] KNOWN_UNITS = new String[]{
             "pixel",
             "nm", "µm", "microns", "mm", "cm", "dm", "m", "km",
+            "inch", "in", "foot", "ft", "yard", "yd",
             "ng", "µg", "mg", "g", "kg", "t",
             "Da",
+            "oz", "lb",
             "ns", "µs", "ms", "s", "min", "h", "d"
     };
     private double value;

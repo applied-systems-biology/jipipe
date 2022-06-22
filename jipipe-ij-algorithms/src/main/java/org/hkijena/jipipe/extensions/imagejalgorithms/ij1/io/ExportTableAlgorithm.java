@@ -84,7 +84,7 @@ public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         ResultsTableData table = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        String baseName = exporter.generateMetadataString(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
+        String baseName = exporter.generateName(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
         Path outputFile;
         switch (fileFormat) {

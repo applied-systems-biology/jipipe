@@ -636,10 +636,6 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Author",
                 "An author with affiliations",
                 JIPipeAuthorMetadataParameterEditorUI.class);
-        registerEnumParameterType("data-by-metadata-exporter:mode",
-                JIPipeDataByMetadataExporter.Mode.class,
-                "Exporter mode",
-                "Allows you to choose between automatic or manual name generation.");
 
         // Node templates
         registerParameterType("node-template",

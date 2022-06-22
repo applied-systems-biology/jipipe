@@ -81,7 +81,7 @@ public class InputImagesToMontage extends JIPipeMergingAlgorithm {
         Map<ImagePlus, String> labelledImages = new HashMap<>();
         for (int row : dataBatch.getInputRows(getFirstInputSlot())) {
             labelledImages.put(getFirstInputSlot().getData(row, ImagePlus2DData.class, progressInfo).getImage(),
-                    labelGenerator.generateMetadataString(getFirstInputSlot(), row, new HashSet<>()));
+                    labelGenerator.generateName(getFirstInputSlot(), row, new HashSet<>()));
         }
         if (labelledImages.isEmpty())
             return;
