@@ -142,14 +142,16 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
     }
 
     public Path getPythonExecutable() {
+        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
         if (SystemUtils.IS_OS_WINDOWS) {
-            return getConfiguration().getInstallationPath().resolve("python").resolve("Python.exe");
+            return installationPath.resolve("python").resolve("Python.exe");
         } else {
-            return getConfiguration().getInstallationPath().resolve("python").resolve("bin").resolve("python3");
+            return installationPath.resolve("python").resolve("bin").resolve("python3");
         }
     }
 
     protected void runPip(String... args) {
+        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
         CommandLine commandLine = new CommandLine(getPythonExecutable().toFile());
         commandLine.addArgument("-m");
         commandLine.addArgument("pip");
@@ -160,7 +162,7 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
         // We must add Library/bin to Path. Otherwise, there SSL won't work
         Map<String, String> environmentVariables = new HashMap<>(System.getenv());
         if (SystemUtils.IS_OS_WINDOWS) {
-            environmentVariables.put("Path", getConfiguration().getInstallationPath().resolve("python").resolve("DLLs").toAbsolutePath() + ";" +
+            environmentVariables.put("Path", installationPath.resolve("python").resolve("DLLs").toAbsolutePath() + ";" +
                     environmentVariables.getOrDefault("Path", ""));
         }
 
@@ -168,7 +170,7 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
         PythonUtils.setupLogger(commandLine, executor, progressInfo);
 
         // Set working directory, so conda can see its DLLs
-        executor.setWorkingDirectory(getConfiguration().getInstallationPath().resolve("python").toAbsolutePath().toFile());
+        executor.setWorkingDirectory(installationPath.resolve("python").toAbsolutePath().toFile());
 
         try {
             executor.execute(commandLine, environmentVariables);
@@ -196,12 +198,13 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
      * @param archivePath the setup
      */
     protected void extractPythonArchive(Path archivePath) {
-        progressInfo.log("Installation path: " + configuration.installationPath.toAbsolutePath());
+        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        progressInfo.log("Installation path: " + installationPath);
         progressInfo.log("The Python distribution was obtained from: https://github.com/indygreg/python-build-standalone/releases/");
         try {
-            ArchiveUtils.decompressTarGZ(archivePath, configuration.installationPath.toAbsolutePath(), progressInfo.resolve("Extract Python"));
+            ArchiveUtils.decompressTarGZ(archivePath, installationPath, progressInfo.resolve("Extract Python"));
             if (!SystemUtils.IS_OS_WINDOWS) {
-                Files.list(configuration.installationPath.toAbsolutePath().resolve("python").resolve("bin")).forEach(PathUtils::makeUnixExecutable);
+                Files.list(installationPath.resolve("python").resolve("bin")).forEach(PathUtils::makeUnixExecutable);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -239,8 +242,9 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
                                 "Please review the settings on the left-hand side. Click OK to download the Python distribution and install it.\n\n" +
                                 "You have to agree to the following licenses: https://python-build-standalone.readthedocs.io/en/latest/running.html#licensing"), "Download & install Python",
                         ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
-                if (result && Files.exists(getConfiguration().installationPath)) {
-                    if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + getConfiguration().getInstallationPath().toAbsolutePath()
+                Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+                if (result && Files.exists(installationPath)) {
+                    if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + installationPath
                             + " already exists. Do you want to overwrite it?", getTaskLabel(), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                         result = false;
                     }
@@ -324,7 +328,7 @@ public class BasicPortableEnvPythonInstaller extends ExternalEnvironmentInstalle
             this.pythonDownloadURL = pythonDownloadURL;
         }
 
-        @JIPipeDocumentation(name = "Installation path", description = "The folder where Miniconda is installed. Please choose an non-existing or empty folder.")
+        @JIPipeDocumentation(name = "Installation path", description = "The folder where Miniconda is installed. Please choose an non-existing or empty folder. If the directory is relative, it is relative towards the ImageJ installation path.")
         @JIPipeParameter("installation-path")
         public Path getInstallationPath() {
             return installationPath;

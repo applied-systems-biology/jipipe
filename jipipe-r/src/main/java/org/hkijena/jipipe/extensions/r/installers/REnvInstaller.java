@@ -131,9 +131,10 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
         }
 
         // Generate result
+        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
         generatedEnvironment = new REnvironment();
-        generatedEnvironment.setRExecutablePath(configuration.installationPath.resolve("bin").resolve("R.exe"));
-        generatedEnvironment.setRScriptExecutablePath(configuration.installationPath.resolve("bin").resolve("Rscript.exe"));
+        generatedEnvironment.setRExecutablePath(installationPath.resolve("bin").resolve("R.exe"));
+        generatedEnvironment.setRScriptExecutablePath(installationPath.resolve("bin").resolve("Rscript.exe"));
         generatedEnvironment.setName(configuration.getName());
         if (getParameterAccess() != null) {
             SwingUtilities.invokeLater(() -> getParameterAccess().set(generatedEnvironment));
@@ -150,11 +151,12 @@ public class REnvInstaller extends ExternalEnvironmentInstaller {
             }
         };
 
-        progressInfo.log("Installation path: " + PathUtils.relativeToImageJToAbsolute(configuration.installationPath));
+        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        progressInfo.log("Installation path: " + installationPath);
         progressInfo.log("If you have issues, please visit this site and install R manually: https://cloud.r-project.org/bin/windows/base/");
         CommandLine commandLine = new CommandLine(installerPath.toFile());
         commandLine.addArgument("/VERYSILENT");
-        commandLine.addArgument("/DIR=" + PathUtils.relativeToImageJToAbsolute(configuration.installationPath));
+        commandLine.addArgument("/DIR=" + installationPath);
 
         ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
         executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));

@@ -165,6 +165,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
      * @param args arguments
      */
     public void runConda(String... args) {
+        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
         CommandLine commandLine = new CommandLine(getCondaExecutableInInstallationPath().toFile());
         for (String arg : args) {
             commandLine.addArgument(arg);
@@ -173,7 +174,7 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
         // We must add Library/bin to Path. Otherwise, there SSL won't work
         Map<String, String> environmentVariables = new HashMap<>(System.getenv());
         if (SystemUtils.IS_OS_WINDOWS) {
-            environmentVariables.put("Path", getConfiguration().getInstallationPath().resolve("Library").resolve("bin").toAbsolutePath() + ";" +
+            environmentVariables.put("Path",installationPath.resolve("Library").resolve("bin").toAbsolutePath() + ";" +
                     environmentVariables.getOrDefault("Path", ""));
         }
 
@@ -205,10 +206,11 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
      * @return the conda path
      */
     public Path getCondaExecutableInInstallationPath() {
+        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
         if (SystemUtils.IS_OS_WINDOWS) {
-            return getConfiguration().getInstallationPath().resolve("Scripts").resolve("conda.exe");
+            return installationPath.resolve("Scripts").resolve("conda.exe");
         } else {
-            return getConfiguration().getInstallationPath().resolve("bin").resolve("conda");
+            return installationPath.resolve("bin").resolve("conda");
         }
     }
 
@@ -219,10 +221,11 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
      */
     protected SelectCondaEnvPythonInstaller.Configuration generateCondaConfig() {
         SelectCondaEnvPythonInstaller.Configuration condaConfig = new SelectCondaEnvPythonInstaller.Configuration();
+        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
         if (SystemUtils.IS_OS_WINDOWS) {
-            condaConfig.setCondaExecutable(getConfiguration().getInstallationPath().resolve("Scripts").resolve("conda.exe"));
+            condaConfig.setCondaExecutable(installationPath.resolve("Scripts").resolve("conda.exe"));
         } else {
-            condaConfig.setCondaExecutable(getConfiguration().getInstallationPath().resolve("bin").resolve("conda"));
+            condaConfig.setCondaExecutable(installationPath.resolve("bin").resolve("conda"));
         }
         condaConfig.setEnvironmentName("base");
         condaConfig.setName(getConfiguration().getName());
@@ -273,8 +276,9 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
                                 "Please review the settings on the left-hand side. Click OK to install Miniconda.\n\n" +
                                 "You have to agree to the following license: https://docs.conda.io/en/latest/license.html"), "Download & install Miniconda",
                         ParameterPanel.NO_GROUP_HEADERS | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SCROLLING);
-                if (result && Files.exists(getConfiguration().installationPath)) {
-                    if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + getConfiguration().getInstallationPath().toAbsolutePath()
+                Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+                if (result && Files.exists(installationPath)) {
+                    if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "The directory " + installationPath
                             + " already exists. Do you want to overwrite it?", getTaskLabel(), JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                         result = false;
                     }
@@ -311,13 +315,14 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
             }
         };
 
-        progressInfo.log("Installation path: " + configuration.installationPath.toAbsolutePath());
+        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        progressInfo.log("Installation path: " + installationPath);
         progressInfo.log("Please note that you agreed to the Conda license: https://docs.conda.io/en/latest/license.html");
         CommandLine commandLine = new CommandLine(installerPath.toFile());
         commandLine.addArgument("-b");
         commandLine.addArgument("-f");
         commandLine.addArgument("-p");
-        commandLine.addArgument(getConfiguration().installationPath.toAbsolutePath().toString());
+        commandLine.addArgument(installationPath.toString());
 
         ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
         executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));
@@ -339,14 +344,15 @@ public class BasicMinicondaEnvPythonInstaller extends ExternalEnvironmentInstall
             }
         };
 
-        progressInfo.log("Installation path: " + getConfiguration().installationPath.toAbsolutePath());
+        Path installationPath = PathUtils.relativeToImageJToAbsolute(getConfiguration().getInstallationPath());
+        progressInfo.log("Installation path: " + installationPath);
         progressInfo.log("Please note that you agreed to the Conda license: https://docs.conda.io/en/latest/license.html");
         CommandLine commandLine = new CommandLine(installerPath.toFile());
         commandLine.addArgument("/InstallationType=JustMe");
         commandLine.addArgument("/AddToPath=0");
         commandLine.addArgument("/RegisterPython=0");
         commandLine.addArgument("/S");
-        commandLine.addArgument("/D=" + getConfiguration().installationPath.toAbsolutePath());
+        commandLine.addArgument("/D=" + installationPath);
 
         ProcessUtils.ExtendedExecutor executor = new ProcessUtils.ExtendedExecutor(ExecuteWatchdog.INFINITE_TIMEOUT, progressInfo);
         executor.setStreamHandler(new PumpStreamHandler(progressInfoLog, progressInfoLog));
