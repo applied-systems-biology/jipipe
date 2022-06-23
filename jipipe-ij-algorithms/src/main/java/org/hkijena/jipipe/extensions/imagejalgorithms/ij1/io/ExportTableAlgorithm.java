@@ -14,6 +14,7 @@ import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
@@ -71,25 +72,23 @@ public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {
             outputPath = outputDirectory;
         }
 
-        // Generate subfolder
-        Path subFolder = exporter.generateSubFolder(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()));
-        if (subFolder != null) {
-            outputPath = outputPath.resolve(subFolder);
-        }
+        // Generate the path
+        Path generatedPath = exporter.generatePath(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
-        try {
-            Files.createDirectories(outputPath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+        // If absolute -> use the path, otherwise use output directory
+        if(generatedPath.isAbsolute()) {
+            outputPath = generatedPath;
+        }
+        else {
+            outputPath = outputPath.resolve(generatedPath);
         }
 
         ResultsTableData table = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        String baseName = exporter.generateName(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
         Path outputFile;
         switch (fileFormat) {
             case CSV: {
-                outputFile = outputPath.resolve(baseName + ".csv");
+                outputFile = PathUtils.ensureExtension(outputPath, ".csv");
                 table.saveAsCSV(outputPath);
             }
             break;

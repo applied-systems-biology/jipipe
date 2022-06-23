@@ -317,6 +317,74 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         return path;
     }
 
+    /**
+     * Saves a single ROI to a file
+     * @param roi the ROI
+     * @param outputFile the file
+     */
+    public static void saveSingleRoi(Roi roi, Path outputFile) {
+        try {
+            FileOutputStream out = new FileOutputStream(outputFile.toFile());
+            RoiEncoder re = new RoiEncoder(out);
+            re.write(roi);
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Saves all ROIs in this list as ZIP file
+     * @param outputFile the output file
+     */
+    public void saveToZip(Path outputFile) {
+        try {
+            ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(outputFile.toFile()));
+            DataOutputStream out = new DataOutputStream(new BufferedOutputStream(zos));
+            RoiEncoder re = new RoiEncoder(out);
+            Set<String> existing = new HashSet<>();
+            for (int i = 0; i < this.size(); i++) {
+                String label = "" + i;
+                Roi roi = this.get(i);
+                if (roi == null) continue;
+                if (roi.getName() != null) {
+                    label = roi.getName();
+                }
+                while (label.endsWith(".roi")) {
+                    label = label.substring(0, label.length() - 4);
+                }
+                label = StringUtils.makeUniqueString(label, " ", existing);
+                existing.add(label);
+                if (!label.endsWith(".roi")) label += ".roi";
+                zos.putNextEntry(new ZipEntry(label));
+                re.write(roi);
+                out.flush();
+            }
+            out.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
+     * Saves all ROIs in this list as *.roi or *.zip file depending on how many ROIs are stored in the list
+     * If the extension of the output file is .zip and there is one ROI in the list, the output will still be saved as zip!
+     * @param outputFile the output file. without extension.
+     * @return the output file with extension
+     */
+    public Path saveToRoiOrZip(Path outputFile) {
+        if(size() == 1 && !outputFile.toString().endsWith(".zip")) {
+            outputFile = PathUtils.ensureExtension(outputFile, ".roi");
+            saveSingleRoi(get(0), outputFile);
+        }
+        else {
+            outputFile = PathUtils.ensureExtension(outputFile, ".zip");
+            saveToZip(outputFile);
+        }
+        return outputFile;
+    }
+
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         // Code adapted from ImageJ RoiManager class
