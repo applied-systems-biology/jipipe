@@ -82,6 +82,7 @@ public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {
         else {
             outputPath = outputPath.resolve(generatedPath);
         }
+        PathUtils.ensureParentDirectoriesExist(outputPath);
 
         ResultsTableData table = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
 

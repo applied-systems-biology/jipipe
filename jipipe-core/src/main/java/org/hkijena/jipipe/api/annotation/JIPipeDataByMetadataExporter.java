@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.annotation;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
@@ -40,7 +41,7 @@ import java.util.Set;
  */
 public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
-    private StringQueryExpression fileNameGenerator = new StringQueryExpression("SUMMARIZE_VARIABLES()");
+    private StringQueryExpression fileNameGenerator = new StringQueryExpression("SUMMARIZE_ANNOTATIONS_MAP(annotations, \"#\")");
     private boolean forceName = true;
 
     private boolean makeFilesystemCompatible = true;
@@ -55,7 +56,8 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     }
 
     @JIPipeDocumentation(name = "File name", description = "This expression is used to generate the file names. You have all metadata available as variables. By default, it will summarize all variables (annotations) into a long string. " +
-            "If you do not want to customize the file name, you can create you own string based on available annotations. For example, you can insert <code>#Dataset + \"_\" + Threshold</code> to store the data set and a threshold annotation.")
+            "If you do not want to customize the file name, you can create you own string based on available annotations. For example, you can insert <code>#Dataset + \"_\" + Threshold</code> to store the data set and a threshold annotation.\n\n" +
+            "You can use the following function to automatically generate the name from annotations: <code>SUMMARIZE_ANNOTATIONS_MAP(annotations, \"#\")</code>")
     @JIPipeParameter(value = "file-name", important = true)
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     public StringQueryExpression getFileNameGenerator() {
@@ -192,6 +194,8 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         parameters.set("data_string", dataTable.getVirtualData(row).getStringRepresentation());
         parameters.set("data_type", JIPipe.getDataTypes().getIdOf(dataTable.getDataClass(row)));
         parameters.set("row", row + "");
+        parameters.set("annotations", JIPipeTextAnnotation.annotationListToMap(dataTable.getTextAnnotations(row),
+                JIPipeTextAnnotationMergeMode.OverwriteExisting));
 
         String metadataString = StringUtils.nullToEmpty(fileNameGenerator.generate(parameters));
         if (StringUtils.isNullOrEmpty(metadataString)) {
@@ -245,6 +249,8 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         parameters.set("data_string", dataTable.getVirtualData(row).getStringRepresentation());
         parameters.set("data_type", JIPipe.getDataTypes().getIdOf(dataTable.getDataClass(row)));
         parameters.set("row", row + "");
+        parameters.set("annotations", JIPipeTextAnnotation.annotationListToMap(dataTable.getTextAnnotations(row),
+                JIPipeTextAnnotationMergeMode.OverwriteExisting));
 
         String metadataString = StringUtils.nullToEmpty(fileNameGenerator.generate(parameters));
         if (StringUtils.isNullOrEmpty(metadataString)) {
@@ -298,6 +304,9 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         static {
             VARIABLES = new HashSet<>();
             VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
+            VARIABLES.add(new ExpressionParameterVariable("Annotations",
+                    "Map of annotation names and values",
+                    "annotations"));
             VARIABLES.add(new ExpressionParameterVariable("Data string",
                     "The data stored as string",
                     "data_string"));

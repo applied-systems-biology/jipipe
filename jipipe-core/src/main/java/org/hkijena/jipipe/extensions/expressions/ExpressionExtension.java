@@ -236,6 +236,7 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new SwitchFunction());
         registerExpressionFunction(new CaseFunction());
         registerExpressionFunction(new PercentageFunction());
+        registerExpressionFunction(new SummarizeAnnotationsMapFunction());
 
         registerExpressionFunction(new CreateRGBColorFunction());
         registerExpressionFunction(new CreateHSBColorFunction());

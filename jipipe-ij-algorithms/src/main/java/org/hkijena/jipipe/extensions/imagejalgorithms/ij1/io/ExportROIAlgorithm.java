@@ -84,6 +84,7 @@ public class ExportROIAlgorithm extends JIPipeIteratingAlgorithm {
         else {
             outputPath = outputPath.resolve(generatedPath);
         }
+        PathUtils.ensureParentDirectoriesExist(outputPath);
 
         ROIListData rois = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
 
