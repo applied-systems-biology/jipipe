@@ -152,6 +152,10 @@ public class TableEditor extends JIPipeWorkbenchPanel {
             JMenuItem exportAsCSV = new JMenuItem("as CSV table (*.csv)", UIUtils.getIconFromResources("data-types/results-table.png"));
             exportAsCSV.addActionListener(e -> exportTableAsCSV());
             exportPopup.add(exportAsCSV);
+
+            JMenuItem exportAsXLSX = new JMenuItem("as Excel table (*.xlsx)", UIUtils.getIconFromResources("mimetypes/application-excel.png"));
+            exportAsXLSX.addActionListener(e -> exportTableAsXLSX());
+            exportPopup.add(exportAsXLSX);
         }
         toolBar.add(exportButton);
 
@@ -733,37 +737,14 @@ public class TableEditor extends JIPipeWorkbenchPanel {
     private void exportTableAsCSV() {
         Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export CSV table (*.csv)", UIUtils.EXTENSION_FILTER_CSV);
         if (selectedPath != null) {
-            try (BufferedOutputStream writer = new BufferedOutputStream(new FileOutputStream(selectedPath.toFile()))) {
-                String[] rowBuffer = new String[tableModel.getColumnCount()];
+           tableModel.saveAsCSV(selectedPath);
+        }
+    }
 
-                for (int column = 0; column < tableModel.getColumnCount(); ++column) {
-                    rowBuffer[column] = tableModel.getColumnName(column);
-                }
-
-                writer.write(Joiner.on(',').join(rowBuffer).getBytes(Charsets.UTF_8));
-                writer.write("\n".getBytes(Charsets.UTF_8));
-
-                for (int row = 0; row < tableModel.getRowCount(); ++row) {
-                    for (int column = 0; column < tableModel.getColumnCount(); ++column) {
-                        if (tableModel.getValueAt(row, column) instanceof Boolean) {
-                            rowBuffer[column] = (Boolean) tableModel.getValueAt(row, column) ? "TRUE" : "FALSE";
-                        } else if (tableModel.getValueAt(row, column) instanceof Number) {
-                            rowBuffer[column] = tableModel.getValueAt(row, column).toString();
-                        } else {
-                            String content = "" + tableModel.getValueAt(row, column);
-                            content = content.replace("\"", "\"\"");
-                            if (content.contains(",")) {
-                                content = "\"" + content + "\"";
-                            }
-                            rowBuffer[column] = content;
-                        }
-                    }
-                    writer.write(Joiner.on(',').join(rowBuffer).getBytes(Charsets.UTF_8));
-                    writer.write("\n".getBytes(Charsets.UTF_8));
-                }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+    private void exportTableAsXLSX() {
+        Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export Excel table (*.xlsx)", UIUtils.EXTENSION_FILTER_XLSX);
+        if (selectedPath != null) {
+            tableModel.saveAsXLSX(selectedPath);
         }
     }
 

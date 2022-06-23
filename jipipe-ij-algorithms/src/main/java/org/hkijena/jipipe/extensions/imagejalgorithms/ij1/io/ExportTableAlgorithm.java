@@ -92,6 +92,11 @@ public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {
                 table.saveAsCSV(outputPath);
             }
             break;
+            case XLSX: {
+                outputFile = PathUtils.ensureExtension(outputPath, ".xlsx");
+                table.saveAsXLSX(outputPath);
+            }
+            break;
             default:
                 throw new UnsupportedOperationException();
         }
@@ -143,6 +148,7 @@ public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     public enum FileFormat {
-        CSV
+        CSV,
+        XLSX
     }
 }

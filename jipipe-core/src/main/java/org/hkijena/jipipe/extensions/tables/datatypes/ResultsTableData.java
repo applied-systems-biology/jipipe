@@ -31,6 +31,12 @@ import ij.macro.Variable;
 import ij.measure.ResultsTable;
 import ij.util.Tools;
 import org.apache.commons.lang3.math.NumberUtils;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -59,6 +65,7 @@ import javax.swing.table.TableModel;
 import java.awt.*;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -374,6 +381,36 @@ public class ResultsTableData implements JIPipeData, TableModel {
         JLabel label = new JLabel(text);
         label.setSize(label.getPreferredSize());
         return label;
+    }
+
+    /**
+     * Saves the table as Excel file
+     * @param path the path
+     */
+    public void saveAsXLSX(Path path) {
+        try(Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Data");
+            {
+                Row xlsxRow = sheet.createRow(0);
+                for (int col = 0; col < getColumnCount(); col++) {
+                    Cell xlsxCell = xlsxRow.createCell(col, CellType.STRING);
+                    xlsxCell.setCellValue(getColumnName(col));
+                }
+            }
+            for (int row = 0; row < getRowCount(); row++) {
+                Row xlsxRow = sheet.createRow(row + 1);
+                for (int col = 0; col < getColumnCount(); col++) {
+                    Cell xlsxCell = xlsxRow.createCell(col, isNumericColumn(col) ? CellType.NUMERIC : CellType.STRING);
+                    if (isNumericColumn(col))
+                        xlsxCell.setCellValue(getValueAsDouble(row, col));
+                    else
+                        xlsxCell.setCellValue(getValueAsString(row, col));
+                }
+            }
+            workbook.write(Files.newOutputStream(path));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     /**

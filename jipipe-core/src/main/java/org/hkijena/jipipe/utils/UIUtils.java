@@ -79,6 +79,8 @@ import java.util.stream.Collectors;
 public class UIUtils {
 
     public static final FileNameExtensionFilter EXTENSION_FILTER_CSV = new FileNameExtensionFilter("CSV table (*.csv)", "csv");
+
+    public static final FileNameExtensionFilter EXTENSION_FILTER_XLSX = new FileNameExtensionFilter("Excel table (*.xlsx)", "xlsx");
     public static final FileNameExtensionFilter EXTENSION_FILTER_PNG = new FileNameExtensionFilter("PNG image (*.png)", "png");
     public static final FileNameExtensionFilter EXTENSION_FILTER_IMAGEIO_IMAGES = new FileNameExtensionFilter("Image file (*.png, *.jpg, *.jpeg, *.bmp)", "png", "jpg", "jpeg", "bmp");
     public static final FileNameExtensionFilter EXTENSION_FILTER_SVG = new FileNameExtensionFilter("SVG image (*.svg)", "svg");

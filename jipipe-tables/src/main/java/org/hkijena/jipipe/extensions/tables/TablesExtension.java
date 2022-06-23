@@ -143,6 +143,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("table-process-columns", ProcessColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-melt", MeltTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-annotate-with-properties", AnnotateByTablePropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
+        registerNodeType("table-add-missing-rows-in-series", AddMissingRowsInSeriesAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort-ascending.png"));
     }
 
     private void registerParameters() {
