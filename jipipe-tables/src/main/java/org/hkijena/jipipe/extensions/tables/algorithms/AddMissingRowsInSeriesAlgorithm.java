@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.tables.algorithms;
 
 import gnu.trove.list.TDoubleList;
 import gnu.trove.list.array.TDoubleArrayList;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -35,6 +36,8 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSour
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.OptionalDefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
+import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndSortOrderPairParameter;
+import org.hkijena.jipipe.extensions.parameters.library.util.SortOrder;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
@@ -74,8 +77,9 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData inputTable = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ResultsTableData outputTable;
-        if(inputTable.getRowCount() > 0) {
+        if (inputTable.getRowCount() > 0) {
             ExpressionVariables variables = new ExpressionVariables();
+            variables.putAnnotations(dataBatch.getMergedTextAnnotations());
             variables.set("num_rows", inputTable.getRowCount());
             variables.set("num_cols", inputTable.getColumnCount());
             variables.set("column_names", inputTable.getColumnNames());
@@ -86,18 +90,16 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
             double counterMax = Double.NEGATIVE_INFINITY;
             final int counterColumn = inputTable.getColumnIndex(countingColumn.queryFirst(inputTable.getColumnNames(), variables));
 
-            if(minCounter.isEnabled()) {
+            if (minCounter.isEnabled()) {
                 counterMin = minCounter.getContent().evaluateToNumber(variables);
-            }
-            else {
+            } else {
                 for (int i = 0; i < inputTable.getRowCount(); i++) {
                     counterMin = Math.min(counterMin, inputTable.getValueAsDouble(i, counterColumn));
                 }
             }
             if (maxCounter.isEnabled()) {
                 counterMax = maxCounter.getContent().evaluateToNumber(variables);
-            }
-            else {
+            } else {
                 for (int i = 0; i < inputTable.getRowCount(); i++) {
                     counterMax = Math.max(counterMax, inputTable.getValueAsDouble(i, counterColumn));
                 }
@@ -114,32 +116,60 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
             {
                 double min = currentCounters.get(0);
                 double max = currentCounters.get(currentCounters.size() - 1);
-                if(min > counterMin)
+                if (min > counterMin) {
                     currentCounters.insert(0, counterMin);
-                if(max < counterMax)
+                }
+                if (max < counterMax) {
                     currentCounters.add(counterMax);
+                }
             }
 
             for (int i = 0; i < currentCounters.size() - 1; i++) {
                 double current = currentCounters.get(i);
                 double next = currentCounters.get(i + 1);
-                if(Math.abs(current - next) > expectedStep) {
+                if (Math.abs(current - next) > expectedStep) {
                     double newCounter = current + expectedStep;
 
                     // Generate new row
-                    addNewRowForCounter(newCounter, variables, outputTable);
+                    addNewRowForCounter(newCounter, counterColumn, variables, outputTable);
                     currentCounters.insert(i + 1, newCounter);
                 }
             }
-        }
-        else {
+
+            // Ensure that the max exists
+            if (maxCounter.isEnabled()) {
+                currentCounters.clear();
+                for (int i = 0; i < inputTable.getRowCount(); i++) {
+                    currentCounters.add(inputTable.getValueAsDouble(i, counterColumn));
+                }
+                if (currentCounters.max() != counterMax) {
+                    // Generate new row
+                    addNewRowForCounter(counterMax, counterColumn, variables, outputTable);
+                }
+            }
+
+            // Sort again
+            {
+                SortTableRowsAlgorithm sortTableRowsAlgorithm = JIPipe.createNode(SortTableRowsAlgorithm.class);
+                sortTableRowsAlgorithm.getFirstInputSlot().addData(outputTable, progressInfo);
+                sortTableRowsAlgorithm.getSortOrderList().clear();
+                StringQueryExpressionAndSortOrderPairParameter pairParameter = new StringQueryExpressionAndSortOrderPairParameter();
+                pairParameter.setKey(new StringQueryExpression("\"" + inputTable.getColumnName(counterColumn) + "\""));
+                pairParameter.setValue(SortOrder.Ascending);
+                sortTableRowsAlgorithm.getSortOrderList().add(pairParameter);
+                sortTableRowsAlgorithm.run(progressInfo.resolve("Sort table"));
+                outputTable = sortTableRowsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
+            }
+        } else {
             outputTable = inputTable;
         }
         dataBatch.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
     }
 
-    private void addNewRowForCounter(double newCounter, ExpressionVariables variables, ResultsTableData outputTable) {
+    private void addNewRowForCounter(double newCounter, int counterColumn, ExpressionVariables variables, ResultsTableData outputTable) {
+        System.out.println(newCounter);
         int row = outputTable.addRow();
+        outputTable.setValueAt(newCounter, row, counterColumn);
         variables.set("counter", newCounter);
         for (ExpressionTableColumnGeneratorProcessor processor : defaultValues) {
             String targetColumn = processor.getValue();
@@ -148,15 +178,18 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         }
     }
 
-    @JIPipeDocumentation(name = "Expected step", description = "The step between two consecutive series points. For example, the step between 5 and 6 is 1. If the calculated step is larger than the provided value, a new row is generated.")
+    @JIPipeDocumentation(name = "Expected step", description = "The step between two consecutive series points. For example, the step between 5 and 6 is 1. If the calculated step is larger than the provided value, a new row is generated. Must be a positive number.")
     @JIPipeParameter("expected-step")
     public double getExpectedStep() {
         return expectedStep;
     }
 
     @JIPipeParameter("expected-step")
-    public void setExpectedStep(double expectedStep) {
+    public boolean setExpectedStep(double expectedStep) {
+        if(expectedStep <= 0)
+            return false;
         this.expectedStep = expectedStep;
+        return true;
     }
 
     @JIPipeDocumentation(name = "Counting column", description = "The column that contains the counter (e.g., the time frame)")
@@ -212,6 +245,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
 
         static {
             VARIABLES = new HashSet<>();
+            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows within the table", "num_rows"));
             VARIABLES.add(new ExpressionParameterVariable("Number of columns", "The number of columns within the table", "num_cols"));
             VARIABLES.add(new ExpressionParameterVariable("List of column names", "An array of the column names", "column_names"));
@@ -229,6 +263,7 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
 
         static {
             VARIABLES = new HashSet<>();
+            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             VARIABLES.add(new ExpressionParameterVariable("Counter", "The step counter that will be assigned to the new row", "counter"));
             VARIABLES.add(new ExpressionParameterVariable("List of column names", "An array of the column names", "column_names"));
             VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows within the table", "num_rows"));

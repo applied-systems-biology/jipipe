@@ -106,7 +106,7 @@ public class JIPipeCachedDataPreview extends JPanel {
         @Override
         protected Component doInBackground() throws Exception {
             JIPipeVirtualData virtualData = parent.data.get();
-            if (virtualData != null)
+            if (virtualData != null && !virtualData.isClosed())
                 return virtualData.getData(new JIPipeProgressInfo()).preview(width, width);
             else
                 return new JLabel("N/A");
