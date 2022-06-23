@@ -29,6 +29,7 @@ import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameter
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
@@ -84,24 +85,21 @@ public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
             outputPath = outputDirectory;
         }
 
-        // Generate subfolder
-        Path subFolder = exporter.generateSubFolder(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()));
-        if (subFolder != null) {
-            outputPath = outputPath.resolve(subFolder);
+        // Generate the path
+        Path generatedPath = exporter.generatePath(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
+
+        // If absolute -> use the path, otherwise use output directory
+        if(generatedPath.isAbsolute()) {
+            outputPath = generatedPath;
+        }
+        else {
+            outputPath = outputPath.resolve(generatedPath);
         }
 
-        try {
-            Files.createDirectories(outputPath);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        // Postprocess path
+        outputPath = PathUtils.ensureExtension(outputPath, ".ome.tif", "ome.tiff");
+        PathUtils.ensureParentDirectoriesExist(outputPath);
 
-        String baseName = StringUtils.nullToEmpty(exporter.generateName(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata));
-        if (!baseName.endsWith(".ome.tif") && !baseName.endsWith(".ome.tiff")) {
-            baseName = baseName + ".ome.tif";
-        }
-
-        outputPath = outputPath.resolve(baseName);
 
         OMEImageData input = dataBatch.getInputData(getFirstInputSlot(), OMEImageData.class, progressInfo);
         OMEImageData.OMEExport(input, outputPath, exporterSettings);
