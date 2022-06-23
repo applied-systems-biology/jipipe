@@ -167,7 +167,6 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
     }
 
     private void addNewRowForCounter(double newCounter, int counterColumn, ExpressionVariables variables, ResultsTableData outputTable) {
-        System.out.println(newCounter);
         int row = outputTable.addRow();
         outputTable.setValueAt(newCounter, row, counterColumn);
         variables.set("counter", newCounter);
