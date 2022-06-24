@@ -20,7 +20,6 @@
     <orderEntry type="library" name="Maven: de.erichseifert.vectorgraphics2d:VectorGraphics2D:0.13" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-ops:0.46.1" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-mesh:0.8.1" level="project" />
-    <orderEntry type="library" name="Maven: net.imglib2:imglib2-algorithm:0.12.1" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-algorithm-fft:0.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:parsington:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scripting-javascript:0.5.0" level="project" />
@@ -136,7 +135,6 @@
     <orderEntry type="library" name="Maven: com.googlecode.efficient-java-matrix-library:ejml:0.24" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-roi:0.12.1" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-search:1.0.0" level="project" />
-    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.6" level="project" />
     <orderEntry type="library" name="Maven: org.ocpsoft.prettytime:prettytime:4.0.1.Final" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-table:0.7.0" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scijava-ui-awt:0.1.7" level="project" />
@@ -350,6 +348,28 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.glassfish.jaxb:jaxb-runtime:2.3.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.glassfish.jaxb:txw2:2.3.3" level="project" />
     <orderEntry type="module" module-name="jipipe-ij-trackmate" scope="RUNTIME" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:TrackMate:7.6.1" level="project" />
+    <orderEntry type="library" name="Maven: net.imglib2:imglib2-algorithm:0.12.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:scijava-listeners:1.0.0-beta-3" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.vlsi.mxgraph:jgraphx:4.1.0" level="project" />
+    <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.6" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.itextpdf:itextpdf:5.5.13.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.opencsv:opencsv:5.2" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.xmlgraphics:batik-dom:1.14" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.xmlgraphics:batik-css:1.14" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.xmlgraphics:xmlgraphics-commons:2.6" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.xmlgraphics:batik-ext:1.14" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.xmlgraphics:batik-shared-resources:1.14" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.xmlgraphics:batik-util:1.14" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.xmlgraphics:batik-constants:1.14" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.xmlgraphics:batik-i18n:1.14" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.xmlgraphics:batik-xml:1.14" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: xml-apis:xml-apis-ext:1.3.04" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.xmlgraphics:batik-svggen:1.14" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.xmlgraphics:batik-awt-util:1.14" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.drjekyll:fontchooser:2.4" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.jdom:jdom2:2.0.6" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: math.geom2d:javaGeom:0.11.1" level="project" />
     <orderEntry type="module" module-name="jipipe-ij-multi-template-matching" scope="RUNTIME" />
     <orderEntry type="module" module-name="jipipe-clij" scope="RUNTIME" />
     <orderEntry type="module" module-name="jipipe-strings" scope="RUNTIME" />

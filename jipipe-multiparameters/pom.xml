@@ -77,16 +77,6 @@
         <license.projectName>JIPipe-Multi-Parameters</license.projectName>
     </properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>org.hkijena</groupId>
-                <artifactId>jipipe-core</artifactId>
-                <version>1.74.0-SNAPSHOT</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
         <dependency>
             <groupId>org.hkijena</groupId>
