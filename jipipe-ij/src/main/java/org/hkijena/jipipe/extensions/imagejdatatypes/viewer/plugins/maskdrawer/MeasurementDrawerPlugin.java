@@ -11,7 +11,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ROIManagerPlugin;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -68,7 +67,7 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
         ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
 
         // Set slices
-        if(getViewerPanel().getImage().getStackSize() > 1) {
+        if (getViewerPanel().getImage().getStackSize() > 1) {
             ImageSliceIndex index = getViewerPanel().getCurrentSliceIndex();
             for (Roi roi : rois) {
                 roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);

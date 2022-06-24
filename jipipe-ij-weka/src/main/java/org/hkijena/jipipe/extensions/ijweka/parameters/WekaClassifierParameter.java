@@ -8,13 +8,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import hr.irb.fastRandomForest.FastRandomForest;
 import org.hkijena.jipipe.utils.SerializationUtils;
-import sun.misc.BASE64Decoder;
-import sun.misc.BASE64Encoder;
-import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.gui.GenericObjectEditor;
 
-import java.io.*;
+import java.io.IOException;
 
 /**
  * A parameter type that stores a Weka classifier

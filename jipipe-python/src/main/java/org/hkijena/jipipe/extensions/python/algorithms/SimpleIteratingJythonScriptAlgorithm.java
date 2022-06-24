@@ -150,7 +150,7 @@ public class SimpleIteratingJythonScriptAlgorithm extends JIPipeSimpleIteratingA
             pythonInterpreter.set("input_slot", getFirstInputSlot());
         }
         pythonInterpreter.set("progress_info", progressInfo);
-        try(IJLogToJIPipeProgressInfoPump ignored = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+        try (IJLogToJIPipeProgressInfoPump ignored = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
             pythonInterpreter.exec(code.getCode(getProjectDirectory()));
         }
     }

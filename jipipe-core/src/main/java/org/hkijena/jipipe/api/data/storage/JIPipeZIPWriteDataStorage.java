@@ -17,8 +17,8 @@ package org.hkijena.jipipe.api.data.storage;
 import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
-import org.hkijena.jipipe.utils.UnclosableOutputStream;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.UnclosableOutputStream;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -59,15 +59,15 @@ public class JIPipeZIPWriteDataStorage implements JIPipeWriteDataStorage {
         }
     }
 
-    private void initialize() throws IOException {
-        fileOutputStream = new FileOutputStream(zipFilePath.toFile());
-        zipOutputStream = new ZipOutputStream(fileOutputStream);
-    }
-
     private JIPipeZIPWriteDataStorage(JIPipeProgressInfo progressInfo, Path zipFilePath, Path internalPath) {
         this.progressInfo = progressInfo;
         this.zipFilePath = zipFilePath;
         this.internalPath = internalPath;
+    }
+
+    private void initialize() throws IOException {
+        fileOutputStream = new FileOutputStream(zipFilePath.toFile());
+        zipOutputStream = new ZipOutputStream(fileOutputStream);
     }
 
     @Override
@@ -83,7 +83,7 @@ public class JIPipeZIPWriteDataStorage implements JIPipeWriteDataStorage {
     @Override
     public Path getFileSystemPath() {
         Path path = getOrCreateTemporaryStorageRoot().resolve(getInternalPath());
-        if(!Files.isDirectory(path)) {
+        if (!Files.isDirectory(path)) {
             try {
                 Files.createDirectories(path);
             } catch (IOException e) {
@@ -94,10 +94,10 @@ public class JIPipeZIPWriteDataStorage implements JIPipeWriteDataStorage {
     }
 
     private Path getOrCreateTemporaryStorageRoot() {
-        if(parent != null) {
+        if (parent != null) {
             return parent.getOrCreateTemporaryStorageRoot();
         }
-        if(temporaryStorage == null) {
+        if (temporaryStorage == null) {
             temporaryStorage = RuntimeSettings.generateTempDirectory("zip");
         }
         return temporaryStorage;
@@ -132,15 +132,15 @@ public class JIPipeZIPWriteDataStorage implements JIPipeWriteDataStorage {
     @Override
     public void close() throws IOException {
         // Only the root storage can apply the operation
-        if(parent != null) {
+        if (parent != null) {
             parent.close();
             return;
         }
 
-        if(temporaryStorage != null) {
-            try(Stream<Path> stream = Files.walk(temporaryStorage)) {
+        if (temporaryStorage != null) {
+            try (Stream<Path> stream = Files.walk(temporaryStorage)) {
                 stream.forEach(path -> {
-                    if(Files.isDirectory(path))
+                    if (Files.isDirectory(path))
                         return;
                     Path relativePath = temporaryStorage.relativize(path);
                     getProgressInfo().log("ZIP " + path + " -> " + relativePath);
@@ -159,7 +159,7 @@ public class JIPipeZIPWriteDataStorage implements JIPipeWriteDataStorage {
         fileOutputStream.close();
 
         // Remove temporary files
-        if(temporaryStorage != null) {
+        if (temporaryStorage != null) {
             PathUtils.deleteDirectoryRecursively(temporaryStorage, progressInfo.resolve("Cleaning temporary files"));
         }
     }

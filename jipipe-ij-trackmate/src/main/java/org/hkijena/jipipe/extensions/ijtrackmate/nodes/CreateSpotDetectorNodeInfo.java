@@ -15,21 +15,21 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.nodes;
 
 import fiji.plugin.trackmate.detection.SpotDetectorFactory;
+import org.apache.commons.lang.WordUtils;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
-import org.hkijena.jipipe.api.nodes.DefaultJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotDetectorData;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
@@ -37,15 +37,26 @@ public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
     private static final JIPipeOutputSlot OUTPUT_SLOT = new DefaultJIPipeOutputSlot(SpotDetectorData.class, "Spot detector", "The generated spot detector", null, true, JIPipeDataSlotRole.Data);
     private final String id;
     private final String name;
-
     private final HTMLText description;
-    private final Class<? extends SpotDetectorFactory> spotDetectorClass;
+    private final SpotDetectorFactory<?> spotDetectorFactory;
 
-    public CreateSpotDetectorNodeInfo(SpotDetectorFactory<?> detectorFactory) {
-        spotDetectorClass = detectorFactory.getClass();
-        this.id = "trackmate-create-spot-detector-" + detectorFactory.getKey().toLowerCase().replace('_', '-');
-        this.name = detectorFactory.getName();
-        this.description = new HTMLText(detectorFactory.getInfoText());
+    private final JIPipeDynamicParameterCollection parameters = new JIPipeDynamicParameterCollection();
+
+    public CreateSpotDetectorNodeInfo(SpotDetectorFactory<?> spotDetectorFactory) {
+        this.id = "trackmate-create-spot-detector-" + spotDetectorFactory.getKey().toLowerCase().replace('_', '-');
+        this.name = spotDetectorFactory.getName();
+        this.description = new HTMLText(spotDetectorFactory.getInfoText());
+        this.spotDetectorFactory = spotDetectorFactory;
+        for (Map.Entry<String, Object> entry : spotDetectorFactory.getDefaultSettings().entrySet()) {
+            JIPipeParameterTypeInfo parameterTypeInfo = JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getClass());
+            if (parameterTypeInfo == null) {
+                throw new UnsupportedOperationException("Cannot resolve parameter " + entry.getKey() + "=" + entry.getValue());
+            }
+            String key = entry.getKey().toLowerCase().replace('_', '-');
+            String name = WordUtils.capitalize(entry.getKey().replace('_', ' ').toLowerCase());
+            JIPipeMutableParameterAccess parameterAccess = parameters.addParameter(key, entry.getValue().getClass(), name, description.getBody());
+            parameterAccess.set(parameterTypeInfo.duplicate(entry.getValue()));
+        }
     }
 
     @Override
@@ -58,14 +69,22 @@ public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
         return CreateSpotDetectorNode.class;
     }
 
+    public SpotDetectorFactory<?> getSpotDetectorFactory() {
+        return spotDetectorFactory;
+    }
+
     @Override
     public JIPipeGraphNode newInstance() {
         return new CreateSpotDetectorNode(this);
     }
 
+    public JIPipeDynamicParameterCollection getParameters() {
+        return parameters;
+    }
+
     @Override
     public JIPipeGraphNode duplicate(JIPipeGraphNode algorithm) {
-        return new CreateSpotDetectorNode((CreateSpotDetectorNode)algorithm);
+        return new CreateSpotDetectorNode((CreateSpotDetectorNode) algorithm);
     }
 
     @Override
@@ -107,4 +126,5 @@ public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
     public boolean isHidden() {
         return false;
     }
+
 }

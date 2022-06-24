@@ -12,20 +12,15 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.SerializationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import trainableSegmentation.WekaSegmentation;
 import trainableSegmentation.Weka_Segmentation;
-import weka.classifiers.AbstractClassifier;
 import weka.core.Instances;
 import weka.gui.GenericObjectEditor;
 
 import javax.swing.*;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 
 /**
  * Wrapper around Cellpose models
@@ -56,7 +51,7 @@ public class WekaModelData implements JIPipeData {
 
         Metadata metadata = JsonUtils.readFromFile(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".json").get(0), Metadata.class);
 
-        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+        try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
             segmentation = new WekaSegmentation(metadata.isProcessing3D());
             segmentation.loadClassifier(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".model").get(0).toString());
             segmentation.loadTrainingData(PathUtils.findFilesByExtensionIn(storage.getFileSystemPath(), ".arff").get(0).toString());
@@ -74,7 +69,7 @@ public class WekaModelData implements JIPipeData {
         Path modelOutputPath = storage.getFileSystemPath().resolve(StringUtils.orElse(name, "classifier") + ".model");
         Path dataOutputPath = storage.getFileSystemPath().resolve(StringUtils.orElse(name, "data") + ".arff");
         Path metadataOutputPath = storage.getFileSystemPath().resolve(StringUtils.orElse(name, "metadata") + ".json");
-        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+        try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
             segmentation.saveClassifier(modelOutputPath.toString());
             segmentation.saveData(dataOutputPath.toString());
         }
@@ -95,9 +90,9 @@ public class WekaModelData implements JIPipeData {
             data = segmentation.getTraceTrainingData();
         else
             data = segmentation.getLoadedTrainingData();
-        if(data == null) {
+        if (data == null) {
             JOptionPane.showMessageDialog(workbench.getWindow(), "The model has no data to visualize!",
-                "Show Weka model", JOptionPane.ERROR_MESSAGE);
+                    "Show Weka model", JOptionPane.ERROR_MESSAGE);
         }
         Weka_Segmentation.displayGraphs(data, segmentation.getClassifier());
     }

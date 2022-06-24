@@ -99,22 +99,22 @@ public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         final int nTilesX = (int) Math.ceil(1.0 * img.getWidth() / tileSizeX);
         final int nTilesY = (int) Math.ceil(1.0 * img.getHeight() / tileSizeY);
 
-       // Add border to image
+        // Add border to image
         {
             int width = img.getWidth();
             int height = img.getHeight();
 
             // First correct the tile size assuming no overlap
-            if((width % tileSizeX) != 0) {
+            if ((width % tileSizeX) != 0) {
                 width = (int) (Math.ceil(1.0 * width / tileSizeX) * tileSizeX);
             }
-            if((height % tileSizeY) != 0) {
+            if ((height % tileSizeY) != 0) {
                 height = (int) (Math.ceil(1.0 * height / tileSizeY) * tileSizeY);
             }
 
             // Insert overlap
-            width += 2*overlapX;
-            height += 2*overlapY;
+            width += 2 * overlapX;
+            height += 2 * overlapY;
 
             int left = overlapX;
             int top = overlapY;
@@ -291,7 +291,7 @@ public class TileImage2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeParameter("overlap-x")
     public boolean setOverlapX(int overlapX) {
-        if(overlapX < 0)
+        if (overlapX < 0)
             return false;
         this.overlapX = overlapX;
         return true;

@@ -56,13 +56,13 @@ import java.util.stream.Collectors;
  */
 @JsonSerialize(using = JIPipeGraphNode.Serializer.class)
 public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParameterCollection {
-    private JIPipeNodeInfo info;
-    private JIPipeSlotConfiguration slotConfiguration;
     private final List<JIPipeInputDataSlot> inputSlots = new ArrayList<>();
     private final List<JIPipeOutputDataSlot> outputSlots = new ArrayList<>();
     private final BiMap<String, JIPipeInputDataSlot> inputSlotMap = HashBiMap.create();
     private final BiMap<String, JIPipeOutputDataSlot> outputSlotMap = HashBiMap.create();
     private final EventBus eventBus = new EventBus();
+    private JIPipeNodeInfo info;
+    private JIPipeSlotConfiguration slotConfiguration;
     private Map<String, Map<String, Point>> locations = new HashMap<>();
     private Path internalStoragePath;
     private Path storagePath;
@@ -101,7 +101,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
                 }
             }
 
-            if(!created) {
+            if (!created) {
                 for (JIPipeInputSlot slot : info.getInputSlots()) {
                     if (slot.autoCreate()) {
                         created = true;
@@ -241,7 +241,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         return changed;
     }
 
-    private <T extends JIPipeDataSlot> boolean updateAddAndModifySlots(boolean changed, Map.Entry<String, JIPipeDataSlotInfo> entry, BiMap<String,T> slotMap, List<T> slots) {
+    private <T extends JIPipeDataSlot> boolean updateAddAndModifySlots(boolean changed, Map.Entry<String, JIPipeDataSlotInfo> entry, BiMap<String, T> slotMap, List<T> slots) {
         JIPipeDataSlot existing = slotMap.getOrDefault(entry.getKey(), null);
         if (existing != null) {
             if (!Objects.equals(existing.getInfo(), entry.getValue())) {
@@ -659,6 +659,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Gets all input slots that have the specified role
+     *
      * @param role the role
      * @return the list of input slots with the role. order is according to getInputSlots()
      */
@@ -668,6 +669,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Gets all input slots that have the specified role
+     *
      * @param role the role
      * @return the list of input slots with the role. order is according to getOutputSlots()
      */
@@ -792,6 +794,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Returns the current project directory.
+     *
      * @return the project directory. Null if none was set.
      */
     public Path getProjectDirectory() {
@@ -800,6 +803,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     /**
      * Sets the project directory. Can be null.
+     *
      * @param projectDirectory the project directory. can be null.
      */
     public void setProjectDirectory(Path projectDirectory) {

@@ -13,11 +13,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -62,8 +58,8 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
 
         ImageJUtils.forEachIndexedZCTSlice(labelsImage, (ip, index) -> {
-            if(method == Method.ProtectedFloodfill)
-                executeProtectedFloodfill(rois,variables, ip,index, progressInfo);
+            if (method == Method.ProtectedFloodfill)
+                executeProtectedFloodfill(rois, variables, ip, index, progressInfo);
             else
                 executeFloodfill(rois, variables, ip, index);
         }, progressInfo);
@@ -72,7 +68,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private void executeProtectedFloodfill(ROIListData outputList, ExpressionVariables variables, ImageProcessor ip, ImageSliceIndex index, JIPipeProgressInfo progressInfo) {
         for (int targetLabel : LabelImages.findAllLabels(ip)) {
-            if(progressInfo.isCancelled())
+            if (progressInfo.isCancelled())
                 return;
 
             ImageProcessor copy = (ImageProcessor) ip.clone();
@@ -84,13 +80,13 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             for (int y = 0; y < components.getHeight(); y++) {
                 for (int x = 0; x < components.getWidth(); x++) {
                     float value = components.getf(x, y);
-                    if(value > 0) {
+                    if (value > 0) {
                         IJ.doWand(wrapper, x, y, 0, connectivity.getNativeValue() + " smooth");
                         Roi roi = wrapper.getRoi();
                         outputList.add(roi);
 
                         // Delete the label
-                        LabelImages.replaceLabels(components, new int[] { (int)value }, 0);
+                        LabelImages.replaceLabels(components, new int[]{(int) value}, 0);
 
                         wrapper.setRoi((Roi) null);
                         roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
@@ -115,7 +111,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         for (int y = 0; y < copy.getHeight(); y++) {
             for (int x = 0; x < copy.getWidth(); x++) {
                 float value = copy.getf(x, y);
-                if(value > 0) {
+                if (value > 0) {
                     IJ.doWand(wrapper, x, y, 0, "Legacy smooth");
                     Roi roi = wrapper.getRoi();
                     outputList.add(roi);
@@ -174,7 +170,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if("connectivity".equals(access.getKey()) && method != Method.ProtectedFloodfill)
+        if ("connectivity".equals(access.getKey()) && method != Method.ProtectedFloodfill)
             return false;
         return super.isParameterUIVisible(tree, access);
     }
@@ -192,7 +188,7 @@ public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         @Override
         public String toString() {
-            if(this == ProtectedFloodfill)
+            if (this == ProtectedFloodfill)
                 return "Protected floodfill";
             return super.toString();
         }

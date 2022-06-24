@@ -170,10 +170,9 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
             throw new IllegalArgumentException("The provided slot does not belong to the data interface algorithm!");
         if (!slot.isInput())
             throw new IllegalArgumentException("Slot is not an input slot!");
-        if(inputSlotRows.containsKey(slot)) {
+        if (inputSlotRows.containsKey(slot)) {
             return slot.getData(inputSlotRows.get(slot), dataClass, progressInfo);
-        }
-        else {
+        } else {
             return null;
         }
     }

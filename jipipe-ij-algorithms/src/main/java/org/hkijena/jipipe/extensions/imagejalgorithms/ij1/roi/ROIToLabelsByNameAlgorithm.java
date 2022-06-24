@@ -10,12 +10,15 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.*;
-import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
-import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -58,7 +61,7 @@ public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Create result image
         ImagePlus result;
-        if(dataBatch.getInputRow("Reference") >= 0) {
+        if (dataBatch.getInputRow("Reference") >= 0) {
             ImagePlus reference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
             result = IJ.createHyperStack("Labels",
                     reference.getWidth(),
@@ -67,8 +70,7 @@ public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
                     reference.getNSlices(),
                     reference.getNFrames(),
                     32);
-        }
-        else {
+        } else {
             Rectangle bounds = rois.getBounds();
             int sx = bounds.width + bounds.x;
             int sy = bounds.height + bounds.y;
@@ -105,15 +107,15 @@ public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
         for (int i = 0; i < rois.size(); i++) {
             Roi roi = rois.get(i);
             Integer label = nameToLabelMapping.getOrDefault(StringUtils.nullToEmpty(roi.getName()), null);
-            if(label != null) {
+            if (label != null) {
                 labelMap[i] = label;
                 labelMapSuccesses[i] = true;
             }
         }
-        if(labelMap.length > 0) {
+        if (labelMap.length > 0) {
             int label = Ints.max(labelMap) + 1;
             for (int i = 0; i < rois.size(); i++) {
-                if(!labelMapSuccesses[i]) {
+                if (!labelMapSuccesses[i]) {
                     labelMap[i] = label;
                     ++label;
                 }
@@ -140,9 +142,9 @@ public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
                             continue;
 
                         processor.setColor(labelMap[i]);
-                        if(fillOutline)
+                        if (fillOutline)
                             processor.fill(roi);
-                        if(drawOutline)
+                        if (drawOutline)
                             roi.drawPixels(processor);
                     }
                 }
@@ -152,7 +154,7 @@ public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale32FData(result), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Draw outline",description = "If enabled, the label value is drawn as outline")
+    @JIPipeDocumentation(name = "Draw outline", description = "If enabled, the label value is drawn as outline")
     @JIPipeParameter("draw-outline")
     public boolean isDrawOutline() {
         return drawOutline;
@@ -163,7 +165,7 @@ public class ROIToLabelsByNameAlgorithm extends JIPipeIteratingAlgorithm {
         this.drawOutline = drawOutline;
     }
 
-    @JIPipeDocumentation(name = "Fill outline",description = "If enabled, the ROI is filled with the label value")
+    @JIPipeDocumentation(name = "Fill outline", description = "If enabled, the ROI is filled with the label value")
     @JIPipeParameter("fill-outline")
     public boolean isFillOutline() {
         return fillOutline;

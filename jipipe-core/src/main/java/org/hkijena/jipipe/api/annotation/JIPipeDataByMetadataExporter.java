@@ -16,9 +16,11 @@ package org.hkijena.jipipe.api.annotation;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.data.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -121,7 +123,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataTable   the data slot
+     * @param dataTable  the data slot
      * @param outputPath the path where the files will be put
      */
     public void writeToFolder(JIPipeDataTable dataTable, Path outputPath, JIPipeProgressInfo progressInfo) {
@@ -131,7 +133,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataTable         the data slot
+     * @param dataTable        the data slot
      * @param outputPath       the path where the files will be put
      * @param existingMetadata list of existing entries. used to avoid duplicates.
      */
@@ -146,7 +148,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataTable   the data slot
+     * @param dataTable  the data slot
      * @param row        the data row
      * @param outputPath the path where the files will be put
      */
@@ -157,14 +159,14 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataTable         the data slot
+     * @param dataTable        the data slot
      * @param row              the data row
      * @param outputPath       the path where the files will be put
      * @param existingMetadata list of existing entries. used to avoid duplicates
      */
     public void writeToFolder(JIPipeDataTable dataTable, int row, Path outputPath, JIPipeProgressInfo progressInfo, Set<String> existingMetadata) {
         Path metadataPath = generatePath(dataTable, row, existingMetadata);
-        if(metadataPath.getParent() != null) {
+        if (metadataPath.getParent() != null) {
             outputPath = PathUtils.resolveAndMakeSubDirectory(outputPath, metadataPath.getParent());
         }
         String metadataString = metadataPath.getFileName().toString();
@@ -176,7 +178,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Generates a unique string based on metadata for the selected row
      *
-     * @param dataTable         the slot
+     * @param dataTable        the slot
      * @param row              the row
      * @param existingMetadata existing strings
      * @return the string
@@ -201,7 +203,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         if (StringUtils.isNullOrEmpty(metadataString)) {
             metadataString = "unnamed";
         }
-        if(makeFilesystemCompatible) {
+        if (makeFilesystemCompatible) {
             metadataString = StringUtils.makeFilesystemCompatible(metadataString);
         }
         metadataString = StringUtils.makeUniqueString(metadataString, "_", existingMetadata);
@@ -220,7 +222,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         if (StringUtils.isNullOrEmpty(metadataString)) {
             metadataString = "unnamed";
         }
-        if(makeFilesystemCompatible) {
+        if (makeFilesystemCompatible) {
             metadataString = StringUtils.makeFilesystemCompatible(metadataString);
         }
         metadataString = StringUtils.makeUniqueString(metadataString, "_", existingMetadata);
@@ -231,7 +233,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Generates a unique path based on metadata for the selected row
      *
-     * @param dataTable         the slot
+     * @param dataTable        the slot
      * @param row              the row
      * @param existingMetadata existing strings. must be writable
      * @return the string
@@ -260,7 +262,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             metadataString = metadataString.replace('\\', '/');
             List<String> pathComponents = new ArrayList<>();
             for (String s : metadataString.split("/")) {
-                if(!StringUtils.isNullOrEmpty(s)) {
+                if (!StringUtils.isNullOrEmpty(s)) {
                     pathComponents.add(StringUtils.makeFilesystemCompatible(s));
                 }
             }
@@ -286,7 +288,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             metadataString = metadataString.replace('\\', '/');
             List<String> pathComponents = new ArrayList<>();
             for (String s : metadataString.split("/")) {
-                if(!StringUtils.isNullOrEmpty(s)) {
+                if (!StringUtils.isNullOrEmpty(s)) {
                     pathComponents.add(StringUtils.makeFilesystemCompatible(s));
                 }
             }

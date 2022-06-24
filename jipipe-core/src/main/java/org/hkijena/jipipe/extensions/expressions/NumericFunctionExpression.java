@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.expressions;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 

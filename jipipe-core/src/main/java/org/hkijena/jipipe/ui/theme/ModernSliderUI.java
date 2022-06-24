@@ -17,17 +17,17 @@ public class ModernSliderUI extends BasicSliderUI {
 
     @Override
     public void paintTrack(Graphics g) {
-        if(slider.getOrientation() == SwingConstants.HORIZONTAL) {
+        if (slider.getOrientation() == SwingConstants.HORIZONTAL) {
             Rectangle trackBounds = trackRect;
 
             g.setColor(Color.LIGHT_GRAY);
             // Draw the ticks
             if (slider.getMinorTickSpacing() > 0) {
                 int value = slider.getMinimum();
-                int yBase =  trackBounds.y + trackBounds.height / 2;
+                int yBase = trackBounds.y + trackBounds.height / 2;
                 int h = trackBounds.height / 4;
 
-                while ( value <= slider.getMaximum() ) {
+                while (value <= slider.getMaximum()) {
                     int xPos = xPositionForValue(value);
                     g.drawLine(xPos, yBase - h, xPos, yBase + h);
 
@@ -48,8 +48,7 @@ public class ModernSliderUI extends BasicSliderUI {
                 int y = trackBounds.y + trackBounds.height / 2;
                 g.fillRect(x, y, trackBounds.width, 1);
             }
-        }
-        else {
+        } else {
             super.paintTrack(g);
         }
     }
@@ -57,7 +56,8 @@ public class ModernSliderUI extends BasicSliderUI {
     @Override
     protected TrackListener createTrackListener(JSlider slider) {
         return new TrackListener() {
-            @Override public void mousePressed(MouseEvent e) {
+            @Override
+            public void mousePressed(MouseEvent e) {
                 if (UIManager.getBoolean("Slider.onlyLeftMouseButtonDrag")
                         && SwingUtilities.isLeftMouseButton(e)) {
                     JSlider slider = (JSlider) e.getComponent();
@@ -77,7 +77,9 @@ public class ModernSliderUI extends BasicSliderUI {
                     super.mousePressed(e);
                 }
             }
-            @Override public boolean shouldScroll(int direction) {
+
+            @Override
+            public boolean shouldScroll(int direction) {
                 return false;
             }
         };
@@ -92,9 +94,9 @@ public class ModernSliderUI extends BasicSliderUI {
 
         g.setColor(UIManager.getColor("Button.background"));
 //        g.setColor(Color.RED);
-        g.fillRoundRect(knobBounds.x, knobBounds.y, knobBounds.width - 1, knobBounds.height - 1, 3,3);
+        g.fillRoundRect(knobBounds.x, knobBounds.y, knobBounds.width - 1, knobBounds.height - 1, 3, 3);
         g.setColor(UIManager.getColor("Button.borderColor"));
-        g.drawRoundRect(knobBounds.x, knobBounds.y, knobBounds.width - 1, knobBounds.height - 1, 3,3);
+        g.drawRoundRect(knobBounds.x, knobBounds.y, knobBounds.width - 1, knobBounds.height - 1, 3, 3);
 //        g.setColor(slider.getBackground());
 //
     }

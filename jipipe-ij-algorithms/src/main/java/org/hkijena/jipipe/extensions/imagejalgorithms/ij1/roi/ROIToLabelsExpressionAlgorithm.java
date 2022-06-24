@@ -54,7 +54,7 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Create result image
         ImagePlus result;
-        if(dataBatch.getInputRow("Reference") >= 0) {
+        if (dataBatch.getInputRow("Reference") >= 0) {
             ImagePlus reference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo).getImage();
             result = IJ.createHyperStack("Labels",
                     reference.getWidth(),
@@ -63,8 +63,7 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
                     reference.getNSlices(),
                     reference.getNFrames(),
                     32);
-        }
-        else {
+        } else {
             Rectangle bounds = rois.getBounds();
             int sx = bounds.width + bounds.x;
             int sy = bounds.height + bounds.y;
@@ -90,7 +89,7 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Calculate labels
         int[] labelMap = new int[rois.size()];
-        if(roiToLabelTransformation.isEnabled()) {
+        if (roiToLabelTransformation.isEnabled()) {
             for (int i = 0; i < rois.size(); i++) {
                 Roi roi = rois.get(i);
                 parameters.set("name", StringUtils.nullToEmpty(roi.getName()));
@@ -99,11 +98,10 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
                 parameters.set("width", roi.getBounds().width);
                 parameters.set("height", roi.getBounds().height);
                 parameters.set("index", i + 1);
-                int label = (int)(roiToLabelTransformation.getContent().evaluateToNumber(parameters));
+                int label = (int) (roiToLabelTransformation.getContent().evaluateToNumber(parameters));
                 labelMap[i] = label;
             }
-        }
-        else {
+        } else {
             for (int i = 0; i < rois.size(); i++) {
                 labelMap[i] = i + 1;
             }
@@ -129,9 +127,9 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
                             continue;
 
                         processor.setColor(labelMap[i]);
-                        if(fillOutline)
+                        if (fillOutline)
                             processor.fill(roi);
-                        if(drawOutline)
+                        if (drawOutline)
                             roi.drawPixels(processor);
                     }
                 }
@@ -153,7 +151,7 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
         this.roiToLabelTransformation = roiToLabelTransformation;
     }
 
-    @JIPipeDocumentation(name = "Draw outline",description = "If enabled, the label value is drawn as outline")
+    @JIPipeDocumentation(name = "Draw outline", description = "If enabled, the label value is drawn as outline")
     @JIPipeParameter("draw-outline")
     public boolean isDrawOutline() {
         return drawOutline;
@@ -164,7 +162,7 @@ public class ROIToLabelsExpressionAlgorithm extends JIPipeIteratingAlgorithm {
         this.drawOutline = drawOutline;
     }
 
-    @JIPipeDocumentation(name = "Fill outline",description = "If enabled, the ROI is filled with the label value")
+    @JIPipeDocumentation(name = "Fill outline", description = "If enabled, the ROI is filled with the label value")
     @JIPipeParameter("fill-outline")
     public boolean isFillOutline() {
         return fillOutline;

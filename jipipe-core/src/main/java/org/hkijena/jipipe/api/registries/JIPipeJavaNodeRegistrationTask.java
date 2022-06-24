@@ -39,7 +39,7 @@ public class JIPipeJavaNodeRegistrationTask extends JIPipeDefaultNodeRegistratio
      * @param id        The id
      * @param nodeClass The algorithm class
      * @param source    The dependency the registers the algorithm
-     * @param icon the icon
+     * @param icon      the icon
      */
     public JIPipeJavaNodeRegistrationTask(String id, Class<? extends JIPipeGraphNode> nodeClass, JIPipeDependency source, URL icon) {
         this.source = source;

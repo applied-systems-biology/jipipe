@@ -15,16 +15,6 @@ package org.hkijena.jipipe.extensions.parameters.library.references;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -37,7 +27,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalBooleanParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
 
-import java.io.IOException;
 import java.util.Objects;
 
 /**
@@ -45,9 +34,8 @@ import java.util.Objects;
  */
 public class ImageJDataExportOperationRef implements JIPipeValidatable, JIPipeParameterCollection {
 
-    private String id;
-
     private final EventBus eventBus = new EventBus();
+    private String id;
     private OptionalBooleanParameter activate = new OptionalBooleanParameter();
     private OptionalBooleanParameter noWindows = new OptionalBooleanParameter();
     private OptionalBooleanParameter append = new OptionalBooleanParameter();
@@ -194,22 +182,23 @@ public class ImageJDataExportOperationRef implements JIPipeValidatable, JIPipePa
 
     /**
      * Overrides parameters if enabled
+     *
      * @param parameters the parameters
      */
     public void configure(ImageJExportParameters parameters) {
-        if(name.isEnabled()) {
+        if (name.isEnabled()) {
             parameters.setName(name.getContent());
         }
-        if(duplicate.isEnabled()) {
+        if (duplicate.isEnabled()) {
             parameters.setDuplicate(duplicate.getContent());
         }
-        if(activate.isEnabled()) {
+        if (activate.isEnabled()) {
             parameters.setActivate(activate.getContent());
         }
-        if(append.isEnabled()) {
+        if (append.isEnabled()) {
             parameters.setAppend(append.getContent());
         }
-        if(noWindows.isEnabled()) {
+        if (noWindows.isEnabled()) {
             parameters.setNoWindows(noWindows.isEnabled());
         }
     }

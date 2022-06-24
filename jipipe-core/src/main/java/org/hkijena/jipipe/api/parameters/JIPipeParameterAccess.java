@@ -82,13 +82,14 @@ public interface JIPipeParameterAccess {
 
     /**
      * Gets annotations for this parameter (including the field class)
+     *
      * @param klass the annotation class
+     * @param <T>   the annotation class
      * @return the list of annotations
-     * @param <T> the annotation class
      */
     default <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
         T annotation = getAnnotationOfType(klass);
-        if(annotation != null)
+        if (annotation != null)
             return Collections.singletonList(annotation);
         else
             return Collections.emptyList();

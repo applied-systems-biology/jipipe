@@ -120,18 +120,17 @@ public abstract class JIPipeAsyncResultDataSlotPreview extends JIPipeResultDataS
             Path thumbnailRootPath = slotStoragePath.resolve("thumbnail").resolve(internalPath);
             Path thumbnailMetadataPath = thumbnailRootPath.resolve("thumbnails.json");
 
-            if(Files.exists(thumbnailMetadataPath)) {
+            if (Files.exists(thumbnailMetadataPath)) {
                 try {
                     JIPipeDataThumbnailsMetadata metadata = JsonUtils.readFromFile(thumbnailMetadataPath, JIPipeDataThumbnailsMetadata.class);
                     JIPipeDataThumbnailsMetadata.Thumbnail thumbnail = metadata.selectBestThumbnail(new Dimension(previewSize, previewSize));
-                    if(thumbnail != null) {
+                    if (thumbnail != null) {
                         Path thumbnailImagePath = thumbnailRootPath.resolve(thumbnail.getImageFile());
                         BufferedImage bufferedImage = ImageIO.read(thumbnailImagePath.toFile());
                         bufferedImage = UIUtils.scaleImageToFit(bufferedImage, previewSize, previewSize);
                         return new JLabel(new ImageIcon(bufferedImage));
                     }
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }

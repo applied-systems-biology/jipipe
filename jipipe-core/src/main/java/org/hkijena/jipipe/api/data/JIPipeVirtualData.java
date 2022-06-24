@@ -73,7 +73,7 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
      * @return the copy
      */
     public JIPipeVirtualData duplicate(JIPipeProgressInfo progressInfo) {
-        if(closed)
+        if (closed)
             throw new IllegalStateException("The data object is already destroyed (use-after-free)");
         JIPipeData data = getData(progressInfo).duplicate(progressInfo);
         JIPipeVirtualData virtualData = new JIPipeVirtualData(data);
@@ -85,6 +85,7 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
 
     /**
      * Returns true if the object is virtual
+     *
      * @return if the object is virtual
      */
     public synchronized boolean isVirtual() {
@@ -93,6 +94,7 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
 
     /**
      * Returns true if this object is closed and thus should not be used anymore
+     *
      * @return if the object is closed
      */
     public boolean isClosed() {
@@ -106,7 +108,7 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
      * @param discard      if existing data should be saved or discarded. Discard has no effect if data was not saved, yet.
      */
     public synchronized void makeVirtual(JIPipeProgressInfo progressInfo, boolean discard) {
-        if(closed)
+        if (closed)
             throw new IllegalStateException("The data object is already destroyed (use-after-free)");
         if (!isVirtual()) {
             if (JIPipe.getInstance() != null && !VirtualDataSettings.getInstance().isVirtualMode())
@@ -128,7 +130,7 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
     }
 
     public synchronized void makeNonVirtual(JIPipeProgressInfo progressInfo, boolean removeVirtualDataStorage) {
-        if(closed)
+        if (closed)
             throw new IllegalStateException("The data object is already destroyed (use-after-free)");
         if (isVirtual()) {
             if (virtualStoragePath.getPath() == null) {
@@ -171,7 +173,7 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
      * @return the data
      */
     public synchronized JIPipeData getData(JIPipeProgressInfo progressInfo) {
-        if(closed)
+        if (closed)
             throw new IllegalStateException("The data object is already destroyed (use-after-free)");
         boolean shouldBeVirtual = isVirtual();
         if (dataReference != null) {
@@ -188,7 +190,7 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
     }
 
     public String getStringRepresentation() {
-        if(data != null) {
+        if (data != null) {
             return "" + data;
         }
         return stringRepresentation;
@@ -200,6 +202,7 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
 
     /**
      * Marks the provided object as user of this data
+     *
      * @param obj the object
      */
     public synchronized void addUser(Object obj) {
@@ -208,6 +211,7 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
 
     /**
      * Un-marks the provided objects as user of this data
+     *
      * @param obj the object
      */
     public synchronized void removeUser(Object obj) {
@@ -216,6 +220,7 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
 
     /**
      * Returns true if the data has no users and thus can be closed
+     *
      * @return if the data has no users
      */
     public synchronized boolean canClose() {
@@ -224,7 +229,7 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
 
     @Override
     public synchronized void close() throws IOException {
-        if(closed)
+        if (closed)
             return;
 //        System.out.println("Closing " + getStringRepresentation());
         closed = true;
@@ -235,7 +240,7 @@ public class JIPipeVirtualData implements AutoCloseable, Closeable {
                 e.printStackTrace();
             }
         }
-        if(data != null) {
+        if (data != null) {
             data.close();
         }
         data = null;

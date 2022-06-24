@@ -36,7 +36,7 @@ public class StringUtils {
     }
 
     public static String removeDuplicateDelimiters(String string, String delimiter) {
-        while(string.contains(delimiter + delimiter)) {
+        while (string.contains(delimiter + delimiter)) {
             string = string.replace(delimiter + delimiter, delimiter);
         }
         return string;

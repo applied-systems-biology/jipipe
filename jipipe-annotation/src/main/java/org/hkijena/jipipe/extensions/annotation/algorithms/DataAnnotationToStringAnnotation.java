@@ -60,7 +60,7 @@ public class DataAnnotationToStringAnnotation extends JIPipeSimpleIteratingAlgor
         this.keepDataAnnotations = keepDataAnnotations;
     }
 
-    @JIPipeDocumentation(name = "Name filter", description = "Determines which data annotations are converted. " )
+    @JIPipeDocumentation(name = "Name filter", description = "Determines which data annotations are converted. ")
     @JIPipeParameter("name-filter")
     public StringQueryExpression getNameFilter() {
         return nameFilter;

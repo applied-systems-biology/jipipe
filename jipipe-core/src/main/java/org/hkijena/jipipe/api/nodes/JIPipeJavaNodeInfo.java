@@ -151,7 +151,8 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
     public JIPipeGraphNode newInstance() {
         try {
             return getInstanceClass().getConstructor(JIPipeNodeInfo.class).newInstance(this);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                 InvocationTargetException e) {
             throw new UserFriendlyRuntimeException(e, "Unable to create an algorithm instance!",
                     "Undefined", "There is a programming error in an algorithm's code.",
                     "Please contact the developer of the plugin that created the algorithm.");

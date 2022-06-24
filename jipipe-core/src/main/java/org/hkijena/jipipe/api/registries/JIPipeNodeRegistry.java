@@ -53,6 +53,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
 
     /**
      * Creates a new registry
+     *
      * @param jiPipe the JIPipe instance
      */
     public JIPipeNodeRegistry(JIPipe jiPipe) {

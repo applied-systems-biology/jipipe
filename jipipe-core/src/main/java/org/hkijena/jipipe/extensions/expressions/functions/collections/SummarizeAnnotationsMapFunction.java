@@ -42,9 +42,9 @@ public class SummarizeAnnotationsMapFunction extends ExpressionFunction {
         String equals = "=";
         String prefix = "";
         boolean onlyValues = false;
-        if(parameters.size() >= 2)
+        if (parameters.size() >= 2)
             prefix = StringUtils.nullToEmpty(parameters.get(1));
-        if(parameters.size() >= 3)
+        if (parameters.size() >= 3)
             onlyValues = (boolean) parameters.get(2);
         if (parameters.size() >= 4)
             delimiter = StringUtils.nullToEmpty(parameters.get(3));
@@ -52,7 +52,7 @@ public class SummarizeAnnotationsMapFunction extends ExpressionFunction {
             equals = StringUtils.nullToEmpty(parameters.get(4));
         String finalEquals = equals;
         String finalPrefix = prefix;
-        if(onlyValues)
+        if (onlyValues)
             return map.keySet().stream().filter(key -> key.toString().startsWith(finalPrefix)).sorted().map(key -> "" + map.get(key)).collect(Collectors.joining(delimiter));
         else
             return map.keySet().stream().filter(key -> key.toString().startsWith(finalPrefix)).sorted().map(key -> key + finalEquals + map.get(key)).collect(Collectors.joining(delimiter));

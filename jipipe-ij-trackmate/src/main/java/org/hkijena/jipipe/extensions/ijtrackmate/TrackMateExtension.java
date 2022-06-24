@@ -30,12 +30,20 @@ import org.scijava.plugin.PluginService;
 import javax.swing.*;
 import java.net.URL;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Plugin(type = JIPipeJavaExtension.class)
 public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     public static final String RESOURCE_BASE_PATH = "/org/hkijena/jipipe/extensions/ijtrackmate";
+
+    private static Map<String, PluginInfo<SpotDetectorFactory>> SPOT_DETECTORS = new HashMap<>();
+
+    public static Map<String, PluginInfo<SpotDetectorFactory>> getSpotDetectors() {
+        return Collections.unmodifiableMap(SPOT_DETECTORS);
+    }
 
     @Override
     public StringList getDependencyCitations() {
@@ -63,18 +71,24 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         URL trackMateIcon16 = getClass().getResource(RESOURCE_BASE_PATH + "/trackmate-16.png");
+        URL trackMateSpotsIcon16 = getClass().getResource(RESOURCE_BASE_PATH + "/trackmate-spots.png");
         PluginService service = context.getService(PluginService.class);
 
-        registerDatatype("trackmate-spot-detector", SpotDetectorData.class, trackMateIcon16);
+        registerDatatype("trackmate-spot-detector", SpotDetectorData.class, trackMateSpotsIcon16);
 
+        registerSpotDetectors(progressInfo, trackMateIcon16, service);
+    }
+
+    private void registerSpotDetectors(JIPipeProgressInfo progressInfo, URL trackMateIcon16, PluginService service) {
         JIPipeProgressInfo spotDetectorProgress = progressInfo.resolveAndLog("Spot detectors");
         for (PluginInfo<SpotDetectorFactory> info : service.getPluginsOfType(SpotDetectorFactory.class)) {
             JIPipeProgressInfo detectorProgress = spotDetectorProgress.resolveAndLog(info.toString());
             try {
-                CreateSpotDetectorNodeInfo nodeInfo = new CreateSpotDetectorNodeInfo(info.createInstance());
+                SpotDetectorFactory instance = info.createInstance();
+                CreateSpotDetectorNodeInfo nodeInfo = new CreateSpotDetectorNodeInfo(instance);
                 registerNodeType(nodeInfo, trackMateIcon16);
-            }
-            catch (Throwable throwable) {
+                SPOT_DETECTORS.put(instance.getKey(), info);
+            } catch (Throwable throwable) {
                 detectorProgress.log("Unable to register: " + throwable.getMessage());
             }
         }

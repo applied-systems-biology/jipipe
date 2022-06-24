@@ -60,11 +60,10 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
     public static final int IGNORE_CUSTOM = 4;
 
     private final EventBus eventBus = new EventBus();
-    private Node root = new Node(null, null);
     private final BiMap<JIPipeParameterCollection, Node> nodeMap = HashBiMap.create();
     private final BiMap<String, JIPipeParameterAccess> parameters = HashBiMap.create();
     private final PriorityQueue<JIPipeParameterAccess> parametersByPriority = new PriorityQueue<>(JIPipeParameterAccess::comparePriority);
-
+    private Node root = new Node(null, null);
     private boolean ignoreReflectionParameters = false;
     private boolean ignoreCustomParameters = false;
     private boolean forceReflection = false;

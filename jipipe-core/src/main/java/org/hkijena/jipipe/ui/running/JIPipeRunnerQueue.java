@@ -22,7 +22,6 @@ import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Queue;
-import java.util.function.Consumer;
 
 /**
  * Queue for {@link JIPipeRunnable}

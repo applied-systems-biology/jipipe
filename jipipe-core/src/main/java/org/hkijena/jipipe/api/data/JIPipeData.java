@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
  * Additionally, there must be an annotation of type {@link JIPipeDataStorageDocumentation} that describes the structure of a valid row storage folder for humans.
  * The static importData(@link org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage}, JIPipeProgressInfo) method and the {@link JIPipeDataStorageDocumentation} annotation can be omitted for abstract data types or interfaces.
  * {@link JIPipeDataStorageDocumentation} can be inherited from parent classes.
- *
+ * <p>
  * Update: 1.74.0: The class is now closable, which is useful for handling external resources. {@link JIPipeDataTable} and {@link JIPipeVirtualData} were adapted to handle the close() automatically.
  */
 @JIPipeDocumentation(name = "Data", description = "Generic data")
@@ -277,7 +277,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
                     BufferedImage image = new BufferedImage(trueWidth, trueHeight, BufferedImage.TYPE_INT_ARGB);
                     Graphics2D g = (Graphics2D) image.getGraphics();
                     component.print(g);
-                    try(OutputStream stream = storage.write(size.width + "x" + size.height + ".png")) {
+                    try (OutputStream stream = storage.write(size.width + "x" + size.height + ".png")) {
                         ImageIO.write(image, "PNG", stream);
                         metadata.getThumbnails().add(new JIPipeDataThumbnailsMetadata.Thumbnail(size.width + "x" + size.height, size, Paths.get(size.width + "x" + size.height + ".png"), new ArrayList<>()));
                     } catch (IOException e) {
@@ -288,7 +288,7 @@ public interface JIPipeData extends Closeable, AutoCloseable {
                 e.printStackTrace();
             }
         }
-        if(!metadata.getThumbnails().isEmpty()) {
+        if (!metadata.getThumbnails().isEmpty()) {
             storage.writeJSON(Paths.get("thumbnails.json"), metadata);
         }
     }

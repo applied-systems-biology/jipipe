@@ -21,7 +21,9 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 
@@ -64,10 +66,10 @@ public class CanvasEqualizer implements JIPipeParameterCollection {
 
         variables.set("width", wNew);
         variables.set("height", hNew);
-        if(!xAxis.isEmpty())
-            wNew =  (int) xAxis.evaluateToNumber(variables);
-        if(!yAxis.isEmpty())
-            hNew =  (int) yAxis.evaluateToNumber(variables);
+        if (!xAxis.isEmpty())
+            wNew = (int) xAxis.evaluateToNumber(variables);
+        if (!yAxis.isEmpty())
+            hNew = (int) yAxis.evaluateToNumber(variables);
 
         List<ImagePlus> result = new ArrayList<>();
         for (ImagePlus imp : input) {

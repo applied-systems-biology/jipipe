@@ -69,9 +69,9 @@ public class JIPipeProjectTabMetadata {
         for (String id : openTabs) {
             restoreTab(id, tabIds, workbench);
         }
-        if(!StringUtils.isNullOrEmpty(selectedTab)) {
+        if (!StringUtils.isNullOrEmpty(selectedTab)) {
             DocumentTabPane.DocumentTab tab = tabIds.getOrDefault(selectedTab, null);
-            if(tab != null) {
+            if (tab != null) {
                 workbench.getDocumentTabPane().switchToTab(tab);
             }
         }

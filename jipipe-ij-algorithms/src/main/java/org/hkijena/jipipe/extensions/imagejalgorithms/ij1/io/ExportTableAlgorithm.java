@@ -17,8 +17,6 @@ import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -62,10 +60,9 @@ public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
-            if(relativeToProjectDir && getProjectDirectory() != null) {
+            if (relativeToProjectDir && getProjectDirectory() != null) {
                 outputPath = getProjectDirectory().resolve(StringUtils.nullToEmpty(outputDirectory));
-            }
-            else {
+            } else {
                 outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
             }
         } else {
@@ -76,10 +73,9 @@ public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {
         Path generatedPath = exporter.generatePath(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
         // If absolute -> use the path, otherwise use output directory
-        if(generatedPath.isAbsolute()) {
+        if (generatedPath.isAbsolute()) {
             outputPath = generatedPath;
-        }
-        else {
+        } else {
             outputPath = outputPath.resolve(generatedPath);
         }
         PathUtils.ensureParentDirectoriesExist(outputPath);

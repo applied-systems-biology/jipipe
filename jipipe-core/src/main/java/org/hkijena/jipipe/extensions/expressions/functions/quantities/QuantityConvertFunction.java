@@ -23,7 +23,6 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Convert quantity", description = "Converts a quantity string '[value] [unit]' to another unit. Will throw an error if the unit is unknown. Supported are length, time, and weight units (metric).")
 public class QuantityConvertFunction extends ExpressionFunction {
@@ -103,17 +102,17 @@ public class QuantityConvertFunction extends ExpressionFunction {
         Object value = parameters.get(0);
         Quantity quantity = Quantity.parse(value.toString());
 
-        if(quantity == null) {
+        if (quantity == null) {
             throw new RuntimeException("Invalid quantity: '" + value + "'. Must be [number] [unit]");
         }
 
         Double sourceFactor = UNITS_FACTORS.getOrDefault(quantity.getUnit(), null);
         Double targetFactor = UNITS_FACTORS.getOrDefault(StringUtils.nullToEmpty(parameters.get(1)), null);
 
-        if(sourceFactor == null) {
+        if (sourceFactor == null) {
             throw new RuntimeException(getName() + ": Unknown unit " + quantity.getUnit() + ". Supported are: " + String.join(", ", UNITS_FACTORS.keySet()));
         }
-        if(targetFactor == null) {
+        if (targetFactor == null) {
             throw new RuntimeException(getName() + ": Unknown unit " + parameters.get(1) + ". Supported are: " + String.join(", ", UNITS_FACTORS.keySet()));
         }
 

@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.ui.tableeditor;
 
-import com.google.common.base.Charsets;
-import com.google.common.base.Joiner;
 import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -44,9 +42,6 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
-import java.io.BufferedOutputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -737,7 +732,7 @@ public class TableEditor extends JIPipeWorkbenchPanel {
     private void exportTableAsCSV() {
         Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export CSV table (*.csv)", UIUtils.EXTENSION_FILTER_CSV);
         if (selectedPath != null) {
-           tableModel.saveAsCSV(selectedPath);
+            tableModel.saveAsCSV(selectedPath);
         }
     }
 

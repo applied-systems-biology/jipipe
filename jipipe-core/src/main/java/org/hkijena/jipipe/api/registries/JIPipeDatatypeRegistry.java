@@ -64,6 +64,7 @@ public class JIPipeDatatypeRegistry {
 
     /**
      * Creates a new instance
+     *
      * @param jiPipe the JIPipe instance
      */
     public JIPipeDatatypeRegistry(JIPipe jiPipe) {
@@ -545,7 +546,8 @@ public class JIPipeDatatypeRegistry {
                 try {
                     return rendererClass.getConstructor(JIPipeProjectWorkbench.class, JTable.class, JIPipeDataSlot.class, JIPipeDataTableMetadataRow.class, JIPipeExportedDataAnnotation.class)
                             .newInstance(workbench, table, slot, row, dataAnnotation);
-                } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+                } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                         NoSuchMethodException e) {
                     throw new RuntimeException(e);
                 }
             } else {

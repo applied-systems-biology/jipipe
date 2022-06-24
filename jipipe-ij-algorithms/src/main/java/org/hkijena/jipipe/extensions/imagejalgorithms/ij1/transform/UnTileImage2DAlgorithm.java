@@ -37,7 +37,7 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
     private OptionalAnnotationNameParameter imageWidthAnnotation = new OptionalAnnotationNameParameter("Original width", true);
 
     private OptionalAnnotationNameParameter imageHeightAnnotation = new OptionalAnnotationNameParameter("Original height", true);
-    
+
     public UnTileImage2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
@@ -70,19 +70,19 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
             int insetX = 0;
             int insetY = 0;
 
-            if(tileInsetXAnnotation.isEnabled()) {
+            if (tileInsetXAnnotation.isEnabled()) {
                 insetX = NumberUtils.createInteger(annotations.get(tileInsetXAnnotation.getContent()));
             }
-            if(tileInsetYAnnotation.isEnabled()) {
+            if (tileInsetYAnnotation.isEnabled()) {
                 insetY = NumberUtils.createInteger(annotations.get(tileInsetYAnnotation.getContent()));
             }
 
-            if(insetX != 0 || insetY != 0) {
+            if (insetX != 0 || insetY != 0) {
                 tile = TransformCrop2DAlgorithm.crop(progressInfo, tile, new Rectangle(insetX, insetY, tile.getWidth() - insetX * 2, tile.getHeight() - insetY * 2));
             }
 
             // Calculate dimensions
-            if(bitDepth != 24)
+            if (bitDepth != 24)
                 bitDepth = Math.max(tile.getBitDepth(), bitDepth);
             nChannels = Math.max(nChannels, tile.getNChannels());
             nFrames = Math.max(nFrames, tile.getNFrames());
@@ -90,42 +90,40 @@ public class UnTileImage2DAlgorithm extends JIPipeMergingAlgorithm {
 
             int x;
             int y;
-            if(tileRealXAnnotation.isEnabled()) {
+            if (tileRealXAnnotation.isEnabled()) {
                 x = NumberUtils.createInteger(annotations.getOrDefault(tileRealXAnnotation.getContent(), "0"));
-            }
-            else {
+            } else {
                 throw new RuntimeException("No real X location available!");
             }
-            if(tileRealYAnnotation.isEnabled()) {
+            if (tileRealYAnnotation.isEnabled()) {
                 y = NumberUtils.createInteger(annotations.getOrDefault(tileRealYAnnotation.getContent(), "0"));
-            }
-            else {
+            } else {
                 throw new RuntimeException("No real Y location available!");
             }
-            if(imageWidthAnnotation.isEnabled() && annotations.containsKey(imageWidthAnnotation.getContent())) {
+            if (imageWidthAnnotation.isEnabled() && annotations.containsKey(imageWidthAnnotation.getContent())) {
                 int num = NumberUtils.createInteger(annotations.get(imageWidthAnnotation.getContent()));
-                if(width != 0 && num != width) {
+                if (width != 0 && num != width) {
                     throw new RuntimeException("Image width was already determined as " + width + ", but row " + row + " suggested width=" + num);
                 }
                 width = num;
             }
-            if(imageHeightAnnotation.isEnabled() && annotations.containsKey(imageHeightAnnotation.getContent())) {
+            if (imageHeightAnnotation.isEnabled() && annotations.containsKey(imageHeightAnnotation.getContent())) {
                 int num = NumberUtils.createInteger(annotations.get(imageHeightAnnotation.getContent()));
-                if(height != 0 && num != height) {
+                if (height != 0 && num != height) {
                     throw new RuntimeException("Image height was already determined as " + height + ", but row " + row + " suggested height=" + num);
                 }
                 height = num;
             }
-            imageLocations.put(tile, new Point(x,y));
+            imageLocations.put(tile, new Point(x, y));
         }
 
         // Determine width & height if not set
-        if(width == 0) {
+        if (width == 0) {
             for (Map.Entry<ImagePlus, Point> entry : imageLocations.entrySet()) {
                 width = Math.max(width, entry.getKey().getWidth() + entry.getValue().x);
             }
         }
-        if(height == 0) {
+        if (height == 0) {
             for (Map.Entry<ImagePlus, Point> entry : imageLocations.entrySet()) {
                 height = Math.max(height, entry.getKey().getHeight() + entry.getValue().y);
             }

@@ -18,7 +18,7 @@ import java.util.*;
 /**
  * A list of multiple {@link org.hkijena.jipipe.api.parameters.JIPipeParameterCollection} items (internally {@link org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection}.
  * We suggest to use this parameter instead of defining custom pairs ({@link org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter} or functions ({@link org.hkijena.jipipe.extensions.parameters.api.functions.FunctionParameter}
- *
+ * <p>
  * You should provide a template {@link JIPipeParameterCollection} class (that is instantiable) to automatically populate newly created {@link JIPipeDynamicParameterCollection} with values.
  */
 @JsonSerialize(using = ParameterCollectionList.Serializer.class)
@@ -40,7 +40,39 @@ public class ParameterCollectionList extends ListParameter<JIPipeDynamicParamete
     }
 
     /**
+     * Creates an instance from a template collection class.
+     * Each item contains the same parameters as the template.
+     * Please note that nested parameters (groups) are flattened.
+     *
+     * @param klass the template collection. must be instantiable.
+     * @return the list
+     */
+    public static ParameterCollectionList containingCollection(Class<? extends JIPipeParameterCollection> klass) {
+        ParameterCollectionList list = new ParameterCollectionList();
+        JIPipeParameterCollection templateCollection = (JIPipeParameterCollection) ReflectionUtils.newInstance(klass);
+        JIPipeParameterTree tree = new JIPipeParameterTree(templateCollection);
+        for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
+            JIPipeMutableParameterAccess parameterAccess = new JIPipeMutableParameterAccess(entry.getValue());
+            list.getTemplate().addParameter(parameterAccess);
+        }
+        return list;
+    }
+
+    /**
+     * Creates an instance that contains a parameter of a specific value
+     *
+     * @param klass the type of parameter that is contained
+     * @return the list
+     */
+    public static ParameterCollectionList containingSingle(Class<?> klass) {
+        ParameterCollectionList list = new ParameterCollectionList();
+        list.getTemplate().addParameter("value", klass, "Value", "");
+        return list;
+    }
+
+    /**
      * Returns the template object for new items
+     *
      * @return the template
      */
     public JIPipeDynamicParameterCollection getTemplate() {
@@ -49,6 +81,7 @@ public class ParameterCollectionList extends ListParameter<JIPipeDynamicParamete
 
     /**
      * Sets the template for new items
+     *
      * @param template the template
      */
     public void setTemplate(JIPipeDynamicParameterCollection template) {
@@ -57,9 +90,10 @@ public class ParameterCollectionList extends ListParameter<JIPipeDynamicParamete
 
     /**
      * Maps the items to a {@link JIPipeParameterCollection} type. Useful if you created this list based on a template.
+     *
      * @param klass the collection class
+     * @param <T>   the collection class
      * @return list of mapped objects
-     * @param <T> the collection class
      */
     public <T extends JIPipeParameterCollection> List<T> mapToCollection(Class<T> klass) {
         List<T> result = new ArrayList<>();
@@ -68,7 +102,7 @@ public class ParameterCollectionList extends ListParameter<JIPipeDynamicParamete
             JIPipeParameterTree tree = new JIPipeParameterTree(target);
             for (Map.Entry<String, JIPipeParameterAccess> entry : source.getParameters().entrySet()) {
                 JIPipeParameterAccess targetAccess = tree.getParameters().getOrDefault(entry.getKey(), null);
-                if(targetAccess == null || !targetAccess.getFieldClass().isAssignableFrom(entry.getValue().getFieldClass()))
+                if (targetAccess == null || !targetAccess.getFieldClass().isAssignableFrom(entry.getValue().getFieldClass()))
                     continue;
                 targetAccess.set(entry.getValue().get(Object.class));
             }
@@ -81,8 +115,7 @@ public class ParameterCollectionList extends ListParameter<JIPipeDynamicParamete
     public JIPipeDynamicParameterCollection addNewInstance() {
         if (getCustomInstanceGenerator() != null) {
             return super.addNewInstance();
-        }
-        else {
+        } else {
             JIPipeDynamicParameterCollection result = new JIPipeDynamicParameterCollection(false);
             for (Map.Entry<String, JIPipeParameterAccess> entry : template.getParameters().entrySet()) {
                 JIPipeMutableParameterAccess copy = new JIPipeMutableParameterAccess(entry.getValue());
@@ -102,19 +135,19 @@ public class ParameterCollectionList extends ListParameter<JIPipeDynamicParamete
         for (JIPipeDynamicParameterCollection collection : this) {
             for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
                 JIPipeMutableParameterAccess itemAccess = (JIPipeMutableParameterAccess) entry.getValue();
-                if(!template.containsKey(entry.getKey())) {
+                if (!template.containsKey(entry.getKey())) {
                     toRemove.add(entry.getKey());
                     continue;
                 }
                 JIPipeParameterAccess templateAccess = template.get(entry.getKey());
-                if(templateAccess.getFieldClass() != itemAccess.getFieldClass()) {
+                if (templateAccess.getFieldClass() != itemAccess.getFieldClass()) {
                     toRemove.add(entry.getKey());
                     toAdd.add(entry.getKey());
                 }
                 itemAccess.setUIOrder(templateAccess.getUIOrder());
             }
             for (Map.Entry<String, JIPipeParameterAccess> entry : template.getParameters().entrySet()) {
-                if(!collection.containsKey(entry.getKey())) {
+                if (!collection.containsKey(entry.getKey())) {
                     toAdd.add(entry.getKey());
                 }
             }
@@ -127,35 +160,6 @@ public class ParameterCollectionList extends ListParameter<JIPipeDynamicParamete
                 collection.addParameter(copy);
             }
         }
-    }
-
-    /**
-     * Creates an instance from a template collection class.
-     * Each item contains the same parameters as the template.
-     * Please note that nested parameters (groups) are flattened.
-     * @param klass the template collection. must be instantiable.
-     * @return the list
-     */
-    public static ParameterCollectionList containingCollection(Class<? extends JIPipeParameterCollection> klass) {
-        ParameterCollectionList list = new ParameterCollectionList();
-        JIPipeParameterCollection templateCollection = (JIPipeParameterCollection) ReflectionUtils.newInstance(klass);
-        JIPipeParameterTree tree = new JIPipeParameterTree(templateCollection);
-        for (Map.Entry<String, JIPipeParameterAccess> entry : tree.getParameters().entrySet()) {
-            JIPipeMutableParameterAccess parameterAccess = new JIPipeMutableParameterAccess(entry.getValue());
-            list.getTemplate().addParameter(parameterAccess);
-        }
-        return list;
-    }
-
-    /**
-     * Creates an instance that contains a parameter of a specific value
-     * @param klass the type of parameter that is contained
-     * @return the list
-     */
-    public static ParameterCollectionList containingSingle(Class<?> klass) {
-        ParameterCollectionList list = new ParameterCollectionList();
-        list.getTemplate().addParameter("value", klass, "Value", "");
-        return list;
     }
 
     public static class Serializer extends JsonSerializer<ParameterCollectionList> {

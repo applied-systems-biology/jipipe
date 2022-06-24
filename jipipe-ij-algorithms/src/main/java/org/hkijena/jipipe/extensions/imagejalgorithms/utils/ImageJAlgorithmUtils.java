@@ -44,7 +44,7 @@ public class ImageJAlgorithmUtils {
         } else if (processor instanceof FloatProcessor) {
             float[] pixels = (float[]) processor.getPixels();
             for (int i = 0; i < pixels.length; i++) {
-                if ((int)pixels[i] == label) {
+                if ((int) pixels[i] == label) {
                     resultPixels[i] = (byte) 255;
                 }
             }

@@ -28,12 +28,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 /**
  * Imports {@link ResultsTableData} from a file
@@ -73,17 +68,14 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         FileFormat format = fileFormat;
-        if(format == FileFormat.Auto) {
-            if(UIUtils.EXTENSION_FILTER_CSV.accept(fileData.toPath().toFile())) {
+        if (format == FileFormat.Auto) {
+            if (UIUtils.EXTENSION_FILTER_CSV.accept(fileData.toPath().toFile())) {
                 format = FileFormat.CSV;
-            }
-            else if(UIUtils.EXTENSION_FILTER_TSV.accept(fileData.toPath().toFile())) {
+            } else if (UIUtils.EXTENSION_FILTER_TSV.accept(fileData.toPath().toFile())) {
                 format = FileFormat.XLSX;
-            }
-            else if(UIUtils.EXTENSION_FILTER_XLSX.accept(fileData.toPath().toFile())) {
+            } else if (UIUtils.EXTENSION_FILTER_XLSX.accept(fileData.toPath().toFile())) {
                 format = FileFormat.XLSX;
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException("Unknown file format: " + fileData.getPath());
             }
         }
@@ -101,20 +93,20 @@ public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
             case XLSX: {
                 Map<String, ResultsTableData> map = ResultsTableData.fromXLSX(fileData.toPath());
                 Set<String> importedSheetNames = new HashSet<>();
-                if(sheets.isEmpty())
+                if (sheets.isEmpty())
                     importedSheetNames.addAll(map.keySet());
                 else
                     importedSheetNames.addAll(sheets);
                 for (String sheetName : importedSheetNames) {
                     ResultsTableData data = map.getOrDefault(sheetName, null);
-                    if(data == null && !ignoreMissingSheets) {
+                    if (data == null && !ignoreMissingSheets) {
                         throw new UserFriendlyNullPointerException("Unable to find sheet '" + sheetName + "' in " + String.join(", ", map.keySet()),
                                 "Unable to find sheet '" + sheetName + "'",
                                 getDisplayName(),
                                 "Tried to import Excel sheet '" + sheetName + "', but it is not there.",
                                 "Please check if the sheet exists. You can also ignore missing sheets.");
                     }
-                    if(data == null)
+                    if (data == null)
                         continue;
                     List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
                     sheetNameAnnotation.addAnnotationIfEnabled(annotationList, sheetName);

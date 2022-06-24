@@ -30,10 +30,7 @@ import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.HashSet;
@@ -89,10 +86,9 @@ public class BioFormatsExporter extends JIPipeSimpleIteratingAlgorithm {
         Path generatedPath = exporter.generatePath(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
         // If absolute -> use the path, otherwise use output directory
-        if(generatedPath.isAbsolute()) {
+        if (generatedPath.isAbsolute()) {
             outputPath = generatedPath;
-        }
-        else {
+        } else {
             outputPath = outputPath.resolve(generatedPath);
         }
 

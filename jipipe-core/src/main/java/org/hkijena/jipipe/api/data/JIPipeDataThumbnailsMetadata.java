@@ -17,7 +17,7 @@ package org.hkijena.jipipe.api.data;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +55,7 @@ public class JIPipeDataThumbnailsMetadata {
 
     /**
      * Selects the best fitting thumbnail entry with respect to the size
+     *
      * @param size the selected size
      * @return the thumbnail or null if no thumbnail is available
      */
@@ -65,7 +66,7 @@ public class JIPipeDataThumbnailsMetadata {
         int selectedWidth = 0;
         int selectedHeight = 0;
         for (Thumbnail thumbnail : thumbnails) {
-            if((selectedWidth < targetWidth && thumbnail.size.width >= targetWidth) || (selectedHeight < targetHeight && thumbnail.size.height >= targetHeight)) {
+            if ((selectedWidth < targetWidth && thumbnail.size.width >= targetWidth) || (selectedHeight < targetHeight && thumbnail.size.height >= targetHeight)) {
                 selected = thumbnail;
                 selectedWidth = thumbnail.size.width;
                 selectedHeight = thumbnail.size.height;

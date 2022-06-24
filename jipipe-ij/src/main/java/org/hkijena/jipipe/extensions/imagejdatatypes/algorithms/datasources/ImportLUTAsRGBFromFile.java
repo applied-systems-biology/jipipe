@@ -12,10 +12,9 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.color.ImagePlus2DColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 @JIPipeDocumentation(name = "Import LUT as RGB image", description = "Imports an ImageJ *.lut file")
-@JIPipeInputSlot(value = FileData.class, slotName = "Input", description = "A *.lut file",autoCreate = true)
+@JIPipeInputSlot(value = FileData.class, slotName = "Input", description = "A *.lut file", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus2DColorRGBData.class, slotName = "Output", description = "Description of the LUT as RGB image", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class)
 public class ImportLUTAsRGBFromFile extends JIPipeSimpleIteratingAlgorithm {

@@ -127,6 +127,7 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
 
     /**
      * Gets the list of acknowledged authors
+     *
      * @return list of acknowledged authors
      */
     @JIPipeDocumentation(name = "Acknowledgements", description = "List of authors to acknowledge")
@@ -138,6 +139,7 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
 
     /**
      * Sets the list of acknowledged authors
+     *
      * @param acknowledgements list of acknowledged authors
      */
     @JsonSetter("acknowledgements")

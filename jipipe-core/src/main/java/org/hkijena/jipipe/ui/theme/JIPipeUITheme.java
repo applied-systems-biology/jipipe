@@ -57,7 +57,8 @@ public enum JIPipeUITheme {
                     UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
                     UIManager.put("swing.boldMetal", Boolean.FALSE);
                     UIManager.put("Button.borderColor", ModernMetalTheme.MEDIUM_GRAY);
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+                         UnsupportedLookAndFeelException e) {
                     e.printStackTrace();
                 }
                 break;
@@ -69,7 +70,8 @@ public enum JIPipeUITheme {
                     UIManager.put("ScrollBarUI", ArrowLessScrollBarUI.class.getName());
                     UIManager.put("SliderUI", ModernSliderUI.class.getName());
                     UIManager.put("SpinnerUI", ModernSpinnerUI.class.getName());
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+                         UnsupportedLookAndFeelException e) {
                     e.printStackTrace();
                 }
                 break;
@@ -81,7 +83,8 @@ public enum JIPipeUITheme {
                     UIManager.put("ScrollBarUI", ArrowLessScrollBarUI.class.getName());
                     UIManager.put("SliderUI", ModernSliderUI.class.getName());
                     UIManager.put("SpinnerUI", ModernSpinnerUI.class.getName());
-                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException e) {
+                } catch (ClassNotFoundException | InstantiationException | IllegalAccessException |
+                         UnsupportedLookAndFeelException e) {
                     e.printStackTrace();
                 }
                 break;

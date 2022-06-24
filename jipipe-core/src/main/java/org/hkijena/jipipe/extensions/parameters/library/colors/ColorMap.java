@@ -139,7 +139,7 @@ public enum ColorMap {
      * @return the color
      */
     public Color apply(double value) {
-        int pixel = (int) ((mapImage.getWidth() - 1)* Math.max(0, Math.min(1, value)));
+        int pixel = (int) ((mapImage.getWidth() - 1) * Math.max(0, Math.min(1, value)));
         return new Color(mapImage.getRGB(pixel, 0));
     }
 

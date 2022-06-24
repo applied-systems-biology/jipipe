@@ -213,10 +213,10 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public void clearData() {
         for (JIPipeVirtualData item : data) {
-            if(item == null)
+            if (item == null)
                 continue;
             item.removeUser(this);
-            if(item.canClose()) {
+            if (item.canClose()) {
                 try {
                     item.close();
                 } catch (IOException e) {
@@ -226,10 +226,10 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         }
         for (Map.Entry<String, ArrayList<JIPipeVirtualData>> entry : dataAnnotations.entrySet()) {
             for (JIPipeVirtualData item : entry.getValue()) {
-                if(item == null)
+                if (item == null)
                     continue;
                 item.removeUser(this);
-                if(item.canClose()) {
+                if (item.canClose()) {
                     try {
                         item.close();
                     } catch (IOException e) {
@@ -405,12 +405,12 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public void setVirtualDataAnnotation(int row, String column, JIPipeVirtualData virtualData) {
         List<JIPipeVirtualData> data = getOrCreateDataAnnotationColumnData(column);
-        if(virtualData != null)
+        if (virtualData != null)
             virtualData.addUser(this);
         JIPipeVirtualData existing = data.get(row);
-        if(existing != null) {
+        if (existing != null) {
             existing.removeUser(this);
-            if(existing.canClose()) {
+            if (existing.canClose()) {
                 try {
                     existing.close();
                 } catch (IOException e) {
@@ -423,16 +423,17 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     /**
      * Sets the data of a specific row
-     * @param row the row
+     *
+     * @param row  the row
      * @param data the data
      */
     public void setData(int row, JIPipeData data) {
         if (!accepts(data))
             throw new IllegalArgumentException("Tried to add data of type " + data.getClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
         JIPipeVirtualData existing = this.data.get(row);
-        if(existing != null) {
+        if (existing != null) {
             existing.removeUser(this);
-            if(existing.canClose()) {
+            if (existing.canClose()) {
                 try {
                     existing.close();
                 } catch (IOException e) {
@@ -447,16 +448,17 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     /**
      * Sets the data of a specific row
-     * @param row the row
+     *
+     * @param row         the row
      * @param virtualData the data
      */
     public void setVirtualData(int row, JIPipeVirtualData virtualData) {
         if (!accepts(virtualData.getDataClass()))
             throw new IllegalArgumentException("Tried to add data of type " + virtualData.getDataClass() + ", but slot only accepts " + acceptedDataType + ". A converter could not be found.");
         JIPipeVirtualData existing = this.data.get(row);
-        if(existing != null) {
+        if (existing != null) {
             existing.removeUser(this);
-            if(existing.canClose()) {
+            if (existing.canClose()) {
                 try {
                     existing.close();
                 } catch (IOException e) {
@@ -498,10 +500,10 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     /**
      * Returns annotations of a row as map
-     * @deprecated Use getTextAnnotationMap instead
      *
      * @param row the row
      * @return map from annotation name to annotation instance. Non-existing annotations are not present.
+     * @deprecated Use getTextAnnotationMap instead
      */
     @Deprecated
     public Map<String, JIPipeTextAnnotation> getAnnotationMap(int row) {
@@ -722,7 +724,8 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     /**
      * Merges the data from the source table into the current one
-     * @param table the source table
+     *
+     * @param table        the source table
      * @param progressInfo the progress
      */
     public synchronized void addFromTable(JIPipeDataTable table, JIPipeProgressInfo progressInfo) {
@@ -995,7 +998,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         for (int i = 0; i < data.size(); ++i) {
             try {
                 data.get(i).removeUser(this);
-                if(data.get(i).canClose())
+                if (data.get(i).canClose())
                     data.get(i).close();
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -1006,7 +1009,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             for (int i = 0; i < list.size(); i++) {
                 try {
                     list.get(i).removeUser(this);
-                    if(list.get(i).canClose())
+                    if (list.get(i).canClose())
                         list.get(i).close();
                 } catch (IOException e) {
                     throw new RuntimeException(e);

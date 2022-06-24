@@ -186,7 +186,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
     @Override
     public <T extends Annotation> T getAnnotationOfType(Class<T> klass) {
         Collection<Annotation> collection = annotationMap.get(klass);
-        if(collection.isEmpty())
+        if (collection.isEmpty())
             return null;
         return (T) collection.iterator().next();
     }
@@ -281,13 +281,13 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         return annotationMap;
     }
 
-    @Override
-    public <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
-        return annotationMap.get(klass).stream().map(ann -> (T)ann).collect(Collectors.toList());
-    }
-
     public void setAnnotationMap(Multimap<Class<? extends Annotation>, Annotation> annotationMap) {
         this.annotationMap = annotationMap;
+    }
+
+    @Override
+    public <T extends Annotation> List<T> getAnnotationsOfType(Class<T> klass) {
+        return annotationMap.get(klass).stream().map(ann -> (T) ann).collect(Collectors.toList());
     }
 
     @JsonGetter("short-key")

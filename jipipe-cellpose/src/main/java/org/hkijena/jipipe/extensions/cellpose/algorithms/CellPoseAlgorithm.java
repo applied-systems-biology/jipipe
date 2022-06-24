@@ -467,7 +467,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     private void injectCustomCellposeClass(StringBuilder code) {
-        if(code.indexOf("class CellposeCustom()") >= 0) {
+        if (code.indexOf("class CellposeCustom()") >= 0) {
             return;
         }
         // This is code that allows to embed a custom model

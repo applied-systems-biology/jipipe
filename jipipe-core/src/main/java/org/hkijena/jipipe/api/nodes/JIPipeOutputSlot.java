@@ -66,6 +66,7 @@ public @interface JIPipeOutputSlot {
     /**
      * Assigns a role to the slot for internal usage within the node's code.
      * For example, this allows to distinguish data and parametric inputs from each other
+     *
      * @return the role. Leave at Data if there is no special role.
      */
     JIPipeDataSlotRole role() default JIPipeDataSlotRole.Data;

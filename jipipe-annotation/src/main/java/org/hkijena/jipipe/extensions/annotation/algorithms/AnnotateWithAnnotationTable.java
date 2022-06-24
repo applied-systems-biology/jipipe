@@ -102,7 +102,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
         JIPipeInputDataSlot dataInputSlot = getInputSlot("Data");
 
         // Create a dummy slot where we put the annotations
-        JIPipeInputDataSlot dummy = new JIPipeInputDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input, "dummy", "", null),this);
+        JIPipeInputDataSlot dummy = new JIPipeInputDataSlot(new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Input, "dummy", "", null), this);
         JIPipeDataSlot annotationSlot = getInputSlot("Annotations");
         for (int i = 0; i < annotationSlot.getRowCount(); i++) {
             AnnotationTableData data = annotationSlot.getData(i, AnnotationTableData.class, progressInfo);

@@ -236,6 +236,24 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     /**
+     * Saves a single ROI to a file
+     *
+     * @param roi        the ROI
+     * @param outputFile the file
+     */
+    public static void saveSingleRoi(Roi roi, Path outputFile) {
+        try {
+            FileOutputStream out = new FileOutputStream(outputFile.toFile());
+            RoiEncoder re = new RoiEncoder(out);
+            re.write(roi);
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    /**
      * Groups the ROI by their image positions
      *
      * @param perSlice   group per slice
@@ -318,24 +336,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     /**
-     * Saves a single ROI to a file
-     * @param roi the ROI
-     * @param outputFile the file
-     */
-    public static void saveSingleRoi(Roi roi, Path outputFile) {
-        try {
-            FileOutputStream out = new FileOutputStream(outputFile.toFile());
-            RoiEncoder re = new RoiEncoder(out);
-            re.write(roi);
-            out.flush();
-            out.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    /**
      * Saves all ROIs in this list as ZIP file
+     *
      * @param outputFile the output file
      */
     public void saveToZip(Path outputFile) {
@@ -370,15 +372,15 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     /**
      * Saves all ROIs in this list as *.roi or *.zip file depending on how many ROIs are stored in the list
      * If the extension of the output file is .zip and there is one ROI in the list, the output will still be saved as zip!
+     *
      * @param outputFile the output file. without extension.
      * @return the output file with extension
      */
     public Path saveToRoiOrZip(Path outputFile) {
-        if(size() == 1 && !outputFile.toString().endsWith(".zip")) {
+        if (size() == 1 && !outputFile.toString().endsWith(".zip")) {
             outputFile = PathUtils.ensureExtension(outputFile, ".roi");
             saveSingleRoi(get(0), outputFile);
-        }
-        else {
+        } else {
             outputFile = PathUtils.ensureExtension(outputFile, ".zip");
             saveToZip(outputFile);
         }

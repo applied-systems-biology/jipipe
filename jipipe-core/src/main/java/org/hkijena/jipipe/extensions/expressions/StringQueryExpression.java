@@ -49,7 +49,7 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
      * @return expression result or the expression itself
      */
     public String generate(ExpressionVariables expressionVariables) {
-        if(StringUtils.isNullOrEmpty(getExpression()))
+        if (StringUtils.isNullOrEmpty(getExpression()))
             return "";
         try {
             Object evaluationResult = evaluate(expressionVariables);

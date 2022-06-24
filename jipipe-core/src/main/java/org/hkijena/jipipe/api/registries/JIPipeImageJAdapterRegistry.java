@@ -171,7 +171,8 @@ public class JIPipeImageJAdapterRegistry {
         }
         try {
             return ConstructorUtils.invokeConstructor(importerClass, workbench, importOperation);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
+                 InstantiationException e) {
             throw new RuntimeException(e);
         }
     }
@@ -190,7 +191,8 @@ public class JIPipeImageJAdapterRegistry {
         }
         try {
             return ConstructorUtils.invokeConstructor(exporterClass, workbench, exportOperation);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
+                 InstantiationException e) {
             throw new RuntimeException(e);
         }
     }

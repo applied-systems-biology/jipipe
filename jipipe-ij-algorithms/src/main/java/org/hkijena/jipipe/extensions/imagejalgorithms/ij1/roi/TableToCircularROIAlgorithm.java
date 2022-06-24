@@ -109,7 +109,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
             int c = (int) colC.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
             int t = (int) colT.getRowAsDouble(row) + (oneBasedPositions ? 0 : 1);
             Roi roi = new OvalRoi(x, y, r * 2, r * 2);
-            roi.setPosition(c,z,t);
+            roi.setPosition(c, z, t);
             rois.add(roi);
         }
 
@@ -117,7 +117,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
     }
 
     private void ensureColumnExists(TableColumn column, ResultsTableData table, String name) {
-        if(column == null) {
+        if (column == null) {
             throw new UserFriendlyRuntimeException("Could not find column for " + name + "!",
                     "The algorithm requires a column that provides coordinate " + name + ".",
                     getName() + ", table " + table,

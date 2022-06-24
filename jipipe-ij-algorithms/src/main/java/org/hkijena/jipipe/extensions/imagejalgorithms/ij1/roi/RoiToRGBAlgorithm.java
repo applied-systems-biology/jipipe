@@ -36,6 +36,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */

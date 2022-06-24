@@ -39,6 +39,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.*;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
@@ -328,10 +329,6 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         return run;
     }
 
-    public JIPipeProgressInfo getProgressInfo() {
-        return progressInfo;
-    }
-
     /**
      * Creates a new node instance from its id
      *
@@ -372,12 +369,27 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             System.err.println("Warning: Node " + node + " has no info attached. Create nodes via the static JIPipe method!");
             try {
                 return (T) node.getClass().getConstructor(node.getClass()).newInstance(node);
-            } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            } catch (InstantiationException | IllegalAccessException | InvocationTargetException |
+                     NoSuchMethodException e) {
                 throw new RuntimeException(e);
             }
         } else {
             return (T) node.getInfo().duplicate(node);
         }
+    }
+
+    /**
+     * Duplicates a value that is registered as parameter
+     *
+     * @param value the value. can be null
+     * @param <T>   the type of the value
+     * @return duplicate of the value
+     */
+    public static <T> T duplicateParameter(T value) {
+        if (value == null)
+            return null;
+        JIPipeParameterTypeInfo parameterTypeInfo = getParameterTypes().getInfoByFieldClass(value.getClass());
+        return (T) parameterTypeInfo.duplicate(value);
     }
 
     /**
@@ -392,10 +404,15 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     public static <T extends JIPipeData> T createData(Class<T> klass, Object... constructorParameters) {
         try {
             return ConstructorUtils.invokeConstructor(klass, constructorParameters);
-        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | InstantiationException e) {
+        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException |
+                 InstantiationException e) {
             throw new UserFriendlyRuntimeException(e, "Cannot create data instance!", "Undefined", "There is an error in the code that provides the annotation type.",
                     "Please contact the author of the plugin that provides the annotation type " + klass);
         }
+    }
+
+    public JIPipeProgressInfo getProgressInfo() {
+        return progressInfo;
     }
 
     public List<JIPipeDependency> getFailedExtensions() {
@@ -734,10 +751,11 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
     /**
      * Checks the update sites of all extensions and stores the results in the issues
-     *  @param issues          the results
+     *
+     * @param issues          the results
      * @param extensions      list of known extensions
      * @param progressAdapter the adapter that takes the progress
-     * @param progressInfo the progress info
+     * @param progressInfo    the progress info
      */
     public void checkUpdateSites(JIPipeRegistryIssues issues, List<JIPipeDependency> extensions, Progress progressAdapter, JIPipeProgressInfo progressInfo) {
         Set<JIPipeImageJUpdateSiteDependency> dependencies = new HashSet<>();
@@ -814,7 +832,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     /**
      * Registers a JSON extension
      *
-     * @param extension The extension
+     * @param extension    The extension
      * @param progressInfo the progress info
      */
     public void register(JIPipeJsonExtension extension, JIPipeProgressInfo progressInfo) {

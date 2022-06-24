@@ -47,6 +47,7 @@ public interface JIPipeRunnable extends Runnable {
     /**
      * Registers an event subscriber into {@link org.hkijena.jipipe.ui.running.JIPipeRunnerQueue} that listens for when
      * this run finishes
+     *
      * @param function the method to execute when the run finishes (successfully or not successfully)
      */
     default void onFinished(Consumer<RunUIWorkerFinishedEvent> function) {
@@ -63,6 +64,7 @@ public interface JIPipeRunnable extends Runnable {
     /**
      * Registers an event subscriber into {@link org.hkijena.jipipe.ui.running.JIPipeRunnerQueue} that listens for when
      * this run is interrupted
+     *
      * @param function the method to execute when the run is interrupted (due to error or user cancel)
      */
     default void onInterrupted(Consumer<RunUIWorkerInterruptedEvent> function) {
@@ -79,6 +81,7 @@ public interface JIPipeRunnable extends Runnable {
     /**
      * Registers an event subscriber into {@link org.hkijena.jipipe.ui.running.JIPipeRunnerQueue} that listens for when
      * this run is started
+     *
      * @param function the method to execute when the run starts
      */
     default void onStarted(Consumer<RunUIWorkerStartedEvent> function) {
@@ -95,6 +98,7 @@ public interface JIPipeRunnable extends Runnable {
     /**
      * Registers an event subscriber into {@link org.hkijena.jipipe.ui.running.JIPipeRunnerQueue} that listens for when
      * this run is progressing
+     *
      * @param function the method to execute when the run progresses
      */
     default void onProgress(Consumer<RunUIWorkerProgressEvent> function) {

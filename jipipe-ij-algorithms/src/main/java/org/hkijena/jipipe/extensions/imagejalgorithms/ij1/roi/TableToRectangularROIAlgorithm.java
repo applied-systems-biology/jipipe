@@ -203,12 +203,12 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
             default:
                 throw new UnsupportedOperationException();
         }
-        roi.setPosition(c,z,t);
+        roi.setPosition(c, z, t);
         rois.add(roi);
     }
 
     private void ensureColumnExists(TableColumn column, ResultsTableData table, String name) {
-        if(column == null) {
+        if (column == null) {
             throw new UserFriendlyRuntimeException("Could not find column for " + name + "!",
                     "The algorithm requires a column that provides coordinate " + name + ".",
                     getName() + ", table " + table,

@@ -14,12 +14,11 @@
 
 package org.hkijena.jipipe.utils;
 
-import org.hkijena.jipipe.ui.JIPipeJsonExtensionInfoUI;
-
 public class VersionUtils {
 
     /**
      * Returns a version string for a class
+     *
      * @param klass the class
      * @return the version string or 'Development' if none is available
      */

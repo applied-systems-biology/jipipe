@@ -18,26 +18,17 @@ import ij.IJ;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public class JIPipeDataTableToZIPExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
 
@@ -46,8 +37,8 @@ public class JIPipeDataTableToZIPExporterRun extends JIPipeWorkbenchPanel implem
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     /**
-     * @param workbench      the workbench
-     * @param outputZipFile     the output zip file
+     * @param workbench     the workbench
+     * @param outputZipFile the output zip file
      * @param dataTable     the data table to save
      */
     public JIPipeDataTableToZIPExporterRun(JIPipeWorkbench workbench, Path outputZipFile, JIPipeDataTable dataTable) {
@@ -61,7 +52,7 @@ public class JIPipeDataTableToZIPExporterRun extends JIPipeWorkbenchPanel implem
     public void run() {
         progressInfo.setMaxProgress(1);
 
-        try( JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, outputZipFile)) {
+        try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, outputZipFile)) {
             dataTable.exportData(storage, progressInfo);
         } catch (Exception e) {
             IJ.handleException(e);

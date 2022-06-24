@@ -32,11 +32,7 @@ import ij.measure.ResultsTable;
 import ij.util.Tools;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -321,23 +317,21 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     public static Map<String, ResultsTableData> fromXLSX(Path xlsxFile) {
         Map<String, ResultsTableData> output = new HashMap<>();
-        try(Workbook workbook = new XSSFWorkbook(xlsxFile.toFile())) {
+        try (Workbook workbook = new XSSFWorkbook(xlsxFile.toFile())) {
             for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
                 Sheet sheet = workbook.getSheetAt(i);
                 ResultsTableData tableData = new ResultsTableData();
                 boolean hasHeader = false;
                 for (Row row : sheet) {
-                    if(hasHeader) {
+                    if (hasHeader) {
                         for (Cell cell : row) {
-                            if(cell.getCellType() == CellType.NUMERIC) {
+                            if (cell.getCellType() == CellType.NUMERIC) {
                                 tableData.setValueAt(cell.getNumericCellValue(), row.getRowNum() - 1, cell.getColumnIndex());
-                            }
-                            else {
+                            } else {
                                 tableData.setValueAt(cell.getStringCellValue(), row.getRowNum() - 1, cell.getColumnIndex());
                             }
                         }
-                    }
-                    else {
+                    } else {
                         for (Cell cell : row) {
                             String columnName = StringUtils.makeUniqueString(cell.getStringCellValue(), "-", tableData.getColumnNames());
                             tableData.addNumericColumn(columnName);
@@ -352,6 +346,47 @@ public class ResultsTableData implements JIPipeData, TableModel {
             throw new RuntimeException(e);
         }
         return output;
+    }
+
+    /**
+     * Creates a valid XLSX sheet name from a string
+     *
+     * @param name     the string. if null or empty, will be assumed to be "Sheet"
+     * @param existing existing names
+     * @return valid sheet name
+     */
+    public static String createXLSXSheetName(String name, Collection<String> existing) {
+        if (StringUtils.isNullOrEmpty(name))
+            name = "Sheet";
+        name = name.replace('\0', ' ');
+        name = name.replace('\3', ' ');
+        name = name.replace(':', ' ');
+        name = name.replace('\\', ' ');
+        name = name.replace('*', ' ');
+        name = name.replace('?', ' ');
+        name = name.replace('/', ' ');
+        name = name.replace('[', ' ');
+        name = name.replace(']', ' ');
+        name = name.trim();
+        while (name.startsWith("'"))
+            name = name.substring(1);
+        while (name.endsWith("'"))
+            name = name.substring(0, name.length() - 1);
+        name = name.trim();
+        if (StringUtils.isNullOrEmpty(name))
+            name = "Sheet";
+
+        // Shorten to 31-character limit
+        if (name.length() > 31)
+            name = name.substring(0, 32);
+
+        // Make unique
+        String uniqueName = StringUtils.makeUniqueString(name, " ", existing);
+        while (uniqueName.length() > 31) {
+            name = name.substring(0, name.length() - 1);
+            uniqueName = StringUtils.makeUniqueString(name, " ", existing);
+        }
+        return uniqueName;
     }
 
     private void importDataColumns(Map<String, TableColumn> columns) {
@@ -421,10 +456,11 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     /**
      * Saves the table as Excel file
+     *
      * @param path the path
      */
     public void saveAsXLSX(Path path) {
-        try(Workbook workbook = new XSSFWorkbook()) {
+        try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Data");
             saveToXLSXSheet(sheet);
             workbook.write(Files.newOutputStream(path));
@@ -435,6 +471,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     /**
      * Saves the table data to an Excel sheet
+     *
      * @param sheet the sheet
      */
     public void saveToXLSXSheet(Sheet sheet) {
@@ -1220,46 +1257,6 @@ public class ResultsTableData implements JIPipeData, TableModel {
             table.setValue(column, row, values[row]);
         }
         cleanupTable();
-    }
-
-    /**
-     * Creates a valid XLSX sheet name from a string
-     * @param name the string. if null or empty, will be assumed to be "Sheet"
-     * @param existing existing names
-     * @return valid sheet name
-     */
-    public static String createXLSXSheetName(String name, Collection<String> existing) {
-        if(StringUtils.isNullOrEmpty(name))
-            name = "Sheet";
-        name = name.replace('\0', ' ');
-        name = name.replace('\3', ' ');
-        name = name.replace(':', ' ');
-        name = name.replace('\\', ' ');
-        name = name.replace('*', ' ');
-        name = name.replace('?', ' ');
-        name = name.replace('/', ' ');
-        name = name.replace('[', ' ');
-        name = name.replace(']', ' ');
-        name = name.trim();
-        while(name.startsWith("'"))
-            name = name.substring(1);
-        while(name.endsWith("'"))
-            name = name.substring(0, name.length() - 1);
-        name = name.trim();
-        if(StringUtils.isNullOrEmpty(name))
-            name = "Sheet";
-
-        // Shorten to 31-character limit
-        if(name.length()>31)
-            name = name.substring(0, 32);
-
-        // Make unique
-        String uniqueName = StringUtils.makeUniqueString(name, " ", existing);
-        while(uniqueName.length() > 31) {
-            name = name.substring(0, name.length() - 1);
-            uniqueName = StringUtils.makeUniqueString(name, " ", existing);
-        }
-        return uniqueName;
     }
 
     /**

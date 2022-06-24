@@ -20,10 +20,9 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
@@ -126,14 +125,12 @@ public class JsonUtils {
         @Override
         public Path deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
             String s = p.readValueAs(String.class);
-            if(StringUtils.isNullOrEmpty(s)) {
+            if (StringUtils.isNullOrEmpty(s)) {
                 return Paths.get("");
-            }
-            else {
+            } else {
                 try {
                     return Paths.get(s.replace('\\', '/'));
-                }
-                catch (InvalidPathException e) {
+                } catch (InvalidPathException e) {
                     return Paths.get("");
                 }
             }

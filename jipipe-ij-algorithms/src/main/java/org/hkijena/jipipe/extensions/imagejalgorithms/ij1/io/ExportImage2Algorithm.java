@@ -22,8 +22,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.utils.PathUtils;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.List;
@@ -89,10 +87,9 @@ public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
         Path generatedPath = exporter.generatePath(getFirstInputSlot(), dataBatch.getInputSlotRows().get(getFirstInputSlot()), existingMetadata);
 
         // If absolute -> use the path, otherwise use output directory
-        if(generatedPath.isAbsolute()) {
+        if (generatedPath.isAbsolute()) {
             outputPath = generatedPath;
-        }
-        else {
+        } else {
             outputPath = outputPath.resolve(generatedPath);
         }
 

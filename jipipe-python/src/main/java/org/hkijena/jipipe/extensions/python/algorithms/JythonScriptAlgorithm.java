@@ -129,7 +129,7 @@ public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         pythonInterpreter.set("output_slot_map", outputSlotMap);
         pythonInterpreter.set("progress_info", progressInfo);
 
-        try(IJLogToJIPipeProgressInfoPump ignored = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+        try (IJLogToJIPipeProgressInfoPump ignored = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
             pythonInterpreter.exec(code.getCode(getProjectDirectory()));
         }
     }

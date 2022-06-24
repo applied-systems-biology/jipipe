@@ -9,11 +9,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -43,10 +39,9 @@ import java.util.stream.Collectors;
 @JIPipeOutputSlot(value = WekaModelData.class, slotName = "Trained model", description = "The model", autoCreate = true)
 public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private WekaFeature3DSettings featureSettings = new WekaFeature3DSettings();
-
-    private WekaClassifierSettings classifierSettings = new WekaClassifierSettings();
     private final InputSlotMapParameterCollection classAssignment;
+    private WekaFeature3DSettings featureSettings = new WekaFeature3DSettings();
+    private WekaClassifierSettings classifierSettings = new WekaClassifierSettings();
 
 
     public WekaTrainingROI3DAlgorithm(JIPipeNodeInfo info) {
@@ -65,6 +60,7 @@ public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
         registerSubParameter(classAssignment);
         registerSubParameter(classifierSettings);
     }
+
     public WekaTrainingROI3DAlgorithm(WekaTrainingROI3DAlgorithm other) {
         super(other);
         this.featureSettings = other.featureSettings;
@@ -81,7 +77,7 @@ public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
         int newClass = 0;
         for (JIPipeParameterAccess access : classAssignment.getParameters().values()) {
             Integer klass = access.get(Integer.class);
-            if(klass != null) {
+            if (klass != null) {
                 newClass = Math.max(newClass, klass + 1);
             }
         }
@@ -90,17 +86,17 @@ public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        Map<Integer, ROIListData> groupedROIs =  new HashMap<>();
+        Map<Integer, ROIListData> groupedROIs = new HashMap<>();
         for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
-            if(inputSlot.acceptsTrivially(ROIListData.class)) {
+            if (inputSlot.acceptsTrivially(ROIListData.class)) {
                 int klass = classAssignment.getValue(inputSlot.getName(), Integer.class);
                 ROIListData list = dataBatch.getInputData(inputSlot, ROIListData.class, progressInfo);
 
-                if(list == null)
+                if (list == null)
                     continue;
 
                 ROIListData target = groupedROIs.getOrDefault(klass, null);
-                if(target == null) {
+                if (target == null) {
                     target = new ROIListData();
                     groupedROIs.put(klass, target);
                 }
@@ -115,7 +111,7 @@ public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
         Classifier classifier = (new WekaClassifierParameter(getClassifierSettings().getClassifier())).getClassifier(); // This will make a copy of the classifier
 
         // Apply the training
-        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
+        try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo.resolve("Weka"))) {
             ImagePlus trainingImage = dataBatch.getInputData("Image", ImagePlus3DData.class, progressInfo).getDuplicateImage();
             WekaSegmentation wekaSegmentation = new WekaSegmentation(true);
             wekaSegmentation.setTrainingImage(trainingImage);
@@ -149,7 +145,7 @@ public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
-        if(getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count() < 2) {
+        if (getInputSlots().stream().filter(slot -> slot.getAcceptedDataType() == ROIListData.class).count() < 2) {
             report.reportIsInvalid("Weka requires at least two classes!", "The Weka algorithm cannot be trained if you do not have at least two classes",
                     "Add at least two ROI List inputs", getDisplayName());
         }

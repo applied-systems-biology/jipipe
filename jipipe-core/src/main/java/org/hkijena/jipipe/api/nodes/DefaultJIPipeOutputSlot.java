@@ -36,7 +36,7 @@ public class DefaultJIPipeOutputSlot implements JIPipeOutputSlot {
      * @param description   the description
      * @param inheritedSlot An optional inherited slot.
      * @param autoCreate    Automatically create the slot if supported by the algorithm
-     * @param role the role
+     * @param role          the role
      */
     public DefaultJIPipeOutputSlot(Class<? extends JIPipeData> value, String slotName, String description, String inheritedSlot, boolean autoCreate, JIPipeDataSlotRole role) {
         this.value = value;

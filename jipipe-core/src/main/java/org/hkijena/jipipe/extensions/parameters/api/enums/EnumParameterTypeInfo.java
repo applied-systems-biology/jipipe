@@ -27,9 +27,9 @@ public class EnumParameterTypeInfo implements JIPipeParameterTypeInfo {
     private String description;
 
     /**
-     * @param id the id
-     * @param fieldClass the field class
-     * @param name the name
+     * @param id          the id
+     * @param fieldClass  the field class
+     * @param name        the name
      * @param description the description
      */
     public EnumParameterTypeInfo(String id, Class<? extends Enum<?>> fieldClass, String name, String description) {

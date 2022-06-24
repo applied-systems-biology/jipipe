@@ -9,11 +9,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -24,23 +20,13 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.NaturalOrderComparator;
-import org.hkijena.jipipe.utils.PathIOMode;
-import org.hkijena.jipipe.utils.PathType;
-import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @JIPipeDocumentation(name = "Export table as XLSX", description = "Exports a results table to XLSX. Merge multiple tables into the same batch to create a multi-sheet table.")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
@@ -75,10 +61,9 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         final Path outputPath;
         if (outputDirectory == null || outputDirectory.toString().isEmpty() || !outputDirectory.isAbsolute()) {
-            if(relativeToProjectDir && getProjectDirectory() != null) {
+            if (relativeToProjectDir && getProjectDirectory() != null) {
                 outputPath = getProjectDirectory().resolve(StringUtils.nullToEmpty(outputDirectory));
-            }
-            else {
+            } else {
                 outputPath = getFirstOutputSlot().getSlotStoragePath().resolve(StringUtils.nullToEmpty(outputDirectory));
             }
         } else {
@@ -92,10 +77,9 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
             Path generatedPath = exporter.generatePath(getFirstInputSlot(), row, new HashSet<>());
             Path rowPath;
             // If absolute -> use the path, otherwise use output directory
-            if(generatedPath.isAbsolute()) {
+            if (generatedPath.isAbsolute()) {
                 rowPath = generatedPath;
-            }
-            else {
+            } else {
                 rowPath = outputPath.resolve(generatedPath);
             }
             PathUtils.ensureParentDirectoriesExist(rowPath);
@@ -104,7 +88,7 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
         }
 
         // Generate excel workbook
-        try(Workbook workbook = new XSSFWorkbook()) {
+        try (Workbook workbook = new XSSFWorkbook()) {
 
             // Collect the sheets
             Map<String, ResultsTableData> sheets = new HashMap<>();
@@ -128,16 +112,15 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
                 variables.set("annotations", JIPipeTextAnnotation.annotationListToMap(dataBatch.getMergedTextAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting));
                 variables.set("sheet_names", new ArrayList<>(sheets.keySet()));
                 Object result = orderExpression.evaluate(variables);
-                if(result instanceof String) {
+                if (result instanceof String) {
                     sortedSheets.add((String) result);
-                }
-                else if(result instanceof Collection) {
+                } else if (result instanceof Collection) {
                     for (Object o : (Collection) result) {
                         sortedSheets.add(StringUtils.nullToEmpty(o));
                     }
                 }
                 sheets.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(name -> {
-                    if(!sortedSheets.contains(name))
+                    if (!sortedSheets.contains(name))
                         sortedSheets.add(name);
                 });
             }
@@ -145,7 +128,7 @@ public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
             // Generate sheets
             for (String sheetName : sortedSheets) {
                 ResultsTableData tableData = sheets.getOrDefault(sheetName, null);
-                if(tableData == null)
+                if (tableData == null)
                     continue;
                 Sheet sheet = workbook.createSheet(sheetName);
                 tableData.saveToXLSXSheet(sheet);

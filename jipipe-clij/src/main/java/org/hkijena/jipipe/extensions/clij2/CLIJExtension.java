@@ -109,7 +109,7 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
             JIPipeProgressInfo moduleProgress = progressInfo.resolve(pluginInfo.getName() + " @ " + pluginInfo.getClassName());
             try {
                 CLIJMacroPlugin instance = pluginInfo.createInstance();
-                if(instance.getClass().getAnnotation(Deprecated.class) != null) {
+                if (instance.getClass().getAnnotation(Deprecated.class) != null) {
                     moduleProgress.log("Marked as deprecated. Skipping.");
                     continue;
                 }

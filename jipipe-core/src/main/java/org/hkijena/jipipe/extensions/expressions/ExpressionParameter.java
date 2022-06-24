@@ -65,6 +65,7 @@ public abstract class ExpressionParameter {
 
     /**
      * Returns true if the expression is empty
+     *
      * @return true if the expression is empty
      */
     public boolean isEmpty() {

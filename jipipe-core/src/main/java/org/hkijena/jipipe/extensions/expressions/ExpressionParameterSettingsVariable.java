@@ -17,7 +17,10 @@ import java.lang.annotation.RetentionPolicy;
 @Repeatable(ExpressionParameterSettingsVariables.class)
 public @interface ExpressionParameterSettingsVariable {
     String name() default "";
+
     String description() default "";
+
     String key() default "";
+
     Class<? extends ExpressionParameterVariableSource> fromClass() default UndefinedExpressionParameterVariableSource.class;
 }

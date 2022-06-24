@@ -230,7 +230,7 @@ public class Margin implements JIPipeParameterCollection {
      * If the rectangle is invalid, null is returned
      *
      * @param availableArea rectangle describing the available area.
-     * @param parameters additional expression variables
+     * @param parameters    additional expression variables
      * @return Rectangle within the area
      */
     public Rectangle getInsideArea(Rectangle availableArea, ExpressionVariables parameters) {

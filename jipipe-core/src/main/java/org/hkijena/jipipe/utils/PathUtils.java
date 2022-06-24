@@ -296,22 +296,22 @@ public class PathUtils {
 
     /**
      * Ensures that the file name of the path has one of the provided extensions
-     * @param path the path
-     * @param extension the extension (should include the dot)
+     *
+     * @param path                  the path
+     * @param extension             the extension (should include the dot)
      * @param alternativeExtensions alternative extensions that are also valid (should include the dot)
      * @return path with a filename that has the provided extension
      */
     public static Path ensureExtension(Path path, String extension, String... alternativeExtensions) {
-        if(path.getFileName().toString().endsWith(extension))
+        if (path.getFileName().toString().endsWith(extension))
             return path;
         for (String ext : alternativeExtensions) {
-            if(path.getFileName().toString().endsWith(ext))
+            if (path.getFileName().toString().endsWith(ext))
                 return path;
         }
-        if(path.getParent() != null) {
+        if (path.getParent() != null) {
             return path.getParent().resolve(path.getFileName() + extension);
-        }
-        else {
+        } else {
             return Paths.get(path + extension);
         }
     }
@@ -319,10 +319,11 @@ public class PathUtils {
     /**
      * Ensures that the parent directories of the path exist.
      * If the parent directory is null, nothing will be done
+     *
      * @param path the path
      */
     public static void ensureParentDirectoriesExist(Path path) {
-        if(path.getParent() != null) {
+        if (path.getParent() != null) {
             try {
                 Files.createDirectories(path.getParent());
             } catch (IOException e) {

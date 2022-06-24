@@ -59,10 +59,10 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private final JLabel stackSliderLabel = new JLabel("Slice (Z)");
     private final JLabel channelSliderLabel = new JLabel("Channel (C)");
     private final JLabel frameSliderLabel = new JLabel("Frame (T)");
-//    private final Adjustable stackSlider = new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, 100);
-    private final JSlider stackSlider = new JSlider(1,100,1);
-    private final JSlider channelSlider = new JSlider(1,100,1);
-    private final JSlider frameSlider = new JSlider(1,100,1);
+    //    private final Adjustable stackSlider = new JScrollBar(Adjustable.HORIZONTAL, 1, 1, 1, 100);
+    private final JSlider stackSlider = new JSlider(1, 100, 1);
+    private final JSlider channelSlider = new JSlider(1, 100, 1);
+    private final JSlider frameSlider = new JSlider(1, 100, 1);
     private final JToggleButton animationStackToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationChannelToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
@@ -82,15 +82,15 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private JScrollPane scrollPane;
     private int rotation = 0;
     private JMenuItem exportAllSlicesItem;
-    private JMenuItem exportMovieItem;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
-    private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
+    private JMenuItem exportMovieItem;
+    private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private JButton rotateLeftButton;
     private JButton rotateRightButton;
     private Component currentContentPanel;
     private boolean isUpdatingSliders = false;
-
     /**
      * Initializes a new image viewer
+     *
      * @param workbench the workbench. Use {@link org.hkijena.jipipe.ui.JIPipeDummyWorkbench} if you do not have access to one.
      */
     public ImageViewerPanel(JIPipeWorkbench workbench) {
@@ -110,11 +110,6 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
 
     public static Set<ImageViewerPanel> getOpenViewerPanels() {
         return OPEN_PANELS;
-    }
-
-    @Override
-    public JIPipeWorkbench getWorkbench() {
-        return workbench;
     }
 
     /**
@@ -141,6 +136,11 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         window.setTitle(title);
         window.setVisible(true);
         return dataDisplay;
+    }
+
+    @Override
+    public JIPipeWorkbench getWorkbench() {
+        return workbench;
     }
 
     public ImageViewerUISettings getSettings() {
@@ -197,8 +197,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         OPEN_PANELS.remove(this);
         try {
             setImage(null);
-        }
-        catch (Exception |Error e) {
+        } catch (Exception | Error e) {
             e.printStackTrace();
         }
     }
@@ -300,7 +299,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         {
             String maxFormat = String.format(labelFormat, slider.getMaximum(), slider.getMaximum());
             int stringWidth = label.getFontMetrics(label.getFont()).stringWidth(maxFormat);
-            int bufferedSw = (int)(stringWidth + stringWidth * 0.2);
+            int bufferedSw = (int) (stringWidth + stringWidth * 0.2);
             label.setMinimumSize(new Dimension(bufferedSw, 16));
             label.setPreferredSize(new Dimension(bufferedSw, 16));
         }
@@ -313,11 +312,11 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         JButton editButton = new JButton(UIUtils.getIconFromResources("actions/go-jump.png"));
         editButton.setToolTipText("Jump to slice");
         UIUtils.makeFlat25x25(editButton);
-        editButton.addActionListener(e-> {
+        editButton.addActionListener(e -> {
             String input = JOptionPane.showInputDialog(this,
                     "Please input a new value for " + name + " (" + slider.getMinimum() + "-" + slider.getMaximum() + ")",
                     slider.getValue());
-            if(!StringUtils.isNullOrEmpty(input)) {
+            if (!StringUtils.isNullOrEmpty(input)) {
                 Integer index = NumberUtils.createInteger(input);
                 index = Math.min(slider.getMaximum(), Math.max(slider.getMinimum(), index));
                 slider.setValue(index);
@@ -342,7 +341,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
             int value = slider.getValue();
             int maximum = slider.getMaximum();
             int newIndex = value - 1;
-            if(newIndex < 1)
+            if (newIndex < 1)
                 newIndex += maximum;
             slider.setValue(newIndex);
         });
@@ -354,7 +353,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         nextFrame.addActionListener(e -> {
             int value = slider.getValue();
             int maximum = slider.getMaximum();
-            int newIndex = ((value) % maximum)  + 1;
+            int newIndex = ((value) % maximum) + 1;
             slider.setValue(newIndex);
         });
         rightPanel.add(nextFrame);
@@ -940,6 +939,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         }
         return null;
     }
+
 
 
 

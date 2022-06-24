@@ -50,7 +50,7 @@ public class SelectDataTableRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Limit", description = "Determines which indices are passed to the output. The first index is zero." )
+    @JIPipeDocumentation(name = "Limit", description = "Determines which indices are passed to the output. The first index is zero.")
     @JIPipeParameter("limit")
     public IntegerRange getLimit() {
         return limit;

@@ -26,11 +26,7 @@ import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
-import org.hkijena.jipipe.ui.cache.JIPipeDataTableRowUI;
-import org.hkijena.jipipe.ui.cache.JIPipeDataTableToFilesByMetadataExporterRun;
-import org.hkijena.jipipe.ui.cache.JIPipeDataTableToOutputExporterRun;
-import org.hkijena.jipipe.ui.cache.JIPipeDataTableToZIPExporterRun;
+import org.hkijena.jipipe.ui.cache.*;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PreviewControlUI;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeComponentCellRenderer;
@@ -278,8 +274,8 @@ public class DataBatchTableUI2 extends JIPipeWorkbenchPanel {
     private void exportAsJIPipeSlotZIP() {
         Path outputZipFile = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", UIUtils.EXTENSION_FILTER_ZIP);
         if (outputZipFile != null) {
-            if(Files.isRegularFile(outputZipFile)) {
-                if(JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
+            if (Files.isRegularFile(outputZipFile)) {
+                if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
                         "The file '" + outputZipFile + "' already exists. Do you want to overwrite the file?",
                         "Export *.zip",
                         JOptionPane.YES_NO_OPTION,

@@ -11,10 +11,9 @@ public class CLIJImageViewerCustomDataLoader extends CachedImagePlusDataViewerWi
     @Override
     public void load(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
         JIPipeData data = virtualData.getData(progressInfo);
-        if(data instanceof ImagePlusData) {
+        if (data instanceof ImagePlusData) {
             setImagePlus(((ImagePlusData) data).getImage());
-        }
-        else if(data instanceof CLIJImageData) {
+        } else if (data instanceof CLIJImageData) {
             setImagePlus(((CLIJImageData) data).pull().getImage());
         }
         setRois(new ROIListData());

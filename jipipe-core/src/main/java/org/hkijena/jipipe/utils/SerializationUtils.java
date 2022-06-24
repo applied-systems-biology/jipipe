@@ -5,7 +5,6 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
@@ -20,6 +19,7 @@ public class SerializationUtils {
     /**
      * Serializes an object to a JSON string
      * Must be serializable via the Jackson JSON library.
+     *
      * @param obj the object
      * @return the JSON string
      */
@@ -29,10 +29,11 @@ public class SerializationUtils {
 
     /**
      * Deserailizes a JSON string into an object via Jackson
-     * @param json the JSON string
+     *
+     * @param json  the JSON string
      * @param klass the object class
+     * @param <T>   the object class
      * @return the object
-     * @param <T> the object class
      */
     public static <T> T jsonStringToObject(String json, Class<T> klass) {
         return JsonUtils.readFromString(json, klass);
@@ -40,12 +41,13 @@ public class SerializationUtils {
 
     /**
      * Serializes a {@link JIPipeParameterCollection} into a JSON string
+     *
      * @param parameterCollection the parameter collection
      * @return the JSON string
      */
     public static String parameterCollectionToJsonString(JIPipeParameterCollection parameterCollection) {
         JsonFactory factory = JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter().getFactory();
-        try(StringWriter writer = new StringWriter()) {
+        try (StringWriter writer = new StringWriter()) {
             JsonGenerator generator = factory.createGenerator(writer);
             ParameterUtils.serializeParametersToJson(parameterCollection, generator);
             writer.flush();
@@ -57,8 +59,9 @@ public class SerializationUtils {
 
     /**
      * Deserializes JSON data into a {@link JIPipeParameterCollection}
+     *
      * @param target the target collection
-     * @param json the JSON string
+     * @param json   the JSON string
      */
     public static void jsonStringToParameterCollection(JIPipeParameterCollection target, String json) {
         JsonNode node = jsonStringToObject(json, JsonNode.class);
@@ -67,11 +70,12 @@ public class SerializationUtils {
 
     /**
      * Serializes a Java object into a file via {@link ObjectOutputStream}
-     * @param obj the object
+     *
+     * @param obj  the object
      * @param file the file
      */
     public static void objectToBinaryFile(Object obj, Path file) {
-        try(FileOutputStream fos = new FileOutputStream(file.toFile())) {
+        try (FileOutputStream fos = new FileOutputStream(file.toFile())) {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fos);
             objectOutputStream.writeObject(obj);
         } catch (IOException e) {
@@ -81,11 +85,12 @@ public class SerializationUtils {
 
     /**
      * Deserializes a Java object from a binary file via {@link ObjectInputStream}
+     *
      * @param file the file
      * @return the object
      */
     public static Object binaryFileToObject(Path file) {
-        try(FileInputStream fis = new FileInputStream(file.toFile())) {
+        try (FileInputStream fis = new FileInputStream(file.toFile())) {
             ObjectInputStream objectInputStream = new ObjectInputStream(fis);
             return objectInputStream.readObject();
         } catch (IOException | ClassNotFoundException e) {
@@ -95,6 +100,7 @@ public class SerializationUtils {
 
     /**
      * Serializes a Java object into its binary representation (via {@link ObjectOutputStream}) as base64
+     *
      * @param obj the object
      * @return the base64 string
      */
@@ -116,6 +122,7 @@ public class SerializationUtils {
 
     /**
      * Deserializes a Java object from its binary representation (as base64 string)
+     *
      * @param base64 the base64 string
      * @return the object
      */

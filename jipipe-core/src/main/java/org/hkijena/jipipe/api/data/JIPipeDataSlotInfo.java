@@ -63,7 +63,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      * @param name          unique slot name
      * @param description   description of the slot
      * @param inheritedSlot only relevant if output slot. Can be an input slot name or '*' to automatically select the first input slot
-     * @param optional only relevant if an input slot. marks the slot as optional input if true
+     * @param optional      only relevant if an input slot. marks the slot as optional input if true
      */
     public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String name, String description, String inheritedSlot, boolean optional) {
         this.dataClass = dataClass;
@@ -83,7 +83,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      * @param inheritedSlot only relevant if output slot. Can be an input slot name or '*' to automatically select the first input slot
      */
     public JIPipeDataSlotInfo(Class<? extends JIPipeData> dataClass, JIPipeSlotType slotType, String name, String description, String inheritedSlot) {
-       this(dataClass, slotType, name, description, inheritedSlot, false);
+        this(dataClass, slotType, name, description, inheritedSlot, false);
     }
 
     /**
@@ -140,41 +140,6 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         this.optional = other.optional;
         this.userModifiable = other.userModifiable;
         this.role = other.role;
-    }
-
-    /**
-     * Converts this info into the annotation form.
-     * Throws an {@link UnsupportedOperationException} if the info describes an output.
-     * @return the annotation
-     */
-    public JIPipeInputSlot toInputSlotAnnotation() {
-        return new DefaultJIPipeInputSlot(getDataClass(), getName(), getDescription(), false, isOptional(), getRole());
-    }
-
-
-    /**
-     * Converts this info into the annotation form.
-     * Throws an {@link UnsupportedOperationException} if the info describes an output.
-     * @return the annotation
-     */
-    public JIPipeOutputSlot toOutputSlotAnnotation() {
-        return new DefaultJIPipeOutputSlot(getDataClass(), getName(), getDescription(), getInheritedSlot(), false, getRole());
-    }
-
-    public void setRole(JIPipeDataSlotRole role) {
-        this.role = role;
-    }
-
-    public JIPipeDataSlot createInstance(JIPipeGraphNode node) {
-        if(isInput()) {
-            return new JIPipeInputDataSlot(this, node);
-        }
-        else if(isOutput()) {
-            return new JIPipeOutputDataSlot(this, node);
-        }
-        else {
-            throw new UnsupportedOperationException("Invalid slot info state!");
-        }
     }
 
     /**
@@ -249,6 +214,36 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      */
     public static boolean isValidName(String slotName) {
         return slotName.matches("[\\w.\\-,# ]+");
+    }
+
+    /**
+     * Converts this info into the annotation form.
+     * Throws an {@link UnsupportedOperationException} if the info describes an output.
+     *
+     * @return the annotation
+     */
+    public JIPipeInputSlot toInputSlotAnnotation() {
+        return new DefaultJIPipeInputSlot(getDataClass(), getName(), getDescription(), false, isOptional(), getRole());
+    }
+
+    /**
+     * Converts this info into the annotation form.
+     * Throws an {@link UnsupportedOperationException} if the info describes an output.
+     *
+     * @return the annotation
+     */
+    public JIPipeOutputSlot toOutputSlotAnnotation() {
+        return new DefaultJIPipeOutputSlot(getDataClass(), getName(), getDescription(), getInheritedSlot(), false, getRole());
+    }
+
+    public JIPipeDataSlot createInstance(JIPipeGraphNode node) {
+        if (isInput()) {
+            return new JIPipeInputDataSlot(this, node);
+        } else if (isOutput()) {
+            return new JIPipeOutputDataSlot(this, node);
+        } else {
+            throw new UnsupportedOperationException("Invalid slot info state!");
+        }
     }
 
     private void setVirtualByDataType() {
@@ -437,6 +432,10 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         return role;
     }
 
+    public void setRole(JIPipeDataSlotRole role) {
+        this.role = role;
+    }
+
     /**
      * Serializes an {@link JIPipeDataSlotInfo}
      */
@@ -467,6 +466,10 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
      * Deserializes an {@link JIPipeDataSlotInfo}
      */
     public static class Deserializer extends JsonDeserializer<JIPipeDataSlotInfo> {
+
+        public static Builder builder() {
+            return new Builder();
+        }
 
         @Override
         public JIPipeDataSlotInfo deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
@@ -513,10 +516,6 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
             return definition;
         }
 
-        public static Builder builder() {
-            return new Builder();
-        }
-
         public static class Builder {
             private JIPipeDataSlotInfo result = new JIPipeDataSlotInfo();
 
@@ -561,7 +560,7 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
             }
 
             public Builder addInheritanceConversion(Class<? extends JIPipeData> from, Class<? extends JIPipeData> to) {
-               return addInheritanceConversion(JIPipeDataInfo.getInstance(from), JIPipeDataInfo.getInstance(to));
+                return addInheritanceConversion(JIPipeDataInfo.getInstance(from), JIPipeDataInfo.getInstance(to));
             }
 
             public Builder setCustomName(String name) {
@@ -584,20 +583,20 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
             }
 
             public boolean isValid() {
-                if(StringUtils.isNullOrEmpty(result.getName())) {
+                if (StringUtils.isNullOrEmpty(result.getName())) {
                     return false;
                 }
-                if(!StringUtils.isFilesystemCompatible(result.getName()) && result.isOutput()) {
+                if (!StringUtils.isFilesystemCompatible(result.getName()) && result.isOutput()) {
                     return false;
                 }
                 return true;
             }
 
             public JIPipeDataSlotInfo build() {
-                if(StringUtils.isNullOrEmpty(result.getName())) {
+                if (StringUtils.isNullOrEmpty(result.getName())) {
                     throw new IllegalArgumentException("The slot name is empty!");
                 }
-                if(!StringUtils.isFilesystemCompatible(result.getName()) && result.isOutput()) {
+                if (!StringUtils.isFilesystemCompatible(result.getName()) && result.isOutput()) {
                     throw new IllegalArgumentException("The output slot name '" + result.getName() + "' is not compatible to file systems!");
                 }
                 result.setVirtualByDataType();

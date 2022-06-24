@@ -1,7 +1,9 @@
 package org.hkijena.jipipe.extensions.clij2;
 
 import net.haesleinhuepf.clij.clearcl.ClearCLBuffer;
-import net.haesleinhuepf.clij.macro.*;
+import net.haesleinhuepf.clij.macro.CLIJImageJProcessor;
+import net.haesleinhuepf.clij.macro.CLIJMacroPlugin;
+import net.haesleinhuepf.clij.macro.CLIJOpenCLProcessor;
 import net.haesleinhuepf.clij2.AbstractCLIJ2Plugin;
 import net.haesleinhuepf.clij2.CLIJ2;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -26,7 +28,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
 
     public CLIJCommandNode(JIPipeNodeInfo info) {
         super(info);
-        this.clijParameters = new JIPipeDynamicParameterCollection (((CLIJCommandNodeInfo)info).getNodeParameters());
+        this.clijParameters = new JIPipeDynamicParameterCollection(((CLIJCommandNodeInfo) info).getNodeParameters());
     }
 
     public CLIJCommandNode(CLIJCommandNode other) {
@@ -49,7 +51,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
             throw new RuntimeException(e);
         }
         CLIJ2 clij2 = CLIJ2.getInstance();
-        if(this.pluginInstance instanceof AbstractCLIJ2Plugin) {
+        if (this.pluginInstance instanceof AbstractCLIJ2Plugin) {
             ((AbstractCLIJ2Plugin) this.pluginInstance).setCLIJ2(clij2);
         }
         this.pluginInstance.setClij(clij2.getCLIJ());
@@ -74,7 +76,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             int argIndex = info.getInputSlotToArgIndexMap().get(inputSlot.getName());
             CLIJImageData imageData = dataBatch.getInputData(inputSlot, CLIJImageData.class, progressInfo);
-            if(info.getIoInputSlots().contains(inputSlot.getName())) {
+            if (info.getIoInputSlots().contains(inputSlot.getName())) {
                 imageData = (CLIJImageData) imageData.duplicate(progressInfo);
                 outputs.put(inputSlot.getName(), imageData.getImage());
             }
@@ -84,16 +86,16 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
         // Prepare outputs (dst buffer)
         ClearCLBuffer referenceImage = null;
         for (Object arg : args) {
-            if(arg instanceof ClearCLBuffer) {
+            if (arg instanceof ClearCLBuffer) {
                 referenceImage = (ClearCLBuffer) arg;
                 break;
             }
         }
 
         for (JIPipeDataSlot outputSlot : getOutputSlots()) {
-            if(outputs.containsKey(outputSlot.getName()))
+            if (outputs.containsKey(outputSlot.getName()))
                 continue;
-            if(outputSlot.getName().equals("Results table"))
+            if (outputSlot.getName().equals("Results table"))
                 continue;
             int argIndex = info.getOutputSlotToArgIndexMap().get(outputSlot.getName());
             ClearCLBuffer buffer = pluginInstance.createOutputBufferFromSource(referenceImage);
@@ -103,11 +105,10 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
 
         // Run algorithm
         if (pluginInstance instanceof CLIJOpenCLProcessor) {
-            ((CLIJOpenCLProcessor)pluginInstance).executeCL();
+            ((CLIJOpenCLProcessor) pluginInstance).executeCL();
         } else if (pluginInstance instanceof CLIJImageJProcessor) {
-            ((CLIJImageJProcessor)pluginInstance).executeIJ();
-        }
-        else {
+            ((CLIJImageJProcessor) pluginInstance).executeIJ();
+        } else {
             throw new UnsupportedOperationException("Unable to run CLIJ plugin of type " + pluginInstance.getClass());
         }
 
@@ -119,7 +120,7 @@ public class CLIJCommandNode extends JIPipeIteratingAlgorithm {
         }
 
         // Extract outputs table
-        if(!info.getOutputTableColumnInfos().isEmpty()) {
+        if (!info.getOutputTableColumnInfos().isEmpty()) {
             ResultsTableData resultsTableData = new ResultsTableData();
             for (CLIJCommandNodeInfo.OutputTableColumnInfo columnInfo : info.getOutputTableColumnInfos()) {
                 resultsTableData.addColumn(columnInfo.getName(), columnInfo.isStringColumn());

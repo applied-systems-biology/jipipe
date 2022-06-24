@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 public class JIPipeInputDataSlot extends JIPipeDataSlot {
     public JIPipeInputDataSlot(JIPipeDataSlotInfo info, JIPipeGraphNode node) {
         super(info, node);
-        if(info.getSlotType() != JIPipeSlotType.Input) {
+        if (info.getSlotType() != JIPipeSlotType.Input) {
             throw new IllegalArgumentException("Data slot info describes an input slot.");
         }
     }

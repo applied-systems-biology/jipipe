@@ -317,7 +317,8 @@ public class ImageJUtils {
     /**
      * Copies the hyperstack dimensions from one image to another
      * src and target must have the same number of slices!
-     * @param src the source image
+     *
+     * @param src    the source image
      * @param target the target image
      */
     public static void copyHyperstackDimensions(ImagePlus src, ImagePlus target) {

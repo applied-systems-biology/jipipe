@@ -5,7 +5,6 @@ import ij.IJ;
 import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -55,6 +54,94 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.marginBottom = new DefaultExpressionParameter(other.marginBottom);
     }
 
+    public static ImagePlus addBorder(ImagePlus img, int left, int top, int right, int bottom, BorderMode borderMode, double colorGreyscale, Color colorRGB, JIPipeProgressInfo progressInfo) {
+        int width = img.getWidth() + left + right;
+        int height = img.getHeight() + top + bottom;
+        ImagePlus result = IJ.createHyperStack(img.getTitle() + "-border", width, height, img.getNChannels(), img.getNSlices(), img.getNFrames(), img.getBitDepth());
+
+        ImageJUtils.forEachIndexedZCTSlice(result, (resultIp, index) -> {
+            ImageProcessor sourceIp = ImageJUtils.getSliceZero(img, index);
+            if (borderMode == BorderMode.Constant) {
+                // Constant: Fill first
+                if (resultIp instanceof ColorProcessor) {
+                    resultIp.setColor(colorRGB);
+                } else {
+                    resultIp.setColor(colorGreyscale);
+                }
+                resultIp.fill();
+            }
+
+            // Copy source to target
+            resultIp.insert(sourceIp, left, top);
+
+            if (borderMode != BorderMode.Constant) {
+                int originalWidth = img.getWidth();
+                int originalHeight = img.getHeight();
+
+                for (int y = 0; y < height; ++y) {
+                    for (int x = 0; x < width; ++x) {
+                        if (x >= left && x < originalWidth + left && y >= top && y < originalHeight + top)
+                            continue;
+                        int targetColor;
+                        if (borderMode == BorderMode.Repeat) {
+                            int sourceX = Math.max(left, Math.min(originalWidth + left - 1, x));
+                            int sourceY = Math.max(top, Math.min(originalHeight + top - 1, y));
+                            targetColor = resultIp.get(sourceX, sourceY);
+                        } else if (borderMode == BorderMode.Tile) {
+                            int sourceX = x;
+                            int sourceY = y;
+
+                            while (sourceX < left || sourceX >= originalWidth + left) {
+                                if (sourceX < left) {
+                                    sourceX += originalWidth;
+                                }
+                                if (sourceX >= originalWidth + left) {
+                                    sourceX = sourceX - originalWidth;
+                                }
+                            }
+
+                            while (sourceY < top || sourceY >= originalHeight + top) {
+                                if (sourceY < top) {
+                                    sourceY += originalHeight;
+                                }
+                                if (sourceY >= originalHeight + top) {
+                                    sourceY = sourceY - originalHeight;
+                                }
+                            }
+
+                            targetColor = resultIp.get(sourceX, sourceY);
+                        } else if (borderMode == BorderMode.Mirror) {
+                            int sourceX = x - left;
+                            int sourceY = y - top;
+
+                            while (sourceX < 0 || sourceX >= originalWidth) {
+                                if (sourceX < 0)
+                                    sourceX = -sourceX - 1;
+                                if (sourceX >= originalWidth)
+                                    sourceX = (originalWidth - 1) - (sourceX - originalWidth);
+                            }
+                            while (sourceY < 0 || sourceY >= originalHeight) {
+                                if (sourceY < 0)
+                                    sourceY = -sourceY - 1;
+                                if (sourceY >= originalHeight)
+                                    sourceY = (originalHeight - 1) - (sourceY - originalHeight);
+                            }
+                            targetColor = resultIp.get(sourceX + left, sourceY + top);
+                        } else {
+                            throw new UnsupportedOperationException();
+                        }
+
+                        resultIp.set(x, y, targetColor);
+                    }
+                }
+            }
+
+        }, progressInfo);
+
+        result.copyScale(img);
+        return result;
+    }
+
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
@@ -62,27 +149,26 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
         ImageQueryExpressionVariableSource.buildVariablesSet(img, variables);
 
-        int left = (int)(marginLeft.evaluateToNumber(variables));
-        int top = (int)(marginTop.evaluateToNumber(variables));
-        int right = (int)(marginRight.evaluateToNumber(variables));
-        int bottom = (int)(marginBottom.evaluateToNumber(variables));
+        int left = (int) (marginLeft.evaluateToNumber(variables));
+        int top = (int) (marginTop.evaluateToNumber(variables));
+        int right = (int) (marginRight.evaluateToNumber(variables));
+        int bottom = (int) (marginBottom.evaluateToNumber(variables));
 
         double colorGreyscale = 0;
         Color colorRGB = Color.BLACK;
 
-        if(borderMode == BorderMode.Constant) {
+        if (borderMode == BorderMode.Constant) {
             Object obj = borderColor.evaluate(variables);
-            if(obj instanceof Number) {
+            if (obj instanceof Number) {
                 colorGreyscale = ((Number) obj).doubleValue();
-                colorRGB = new Color((int)colorGreyscale, (int)colorGreyscale, (int)colorGreyscale);
-            }
-            else if(obj instanceof Collection) {
+                colorRGB = new Color((int) colorGreyscale, (int) colorGreyscale, (int) colorGreyscale);
+            } else if (obj instanceof Collection) {
                 ImmutableList<?> objects = ImmutableList.copyOf((Collection<?>) obj);
-                int r = ((Number)(objects.get(0))).intValue();
-                int g = ((Number)(objects.get(1))).intValue();
-                int b = ((Number)(objects.get(2))).intValue();
+                int r = ((Number) (objects.get(0))).intValue();
+                int g = ((Number) (objects.get(1))).intValue();
+                int b = ((Number) (objects.get(2))).intValue();
                 colorGreyscale = (r + g + b) / 3;
-                colorRGB = new Color(r,g,b);
+                colorRGB = new Color(r, g, b);
             }
         }
 
@@ -164,97 +250,5 @@ public class AddBorder2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("margin-bottom")
     public void setMarginBottom(DefaultExpressionParameter marginBottom) {
         this.marginBottom = marginBottom;
-    }
-
-    public static ImagePlus addBorder(ImagePlus img, int left, int top, int right, int bottom, BorderMode borderMode, double colorGreyscale, Color colorRGB, JIPipeProgressInfo progressInfo) {
-        int width = img.getWidth() + left + right;
-        int height = img.getHeight() + top + bottom;
-        ImagePlus result = IJ.createHyperStack(img.getTitle() + "-border", width, height, img.getNChannels(), img.getNSlices(), img.getNFrames(), img.getBitDepth());
-
-        ImageJUtils.forEachIndexedZCTSlice(result, (resultIp, index) -> {
-            ImageProcessor sourceIp = ImageJUtils.getSliceZero(img, index);
-            if(borderMode == BorderMode.Constant) {
-                // Constant: Fill first
-                if(resultIp instanceof ColorProcessor) {
-                    resultIp.setColor(colorRGB);
-                }
-                else {
-                    resultIp.setColor(colorGreyscale);
-                }
-                resultIp.fill();
-            }
-
-            // Copy source to target
-            resultIp.insert(sourceIp, left, top);
-
-            if(borderMode != BorderMode.Constant) {
-                int originalWidth = img.getWidth();
-                int originalHeight = img.getHeight();
-
-                for (int y = 0; y < height; ++y) {
-                    for (int x = 0; x < width; ++x) {
-                        if(x >= left && x < originalWidth + left && y >= top && y < originalHeight + top)
-                            continue;
-                        int targetColor;
-                        if(borderMode == BorderMode.Repeat) {
-                            int sourceX = Math.max(left, Math.min(originalWidth + left - 1, x));
-                            int sourceY = Math.max(top, Math.min(originalHeight + top - 1, y));
-                            targetColor = resultIp.get(sourceX, sourceY);
-                        }
-                        else if(borderMode == BorderMode.Tile) {
-                            int sourceX = x;
-                            int sourceY = y;
-
-                            while(sourceX < left || sourceX >= originalWidth + left) {
-                                if(sourceX < left) {
-                                    sourceX += originalWidth;
-                                }
-                                if( sourceX >= originalWidth + left) {
-                                    sourceX = sourceX - originalWidth;
-                                }
-                            }
-
-                            while(sourceY < top || sourceY >= originalHeight + top) {
-                                if(sourceY < top) {
-                                    sourceY += originalHeight;
-                                }
-                                if( sourceY >= originalHeight + top) {
-                                    sourceY = sourceY - originalHeight;
-                                }
-                            }
-
-                            targetColor = resultIp.get(sourceX, sourceY);
-                        }
-                        else if(borderMode == BorderMode.Mirror) {
-                            int sourceX = x - left;
-                            int sourceY = y - top;
-
-                            while(sourceX < 0 || sourceX >= originalWidth) {
-                                if(sourceX < 0)
-                                    sourceX = -sourceX - 1;
-                                if(sourceX >= originalWidth)
-                                    sourceX = (originalWidth - 1) - (sourceX - originalWidth);
-                            }
-                            while(sourceY < 0 || sourceY >= originalHeight) {
-                                if(sourceY < 0)
-                                    sourceY = -sourceY - 1;
-                                if(sourceY >= originalHeight)
-                                    sourceY = (originalHeight - 1) - (sourceY - originalHeight);
-                            }
-                            targetColor = resultIp.get(sourceX + left, sourceY + top);
-                        }
-                        else {
-                            throw new UnsupportedOperationException();
-                        }
-
-                        resultIp.set(x, y, targetColor);
-                    }
-                }
-            }
-
-        }, progressInfo);
-
-        result.copyScale(img);
-        return result;
     }
 }

@@ -27,7 +27,6 @@ import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInImageJData
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInJIPipeTabDataOperation;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.VersionUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 

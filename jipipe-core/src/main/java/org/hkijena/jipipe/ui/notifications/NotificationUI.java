@@ -20,8 +20,8 @@ public class NotificationUI extends JIPipeWorkbenchPanel {
     /**
      * @param inboxUI      the workbench
      * @param notification the notification instance
-     * @param blocked if blocked
-     * @param dismissed if dismissed
+     * @param blocked      if blocked
+     * @param dismissed    if dismissed
      */
     public NotificationUI(WorkbenchNotificationInboxUI inboxUI, JIPipeNotification notification, boolean blocked, boolean dismissed) {
         super(inboxUI.getWorkbench());

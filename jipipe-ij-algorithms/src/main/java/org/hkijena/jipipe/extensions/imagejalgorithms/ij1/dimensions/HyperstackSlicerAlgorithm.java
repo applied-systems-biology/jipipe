@@ -8,11 +8,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -23,7 +19,6 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.Intege
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Reduce & split hyperstack", description = "Slices a hyperstack via a range of indices.")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
@@ -32,8 +27,8 @@ import java.util.stream.Collectors;
 public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private IntegerRange indicesZ = new IntegerRange("0");
-    private IntegerRange indicesC =  new IntegerRange("0");
-    private IntegerRange indicesT =  new IntegerRange("0");
+    private IntegerRange indicesC = new IntegerRange("0");
+    private IntegerRange indicesT = new IntegerRange("0");
     private OptionalAnnotationNameParameter annotateZ = new OptionalAnnotationNameParameter("Z", true);
     private OptionalAnnotationNameParameter annotateC = new OptionalAnnotationNameParameter("C", true);
     private OptionalAnnotationNameParameter annotateT = new OptionalAnnotationNameParameter("T", true);
@@ -67,7 +62,7 @@ public class HyperstackSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         int numT = indices.getT().size();
 
         if (numZ * numC * numT == 0) {
-           throw new RuntimeException("Resulting image is empty!");
+            throw new RuntimeException("Resulting image is empty!");
         }
 
         ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(),

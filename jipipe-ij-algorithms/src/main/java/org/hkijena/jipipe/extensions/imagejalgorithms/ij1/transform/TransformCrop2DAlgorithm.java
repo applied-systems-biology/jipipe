@@ -66,6 +66,29 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.roi = new Margin(other.roi);
     }
 
+    public static ImagePlus crop(JIPipeProgressInfo progressInfo, ImagePlus img, Rectangle cropped) {
+        ImagePlus croppedImg;
+        if (img.isStack()) {
+            ImageStack result = new ImageStack(cropped.width, cropped.height, img.getStackSize());
+            ImageJUtils.forEachIndexedZCTSlice(img, (imp, index) -> {
+                imp.setRoi(cropped);
+                ImageProcessor croppedImage = imp.crop();
+                imp.resetRoi();
+                result.setProcessor(croppedImage, index.zeroSliceIndexToOneStackIndex(img));
+            }, progressInfo);
+            croppedImg = new ImagePlus("Cropped", result);
+            croppedImg.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
+            croppedImg.copyScale(img);
+        } else {
+            ImageProcessor imp = img.getProcessor();
+            imp.setRoi(cropped);
+            ImageProcessor croppedImage = imp.crop();
+            imp.resetRoi();
+            croppedImg = new ImagePlus("Cropped", croppedImage);
+        }
+        return croppedImg;
+    }
+
     @Override
     public boolean supportsParallelization() {
         return true;
@@ -99,29 +122,6 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus croppedImg = crop(progressInfo, img, cropped);
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(croppedImg), progressInfo);
-    }
-
-    public static ImagePlus crop(JIPipeProgressInfo progressInfo, ImagePlus img, Rectangle cropped) {
-        ImagePlus croppedImg;
-        if (img.isStack()) {
-            ImageStack result = new ImageStack(cropped.width, cropped.height, img.getStackSize());
-            ImageJUtils.forEachIndexedZCTSlice(img, (imp, index) -> {
-                imp.setRoi(cropped);
-                ImageProcessor croppedImage = imp.crop();
-                imp.resetRoi();
-                result.setProcessor(croppedImage, index.zeroSliceIndexToOneStackIndex(img));
-            }, progressInfo);
-            croppedImg = new ImagePlus("Cropped", result);
-            croppedImg.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
-            croppedImg.copyScale(img);
-        } else {
-            ImageProcessor imp = img.getProcessor();
-            imp.setRoi(cropped);
-            ImageProcessor croppedImage = imp.crop();
-            imp.resetRoi();
-            croppedImg = new ImagePlus("Cropped", croppedImage);
-        }
-        return croppedImg;
     }
 
     @JIPipeDocumentation(name = "ROI", description = "Defines the area to crop.")

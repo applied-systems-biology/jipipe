@@ -64,16 +64,16 @@ public class DocumentationUtils {
      * Prefers to use the resource URL if set up.
      *
      * @param documentation the first documentation
-     * @param klass the class the contains {@link JIPipeDocumentation} and {@link org.hkijena.jipipe.api.JIPipeDocumentationDescription} items
+     * @param klass         the class the contains {@link JIPipeDocumentation} and {@link org.hkijena.jipipe.api.JIPipeDocumentationDescription} items
      * @return the description
      */
     public static String getDocumentationDescription(JIPipeDocumentation documentation, Class<?> klass) {
         StringBuilder builder = new StringBuilder();
         JIPipeDocumentation annotation = klass.getAnnotation(JIPipeDocumentation.class);
         builder.append(getDocumentationDescription(documentation));
-        if(annotation != null) {
+        if (annotation != null) {
             String secondary = getDocumentationDescription(annotation);
-            if(builder.length() > 0 && !StringUtils.isNullOrEmpty(secondary))
+            if (builder.length() > 0 && !StringUtils.isNullOrEmpty(secondary))
                 builder.append("\n\n");
             builder.append(getDocumentationDescription(annotation));
         }
@@ -94,7 +94,7 @@ public class DocumentationUtils {
     public static String getDocumentationDescription(Class<?> klass) {
         StringBuilder builder = new StringBuilder();
         JIPipeDocumentation annotation = klass.getAnnotation(JIPipeDocumentation.class);
-        if(annotation != null) {
+        if (annotation != null) {
             builder.append(getDocumentationDescription(annotation));
         }
         for (JIPipeDocumentationDescription description : klass.getAnnotationsByType(JIPipeDocumentationDescription.class)) {

@@ -1,15 +1,12 @@
 package org.hkijena.jipipe.api.data;
 
-import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
 
 import javax.swing.*;
 import java.nio.file.Path;
@@ -67,12 +64,11 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImport
 
     public static class ImportDataRun implements JIPipeRunnable {
 
-        private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         private final Path rowStorageFolder;
         private final Class<? extends JIPipeData> dataType;
-
         private final JIPipeDataTableMetadataRow metadataRow;
         private final JIPipeDataTable outputTable;
+        private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
         public ImportDataRun(Path rowStorageFolder, Class<? extends JIPipeData> dataType, JIPipeDataTableMetadataRow metadataRow) {
             this.rowStorageFolder = rowStorageFolder;

@@ -6,7 +6,6 @@ import ij.plugin.frame.RoiManager;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIEditor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
@@ -28,10 +27,10 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class ROIManagerPlugin extends ImageViewerPanelPlugin {
-    private ROIListData rois = new ROIListData();
     private final ROIListData overlayRois = new ROIListData();
     private final JList<Roi> roiJList = new JList<>();
     private final JLabel roiInfoLabel = new JLabel();
+    private ROIListData rois = new ROIListData();
     private boolean roiSeeThroughZ = false;
     private boolean roiSeeThroughC = false;
     private boolean roiSeeThroughT = false;
@@ -106,12 +105,12 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         {
             JMenuItem item = new JMenuItem("Export to ImageJ ROI Manager", UIUtils.getIconFromResources("apps/imagej.png"));
             item.addActionListener(e -> {
-                if(rois.isEmpty()) {
+                if (rois.isEmpty()) {
                     JOptionPane.showMessageDialog(getViewerPanel(), "No ROI to export.", "Export ROI", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 ROIListData result = getSelectedROIOrAll("Export ROI", "Do you want to export all ROI or only the selected ones?");
-                if(result != null) {
+                if (result != null) {
                     exportROIsToManager(result);
                 }
             });
@@ -120,12 +119,12 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         {
             JMenuItem item = new JMenuItem("Export to file", UIUtils.getIconFromResources("actions/save.png"));
             item.addActionListener(e -> {
-                if(rois.isEmpty()) {
+                if (rois.isEmpty()) {
                     JOptionPane.showMessageDialog(getViewerPanel(), "No ROI to export.", "Export ROI", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
                 ROIListData result = getSelectedROIOrAll("Export ROI", "Do you want to export all ROI or only the selected ones?");
-                if(result != null) {
+                if (result != null) {
                     exportROIsToFile(result);
                 }
             });
@@ -134,7 +133,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     public ROIListData getSelectedROIOrAll(String title, String message) {
-        if(!roiJList.getSelectedValuesList().isEmpty()) {
+        if (!roiJList.getSelectedValuesList().isEmpty()) {
             int result = JOptionPane.showOptionDialog(getViewerPanel(),
                     message,
                     title,
@@ -143,9 +142,9 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
                     null,
                     new Object[]{"All ROI (" + rois.size() + ")", "Selected ROI (" + roiJList.getSelectedValuesList().size() + ")", "Cancel"},
                     "All ROI (" + rois.size() + ")");
-            if(result == JOptionPane.CANCEL_OPTION)
+            if (result == JOptionPane.CANCEL_OPTION)
                 return null;
-            else if(result == JOptionPane.YES_OPTION)
+            else if (result == JOptionPane.YES_OPTION)
                 return rois;
             else
                 return new ROIListData(roiJList.getSelectedValuesList());
@@ -192,7 +191,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         infoToolBar.setFloatable(false);
 
         roiInfoLabel.setIcon(UIUtils.getIconFromResources("data-types/roi.png"));
-        roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         infoToolBar.add(roiInfoLabel);
         infoToolBar.add(Box.createHorizontalGlue());
 
@@ -204,9 +203,9 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             JButton removeButton = new JButton("Delete", UIUtils.getIconFromResources("actions/delete.png"));
             removeButton.setToolTipText("Remove selected ROIs");
             removeButton.addActionListener(e -> {
-                if(roiJList.getSelectedValuesList().isEmpty())
+                if (roiJList.getSelectedValuesList().isEmpty())
                     return;
-                if(JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + roiJList.getSelectedValuesList().size() + "ROI?", "Edit ROI", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + roiJList.getSelectedValuesList().size() + "ROI?", "Edit ROI", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     removeSelectedROIs(false);
                 }
             });
@@ -215,18 +214,18 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         {
             JButton editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
             JPopupMenu editMenu = new JPopupMenu();
-            UIUtils.addReloadablePopupMenuToComponent(editButton,editMenu, () -> reloadEditRoiMenu(editMenu) );
+            UIUtils.addReloadablePopupMenuToComponent(editButton, editMenu, () -> reloadEditRoiMenu(editMenu));
             menuBar.add(editButton);
         }
     }
 
     private void editROIInDialog() {
         List<Roi> selected = roiJList.getSelectedValuesList();
-        if(selected.isEmpty()) {
+        if (selected.isEmpty()) {
             JOptionPane.showMessageDialog(getViewerPanel(), "You have not selected ROI to edit.", "Edit ROI", JOptionPane.ERROR_MESSAGE);
         }
-        if(selected.size() > 5) {
-            if(JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to edit " + selected.size() + "ROI?", "Edit ROI", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
+        if (selected.size() > 5) {
+            if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to edit " + selected.size() + "ROI?", "Edit ROI", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION) {
                 return;
             }
         }
@@ -238,7 +237,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             documentTabPane.addTab(roi.getName() + "", UIUtils.getIconFromResources("data-types/roi.png"), parameterPanel, DocumentTabPane.CloseMode.withoutCloseButton, true);
             editors.add(editor);
         }
-        if(UIUtils.showOKCancelDialog(getViewerPanel(), documentTabPane, "Edit ROI")) {
+        if (UIUtils.showOKCancelDialog(getViewerPanel(), documentTabPane, "Edit ROI")) {
             for (int i = 0; i < selected.size(); i++) {
                 Roi roi = editors.get(i).applyToRoi(selected.get(i));
                 rois.set(i, roi);
@@ -279,7 +278,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             viewMenu.add(toggle);
         }
         {
-            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Draw ROI labels",UIUtils.getIconFromResources( "actions/edit-select-text.png"));
+            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Draw ROI labels", UIUtils.getIconFromResources("actions/edit-select-text.png"));
             toggle.setSelected(roiDrawLabels);
             toggle.addActionListener(e -> {
                 roiDrawLabels = toggle.isSelected();

@@ -18,7 +18,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
@@ -37,8 +36,8 @@ public class CellPoseUtils {
 
     }
 
-    public static String getCellposeCustomCode()  {
-        if(CELLPOSE_CUSTOM_CODE == null) {
+    public static String getCellposeCustomCode() {
+        if (CELLPOSE_CUSTOM_CODE == null) {
             try {
                 CELLPOSE_CUSTOM_CODE = Resources.toString(CellPoseUtils.class.getResource("/org/hkijena/jipipe/extensions/cellpose/cellpose-custom.py"), StandardCharsets.UTF_8);
             } catch (IOException e) {

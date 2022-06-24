@@ -223,6 +223,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
 
     /**
      * Adds an input slot from an annotation
+     *
      * @param slot the slot annotation
      * @param user if the change was triggered by a user. If false, checks for slot modification, counts, etc. do not apply.
      * @return the slot info
@@ -234,6 +235,7 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
 
     /**
      * Adds an input slot from an annotation
+     *
      * @param slot the slot annotation
      * @param user if the change was triggered by a user. If false, checks for slot modification, counts, etc. do not apply.
      * @return the slot info

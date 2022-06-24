@@ -92,11 +92,10 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     };
     private final List<ImagePlus> initiallyOpenedImages = new ArrayList<>();
     private final List<Window> initiallyOpenedWindows = new ArrayList<>();
-    private ImageJMacro code = new ImageJMacro();
-    private JIPipeDynamicParameterCollection macroParameters = new JIPipeDynamicParameterCollection(true, ALLOWED_PARAMETER_CLASSES);
     private final InputSlotMapParameterCollection inputToImageJExporters;
     private final OutputSlotMapParameterCollection outputFromImageJImporters;
-
+    private ImageJMacro code = new ImageJMacro();
+    private JIPipeDynamicParameterCollection macroParameters = new JIPipeDynamicParameterCollection(true, ALLOWED_PARAMETER_CLASSES);
     private int importDelay = 1000;
 
     private int exportDelay = 250;
@@ -194,7 +193,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             prepareInputData(dataBatch, progressInfo);
 
             // Add delay
-            if(exportDelay > 0) {
+            if (exportDelay > 0) {
                 try {
                     progressInfo.log("Waiting " + exportDelay + "ms before executing the code");
                     Thread.sleep(exportDelay);
@@ -262,13 +261,13 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             finalCode.append("\n").append(code.getCode(getProjectDirectory()));
 
 
-            try(IJLogToJIPipeProgressInfoPump ignored = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+            try (IJLogToJIPipeProgressInfoPump ignored = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
                 progressInfo.log("Executing macro: \n\n" + finalCode);
 
                 Interpreter interpreter = new Interpreter();
                 interpreter.run(finalCode.toString());
 
-                if(importDelay > 0) {
+                if (importDelay > 0) {
                     try {
                         progressInfo.log("Waiting " + importDelay + "ms before importing results back into JIPipe");
                         Thread.sleep(importDelay);
@@ -282,8 +281,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
-        }
-        finally {
+        } finally {
             clearData(progressInfo.resolve("Cleanup"));
         }
     }
@@ -294,15 +292,13 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             ImageJDataImporter importer;
             ImageJImportParameters parameters = new ImageJImportParameters(outputSlot.getName());
 
-            if(configuration instanceof ImageJDataImporterRef) {
+            if (configuration instanceof ImageJDataImporterRef) {
                 importer = ((ImageJDataImporterRef) configuration).getInstance();
-            }
-            else if(configuration instanceof ImageJDataImportOperationRef) {
+            } else if (configuration instanceof ImageJDataImportOperationRef) {
                 ImageJDataImportOperationRef operationRef = (ImageJDataImportOperationRef) configuration;
                 importer = operationRef.getInstance();
                 operationRef.configure(parameters);
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException("Unknown parameter: " + parameters);
             }
 
@@ -390,15 +386,13 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             ImageJExportParameters parameters = new ImageJExportParameters(true, false, false, inputSlot.getName());
             ImageJDataExporter exporter;
 
-            if(configuration instanceof ImageJDataExporterRef) {
+            if (configuration instanceof ImageJDataExporterRef) {
                 exporter = ((ImageJDataExporterRef) configuration).getInstance();
-            }
-            else if(configuration instanceof ImageJDataExportOperationRef) {
+            } else if (configuration instanceof ImageJDataExportOperationRef) {
                 ImageJDataExportOperationRef operationRef = (ImageJDataExportOperationRef) configuration;
                 exporter = operationRef.getInstance();
                 operationRef.configure(parameters);
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException("Unknown parameter: " + configuration);
             }
 

@@ -1,15 +1,12 @@
 package org.hkijena.jipipe.extensions.plots.ui.resultanalysis;
 
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeDataDisplayOperation;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.nio.file.Path;
 
 public class OpenPlotInJIPipeDataOperation implements JIPipeDataDisplayOperation {
     @Override

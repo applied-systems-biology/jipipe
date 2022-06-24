@@ -1,23 +1,11 @@
 package org.hkijena.jipipe.extensions.ijweka.parameters;
 
-import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
-import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.pickers.JIPipeDataTypePicker;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.classfilters.AnyClassFilter;
-import org.hkijena.jipipe.utils.classfilters.ClassFilter;
-import weka.classifiers.AbstractClassifier;
 import weka.classifiers.Classifier;
 import weka.core.CustomDisplayStringProvider;
 import weka.core.OptionHandler;
@@ -27,9 +15,6 @@ import weka.gui.PropertyPanel;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
 
 public class WekaClassifierParameterEditorUI extends JIPipeParameterEditorUI {
     private JButton currentlyDisplayed;
@@ -86,9 +71,9 @@ public class WekaClassifierParameterEditorUI extends JIPipeParameterEditorUI {
                 "click the white area next to 'Choose'."), FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION);
         formPanel.addToForm(propertyPanel, new JLabel("Classifier"), null);
 
-        if(UIUtils.showOKCancelDialog(getWorkbench().getWindow(), formPanel, "Edit classifier")) {
+        if (UIUtils.showOKCancelDialog(getWorkbench().getWindow(), formPanel, "Edit classifier")) {
             WekaClassifierParameter newParameter = new WekaClassifierParameter();
-            newParameter.setClassifier((Classifier)editor.getValue());
+            newParameter.setClassifier((Classifier) editor.getValue());
             setParameter(newParameter, true);
         }
     }
@@ -99,9 +84,9 @@ public class WekaClassifierParameterEditorUI extends JIPipeParameterEditorUI {
             return;
         isReloading = true;
         WekaClassifierParameter parameter = getParameter(WekaClassifierParameter.class);
-        if(parameter.getClassifier() instanceof OptionHandler)
-            currentlyDisplayed.setText(parameter.getClassifier().getClass().getSimpleName() + " " + Utils.joinOptions(((OptionHandler)parameter.getClassifier()).getOptions()));
-        else if(parameter.getClassifier() instanceof CustomDisplayStringProvider)
+        if (parameter.getClassifier() instanceof OptionHandler)
+            currentlyDisplayed.setText(parameter.getClassifier().getClass().getSimpleName() + " " + Utils.joinOptions(((OptionHandler) parameter.getClassifier()).getOptions()));
+        else if (parameter.getClassifier() instanceof CustomDisplayStringProvider)
             currentlyDisplayed.setText(((CustomDisplayStringProvider) parameter.getClassifier()).toDisplay());
         else
             currentlyDisplayed.setText("" + parameter.getClassifier());
