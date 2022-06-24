@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.ijtrackmate;
 
+import fiji.plugin.trackmate.detection.SpotDetectorFactory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -21,6 +22,8 @@ import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
+import org.scijava.plugin.PluginInfo;
+import org.scijava.plugin.PluginService;
 
 import javax.swing.*;
 import java.util.Collections;
@@ -56,6 +59,12 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+        PluginService service = context.getService(PluginService.class);
+
+        JIPipeProgressInfo spotDetectorProgress = progressInfo.resolveAndLog("Spot detectors");
+        for (PluginInfo<SpotDetectorFactory> info : service.getPluginsOfType(SpotDetectorFactory.class)) {
+            spotDetectorProgress.resolveAndLog(info.toString());
+        }
     }
 
     @Override

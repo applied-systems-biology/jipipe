@@ -460,7 +460,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             JIPipeJavaExtension extension = null;
             try {
                 extension = (JIPipeJavaExtension) javaExtensions.get(i);
-                extension.register(this, getContext(), progressInfo);
+                extension.register(this, getContext(), progressInfo.resolve(extension.getDependencyId()));
                 registeredExtensions.add(extension);
                 registeredExtensionIds.add(extension.getDependencyId());
                 eventBus.post(new ExtensionRegisteredEvent(this, extension));
