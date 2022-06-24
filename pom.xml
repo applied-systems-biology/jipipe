@@ -10,7 +10,8 @@ Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 This code is licensed under BSD 2-Clause
 See the LICENSE file provided with this code for the full license.
 -->
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <packaging>pom</packaging>
     <groupId>org.hkijena</groupId>
@@ -78,7 +79,7 @@ See the LICENSE file provided with this code for the full license.
         <groupId>org.scijava</groupId>
         <artifactId>pom-scijava</artifactId>
         <version>32.0.0-beta-4</version>
-        <relativePath />
+        <relativePath/>
     </parent>
 
     <repositories>
@@ -192,6 +193,106 @@ See the LICENSE file provided with this code for the full license.
                 <artifactId>mslinks</artifactId>
                 <version>1.0.5</version>
             </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-python</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-annotation</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-filesystem</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-multiparameters</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-plots</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-tables</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-ij</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-ij2</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-ij-algorithms</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-ij-weka</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-ij-trackmate</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-ij-multi-template-matching</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-clij</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-strings</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-utils</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-ij-omero</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-forms</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-r</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-cellpose</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -235,6 +336,7 @@ See the LICENSE file provided with this code for the full license.
         <module>jipipe-r</module>
         <module>jipipe-cellpose</module>
         <module>jipipe-ij-weka</module>
+        <module>jipipe-ij-trackmate</module>
         <module>jipipe-launcher</module>
     </modules>
 

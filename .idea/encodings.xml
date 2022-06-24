@@ -23,6 +23,8 @@
     <file url="file://$PROJECT_DIR$/jipipe-ij-multi-template-matching/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-ij-omero/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-ij-omero/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jipipe-ij-trackmate/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/jipipe-ij-trackmate/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-ij-updater-cli/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-ij-updater-cli/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/jipipe-ij-weka/src/main/java" charset="UTF-8" />

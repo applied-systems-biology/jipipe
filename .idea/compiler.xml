@@ -23,6 +23,7 @@
         <module name="jipipe-clij" />
         <module name="jipipe-python" />
         <module name="jipipe-installer-linux" />
+        <module name="jipipe-ij-trackmate" />
         <module name="jipipe-r" />
         <module name="jipipe-ij-algorithms" />
         <module name="jipipe-multiparameters" />
@@ -43,6 +44,7 @@
       <module name="jipipe-ij-algorithms" target="1.8" />
       <module name="jipipe-ij-multi-template-matching" target="1.8" />
       <module name="jipipe-ij-omero" target="1.8" />
+      <module name="jipipe-ij-trackmate" target="1.8" />
       <module name="jipipe-ij-updater-cli" target="1.8" />
       <module name="jipipe-ij-weka" target="1.8" />
       <module name="jipipe-ij2" target="1.8" />
