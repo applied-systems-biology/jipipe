@@ -233,7 +233,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
      *
      * @param dataTable         the slot
      * @param row              the row
-     * @param existingMetadata existing strings
+     * @param existingMetadata existing strings. must be writable
      * @return the string
      */
     public Path generatePath(JIPipeDataTable dataTable, int row, Set<String> existingMetadata) {

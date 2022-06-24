@@ -488,12 +488,24 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param row the row
      * @return map from annotation name to annotation instance. Non-existing annotations are not present.
      */
-    public Map<String, JIPipeTextAnnotation> getAnnotationMap(int row) {
+    public Map<String, JIPipeTextAnnotation> getTextAnnotationMap(int row) {
         Map<String, JIPipeTextAnnotation> result = new HashMap<>();
         for (JIPipeTextAnnotation annotation : getTextAnnotations(row)) {
             result.put(annotation.getName(), annotation);
         }
         return result;
+    }
+
+    /**
+     * Returns annotations of a row as map
+     * @deprecated Use getTextAnnotationMap instead
+     *
+     * @param row the row
+     * @return map from annotation name to annotation instance. Non-existing annotations are not present.
+     */
+    @Deprecated
+    public Map<String, JIPipeTextAnnotation> getAnnotationMap(int row) {
+        return getTextAnnotationMap(row);
     }
 
     /**

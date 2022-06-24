@@ -259,6 +259,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         // Register data sources
         registerNodeType("import-imagej-roi-from-file", ROIDataFromFile.class);
         registerNodeType("extract-imagej-roi-from-ome-image", ROIDataFromOMEImage.class);
+        registerEnumParameterType("import-imagej-results-table-from-file:file-format", ResultsTableFromFile.FileFormat.class, "File format", "A file format");
         registerNodeType("import-imagej-results-table-from-file", ResultsTableFromFile.class);
         registerNodeType("import-imagej-imgplus-from-file", ImagePlusFromFile.class);
         registerNodeType("import-imagej-bioformats", BioFormatsImporter.class, UIUtils.getIconURLFromResources("apps/bioformats.png"));

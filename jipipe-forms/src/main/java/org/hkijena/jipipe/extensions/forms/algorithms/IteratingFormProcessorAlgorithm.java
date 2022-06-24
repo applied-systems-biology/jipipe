@@ -72,7 +72,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
      * @param annotations        target list
      */
     public static void extractRestoredAnnotations(JIPipeMergingDataBatch dataBatch, Map<String, JIPipeTextAnnotation> preFormAnnotations, JIPipeDataSlot inputSlot, int row, List<JIPipeTextAnnotation> annotations) {
-        Map<String, JIPipeTextAnnotation> originalAnnotationMap = inputSlot.getAnnotationMap(row);
+        Map<String, JIPipeTextAnnotation> originalAnnotationMap = inputSlot.getTextAnnotationMap(row);
         for (JIPipeTextAnnotation formAnnotation : dataBatch.getMergedTextAnnotations().values()) {
             JIPipeTextAnnotation preFormAnnotation = preFormAnnotations.getOrDefault(formAnnotation.getName(), null);
             if (preFormAnnotation == null) {
