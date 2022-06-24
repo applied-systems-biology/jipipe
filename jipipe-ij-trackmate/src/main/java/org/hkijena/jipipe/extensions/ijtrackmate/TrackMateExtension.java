@@ -18,6 +18,8 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotDetectorData;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.CreateSpotDetectorNodeInfo;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
@@ -26,6 +28,7 @@ import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 
 import javax.swing.*;
+import java.net.URL;
 import java.util.Collections;
 import java.util.List;
 
@@ -59,11 +62,21 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
+        URL trackMateIcon16 = getClass().getResource(RESOURCE_BASE_PATH + "/trackmate-16.png");
         PluginService service = context.getService(PluginService.class);
+
+        registerDatatype("trackmate-spot-detector", SpotDetectorData.class, trackMateIcon16);
 
         JIPipeProgressInfo spotDetectorProgress = progressInfo.resolveAndLog("Spot detectors");
         for (PluginInfo<SpotDetectorFactory> info : service.getPluginsOfType(SpotDetectorFactory.class)) {
-            spotDetectorProgress.resolveAndLog(info.toString());
+            JIPipeProgressInfo detectorProgress = spotDetectorProgress.resolveAndLog(info.toString());
+            try {
+                CreateSpotDetectorNodeInfo nodeInfo = new CreateSpotDetectorNodeInfo(info.createInstance());
+                registerNodeType(nodeInfo, trackMateIcon16);
+            }
+            catch (Throwable throwable) {
+                detectorProgress.log("Unable to register: " + throwable.getMessage());
+            }
         }
     }
 
