@@ -56,6 +56,11 @@ public abstract class DynamicEnumParameter<T> {
         this.value = value;
     }
 
+    /**
+     * Returns the list of allowed choices
+     * Please note that if isEditable() is true, other options might be available
+     * @return the allowed values
+     */
     public List<T> getAllowedValues() {
         return allowedValues;
     }
@@ -93,4 +98,10 @@ public abstract class DynamicEnumParameter<T> {
     public Icon renderIcon(T value) {
         return null;
     }
+
+    /**
+     * If this returns true, the user can freely edit the entry
+     * @return if the user can freely edit the entry
+     */
+    public boolean isEditable() {return false;}
 }
