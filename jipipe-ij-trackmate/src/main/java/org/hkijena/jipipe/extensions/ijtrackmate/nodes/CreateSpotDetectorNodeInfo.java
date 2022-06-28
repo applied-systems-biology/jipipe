@@ -26,9 +26,12 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotDetectorData;
+import org.hkijena.jipipe.extensions.ijtrackmate.io.settings.DefaultSettingsIO;
+import org.hkijena.jipipe.extensions.ijtrackmate.io.settings.SettingsIO;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +45,8 @@ public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
     private final SpotDetectorFactory<?> spotDetectorFactory;
 
     private final JIPipeDynamicParameterCollection parameters = new JIPipeDynamicParameterCollection();
+
+    private final Map<String, SettingsIO> settingsIOMap = new HashMap<>();
 
     public CreateSpotDetectorNodeInfo(SpotDetectorFactory<?> spotDetectorFactory) {
         this.id = "trackmate-create-spot-detector-" + spotDetectorFactory.getKey().toLowerCase().replace('_', '-');
@@ -57,6 +62,8 @@ public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
             String name = StringUtils.capitalize(entry.getKey().replace('_', ' ').toLowerCase());
             JIPipeMutableParameterAccess parameterAccess = parameters.addParameter(key, entry.getValue().getClass(), name, description.getBody());
             parameterAccess.set(parameterTypeInfo.duplicate(entry.getValue()));
+
+            settingsIOMap.put(entry.getKey(), new DefaultSettingsIO(parameterTypeInfo.getFieldClass()));
         }
     }
 
@@ -128,4 +135,7 @@ public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
         return false;
     }
 
+    public Map<String, SettingsIO> getSettingsIOMap() {
+        return settingsIOMap;
+    }
 }

@@ -32,7 +32,7 @@ public class SpotFeature extends DynamicStringEnumParameter {
         setAllowedValues(ALLOWED_VALUES);
     }
 
-    public SpotFeature(DynamicStringEnumParameter other) {
+    public SpotFeature(SpotFeature other) {
         super(other);
         setAllowedValues(ALLOWED_VALUES);
     }

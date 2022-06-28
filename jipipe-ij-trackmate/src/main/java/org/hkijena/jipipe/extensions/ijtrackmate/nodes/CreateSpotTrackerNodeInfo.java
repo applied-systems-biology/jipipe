@@ -31,9 +31,14 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotTrackerData;
+import org.hkijena.jipipe.extensions.ijtrackmate.io.settings.DefaultSettingsIO;
+import org.hkijena.jipipe.extensions.ijtrackmate.io.settings.SettingsIO;
+import org.hkijena.jipipe.extensions.ijtrackmate.io.settings.SpotFeaturePenaltyParameterListSettingsIO;
+import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeaturePenaltyParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -46,6 +51,7 @@ public class CreateSpotTrackerNodeInfo implements JIPipeNodeInfo {
     private final HTMLText description;
     private final SpotTrackerFactory spotTrackerFactory;
 
+    private final Map<String, SettingsIO> settingsIOMap = new HashMap<>();
     private final JIPipeDynamicParameterCollection parameters = new JIPipeDynamicParameterCollection();
 
     public CreateSpotTrackerNodeInfo(SpotTrackerFactory spotTrackerFactory) {
@@ -54,14 +60,31 @@ public class CreateSpotTrackerNodeInfo implements JIPipeNodeInfo {
         this.description = new HTMLText(spotTrackerFactory.getInfoText());
         this.spotTrackerFactory = spotTrackerFactory;
         for (Map.Entry<String, Object> entry : spotTrackerFactory.getDefaultSettings().entrySet()) {
-            JIPipeParameterTypeInfo parameterTypeInfo = JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getClass());
-            if (parameterTypeInfo == null) {
-                throw new UnsupportedOperationException("Cannot resolve parameter " + entry.getKey() + "=" + entry.getValue());
+            if(entry.getValue() == null) {
+                continue;
             }
+            JIPipeParameterTypeInfo parameterTypeInfo = JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getClass());
             String key = entry.getKey().toLowerCase().replace('_', '-');
             String name = StringUtils.capitalize(entry.getKey().replace('_', ' ').toLowerCase());
-            JIPipeMutableParameterAccess parameterAccess = parameters.addParameter(key, entry.getValue().getClass(), name, description.getBody());
-            parameterAccess.set(parameterTypeInfo.duplicate(entry.getValue()));
+            Class<?> fieldClass;
+            SettingsIO settingsIO;
+            if (parameterTypeInfo != null) {
+                fieldClass = parameterTypeInfo.getFieldClass();
+                settingsIO = new DefaultSettingsIO(fieldClass);
+            }
+            else if(entry.getValue() instanceof Map) {
+                // Assume it's a penalty
+                fieldClass = SpotFeaturePenaltyParameter.List.class;
+                settingsIO = new SpotFeaturePenaltyParameterListSettingsIO();
+                parameterTypeInfo = JIPipe.getParameterTypes().getInfoByFieldClass(fieldClass);
+            }
+            else {
+                throw new UnsupportedOperationException("Cannot resolve parameter " + entry.getKey() + "=" + entry.getValue());
+            }
+
+            JIPipeMutableParameterAccess parameterAccess = parameters.addParameter(key, fieldClass, name, description.getBody());
+            parameterAccess.set(parameterTypeInfo.duplicate(settingsIO.settingToParameter(entry.getValue())));
+            settingsIOMap.put(entry.getKey(), settingsIO);
         }
     }
 
@@ -126,6 +149,10 @@ public class CreateSpotTrackerNodeInfo implements JIPipeNodeInfo {
     @Override
     public Set<JIPipeDependency> getDependencies() {
         return Collections.emptySet();
+    }
+
+    public Map<String, SettingsIO> getSettingsIOMap() {
+        return settingsIOMap;
     }
 
     @Override

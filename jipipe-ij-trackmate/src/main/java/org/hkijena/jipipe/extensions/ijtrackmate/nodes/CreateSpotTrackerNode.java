@@ -50,7 +50,9 @@ public class CreateSpotTrackerNode extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         Map<String, Object> settings = new HashMap<>();
         for (Map.Entry<String, JIPipeParameterAccess> entry : parameters.getParameters().entrySet()) {
-            settings.put(entry.getKey(), JIPipe.duplicateParameter(entry.getValue().get(Object.class)));
+            Object parameterValue = JIPipe.duplicateParameter(entry.getValue().get(Object.class));
+            Object settingValue = nodeInfo.getSettingsIOMap().get(entry.getKey()).parameterToSetting(parameterValue);
+            settings.put(entry.getKey(), settingValue);
         }
         SpotTrackerData spotDetectorData = new SpotTrackerData(nodeInfo.getSpotTrackerFactory(), settings);
         dataBatch.addOutputData(getFirstOutputSlot(), spotDetectorData, progressInfo);
