@@ -30,6 +30,7 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmSourceFinderUI;
 import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmTargetFinderUI;
+import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -569,10 +570,19 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 dialog.dispose();
             }
         });
-//        Point slotLocation = new Point(getNodeUI().getSlotLocation(getSlot()).min);
-//        slotLocation.x += getNodeUI().getX();
-//        slotLocation.y += getNodeUI().getY();
-//        getNodeUI().getGraphUI().setGraphEditCursor(slotLocation);
+        if (getNodeUI().getGraphUI().isLayoutHelperEnabled()) {
+            Point cursorLocation = new Point();
+            Point slotLocation = getLocation();
+            if (getNodeUI().getGraphUI().getViewMode() == JIPipeGraphViewMode.Horizontal) {
+                cursorLocation.x = getNodeUI().getX() - getNodeUI().getGraphUI().getViewMode().getGridWidth() * 6;
+                cursorLocation.y = getNodeUI().getY() + slotLocation.y;
+            } else {
+                cursorLocation.x = getNodeUI().getX() + slotLocation.x;
+                cursorLocation.y = getNodeUI().getY() - getNodeUI().getGraphUI().getViewMode().getGridHeight() * 4;
+            }
+            getNodeUI().getGraphUI().setGraphEditCursor(cursorLocation);
+            getNodeUI().getGraphUI().repaint(50);
+        }
 
         dialog.setVisible(true);
     }
@@ -691,11 +701,12 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         });
         if (getNodeUI().getGraphUI().isLayoutHelperEnabled()) {
             Point cursorLocation = new Point();
+            Point slotLocation = getLocation();
             if (getNodeUI().getGraphUI().getViewMode() == JIPipeGraphViewMode.Horizontal) {
                 cursorLocation.x = getNodeUI().getRightX() + getNodeUI().getGraphUI().getViewMode().getGridWidth();
-                cursorLocation.y = getNodeUI().getY();
+                cursorLocation.y = getNodeUI().getY() + slotLocation.y;
             } else {
-                cursorLocation.x = getNodeUI().getX();
+                cursorLocation.x = getNodeUI().getX() + slotLocation.x;
                 cursorLocation.y = getNodeUI().getBottomY() + getNodeUI().getGraphUI().getViewMode().getGridHeight();
             }
             getNodeUI().getGraphUI().setGraphEditCursor(cursorLocation);
