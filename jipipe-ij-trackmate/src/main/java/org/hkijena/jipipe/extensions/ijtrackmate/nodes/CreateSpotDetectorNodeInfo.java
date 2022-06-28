@@ -14,6 +14,8 @@
 
 package org.hkijena.jipipe.extensions.ijtrackmate.nodes;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import fiji.plugin.trackmate.detection.SpotDetectorFactory;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -43,9 +45,9 @@ public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
     private final String name;
     private final HTMLText description;
     private final SpotDetectorFactory<?> spotDetectorFactory;
-
     private final JIPipeDynamicParameterCollection parameters = new JIPipeDynamicParameterCollection();
 
+    private final BiMap<String, String> settingsToParameterMap = HashBiMap.create();
     private final Map<String, SettingsIO> settingsIOMap = new HashMap<>();
 
     public CreateSpotDetectorNodeInfo(SpotDetectorFactory<?> spotDetectorFactory) {
@@ -63,6 +65,7 @@ public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
             JIPipeMutableParameterAccess parameterAccess = parameters.addParameter(key, entry.getValue().getClass(), name, description.getBody());
             parameterAccess.set(parameterTypeInfo.duplicate(entry.getValue()));
 
+            settingsToParameterMap.put(entry.getKey(), key);
             settingsIOMap.put(entry.getKey(), new DefaultSettingsIO(parameterTypeInfo.getFieldClass()));
         }
     }
@@ -137,5 +140,9 @@ public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
 
     public Map<String, SettingsIO> getSettingsIOMap() {
         return settingsIOMap;
+    }
+
+    public BiMap<String, String> getSettingsToParameterMap() {
+        return settingsToParameterMap;
     }
 }

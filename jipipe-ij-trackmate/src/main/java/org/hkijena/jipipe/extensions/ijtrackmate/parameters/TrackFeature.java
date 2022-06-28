@@ -25,27 +25,25 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.DynamicString
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
-@JsonDeserialize(using = SpotFeature.Deserializer.class)
-public class SpotFeature extends DynamicStringEnumParameter {
+@JsonDeserialize(using = TrackFeature.Deserializer.class)
+public class TrackFeature extends DynamicStringEnumParameter {
 
     public static final List<String> ALLOWED_VALUES = new ArrayList<>();
     public static final Map<String, String> VALUE_LABELS = new HashMap<>();
 
-    public SpotFeature() {
+    public TrackFeature() {
         setAllowedValues(ALLOWED_VALUES);
     }
 
-    public SpotFeature(SpotFeature other) {
+    public TrackFeature(TrackFeature other) {
         super(other);
         setAllowedValues(ALLOWED_VALUES);
     }
 
-    public SpotFeature(String value) {
+    public TrackFeature(String value) {
         super(value);
         setAllowedValues(ALLOWED_VALUES);
     }
@@ -63,7 +61,7 @@ public class SpotFeature extends DynamicStringEnumParameter {
     public static class Deserializer extends JsonDeserializer<DynamicStringEnumParameter> {
         @Override
         public DynamicStringEnumParameter deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
-            return new SpotFeature(((JsonNode) p.readValueAsTree()).textValue());
+            return new TrackFeature(((JsonNode) p.readValueAsTree()).textValue());
         }
     }
 }

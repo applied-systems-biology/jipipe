@@ -35,6 +35,7 @@ import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.python.antlr.ast.Str;
 import org.scijava.InstantiableException;
 import org.scijava.plugin.PluginInfo;
 
@@ -58,10 +59,7 @@ public class SpotTrackerData implements JIPipeData {
 
     public SpotTrackerData(SpotTrackerData other) {
         this.trackerFactory = other.trackerFactory;
-        this.settings = new HashMap<>();
-        for (Map.Entry<String, Object> entry : other.settings.entrySet()) {
-            settings.put(entry.getKey(), JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getClass()).duplicate(entry.getValue()));
-        }
+        this.settings = other.settings;
     }
 
     public static SpotTrackerData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -118,7 +116,7 @@ public class SpotTrackerData implements JIPipeData {
         JIPipeDynamicParameterCollection parameters = new JIPipeDynamicParameterCollection();
         for (Map.Entry<String, Object> entry : settings.entrySet()) {
             Object value = JIPipe.duplicateParameter(entry.getValue());
-            String key = entry.getKey().toLowerCase().replace('_', '-');
+            String key = entry.getKey();
             String name = WordUtils.capitalize(entry.getKey().replace('_', ' ').toLowerCase());
             JIPipeMutableParameterAccess parameterAccess = parameters.addParameter(key, entry.getValue().getClass(), name, description.getBody());
             parameterAccess.set(value);
@@ -134,6 +132,14 @@ public class SpotTrackerData implements JIPipeData {
     @Override
     public String toString() {
         return trackerFactory.getName();
+    }
+
+    public SpotTrackerFactory getTrackerFactory() {
+        return trackerFactory;
+    }
+
+    public Map<String, Object> getSettings() {
+        return settings;
     }
 
     @Override

@@ -18,6 +18,7 @@ import fiji.plugin.trackmate.Model;
 import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.detection.SpotDetectorFactory;
 import fiji.plugin.trackmate.features.spot.SpotAnalyzerFactoryBase;
+import fiji.plugin.trackmate.features.track.TrackAnalyzer;
 import fiji.plugin.trackmate.tracking.SpotTrackerFactory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
@@ -27,8 +28,12 @@ import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotDetectorData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotTrackerData;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.CreateSpotDetectorNodeInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.CreateSpotTrackerNodeInfo;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.TrackerNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
+import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeatureFilterParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeaturePenaltyParameter;
+import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeature;
+import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeatureFilterParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.scijava.Context;
@@ -99,13 +104,35 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "TrackMate spot feature penalty",
                 "Associates a penalty value to a spot feature",
                 null);
+        registerParameterType("trackmate-spot-feature-filter",
+                SpotFeatureFilterParameter.class,
+                SpotFeatureFilterParameter.List.class,
+                null,
+                null,
+                "TrackMate spot feature filter",
+                "Filters spots by a feature",
+                null);
+
+        registerParameterType("trackmate-track-feature", TrackFeature.class, "TrackMate track feature", "A track feature");
+        registerParameterType("trackmate-track-feature-filter",
+                TrackFeatureFilterParameter.class,
+                TrackFeatureFilterParameter.List.class,
+                null,
+                null,
+                "TrackMate track feature filter",
+                "Filters tracks by a feature",
+                null);
+
         registerSpotFeatures(progressInfo);
+        registerTrackFeatures(progressInfo);
 
         registerDatatype("trackmate-spot-detector", SpotDetectorData.class, trackMateSpotsIcon16);
         registerDatatype("trackmate-spot-tracker", SpotTrackerData.class, trackMateTrackerIcon16);
 
         registerSpotDetectors(progressInfo, trackMateIcon16, service);
         registerSpotTrackers(progressInfo, trackMateIcon16, service);
+
+        registerNodeType("trackmate-tracker", TrackerNode.class, trackMateIcon16);
     }
 
     private void registerSpotFeatures(JIPipeProgressInfo progressInfo) {
@@ -130,6 +157,27 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
         }
     }
 
+    private void registerTrackFeatures(JIPipeProgressInfo progressInfo) {
+        Model model = new Model();
+        for (Map.Entry<String, String> entry : model.getFeatureModel().getTrackFeatureNames().entrySet()) {
+            String internalName = entry.getKey();
+            String displayName = entry.getValue();
+            progressInfo.log("Track feature detected: " + internalName + " (" + displayName + ")");
+            TrackFeature.ALLOWED_VALUES.add(internalName);
+            TrackFeature.VALUE_LABELS.put(internalName, displayName);
+        }
+        Settings settings = new Settings();
+        settings.addAllAnalyzers();
+        for (TrackAnalyzer trackAnalyzer : settings.getTrackAnalyzers()) {
+            for (Map.Entry<String, String> entry : trackAnalyzer.getFeatureNames().entrySet()) {
+                String internalName = entry.getKey();
+                String displayName = entry.getValue();
+                progressInfo.log("Track feature detected: " + internalName + " (" + displayName + ")");
+                TrackFeature.ALLOWED_VALUES.add(internalName);
+                TrackFeature.VALUE_LABELS.put(internalName, displayName);
+            }
+        }
+    }
 
     private void registerSpotTrackers(JIPipeProgressInfo progressInfo, URL trackMateIcon16, PluginService service) {
         JIPipeProgressInfo spotDetectorProgress = progressInfo.resolveAndLog("Spot trackers");

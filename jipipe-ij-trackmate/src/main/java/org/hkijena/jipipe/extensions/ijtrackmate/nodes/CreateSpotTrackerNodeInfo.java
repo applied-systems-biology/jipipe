@@ -14,6 +14,8 @@
 
 package org.hkijena.jipipe.extensions.ijtrackmate.nodes;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import fiji.plugin.trackmate.tracking.SpotTrackerFactory;
 import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -50,8 +52,9 @@ public class CreateSpotTrackerNodeInfo implements JIPipeNodeInfo {
     private final String name;
     private final HTMLText description;
     private final SpotTrackerFactory spotTrackerFactory;
-
     private final Map<String, SettingsIO> settingsIOMap = new HashMap<>();
+
+    private final BiMap<String, String> settingsToParameterMap = HashBiMap.create();
     private final JIPipeDynamicParameterCollection parameters = new JIPipeDynamicParameterCollection();
 
     public CreateSpotTrackerNodeInfo(SpotTrackerFactory spotTrackerFactory) {
@@ -59,7 +62,8 @@ public class CreateSpotTrackerNodeInfo implements JIPipeNodeInfo {
         this.name = spotTrackerFactory.getName();
         this.description = new HTMLText(spotTrackerFactory.getInfoText());
         this.spotTrackerFactory = spotTrackerFactory;
-        for (Map.Entry<String, Object> entry : spotTrackerFactory.getDefaultSettings().entrySet()) {
+        Map<String, Object> defaultSettings = spotTrackerFactory.getDefaultSettings();
+        for (Map.Entry<String, Object> entry : defaultSettings.entrySet()) {
             if(entry.getValue() == null) {
                 continue;
             }
@@ -84,6 +88,8 @@ public class CreateSpotTrackerNodeInfo implements JIPipeNodeInfo {
 
             JIPipeMutableParameterAccess parameterAccess = parameters.addParameter(key, fieldClass, name, description.getBody());
             parameterAccess.set(parameterTypeInfo.duplicate(settingsIO.settingToParameter(entry.getValue())));
+
+            settingsToParameterMap.put(entry.getKey(), key);
             settingsIOMap.put(entry.getKey(), settingsIO);
         }
     }
@@ -153,6 +159,10 @@ public class CreateSpotTrackerNodeInfo implements JIPipeNodeInfo {
 
     public Map<String, SettingsIO> getSettingsIOMap() {
         return settingsIOMap;
+    }
+
+    public BiMap<String, String> getSettingsToParameterMap() {
+        return settingsToParameterMap;
     }
 
     @Override

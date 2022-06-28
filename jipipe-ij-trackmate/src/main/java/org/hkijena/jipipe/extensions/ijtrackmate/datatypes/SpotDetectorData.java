@@ -58,10 +58,7 @@ public class SpotDetectorData implements JIPipeData {
 
     public SpotDetectorData(SpotDetectorData other) {
         this.spotDetectorFactory = other.spotDetectorFactory;
-        this.settings = new HashMap<>();
-        for (Map.Entry<String, Object> entry : other.settings.entrySet()) {
-            settings.put(entry.getKey(), JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getClass()).duplicate(entry.getValue()));
-        }
+        this.settings = other.settings;
     }
 
     public static SpotDetectorData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -118,7 +115,7 @@ public class SpotDetectorData implements JIPipeData {
         JIPipeDynamicParameterCollection parameters = new JIPipeDynamicParameterCollection();
         for (Map.Entry<String, Object> entry : settings.entrySet()) {
             Object value = JIPipe.duplicateParameter(entry.getValue());
-            String key = entry.getKey().toLowerCase().replace('_', '-');
+            String key = entry.getKey();
             String name = WordUtils.capitalize(entry.getKey().replace('_', ' ').toLowerCase());
             JIPipeMutableParameterAccess parameterAccess = parameters.addParameter(key, entry.getValue().getClass(), name, description.getBody());
             parameterAccess.set(value);
@@ -134,6 +131,14 @@ public class SpotDetectorData implements JIPipeData {
     @Override
     public String toString() {
         return spotDetectorFactory.getName();
+    }
+
+    public SpotDetectorFactory<?> getSpotDetectorFactory() {
+        return spotDetectorFactory;
+    }
+
+    public Map<String, Object> getSettings() {
+        return settings;
     }
 
     @Override
