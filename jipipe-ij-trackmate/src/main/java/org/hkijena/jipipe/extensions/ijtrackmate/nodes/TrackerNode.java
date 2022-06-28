@@ -26,8 +26,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.ModelData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotDetectorData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotTrackerData;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
@@ -41,6 +43,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", description = "The image to be tracked", autoCreate = true)
 @JIPipeInputSlot(value = SpotDetectorData.class, slotName = "Spot detector", description = "The algorithm that detects the spots", autoCreate = true)
 @JIPipeInputSlot(value = SpotTrackerData.class, slotName = "Spot tracker", description = "The algorithm that tracks the spots", autoCreate = true)
+@JIPipeOutputSlot(value = ModelData.class, slotName = "Model", description = "The TrackMate model", autoCreate = true)
 public class TrackerNode extends JIPipeIteratingAlgorithm {
 
     private SpotFeatureFilterParameter.List spotFilters = new SpotFeatureFilterParameter.List();
@@ -101,6 +104,8 @@ public class TrackerNode extends JIPipeIteratingAlgorithm {
                     "TrackMate could not successfully process the data",
                     "Please check the error message");
         }
+
+        dataBatch.addOutputData(getFirstOutputSlot(), new ModelData(model, settings, image), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Spot filters", description = "Allows to filter the detected spots by various features")

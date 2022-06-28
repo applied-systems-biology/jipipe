@@ -24,6 +24,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.ModelData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotDetectorData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotTrackerData;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.CreateSpotDetectorNodeInfo;
@@ -128,6 +129,7 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerDatatype("trackmate-spot-detector", SpotDetectorData.class, trackMateSpotsIcon16);
         registerDatatype("trackmate-spot-tracker", SpotTrackerData.class, trackMateTrackerIcon16);
+        registerDatatype("trackmate-model", ModelData.class, trackMateIcon16);
 
         registerSpotDetectors(progressInfo, trackMateIcon16, service);
         registerSpotTrackers(progressInfo, trackMateIcon16, service);
