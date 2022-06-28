@@ -77,16 +77,6 @@
         <license.projectName>JIPipe-TrackMate</license.projectName>
     </properties>
 
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>sc.fiji</groupId>
-                <artifactId>TrackMate</artifactId>
-                <version>7.7.1</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
-
     <dependencies>
         <dependency>
             <groupId>org.hkijena</groupId>

@@ -80,6 +80,18 @@ public class ModelData implements JIPipeData {
 
     }
 
+    public Model getModel() {
+        return model;
+    }
+
+    public Settings getSettings() {
+        return settings;
+    }
+
+    public ImagePlus getImage() {
+        return image;
+    }
+
     public static ModelData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         Path xmlFileName = storage.findFileByExtension(".xml").get();
         Path tiffFileName = storage.findFileByExtension(".tif", ".tiff").get();

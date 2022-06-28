@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.scijava.Cancelable;
 
 import java.util.Collection;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -24,7 +25,7 @@ import java.util.function.BiConsumer;
 /**
  * This object is available inside a {@link JIPipeRunnable} and contains methods to report progress, logs, and request cancellation.
  */
-public class JIPipeProgressInfo {
+public class JIPipeProgressInfo implements Cancelable {
     private EventBus eventBus = new EventBus();
     private AtomicBoolean cancelled = new AtomicBoolean();
     private AtomicInteger progress = new AtomicInteger(0);
@@ -33,6 +34,8 @@ public class JIPipeProgressInfo {
     private String logPrepend = "";
     private AtomicBoolean logToStdOut = new AtomicBoolean(false);
     private boolean detachedProgress = false;
+
+    private String cancelReason;
 
     public JIPipeProgressInfo() {
     }
@@ -46,6 +49,7 @@ public class JIPipeProgressInfo {
         this.logPrepend = other.logPrepend;
         this.logToStdOut = other.logToStdOut;
         this.detachedProgress = other.detachedProgress;
+        this.cancelReason = other.cancelReason;
     }
 
     public synchronized void clearLog() {
@@ -74,6 +78,21 @@ public class JIPipeProgressInfo {
 
     public boolean isCancelled() {
         return cancelled.get();
+    }
+
+    public boolean isCanceled() {
+        return cancelled.get();
+    }
+
+    @Override
+    public void cancel(String reason) {
+        cancel();
+        cancelReason = reason;
+    }
+
+    @Override
+    public String getCancelReason() {
+        return cancelReason;
     }
 
     public void cancel() {

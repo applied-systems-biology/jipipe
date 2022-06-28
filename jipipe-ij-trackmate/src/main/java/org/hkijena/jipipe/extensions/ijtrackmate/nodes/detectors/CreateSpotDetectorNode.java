@@ -12,7 +12,7 @@
  *
  */
 
-package org.hkijena.jipipe.extensions.ijtrackmate.nodes;
+package org.hkijena.jipipe.extensions.ijtrackmate.nodes.detectors;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;

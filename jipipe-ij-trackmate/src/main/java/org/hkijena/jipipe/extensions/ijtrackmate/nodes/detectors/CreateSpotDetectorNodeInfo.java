@@ -12,12 +12,11 @@
  *
  */
 
-package org.hkijena.jipipe.extensions.ijtrackmate.nodes;
+package org.hkijena.jipipe.extensions.ijtrackmate.nodes.detectors;
 
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import fiji.plugin.trackmate.detection.SpotDetectorFactory;
-import org.apache.commons.lang.WordUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;

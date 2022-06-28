@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.ijtrackmate;
 
-import fiji.plugin.trackmate.FeatureModel;
 import fiji.plugin.trackmate.Model;
 import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.detection.SpotDetectorFactory;
@@ -27,9 +26,15 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.ModelData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotDetectorData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotTrackerData;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.CreateSpotDetectorNodeInfo;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.CreateSpotTrackerNodeInfo;
+import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.converters.ConvertSpotsToRoiNode;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.converters.SpotsToRoiConverter;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.detectors.CreateSpotDetectorNodeInfo;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.detectors.CreateSpotTrackerNodeInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.TrackerNode;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.DetectNode;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MeasureSpotsNode;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SpotFilterNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeatureFilterParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeaturePenaltyParameter;
@@ -37,6 +42,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeatureFilterParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 import org.scijava.plugin.PluginInfo;
@@ -130,11 +136,18 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("trackmate-spot-detector", SpotDetectorData.class, trackMateSpotsIcon16);
         registerDatatype("trackmate-spot-tracker", SpotTrackerData.class, trackMateTrackerIcon16);
         registerDatatype("trackmate-model", ModelData.class, trackMateIcon16);
+        registerDatatype("trackmate-spot-collection", SpotsCollectionData.class, trackMateSpotsIcon16);
+        registerDatatypeConversion(new SpotsToRoiConverter());
 
         registerSpotDetectors(progressInfo, trackMateIcon16, service);
         registerSpotTrackers(progressInfo, trackMateIcon16, service);
 
+        registerNodeType("trackmate-detector", DetectNode.class, trackMateIcon16);
         registerNodeType("trackmate-tracker", TrackerNode.class, trackMateIcon16);
+
+        registerNodeType("trackmate-spots-to-roi", ConvertSpotsToRoiNode.class, UIUtils.getIconURLFromResources("actions/reload.png"));
+        registerNodeType("trackmate-filter-spots", SpotFilterNode.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("trackmate-measure-spots", MeasureSpotsNode.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
     }
 
     private void registerSpotFeatures(JIPipeProgressInfo progressInfo) {
