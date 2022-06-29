@@ -1,6 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins;
 
 import com.google.common.primitives.Ints;
+import ij.IJ;
+import ij.ImagePlus;
 import ij.gui.Roi;
 import ij.plugin.frame.RoiManager;
 import ij.process.ColorProcessor;
@@ -352,6 +354,15 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         }
         return processor;
     }
+
+//    @Override
+//    public void postprocessDraw(Graphics2D graphics2D, int x, int y, int w, int h) {
+//        ImagePlus dummy = IJ.createImage("img", )
+//        for (Roi roi : rois) {
+//
+//            roi.draw(graphics2D);
+//        }
+//    }
 
     @Override
     public void onSliceChanged(boolean deferUploadSlice) {
