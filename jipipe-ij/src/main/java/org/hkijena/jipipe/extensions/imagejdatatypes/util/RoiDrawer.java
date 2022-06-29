@@ -64,6 +64,10 @@ public class RoiDrawer implements JIPipeParameterCollection {
     }
 
     public RoiDrawer(RoiDrawer other) {
+        copyFrom(other);
+    }
+
+    public void copyFrom(RoiDrawer other) {
         this.drawOutlineMode = other.drawOutlineMode;
         this.drawFilledOutlineMode = other.drawFilledOutlineMode;
         this.drawnLabel = other.drawnLabel;

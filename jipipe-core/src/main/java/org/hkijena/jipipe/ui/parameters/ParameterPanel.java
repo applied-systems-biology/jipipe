@@ -76,6 +76,11 @@ public class ParameterPanel extends FormPanel implements Contextual {
      */
     public static final int WITHOUT_COLLAPSE = 2048;
 
+    /**
+     * Flags suitable for standalone dialogs
+     */
+    public static final int DEFAULT_DIALOG_FLAGS = WITH_SEARCH_BAR | WITH_DOCUMENTATION | WITH_SCROLLING;
+
     private JIPipeWorkbench workbench;
     private Context context;
     private JIPipeParameterCollection displayedParameters;

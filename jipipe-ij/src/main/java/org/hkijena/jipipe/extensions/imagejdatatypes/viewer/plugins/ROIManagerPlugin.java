@@ -5,9 +5,13 @@ import ij.gui.Roi;
 import ij.plugin.frame.RoiManager;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIRoiDisplaySettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIEditor;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.RoiListCellRenderer;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -16,6 +20,7 @@ import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -31,19 +36,14 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     private final JList<Roi> roiJList = new JList<>();
     private final JLabel roiInfoLabel = new JLabel();
     private ROIListData rois = new ROIListData();
-    private boolean roiSeeThroughZ = false;
-    private boolean roiSeeThroughC = false;
-    private boolean roiSeeThroughT = false;
-    private boolean roiDrawOutline = true;
-    private boolean roiFillOutline = false;
-    private boolean roiDrawLabels = false;
+    private final RoiDrawer roiDrawer;
     private boolean roiFilterList = false;
 
     public ROIManagerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
+        roiDrawer = new RoiDrawer(ImageViewerUIRoiDisplaySettings.getInstance()); // Copy from settings
         initialize();
     }
-
 
     @Override
     public void onImageChanged() {
@@ -258,62 +258,58 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             });
             viewMenu.add(toggle);
         }
-        viewMenu.addSeparator();
-        {
-            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Draw ROI outline", UIUtils.getIconFromResources("actions/object-stroke.png"));
-            toggle.setSelected(roiDrawOutline);
-            toggle.addActionListener(e -> {
-                roiDrawOutline = toggle.isSelected();
-                uploadSliceToCanvas();
-            });
-            viewMenu.add(toggle);
-        }
-        {
-            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Fill ROI outline", UIUtils.getIconFromResources("actions/object-fill.png"));
-            toggle.setSelected(roiFillOutline);
-            toggle.addActionListener(e -> {
-                roiFillOutline = toggle.isSelected();
-                uploadSliceToCanvas();
-            });
-            viewMenu.add(toggle);
-        }
-        {
-            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Draw ROI labels", UIUtils.getIconFromResources("actions/edit-select-text.png"));
-            toggle.setSelected(roiDrawLabels);
-            toggle.addActionListener(e -> {
-                roiDrawLabels = toggle.isSelected();
-                uploadSliceToCanvas();
-            });
-            viewMenu.add(toggle);
-        }
-        viewMenu.addSeparator();
         {
             JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Draw ROI: Ignore Z axis", UIUtils.getIconFromResources("actions/layer-flatten-z.png"));
-            toggle.setSelected(roiSeeThroughZ);
+            toggle.setSelected(roiDrawer.isIgnoreZ());
             toggle.addActionListener(e -> {
-                roiSeeThroughZ = toggle.isSelected();
+                roiDrawer.setIgnoreZ(toggle.isSelected());
                 uploadSliceToCanvas();
             });
             viewMenu.add(toggle);
         }
         {
             JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Draw ROI: Ignore time/frame axis", UIUtils.getIconFromResources("actions/layer-flatten-t.png"));
-            toggle.setSelected(roiSeeThroughT);
+            toggle.setSelected(roiDrawer.isIgnoreT());
             toggle.addActionListener(e -> {
-                roiSeeThroughT = toggle.isSelected();
+                roiDrawer.setIgnoreT(toggle.isSelected());
                 uploadSliceToCanvas();
             });
             viewMenu.add(toggle);
         }
         {
             JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Draw ROI: Ignore channel axis", UIUtils.getIconFromResources("actions/layer-flatten-c.png"));
-            toggle.setSelected(roiSeeThroughC);
+            toggle.setSelected(roiDrawer.isIgnoreC());
             toggle.addActionListener(e -> {
-                roiSeeThroughC = toggle.isSelected();
+                roiDrawer.setIgnoreC(toggle.isSelected());
                 uploadSliceToCanvas();
             });
             viewMenu.add(toggle);
         }
+        {
+            JMenuItem item = new JMenuItem("More settings ...", UIUtils.getIconFromResources("actions/configure.png"));
+            item.addActionListener(e->openRoiDrawingSettings());
+            viewMenu.add(item);
+        }
+        {
+            JMenuItem item = new JMenuItem("Save settings as default", UIUtils.getIconFromResources("actions/save.png"));
+            item.addActionListener(e->saveRoiDrawingSettings());
+            viewMenu.add(item);
+        }
+    }
+
+    private void saveRoiDrawingSettings() {
+        if(JOptionPane.showConfirmDialog(getViewerPanel(),
+                "Dou you want to save the ROI display settings as default?",
+                "Save settings as default",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            ImageViewerUIRoiDisplaySettings.getInstance().copyFrom(roiDrawer);
+            JIPipe.getSettings().save();
+        }
+    }
+
+    private void openRoiDrawingSettings() {
+        ParameterPanel.showDialog(getWorkbench(), roiDrawer, new MarkdownDocument("# ROI display settings\n\nPlease use the settings on the left to modify how ROI are visualized."), "ROI display settings", ParameterPanel.DEFAULT_DIALOG_FLAGS);
+        uploadSliceToCanvas();
     }
 
     private void importROIsFromFile() {
@@ -341,17 +337,18 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     public ImageProcessor draw(int c, int z, int t, ImageProcessor processor) {
         if (!rois.isEmpty()) {
             processor = new ColorProcessor(processor.getBufferedImage());
-            rois.draw(processor, new ImageSliceIndex(c, z, t),
-                    roiSeeThroughZ,
-                    roiSeeThroughC,
-                    roiSeeThroughT,
-                    roiDrawOutline,
-                    roiFillOutline,
-                    roiDrawLabels,
-                    1,
-                    Color.RED,
-                    Color.YELLOW,
-                    roiJList.getSelectedValuesList());
+//            rois.draw(processor, new ImageSliceIndex(c, z, t),
+//                    roiSeeThroughZ,
+//                    roiSeeThroughC,
+//                    roiSeeThroughT,
+//                    roiDrawOutline,
+//                    roiFillOutline,
+//                    roiDrawLabels,
+//                    1,
+//                    Color.RED,
+//                    Color.YELLOW,
+//                    roiJList.getSelectedValuesList());
+            roiDrawer.drawOnProcessor(new ImageSliceIndex(c,z,t), (ColorProcessor) processor, rois, new HashSet<>(roiJList.getSelectedValuesList()));
         }
         return processor;
     }
@@ -531,7 +528,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         int[] selectedIndices = roiJList.getSelectedIndices();
         ImageSliceIndex currentIndex = getCurrentSlicePosition();
         for (Roi roi : rois) {
-            if (roiFilterList && !ROIListData.isVisibleIn(roi, currentIndex, roiSeeThroughZ, roiSeeThroughC, roiSeeThroughT))
+            if (roiFilterList && !ROIListData.isVisibleIn(roi, currentIndex, roiDrawer.isIgnoreZ(), roiDrawer.isIgnoreC(), roiDrawer.isIgnoreT()))
                 continue;
             model.addElement(roi);
         }

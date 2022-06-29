@@ -70,6 +70,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImageDataPre
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ImportImageJPathDataOperation;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.OMEImageDataPreview;
 import org.hkijena.jipipe.extensions.imagejdatatypes.resultanalysis.ROIDataPreview;
+import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIRoiDisplaySettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.tools.BioFormatsConfigTool;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
@@ -77,6 +78,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.OptionalBitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataPreview;
 import org.hkijena.jipipe.extensions.tables.compat.ResultsTableDataImageJExporter;
 import org.hkijena.jipipe.extensions.tables.compat.ResultsTableDataImageJImporter;
@@ -289,6 +291,13 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
         registerDatatypeOperation("file", new ImportImageJPathDataOperation());
 
         registerMenuExtension(BioFormatsConfigTool.class);
+
+        registerSettingsSheet(ImageViewerUIRoiDisplaySettings.ID,
+                "Image viewer: ROI display",
+                UIUtils.getIconFromResources("actions/roi.png"),
+                "UI",
+                null,
+                new ImageViewerUIRoiDisplaySettings());
 
     }
 
