@@ -16,7 +16,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Measure tracks", description = "Measures the cks and outputs the results into a table")
+@JIPipeDocumentation(name = "Measure tracks", description = "Measures the tracks and outputs the results into a table")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nMeasure")
 @JIPipeInputSlot(value = TrackCollectionData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
