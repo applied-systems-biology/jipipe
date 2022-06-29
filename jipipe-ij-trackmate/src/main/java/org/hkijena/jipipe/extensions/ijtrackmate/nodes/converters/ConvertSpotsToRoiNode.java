@@ -24,7 +24,7 @@ public class ConvertSpotsToRoiNode extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         SpotsCollectionData data = dataBatch.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo);
-        ROIListData rois = data.toROIList();
+        ROIListData rois = data.spotsToROIList();
         dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 }

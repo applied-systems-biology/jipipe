@@ -1,14 +1,7 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots;
 
 import fiji.plugin.trackmate.*;
-import fiji.plugin.trackmate.detection.*;
-import fiji.plugin.trackmate.util.TMUtils;
 import ij.ImagePlus;
-import ij.gui.Roi;
-import net.imagej.ImgPlus;
-import net.imagej.axis.Axes;
-import net.imglib2.Interval;
-import net.imglib2.algorithm.MultiThreaded;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -19,28 +12,21 @@ import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotDetectorData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.JIPipeLogger;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.scijava.Cancelable;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @JIPipeDocumentation(name = "Detect spots", description = "Detect spots using TrackMate")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", description = "The image where the spots should be detected", autoCreate = true)
 @JIPipeInputSlot(value = SpotDetectorData.class, slotName = "Spot detector", description = "The algorithm that detects the spots", autoCreate = true)
 @JIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Spots", description = "The detected spots", autoCreate = true)
-public class DetectNode extends JIPipeIteratingAlgorithm {
+public class SpotDetectorNode extends JIPipeIteratingAlgorithm {
 
     private int numThreads = 1;
 
-    public DetectNode(JIPipeNodeInfo info) {
+    public SpotDetectorNode(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public DetectNode(DetectNode other) {
+    public SpotDetectorNode(SpotDetectorNode other) {
         super(other);
         this.numThreads = other.numThreads;
     }

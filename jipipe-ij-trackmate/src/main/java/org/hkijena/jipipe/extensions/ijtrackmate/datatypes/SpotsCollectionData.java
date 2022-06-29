@@ -3,14 +3,11 @@ package org.hkijena.jipipe.extensions.ijtrackmate.datatypes;
 import fiji.plugin.trackmate.*;
 import ij.ImagePlus;
 import ij.gui.EllipseRoi;
-import ij.gui.PolygonRoi;
-import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Optional;
 
@@ -22,7 +19,7 @@ public class SpotsCollectionData extends ModelData {
     }
 
     public SpotsCollectionData(ModelData other) {
-        super(other.getModel().copy(), other.getSettings().copyOn(other.getImage()), other.getImage());
+        super(other);
     }
 
     public static SpotsCollectionData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -44,7 +41,7 @@ public class SpotsCollectionData extends ModelData {
         return getModel().getSpots();
     }
 
-    public ROIListData toROIList() {
+    public ROIListData spotsToROIList() {
         ROIListData result = new ROIListData();
         for (Spot spot : getSpots().iterable(false)) {
             double x = spot.getDoublePosition(0);

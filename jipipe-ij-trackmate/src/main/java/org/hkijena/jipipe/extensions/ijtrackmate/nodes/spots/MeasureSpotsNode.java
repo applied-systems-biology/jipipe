@@ -37,7 +37,8 @@ public class MeasureSpotsNode extends JIPipeSimpleIteratingAlgorithm {
             int row = tableData.addRow();
             tableData.setValueAt(spot.getName(), row, "Name");
             for (Map.Entry<String, Double> entry : spot.getFeatures().entrySet()) {
-                int column = tableData.getOrCreateColumnIndex(entry.getKey(), false);
+                String columnName = spotsCollectionData.getModel().getFeatureModel().getSpotFeatureNames().get(entry.getKey());
+                int column = tableData.getOrCreateColumnIndex(columnName, false);
                 tableData.setValueAt(entry.getValue(), row, column);
             }
         }

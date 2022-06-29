@@ -52,9 +52,9 @@ public class ModelData implements JIPipeData {
     }
 
     public ModelData(ModelData other) {
-        this.model = other.model;
-        this.settings = other.settings;
-        this.image = other.image;
+        this.model = other.getModel().copy();
+        this.settings = other.getSettings().copyOn(other.getImage());
+        this.image = other.getImage();
     }
 
     @Override
