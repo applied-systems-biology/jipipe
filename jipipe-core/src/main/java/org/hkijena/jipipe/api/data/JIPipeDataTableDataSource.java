@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.api.data;
 
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+
 /**
  * A {@link JIPipeDataSource}
  */
@@ -58,5 +60,23 @@ public class JIPipeDataTableDataSource implements JIPipeDataSource {
      */
     public String getDataAnnotation() {
         return dataAnnotation;
+    }
+
+    /**
+     * Ensures that a table data source is present. If dataSource is already a table data source, it will be returned.
+     * Otherwise, a new {@link JIPipeDataTable} is created and the data is wrapped into it.
+     * @param data the data
+     * @param dataSource the data source. can be null.
+     * @return a table data source
+     */
+    public static JIPipeDataTableDataSource wrap(JIPipeData data, JIPipeDataSource dataSource) {
+        if(dataSource instanceof JIPipeDataTableDataSource) {
+            return (JIPipeDataTableDataSource) dataSource;
+        }
+        else {
+            JIPipeDataTable table = new JIPipeDataTable(data.getClass());
+            table.addData(data, new JIPipeProgressInfo());
+            return new JIPipeDataTableDataSource(table, 0);
+        }
     }
 }

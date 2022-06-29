@@ -753,15 +753,8 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        if (source instanceof JIPipeDataTableDataSource) {
-//            CacheAwareTableEditor.show(workbench, (JIPipeDataTableDataSource) source, displayName);
-            CachedTableViewerWindow window = new CachedTableViewerWindow(workbench, (JIPipeDataTableDataSource) source, displayName, false);
-            window.setVisible(true);
-        } else {
-            workbench.getDocumentTabPane().addTab(displayName, UIUtils.getIconFromResources("data-types/results-table.png"),
-                    new TableEditor(workbench, (ResultsTableData) duplicate(new JIPipeProgressInfo())), DocumentTabPane.CloseMode.withAskOnCloseButton, true);
-            workbench.getDocumentTabPane().switchToLastTab();
-        }
+        CachedTableViewerWindow window = new CachedTableViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
+        window.setVisible(true);
     }
 
     public ResultsTable getTable() {

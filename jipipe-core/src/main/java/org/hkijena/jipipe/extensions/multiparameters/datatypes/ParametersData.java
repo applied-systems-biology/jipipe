@@ -84,31 +84,9 @@ public class ParametersData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-//        try {
-//            Path outputFile = Files.createTempFile("JIPipeTempParameters-" + StringUtils.makeFilesystemCompatible(displayName), ".json");
-//            JsonUtils.getObjectMapper().writerWithDefaultPrettyPrinter()
-//                    .writeValue(outputFile.toFile(), this);
-//            Desktop.getDesktop().open(outputFile.toFile());
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-        if (source instanceof JIPipeDataTableDataSource) {
-            CachedParametersDataViewerWindow window = new CachedParametersDataViewerWindow(workbench, (JIPipeDataTableDataSource) source, displayName);
-            window.reloadDisplayedData();
-            window.setVisible(true);
-        } else {
-            ParametersDataViewer viewer = new ParametersDataViewer(workbench);
-            viewer.setParametersData(this);
-            JFrame frame = new JFrame(displayName);
-            frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-            frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-            frame.setContentPane(viewer);
-            frame.pack();
-            frame.setSize(800, 600);
-            frame.setLocationRelativeTo(workbench.getWindow());
-            frame.setVisible(true);
-        }
-
+        CachedParametersDataViewerWindow window = new CachedParametersDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName);
+        window.reloadDisplayedData();
+        window.setVisible(true);
     }
 
     public Map<String, Object> getParameterData() {

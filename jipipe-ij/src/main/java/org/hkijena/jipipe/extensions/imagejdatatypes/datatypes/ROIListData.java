@@ -461,22 +461,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        if (source instanceof JIPipeDataTableDataSource) {
-            CachedROIListDataViewerWindow window = new CachedROIListDataViewerWindow(workbench, (JIPipeDataTableDataSource) source, displayName, false);
-            window.setVisible(true);
-        } else {
-            ImagePlus mask;
-            if (isEmpty()) {
-                mask = IJ.createImage("empty", "8-bit", 128, 128, 1);
-            } else {
-                ROIListData copy = new ROIListData(this);
-                copy.flatten();
-                copy.crop(true, false, false, false);
-                mask = copy.toMask(new Margin(), false, true, 1);
-                mask.setLut(LUT.createLutFromColor(Color.RED));
-            }
-            mask.show();
-        }
+        CachedROIListDataViewerWindow window = new CachedROIListDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
+        window.setVisible(true);
     }
 
     /**
