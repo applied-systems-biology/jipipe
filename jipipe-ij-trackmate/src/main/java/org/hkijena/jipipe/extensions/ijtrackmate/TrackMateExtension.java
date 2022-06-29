@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.ijtrackmate;
 import fiji.plugin.trackmate.Model;
 import fiji.plugin.trackmate.Settings;
 import fiji.plugin.trackmate.detection.SpotDetectorFactory;
+import fiji.plugin.trackmate.features.edges.EdgeAnalyzer;
 import fiji.plugin.trackmate.features.spot.SpotAnalyzerFactoryBase;
 import fiji.plugin.trackmate.features.track.TrackAnalyzer;
 import fiji.plugin.trackmate.tracking.SpotTrackerFactory;
@@ -35,6 +36,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.nodes.TrackerNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.DetectNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MeasureSpotsNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SpotFilterNode;
+import org.hkijena.jipipe.extensions.ijtrackmate.parameters.EdgeFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeatureFilterParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeaturePenaltyParameter;
@@ -42,6 +44,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeatureFilterParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.utils.ResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -49,7 +52,6 @@ import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 
 import javax.swing.*;
-import java.net.URL;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -58,7 +60,7 @@ import java.util.Map;
 @Plugin(type = JIPipeJavaExtension.class)
 public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
 
-    public static final String RESOURCE_BASE_PATH = "/org/hkijena/jipipe/extensions/ijtrackmate";
+    public static final ResourceManager RESOURCES = new ResourceManager(TrackMateExtension.class, "/org/hkijena/jipipe/extensions/ijtrackmate");
 
     private static Map<String, PluginInfo<SpotDetectorFactory>> SPOT_DETECTORS = new HashMap<>();
 
@@ -92,14 +94,11 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public List<ImageIcon> getSplashIcons() {
-        return Collections.singletonList(new ImageIcon(getClass().getResource(RESOURCE_BASE_PATH + "/trackmate-32.png")));
+        return Collections.singletonList(RESOURCES.getIcon32FromResources("trackmate.png"));
     }
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        URL trackMateIcon16 = getClass().getResource(RESOURCE_BASE_PATH + "/trackmate-16.png");
-        URL trackMateSpotsIcon16 = getClass().getResource(RESOURCE_BASE_PATH + "/trackmate-spots.png");
-        URL trackMateTrackerIcon16 = getClass().getResource(RESOURCE_BASE_PATH + "/trackmate-tracker.png");
         PluginService service = context.getService(PluginService.class);
 
         registerParameterType("trackmate-spot-feature", SpotFeature.class, "TrackMate spot feature", "A spot feature");
@@ -132,22 +131,31 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerSpotFeatures(progressInfo);
         registerTrackFeatures(progressInfo);
+        registerEdgeFeatures(progressInfo);
 
-        registerDatatype("trackmate-spot-detector", SpotDetectorData.class, trackMateSpotsIcon16);
-        registerDatatype("trackmate-spot-tracker", SpotTrackerData.class, trackMateTrackerIcon16);
-        registerDatatype("trackmate-model", ModelData.class, trackMateIcon16);
-        registerDatatype("trackmate-spot-collection", SpotsCollectionData.class, trackMateSpotsIcon16);
-        registerDatatypeConversion(new SpotsToRoiConverter());
+        registerDataTypes();
 
-        registerSpotDetectors(progressInfo, trackMateIcon16, service);
-        registerSpotTrackers(progressInfo, trackMateIcon16, service);
+        registerSpotDetectors(progressInfo, service);
+        registerSpotTrackers(progressInfo, service);
 
-        registerNodeType("trackmate-detector", DetectNode.class, trackMateIcon16);
-        registerNodeType("trackmate-tracker", TrackerNode.class, trackMateIcon16);
+        registerNodes();
+    }
+
+    private void registerNodes() {
+        registerNodeType("trackmate-detector", DetectNode.class, RESOURCES.getIcon16URLFromResources("trackmate.png"));
+        registerNodeType("trackmate-tracker", TrackerNode.class, RESOURCES.getIcon16URLFromResources("trackmate.png"));
 
         registerNodeType("trackmate-spots-to-roi", ConvertSpotsToRoiNode.class, UIUtils.getIconURLFromResources("actions/reload.png"));
         registerNodeType("trackmate-filter-spots", SpotFilterNode.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("trackmate-measure-spots", MeasureSpotsNode.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
+    }
+
+    private void registerDataTypes() {
+        registerDatatype("trackmate-spot-detector", SpotDetectorData.class, RESOURCES.getIcon16URLFromResources("trackmate-spots.png"));
+        registerDatatype("trackmate-spot-tracker", SpotTrackerData.class, RESOURCES.getIcon16URLFromResources("trackmate-tracker.png"));
+        registerDatatype("trackmate-model", ModelData.class, RESOURCES.getIcon16URLFromResources("trackmate.png"));
+        registerDatatype("trackmate-spot-collection", SpotsCollectionData.class, RESOURCES.getIcon16URLFromResources("trackmate-spots.png"));
+        registerDatatypeConversion(new SpotsToRoiConverter());
     }
 
     private void registerSpotFeatures(JIPipeProgressInfo progressInfo) {
@@ -168,6 +176,28 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
                 progressInfo.log("Spot feature detected: " + internalName + " (" + displayName + ")");
                 SpotFeature.ALLOWED_VALUES.add(internalName);
                 SpotFeature.VALUE_LABELS.put(internalName, displayName);
+            }
+        }
+    }
+
+    private void registerEdgeFeatures(JIPipeProgressInfo progressInfo) {
+        Model model = new Model();
+        for (Map.Entry<String, String> entry : model.getFeatureModel().getEdgeFeatureNames().entrySet()) {
+            String internalName = entry.getKey();
+            String displayName = entry.getValue();
+            progressInfo.log("Edge feature detected: " + internalName + " (" + displayName + ")");
+            EdgeFeature.ALLOWED_VALUES.add(internalName);
+            EdgeFeature.VALUE_LABELS.put(internalName, displayName);
+        }
+        Settings settings = new Settings();
+        settings.addAllAnalyzers();
+        for (EdgeAnalyzer edgeAnalyzer : settings.getEdgeAnalyzers()) {
+            for (Map.Entry<String, String> entry : edgeAnalyzer.getFeatureNames().entrySet()) {
+                String internalName = entry.getKey();
+                String displayName = entry.getValue();
+                progressInfo.log("Edge feature detected: " + internalName + " (" + displayName + ")");
+                EdgeFeature.ALLOWED_VALUES.add(internalName);
+                EdgeFeature.VALUE_LABELS.put(internalName, displayName);
             }
         }
     }
@@ -194,14 +224,14 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
         }
     }
 
-    private void registerSpotTrackers(JIPipeProgressInfo progressInfo, URL trackMateIcon16, PluginService service) {
+    private void registerSpotTrackers(JIPipeProgressInfo progressInfo, PluginService service) {
         JIPipeProgressInfo spotDetectorProgress = progressInfo.resolveAndLog("Spot trackers");
         for (PluginInfo<SpotTrackerFactory> info : service.getPluginsOfType(SpotTrackerFactory.class)) {
             JIPipeProgressInfo detectorProgress = spotDetectorProgress.resolveAndLog(info.toString());
             try {
                 SpotTrackerFactory instance = info.createInstance();
                 CreateSpotTrackerNodeInfo nodeInfo = new CreateSpotTrackerNodeInfo(instance);
-                registerNodeType(nodeInfo, trackMateIcon16);
+                registerNodeType(nodeInfo, RESOURCES.getIcon16URLFromResources("trackmate.png"));
                 SPOT_TRACKERS.put(instance.getKey(), info);
             } catch (Throwable throwable) {
                 detectorProgress.log("Unable to register: " + throwable.getMessage());
@@ -209,14 +239,14 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
         }
     }
 
-    private void registerSpotDetectors(JIPipeProgressInfo progressInfo, URL trackMateIcon16, PluginService service) {
+    private void registerSpotDetectors(JIPipeProgressInfo progressInfo, PluginService service) {
         JIPipeProgressInfo spotDetectorProgress = progressInfo.resolveAndLog("Spot detectors");
         for (PluginInfo<SpotDetectorFactory> info : service.getPluginsOfType(SpotDetectorFactory.class)) {
             JIPipeProgressInfo detectorProgress = spotDetectorProgress.resolveAndLog(info.toString());
             try {
                 SpotDetectorFactory instance = info.createInstance();
                 CreateSpotDetectorNodeInfo nodeInfo = new CreateSpotDetectorNodeInfo(instance);
-                registerNodeType(nodeInfo, trackMateIcon16);
+                registerNodeType(nodeInfo, RESOURCES.getIcon16URLFromResources("trackmate.png"));
                 SPOT_DETECTORS.put(instance.getKey(), info);
             } catch (Throwable throwable) {
                 detectorProgress.log("Unable to register: " + throwable.getMessage());

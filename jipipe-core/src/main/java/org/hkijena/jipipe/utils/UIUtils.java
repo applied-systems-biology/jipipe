@@ -451,6 +451,7 @@ public class UIUtils {
 
     /**
      * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link ResourceManager}
      *
      * @param iconName relative to the icons/ plugin resource
      * @return the icon instance
@@ -467,6 +468,7 @@ public class UIUtils {
 
     /**
      * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link ResourceManager}
      *
      * @param iconName relative to the icons/ plugin resource
      * @return the icon instance
@@ -483,6 +485,7 @@ public class UIUtils {
 
     /**
      * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link ResourceManager}
      *
      * @param iconName relative to the icons/ plugin resource
      * @return the icon instance
@@ -499,6 +502,7 @@ public class UIUtils {
 
     /**
      * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link ResourceManager}
      *
      * @param iconName relative to the icons/ plugin resource
      * @return the icon instance
@@ -515,6 +519,7 @@ public class UIUtils {
 
     /**
      * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link ResourceManager}
      *
      * @param iconName relative to the icons/ plugin resource
      * @return the icon instance
@@ -531,6 +536,7 @@ public class UIUtils {
 
     /**
      * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link ResourceManager}
      *
      * @param iconName relative to the icons/ plugin resource
      * @return the icon instance

@@ -29,7 +29,7 @@ public class ImageViewerUISettings implements JIPipeParameterCollection {
 
     private final EventBus eventBus = new EventBus();
     private boolean showSideBar = true;
-    private int defaultAnimationSpeed = 250;
+    private int defaultAnimationSpeed = 75;
     private boolean alwaysClearROIs = true;
 
     public static ImageViewerUISettings getInstance() {

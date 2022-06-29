@@ -61,7 +61,7 @@ public class CreateSpotTrackerNode extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Spot tracker settings")
-    @JIPipeParameter(value = "spot-tracker-parameters", resourceClass = TrackMateExtension.class, iconURL = "/org/hkijena/jipipe/extensions/ijtrackmate/trackmate-16.png")
+    @JIPipeParameter(value = "spot-tracker-parameters", resourceClass = TrackMateExtension.class, iconURL = "/org/hkijena/jipipe/extensions/ijtrackmate/icons/trackmate.png")
     public JIPipeDynamicParameterCollection getParameters() {
         return parameters;
     }
