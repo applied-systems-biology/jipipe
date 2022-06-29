@@ -15,7 +15,12 @@ package org.hkijena.jipipe.extensions.expressions;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+
+import java.awt.Color;
+import java.util.Collection;
+import java.util.Iterator;
 
 /**
  * A parameter that contains an expression.
@@ -84,6 +89,39 @@ public abstract class ExpressionParameter {
     }
 
     /**
+     * Runs the expression and returns the numeric result. If no number is returned, an error is thrown.
+     *
+     * @param variables the variables
+     * @return the result
+     */
+    public int evaluateToInteger(ExpressionVariables variables) {
+        Object result = evaluate(variables);
+        return ((Number) result).intValue();
+    }
+
+    /**
+     * Runs the expression and returns the numeric result. If no number is returned, an error is thrown.
+     *
+     * @param variables the variables
+     * @return the result
+     */
+    public double evaluateToDouble(ExpressionVariables variables) {
+        Object result = evaluate(variables);
+        return ((Number) result).doubleValue();
+    }
+
+    /**
+     * Runs the expression and returns the numeric result. If no number is returned, an error is thrown.
+     *
+     * @param variables the variables
+     * @return the result
+     */
+    public float evaluateToFloat(ExpressionVariables variables) {
+        Object result = evaluate(variables);
+        return ((Number) result).floatValue();
+    }
+
+    /**
      * Runs the expression and returns the string result.
      *
      * @param variables the variables
@@ -92,6 +130,45 @@ public abstract class ExpressionParameter {
     public String evaluateToString(ExpressionVariables variables) {
         Object result = evaluate(variables);
         return StringUtils.nullToEmpty(result);
+    }
+
+    /**
+     * Runs the expression and returns the boolean result.
+     *
+     * @param variables the variables
+     * @return the result
+     */
+    public boolean evaluateToBoolean(ExpressionVariables variables) {
+        Object result = evaluate(variables);
+        return (boolean) result;
+    }
+
+    /**
+     * Runs the expression and returns a color result.
+     * Can handle return value of type {@link Color}, hex string, named colors according to {@link ColorUtils}, Collection of RGB or RGBA values (0-255)
+     * @param variables the variables
+     * @return the result
+     */
+    public Color evaluateToColor(ExpressionVariables variables) {
+        Object o = evaluate(variables);
+        if (o instanceof Color) {
+            return (Color) o;
+        } else if (o instanceof String) {
+            return ColorUtils.parseColor((String) o);
+        } else if (o instanceof Collection) {
+            Collection<?> collection = (Collection<?>) o;
+            Iterator<?> iterator = collection.iterator();
+            int red = ((Number) iterator.next()).intValue();
+            int green = ((Number) iterator.next()).intValue();
+            int blue = ((Number) iterator.next()).intValue();
+            int alpha = 255;
+            if (iterator.hasNext()) {
+                alpha = ((Number) iterator.next()).intValue();
+            }
+            return new Color(red, green, blue, alpha);
+        } else {
+            return null;
+        }
     }
 
     /**

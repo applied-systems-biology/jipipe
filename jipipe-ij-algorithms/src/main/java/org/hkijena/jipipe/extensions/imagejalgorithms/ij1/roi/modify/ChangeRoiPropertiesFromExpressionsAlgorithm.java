@@ -142,9 +142,9 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
             roi.setLocation(x, y);
 
             if (fillColor.isEnabled())
-                roi.setFillColor(parseColor(fillColor.getContent().evaluate(variables)));
+                roi.setFillColor(fillColor.getContent().evaluateToColor(variables));
             if (lineColor.isEnabled())
-                roi.setStrokeColor(parseColor(lineColor.getContent().evaluate(variables)));
+                roi.setStrokeColor(lineColor.getContent().evaluateToColor(variables));
             if (lineWidth.isEnabled())
                 roi.setStrokeWidth(lineWidth.getContent().evaluateToNumber(variables));
             if (roiName.isEnabled())
@@ -166,27 +166,6 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
-    }
-
-    private Color parseColor(Object o) {
-        if (o instanceof Color) {
-            return (Color) o;
-        } else if (o instanceof String) {
-            return ColorUtils.parseColor((String) o);
-        } else if (o instanceof Collection) {
-            Collection<?> collection = (Collection<?>) o;
-            Iterator<?> iterator = collection.iterator();
-            int red = ((Number) iterator.next()).intValue();
-            int green = ((Number) iterator.next()).intValue();
-            int blue = ((Number) iterator.next()).intValue();
-            int alpha = 255;
-            if (iterator.hasNext()) {
-                alpha = ((Number) iterator.next()).intValue();
-            }
-            return new Color(red, green, blue, alpha);
-        } else {
-            return null;
-        }
     }
 
     @JIPipeDocumentation(name = "Location (X)", description = "The X location. The annotation value is converted to an integer.")

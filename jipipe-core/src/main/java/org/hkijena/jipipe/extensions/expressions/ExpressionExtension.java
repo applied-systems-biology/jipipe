@@ -13,6 +13,7 @@ import org.hkijena.jipipe.extensions.expressions.functions.datetime.*;
 import org.hkijena.jipipe.extensions.expressions.functions.filesystem.*;
 import org.hkijena.jipipe.extensions.expressions.functions.math.ClampFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.math.PercentageFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.math.RoundToDecimalsFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityConvertFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityGetUnitFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.quantities.QuantityGetValueFunction;
@@ -237,7 +238,7 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new CaseFunction());
         registerExpressionFunction(new PercentageFunction());
         registerExpressionFunction(new SummarizeAnnotationsMapFunction());
-
+        registerExpressionFunction(new RoundToDecimalsFunction());
         registerExpressionFunction(new CreateRGBColorFunction());
         registerExpressionFunction(new CreateHSBColorFunction());
         registerExpressionFunction(new CreateLABColorFunction());

@@ -29,6 +29,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIElementDrawingMode;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.NumberParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
@@ -38,7 +39,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Wrapper around {@link ij.plugin.frame.RoiManager}
+ * Wrapper around {@link RoiDrawer}
  */
 @JIPipeDocumentation(name = "Convert ROI to RGB", description = "Converts ROI lists to masks. The line and fill color is stored within the ROI themselves. " +
         "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant.")
@@ -117,103 +118,23 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         ROIListData inputData = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
         ImagePlus reference = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
 
-        // Find the bounds and future stack position
-        int sx = reference.getWidth();
-        int sy = reference.getHeight();
-        int sz = reference.getNSlices();
-        int sc = reference.getNChannels();
-        int st = reference.getNFrames();
+        RoiDrawer drawer = new RoiDrawer();
+        drawer.setDrawOutlineMode(drawOutlineMode);
+        drawer.setDrawFilledOutlineMode(drawFilledOutlineMode);
+        drawer.setDrawnLabel(drawnLabel);
+        drawer.setOverrideFillColor(overrideFillColor);
+        drawer.setOverrideLineColor(overrideLineColor);
+        drawer.setOverrideLineWidth(overrideLineWidth);
+        drawer.setDrawOver(drawOver);
+        drawer.setLabelForeground(labelForeground);
+        drawer.setLabelBackground(labelBackground);
+        drawer.setLabelSize(labelSize);
+        drawer.setOpacity(opacity);
+        drawer.setIgnoreC(ignoreC);
+        drawer.setIgnoreZ(ignoreZ);
+        drawer.setIgnoreT(ignoreT);
 
-        // ROI statistics needed for labels
-        Map<Roi, Point> roiCentroids = new HashMap<>();
-        Map<Roi, Integer> roiIndices = new HashMap<>();
-        if (drawnLabel != RoiLabel.None) {
-            for (int i = 0; i < inputData.size(); i++) {
-                Roi roi = inputData.get(i);
-                roiIndices.put(roi, i);
-                roiCentroids.put(roi, ROIListData.getCentroid(roi));
-            }
-        }
-
-        ImagePlus result;
-        if (drawOver) {
-            result = ImageJUtils.convertToColorRGBIfNeeded(ImageJUtils.duplicate(reference));
-            result.setTitle("Reference+ROIs");
-        } else {
-            result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);
-        }
-
-        Font labelFont = new Font(Font.DIALOG, Font.PLAIN, labelSize);
-
-        // Draw ROI
-        for (int z = 0; z < sz; z++) {
-            for (int c = 0; c < sc; c++) {
-                for (int t = 0; t < st; t++) {
-                    int stackIndex = result.getStackIndex(c + 1, z + 1, t + 1);
-                    ImageProcessor originalProcessor = opacity != 1.0 ? result.getStack().getProcessor(stackIndex).duplicate() : null;
-                    ImageProcessor processor = result.getStack().getProcessor(stackIndex);
-                    for (Roi roi : inputData) {
-
-                        if (progressInfo.isCancelled())
-                            return;
-
-                        int rz = ignoreZ ? 0 : roi.getZPosition();
-                        int rc = ignoreC ? 0 : roi.getCPosition();
-                        int rt = ignoreT ? 0 : roi.getTPosition();
-                        if (rz != 0 && rz != (z + 1))
-                            continue;
-                        if (rc != 0 && rc != (c + 1))
-                            continue;
-                        if (rt != 0 && rt != (t + 1))
-                            continue;
-                        if (drawFilledOutlineMode.shouldDraw(roi.getFillColor(), overrideFillColor.getContent())) {
-                            Color color = (overrideFillColor.isEnabled() || roi.getFillColor() == null) ? overrideFillColor.getContent() : roi.getFillColor();
-                            processor.setColor(color);
-                            processor.fill(roi);
-                        }
-                        if (drawOutlineMode.shouldDraw(roi.getStrokeColor(), overrideLineColor.getContent())) {
-                            Color color = (overrideLineColor.isEnabled() || roi.getStrokeColor() == null) ? overrideLineColor.getContent() : roi.getStrokeColor();
-                            int width = (overrideLineWidth.isEnabled() || roi.getStrokeWidth() <= 0) ? (int) (double) (overrideLineWidth.getContent()) : (int) roi.getStrokeWidth();
-                            processor.setLineWidth(width);
-                            processor.setColor(color);
-                            roi.drawPixels(processor);
-                        }
-                        if (drawnLabel != RoiLabel.None) {
-                            Point centroid = roiCentroids.get(roi);
-                            drawnLabel.draw(result,
-                                    processor,
-                                    roi,
-                                    roiIndices.get(roi),
-                                    new Rectangle(centroid.x, centroid.y, 0, 0),
-                                    labelForeground,
-                                    labelBackground.getContent(),
-                                    labelFont,
-                                    labelBackground.isEnabled());
-                        }
-                    }
-
-                    // Apply opacity
-                    if (originalProcessor != null) {
-                        int[] originalBytes = (int[]) originalProcessor.getPixels();
-                        int[] bytes = (int[]) processor.getPixels();
-                        for (int i = 0; i < bytes.length; i++) {
-                            int rs = (originalBytes[i] & 0xff0000) >> 16;
-                            int gs = (originalBytes[i] & 0xff00) >> 8;
-                            int bs = originalBytes[i] & 0xff;
-                            int rt = (bytes[i] & 0xff0000) >> 16;
-                            int gt = (bytes[i] & 0xff00) >> 8;
-                            int bt = bytes[i] & 0xff;
-                            int r = Math.min(255, Math.max((int) ((1 - opacity) * rs + opacity * rt), 0));
-                            int g = Math.min(255, Math.max((int) ((1 - opacity) * gs + opacity * gt), 0));
-                            int b = Math.min(255, Math.max((int) ((1 - opacity) * bs + opacity * bt), 0));
-                            int rgb = b + (g << 8) + (r << 16);
-                            bytes[i] = rgb;
-                        }
-                    }
-                }
-            }
-        }
-
+        ImagePlus result = drawer.draw(reference, inputData, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
     }
 
