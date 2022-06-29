@@ -9,7 +9,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 
 @JIPipeDocumentation(name = "Convert spots to ROI", description = "Converts TrackMate spots into ROI")
-@JIPipeNode(menuPath = "Tracking", nodeTypeCategory = ImagesNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Tracking\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class ConvertSpotsToRoiNode extends JIPipeSimpleIteratingAlgorithm {

@@ -20,7 +20,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import java.util.Map;
 
 @JIPipeDocumentation(name = "Filter spots", description = "Filter TrackMate spots via expressions")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nFilter")
 @JIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output",autoCreate = true)
 public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
@@ -43,7 +43,7 @@ public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
         SpotCollection oldCollection = spotsCollectionData.getSpots();
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
-        for (Spot spot : oldCollection.iterable(false)) {
+        for (Spot spot : oldCollection.iterable(true)) {
             for (Map.Entry<String, Double> entry : spot.getFeatures().entrySet()) {
                 String variableName = SpotFeatureVariableSource.keyToVariable(entry.getKey());
                 variables.set(variableName, entry.getValue());

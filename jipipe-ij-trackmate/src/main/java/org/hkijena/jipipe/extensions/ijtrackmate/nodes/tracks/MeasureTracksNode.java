@@ -38,7 +38,7 @@ public class MeasureTracksNode extends JIPipeSimpleIteratingAlgorithm {
         // Compute features
         trackCollectionData.computeTrackFeatures(progressInfo.resolve("Compute features"));
 
-        for (Integer trackID : trackCollectionData.getTracks().trackIDs(false)) {
+        for (Integer trackID : trackCollectionData.getTracks().trackIDs(true)) {
             int row = tableData.addRow();
             tableData.setValueAt("Track_" + trackID, row, "Name");
             for (String trackFeature : trackCollectionData.getModel().getFeatureModel().getTrackFeatures()) {

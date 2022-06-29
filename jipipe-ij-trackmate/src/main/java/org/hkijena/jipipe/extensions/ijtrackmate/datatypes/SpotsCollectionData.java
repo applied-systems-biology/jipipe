@@ -29,7 +29,7 @@ public class SpotsCollectionData extends ModelData {
 
     @Override
     public String toString() {
-        return getModel().getSpots().getNSpots(false) + " spots";
+        return getModel().getSpots().getNSpots(true) + " spots";
     }
 
     @Override
@@ -43,7 +43,7 @@ public class SpotsCollectionData extends ModelData {
 
     public ROIListData spotsToROIList() {
         ROIListData result = new ROIListData();
-        for (Spot spot : getSpots().iterable(false)) {
+        for (Spot spot : getSpots().iterable(true)) {
             double x = spot.getDoublePosition(0);
             double y = spot.getDoublePosition(1);
             int z = (int) spot.getFloatPosition(2);

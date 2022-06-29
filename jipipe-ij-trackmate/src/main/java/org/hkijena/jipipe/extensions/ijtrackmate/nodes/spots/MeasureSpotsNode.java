@@ -33,7 +33,7 @@ public class MeasureSpotsNode extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         SpotsCollectionData spotsCollectionData = dataBatch.getInputData(getFirstInputSlot(), SpotsCollectionData.class, progressInfo);
         ResultsTableData tableData = new ResultsTableData();
-        for (Spot spot : spotsCollectionData.getSpots().iterable(false)) {
+        for (Spot spot : spotsCollectionData.getSpots().iterable(true)) {
             int row = tableData.addRow();
             tableData.setValueAt(spot.getName(), row, "Name");
             for (Map.Entry<String, Double> entry : spot.getFeatures().entrySet()) {
