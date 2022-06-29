@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.JIPipeLogger;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 
+import java.awt.Component;
 import java.util.Optional;
 
 @JIPipeDocumentation(name = "TrackMate tracks", description = "Tracks detected by TrackMate")
