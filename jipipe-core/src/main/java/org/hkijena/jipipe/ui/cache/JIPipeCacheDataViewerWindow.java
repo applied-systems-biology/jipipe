@@ -59,6 +59,8 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     private JLabel rowInfoLabel;
     private Function<JIPipeVirtualData, JIPipeVirtualData> dataConverterFunction;
 
+    private JLabel standardErrorLabel;
+
     public JIPipeCacheDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         this.workbench = workbench;
         this.dataSource = dataSource;
@@ -120,6 +122,18 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, InputEvent.CTRL_DOWN_MASK), "previous-row");
         inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, InputEvent.CTRL_DOWN_MASK), "next-row");
+
+        // Create a standard error label
+        standardErrorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
+    }
+
+    /**
+     * Returns a standard error label that simplifies the creation of cache windows.
+     * It must be included into the UI manually
+     * @return the standard error label
+     */
+    public JLabel getStandardErrorLabel() {
+        return standardErrorLabel;
     }
 
     @Override
@@ -200,13 +214,29 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
     /**
      * Instruction to remove the error UI
+     * By default, it will hide the standard error label
      */
-    protected abstract void hideErrorUI();
+    protected void hideErrorUI() {
+        standardErrorLabel.setVisible(false);
+    }
 
     /**
      * Instruction to add the error UI
+     * By default, it will update the standard error label and revalidate the toolbar
      */
-    protected abstract void showErrorUI();
+    protected void showErrorUI() {
+        if (getAlgorithm() != null) {
+            standardErrorLabel.setText(String.format("No data available in node '%s', slot '%s', row %d",
+                    getAlgorithm().getName(),
+                    getSlotName(),
+                    getDataSource().getRow()));
+        } else {
+            standardErrorLabel.setText("No data available");
+        }
+        standardErrorLabel.setVisible(true);
+        getToolBar().revalidate();
+        getToolBar().repaint();
+    }
 
     /**
      * Instruction to load the data from the current data source
