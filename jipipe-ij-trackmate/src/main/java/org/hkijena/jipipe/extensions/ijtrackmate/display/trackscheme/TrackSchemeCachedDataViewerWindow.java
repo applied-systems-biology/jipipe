@@ -88,7 +88,6 @@ public class TrackSchemeCachedDataViewerWindow extends JIPipeCacheDataViewerWind
         annotationInfoPanel.displayAnnotations(getDataSource());
         TrackCollectionData trackCollectionData = virtualData.getData(TrackCollectionData.class, progressInfo);
         TrackScheme trackScheme = new TrackScheme(trackCollectionData.getModel(), new SelectionModel(trackCollectionData.getModel()), displaySettings);
-//
         trackScheme.render();
         trackScheme.getGUI().setVisible(false);
         splitPane.setLeftComponent(trackScheme.getGUI().getContentPane());
