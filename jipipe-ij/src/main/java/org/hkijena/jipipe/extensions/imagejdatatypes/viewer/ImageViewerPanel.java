@@ -671,19 +671,20 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
 
     private void increaseZoom() {
         long diff = System.currentTimeMillis() - lastTimeZoomed;
-        double x = Math.min(250, diff);
-        double fac = 0.2 - 0.15 * (x / 250);
+
+        double speedFactor = 1 - Math.min(250.0, diff) / 250;
+        double addedZoom = 0.2 + 0.2 * speedFactor;
         lastTimeZoomed = System.currentTimeMillis();
-        canvas.setZoom(canvas.getZoom() + fac);
+        canvas.setZoom(canvas.getZoom() + addedZoom);
         updateZoomStatus();
     }
 
     private void decreaseZoom() {
         long diff = System.currentTimeMillis() - lastTimeZoomed;
-        double x = Math.min(250, diff);
-        double fac = 0.2 - 0.15 * (x / 250);
+        double speedFactor = 1 - Math.min(250.0, diff) / 250;
+        double addedZoom = 0.2 + 0.2 * speedFactor;
         lastTimeZoomed = System.currentTimeMillis();
-        canvas.setZoom(canvas.getZoom() - fac);
+        canvas.setZoom(canvas.getZoom() - addedZoom);
         updateZoomStatus();
     }
 
