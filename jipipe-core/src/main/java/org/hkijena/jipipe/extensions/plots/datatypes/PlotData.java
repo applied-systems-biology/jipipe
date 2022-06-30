@@ -42,11 +42,8 @@ import org.hkijena.jipipe.extensions.plots.utils.ColorMap;
 import org.hkijena.jipipe.extensions.plots.utils.ColorMapSupplier;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jfree.chart.ChartUtils;
 import org.jfree.chart.JFreeChart;
@@ -127,6 +124,25 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         this.customColorMap = new ColorListParameter(other.customColorMap);
     }
 
+    public static <T extends PlotData> T importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        try {
+            Path storageFilePath = storage.getFileSystemPath();
+            JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(storageFilePath.resolve("plot-metadata.json").toFile());
+            String dataTypeId = node.get("plot-data-type").textValue();
+            Class<? extends JIPipeData> klass = JIPipe.getDataTypes().getById(dataTypeId);
+            PlotData plotData = JsonUtils.getObjectMapper().readerFor(klass).readValue(node);
+            ParameterUtils.deserializeParametersFromJson(plotData, node, new JIPipeIssueReport());
+            List<Path> seriesFiles = PathUtils.findFilesByExtensionIn(storageFilePath, ".csv").stream()
+                    .filter(p -> p.getFileName().toString().matches("series\\d+.csv")).sorted(Comparator.comparing(p -> p.getFileName().toString())).collect(Collectors.toList());
+            for (Path seriesFile : seriesFiles) {
+                plotData.addSeries(new PlotDataSeries(ResultsTable.open(seriesFile.toString())));
+            }
+            return (T) plotData;
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public static <T extends PlotData> T importData(JIPipeReadDataStorage storage, Class<T> klass, JIPipeProgressInfo progressInfo) {
         try {
             Path storageFilePath = storage.getFileSystemPath();
@@ -142,37 +158,6 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    /**
-     * Loads data from a folder
-     *
-     * @param folder folder
-     * @return loaded data
-     */
-    public static PlotData fromFolder(Path folder) {
-        PlotData result;
-        try {
-            JsonNode node = JsonUtils.getObjectMapper().readValue(folder.resolve("plot-metadata.json").toFile(), JsonNode.class);
-            Class<? extends JIPipeData> dataClass = JIPipe.getDataTypes().getById(node.get("plot-data-type").textValue());
-            result = (PlotData) JIPipe.createData(dataClass);
-
-            // Load metadata
-            result.fromJson(node);
-
-            // Load series
-            for (JsonNode element : ImmutableList.copyOf(node.get("plot-series").elements())) {
-                PlotDataSeries series = JsonUtils.getObjectMapper().readerFor(PlotDataSeries.class).readValue(element.get("metadata"));
-                Path fileName = folder.resolve(element.get("file-name").textValue());
-                ResultsTableData tableData = new ResultsTableData(ResultsTable.open(fileName.toString()));
-                series.setTable(tableData.getTable());
-                result.addSeries(series);
-            }
-
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        return result;
     }
 
     /**
@@ -209,7 +194,7 @@ public abstract class PlotData implements JIPipeData, JIPipeParameterCollection,
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        CachedPlotViewerWindow window = new CachedPlotViewerWindow(workbench,JIPipeDataTableDataSource.wrap(this, source), displayName, false);
+        CachedPlotViewerWindow window = new CachedPlotViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
         window.setVisible(true);
     }
 

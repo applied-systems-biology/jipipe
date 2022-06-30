@@ -715,6 +715,27 @@ public class UIUtils {
     }
 
     /**
+     * Checks if a file exists and asks the user if it should be overwritten
+     * @param parent the parent component
+     * @param path the path. can be null, will return false
+     * @param title the title
+     * @return true if the path is OK or the user confirmed, otherwise false
+     */
+    public static boolean checkAndAskIfFileExists(Component parent, Path path, String title) {
+        if (path != null) {
+            if (Files.isRegularFile(path)) {
+                return JOptionPane.showConfirmDialog(parent,
+                        "The file '" + path + "' already exists. Do you want to overwrite the file?",
+                        title,
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE) != JOptionPane.NO_OPTION;
+            }
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Creates a read-only "star-rating" label
      *
      * @param title   the label title

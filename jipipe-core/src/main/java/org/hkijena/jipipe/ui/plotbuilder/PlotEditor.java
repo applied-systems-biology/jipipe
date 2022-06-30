@@ -127,7 +127,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
 
     private void savePlot() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Save plot", UIUtils.EXTENSION_FILTER_ZIP);
-        if (path != null) {
+        if (UIUtils.checkAndAskIfFileExists(this, path, "Save plot")) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try(JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {
                 getCurrentPlot().exportData(storage, path.getFileName().toString(), false, progressInfo);
@@ -142,7 +142,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         if (path != null) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
-                PlotData plotData = PlotData.importData(storage, PlotData.class, progressInfo);
+                PlotData plotData = PlotData.importData(storage, progressInfo);
                 importExistingPlot(plotData);
             } catch (IOException e) {
                 throw new RuntimeException(e);
