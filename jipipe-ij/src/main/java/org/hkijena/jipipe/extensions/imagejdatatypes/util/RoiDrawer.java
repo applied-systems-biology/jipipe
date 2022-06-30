@@ -52,9 +52,9 @@ public class RoiDrawer implements JIPipeParameterCollection {
     private ROIElementDrawingMode drawOutlineMode = ROIElementDrawingMode.Always;
     private ROIElementDrawingMode drawFilledOutlineMode = ROIElementDrawingMode.IfAvailable;
     private RoiLabel drawnLabel = RoiLabel.None;
-    private OptionalColorParameter overrideFillColor = new OptionalColorParameter();
-    private OptionalColorParameter overrideLineColor = new OptionalColorParameter();
-    private OptionalDoubleParameter overrideLineWidth = new OptionalDoubleParameter();
+    private OptionalColorParameter overrideFillColor = new OptionalColorParameter(Color.RED, false);
+    private OptionalColorParameter overrideLineColor = new OptionalColorParameter(Color.YELLOW, false);
+    private OptionalDoubleParameter overrideLineWidth = new OptionalDoubleParameter(1, false);
     private boolean drawOver = true;
     private Color labelForeground = Color.WHITE;
     private OptionalColorParameter labelBackground = new OptionalColorParameter(Color.BLACK, false);
