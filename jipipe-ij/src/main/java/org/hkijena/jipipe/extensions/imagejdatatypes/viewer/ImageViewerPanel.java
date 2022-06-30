@@ -669,22 +669,31 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         return exportDummyCanvas;
     }
 
-    private void increaseZoom() {
+    private double calculateZoomModifier(int fac) {
+        // Calculate the dynamic speed factor based on how fast the user scrolls
+        // 0 = slow, 1 = fastest
         long diff = System.currentTimeMillis() - lastTimeZoomed;
-
-        double speedFactor = 1 - Math.min(250.0, diff) / 250;
-        double addedZoom = 0.2 + 0.2 * speedFactor;
         lastTimeZoomed = System.currentTimeMillis();
-        canvas.setZoom(canvas.getZoom() + addedZoom);
+        final double speedFactor = 1 - Math.min(250.0, diff) / 250;
+
+        // Multiplicative zoom
+        double targetScreenSizeModifier2 = settings.getZoomBaseSpeed() + speedFactor * settings.getZoomDynamicSpeed();
+        if(fac < 0) {
+            targetScreenSizeModifier2 = 1.0 / targetScreenSizeModifier2;
+        }
+
+        return targetScreenSizeModifier2;
+    }
+
+    private void increaseZoom() {
+        double modifier = calculateZoomModifier(1);
+        canvas.setZoom(canvas.getZoom() * modifier);
         updateZoomStatus();
     }
 
     private void decreaseZoom() {
-        long diff = System.currentTimeMillis() - lastTimeZoomed;
-        double speedFactor = 1 - Math.min(250.0, diff) / 250;
-        double addedZoom = 0.2 + 0.2 * speedFactor;
-        lastTimeZoomed = System.currentTimeMillis();
-        canvas.setZoom(canvas.getZoom() - addedZoom);
+        double modifier = calculateZoomModifier(-1);
+        canvas.setZoom(canvas.getZoom() * modifier);
         updateZoomStatus();
     }
 
