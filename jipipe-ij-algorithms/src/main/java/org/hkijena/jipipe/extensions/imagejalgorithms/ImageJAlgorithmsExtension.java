@@ -35,6 +35,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.background.RollingBall
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.SetPhysicalDimensionsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.SetPhysicalDimensionsByAnnotationsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.SetPhysicalDimensionsByExpressionsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
@@ -553,6 +554,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     private void registerCalibrationAlgorithms() {
         registerNodeType("ij1-calibration-set-physical-dimensions", SetPhysicalDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
         registerNodeType("ij1-calibration-set-physical-dimensions-from-expressions", SetPhysicalDimensionsByExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
+        registerNodeType("ij1-calibration-set-physical-dimensions-from-annotations", SetPhysicalDimensionsByAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
     }
 
     private void registerSegmentationAlgorithms() {

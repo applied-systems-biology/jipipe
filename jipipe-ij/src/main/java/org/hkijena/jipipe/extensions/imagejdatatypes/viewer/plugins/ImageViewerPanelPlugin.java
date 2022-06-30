@@ -97,12 +97,10 @@ public abstract class ImageViewerPanelPlugin implements JIPipeWorkbenchAccess {
      * Called after the image has been drawn after the image has been drawn
      *
      * @param graphics2D the graphics
-     * @param x          x position of the drawn image
-     * @param y          y position of the drawn image
-     * @param w          width of the drawn image
-     * @param h          height of the drawn image
+     * @param renderArea
+     * @param sliceIndex the index of the slice
      */
-    public void postprocessDraw(Graphics2D graphics2D, int x, int y, int w, int h) {
+    public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
 
     }
 

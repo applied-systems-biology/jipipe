@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.ImageCanvas;
 import ij.gui.ImageWindow;
 import ij.measure.Calibration;
 import ij.process.ColorProcessor;
@@ -74,6 +75,10 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private final Map<String, FormPanel> formPanels = new HashMap<>();
     private final JIPipeWorkbench workbench;
     private ImagePlus image;
+
+    private ImageCanvas zoomedDummyCanvas;
+
+    private ImageCanvas exportDummyCanvas;
     private ImageProcessor currentSlice;
     private ImageViewerPanelCanvas canvas;
     private Map<ImageSliceIndex, ImageStatistics> statisticsMap = new HashMap<>();
@@ -645,6 +650,25 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         zoomStatusButton.setText((int) Math.round(canvas.getZoom() * 100) + "%");
     }
 
+    /**
+     * A dummy {@link ImageCanvas} that is needed by some visualization algorithms for magnification
+     * It is updated by {@link ImageViewerPanelCanvas}
+     * Please do not make any changes to the display properties here, as the image viewer has its own canvas
+     * @return the dummy canvas
+     */
+    public ImageCanvas getZoomedDummyCanvas() {
+        return zoomedDummyCanvas;
+    }
+
+    /**
+     * A dummy {@link ImageCanvas} that is needed by some visualization algorithms for magnification
+     * Its magnification should be permanently 1.0
+     * @return the dummy canvas
+     */
+    public ImageCanvas getExportDummyCanvas() {
+        return exportDummyCanvas;
+    }
+
     private void increaseZoom() {
         long diff = System.currentTimeMillis() - lastTimeZoomed;
         double x = Math.min(250, diff);
@@ -706,6 +730,14 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
 
     public void setImage(ImagePlus image) {
         this.image = image;
+        if(image != null) {
+            this.zoomedDummyCanvas = new ImageCanvas(image);
+            this.exportDummyCanvas = new ImageCanvas(image);
+        }
+        else {
+            this.zoomedDummyCanvas = null;
+            this.exportDummyCanvas = null;
+        }
         this.currentSlice = null;
         this.statisticsMap.clear();
         refreshSliders();
@@ -893,13 +925,13 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
                     frameSlider.getValue() - 1,
                     true, false);
             if (processor == null) {
-                canvas.setImage(null);
+                canvas.setImage(null, null);
                 return;
             }
 //            System.out.println("tg " + processor.getMin() + ", " + processor.getMax());
-            canvas.setImage(processor.getBufferedImage());
+            canvas.setImage(processor.getBufferedImage(), getCurrentSliceIndex());
         } else {
-            canvas.setImage(null);
+            canvas.setImage(null, null);
         }
     }
 

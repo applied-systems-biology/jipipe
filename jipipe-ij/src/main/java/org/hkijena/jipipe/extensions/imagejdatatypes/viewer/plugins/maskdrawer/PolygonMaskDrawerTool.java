@@ -4,6 +4,7 @@ import com.google.common.eventbus.Subscribe;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.MouseClickedEvent;
@@ -167,9 +168,11 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
     }
 
     @Override
-    public void postprocessDraw(Graphics2D graphics2D, int x, int y, int w, int h) {
+    public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
         if (referencePoints.isEmpty())
             return;
+        final int renderX = renderArea.x;
+        final int renderY = renderArea.y;
         final double zoom = getViewerPanel().getCanvas().getZoom();
         Point point = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
         graphics2D.setColor(getMaskDrawerPlugin().getHighlightColor());
@@ -179,13 +182,13 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
         int[] yCoordinates = new int[nPoints];
 
         for (int i = 0; i < referencePoints.size(); i++) {
-            xCoordinates[i] = x + (int) (zoom * referencePoints.get(i).x);
-            yCoordinates[i] = y + (int) (zoom * referencePoints.get(i).y);
+            xCoordinates[i] = renderX + (int) (zoom * referencePoints.get(i).x);
+            yCoordinates[i] = renderY + (int) (zoom * referencePoints.get(i).y);
         }
 
         if (point != null) {
-            xCoordinates[xCoordinates.length - 1] = (int) (x + zoom * point.x);
-            yCoordinates[yCoordinates.length - 1] = (int) (y + zoom * point.y);
+            xCoordinates[xCoordinates.length - 1] = (int) (renderX + zoom * point.x);
+            yCoordinates[yCoordinates.length - 1] = (int) (renderY + zoom * point.y);
         }
 
         Polygon polygon = new Polygon(xCoordinates, yCoordinates, nPoints);

@@ -1,14 +1,12 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins;
 
 import com.google.common.primitives.Ints;
-import ij.IJ;
-import ij.ImagePlus;
+import ij.gui.ImageCanvas;
 import ij.gui.Roi;
 import ij.plugin.frame.RoiManager;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIRoiDisplaySettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
@@ -22,12 +20,13 @@ import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -38,13 +37,24 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     private final JList<Roi> roiJList = new JList<>();
     private final JLabel roiInfoLabel = new JLabel();
     private ROIListData rois = new ROIListData();
-    private final RoiDrawer roiDrawer;
+    private final RoiDrawer roiDrawer = new RoiDrawer();
     private boolean roiFilterList = false;
+
+    private final JCheckBoxMenuItem displayROIViewMenuItem = new JCheckBoxMenuItem("Display ROI",  UIUtils.getIconFromResources("actions/eye.png"));
+
+    private final JCheckBoxMenuItem renderROIAsOverlayViewMenuItem = new JCheckBoxMenuItem("Draw ROI as overlay",  UIUtils.getIconFromResources("actions/path-break-apart.png"));
 
     public ROIManagerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
-        roiDrawer = new RoiDrawer(ImageViewerUIRoiDisplaySettings.getInstance()); // Copy from settings
+        loadDefaults();
         initialize();
+    }
+
+    private void loadDefaults() {
+        ImageViewerUIRoiDisplaySettings settings = ImageViewerUIRoiDisplaySettings.getInstance();
+        roiDrawer.copyFrom(settings.getRoiDrawer());
+        displayROIViewMenuItem.setState(settings.isShowROI());
+        renderROIAsOverlayViewMenuItem.setState(settings.isRenderROIAsOverlay());
     }
 
     @Override
@@ -60,6 +70,9 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
                 rois.add(roi);
                 overlayRois.add(roi);
             }
+        }
+        for (Roi roi : rois) {
+            updateRoiCanvas(roi, getViewerPanel().getZoomedDummyCanvas());
         }
         updateROIJList(true);
     }
@@ -252,6 +265,21 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         JMenu viewMenu = new JMenu("View");
         menuBar.add(viewMenu);
         {
+            JCheckBoxMenuItem toggle = displayROIViewMenuItem;
+            toggle.addActionListener(e -> {
+                uploadSliceToCanvas();
+            });
+            viewMenu.add(toggle);
+        }
+        {
+            JCheckBoxMenuItem toggle = renderROIAsOverlayViewMenuItem;
+            toggle.addActionListener(e -> {
+                uploadSliceToCanvas();
+            });
+            viewMenu.add(toggle);
+        }
+        viewMenu.addSeparator();
+        {
             JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Show only visible ROI in list", UIUtils.getIconFromResources("actions/eye.png"));
             toggle.setSelected(roiFilterList);
             toggle.addActionListener(e -> {
@@ -287,6 +315,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             });
             viewMenu.add(toggle);
         }
+        viewMenu.addSeparator();
         {
             JMenuItem item = new JMenuItem("More settings ...", UIUtils.getIconFromResources("actions/configure.png"));
             item.addActionListener(e->openRoiDrawingSettings());
@@ -294,23 +323,26 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         }
         {
             JMenuItem item = new JMenuItem("Save settings as default", UIUtils.getIconFromResources("actions/save.png"));
-            item.addActionListener(e->saveRoiDrawingSettings());
+            item.addActionListener(e-> saveDefaults());
             viewMenu.add(item);
         }
     }
 
-    private void saveRoiDrawingSettings() {
+    private void saveDefaults() {
         if(JOptionPane.showConfirmDialog(getViewerPanel(),
                 "Dou you want to save the ROI display settings as default?",
                 "Save settings as default",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            ImageViewerUIRoiDisplaySettings.getInstance().copyFrom(roiDrawer);
+            ImageViewerUIRoiDisplaySettings settings = ImageViewerUIRoiDisplaySettings.getInstance();
+            settings.getRoiDrawer().copyFrom(roiDrawer);
+            settings.setRenderROIAsOverlay(renderROIAsOverlayViewMenuItem.getState());
+            settings.setShowROI(displayROIViewMenuItem.getState());
             JIPipe.getSettings().save();
         }
     }
 
     private void openRoiDrawingSettings() {
-        ParameterPanel.showDialog(getWorkbench(), roiDrawer, new MarkdownDocument("# ROI display settings\n\nPlease use the settings on the left to modify how ROI are visualized."), "ROI display settings", ParameterPanel.DEFAULT_DIALOG_FLAGS);
+        ParameterPanel.showDialog(getWorkbench(), getViewerPanel(), roiDrawer, new MarkdownDocument("# ROI display settings\n\nPlease use the settings on the left to modify how ROI are visualized."), "ROI display settings", ParameterPanel.DEFAULT_DIALOG_FLAGS);
         uploadSliceToCanvas();
     }
 
@@ -337,32 +369,36 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public ImageProcessor draw(int c, int z, int t, ImageProcessor processor) {
-        if (!rois.isEmpty()) {
-            processor = new ColorProcessor(processor.getBufferedImage());
-//            rois.draw(processor, new ImageSliceIndex(c, z, t),
-//                    roiSeeThroughZ,
-//                    roiSeeThroughC,
-//                    roiSeeThroughT,
-//                    roiDrawOutline,
-//                    roiFillOutline,
-//                    roiDrawLabels,
-//                    1,
-//                    Color.RED,
-//                    Color.YELLOW,
-//                    roiJList.getSelectedValuesList());
-            roiDrawer.drawOnProcessor(new ImageSliceIndex(c,z,t), (ColorProcessor) processor, rois, new HashSet<>(roiJList.getSelectedValuesList()));
+        if(!renderROIAsOverlayViewMenuItem.getState()) {
+            if (!rois.isEmpty()) {
+                processor = new ColorProcessor(processor.getBufferedImage());
+                roiDrawer.drawOnProcessor(rois, (ColorProcessor) processor, new ImageSliceIndex(c, z, t), new HashSet<>(roiJList.getSelectedValuesList()));
+            }
         }
         return processor;
     }
 
-//    @Override
-//    public void postprocessDraw(Graphics2D graphics2D, int x, int y, int w, int h) {
-//        ImagePlus dummy = IJ.createImage("img", )
-//        for (Roi roi : rois) {
-//
-//            roi.draw(graphics2D);
-//        }
-//    }
+    @Override
+    public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
+        if(renderROIAsOverlayViewMenuItem.getState()) {
+            roiDrawer.drawOverlayOnGraphics(rois, graphics2D, renderArea, sliceIndex, new HashSet<>(roiJList.getSelectedValuesList()), getViewerPanel().getCanvas().getZoom());
+        }
+    }
+
+    @Override
+    public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex) {
+        if(renderROIAsOverlayViewMenuItem.getState()) {
+            Graphics2D graphics = image.createGraphics();
+            ROIListData copy = new ROIListData();
+            for (Roi roi : rois) {
+                Roi clone = (Roi) roi.clone();
+                updateRoiCanvas(clone, getViewerPanel().getExportDummyCanvas());
+                copy.add(clone);
+            }
+            roiDrawer.drawOverlayOnGraphics(copy, graphics, new Rectangle(0,0,image.getWidth(), image.getHeight()), sliceIndex, new HashSet<>(roiJList.getSelectedValuesList()), 1.0);
+            graphics.dispose();
+        }
+    }
 
     @Override
     public void onSliceChanged(boolean deferUploadSlice) {
@@ -498,10 +534,25 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     public void importROIs(ROIListData rois, boolean deferUploadSlice) {
         for (Roi roi : rois) {
-            this.rois.add((Roi) roi.clone());
+            Roi clone = (Roi) roi.clone();
+            updateRoiCanvas(roi, getViewerPanel().getZoomedDummyCanvas());
+            this.rois.add(clone);
         }
         updateROIJList(deferUploadSlice);
         uploadSliceToCanvas();
+    }
+
+    private void updateRoiCanvas(Roi roi, ImageCanvas canvas) {
+        // First set the image
+        roi.setImage(getCurrentImage());
+        // We have to set the canvas or overlay rendering will fail
+        try {
+            Field field = Roi.class.getDeclaredField("ic");
+            field.setAccessible(true);
+            field.set(roi, canvas);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void removeSelectedROIs(boolean deferUploadSlice) {

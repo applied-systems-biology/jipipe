@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer;
 
 import com.google.common.eventbus.EventBus;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerPanelPlugin;
 import org.hkijena.jipipe.utils.ui.*;
 
@@ -32,6 +33,8 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     private final ImageViewerPanel imageViewerPanel;
     private final EventBus eventBus = new EventBus();
     private BufferedImage image;
+
+    private ImageSliceIndex imageSliceIndex;
     private double zoom = 1.0;
     private int contentX = 0;
     private int contentY = 0;
@@ -53,9 +56,10 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
         return image;
     }
 
-    public void setImage(BufferedImage image) {
+    public void setImage(BufferedImage image, ImageSliceIndex imageSliceIndex) {
 //        System.out.println(image);
         this.image = image;
+        this.imageSliceIndex = imageSliceIndex;
         revalidate();
         repaint();
     }
@@ -126,7 +130,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
             BufferedImageOp op = new AffineTransformOp(transform, zoom < 1 ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
             graphics2D.drawImage(image, op, contentX, contentY);
             for (ImageViewerPanelPlugin plugin : imageViewerPanel.getPlugins()) {
-                plugin.postprocessDraw(graphics2D, x, y, w, h);
+                plugin.postprocessDraw(graphics2D, new Rectangle(x, y, w, h), imageSliceIndex);
             }
         }
         if (error != null) {
@@ -146,13 +150,15 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     }
 
     public void setZoom(double zoom) {
-        zoom = Math.max(zoom, 10e-4);
+        // Based on limits of ImageCanvas
+        zoom = Math.min(32.0, Math.max(zoom, 1/72.0));
         Point mousePosition = getMousePosition();
         Point2D.Double currentPixel = null;
         if (mousePosition != null) {
             currentPixel = screenToImageSubPixelCoordinate(mousePosition, false);
         }
         this.zoom = zoom;
+        imageViewerPanel.getZoomedDummyCanvas().setMagnification(zoom);
         if (currentPixel != null) {
             Point2D.Double newPixelLocation = imageSubPixelCoordinateToScreen(currentPixel);
             double dx = newPixelLocation.x - mousePosition.x;

@@ -130,7 +130,19 @@ public class ParameterPanel extends FormPanel implements Contextual {
      * @return if the user clicked "OK"
      */
     public static boolean showDialog(JIPipeWorkbench workbench, JIPipeParameterCollection parameterCollection, MarkdownDocument defaultDocumentation, String title, int flags) {
-        JDialog dialog = new JDialog(workbench.getWindow());
+        return showDialog(workbench, workbench.getWindow(), parameterCollection, defaultDocumentation, title, flags);
+    }
+
+    /**
+     * Shows a parameter collection inside a modal dialog
+     *
+     * @param workbench           parent component
+     * @param parameterCollection the parameter collection
+     * @param flags               flags for the editor
+     * @return if the user clicked "OK"
+     */
+    public static boolean showDialog(JIPipeWorkbench workbench, Component parent, JIPipeParameterCollection parameterCollection, MarkdownDocument defaultDocumentation, String title, int flags) {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(parent));
         dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         ParameterPanel parameterPanel = new ParameterPanel(workbench, parameterCollection, defaultDocumentation, flags);
 
@@ -165,7 +177,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         dialog.setModal(true);
         dialog.pack();
         dialog.setSize(new Dimension(800, 600));
-        dialog.setLocationRelativeTo(workbench.getWindow());
+        dialog.setLocationRelativeTo(parent);
         UIUtils.addEscapeListener(dialog);
         dialog.setVisible(true);
 

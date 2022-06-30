@@ -6,6 +6,7 @@ import ij.ImagePlus;
 import ij.process.Blitter;
 import ij.process.ByteProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -206,7 +207,9 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
     }
 
     @Override
-    public void postprocessDraw(Graphics2D graphics2D, int x, int y, int w, int h) {
+    public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
+        final int renderX = renderArea.x;
+        final int renderY = renderArea.y;
         Point mousePosition = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
         final double zoom = getViewerPanel().getCanvas().getZoom();
         AffineTransform transform = new AffineTransform();
@@ -218,8 +221,8 @@ public class PencilMaskDrawerTool extends MaskDrawerTool {
         final int pencilHeight = currentPencil.getHeight();
         final int displayedPencilWidth = (int) (zoom * pencilWidth);
         final int displayedPencilHeight = (int) (zoom * pencilHeight);
-        int displayedPencilX = (int) (x + zoom * mousePosition.x - displayedPencilWidth / 2);
-        int displayedPencilY = (int) (y + zoom * mousePosition.y - displayedPencilHeight / 2);
+        int displayedPencilX = (int) (renderX + zoom * mousePosition.x - displayedPencilWidth / 2);
+        int displayedPencilY = (int) (renderY + zoom * mousePosition.y - displayedPencilHeight / 2);
 
         graphics2D.drawImage(currentPencilGhost, op, displayedPencilX, displayedPencilY);
     }

@@ -428,22 +428,26 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     }
 
     @Override
-    public void postprocessDraw(Graphics2D graphics2D, int x, int y, int w, int h) {
+    public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
+        final int renderX = renderArea.x;
+        final int renderY = renderArea.y;
+        final int renderW = renderArea.width;
+        final int renderH = renderArea.height;
         final double zoom = getViewerPanel().getCanvas().getZoom();
         AffineTransform transform = new AffineTransform();
         transform.scale(zoom, zoom);
         BufferedImageOp op = new AffineTransformOp(transform, zoom < 1 ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-        graphics2D.drawImage(currentMaskSlicePreview, op, x, y);
-        currentTool.postprocessDraw(graphics2D, x, y, w, h);
+        graphics2D.drawImage(currentMaskSlicePreview, op, renderX, renderY);
+        currentTool.postprocessDraw(graphics2D, renderArea, sliceIndex);
         if (showGuidesToggle.isSelected() && currentTool.showGuides()) {
             graphics2D.setStroke(STROKE_GUIDE_LINE);
             graphics2D.setColor(getHighlightColor());
             Point mousePosition = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
             if (mousePosition != null) {
-                int displayedX = (int) (x + zoom * mousePosition.x);
-                int displayedY = (int) (y + zoom * mousePosition.y);
-                graphics2D.drawLine(x, displayedY, x + w, displayedY);
-                graphics2D.drawLine(displayedX, y, displayedX, y + h);
+                int displayedX = (int) (renderX + zoom * mousePosition.x);
+                int displayedY = (int) (renderY + zoom * mousePosition.y);
+                graphics2D.drawLine(renderX, displayedY, renderX + renderW, displayedY);
+                graphics2D.drawLine(displayedX, renderY, displayedX, renderY + renderH);
             }
         }
     }

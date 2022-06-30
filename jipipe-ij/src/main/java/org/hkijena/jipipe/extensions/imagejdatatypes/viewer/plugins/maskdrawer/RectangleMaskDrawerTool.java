@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.maskdrawer;
 
 import com.google.common.eventbus.Subscribe;
 import ij.process.ImageProcessor;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.MouseClickedEvent;
@@ -157,9 +158,11 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
     }
 
     @Override
-    public void postprocessDraw(Graphics2D graphics2D, int x, int y, int w, int h) {
+    public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
         if (referencePoint == null)
             return;
+        final int renderX = renderArea.x;
+        final int renderY = renderArea.y;
         Point p0 = referencePoint;
         Point p1 = getViewerPanel().getCanvas().getMouseModelPixelCoordinate(false);
         if (p1 == null)
@@ -173,9 +176,9 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
         r.width = (int) (zoom * r.width);
         r.height = (int) (zoom * r.height);
         if (fillToggle.isSelected()) {
-            graphics2D.fillRect(x + r.x, y + r.y, r.width, r.height);
+            graphics2D.fillRect(renderX + r.x, renderY + r.y, r.width, r.height);
         } else {
-            graphics2D.drawRect(x + r.x, y + r.y, r.width, r.height);
+            graphics2D.drawRect(renderX + r.x, renderY + r.y, r.width, r.height);
         }
     }
 
