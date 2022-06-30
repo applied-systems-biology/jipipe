@@ -27,6 +27,10 @@ public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIte
     private OptionalDefaultExpressionParameter physicalDimensionY = new OptionalDefaultExpressionParameter();
     private OptionalDefaultExpressionParameter physicalDimensionZ = new OptionalDefaultExpressionParameter();
 
+    private OptionalDefaultExpressionParameter physicalDimensionT = new OptionalDefaultExpressionParameter();
+
+    private OptionalDefaultExpressionParameter physicalDimensionValue = new OptionalDefaultExpressionParameter();
+
     public SetPhysicalDimensionsByExpressionsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
@@ -36,6 +40,8 @@ public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIte
         this.physicalDimensionX = new OptionalDefaultExpressionParameter(other.physicalDimensionX);
         this.physicalDimensionY = new OptionalDefaultExpressionParameter(other.physicalDimensionY);
         this.physicalDimensionZ = new OptionalDefaultExpressionParameter(other.physicalDimensionZ);
+        this.physicalDimensionT = new OptionalDefaultExpressionParameter(other.physicalDimensionT);
+        this.physicalDimensionValue = new OptionalDefaultExpressionParameter(other.physicalDimensionValue);
     }
 
     @Override
@@ -63,6 +69,15 @@ public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIte
             calibration.setZUnit(quantity.getUnit());
             calibration.pixelDepth = quantity.getValue();
         }
+        if (physicalDimensionT.isEnabled()) {
+            Quantity quantity = Quantity.parse(StringUtils.nullToEmpty(physicalDimensionT.getContent().evaluate(variables)));
+            calibration.setTimeUnit(quantity.getUnit());
+        }
+        if (physicalDimensionValue.isEnabled()) {
+            Quantity quantity = Quantity.parse(StringUtils.nullToEmpty(physicalDimensionValue.getContent().evaluate(variables)));
+            calibration.setValueUnit(quantity.getUnit());
+        }
+
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
@@ -100,5 +115,29 @@ public class SetPhysicalDimensionsByExpressionsAlgorithm extends JIPipeSimpleIte
     @JIPipeParameter("physical-dimension-z")
     public void setPhysicalDimensionZ(OptionalDefaultExpressionParameter physicalDimensionZ) {
         this.physicalDimensionZ = physicalDimensionZ;
+    }
+
+    @JIPipeDocumentation(name = "Physical dimension (T)", description = "If enabled, sets the physical dimension of the image. Please note that only the unit is supported.")
+    @JIPipeParameter("physical-dimension-t")
+    @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
+    public OptionalDefaultExpressionParameter getPhysicalDimensionT() {
+        return physicalDimensionT;
+    }
+
+    @JIPipeParameter("physical-dimension-t")
+    public void setPhysicalDimensionT(OptionalDefaultExpressionParameter physicalDimensionT) {
+        this.physicalDimensionT = physicalDimensionT;
+    }
+
+    @JIPipeDocumentation(name = "Physical dimension (Value)", description = "If enabled, sets the physical dimension of the image. Please note that only the unit is supported.")
+    @JIPipeParameter("physical-dimension-value")
+    @ExpressionParameterSettings(variableSource = ImagePlusPropertiesExpressionParameterVariableSource.class)
+    public OptionalDefaultExpressionParameter getPhysicalDimensionValue() {
+        return physicalDimensionValue;
+    }
+
+    @JIPipeParameter("physical-dimension-value")
+    public void setPhysicalDimensionValue(OptionalDefaultExpressionParameter physicalDimensionValue) {
+        this.physicalDimensionValue = physicalDimensionValue;
     }
 }

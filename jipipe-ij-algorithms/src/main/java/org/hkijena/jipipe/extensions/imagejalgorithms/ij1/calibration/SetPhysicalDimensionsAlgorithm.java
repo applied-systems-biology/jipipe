@@ -22,6 +22,9 @@ public class SetPhysicalDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorit
     private OptionalQuantity physicalDimensionY = new OptionalQuantity();
     private OptionalQuantity physicalDimensionZ = new OptionalQuantity();
 
+    private OptionalQuantity physicalDimensionT = new OptionalQuantity();
+    private OptionalQuantity physicalDimensionValue = new OptionalQuantity();
+
     public SetPhysicalDimensionsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
@@ -31,6 +34,8 @@ public class SetPhysicalDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.physicalDimensionX = new OptionalQuantity(other.physicalDimensionX);
         this.physicalDimensionY = new OptionalQuantity(other.physicalDimensionY);
         this.physicalDimensionZ = new OptionalQuantity(other.physicalDimensionZ);
+        this.physicalDimensionT = new OptionalQuantity(other.physicalDimensionT);
+        this.physicalDimensionValue = new OptionalQuantity(other.physicalDimensionValue);
     }
 
     @Override
@@ -52,6 +57,12 @@ public class SetPhysicalDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorit
         if (physicalDimensionZ.isEnabled()) {
             calibration.setZUnit(physicalDimensionZ.getContent().getUnit());
             calibration.pixelDepth = physicalDimensionZ.getContent().getValue();
+        }
+        if (physicalDimensionT.isEnabled()) {
+            calibration.setTimeUnit(physicalDimensionT.getContent().getUnit());
+        }
+        if (physicalDimensionValue.isEnabled()) {
+            calibration.setValueUnit(physicalDimensionValue.getContent().getUnit());
         }
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
@@ -90,5 +101,28 @@ public class SetPhysicalDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorit
     @JIPipeParameter("physical-dimension-z")
     public void setPhysicalDimensionZ(OptionalQuantity physicalDimensionZ) {
         this.physicalDimensionZ = physicalDimensionZ;
+    }
+
+    @JIPipeDocumentation(name = "Physical dimension (Time)", description = "If enabled, sets the physical dimension of the image. Please note that only the unit is supported.")
+    @JIPipeParameter("physical-dimension-t")
+    @QuantityParameterSettings(predefinedUnits = {"ns", "µs", "ms", "s", "min", "h", "d"})
+    public OptionalQuantity getPhysicalDimensionT() {
+        return physicalDimensionT;
+    }
+
+    @JIPipeParameter("physical-dimension-t")
+    public void setPhysicalDimensionT(OptionalQuantity physicalDimensionT) {
+        this.physicalDimensionT = physicalDimensionT;
+    }
+
+    @JIPipeDocumentation(name = "Physical dimension (Value)", description = "If enabled, sets the physical dimension of the image. Please note that only the unit is supported.")
+    @JIPipeParameter("physical-dimension-value")
+    public OptionalQuantity getPhysicalDimensionValue() {
+        return physicalDimensionValue;
+    }
+
+    @JIPipeParameter("physical-dimension-value")
+    public void setPhysicalDimensionValue(OptionalQuantity physicalDimensionValue) {
+        this.physicalDimensionValue = physicalDimensionValue;
     }
 }
