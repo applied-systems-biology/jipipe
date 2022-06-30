@@ -15,6 +15,8 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.datatypes;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.Overlay;
+import ij.gui.Roi;
 import ij.process.*;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -117,13 +119,27 @@ public class ImagePlusData implements JIPipeData {
                     "Please contact the JIPipe developers about this issue.");
         }
         String fileName = targetFile.toString().toLowerCase();
+        ImagePlus outputImage;
         if ((fileName.endsWith(".tiff") || fileName.endsWith(".tif")) && ImageJDataTypesSettings.getInstance().isUseBioFormats()) {
             OMEImageData omeImageData = OMEImageData.importData(storage, progressInfo);
-            return omeImageData.getImage();
+            outputImage = omeImageData.getImage();
         } else {
             progressInfo.log("ImageJ import " + targetFile);
-            return IJ.openImage(targetFile.toString());
+            outputImage = IJ.openImage(targetFile.toString());
         }
+        if(outputImage.getOverlay() == null || outputImage.getOverlay().size() == 0) {
+            // Import ROI
+            Path roiFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".roi", ".zip");
+            if(roiFile != null) {
+                ROIListData rois = ROIListData.importData(storage, progressInfo.resolve("Import ROI"));
+                Overlay overlay = new Overlay();
+                for (Roi roi : rois) {
+                    overlay.add(roi);
+                }
+                outputImage.setOverlay(overlay);
+            }
+        }
+        return outputImage;
     }
 
     public static ImagePlusData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
@@ -274,6 +290,13 @@ public class ImagePlusData implements JIPipeData {
             } else {
                 Path outputPath = storage.getFileSystemPath().resolve(name + ".tif");
                 IJ.saveAsTiff(image, outputPath.toString());
+            }
+            if(image.getOverlay() != null) {
+                ROIListData rois = new ROIListData();
+                for (Roi roi : image.getOverlay()) {
+                    rois.add(roi);
+                }
+                rois.exportData(storage, name, forceName, progressInfo.resolve("Save ROI"));
             }
         } else {
             imageSource.saveTo(storage.getFileSystemPath(), name, forceName, progressInfo);
