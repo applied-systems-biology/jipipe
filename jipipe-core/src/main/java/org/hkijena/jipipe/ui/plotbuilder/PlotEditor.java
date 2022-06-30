@@ -28,6 +28,8 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
+import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
@@ -51,6 +53,7 @@ import org.scijava.Priority;
 import javax.swing.*;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -123,19 +126,30 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     }
 
     private void savePlot() {
-        Path path = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Save plot");
+        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Save plot", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null) {
             if (PathUtils.ensureEmptyFolder(this, path)) {
-                getCurrentPlot().exportData(new JIPipeFileSystemWriteDataStorage(new JIPipeProgressInfo(), path), path.getFileName().toString(), false, new JIPipeProgressInfo());
+                JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+                try(JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {
+                    getCurrentPlot().exportData(storage, path.getFileName().toString(), false, progressInfo);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
             }
         }
     }
 
     private void openPlot() {
-        Path path = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Open plot");
+        Path path = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Data, "Open plot", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null) {
-            PlotData plotData = PlotData.importData(new JIPipeFileSystemReadDataStorage(new JIPipeProgressInfo(), path), PlotData.class, new JIPipeProgressInfo());
-            importExistingPlot(plotData);
+            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+            try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
+                PlotData plotData = PlotData.importData(storage, PlotData.class, progressInfo);
+                importExistingPlot(plotData);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
