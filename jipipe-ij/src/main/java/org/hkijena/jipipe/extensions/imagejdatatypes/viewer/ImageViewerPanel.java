@@ -742,6 +742,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         this.image = image;
         if(image != null) {
             this.zoomedDummyCanvas = new ImageCanvas(image);
+            this.zoomedDummyCanvas.setMagnification(getCanvas().getZoom());
             this.exportDummyCanvas = new ImageCanvas(image);
         }
         else {
