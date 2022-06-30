@@ -677,7 +677,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         final double speedFactor = 1 - Math.min(250.0, diff) / 250;
 
         // Multiplicative zoom
-        double targetScreenSizeModifier2 = settings.getZoomBaseSpeed() + speedFactor * settings.getZoomDynamicSpeed();
+        double targetScreenSizeModifier2 = 1.0 + settings.getZoomBaseSpeed() + speedFactor * settings.getZoomDynamicSpeed();
         if(fac < 0) {
             targetScreenSizeModifier2 = 1.0 / targetScreenSizeModifier2;
         }

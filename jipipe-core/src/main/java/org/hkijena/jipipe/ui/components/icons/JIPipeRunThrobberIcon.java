@@ -13,11 +13,24 @@
 
 package org.hkijena.jipipe.ui.components.icons;
 
+import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
+import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
+import org.hkijena.jipipe.ui.running.RunUIWorkerStartedEvent;
+import org.hkijena.jipipe.utils.UIUtils;
+
 import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.awt.geom.AffineTransform;
 
-public class ThrobberIcon implements Icon {
+public class JIPipeRunThrobberIcon implements Icon {
+
+    public static final int ANIMATION_DELAY = 80;
+    public static final int ANIMATION_STEP = 24;
 
     private final Timer timer;
     private Component parent;
@@ -25,13 +38,38 @@ public class ThrobberIcon implements Icon {
     private double rotation = 0;
     private double rotationStep;
 
-    public ThrobberIcon(Component parent, ImageIcon wrappedIcon, int delay, double rotationStep) {
+    public JIPipeRunThrobberIcon(Component parent) {
         this.parent = parent;
-        this.wrappedIcon = wrappedIcon;
-        this.timer = new Timer(delay, e -> updateIcon());
+        this.wrappedIcon =  UIUtils.getIconFromResources("status/throbber.png");
+        this.timer = new Timer(ANIMATION_DELAY, e -> updateIcon());
         this.timer.setRepeats(true);
         this.timer.setCoalesce(false);
-        this.rotationStep = rotationStep;
+        this.timer.stop();
+        this.rotationStep = ANIMATION_STEP;
+
+        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        if(!JIPipeRunnerQueue.getInstance().isEmpty()) {
+            timer.start();
+        }
+    }
+
+    @Subscribe
+    public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+        if(JIPipeRunnerQueue.getInstance().isEmpty()) {
+            stop();
+        }
+    }
+
+    @Subscribe
+    public void onWorkerStart(RunUIWorkerStartedEvent event) {
+        timer.start();
+    }
+
+    @Subscribe
+    public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
+        if(JIPipeRunnerQueue.getInstance().isEmpty()) {
+            stop();
+        }
     }
 
     public double getRotation() {
@@ -74,14 +112,16 @@ public class ThrobberIcon implements Icon {
 
     private void updateIcon() {
         rotation += rotationStep;
+        while(rotation > 360) {
+            rotation -= 360;
+        }
         if (parent != null && parent.isDisplayable()) {
             parent.repaint();
             parent.getToolkit().sync();
         }
-    }
-
-    public void start() {
-        timer.start();
+        else {
+            timer.stop();
+        }
     }
 
     public void stop() {

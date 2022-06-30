@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.ui.components.icons.JIPipeRunThrobberIcon;
 import org.hkijena.jipipe.ui.components.icons.ThrobberIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -29,7 +30,6 @@ public class JIPipeRunnerQueueUI extends JPanel {
     private JPanel emptyQueuePanel;
     private JPanel runningQueuePanel;
     private JProgressBar runningQueueProgress;
-    private ThrobberIcon throbberIcon;
     private JLabel queueCountLabel;
 
     /**
@@ -64,8 +64,7 @@ public class JIPipeRunnerQueueUI extends JPanel {
                 BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2),
                         BorderFactory.createEmptyBorder(5, 15, 5, 15))));
         JLabel throbberLabel = new JLabel();
-        throbberIcon = new ThrobberIcon(throbberLabel, UIUtils.getIconFromResources("status/throbber.png"), 80, 24);
-        throbberLabel.setIcon(throbberIcon);
+        throbberLabel.setIcon(new JIPipeRunThrobberIcon(throbberLabel));
         runningQueuePanel.add(throbberLabel);
         runningQueuePanel.add(Box.createHorizontalStrut(2));
         runningQueueProgress = new JProgressBar();
@@ -94,7 +93,6 @@ public class JIPipeRunnerQueueUI extends JPanel {
         if (JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
             removeAll();
             add(runningQueuePanel, BorderLayout.EAST);
-            throbberIcon.start();
             int size = JIPipeRunnerQueue.getInstance().size();
             if (size <= 1) {
                 queueCountLabel.setText("");
@@ -107,7 +105,6 @@ public class JIPipeRunnerQueueUI extends JPanel {
             removeAll();
             queueCountLabel.setText("");
             add(emptyQueuePanel, BorderLayout.EAST);
-            throbberIcon.stop();
             revalidate();
             repaint();
         }
