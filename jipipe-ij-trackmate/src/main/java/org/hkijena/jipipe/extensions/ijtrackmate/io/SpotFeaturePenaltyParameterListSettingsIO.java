@@ -12,7 +12,7 @@
  *
  */
 
-package org.hkijena.jipipe.extensions.ijtrackmate.io.settings;
+package org.hkijena.jipipe.extensions.ijtrackmate.io;
 
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeaturePenaltyParameter;

@@ -32,9 +32,9 @@ import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotTrackerData;
-import org.hkijena.jipipe.extensions.ijtrackmate.io.settings.DefaultSettingsIO;
-import org.hkijena.jipipe.extensions.ijtrackmate.io.settings.SettingsIO;
-import org.hkijena.jipipe.extensions.ijtrackmate.io.settings.SpotFeaturePenaltyParameterListSettingsIO;
+import org.hkijena.jipipe.extensions.ijtrackmate.io.DefaultSettingsIO;
+import org.hkijena.jipipe.extensions.ijtrackmate.io.SettingsIO;
+import org.hkijena.jipipe.extensions.ijtrackmate.io.SpotFeaturePenaltyParameterListSettingsIO;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeaturePenaltyParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 

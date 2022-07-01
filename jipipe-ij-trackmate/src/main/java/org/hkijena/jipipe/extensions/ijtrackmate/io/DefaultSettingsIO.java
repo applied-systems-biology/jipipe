@@ -12,7 +12,7 @@
  *
  */
 
-package org.hkijena.jipipe.extensions.ijtrackmate.io.settings;
+package org.hkijena.jipipe.extensions.ijtrackmate.io;
 
 public class DefaultSettingsIO implements SettingsIO {
 

@@ -38,6 +38,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.nodes.detectors.CreateSpotTrack
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SpotDetectorNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MeasureSpotsNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SpotFilterNode;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.FollowSpotsPerTrackNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureEdgesNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureTracksNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.TrackFilterNode;
@@ -163,6 +164,7 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("trackmate-measure-edges", MeasureEdgesNode.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
 
         registerNodeType("trackmate-visualize-track-scheme", TrackSchemeRendererNode.class, RESOURCES.getIcon16URLFromResources("trackscheme.png"));
+        registerNodeType("trackmate-visualize-follow-spots", FollowSpotsPerTrackNode.class, RESOURCES.getIcon16URLFromResources("trackscheme.png"));
     }
 
     private void registerDataTypes() {
