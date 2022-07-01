@@ -31,6 +31,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
 
@@ -75,7 +76,7 @@ public class PhansalkarLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterati
         this.radius = other.radius;
     }
 
-    public static void Phansalkar(ImagePlus imp, int radius, double k_value, double r_value, double p_value, double q_value, boolean doIwhite) {
+    public static void Phansalkar(ImageProcessor ip, int radius, double k_value, double r_value, double p_value, double q_value, boolean doIwhite) {
         // This is a modification of Sauvola's thresholding method to deal with low contrast images.
         // Phansalskar N. et al. Adaptive local thresholding for detection of nuclei in diversity stained
         // cytology images.International Conference on Communications and Signal Processing (ICCSP), 2011,
@@ -88,7 +89,7 @@ public class PhansalkarLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterati
         // This version uses a circular local window, instead of a rectagular one
 
         ImagePlus Meanimp, Varimp, Orimp;
-        ImageProcessor ip = imp.getProcessor(), ipMean, ipVar, ipOri;
+        ImageProcessor ipMean, ipVar, ipOri;
         byte object;
         byte backg;
 
@@ -218,10 +219,13 @@ public class PhansalkarLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterati
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        if (!darkBackground) {
-            img.getProcessor().invert();
-        }
-        Phansalkar(img, radius, k, r, p, q, true);
+        ImageJUtils.forEachIndexedZCTSlice(img, (processor, index) -> {
+            if (!darkBackground) {
+                processor.invert();
+            }
+            Phansalkar(processor, radius, k, r, p, q, true);
+        }, progressInfo);
+
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 

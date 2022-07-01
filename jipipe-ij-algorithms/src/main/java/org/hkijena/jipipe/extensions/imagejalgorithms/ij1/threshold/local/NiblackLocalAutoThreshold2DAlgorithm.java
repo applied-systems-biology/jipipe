@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
 
@@ -74,7 +75,7 @@ public class NiblackLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         this.modifier = other.modifier;
     }
 
-    public static void Niblack(ImagePlus imp, int radius, double k_value, int c_value, boolean doIwhite) {
+    public static void Niblack(ImageProcessor ip, int radius, double k_value, int c_value, boolean doIwhite) {
         // Niblack recommends K_VALUE = -0.2 for images with black foreground
         // objects, and K_VALUE = +0.2 for images with white foreground objects.
         // Niblack W. (1986) "An introduction to Digital Image Processing" Prentice-Hall.
@@ -82,7 +83,7 @@ public class NiblackLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         // This version uses a circular local window, instead of a rectagular one
 
         ImagePlus Meanimp, Varimp;
-        ImageProcessor ip = imp.getProcessor(), ipMean, ipVar;
+        ImageProcessor ipMean, ipVar;
 
         byte object;
         byte backg;
@@ -161,10 +162,12 @@ public class NiblackLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        if (!darkBackground) {
-            img.getProcessor().invert();
-        }
-        Niblack(img, radius, k, modifier, true);
+        ImageJUtils.forEachIndexedZCTSlice(img, (processor, index) -> {
+            if (!darkBackground) {
+                processor.invert();
+            }
+            Niblack(processor, radius, k, modifier, true);
+        }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 

@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
 
@@ -73,7 +74,7 @@ public class SauvolaLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         this.r = other.r;
     }
 
-    public static void Sauvola(ImagePlus imp, int radius, double k_value, double r_value, boolean doIwhite) {
+    public static void Sauvola(ImageProcessor ip, int radius, double k_value, double r_value, boolean doIwhite) {
         // Sauvola recommends K_VALUE = 0.5 and R_VALUE = 128.
         // This is a modification of Niblack's thresholding method.
         // Sauvola J. and Pietaksinen M. (2000) "Adaptive Document Image Binarization"
@@ -83,7 +84,7 @@ public class SauvolaLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
         // This version uses a circular local window, instead of a rectagular one
 
         ImagePlus Meanimp, Varimp;
-        ImageProcessor ip = imp.getProcessor(), ipMean, ipVar;
+        ImageProcessor ipMean, ipVar;
         byte object;
         byte backg;
 
@@ -172,10 +173,12 @@ public class SauvolaLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIteratingA
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        if (!darkBackground) {
-            img.getProcessor().invert();
-        }
-        Sauvola(img, radius, k, r, true);
+        ImageJUtils.forEachIndexedZCTSlice(img, (processor, index) -> {
+            if (!darkBackground) {
+                processor.invert();
+            }
+            Sauvola(processor, radius, k, r, true);
+        }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 

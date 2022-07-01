@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
 
@@ -72,14 +73,14 @@ public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterating
         this.radius = other.radius;
     }
 
-    public static void Contrast(ImagePlus imp, int radius, boolean doIwhite) {
+    public static void Contrast(ImageProcessor ip, int radius, boolean doIwhite) {
         // G. Landini, 2013
         // Based on a simple contrast toggle. This procedure does not have user-provided parameters other than the kernel radius
         // Sets the pixel value to either white or black depending on whether its current value is closest to the local Max or Min respectively
         // The procedure is similar to Toggle Contrast Enhancement (see Soille, Morphological Image Analysis (2004), p. 259
 
         ImagePlus Maximp, Minimp;
-        ImageProcessor ip = imp.getProcessor(), ipMax, ipMin;
+        ImageProcessor ipMax, ipMin;
         int c_value = 0;
         int mid_gray;
         byte object;
@@ -144,10 +145,12 @@ public class ContrastLocalAutoThreshold2DAlgorithm extends JIPipeSimpleIterating
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale8UData.class, progressInfo);
         ImagePlus img = inputData.getDuplicateImage();
-        if (!darkBackground) {
-            img.getProcessor().invert();
-        }
-        Contrast(img, radius, true);
+        ImageJUtils.forEachIndexedZCTSlice(img, (processor, index) -> {
+            if (!darkBackground) {
+                processor.invert();
+            }
+            Contrast(processor, radius, true);
+        }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleMaskData(img), progressInfo);
     }
 
