@@ -128,8 +128,10 @@ public class TrackCollectionData extends SpotsCollectionData {
         // ROI rendering
         BufferedImage bufferedImage = rgbImage.getBufferedImage();
         DisplaySettings displaySettings = new DisplaySettings();
+        displaySettings.setLineThickness(5);
         displaySettings.setTrackDisplayMode(DisplaySettings.TrackDisplayMode.FULL);
         displaySettings.setTrackColorBy(DisplaySettings.TrackMateObject.TRACKS, "TRACK_ID");
+        displaySettings.setTrackMinMax(0, getTracks().nTracks(true));
         TrackOverlay overlay = new TrackOverlay(getModel(), rgbImage, displaySettings);
         try {
             Field field = Roi.class.getDeclaredField("ic");
