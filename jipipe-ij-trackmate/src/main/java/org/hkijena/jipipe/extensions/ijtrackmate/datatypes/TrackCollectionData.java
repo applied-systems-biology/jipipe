@@ -25,6 +25,7 @@ import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import fiji.plugin.trackmate.visualization.hyperstack.TrackOverlay;
 import ij.ImagePlus;
 import ij.gui.EllipseRoi;
+import ij.gui.ImageCanvas;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -38,9 +39,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Field;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -118,19 +119,30 @@ public class TrackCollectionData extends SpotsCollectionData {
         double factorX = 1.0 * width / image.getWidth();
         double factorY = 1.0 * height / image.getHeight();
         double factor = Math.max(factorX, factorY);
-        boolean smooth = factor < 0;
+//        boolean smooth = factor < 0;
         int imageWidth = (int) (image.getWidth() * factor);
         int imageHeight = (int) (image.getHeight() * factor);
         ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
         rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
 
         // ROI rendering
-        TrackOverlay overlay = new TrackOverlay(getModel(), rgbImage, new DisplaySettings());
-        overlay.drawOverlay();
-
-        ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
-        BufferedImage bufferedImage = resized.getBufferedImage();
-        return new JLabel(new ImageIcon(bufferedImage));
+        BufferedImage bufferedImage = rgbImage.getBufferedImage();
+        DisplaySettings displaySettings = new DisplaySettings();
+        displaySettings.setTrackDisplayMode(DisplaySettings.TrackDisplayMode.FULL);
+        displaySettings.setTrackColorBy(DisplaySettings.TrackMateObject.TRACKS, "TRACK_ID");
+        TrackOverlay overlay = new TrackOverlay(getModel(), rgbImage, displaySettings);
+        try {
+            Field field = Roi.class.getDeclaredField("ic");
+            field.setAccessible(true);
+            field.set(overlay, new ImageCanvas(getImage()));
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
+        Graphics2D graphics = bufferedImage.createGraphics();
+        overlay.drawOverlay(graphics);
+        graphics.dispose();
+        Image scaledInstance = bufferedImage.getScaledInstance(imageWidth, imageHeight, Image.SCALE_DEFAULT);
+        return new JLabel(new ImageIcon(scaledInstance));
     }
 
     @Override
