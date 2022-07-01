@@ -21,16 +21,27 @@ import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.TrackModel;
 import fiji.plugin.trackmate.features.EdgeFeatureCalculator;
 import fiji.plugin.trackmate.features.TrackFeatureCalculator;
+import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
+import fiji.plugin.trackmate.visualization.hyperstack.TrackOverlay;
 import ij.ImagePlus;
 import ij.gui.EllipseRoi;
+import ij.gui.Roi;
+import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.JIPipeLogger;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 
+import javax.swing.*;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.image.BufferedImage;
+import java.util.Collections;
 import java.util.Optional;
 
 @JIPipeDocumentation(name = "TrackMate tracks", description = "Tracks detected by TrackMate")
@@ -99,6 +110,27 @@ public class TrackCollectionData extends SpotsCollectionData {
             result.add(roi);
         }
         return result;
+    }
+
+    @Override
+    public Component preview(int width, int height) {
+        ImagePlus image = getImage();
+        double factorX = 1.0 * width / image.getWidth();
+        double factorY = 1.0 * height / image.getHeight();
+        double factor = Math.max(factorX, factorY);
+        boolean smooth = factor < 0;
+        int imageWidth = (int) (image.getWidth() * factor);
+        int imageHeight = (int) (image.getHeight() * factor);
+        ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
+        rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
+
+        // ROI rendering
+        TrackOverlay overlay = new TrackOverlay(getModel(), rgbImage, new DisplaySettings());
+        overlay.drawOverlay();
+
+        ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
+        BufferedImage bufferedImage = resized.getBufferedImage();
+        return new JLabel(new ImageIcon(bufferedImage));
     }
 
     @Override

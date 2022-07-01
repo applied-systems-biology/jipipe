@@ -4,6 +4,7 @@ import fiji.plugin.trackmate.*;
 import ij.ImagePlus;
 import ij.gui.EllipseRoi;
 import ij.gui.Roi;
+import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -13,10 +14,16 @@ import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedROIListDataViewerWindow;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
+import javax.swing.*;
+import java.awt.Color;
 import java.awt.Component;
+import java.awt.image.BufferedImage;
+import java.util.Collections;
 import java.util.Optional;
 
 @JIPipeDocumentation(name = "TrackMate spots", description = "Spots detected by TrackMate")
@@ -51,6 +58,17 @@ public class SpotsCollectionData extends ModelData {
 
     @Override
     public Component preview(int width, int height) {
+        ImagePlus image = getImage();
+        double factorX = 1.0 * width / image.getWidth();
+        double factorY = 1.0 * height / image.getHeight();
+        double factor = Math.max(factorX, factorY);
+        boolean smooth = factor < 0;
+        int imageWidth = (int) (image.getWidth() * factor);
+        int imageHeight = (int) (image.getHeight() * factor);
+        ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
+        rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
+
+        // ROI rendering
         ROIListData rois = spotsToROIList();
         int dMax = 1;
         for (Roi roi : rois) {
@@ -61,7 +79,22 @@ public class SpotsCollectionData extends ModelData {
             int d = roi.getZPosition() + roi.getCPosition() + roi.getTPosition();
             roi.setStrokeColor(ColorMap.hsv.apply(1.0 * d / dMax));
         }
-        return rois.preview(width, height);
+        rois.draw(rgbImage.getProcessor(),
+                new ImageSliceIndex(0, 0, 0),
+                true,
+                true,
+                true,
+                true,
+                false,
+                false,
+                1,
+                Color.RED,
+                Color.YELLOW,
+                Collections.emptyList());
+
+        ImageProcessor resized = rgbImage.getProcessor().resize(imageWidth, imageHeight, smooth);
+        BufferedImage bufferedImage = resized.getBufferedImage();
+        return new JLabel(new ImageIcon(bufferedImage));
     }
 
     @Override
