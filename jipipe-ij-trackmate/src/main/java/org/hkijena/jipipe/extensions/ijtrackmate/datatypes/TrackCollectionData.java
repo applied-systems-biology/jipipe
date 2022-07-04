@@ -125,6 +125,8 @@ public class TrackCollectionData extends SpotsCollectionData {
         ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
         rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
 
+        computeTrackFeatures(new JIPipeProgressInfo());
+
         // ROI rendering
         BufferedImage bufferedImage = rgbImage.getBufferedImage();
         DisplaySettings displaySettings = new DisplaySettings();
