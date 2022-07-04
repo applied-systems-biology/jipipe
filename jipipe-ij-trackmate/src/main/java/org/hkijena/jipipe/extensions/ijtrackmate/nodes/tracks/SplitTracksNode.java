@@ -64,7 +64,7 @@ public class SplitTracksNode extends JIPipeSimpleIteratingAlgorithm {
             }
             TrackCollectionData newTrackCollectionData = new TrackCollectionData(oldTrackCollectionData);
             for (Integer otherId : trackIds) {
-                newTrackCollectionData.getModel().setTrackVisibility(trackID, otherId.intValue() == trackID.intValue());
+                newTrackCollectionData.getModel().setTrackVisibility(otherId, otherId.intValue() == trackID.intValue());
             }
             ++index;
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
