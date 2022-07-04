@@ -12,6 +12,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.ijtrackmate.display.CachedSpotCollectionDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.display.CachedROIListDataViewerWindow;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -100,7 +101,7 @@ public class SpotsCollectionData extends ModelData {
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         // Possible due to conversion of Spots to ROI
-        CachedROIListDataViewerWindow window = new CachedROIListDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
+        CachedSpotCollectionDataViewerWindow window = new CachedSpotCollectionDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
         window.setVisible(true);
     }
 

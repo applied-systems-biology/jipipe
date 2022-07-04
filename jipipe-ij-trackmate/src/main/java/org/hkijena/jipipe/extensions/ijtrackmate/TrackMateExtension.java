@@ -35,12 +35,15 @@ import org.hkijena.jipipe.extensions.ijtrackmate.nodes.converters.ConvertTracksT
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.converters.SpotsToRoiConverter;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.detectors.CreateSpotDetectorNodeInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.detectors.CreateSpotTrackerNodeInfo;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MergeSpotsNode;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SplitSpotsNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SpotDetectorNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MeasureSpotsNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SpotFilterNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.FollowSpotsPerTrackNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureEdgesNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureTracksNode;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.SplitTracksNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.TrackFilterNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.TrackSchemeRendererNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.TrackingNode;
@@ -162,6 +165,10 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("trackmate-filter-tracks", TrackFilterNode.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("trackmate-measure-tracks", MeasureTracksNode.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("trackmate-measure-edges", MeasureEdgesNode.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
+
+        registerNodeType("trackmate-split-spots", SplitSpotsNode.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("trackmate-split-tracks", SplitTracksNode.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("trackmate-merge-spots", MergeSpotsNode.class, UIUtils.getIconURLFromResources("actions/split.png"));
 
         registerNodeType("trackmate-visualize-track-scheme", TrackSchemeRendererNode.class, RESOURCES.getIcon16URLFromResources("trackscheme.png"));
         registerNodeType("trackmate-visualize-follow-spots", FollowSpotsPerTrackNode.class, RESOURCES.getIcon16URLFromResources("trackscheme.png"));

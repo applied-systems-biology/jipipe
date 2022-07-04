@@ -43,7 +43,12 @@ public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
         SpotCollection oldCollection = spotsCollectionData.getSpots();
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        variables.set("n_spots", oldCollection.getNSpots(true));
+        int index = 0;
         for (Spot spot : oldCollection.iterable(true)) {
+            variables.set("name", spot.getName());
+            variables.set("id", spot.ID());
+            variables.set("index", index);
             for (Map.Entry<String, Double> entry : spot.getFeatures().entrySet()) {
                 String variableName = SpotFeatureVariableSource.keyToVariable(entry.getKey());
                 variables.set(variableName, entry.getValue());
@@ -54,12 +59,16 @@ public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
         }
         spotsCollectionData.getModel().setSpots(newCollection, true);
         dataBatch.addOutputData(getFirstOutputSlot(), spotsCollectionData, progressInfo);
+        ++index;
     }
 
     @JIPipeDocumentation(name = "Filter", description = "The expression is executed per spot. If it returns TRUE, the spot is kept.")
     @JIPipeParameter(value = "filter", important = true)
     @ExpressionParameterSettingsVariable(fromClass = SpotFeatureVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
+    @ExpressionParameterSettingsVariable(name = "Spot index", key = "index", description = "Numeric index.")
+    @ExpressionParameterSettingsVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")
     public DefaultExpressionParameter getFilter() {
         return filter;
     }
