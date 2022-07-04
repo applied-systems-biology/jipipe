@@ -43,6 +43,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SpotFilterNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.FollowSpotsPerTrackNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureEdgesNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureTracksNode;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MergeTracksNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.SplitTracksNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.TrackFilterNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.TrackSchemeRendererNode;
@@ -168,7 +169,8 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("trackmate-split-spots", SplitSpotsNode.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("trackmate-split-tracks", SplitTracksNode.class, UIUtils.getIconURLFromResources("actions/split.png"));
-        registerNodeType("trackmate-merge-spots", MergeSpotsNode.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("trackmate-merge-spots", MergeSpotsNode.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("trackmate-merge-tracks", MergeTracksNode.class, UIUtils.getIconURLFromResources("actions/merge.png"));
 
         registerNodeType("trackmate-visualize-track-scheme", TrackSchemeRendererNode.class, RESOURCES.getIcon16URLFromResources("trackscheme.png"));
         registerNodeType("trackmate-visualize-follow-spots", FollowSpotsPerTrackNode.class, RESOURCES.getIcon16URLFromResources("trackscheme.png"));

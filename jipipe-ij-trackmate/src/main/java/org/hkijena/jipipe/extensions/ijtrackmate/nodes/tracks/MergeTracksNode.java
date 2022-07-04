@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
+import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.util.List;
 
@@ -53,6 +54,7 @@ public class MergeTracksNode extends JIPipeMergingAlgorithm {
             dataBatch.addOutputData(getFirstOutputSlot(), spotCollections.get(0), progressInfo);
             return;
         }
+        throw new UnsupportedOperationException("Currently not working. ---> Create new track model based on graph");
         TrackCollectionData newCollection = new TrackCollectionData(spotCollections.get(0));
         for (int i = 1; i < spotCollections.size(); i++) {
             // Copy over spots that do not exist
@@ -65,7 +67,15 @@ public class MergeTracksNode extends JIPipeMergingAlgorithm {
                     newCollection.getSpots().add(spot, frame);
                 }
             }
-            // TODO: Copy over tracks
+            newCollection.getModel().beginUpdate();
+            for (DefaultWeightedEdge edge : sourceCollection.getTracks().edgeSet()) {
+                Spot sourceCollectionSource = sourceCollection.getTracks().getEdgeSource(edge);
+                Spot sourceCollectionTarget = sourceCollection.getTracks().getEdgeTarget(edge);
+                Spot newCollectionSource = newCollection.getSpots().getClosestSpot(sourceCollectionSource, sourceCollectionSource.getFeature(Spot.FRAME).intValue(), true);
+                Spot newCollectionTarget = newCollection.getSpots().getClosestSpot(sourceCollectionTarget, sourceCollectionTarget.getFeature(Spot.FRAME).intValue(), true);
+                newCollection.getModel().addEdge(newCollectionSource, newCollectionTarget, sourceCollection.getTracks().getEdgeWeight(edge));
+            }
+            newCollection.getModel().endUpdate();
         }
         dataBatch.addOutputData(getFirstOutputSlot(), newCollection, progressInfo);
     }
