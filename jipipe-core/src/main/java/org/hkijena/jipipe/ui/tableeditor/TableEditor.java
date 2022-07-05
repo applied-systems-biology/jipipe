@@ -111,6 +111,7 @@ public class TableEditor extends JIPipeWorkbenchPanel {
     public static TableEditor openWindow(JIPipeWorkbench workbench, ResultsTableData tableData, String title) {
         JFrame window = new JFrame(title);
         window.getContentPane().setLayout(new BorderLayout());
+        window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
         TableEditor editor = new TableEditor(workbench, tableData);
         window.getContentPane().add(editor, BorderLayout.CENTER);
         window.setSize(1024, 768);

@@ -43,6 +43,10 @@ public class SpotsCollectionData extends ModelData {
         return new SpotsCollectionData(modelData.getModel(), modelData.getSettings(), modelData.getImage());
     }
 
+    public int getNSpots() {
+        return getSpots().getNSpots(true);
+    }
+
     @Override
     public String toString() {
         return getModel().getSpots().getNSpots(true) + " spots";

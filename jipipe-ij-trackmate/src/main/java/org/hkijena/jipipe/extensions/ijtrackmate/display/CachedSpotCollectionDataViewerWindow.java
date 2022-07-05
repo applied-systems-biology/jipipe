@@ -64,6 +64,7 @@ public class CachedSpotCollectionDataViewerWindow extends JIPipeCacheDataViewerW
         pluginList.add(new CalibrationPlugin(imageViewerPanel));
         pluginList.add(new PixelInfoPlugin(imageViewerPanel));
         pluginList.add(new LUTManagerPlugin(imageViewerPanel));
+        pluginList.add(new SpotsManagerPlugin(imageViewerPanel));
         pluginList.add(new ROIManagerPlugin(imageViewerPanel));
         pluginList.add(new AnimationSpeedPlugin(imageViewerPanel));
         pluginList.add(new MeasurementDrawerPlugin(imageViewerPanel));
@@ -109,12 +110,17 @@ public class CachedSpotCollectionDataViewerWindow extends JIPipeCacheDataViewerW
 
     @Override
     protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
-        ROIManagerPlugin plugin = imageViewerPanel.getPlugin(ROIManagerPlugin.class);
+//        ROIManagerPlugin plugin = imageViewerPanel.getPlugin(ROIManagerPlugin.class);
+//        SpotsCollectionData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), SpotsCollectionData.class);
+//        imageViewerPanel.getCanvas().setError(null);
+//        boolean fitImage = imageViewerPanel.getImage() == null;
+//        plugin.clearROIs(true);
+//        plugin.importROIs(data.spotsToROIList(), true);
+        SpotsManagerPlugin plugin = imageViewerPanel.getPlugin(SpotsManagerPlugin.class);
         SpotsCollectionData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), SpotsCollectionData.class);
-        imageViewerPanel.getCanvas().setError(null);
         boolean fitImage = imageViewerPanel.getImage() == null;
-        plugin.clearROIs(true);
-        plugin.importROIs(data.spotsToROIList(), true);
+        plugin.setSpots(data, true);
+        imageViewerPanel.getCanvas().setError(null);
         imageViewerPanel.setImage(data.getImage());
         if (fitImage)
             SwingUtilities.invokeLater(imageViewerPanel::fitImageToScreen);

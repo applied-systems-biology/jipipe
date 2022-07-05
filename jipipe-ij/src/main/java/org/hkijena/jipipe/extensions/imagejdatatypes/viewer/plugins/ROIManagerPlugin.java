@@ -715,13 +715,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         }
 
         private void measure() {
-            ROIListData data;
-            if(selectedROI == null || selectedROI.isEmpty()) {
-                data = getRoiManagerPlugin().getRois();
-            }
-            else {
-                data = new ROIListData(selectedROI);
-            }
+            ROIListData data = getRoiManagerPlugin().getSelectedROIOrAll("Measure", "Please select which ROI you want to measure");
             ResultsTableData measurements = data.measure(getViewerPanel().getImage().duplicate(),
                     statistics, true);
             TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Measurements");
