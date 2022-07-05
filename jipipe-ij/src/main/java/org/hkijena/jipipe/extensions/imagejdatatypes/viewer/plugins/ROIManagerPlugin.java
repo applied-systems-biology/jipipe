@@ -1,25 +1,35 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins;
 
+import com.google.common.eventbus.EventBus;
 import com.google.common.primitives.Ints;
+import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import ij.gui.Roi;
 import ij.plugin.frame.RoiManager;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIRoiDisplaySettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIEditor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.RoiListCellRenderer;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -51,6 +61,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         loadDefaults();
         initialize();
         addSelectionContextPanel(new SelectionInfoContextPanel(this));
+        addSelectionContextPanel(new MeasureContextPanel(this));
     }
 
     private void loadDefaults() {
@@ -603,6 +614,10 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             return roiManagerPlugin;
         }
 
+        public ImageViewerPanel getViewerPanel() {
+            return roiManagerPlugin.getViewerPanel();
+        }
+
         public abstract void selectionUpdated(ROIListData allROI, List<Roi> selectedROI);
     }
 
@@ -659,9 +674,94 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         @Override
         public void selectionUpdated(ROIListData allROI, List<Roi> selectedROI) {
             if(selectedROI.isEmpty())
-                roiInfoLabel.setText(allROI.size() + "");
+                roiInfoLabel.setText(allROI.size() + " ROI");
             else
-                roiInfoLabel.setText(selectedROI.size() + "/" + allROI.size());
+                roiInfoLabel.setText(selectedROI.size() + "/" + allROI.size() + " ROI");
+        }
+    }
+
+    public static class MeasureContextPanel extends SelectionContextPanel implements JIPipeParameterCollection {
+
+        private ImageStatisticsSetParameter statistics = new ImageStatisticsSetParameter();
+        private final EventBus eventBus = new EventBus();
+
+//        private final JLabel roiInfoLabel;
+        private List<Roi> selectedROI;
+
+        protected MeasureContextPanel(ROIManagerPlugin roiManagerPlugin) {
+            super(roiManagerPlugin);
+            statistics.setCollapsed(false);
+            statistics.getValues().add(Measurement.PixelValueMean);
+
+            setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+            setBorder(BorderFactory.createEmptyBorder(4,2,4,2));
+//            this.roiInfoLabel = new JLabel("");
+//            roiInfoLabel.setIcon(UIUtils.getIconFromResources("data-types/results-table.png"));
+//            roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+//            add(roiInfoLabel);
+            add(Box.createHorizontalGlue());
+
+            JButton measureButton = new JButton("Measure", UIUtils.getIconFromResources("actions/statistics.png"));
+            measureButton.addActionListener(e -> measure());
+            add(measureButton);
+
+            JButton settingsButton = new JButton( UIUtils.getIconFromResources("actions/configure.png"));
+            settingsButton.setToolTipText("Configure measurements");
+            UIUtils.makeFlat25x25(settingsButton);
+            settingsButton.addActionListener(e -> showSettings());
+            add(settingsButton);
+
+
+        }
+
+        private void measure() {
+            ROIListData data;
+            if(selectedROI == null || selectedROI.isEmpty()) {
+                data = getRoiManagerPlugin().getRois();
+            }
+            else {
+                data = new ROIListData(selectedROI);
+            }
+            ResultsTableData measurements = data.measure(getViewerPanel().getImage().duplicate(),
+                    statistics, true);
+            TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Measurements");
+        }
+
+        @Override
+        public void selectionUpdated(ROIListData allROI, List<Roi> selectedROI) {
+            this.selectedROI = selectedROI;
+//            if(selectedROI.isEmpty())
+//                roiInfoLabel.setText("Measure " + allROI.size() + " ROI");
+//            else
+//                roiInfoLabel.setText("Measure " + selectedROI.size() + " ROI");
+        }
+
+        private void showSettings() {
+            JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(getViewerPanel()));
+            dialog.setTitle("Measurement settings");
+            dialog.setContentPane(new ParameterPanel(new JIPipeDummyWorkbench(), this, null, FormPanel.WITH_SCROLLING));
+            UIUtils.addEscapeListener(dialog);
+            dialog.setSize(640, 480);
+            dialog.setLocationRelativeTo(getViewerPanel());
+            dialog.revalidate();
+            dialog.repaint();
+            dialog.setVisible(true);
+        }
+
+        @Override
+        public EventBus getEventBus() {
+            return eventBus;
+        }
+
+        @JIPipeDocumentation(name = "Statistics", description = "The statistics to measure")
+        @JIPipeParameter("statistics")
+        public ImageStatisticsSetParameter getStatistics() {
+            return statistics;
+        }
+
+        @JIPipeParameter("statistics")
+        public void setStatistics(ImageStatisticsSetParameter statistics) {
+            this.statistics = statistics;
         }
     }
 }

@@ -37,6 +37,7 @@ public class MeasurementPlugin extends ImageViewerPanelPlugin implements JIPipeP
 
     public MeasurementPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
+        statistics.setCollapsed(false);
         statistics.getValues().add(Measurement.PixelValueMean);
         initialize();
         viewerPanel.getCanvas().getEventBus().register(this);
