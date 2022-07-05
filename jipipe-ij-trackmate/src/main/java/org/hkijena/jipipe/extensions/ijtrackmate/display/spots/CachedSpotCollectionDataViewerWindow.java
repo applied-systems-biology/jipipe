@@ -12,18 +12,13 @@
  *
  */
 
-package org.hkijena.jipipe.extensions.ijtrackmate.display;
+package org.hkijena.jipipe.extensions.ijtrackmate.display.spots;
 
-import ij.IJ;
-import ij.ImagePlus;
-import ij.gui.Roi;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.AnimationSpeedPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.AnnotationInfoPlugin;
@@ -39,7 +34,6 @@ import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Rectangle;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.util.ArrayList;

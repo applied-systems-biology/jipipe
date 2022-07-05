@@ -9,14 +9,14 @@
  *
  * The project code is licensed under BSD 2-Clause.
  * See the LICENSE file provided with the code for the full license.
+ *
  */
 
-package org.hkijena.jipipe.extensions.ijtrackmate.display;
+package org.hkijena.jipipe.extensions.ijtrackmate.display.spots;
 
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.features.FeatureUtils;
 import fiji.plugin.trackmate.visualization.FeatureColorGenerator;
-import fiji.plugin.trackmate.visualization.SpotColorGenerator;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
