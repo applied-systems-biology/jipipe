@@ -34,12 +34,14 @@ import java.util.stream.Collectors;
 
 public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     private final ROIListData overlayRois = new ROIListData();
-    private final JList<Roi> roiJList = new JList<>();
-    private final JLabel roiInfoLabel = new JLabel();
+    private final JList<Roi> roiListControl = new JList<>();
     private ROIListData rois = new ROIListData();
     private final RoiDrawer roiDrawer = new RoiDrawer();
     private boolean roiFilterList = false;
 
+    private List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
+
+    private JPanel selectionContentPanelUI = new JPanel();
     private final JCheckBoxMenuItem displayROIViewMenuItem = new JCheckBoxMenuItem("Display ROI",  UIUtils.getIconFromResources("actions/eye.png"));
 
     private final JCheckBoxMenuItem renderROIAsOverlayViewMenuItem = new JCheckBoxMenuItem("Draw ROI as overlay",  UIUtils.getIconFromResources("actions/path-break-apart.png"));
@@ -48,6 +50,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         super(viewerPanel);
         loadDefaults();
         initialize();
+        addSelectionContextPanel(new SelectionInfoContextPanel(this));
     }
 
     private void loadDefaults() {
@@ -90,17 +93,18 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         panel.add(listMenuBar, BorderLayout.NORTH);
 
         createViewMenu(listMenuBar);
-        createSelectionMenu(listMenuBar);
+//        createSelectionMenu(listMenuBar);
         createImportExportMenu(listMenuBar);
 
         listMenuBar.add(Box.createHorizontalGlue());
         createButtons(listMenuBar);
 
-        JScrollPane scrollPane = new JScrollPane(roiJList);
+        JScrollPane scrollPane = new JScrollPane(roiListControl);
         panel.add(scrollPane, BorderLayout.CENTER);
 
         // Info (bottom toolbar)
-        createInfoToolbar(panel);
+        selectionContentPanelUI.setLayout(new BoxLayout(selectionContentPanelUI, BoxLayout.Y_AXIS));
+        panel.add(selectionContentPanelUI, BorderLayout.SOUTH);
 
         formPanel.addVerticalGlue(panel, null);
     }
@@ -148,69 +152,41 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     public ROIListData getSelectedROIOrAll(String title, String message) {
-        if (!roiJList.getSelectedValuesList().isEmpty()) {
+        if (!roiListControl.getSelectedValuesList().isEmpty()) {
             int result = JOptionPane.showOptionDialog(getViewerPanel(),
                     message,
                     title,
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
                     null,
-                    new Object[]{"All ROI (" + rois.size() + ")", "Selected ROI (" + roiJList.getSelectedValuesList().size() + ")", "Cancel"},
+                    new Object[]{"All ROI (" + rois.size() + ")", "Selected ROI (" + roiListControl.getSelectedValuesList().size() + ")", "Cancel"},
                     "All ROI (" + rois.size() + ")");
             if (result == JOptionPane.CANCEL_OPTION)
                 return null;
             else if (result == JOptionPane.YES_OPTION)
                 return rois;
             else
-                return new ROIListData(roiJList.getSelectedValuesList());
+                return new ROIListData(roiListControl.getSelectedValuesList());
         }
         return rois;
     }
 
-    private void createSelectionMenu(JMenuBar menuBar) {
-        JMenu selectionMenu = new JMenu("Selection");
-        menuBar.add(selectionMenu);
-
-        {
-            JMenuItem selectAllButton = new JMenuItem("Select all", UIUtils.getIconFromResources("actions/edit-select-all.png"));
-            selectAllButton.addActionListener(e -> {
-                roiJList.setSelectionInterval(0, roiJList.getModel().getSize() - 1);
-            });
-            selectionMenu.add(selectAllButton);
-        }
-        {
-            JMenuItem deselectAllButton = new JMenuItem("Clear selection", UIUtils.getIconFromResources("actions/edit-select-none.png"));
-            deselectAllButton.addActionListener(e -> {
-                roiJList.clearSelection();
-            });
-            selectionMenu.add(deselectAllButton);
-        }
-        {
-            JMenuItem invertSelectionButton = new JMenuItem("Invert selection", UIUtils.getIconFromResources("actions/object-inverse.png"));
-            invertSelectionButton.addActionListener(e -> {
-                Set<Integer> selectedIndices = Arrays.stream(roiJList.getSelectedIndices()).boxed().collect(Collectors.toSet());
-                roiJList.clearSelection();
-                Set<Integer> newSelectedIndices = new HashSet<>();
-                for (int i = 0; i < roiJList.getModel().getSize(); i++) {
-                    if (!selectedIndices.contains(i))
-                        newSelectedIndices.add(i);
-                }
-                roiJList.setSelectedIndices(Ints.toArray(newSelectedIndices));
-            });
-            selectionMenu.add(invertSelectionButton);
-        }
+    public List<SelectionContextPanel> getSelectionContextPanels() {
+        return Collections.unmodifiableList(selectionContextPanels);
     }
 
-    private void createInfoToolbar(JPanel panel) {
-        JToolBar infoToolBar = new JToolBar();
-        infoToolBar.setFloatable(false);
+    public void addSelectionContextPanel(SelectionContextPanel panel) {
+        selectionContextPanels.add(panel);
+        selectionContentPanelUI.add(panel);
+        selectionContentPanelUI.revalidate();
+        selectionContentPanelUI.repaint();
+    }
 
-        roiInfoLabel.setIcon(UIUtils.getIconFromResources("data-types/roi.png"));
-        roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        infoToolBar.add(roiInfoLabel);
-        infoToolBar.add(Box.createHorizontalGlue());
-
-        panel.add(infoToolBar, BorderLayout.SOUTH);
+    public void removeSelectionContextPanel(SelectionContextPanel panel) {
+        selectionContextPanels.remove(panel);
+        selectionContentPanelUI.remove(panel);
+        selectionContentPanelUI.revalidate();
+        selectionContentPanelUI.repaint();
     }
 
     private void createButtons(JMenuBar menuBar) {
@@ -218,9 +194,9 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             JButton removeButton = new JButton("Delete", UIUtils.getIconFromResources("actions/delete.png"));
             removeButton.setToolTipText("Remove selected ROIs");
             removeButton.addActionListener(e -> {
-                if (roiJList.getSelectedValuesList().isEmpty())
+                if (roiListControl.getSelectedValuesList().isEmpty())
                     return;
-                if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + roiJList.getSelectedValuesList().size() + "ROI?", "Edit ROI", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + roiListControl.getSelectedValuesList().size() + "ROI?", "Edit ROI", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     removeSelectedROIs(false);
                 }
             });
@@ -235,7 +211,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     private void editROIInDialog() {
-        List<Roi> selected = roiJList.getSelectedValuesList();
+        List<Roi> selected = roiListControl.getSelectedValuesList();
         if (selected.isEmpty()) {
             JOptionPane.showMessageDialog(getViewerPanel(), "You have not selected ROI to edit.", "Edit ROI", JOptionPane.ERROR_MESSAGE);
         }
@@ -372,7 +348,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         if(!renderROIAsOverlayViewMenuItem.getState()) {
             if (!rois.isEmpty()) {
                 processor = new ColorProcessor(processor.getBufferedImage());
-                roiDrawer.drawOnProcessor(rois, (ColorProcessor) processor, new ImageSliceIndex(c, z, t), new HashSet<>(roiJList.getSelectedValuesList()));
+                roiDrawer.drawOnProcessor(rois, (ColorProcessor) processor, new ImageSliceIndex(c, z, t), new HashSet<>(roiListControl.getSelectedValuesList()));
             }
         }
         return processor;
@@ -381,7 +357,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     @Override
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
         if(renderROIAsOverlayViewMenuItem.getState()) {
-            roiDrawer.drawOverlayOnGraphics(rois, graphics2D, renderArea, sliceIndex, new HashSet<>(roiJList.getSelectedValuesList()), getViewerPanel().getCanvas().getZoom());
+            roiDrawer.drawOverlayOnGraphics(rois, graphics2D, renderArea, sliceIndex, new HashSet<>(roiListControl.getSelectedValuesList()), getViewerPanel().getCanvas().getZoom());
         }
     }
 
@@ -395,7 +371,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
                 updateRoiCanvas(clone, getViewerPanel().getExportDummyCanvas());
                 copy.add(clone);
             }
-            roiDrawer.drawOverlayOnGraphics(copy, graphics, new Rectangle(0,0,image.getWidth(), image.getHeight()), sliceIndex, new HashSet<>(roiJList.getSelectedValuesList()), 1.0);
+            roiDrawer.drawOverlayOnGraphics(copy, graphics, new Rectangle(0,0,image.getWidth(), image.getHeight()), sliceIndex, new HashSet<>(roiListControl.getSelectedValuesList()), 1.0);
             graphics.dispose();
         }
     }
@@ -416,7 +392,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     private void reloadEditRoiMenu(JPopupMenu menu) {
-        List<Roi> selectedRois = roiJList.getSelectedValuesList();
+        List<Roi> selectedRois = roiListControl.getSelectedValuesList();
         menu.removeAll();
         if (selectedRois.isEmpty()) {
             JMenuItem noSelection = new JMenuItem("No ROI selected");
@@ -433,7 +409,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
                 for (Roi roi : selectedRois) {
                     roi.setStrokeColor(value);
                 }
-                roiJList.repaint();
+                roiListControl.repaint();
                 uploadSliceToCanvas();
             }
         });
@@ -447,7 +423,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
                 for (Roi roi : selectedRois) {
                     roi.setFillColor(value);
                 }
-                roiJList.repaint();
+                roiListControl.repaint();
                 uploadSliceToCanvas();
             }
         });
@@ -461,7 +437,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
                 for (Roi roi : selectedRois) {
                     roi.setStrokeWidth(value.get());
                 }
-                roiJList.repaint();
+                roiListControl.repaint();
                 uploadSliceToCanvas();
             }
         });
@@ -475,7 +451,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
                 for (Roi roi : selectedRois) {
                     roi.setName(value);
                 }
-                roiJList.repaint();
+                roiListControl.repaint();
                 uploadSliceToCanvas();
             }
         });
@@ -491,7 +467,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
                 for (Roi roi : selectedRois) {
                     roi.setPosition(roi.getCPosition(), value.get(), roi.getTPosition());
                 }
-                roiJList.repaint();
+                roiListControl.repaint();
                 uploadSliceToCanvas();
             }
         });
@@ -505,7 +481,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
                 for (Roi roi : selectedRois) {
                     roi.setPosition(value.get(), roi.getZPosition(), roi.getTPosition());
                 }
-                roiJList.repaint();
+                roiListControl.repaint();
                 uploadSliceToCanvas();
             }
         });
@@ -519,7 +495,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
                 for (Roi roi : selectedRois) {
                     roi.setPosition(roi.getCPosition(), roi.getZPosition(), value.get());
                 }
-                roiJList.repaint();
+                roiListControl.repaint();
                 uploadSliceToCanvas();
             }
         });
@@ -528,8 +504,11 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     private void initialize() {
         // Setup ROI
-        roiJList.setCellRenderer(new RoiListCellRenderer());
-        roiJList.addListSelectionListener(e -> uploadSliceToCanvas());
+        roiListControl.setCellRenderer(new RoiListCellRenderer());
+        roiListControl.addListSelectionListener(e -> {
+            updateContextPanels();
+            uploadSliceToCanvas();
+        });
     }
 
     public void importROIs(ROIListData rois, boolean deferUploadSlice) {
@@ -556,7 +535,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     public void removeSelectedROIs(boolean deferUploadSlice) {
-        rois.removeAll(roiJList.getSelectedValuesList());
+        rois.removeAll(roiListControl.getSelectedValuesList());
         updateROIJList(deferUploadSlice);
     }
 
@@ -587,17 +566,102 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     private void updateROIJList(boolean deferUploadSlice) {
         DefaultListModel<Roi> model = new DefaultListModel<>();
-        int[] selectedIndices = roiJList.getSelectedIndices();
+        int[] selectedIndices = roiListControl.getSelectedIndices();
         ImageSliceIndex currentIndex = getCurrentSlicePosition();
         for (Roi roi : rois) {
             if (roiFilterList && !ROIListData.isVisibleIn(roi, currentIndex, roiDrawer.isIgnoreZ(), roiDrawer.isIgnoreC(), roiDrawer.isIgnoreT()))
                 continue;
             model.addElement(roi);
         }
-        roiJList.setModel(model);
-        roiJList.setSelectedIndices(selectedIndices);
-        roiInfoLabel.setText(rois.size() + " ROI");
+        roiListControl.setModel(model);
+        roiListControl.setSelectedIndices(selectedIndices);
+        updateContextPanels();
         if (!deferUploadSlice)
             uploadSliceToCanvas();
+    }
+
+    private void updateContextPanels() {
+        List<Roi> selectedValuesList = roiListControl.getSelectedValuesList();
+        for (SelectionContextPanel selectionContextPanel : selectionContextPanels) {
+            selectionContextPanel.selectionUpdated(rois, selectedValuesList);
+        }
+    }
+
+    public JList<Roi> getRoiListControl() {
+        return roiListControl;
+    }
+
+    public abstract static class SelectionContextPanel extends JPanel {
+
+        private final ROIManagerPlugin roiManagerPlugin;
+
+        protected SelectionContextPanel(ROIManagerPlugin roiManagerPlugin) {
+            this.roiManagerPlugin = roiManagerPlugin;
+        }
+
+        public ROIManagerPlugin getRoiManagerPlugin() {
+            return roiManagerPlugin;
+        }
+
+        public abstract void selectionUpdated(ROIListData allROI, List<Roi> selectedROI);
+    }
+
+    public static class SelectionInfoContextPanel extends SelectionContextPanel {
+
+        private final JLabel roiInfoLabel;
+
+        public SelectionInfoContextPanel(ROIManagerPlugin parent) {
+            super(parent);
+            setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+            setBorder(BorderFactory.createEmptyBorder(4,2,4,2));
+            this.roiInfoLabel = new JLabel();
+            roiInfoLabel.setIcon(UIUtils.getIconFromResources("data-types/roi.png"));
+            roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            add(roiInfoLabel);
+            add(Box.createHorizontalGlue());
+            JList<Roi> roiJList = getRoiManagerPlugin().getRoiListControl();
+            {
+                JButton selectAllButton = new JButton("Select all", UIUtils.getIconFromResources("actions/edit-select-all.png"));
+//                UIUtils.makeFlat25x25(selectAllButton);
+                selectAllButton.setToolTipText("Select all");
+                selectAllButton.addActionListener(e -> {
+                    roiJList.setSelectionInterval(0, roiJList.getModel().getSize() - 1);
+                });
+                add(selectAllButton);
+            }
+            {
+                JButton deselectAllButton = new JButton("Clear selection", UIUtils.getIconFromResources("actions/edit-select-none.png"));
+//                UIUtils.makeFlat25x25(deselectAllButton);
+                deselectAllButton.setToolTipText("Clear selection");
+                deselectAllButton.addActionListener(e -> {
+                    roiJList.clearSelection();
+                });
+                add(deselectAllButton);
+            }
+            {
+                JButton invertSelectionButton = new JButton(UIUtils.getIconFromResources("actions/object-inverse.png"));
+                UIUtils.makeFlat25x25(invertSelectionButton);
+                invertSelectionButton.setToolTipText("Invert selection");
+                invertSelectionButton.addActionListener(e -> {
+                    Set<Integer> selectedIndices = Arrays.stream(roiJList.getSelectedIndices()).boxed().collect(Collectors.toSet());
+                    roiJList.clearSelection();
+                    Set<Integer> newSelectedIndices = new HashSet<>();
+                    for (int i = 0; i < roiJList.getModel().getSize(); i++) {
+                        if (!selectedIndices.contains(i))
+                            newSelectedIndices.add(i);
+                    }
+                    roiJList.setSelectedIndices(Ints.toArray(newSelectedIndices));
+                });
+                add(invertSelectionButton);
+            }
+        }
+
+        @Override
+        public void selectionUpdated(ROIListData allROI, List<Roi> selectedROI) {
+            if(selectedROI.isEmpty())
+                roiInfoLabel.setText(allROI.size() + "");
+            else
+                roiInfoLabel.setText(selectedROI.size() + "/" + allROI.size());
+        }
     }
 }
