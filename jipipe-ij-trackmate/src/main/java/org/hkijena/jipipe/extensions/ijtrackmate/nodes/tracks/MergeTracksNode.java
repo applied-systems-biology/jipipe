@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.jgrapht.graph.DefaultWeightedEdge;
+import org.jgrapht.graph.SimpleWeightedGraph;
 
 import java.util.List;
 
@@ -54,8 +55,8 @@ public class MergeTracksNode extends JIPipeMergingAlgorithm {
             dataBatch.addOutputData(getFirstOutputSlot(), spotCollections.get(0), progressInfo);
             return;
         }
-        throw new UnsupportedOperationException("Currently not working. ---> Create new track model based on graph");
         TrackCollectionData newCollection = new TrackCollectionData(spotCollections.get(0));
+        newCollection.getModel().clearTracks(true);
         for (int i = 1; i < spotCollections.size(); i++) {
             // Copy over spots that do not exist
             TrackCollectionData sourceCollection = spotCollections.get(i);
