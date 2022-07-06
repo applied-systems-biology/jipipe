@@ -395,6 +395,11 @@ public class ImageJUtils {
     public static ImagePlus ensureSize(ImagePlus target, int nChannels, int nSlices, int nFrames, boolean copySlices) {
         if (target.getNChannels() == nChannels && target.getNSlices() == nSlices && target.getNFrames() == nFrames)
             return target;
+        if(target.getStackSize() == nChannels * nSlices * nFrames) {
+            // Use the native ImageJ function
+            target.setDimensions(nChannels, nSlices, nFrames);
+            return target;
+        }
         if (nChannels * nSlices * nFrames == 1) {
             return new ImagePlus(target.getTitle(), target.getProcessor());
         } else {

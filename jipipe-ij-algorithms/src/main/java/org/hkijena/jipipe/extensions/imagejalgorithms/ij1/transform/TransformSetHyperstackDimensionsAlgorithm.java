@@ -50,6 +50,7 @@ public class TransformSetHyperstackDimensionsAlgorithm extends JIPipeSimpleItera
         int t = (int) tAxis.evaluateToNumber(variables);
 
         ImagePlus outputImage = ImageJUtils.ensureSize(image, c, z, t, copySlices);
+        outputImage.setCalibration(image.getCalibration());
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(outputImage), progressInfo);
     }
 
