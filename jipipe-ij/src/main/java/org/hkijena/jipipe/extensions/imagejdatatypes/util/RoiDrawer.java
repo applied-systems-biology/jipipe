@@ -35,9 +35,11 @@ import org.hkijena.jipipe.utils.ColorUtils;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -470,13 +472,14 @@ public class RoiDrawer implements JIPipeParameterCollection {
      */
     public void drawOverlayOnGraphics(ROIListData roisToDraw, Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex index, HashSet<Roi> roisToHighlight, double magnification) {
         // ROI statistics needed for labels
-        Map<Roi, Point> roiCentroids = new HashMap<>();
+        Map<Roi, Point2D> roiCentroids = new HashMap<>();
         Map<Roi, Integer> roiIndices = new HashMap<>();
         if (drawnLabel != RoiLabel.None) {
             for (int i = 0; i < roisToDraw.size(); i++) {
                 Roi roi = roisToDraw.get(i);
                 roiIndices.put(roi, i);
-                roiCentroids.put(roi, ROIListData.getCentroid(roi));
+                double[] contourCentroid = roi.getContourCentroid();
+                roiCentroids.put(roi, new Point2D.Double(contourCentroid[0], contourCentroid[1]));
             }
         }
 
@@ -506,6 +509,34 @@ public class RoiDrawer implements JIPipeParameterCollection {
     }
 
     /**
+     * Draws a label on graphics
+     * @param text the text
+     * @param graphics2D the graphics
+     * @param centroidX the x location (centroid)
+     * @param centroidY the y location (centroid)
+     * @param magnification the magnification
+     * @param foreground the foreground
+     * @param background the background
+     * @param font the font
+     * @param drawBackground if a background should be drawn
+     */
+    public static void drawLabelOnGraphics(String text, Graphics2D graphics2D, double centroidX, double centroidY, double magnification, Color foreground, Color background, Font font, boolean drawBackground) {
+        graphics2D.setFont(font);
+        FontMetrics fontMetrics = graphics2D.getFontMetrics();
+        int width = fontMetrics.stringWidth(text);
+        int height = fontMetrics.getHeight();
+        int ascent = fontMetrics.getAscent();
+        int x = (int) (centroidX * magnification - width / 2);
+        int y = (int) (centroidY * magnification - height / 2);
+        if(drawBackground) {
+            graphics2D.setColor(background);
+            graphics2D.fillRect(x -1, y - 1, width + 2, height + 2);
+        }
+        graphics2D.setColor(foreground);
+        graphics2D.drawString(text,x,y + ascent);
+    }
+
+    /**
      * Draws a ROI on graphics
      * Assumes that the ROI has an appropriate image canvas (ic) for its magnification
      *
@@ -522,7 +553,7 @@ public class RoiDrawer implements JIPipeParameterCollection {
      * @param highlighted   if highlighted
      * @param magnification the magnification
      */
-    private void drawRoiOnGraphics(Roi roi, Graphics2D graphics2D, Rectangle renderArea, int z, int c, int t, Map<Roi, Point> roiCentroids, Map<Roi, Integer> roiIndices, Font labelFont, boolean drawMuted, boolean highlighted, double magnification) {
+    private void drawRoiOnGraphics(Roi roi, Graphics2D graphics2D, Rectangle renderArea, int z, int c, int t, Map<Roi, Point2D> roiCentroids, Map<Roi, Integer> roiIndices, Font labelFont, boolean drawMuted, boolean highlighted, double magnification) {
         int rz = ignoreZ ? 0 : roi.getZPosition();
         int rc = ignoreC ? 0 : roi.getCPosition();
         int rt = ignoreT ? 0 : roi.getTPosition();
@@ -572,7 +603,7 @@ public class RoiDrawer implements JIPipeParameterCollection {
 
         // Render label
         if (drawnLabel != RoiLabel.None) {
-            Point centroid = roiCentroids.get(roi);
+            Point2D centroid = roiCentroids.get(roi);
             // Apply modifications
             drawnLabel.draw(graphics2D,
                     roi,

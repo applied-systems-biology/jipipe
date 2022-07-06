@@ -21,6 +21,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 
 /**
  * Moved out of the ImageJ algorithms extension
@@ -71,7 +72,7 @@ public enum RoiLabel {
         return label;
     }
 
-    public void draw(Graphics2D graphics2D, Roi roi, int roiIndex, Point center, double magnification, Color foreground, Color background, Font font, boolean drawBackground) {
+    public void draw(Graphics2D graphics2D, Roi roi, int roiIndex, Point2D center, double magnification, Color foreground, Color background, Font font, boolean drawBackground) {
         if (this == None)
             return;
         String label = createLabel(roi, roiIndex);
@@ -79,8 +80,8 @@ public enum RoiLabel {
         FontMetrics fontMetrics = graphics2D.getFontMetrics();
         int width = fontMetrics.stringWidth(label);
         int height = fontMetrics.getHeight();
-        int x = (int) (center.x * magnification - width / 2);
-        int y = (int) (center.y * magnification - height / 2);
+        int x = (int) (center.getX() * magnification - width / 2);
+        int y = (int) (center.getY() * magnification - height / 2);
         if(drawBackground) {
             graphics2D.setColor(background);
             graphics2D.fillRect(x -1, y - 1, width + 2, height + 2);
