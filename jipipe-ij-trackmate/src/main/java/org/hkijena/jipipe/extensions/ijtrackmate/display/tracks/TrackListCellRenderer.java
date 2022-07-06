@@ -18,8 +18,8 @@ import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.features.FeatureUtils;
 import fiji.plugin.trackmate.visualization.FeatureColorGenerator;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.jgrapht.graph.DefaultWeightedEdge;
 
 import javax.swing.*;
 import java.awt.Color;
@@ -27,9 +27,6 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 
 public class TrackListCellRenderer extends JPanel implements ListCellRenderer<Integer> {
 
@@ -39,7 +36,7 @@ public class TrackListCellRenderer extends JPanel implements ListCellRenderer<In
     private JLabel nameLabel = new JLabel();
     private JLabel infoLabel = new JLabel();
 
-    private FeatureColorGenerator<Spot> strokeColorGenerator;
+    private FeatureColorGenerator<DefaultWeightedEdge> strokeColorGenerator;
 
     public TrackListCellRenderer(TracksManagerPlugin tracksManagerPlugin) {
         this.tracksManagerPlugin = tracksManagerPlugin;
@@ -49,8 +46,8 @@ public class TrackListCellRenderer extends JPanel implements ListCellRenderer<In
     }
 
     public void updateColorMaps() {
-        if(tracksManagerPlugin.getSpotsCollection() != null) {
-            strokeColorGenerator = FeatureUtils.createSpotColorGenerator(tracksManagerPlugin.getSpotsCollection().getModel(), tracksManagerPlugin.getDisplaySettings());
+        if(tracksManagerPlugin.getTracksCollection() != null) {
+            strokeColorGenerator = FeatureUtils.createTrackColorGenerator(tracksManagerPlugin.getTracksCollection().getModel(), tracksManagerPlugin.getDisplaySettings());
         }
     }
 
@@ -87,26 +84,13 @@ public class TrackListCellRenderer extends JPanel implements ListCellRenderer<In
     }
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends Integer> list, Integer value, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<? extends Integer> list, Integer trackId, int index, boolean isSelected, boolean cellHasFocus) {
 
-//        if (!StringUtils.isNullOrEmpty(value.getName()))
-//            nameLabel.setText(value.getName());
-//        else
-//            nameLabel.setText("Unnamed [" + index + "]");
-//
-//        strokeFillPreview.setFillColor(Color.WHITE);
-//        if(strokeColorGenerator == null) {
-//            strokeFillPreview.setBorderColor(Color.RED);
-//        }
-//        else {
-//            strokeFillPreview.setBorderColor(strokeColorGenerator.color(value));
-//        }
-//
-//        DecimalFormat format = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.US));
-//
-//        iconLabel.setText("" + index);
-//        infoLabel.setText("x: " + format.format(value.getDoublePosition(0)) + ", y: " + format.format(value.getDoublePosition(1)) + ", z: " + format.format(value.getDoublePosition(2)) +
-//                ", t: " + format.format(value.getFeature(Spot.FRAME)) + ", r: " + format.format(value.getFeature(Spot.RADIUS)) + ", q: " + format.format(value.getFeature(Spot.QUALITY)));
+        nameLabel.setText(tracksManagerPlugin.getTracksCollection().getTracks().name(trackId));
+
+        strokeFillPreview.setFillColor(Color.WHITE);
+        iconLabel.setText("" + index);
+        infoLabel.setText(tracksManagerPlugin.getTracksCollection().getTrackSpots(trackId).size() + " spots");
 
         if (isSelected) {
             setBackground(UIManager.getColor("List.selectionBackground"));

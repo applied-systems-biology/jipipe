@@ -168,6 +168,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
         }
         this.zoom = zoom;
         imageViewerPanel.getZoomedDummyCanvas().setMagnification(zoom);
+        imageViewerPanel.getZoomedDummyCanvas().setSize((int) (image.getWidth() * zoom), (int) (image.getHeight() * zoom));
         if (currentPixel != null) {
             Point2D.Double newPixelLocation = imageSubPixelCoordinateToScreen(currentPixel);
             double dx = newPixelLocation.x - mousePosition.x;

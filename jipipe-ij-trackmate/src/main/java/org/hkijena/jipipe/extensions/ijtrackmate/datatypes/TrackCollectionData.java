@@ -27,23 +27,25 @@ import ij.ImagePlus;
 import ij.gui.EllipseRoi;
 import ij.gui.ImageCanvas;
 import ij.gui.Roi;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
+import org.hkijena.jipipe.extensions.ijtrackmate.display.tracks.CachedTracksCollectionDataViewerWindow;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.JIPipeLogger;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.jgrapht.graph.DefaultWeightedEdge;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
-import java.util.Collections;
 import java.util.Optional;
+import java.util.Set;
 
 @JIPipeDocumentation(name = "TrackMate tracks", description = "Tracks detected by TrackMate")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "TODO", jsonSchemaURL = "TODO")
@@ -111,6 +113,88 @@ public class TrackCollectionData extends SpotsCollectionData {
             result.add(roi);
         }
         return result;
+    }
+
+    public int getNTracks() {
+        return getTracks().nTracks(true);
+    }
+
+    public Set<Spot> getTrackSpots(int trackId) {
+        return getTracks().trackSpots(trackId);
+    }
+
+    @Override
+    public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
+        CachedTracksCollectionDataViewerWindow window = new CachedTracksCollectionDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
+        window.setVisible(true);
+    }
+
+    /**
+     * Returns a copy of this track collection that has only the selected track IDs
+     * Please note that all spots are still present
+     * @param selectedTrackIds the selected tracks
+     * @return collection with only the selected tracks
+     */
+    public TrackCollectionData filterTracks(Set<Integer> selectedTrackIds) {
+        TrackCollectionData result = new TrackCollectionData(this);
+        for (Integer trackID : result.getTracks().trackIDs(true)) {
+            if(!selectedTrackIds.contains(trackID)) {
+                result.getModel().setTrackVisibility(trackID, false);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * Gets a feature from a track.
+     * Calculates features if necessary
+     *
+     * @param trackId      the track ID
+     * @param feature      the feature
+     * @param defaultValue the default value
+     * @return the value.
+     */
+    public double getTrackFeature(int trackId, String feature, double defaultValue) {
+        Double trackFeature = getModel().getFeatureModel().getTrackFeature(trackId, feature);
+        if(trackFeature == null) {
+            computeTrackFeatures(new JIPipeProgressInfo());
+        }
+        else {
+            return trackFeature;
+        }
+        trackFeature = getModel().getFeatureModel().getTrackFeature(trackId, feature);
+        if(trackFeature != null) {
+            return trackFeature;
+        }
+        else {
+            return defaultValue;
+        }
+    }
+
+    /**
+     * Gets a feature from an edge.
+     * Calculates features if necessary
+     *
+     * @param edge         the edge
+     * @param feature      the feature
+     * @param defaultValue the default value
+     * @return the value.
+     */
+    public double getEdgeFeature(DefaultWeightedEdge edge, String feature, double defaultValue) {
+        Double trackFeature = getModel().getFeatureModel().getEdgeFeature(edge, feature);
+        if(trackFeature == null) {
+            computeEdgeFeatures(new JIPipeProgressInfo());
+        }
+        else {
+            return trackFeature;
+        }
+        trackFeature = getModel().getFeatureModel().getEdgeFeature(edge, feature);
+        if(trackFeature != null) {
+            return trackFeature;
+        }
+        else {
+            return defaultValue;
+        }
     }
 
     @Override

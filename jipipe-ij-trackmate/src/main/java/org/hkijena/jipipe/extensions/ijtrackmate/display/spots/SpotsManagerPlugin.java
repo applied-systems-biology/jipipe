@@ -32,6 +32,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MeasureSpotsNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
+import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackMateUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
@@ -243,11 +244,15 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
                     double min = Double.POSITIVE_INFINITY;
                     double max = Double.NEGATIVE_INFINITY;
                     for (Spot spot : getSpotsCollection().getSpots().iterable(true)) {
-                        double feature = Optional.ofNullable(spot.getFeature(key)).orElse(0d);
+                        double feature = spotsCollection.getSpotFeature(spot, key, Double.NaN);
+                        if(Double.isNaN(feature))
+                            continue;
                         min = Math.min(feature, min);
                         max = Math.max(feature, max);
                     }
-                    displaySettings.setSpotMinMax(min, max);
+                    if(Double.isFinite(min)) {
+                        displaySettings.setSpotMinMax(min, max);
+                    }
                     spotsListCellRenderer.updateColorMaps();
                     uploadSliceToCanvas();
                 });
@@ -285,12 +290,12 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     private void importSpotsFromFile() {
-        Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import ROI", UIUtils.EXTENSION_FILTER_ZIP);
+        Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import spots", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null && displaySpotsViewMenuItem.getState()) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try(JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
                 SpotsCollectionData spotsCollectionData = SpotsCollectionData.importData(storage, progressInfo);
-                setSpots(spotsCollectionData, false);
+                setSpotCollection(spotsCollectionData, false);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -329,7 +334,7 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
                             label = spot.getName();
                         }
                         else {
-                            label = SpotListCellRenderer.FEATURE_DECIMAL_FORMAT.format(Optional.ofNullable(spot.getFeature(displayLabelsFeature)).orElse(0d));
+                            label = TrackMateUtils.FEATURE_DECIMAL_FORMAT.format(Optional.ofNullable(spot.getFeature(displayLabelsFeature)).orElse(0d));
                         }
                         RoiDrawer.drawLabelOnGraphics(label,
                                 graphics2D,
@@ -381,7 +386,7 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
                             label = spot.getName();
                         }
                         else {
-                            label = SpotListCellRenderer.FEATURE_DECIMAL_FORMAT.format(Optional.ofNullable(spot.getFeature(displayLabelsFeature)).orElse(0d));
+                            label = TrackMateUtils.FEATURE_DECIMAL_FORMAT.format(Optional.ofNullable(spot.getFeature(displayLabelsFeature)).orElse(0d));
                         }
                         RoiDrawer.drawLabelOnGraphics(label,
                                 graphics2D,
@@ -425,7 +430,7 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
         });
     }
 
-    public void setSpots(SpotsCollectionData spots, boolean deferUploadSlice) {
+    public void setSpotCollection(SpotsCollectionData spots, boolean deferUploadSlice) {
         spotsCollection = new SpotsCollectionData(spots);
         spotsListCellRenderer.updateColorMaps();
         updateSpotJList(deferUploadSlice);
@@ -469,18 +474,18 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
 
     public abstract static class SelectionContextPanel extends JPanel {
 
-        private final SpotsManagerPlugin roiManagerPlugin;
+        private final SpotsManagerPlugin spotsManagerPlugin;
 
-        protected SelectionContextPanel(SpotsManagerPlugin roiManagerPlugin) {
-            this.roiManagerPlugin = roiManagerPlugin;
+        protected SelectionContextPanel(SpotsManagerPlugin spotsManagerPlugin) {
+            this.spotsManagerPlugin = spotsManagerPlugin;
         }
 
-        public SpotsManagerPlugin getRoiManagerPlugin() {
-            return roiManagerPlugin;
+        public SpotsManagerPlugin getSpotsManagerPlugin() {
+            return spotsManagerPlugin;
         }
 
         public ImageViewerPanel getViewerPanel() {
-            return roiManagerPlugin.getViewerPanel();
+            return spotsManagerPlugin.getViewerPanel();
         }
 
         public abstract void selectionUpdated(SpotsCollectionData spotsCollectionData, List<Spot> selectedSpots);
@@ -499,7 +504,7 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
             roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             add(roiInfoLabel);
             add(Box.createHorizontalGlue());
-            JList<Spot> roiJList = getRoiManagerPlugin().getSpotsListControl();
+            JList<Spot> roiJList = getSpotsManagerPlugin().getSpotsListControl();
             {
                 JButton selectAllButton = new JButton("Select all", UIUtils.getIconFromResources("actions/edit-select-all.png"));
 //                UIUtils.makeFlat25x25(selectAllButton);
@@ -577,7 +582,7 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
 
         private void measure() {
             MeasureSpotsNode node = JIPipe.createNode(MeasureSpotsNode.class);
-            SpotsCollectionData selected = getRoiManagerPlugin().getSelectedSpotsOrAll("Measure", "Please select which spots should be measured");
+            SpotsCollectionData selected = getSpotsManagerPlugin().getSelectedSpotsOrAll("Measure", "Please select which spots should be measured");
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             node.getFirstInputSlot().addData(selected, progressInfo);
             node.run(progressInfo);

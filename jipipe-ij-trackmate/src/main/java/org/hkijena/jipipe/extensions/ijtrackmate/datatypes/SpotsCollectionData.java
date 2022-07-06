@@ -102,9 +102,24 @@ public class SpotsCollectionData extends ModelData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        // Possible due to conversion of Spots to ROI
         CachedSpotCollectionDataViewerWindow window = new CachedSpotCollectionDataViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
         window.setVisible(true);
+    }
+
+    /**
+     * Gets a feature of a spot.
+     *
+     * @param spot         the spot
+     * @param feature      the feature
+     * @param defaultValue the default value
+     * @return the value
+     */
+    public double getSpotFeature(Spot spot, String feature, double defaultValue) {
+        Double result = spot.getFeature(feature);
+        if(result == null)
+            return defaultValue;
+        else
+            return result;
     }
 
     public ROIListData spotsToROIList() {

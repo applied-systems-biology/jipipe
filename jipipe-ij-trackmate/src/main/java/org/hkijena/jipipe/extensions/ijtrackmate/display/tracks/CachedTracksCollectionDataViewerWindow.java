@@ -12,13 +12,15 @@
  *
  */
 
-package org.hkijena.jipipe.extensions.ijtrackmate.display.spots;
+package org.hkijena.jipipe.extensions.ijtrackmate.display.tracks;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
+import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
+import org.hkijena.jipipe.extensions.ijtrackmate.display.spots.SpotsManagerPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.AnimationSpeedPlugin;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.AnnotationInfoPlugin;
@@ -39,12 +41,12 @@ import java.awt.event.WindowListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CachedSpotCollectionDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
+public class CachedTracksCollectionDataViewerWindow extends JIPipeCacheDataViewerWindow implements WindowListener {
 
     private final JLabel errorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
     private ImageViewerPanel imageViewerPanel;
 
-    public CachedSpotCollectionDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
+    public CachedTracksCollectionDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName, boolean deferLoading) {
         super(workbench, dataSource, displayName);
         initialize();
         if (!deferLoading)
@@ -58,6 +60,7 @@ public class CachedSpotCollectionDataViewerWindow extends JIPipeCacheDataViewerW
         pluginList.add(new CalibrationPlugin(imageViewerPanel));
         pluginList.add(new PixelInfoPlugin(imageViewerPanel));
         pluginList.add(new LUTManagerPlugin(imageViewerPanel));
+        pluginList.add(new TracksManagerPlugin(imageViewerPanel));
         pluginList.add(new SpotsManagerPlugin(imageViewerPanel));
         pluginList.add(new ROIManagerPlugin(imageViewerPanel));
         pluginList.add(new AnimationSpeedPlugin(imageViewerPanel));
@@ -104,16 +107,12 @@ public class CachedSpotCollectionDataViewerWindow extends JIPipeCacheDataViewerW
 
     @Override
     protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
-//        ROIManagerPlugin plugin = imageViewerPanel.getPlugin(ROIManagerPlugin.class);
-//        SpotsCollectionData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), SpotsCollectionData.class);
-//        imageViewerPanel.getCanvas().setError(null);
-//        boolean fitImage = imageViewerPanel.getImage() == null;
-//        plugin.clearROIs(true);
-//        plugin.importROIs(data.spotsToROIList(), true);
-        SpotsManagerPlugin plugin = imageViewerPanel.getPlugin(SpotsManagerPlugin.class);
-        SpotsCollectionData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), SpotsCollectionData.class);
+        SpotsManagerPlugin spotsManagerPlugin = imageViewerPanel.getPlugin(SpotsManagerPlugin.class);
+        TracksManagerPlugin tracksManagerPlugin = imageViewerPanel.getPlugin(TracksManagerPlugin.class);
+        TrackCollectionData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), TrackCollectionData.class);
         boolean fitImage = imageViewerPanel.getImage() == null;
-        plugin.setSpotCollection(data, true);
+        spotsManagerPlugin.setSpotCollection(data, true);
+        tracksManagerPlugin.setTrackCollection(data, true);
         imageViewerPanel.getCanvas().setError(null);
         imageViewerPanel.setImage(data.getImage());
         if (fitImage)

@@ -17,6 +17,7 @@ package org.hkijena.jipipe.extensions.ijtrackmate.display.spots;
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.features.FeatureUtils;
 import fiji.plugin.trackmate.visualization.FeatureColorGenerator;
+import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackMateUtils;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -28,12 +29,9 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.util.Locale;
 
 public class SpotListCellRenderer extends JPanel implements ListCellRenderer<Spot> {
 
-    public static final DecimalFormat FEATURE_DECIMAL_FORMAT = new DecimalFormat("#.##", new DecimalFormatSymbols(Locale.US));
     private final SpotsManagerPlugin spotsManagerPlugin;
     private SolidColorIcon strokeFillPreview = new SolidColorIcon(16, 16);
     private JLabel iconLabel = new JLabel();
@@ -104,7 +102,7 @@ public class SpotListCellRenderer extends JPanel implements ListCellRenderer<Spo
         }
 
         iconLabel.setText("" + index);
-        final DecimalFormat format = FEATURE_DECIMAL_FORMAT;
+        final DecimalFormat format = TrackMateUtils.FEATURE_DECIMAL_FORMAT;
         infoLabel.setText("x: " + format.format(value.getDoublePosition(0)) + ", y: " + format.format(value.getDoublePosition(1)) + ", z: " + format.format(value.getDoublePosition(2)) +
                 ", t: " + format.format(value.getFeature(Spot.FRAME)) + ", r: " + format.format(value.getFeature(Spot.RADIUS)) + ", q: " + format.format(value.getFeature(Spot.QUALITY)));
 

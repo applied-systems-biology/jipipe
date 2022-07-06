@@ -15,10 +15,8 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.display.tracks;
 
 import com.google.common.primitives.Ints;
-import fiji.plugin.trackmate.Spot;
-import fiji.plugin.trackmate.SpotCollection;
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
-import fiji.plugin.trackmate.visualization.hyperstack.SpotOverlay;
+import fiji.plugin.trackmate.visualization.hyperstack.TrackOverlay;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import ij.gui.Roi;
@@ -30,8 +28,10 @@ import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MeasureSpotsNode;
-import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
+import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureEdgesNode;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureTracksNode;
+import org.hkijena.jipipe.extensions.ijtrackmate.parameters.EdgeFeature;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
@@ -43,6 +43,7 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.jgrapht.graph.DefaultWeightedEdge;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -63,14 +64,14 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class TracksManagerPlugin extends ImageViewerPanelPlugin {
-    private final JList<Spot> spotsListControl = new JList<>();
-    private SpotsCollectionData spotsCollection;
+    private final JList<Integer> tracksListControl = new JList<>();
+    private TrackCollectionData tracksCollection;
     private List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private JPanel selectionContentPanelUI = new JPanel();
-    private final JCheckBoxMenuItem displaySpotsViewMenuItem = new JCheckBoxMenuItem("Display spots",  UIUtils.getIconFromResources("actions/eye.png"));
+    private final JCheckBoxMenuItem displaySpotsViewMenuItem = new JCheckBoxMenuItem("Display tracks",  UIUtils.getIconFromResources("actions/eye.png"));
 
     private DisplaySettings displaySettings = new DisplaySettings();
-    private TrackListCellRenderer spotsListCellRenderer;
+    private TrackListCellRenderer tracksListCellRenderer;
 
     public TracksManagerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
@@ -103,7 +104,7 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
         listMenuBar.add(Box.createHorizontalGlue());
         createButtons(listMenuBar);
 
-        JScrollPane scrollPane = new JScrollPane(spotsListControl);
+        JScrollPane scrollPane = new JScrollPane(tracksListControl);
         panel.add(scrollPane, BorderLayout.CENTER);
 
         // Info (bottom toolbar)
@@ -119,67 +120,47 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
         // Import items
         {
             JMenuItem item = new JMenuItem("Import from file", UIUtils.getIconFromResources("actions/fileopen.png"));
-            item.addActionListener(e -> importSpotsFromFile());
+            item.addActionListener(e -> importTracksFromFile());
             ioMenu.add(item);
         }
         // Separator
         ioMenu.addSeparator();
         // Export items
-//        {
-//            JMenuItem item = new JMenuItem("Export to ImageJ ROI Manager", UIUtils.getIconFromResources("apps/imagej.png"));
-//            item.addActionListener(e -> {
-//                if (spots.isEmpty()) {
-//                    JOptionPane.showMessageDialog(getViewerPanel(), "No ROI to export.", "Export ROI", JOptionPane.ERROR_MESSAGE);
-//                    return;
-//                }
-//                ROIListData result = getSelectedROIOrAll("Export ROI", "Do you want to export all ROI or only the selected ones?");
-//                if (result != null) {
-//                    exportROIsToManager(result);
-//                }
-//            });
-//            ioMenu.add(item);
-//        }
         {
             JMenuItem item = new JMenuItem("Export to file", UIUtils.getIconFromResources("actions/save.png"));
             item.addActionListener(e -> {
-                if (spotsCollection.getSpots().getNSpots(true) <= 0) {
+                if (tracksCollection.getSpots().getNSpots(true) <= 0) {
                     JOptionPane.showMessageDialog(getViewerPanel(), "No spots to export.", "Export spots", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
-                SpotsCollectionData result = getSelectedSpotsOrAll("Export spots", "Do you want to export all ROI or only the selected ones?");
+                SpotsCollectionData result = getSelectedTracksOrAll("Export spots", "Do you want to export all ROI or only the selected ones?");
                 if (result != null) {
-                    exportSpotsToFile(result);
+                    exportTracksToFile(result);
                 }
             });
             ioMenu.add(item);
         }
     }
 
-    public SpotsCollectionData getSelectedSpotsOrAll(String title, String message) {
-        if (!spotsListControl.getSelectedValuesList().isEmpty()) {
+    public TrackCollectionData getSelectedTracksOrAll(String title, String message) {
+        if (!tracksListControl.getSelectedValuesList().isEmpty()) {
             int result = JOptionPane.showOptionDialog(getViewerPanel(),
                     message,
                     title,
                     JOptionPane.YES_NO_CANCEL_OPTION,
                     JOptionPane.QUESTION_MESSAGE,
                     null,
-                    new Object[]{"All spots (" + spotsCollection.getNSpots() + ")", "Selected spots (" + spotsListControl.getSelectedValuesList().size() + ")", "Cancel"},
-                    "All spots (" + spotsCollection.getNSpots() + ")");
+                    new Object[]{"All tracks (" + tracksCollection.getNTracks() + ")", "Selected tracks (" + tracksListControl.getSelectedValuesList().size() + ")", "Cancel"},
+                    "All tracks (" + tracksCollection.getNTracks() + ")");
             if (result == JOptionPane.CANCEL_OPTION)
                 return null;
             else if (result == JOptionPane.YES_OPTION)
-                return spotsCollection;
+                return tracksCollection;
             else {
-                SpotsCollectionData newCollectionData = new SpotsCollectionData(spotsCollection);
-                SpotCollection newCollection = new SpotCollection();
-                for (Spot spot : spotsListControl.getSelectedValuesList()) {
-                    newCollection.add(spot, spot.getFeature(Spot.FRAME).intValue());
-                }
-                newCollectionData.getModel().setSpots(newCollection, true);
-                return newCollectionData;
+                return tracksCollection.filterTracks(new HashSet<>(tracksListControl.getSelectedValuesList()));
             }
         }
-        return spotsCollection;
+        return tracksCollection;
     }
 
     public List<SelectionContextPanel> getSelectionContextPanels() {
@@ -209,10 +190,10 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
             JButton removeButton = new JButton("Delete", UIUtils.getIconFromResources("actions/delete.png"));
             removeButton.setToolTipText("Remove selected spots");
             removeButton.addActionListener(e -> {
-                if (spotsListControl.getSelectedValuesList().isEmpty())
+                if (tracksListControl.getSelectedValuesList().isEmpty())
                     return;
-                if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + spotsListControl.getSelectedValuesList().size() + "spots?", "Delete spots", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                    removeSelectedSpots(false);
+                if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + tracksListControl.getSelectedValuesList().size() + "spots?", "Delete spots", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    removeSelectedTracks(false);
                 }
             });
             menuBar.add(removeButton);
@@ -231,14 +212,25 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
             viewMenu.add(toggle);
         }
         JMenu colorByMenu = new JMenu("Color by ...");
-        SpotFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
-            String name = SpotFeature.VALUE_LABELS.get(key);
+        EdgeFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
+            String name = EdgeFeature.VALUE_LABELS.get(key);
             JMenuItem colorByMenuEntry = new JMenuItem(name);
-            colorByMenuEntry.setToolTipText("Colors the spots by their " + name.toLowerCase());
+            colorByMenuEntry.setToolTipText("Colors the track edges by their " + name.toLowerCase());
             colorByMenuEntry.addActionListener(e -> {
-                displaySettings.setSpotColorBy(DisplaySettings.TrackMateObject.SPOTS, key);
-                displaySettings.setSpotMinMax(0, getSpotsCollection().getNSpots());
-                spotsListCellRenderer.updateColorMaps();
+                displaySettings.setTrackColorBy(DisplaySettings.TrackMateObject.EDGES, key);
+                double min = Double.POSITIVE_INFINITY;
+                double max = Double.NEGATIVE_INFINITY;
+                for (DefaultWeightedEdge edge : getTracksCollection().getTracks().edgeSet()) {
+                    double feature = tracksCollection.getEdgeFeature(edge, key, Double.NaN);
+                    if(Double.isNaN(feature))
+                        continue;
+                    min = Math.min(feature, min);
+                    max = Math.max(feature, max);
+                }
+                if(Double.isFinite(min)) {
+                    displaySettings.setSpotMinMax(min, max);
+                }
+                tracksListCellRenderer.updateColorMaps();
                 uploadSliceToCanvas();
             });
             colorByMenu.add(colorByMenuEntry);
@@ -246,26 +238,26 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
         viewMenu.add(colorByMenu);
     }
 
-    private void importSpotsFromFile() {
-        Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import ROI", UIUtils.EXTENSION_FILTER_ZIP);
+    private void importTracksFromFile() {
+        Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import tracks", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null && displaySpotsViewMenuItem.getState()) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try(JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
-                SpotsCollectionData spotsCollectionData = SpotsCollectionData.importData(storage, progressInfo);
-                setSpots(spotsCollectionData, false);
+                TrackCollectionData trackCollectionData = TrackCollectionData.importData(storage, progressInfo);
+                setTrackCollection(trackCollectionData, false);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    private void exportSpotsToFile(SpotsCollectionData rois) {
+    private void exportTracksToFile(SpotsCollectionData rois) {
         FileNameExtensionFilter[] fileNameExtensionFilters = new FileNameExtensionFilter[] { UIUtils.EXTENSION_FILTER_ZIP };
-        Path path = FileChooserSettings.saveFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Export spots", fileNameExtensionFilters);
+        Path path = FileChooserSettings.saveFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Export tracks", fileNameExtensionFilters);
         if (path != null) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try(JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {
-                rois.exportData(storage, "Spots", false, progressInfo);
+                rois.exportData(storage, "Tracks", false, progressInfo);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -274,12 +266,19 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
-        if(spotsCollection != null && displaySpotsViewMenuItem.getState()) {
-            SpotOverlay spotOverlay = new SpotOverlay(spotsCollection.getModel(), spotsCollection.getImage(), displaySettings);
-            updateRoiCanvas(spotOverlay, getViewerPanel().getZoomedDummyCanvas());
-            spotOverlay.setSpotSelection(spotsListControl.getSelectedValuesList());
+        if(tracksCollection != null && displaySpotsViewMenuItem.getState()) {
+            TrackOverlay trackOverlay = new TrackOverlay(tracksCollection.getModel(), tracksCollection.getImage(), displaySettings);
+            updateRoiCanvas(trackOverlay, getViewerPanel().getZoomedDummyCanvas());
+            List<Integer> selectedValuesList = tracksListControl.getSelectedValuesList();
+            if (!selectedValuesList.isEmpty()) {
+                Set<DefaultWeightedEdge> highlight = new HashSet<>();
+                for (Integer trackId : selectedValuesList) {
+                    highlight.addAll(tracksCollection.getTracks().trackEdges(trackId));
+                }
+                trackOverlay.setHighlight(highlight);
+            }
             graphics2D.translate(renderArea.x, renderArea.y);
-            spotOverlay.drawOverlay(graphics2D);
+            trackOverlay.drawOverlay(graphics2D);
             graphics2D.translate(-renderArea.x, -renderArea.y);
         }
     }
@@ -299,14 +298,21 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex) {
-        if(spotsCollection != null) {
-            ImagePlus imagePlus = spotsCollection.getImage();
+        if(tracksCollection != null) {
+            ImagePlus imagePlus = tracksCollection.getImage();
             imagePlus.setSlice(sliceIndex.zeroSliceIndexToOneStackIndex(imagePlus));
-            SpotOverlay spotOverlay = new SpotOverlay(spotsCollection.getModel(), imagePlus, displaySettings);
-            updateRoiCanvas(spotOverlay, getViewerPanel().getExportDummyCanvas());
-            spotOverlay.setSpotSelection(spotsListControl.getSelectedValuesList());
+            TrackOverlay trackOverlay = new TrackOverlay(tracksCollection.getModel(), imagePlus, displaySettings);
+            updateRoiCanvas(trackOverlay, getViewerPanel().getExportDummyCanvas());
+            List<Integer> selectedValuesList = tracksListControl.getSelectedValuesList();
+            if (!selectedValuesList.isEmpty()) {
+                Set<DefaultWeightedEdge> highlight = new HashSet<>();
+                for (Integer trackId : selectedValuesList) {
+                    highlight.addAll(tracksCollection.getTracks().trackEdges(trackId));
+                }
+                trackOverlay.setHighlight(highlight);
+            }
             Graphics2D graphics2D = image.createGraphics();
-            spotOverlay.drawOverlay(graphics2D);
+            trackOverlay.drawOverlay(graphics2D);
             graphics2D.dispose();
             imagePlus.setSlice(1);
         }
@@ -314,88 +320,88 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void onSliceChanged(boolean deferUploadSlice) {
-        updateSpotJList(deferUploadSlice);
+        updateTrackJList(deferUploadSlice);
     }
 
     @Override
     public String getCategory() {
-        return "Spots";
+        return "Tracks";
     }
 
     @Override
     public Icon getCategoryIcon() {
-        return TrackMateExtension.RESOURCES.getIconFromResources("trackmate-spots.png");
+        return TrackMateExtension.RESOURCES.getIconFromResources("trackmate-tracker.png");
     }
 
     private void initialize() {
         // Setup ROI
-        spotsListCellRenderer = new TrackListCellRenderer(this);
-        spotsListControl.setCellRenderer(spotsListCellRenderer);
-        spotsListControl.addListSelectionListener(e -> {
+        tracksListCellRenderer = new TrackListCellRenderer(this);
+        tracksListControl.setCellRenderer(tracksListCellRenderer);
+        tracksListControl.addListSelectionListener(e -> {
             updateContextPanels();
             uploadSliceToCanvas();
         });
     }
 
-    public void setSpots(SpotsCollectionData spots, boolean deferUploadSlice) {
-        spotsCollection = new SpotsCollectionData(spots);
-        spotsListCellRenderer.updateColorMaps();
-        updateSpotJList(deferUploadSlice);
+    public void setTrackCollection(TrackCollectionData tracksCollection, boolean deferUploadSlice) {
+        this.tracksCollection = new TrackCollectionData(tracksCollection);
+        tracksListCellRenderer.updateColorMaps();
+        updateTrackJList(deferUploadSlice);
         uploadSliceToCanvas();
     }
 
-    public void removeSelectedSpots(boolean deferUploadSlice) {
-        for (Spot spot : spotsListControl.getSelectedValuesList()) {
-            spotsCollection.getSpots().remove(spot, spot.getFeature(Spot.FRAME).intValue());
+    public void removeSelectedTracks(boolean deferUploadSlice) {
+        for (Integer trackId : tracksListControl.getSelectedValuesList()) {
+            tracksCollection.getModel().setTrackVisibility(trackId, false);
         }
-        updateSpotJList(deferUploadSlice);
+        updateTrackJList(deferUploadSlice);
     }
 
-    public SpotsCollectionData getSpotsCollection() {
-        return spotsCollection;
+    public TrackCollectionData getTracksCollection() {
+        return tracksCollection;
     }
 
-    private void updateSpotJList(boolean deferUploadSlice) {
-        DefaultListModel<Spot> model = new DefaultListModel<>();
-        int[] selectedIndices = spotsListControl.getSelectedIndices();
-        for (Spot spot : spotsCollection.getSpots().iterable(true)) {
-            model.addElement(spot);
+    private void updateTrackJList(boolean deferUploadSlice) {
+        DefaultListModel<Integer> model = new DefaultListModel<>();
+        int[] selectedIndices = tracksListControl.getSelectedIndices();
+        for (Integer trackID : tracksCollection.getTracks().trackIDs(true)) {
+            model.addElement(trackID);
         }
-        spotsListControl.setModel(model);
-        spotsListControl.setSelectedIndices(selectedIndices);
+        tracksListControl.setModel(model);
+        tracksListControl.setSelectedIndices(selectedIndices);
         updateContextPanels();
         if (!deferUploadSlice)
             uploadSliceToCanvas();
     }
 
     private void updateContextPanels() {
-        List<Spot> selectedValuesList = spotsListControl.getSelectedValuesList();
+        List<Integer> selectedValuesList = tracksListControl.getSelectedValuesList();
         for (SelectionContextPanel selectionContextPanel : selectionContextPanels) {
-            selectionContextPanel.selectionUpdated(spotsCollection, selectedValuesList);
+            selectionContextPanel.selectionUpdated(tracksCollection, selectedValuesList);
         }
     }
 
-    public JList<Spot> getSpotsListControl() {
-        return spotsListControl;
+    public JList<Integer> getTracksListControl() {
+        return tracksListControl;
     }
 
     public abstract static class SelectionContextPanel extends JPanel {
 
-        private final TracksManagerPlugin roiManagerPlugin;
+        private final TracksManagerPlugin tracksManagerPlugin;
 
-        protected SelectionContextPanel(TracksManagerPlugin roiManagerPlugin) {
-            this.roiManagerPlugin = roiManagerPlugin;
+        protected SelectionContextPanel(TracksManagerPlugin tracksManagerPlugin) {
+            this.tracksManagerPlugin = tracksManagerPlugin;
         }
 
-        public TracksManagerPlugin getRoiManagerPlugin() {
-            return roiManagerPlugin;
+        public TracksManagerPlugin getTracksManagerPlugin() {
+            return tracksManagerPlugin;
         }
 
         public ImageViewerPanel getViewerPanel() {
-            return roiManagerPlugin.getViewerPanel();
+            return tracksManagerPlugin.getViewerPanel();
         }
 
-        public abstract void selectionUpdated(SpotsCollectionData spotsCollectionData, List<Spot> selectedSpots);
+        public abstract void selectionUpdated(TrackCollectionData trackCollectionData, List<Integer> selectedTrackIds);
     }
 
     public static class SelectionInfoContextPanel extends SelectionContextPanel {
@@ -407,11 +413,11 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             setBorder(BorderFactory.createEmptyBorder(4,2,4,2));
             this.roiInfoLabel = new JLabel();
-            roiInfoLabel.setIcon(TrackMateExtension.RESOURCES.getIconFromResources("trackmate-spots.png"));
+            roiInfoLabel.setIcon(TrackMateExtension.RESOURCES.getIconFromResources("trackmate-tracker.png"));
             roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             add(roiInfoLabel);
             add(Box.createHorizontalGlue());
-            JList<Spot> roiJList = getRoiManagerPlugin().getSpotsListControl();
+            JList<Integer> roiJList = getTracksManagerPlugin().getTracksListControl();
             {
                 JButton selectAllButton = new JButton("Select all", UIUtils.getIconFromResources("actions/edit-select-all.png"));
 //                UIUtils.makeFlat25x25(selectAllButton);
@@ -449,11 +455,11 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
         }
 
         @Override
-        public void selectionUpdated(SpotsCollectionData spotsCollectionData, List<Spot> selectedSpots) {
-            if(selectedSpots.isEmpty())
-                roiInfoLabel.setText(spotsCollectionData.getNSpots() + " spots");
+        public void selectionUpdated(TrackCollectionData trackCollectionData, List<Integer> selectedTrackIds) {
+            if(selectedTrackIds.isEmpty())
+                roiInfoLabel.setText(trackCollectionData.getNTracks() + " tracks");
             else
-                roiInfoLabel.setText(selectedSpots.size() + "/" + spotsCollectionData.getNSpots() + " spots");
+                roiInfoLabel.setText(selectedTrackIds.size() + "/" + trackCollectionData.getNTracks() + " tracks");
         }
     }
 
@@ -474,9 +480,13 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
 //            add(roiInfoLabel);
             add(Box.createHorizontalGlue());
 
-            JButton measureButton = new JButton("Measure", UIUtils.getIconFromResources("actions/statistics.png"));
-            measureButton.addActionListener(e -> measure());
-            add(measureButton);
+            JButton measureTracksButton = new JButton("Measure tracks", UIUtils.getIconFromResources("actions/statistics.png"));
+            measureTracksButton.addActionListener(e -> measureTracks());
+            add(measureTracksButton);
+
+            JButton measureEdgesButton = new JButton("Measure edges", UIUtils.getIconFromResources("actions/statistics.png"));
+            measureEdgesButton.addActionListener(e -> measureEdges());
+            add(measureEdgesButton);
 
 //            JButton settingsButton = new JButton( UIUtils.getIconFromResources("actions/configure.png"));
 //            settingsButton.setToolTipText("Configure measurements");
@@ -487,18 +497,28 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
 
         }
 
-        private void measure() {
-            MeasureSpotsNode node = JIPipe.createNode(MeasureSpotsNode.class);
-            SpotsCollectionData selected = getRoiManagerPlugin().getSelectedSpotsOrAll("Measure", "Please select which spots should be measured");
+        private void measureEdges() {
+            MeasureEdgesNode node = JIPipe.createNode(MeasureEdgesNode.class);
+            TrackCollectionData selected = getTracksManagerPlugin().getSelectedTracksOrAll("Measure", "Please select which tracks should be measured");
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             node.getFirstInputSlot().addData(selected, progressInfo);
             node.run(progressInfo);
             ResultsTableData measurements = node.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
-            TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Measurements");
+            TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Edge measurements");
+        }
+
+        private void measureTracks() {
+            MeasureTracksNode node = JIPipe.createNode(MeasureTracksNode.class);
+            TrackCollectionData selected = getTracksManagerPlugin().getSelectedTracksOrAll("Measure", "Please select which tracks should be measured");
+            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+            node.getFirstInputSlot().addData(selected, progressInfo);
+            node.run(progressInfo);
+            ResultsTableData measurements = node.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
+            TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Track measurements");
         }
 
         @Override
-        public void selectionUpdated(SpotsCollectionData spotsCollectionData, List<Spot> selectedSpots) {
+        public void selectionUpdated(TrackCollectionData trackCollectionData, List<Integer> selectedTrackIds) {
         }
 
 //        private void showSettings() {
