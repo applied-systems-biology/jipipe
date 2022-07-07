@@ -20,8 +20,6 @@ import fiji.plugin.trackmate.SpotCollection;
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import fiji.plugin.trackmate.visualization.hyperstack.SpotOverlay;
 import ij.ImagePlus;
-import ij.gui.ImageCanvas;
-import ij.gui.Roi;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -33,6 +31,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MeasureSpotsNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackMateUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
@@ -57,7 +56,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -319,7 +317,7 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
         if(spotsCollection != null && displaySpotsViewMenuItem.getState()) {
             SpotOverlay spotOverlay = new SpotOverlay(spotsCollection.getModel(), spotsCollection.getImage(), displaySettings);
-            updateRoiCanvas(spotOverlay, getViewerPanel().getZoomedDummyCanvas());
+            ImageJUtils.setRoiCanvas(spotOverlay, getCurrentImage(), getViewerPanel().getZoomedDummyCanvas());
             spotOverlay.setSpotSelection(spotsListControl.getSelectedValuesList());
             graphics2D.translate(renderArea.x, renderArea.y);
             spotOverlay.drawOverlay(graphics2D);
@@ -352,26 +350,13 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
         }
     }
 
-    private void updateRoiCanvas(Roi roi, ImageCanvas canvas) {
-        // First set the image
-        roi.setImage(getCurrentImage());
-        // We have to set the canvas or overlay rendering will fail
-        try {
-            Field field = Roi.class.getDeclaredField("ic");
-            field.setAccessible(true);
-            field.set(roi, canvas);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex) {
         if(spotsCollection != null) {
             ImagePlus imagePlus = spotsCollection.getImage();
             imagePlus.setSlice(sliceIndex.zeroSliceIndexToOneStackIndex(imagePlus));
             SpotOverlay spotOverlay = new SpotOverlay(spotsCollection.getModel(), imagePlus, displaySettings);
-            updateRoiCanvas(spotOverlay, getViewerPanel().getExportDummyCanvas());
+            ImageJUtils.setRoiCanvas(spotOverlay, getCurrentImage(), getViewerPanel().getExportDummyCanvas());
             spotOverlay.setSpotSelection(spotsListControl.getSelectedValuesList());
             Graphics2D graphics2D = image.createGraphics();
             spotOverlay.drawOverlay(graphics2D);

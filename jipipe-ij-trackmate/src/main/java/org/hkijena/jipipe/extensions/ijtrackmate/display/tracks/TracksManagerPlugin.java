@@ -32,6 +32,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureEdgesNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureTracksNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.EdgeFeature;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
@@ -266,9 +267,9 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
-        if(tracksCollection != null && displaySpotsViewMenuItem.getState()) {
+        if (tracksCollection != null && displaySpotsViewMenuItem.getState()) {
             TrackOverlay trackOverlay = new TrackOverlay(tracksCollection.getModel(), tracksCollection.getImage(), displaySettings);
-            updateRoiCanvas(trackOverlay, getViewerPanel().getZoomedDummyCanvas());
+            ImageJUtils.setRoiCanvas(trackOverlay, getCurrentImage(), getViewerPanel().getZoomedDummyCanvas());
             List<Integer> selectedValuesList = tracksListControl.getSelectedValuesList();
             if (!selectedValuesList.isEmpty()) {
                 Set<DefaultWeightedEdge> highlight = new HashSet<>();
@@ -283,26 +284,13 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
         }
     }
 
-    private void updateRoiCanvas(Roi roi, ImageCanvas canvas) {
-        // First set the image
-        roi.setImage(getCurrentImage());
-        // We have to set the canvas or overlay rendering will fail
-        try {
-            Field field = Roi.class.getDeclaredField("ic");
-            field.setAccessible(true);
-            field.set(roi, canvas);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     @Override
     public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex) {
         if(tracksCollection != null) {
             ImagePlus imagePlus = tracksCollection.getImage();
             imagePlus.setSlice(sliceIndex.zeroSliceIndexToOneStackIndex(imagePlus));
             TrackOverlay trackOverlay = new TrackOverlay(tracksCollection.getModel(), imagePlus, displaySettings);
-            updateRoiCanvas(trackOverlay, getViewerPanel().getExportDummyCanvas());
+            ImageJUtils.setRoiCanvas(trackOverlay, getCurrentImage(), getViewerPanel().getExportDummyCanvas());
             List<Integer> selectedValuesList = tracksListControl.getSelectedValuesList();
             if (!selectedValuesList.isEmpty()) {
                 Set<DefaultWeightedEdge> highlight = new HashSet<>();

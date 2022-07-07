@@ -45,6 +45,7 @@ import java.awt.image.ColorModel;
 import java.awt.image.DataBufferByte;
 import java.awt.image.WritableRaster;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -382,6 +383,30 @@ public class ImageJUtils {
         }
     }
 
+    /**
+     * Creates a dummy canvas that contains the appropriate magnification settings
+     * @param image the image
+     * @param renderArea the area where the image will be rendered
+     * @return the canvas
+     */
+    public static ImageCanvas createZoomedDummyCanvas(ImagePlus image, Rectangle renderArea) {
+        double magnification = 1.0 * renderArea.width / image.getWidth();
+        return createZoomedDummyCanvas(image, magnification);
+    }
+
+    /**
+     * Creates a dummy canvas that contains the appropriate magnification settings
+     * @param image the image
+     * @param magnification the magnification. See {@link ImageCanvas} for the minimum and maximum values
+     * @return the canvas
+     */
+    public static ImageCanvas createZoomedDummyCanvas(ImagePlus image, double magnification) {
+        ImageCanvas canvas = new ImageCanvas(image);
+        canvas.setMagnification(magnification);
+        canvas.setSize((int) (image.getWidth() * magnification), (int) (image.getHeight() * magnification));
+        return canvas;
+    }
+    
     /**
      * Returns an image that has the specified size by copying
      *
@@ -1753,6 +1778,26 @@ public class ImageJUtils {
         }
         ip.setColor(foreground);
         ip.drawString(label, x, y);
+    }
+
+    /**
+     * Uses reflection to manually set the canvas of a {@link Roi}
+     * Please note that the image of the Roi will be set.
+     * @param roi the ROI
+     * @param imagePlus the image
+     * @param canvas the canvas
+     */
+    public static void setRoiCanvas(Roi roi, ImagePlus imagePlus, ImageCanvas canvas) {
+        // First set the image
+        roi.setImage(imagePlus);
+        // We have to set the canvas or overlay rendering will fail
+        try {
+            Field field = Roi.class.getDeclaredField("ic");
+            field.setAccessible(true);
+            field.set(roi, canvas);
+        } catch (IllegalAccessException | NoSuchFieldException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public static class GradientStop implements Comparable<GradientStop> {
