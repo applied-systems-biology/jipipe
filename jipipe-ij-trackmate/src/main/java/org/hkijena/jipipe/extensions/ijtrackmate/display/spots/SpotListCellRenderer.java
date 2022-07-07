@@ -16,7 +16,10 @@ package org.hkijena.jipipe.extensions.ijtrackmate.display.spots;
 
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.features.FeatureUtils;
+import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import fiji.plugin.trackmate.visualization.FeatureColorGenerator;
+import fiji.plugin.trackmate.visualization.UniformSpotColorGenerator;
+import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotDrawer;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackMateUtils;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -37,20 +40,11 @@ public class SpotListCellRenderer extends JPanel implements ListCellRenderer<Spo
     private JLabel iconLabel = new JLabel();
     private JLabel nameLabel = new JLabel();
     private JLabel infoLabel = new JLabel();
-
     private FeatureColorGenerator<Spot> strokeColorGenerator;
 
     public SpotListCellRenderer(SpotsManagerPlugin spotsManagerPlugin) {
         this.spotsManagerPlugin = spotsManagerPlugin;
         initialize();
-        updateColorMaps();
-        spotsManagerPlugin.getDisplaySettings().listeners().add(this::updateColorMaps);
-    }
-
-    public void updateColorMaps() {
-        if(spotsManagerPlugin.getSpotsCollection() != null) {
-            strokeColorGenerator = FeatureUtils.createSpotColorGenerator(spotsManagerPlugin.getSpotsCollection().getModel(), spotsManagerPlugin.getDisplaySettings());
-        }
     }
 
     private void initialize() {
@@ -85,6 +79,19 @@ public class SpotListCellRenderer extends JPanel implements ListCellRenderer<Spo
         });
     }
 
+    public void updateColorMaps() {
+        if(spotsManagerPlugin.getSpotsCollection() != null) {
+            SpotDrawer spotDrawer = spotsManagerPlugin.getSpotDrawer();
+            if(spotDrawer.isUniformStrokeColor()) {
+                strokeColorGenerator = new UniformSpotColorGenerator(spotDrawer.getStrokeColor());
+            }
+            else {
+                DisplaySettings displaySettings = spotDrawer.createDisplaySettings(spotsManagerPlugin.getSpotsCollection());
+                strokeColorGenerator = FeatureUtils.createSpotColorGenerator(spotsManagerPlugin.getSpotsCollection().getModel(), displaySettings);
+            }
+        }
+    }
+
     @Override
     public Component getListCellRendererComponent(JList<? extends Spot> list, Spot value, int index, boolean isSelected, boolean cellHasFocus) {
 
@@ -95,7 +102,7 @@ public class SpotListCellRenderer extends JPanel implements ListCellRenderer<Spo
 
         strokeFillPreview.setFillColor(Color.WHITE);
         if(strokeColorGenerator == null) {
-            strokeFillPreview.setBorderColor(Color.RED);
+            strokeFillPreview.setBorderColor(spotsManagerPlugin.getSpotDrawer().getStrokeColor());
         }
         else {
             strokeFillPreview.setBorderColor(strokeColorGenerator.color(value));

@@ -5,6 +5,7 @@ import ij.ImagePlus;
 import ij.gui.EllipseRoi;
 import ij.gui.Roi;
 import ij.process.ImageProcessor;
+import org.apache.commons.lang3.Range;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -23,11 +24,15 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @JIPipeDocumentation(name = "TrackMate spots", description = "Spots detected by TrackMate")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "TODO", jsonSchemaURL = "TODO")
 public class SpotsCollectionData extends ModelData {
+
+    private Map<String, Range<Double>> spotFeatureRanges = new HashMap<>();
     public SpotsCollectionData(Model model, Settings settings, ImagePlus image) {
         super(model, settings, image);
     }
@@ -57,6 +62,38 @@ public class SpotsCollectionData extends ModelData {
 
     public SpotCollection getSpots() {
         return getModel().getSpots();
+    }
+
+    /**
+     * Returns the range of values for a feature. This method makes use of a cache for fast access.
+     * @param featureName the feature
+     * @return the range. returns an empty range (min = 0 and max = 0) if no feature values are available
+     */
+    public Range<Double> getSpotFeatureRange(String featureName) {
+        Range<Double> result = spotFeatureRanges.getOrDefault(featureName, null);
+        if(result == null) {
+            double min = Double.POSITIVE_INFINITY;
+            double max = Double.NEGATIVE_INFINITY;
+            for (Spot spot : getSpots().iterable(true)) {
+                double feature = getSpotFeature(spot, featureName, Double.NaN);
+                if (Double.isNaN(feature))
+                    continue;
+                min = Math.min(feature, min);
+                max = Math.max(feature, max);
+            }
+            if(Double.isFinite(min)) {
+                result = Range.between(min, max);
+            }
+            else {
+                result = Range.is(0d);
+            }
+            spotFeatureRanges.put(featureName, result);
+        }
+        return result;
+    }
+
+    public void recalculateSpotFeatureRange() {
+        spotFeatureRanges.clear();
     }
 
     @Override

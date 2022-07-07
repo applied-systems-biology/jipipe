@@ -54,6 +54,8 @@ import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeatureFilterPar
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeaturePenaltyParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeatureFilterParameter;
+import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUISpotsDisplaySettings;
+import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIRoiDisplaySettings;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceManager;
@@ -151,6 +153,16 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerSpotTrackers(progressInfo, service);
 
         registerNodes();
+        registerSettings();
+    }
+
+    private void registerSettings() {
+        registerSettingsSheet(ImageViewerUISpotsDisplaySettings.ID,
+                "Image viewer: Spots display",
+                RESOURCES.getIconFromResources("trackmate-spots.png"),
+                "UI",
+                null,
+                new ImageViewerUISpotsDisplaySettings());
     }
 
     private void registerNodes() {

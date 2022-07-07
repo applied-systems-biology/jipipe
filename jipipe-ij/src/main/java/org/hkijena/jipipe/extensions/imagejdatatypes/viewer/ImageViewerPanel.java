@@ -85,7 +85,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private FormPanel bottomPanel;
     private long lastTimeZoomed;
     private JScrollPane scrollPane;
-    private int rotation = 0;
+//    private int rotation = 0;
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
     private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
@@ -178,15 +178,15 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         return null;
     }
 
-    public void setRotationEnabled(boolean enabled) {
-        rotateLeftButton.setVisible(enabled);
-        rotateRightButton.setVisible(enabled);
-        if (!enabled) {
-            rotation = 0;
-            refreshImageInfo();
-            refreshSlice();
-        }
-    }
+//    public void setRotationEnabled(boolean enabled) {
+//        rotateLeftButton.setVisible(enabled);
+//        rotateRightButton.setVisible(enabled);
+//        if (!enabled) {
+//            rotation = 0;
+//            refreshImageInfo();
+//            refreshSlice();
+//        }
+//    }
 
     public void setAsActiveViewerPanel() {
         ACTIVE_PANEL = this;
@@ -414,15 +414,15 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         toolBar.add(exportMenuButton);
         toolBar.addSeparator();
 
-        rotateLeftButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate-left.png"));
-        rotateLeftButton.setToolTipText("Rotate 90° to the left");
-        rotateLeftButton.addActionListener(e -> rotateLeft());
-        toolBar.add(rotateLeftButton);
-
-        rotateRightButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate.png"));
-        rotateRightButton.setToolTipText("Rotate 90° to the right");
-        rotateRightButton.addActionListener(e -> rotateRight());
-        toolBar.add(rotateRightButton);
+//        rotateLeftButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate-left.png"));
+//        rotateLeftButton.setToolTipText("Rotate 90° to the left");
+//        rotateLeftButton.addActionListener(e -> rotateLeft());
+//        toolBar.add(rotateLeftButton);
+//
+//        rotateRightButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate.png"));
+//        rotateRightButton.setToolTipText("Rotate 90° to the right");
+//        rotateRightButton.addActionListener(e -> rotateRight());
+//        toolBar.add(rotateRightButton);
 
         JButton centerImageButton = new JButton("Center image", UIUtils.getIconFromResources("actions/zoom-center-page.png"));
         centerImageButton.addActionListener(e -> canvas.centerImage());
@@ -631,20 +631,20 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         }
     }
 
-    private void rotateLeft() {
-        if (rotation == 0)
-            rotation = 270;
-        else
-            rotation -= 90;
-        refreshImageInfo();
-        refreshSlice();
-    }
-
-    public void rotateRight() {
-        rotation = (rotation + 90) % 360;
-        refreshImageInfo();
-        refreshSlice();
-    }
+//    private void rotateLeft() {
+//        if (rotation == 0)
+//            rotation = 270;
+//        else
+//            rotation -= 90;
+//        refreshImageInfo();
+//        refreshSlice();
+//    }
+//
+//    public void rotateRight() {
+//        rotation = (rotation + 90) % 360;
+//        refreshImageInfo();
+//        refreshSlice();
+//    }
 
     private void updateZoomStatus() {
         zoomStatusButton.setText((int) Math.round(canvas.getZoom() * 100) + "%");
@@ -855,9 +855,9 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         if (image.isInvertedLut())
             s += " (inverting LUT)";
         s += "; " + ImageWindow.getImageSize(image);
-        if (rotation != 0) {
-            s += " (Rotated " + rotation + "°)";
-        }
+//        if (rotation != 0) {
+//            s += " (Rotated " + rotation + "°)";
+//        }
         imageInfoLabel.setText(s);
     }
 
@@ -910,16 +910,16 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         for (ImageViewerPanelPlugin plugin : plugins) {
             processor = plugin.draw(c, z, t, processor);
         }
-        if (withRotation && rotation != 0) {
-            if (rotation == 90)
-                processor = processor.rotateRight();
-            else if (rotation == 180)
-                processor = processor.rotateRight().rotateRight();
-            else if (rotation == 270)
-                processor = processor.rotateLeft();
-            else
-                throw new UnsupportedOperationException("Unknown rotation: " + rotation);
-        }
+//        if (withRotation && rotation != 0) {
+//            if (rotation == 90)
+//                processor = processor.rotateRight();
+//            else if (rotation == 180)
+//                processor = processor.rotateRight().rotateRight();
+//            else if (rotation == 270)
+//                processor = processor.rotateLeft();
+//            else
+//                throw new UnsupportedOperationException("Unknown rotation: " + rotation);
+//        }
         if (withPostprocessing) {
             BufferedImage image = processor.getBufferedImage();
             for (ImageViewerPanelPlugin plugin : getPlugins()) {

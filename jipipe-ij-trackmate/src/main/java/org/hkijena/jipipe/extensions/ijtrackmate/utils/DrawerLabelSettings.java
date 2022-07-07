@@ -26,8 +26,8 @@ import java.awt.Color;
 public class DrawerLabelSettings extends AbstractJIPipeParameterCollection {
     private boolean drawLabels = true;
     private Color labelForeground = Color.WHITE;
-    private OptionalColorParameter labelBackground = new OptionalColorParameter(Color.BLACK, false);
-    private int labelSize = 9;
+    private OptionalColorParameter labelBackground = new OptionalColorParameter(Color.BLACK, true);
+    private int labelSize = 12;
 
     public DrawerLabelSettings() {
     }

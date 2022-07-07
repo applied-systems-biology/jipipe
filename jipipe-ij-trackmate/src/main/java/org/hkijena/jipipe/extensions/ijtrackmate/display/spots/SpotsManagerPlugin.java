@@ -30,7 +30,10 @@ import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MeasureSpotsNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
+import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUISpotsDisplaySettings;
+import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotDrawer;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackMateUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIRoiDisplaySettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
@@ -41,6 +44,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerP
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -66,12 +71,8 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
     private List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private JPanel selectionContentPanelUI = new JPanel();
     private final JCheckBoxMenuItem displaySpotsViewMenuItem = new JCheckBoxMenuItem("Display spots",  UIUtils.getIconFromResources("actions/eye.png"));
-
     private final JCheckBoxMenuItem displayLabelsViewMenuItem = new JCheckBoxMenuItem("Display labels", UIUtils.getIconFromResources("actions/tag.png"));
-
-    private String displayLabelsFeature = null;
-
-    private DisplaySettings displaySettings = new DisplaySettings();
+    private SpotDrawer spotDrawer = new SpotDrawer();
     private SpotListCellRenderer spotsListCellRenderer;
 
     public SpotsManagerPlugin(ImageViewerPanel viewerPanel) {
@@ -83,8 +84,10 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     private void initializeDefaults() {
-        displaySpotsViewMenuItem.setState(true);
-        displayLabelsViewMenuItem.setState(true);
+        ImageViewerUISpotsDisplaySettings settings = ImageViewerUISpotsDisplaySettings.getInstance();
+        spotDrawer = new SpotDrawer(settings.getSpotDrawer());
+        displaySpotsViewMenuItem.setState(settings.isShowSpots());
+        displayLabelsViewMenuItem.setState(spotDrawer.getLabelSettings().isDrawLabels());
     }
 
     @Override
@@ -203,8 +206,8 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
         selectionContentPanelUI.repaint();
     }
 
-    public DisplaySettings getDisplaySettings() {
-        return displaySettings;
+    public SpotDrawer getSpotDrawer() {
+        return spotDrawer;
     }
 
     private void createButtons(JMenuBar menuBar) {
@@ -232,25 +235,18 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
             viewMenu.add(toggle);
         }
         {
+            displayLabelsViewMenuItem.addActionListener(e->uploadSliceToCanvas());
+            viewMenu.add(displayLabelsViewMenuItem);
+        }
+        {
             JMenu colorByMenu = new JMenu("Color by ...");
             SpotFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
                 String name = SpotFeature.VALUE_LABELS.get(key);
                 JMenuItem colorByMenuEntry = new JMenuItem(name);
                 colorByMenuEntry.setToolTipText("Colors the spots by their " + name.toLowerCase());
                 colorByMenuEntry.addActionListener(e -> {
-                    displaySettings.setSpotColorBy(DisplaySettings.TrackMateObject.SPOTS, key);
-                    double min = Double.POSITIVE_INFINITY;
-                    double max = Double.NEGATIVE_INFINITY;
-                    for (Spot spot : getSpotsCollection().getSpots().iterable(true)) {
-                        double feature = spotsCollection.getSpotFeature(spot, key, Double.NaN);
-                        if(Double.isNaN(feature))
-                            continue;
-                        min = Math.min(feature, min);
-                        max = Math.max(feature, max);
-                    }
-                    if(Double.isFinite(min)) {
-                        displaySettings.setSpotMinMax(min, max);
-                    }
+                    spotDrawer.setStrokeColorFeature(new SpotFeature(key));
+                    spotDrawer.setUniformStrokeColor(false);
                     spotsListCellRenderer.updateColorMaps();
                     uploadSliceToCanvas();
                 });
@@ -258,17 +254,12 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
             });
             viewMenu.add(colorByMenu);
         }
-        viewMenu.addSeparator();
-        {
-            displayLabelsViewMenuItem.addActionListener(e->uploadSliceToCanvas());
-            viewMenu.add(displayLabelsViewMenuItem);
-        }
         {
             JMenu setLabelMenu = new JMenu("Set label to ...");
             {
                 JMenuItem nameItem = new JMenuItem("Name");
                 nameItem.addActionListener(e -> {
-                    displayLabelsFeature = null;
+                    spotDrawer.getLabelSettings().setDrawName(true);
                     uploadSliceToCanvas();
                 });
                 setLabelMenu.add(nameItem);
@@ -278,13 +269,42 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
                 JMenuItem setLabelMenuEntry = new JMenuItem(name);
                 setLabelMenuEntry.setToolTipText("Set the displayed label to " + name.toLowerCase());
                 setLabelMenuEntry.addActionListener(e -> {
-                    displayLabelsFeature = key;
+                    spotDrawer.getLabelSettings().setDrawName(false);
+                    spotDrawer.getLabelSettings().setDrawnFeature(new SpotFeature(key));
                     uploadSliceToCanvas();
                 });
                 setLabelMenu.add(setLabelMenuEntry);
             });
             viewMenu.add(setLabelMenu);
         }
+        viewMenu.addSeparator();
+        {
+            JMenuItem item = new JMenuItem("More settings ...", UIUtils.getIconFromResources("actions/configure.png"));
+            item.addActionListener(e->openDrawingSettings());
+            viewMenu.add(item);
+        }
+        {
+            JMenuItem item = new JMenuItem("Save settings as default", UIUtils.getIconFromResources("actions/save.png"));
+            item.addActionListener(e-> saveDefaults());
+            viewMenu.add(item);
+        }
+    }
+
+    private void saveDefaults() {
+        if(JOptionPane.showConfirmDialog(getViewerPanel(),
+                "Dou you want to save the spot display settings as default?",
+                "Save settings as default",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            ImageViewerUISpotsDisplaySettings settings = ImageViewerUISpotsDisplaySettings.getInstance();
+            settings.getSpotDrawer().copyFrom(spotDrawer);
+            settings.setShowSpots(displaySpotsViewMenuItem.getState());
+            JIPipe.getSettings().save();
+        }
+    }
+
+    private void openDrawingSettings() {
+        ParameterPanel.showDialog(getWorkbench(), getViewerPanel(), spotDrawer, new MarkdownDocument("# Spots display settings\n\nPlease use the settings on the left to modify how spots are visualized."), "Spots display settings", ParameterPanel.DEFAULT_DIALOG_FLAGS);
+        uploadSliceToCanvas();
     }
 
     private void importSpotsFromFile() {
@@ -316,37 +336,7 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
     @Override
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
         if(spotsCollection != null && displaySpotsViewMenuItem.getState()) {
-            SpotOverlay spotOverlay = new SpotOverlay(spotsCollection.getModel(), spotsCollection.getImage(), displaySettings);
-            ImageJUtils.setRoiCanvas(spotOverlay, getCurrentImage(), getViewerPanel().getZoomedDummyCanvas());
-            spotOverlay.setSpotSelection(spotsListControl.getSelectedValuesList());
-            graphics2D.translate(renderArea.x, renderArea.y);
-            spotOverlay.drawOverlay(graphics2D);
-            if(displayLabelsViewMenuItem.getState()) {
-                Font labelFont = new Font(Font.DIALOG, Font.PLAIN, 12);
-                for (Spot spot : getSpotsCollection().getSpots().iterable(true)) {
-                    int z = (int) spot.getDoublePosition(2);
-                    int frame = spot.getFeature(Spot.FRAME).intValue();
-                    if(z == sliceIndex.getZ() && frame == sliceIndex.getT()) {
-                        String label;
-                        if(StringUtils.isNullOrEmpty(displayLabelsFeature)) {
-                            label = spot.getName();
-                        }
-                        else {
-                            label = TrackMateUtils.FEATURE_DECIMAL_FORMAT.format(Optional.ofNullable(spot.getFeature(displayLabelsFeature)).orElse(0d));
-                        }
-                        RoiDrawer.drawLabelOnGraphics(label,
-                                graphics2D,
-                                spot.getDoublePosition(0),
-                                spot.getDoublePosition(1),
-                                getViewerPanel().getCanvas().getZoom(),
-                                Color.WHITE,
-                                Color.BLACK,
-                                labelFont,
-                                true);
-                    }
-                }
-            }
-            graphics2D.translate(-renderArea.x, -renderArea.y);
+           spotDrawer.drawOnGraphics(spotsCollection, graphics2D, renderArea, getCurrentSlicePosition(), spotsListControl.getSelectedValuesList());
         }
     }
 
@@ -355,36 +345,8 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
         if(spotsCollection != null) {
             ImagePlus imagePlus = spotsCollection.getImage();
             imagePlus.setSlice(sliceIndex.zeroSliceIndexToOneStackIndex(imagePlus));
-            SpotOverlay spotOverlay = new SpotOverlay(spotsCollection.getModel(), imagePlus, displaySettings);
-            ImageJUtils.setRoiCanvas(spotOverlay, getCurrentImage(), getViewerPanel().getExportDummyCanvas());
-            spotOverlay.setSpotSelection(spotsListControl.getSelectedValuesList());
             Graphics2D graphics2D = image.createGraphics();
-            spotOverlay.drawOverlay(graphics2D);
-            if(displayLabelsViewMenuItem.getState()) {
-                Font labelFont = new Font(Font.DIALOG, Font.PLAIN, 12);
-                for (Spot spot : getSpotsCollection().getSpots().iterable(true)) {
-                    int z = (int) spot.getDoublePosition(2);
-                    int frame = spot.getFeature(Spot.FRAME).intValue();
-                    if(z == sliceIndex.getZ() && frame == sliceIndex.getT()) {
-                        String label;
-                        if(StringUtils.isNullOrEmpty(displayLabelsFeature)) {
-                            label = spot.getName();
-                        }
-                        else {
-                            label = TrackMateUtils.FEATURE_DECIMAL_FORMAT.format(Optional.ofNullable(spot.getFeature(displayLabelsFeature)).orElse(0d));
-                        }
-                        RoiDrawer.drawLabelOnGraphics(label,
-                                graphics2D,
-                                spot.getDoublePosition(0),
-                                spot.getDoublePosition(1),
-                                1.0,
-                                Color.WHITE,
-                                Color.BLACK,
-                                labelFont,
-                                true);
-                    }
-                }
-            }
+            spotDrawer.drawOnGraphics(spotsCollection, graphics2D, new Rectangle(0,0,image.getWidth(),image.getHeight()), getCurrentSlicePosition(), spotsListControl.getSelectedValuesList());
             graphics2D.dispose();
             imagePlus.setSlice(1);
         }

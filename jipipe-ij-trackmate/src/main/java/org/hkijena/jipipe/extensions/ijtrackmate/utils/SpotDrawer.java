@@ -20,6 +20,7 @@ import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import fiji.plugin.trackmate.visualization.hyperstack.SpotOverlay;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
+import org.apache.commons.lang3.Range;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -29,15 +30,12 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.Collection;
-import java.util.Optional;
-import java.util.Set;
 
 public class SpotDrawer implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
@@ -52,20 +50,41 @@ public class SpotDrawer implements JIPipeParameterCollection {
 
     private LabelSettings labelSettings = new LabelSettings();
 
+    private boolean fillSpots = false;
+
     public SpotDrawer() {
     }
 
     public SpotDrawer(SpotDrawer other) {
+       copyFrom(other);
+    }
+
+    public void copyFrom(SpotDrawer other) {
         this.strokeWidth = other.strokeWidth;
         this.strokeColor = other.strokeColor;
         this.uniformStrokeColor = other.uniformStrokeColor;
         this.strokeColorFeature = new SpotFeature(other.strokeColorFeature);
         this.labelSettings = new LabelSettings(other.labelSettings);
+        this.fillSpots = other.fillSpots;
     }
 
     @Override
     public EventBus getEventBus() {
         return eventBus;
+    }
+
+    public DisplaySettings createDisplaySettings(SpotsCollectionData spotsCollectionData) {
+        DisplaySettings displaySettings = new DisplaySettings();
+        displaySettings.setLineThickness(strokeWidth);
+        displaySettings.setSpotFilled(fillSpots);
+        if(uniformStrokeColor) {
+            displaySettings.setSpotUniformColor(strokeColor);
+        } else {
+            Range<Double> range = spotsCollectionData.getSpotFeatureRange(strokeColorFeature.getValue());
+            displaySettings.setSpotColorBy(DisplaySettings.TrackMateObject.SPOTS, strokeColorFeature.getValue());
+            displaySettings.setSpotMinMax(range.getMinimum(), range.getMaximum());
+        }
+        return displaySettings;
     }
 
     public void drawOnGraphics(SpotsCollectionData spotsCollectionData, Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex, Collection<Spot> selected) {
@@ -75,7 +94,7 @@ public class SpotDrawer implements JIPipeParameterCollection {
         ImageCanvas dummyCanvas = ImageJUtils.createZoomedDummyCanvas(imagePlus, renderArea);
 
         // Setup the display settings
-        DisplaySettings displaySettings = new DisplaySettings();
+        DisplaySettings displaySettings = createDisplaySettings(spotsCollectionData);
 
         // Create overlay
         SpotOverlay spotOverlay = new SpotOverlay(spotsCollectionData.getModel(), spotsCollectionData.getImage(), displaySettings);
@@ -88,7 +107,7 @@ public class SpotDrawer implements JIPipeParameterCollection {
 
         // Draw label
         if(labelSettings.isDrawLabels()) {
-            Font labelFont = new Font(Font.DIALOG, Font.PLAIN, 12);
+            Font labelFont = new Font(Font.DIALOG, Font.PLAIN, labelSettings.getLabelSize());
             for (Spot spot : spotsCollectionData.getSpots().iterable(true)) {
                 int z = (int) spot.getDoublePosition(2);
                 int frame = spot.getFeature(Spot.FRAME).intValue();
@@ -113,6 +132,17 @@ public class SpotDrawer implements JIPipeParameterCollection {
             }
         }
         graphics2D.translate(-renderArea.x, -renderArea.y);
+    }
+
+    @JIPipeDocumentation(name = "Fill spots", description = "If enabled, the spots are drawn filled")
+    @JIPipeParameter("fill-spots")
+    public boolean isFillSpots() {
+        return fillSpots;
+    }
+
+    @JIPipeParameter("fill-spots")
+    public void setFillSpots(boolean fillSpots) {
+        this.fillSpots = fillSpots;
     }
 
     @JIPipeDocumentation(name = "Stroke width", description = "Width of the spot stroke")

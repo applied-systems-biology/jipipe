@@ -14,9 +14,12 @@
 package org.hkijena.jipipe.api.parameters;
 
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Consumer;
 
 /**
  * Interfaced for a parameterized object
@@ -74,6 +77,23 @@ public interface JIPipeParameterCollection {
      */
     default void triggerParameterChange(String key) {
         getEventBus().post(new ParameterChangedEvent(this, key));
+    }
+
+    /**
+     * Adds a listener to the change of a parameter of the specified key.
+     * Wrapper around creating an anonymous object
+     * @param key the parameter key
+     * @param consumer the listener
+     */
+    default void addParameterChangeListener(String key, Consumer<ParameterChangedEvent> consumer) {
+        getEventBus().register(new Object() {
+            @Subscribe
+            public void onParameterChanged(ParameterChangedEvent event) {
+                if(Objects.equals(key, event.getKey())) {
+                    consumer.accept(event);
+                }
+            }
+        });
     }
 
     /**
