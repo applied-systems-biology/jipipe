@@ -12,13 +12,11 @@ import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.NamedTextAnnotationGeneratorExpression;
 import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
-import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotFeatureVariableSource;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackFeatureVariableSource;
 
 import java.util.ArrayList;
@@ -48,9 +46,9 @@ public class SplitTracksNode extends JIPipeSimpleIteratingAlgorithm {
 
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
-        variables.set("n_tracks", oldTrackCollectionData.getTracks().nTracks(true));
+        variables.set("n_tracks", oldTrackCollectionData.getTrackModel().nTracks(true));
         int index = 0;
-        Set<Integer> trackIds = oldTrackCollectionData.getTracks().trackIDs(true);
+        Set<Integer> trackIds = oldTrackCollectionData.getTrackModel().trackIDs(true);
         for (Integer trackID : trackIds) {
             variables.set("index", index);
             variables.set("id", trackID);

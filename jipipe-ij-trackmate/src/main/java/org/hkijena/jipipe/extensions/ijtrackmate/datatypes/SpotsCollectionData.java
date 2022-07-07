@@ -32,7 +32,7 @@ import java.util.Optional;
 @JIPipeDataStorageDocumentation(humanReadableDescription = "TODO", jsonSchemaURL = "TODO")
 public class SpotsCollectionData extends ModelData {
 
-    private Map<String, Range<Double>> spotFeatureRanges = new HashMap<>();
+    private final Map<String, Range<Double>> spotFeatureRanges = new HashMap<>();
     public SpotsCollectionData(Model model, Settings settings, ImagePlus image) {
         super(model, settings, image);
     }

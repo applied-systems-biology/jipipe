@@ -15,11 +15,7 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.display.tracks;
 
 import com.google.common.primitives.Ints;
-import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
-import fiji.plugin.trackmate.visualization.hyperstack.TrackOverlay;
 import ij.ImagePlus;
-import ij.gui.ImageCanvas;
-import ij.gui.Roi;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -32,7 +28,8 @@ import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureEdgesNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureTracksNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.EdgeFeature;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUITracksDisplaySettings;
+import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
@@ -41,6 +38,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins.ImageViewerP
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -54,7 +53,6 @@ import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -69,9 +67,9 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
     private TrackCollectionData tracksCollection;
     private List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private JPanel selectionContentPanelUI = new JPanel();
-    private final JCheckBoxMenuItem displaySpotsViewMenuItem = new JCheckBoxMenuItem("Display tracks",  UIUtils.getIconFromResources("actions/eye.png"));
+    private final JCheckBoxMenuItem displayTracksViewMenuItem = new JCheckBoxMenuItem("Display tracks",  UIUtils.getIconFromResources("actions/eye.png"));
 
-    private DisplaySettings displaySettings = new DisplaySettings();
+    private TrackDrawer trackDrawer = new TrackDrawer();
     private TrackListCellRenderer tracksListCellRenderer;
 
     public TracksManagerPlugin(ImageViewerPanel viewerPanel) {
@@ -83,7 +81,9 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     private void initializeDefaults() {
-        displaySpotsViewMenuItem.setState(true);
+        ImageViewerUITracksDisplaySettings settings = ImageViewerUITracksDisplaySettings.getInstance();
+        displayTracksViewMenuItem.setState(settings.isShowTracks());
+        trackDrawer = new TrackDrawer(settings.getTrackDrawer());
     }
 
     @Override
@@ -182,8 +182,8 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
         selectionContentPanelUI.repaint();
     }
 
-    public DisplaySettings getDisplaySettings() {
-        return displaySettings;
+    public TrackDrawer getTrackDrawer() {
+        return trackDrawer;
     }
 
     private void createButtons(JMenuBar menuBar) {
@@ -206,42 +206,42 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
         JMenu viewMenu = new JMenu("View");
         menuBar.add(viewMenu);
         {
-            JCheckBoxMenuItem toggle = displaySpotsViewMenuItem;
-            toggle.addActionListener(e -> {
-                uploadSliceToCanvas();
-            });
+            JCheckBoxMenuItem toggle = displayTracksViewMenuItem;
+            toggle.addActionListener(e -> uploadSliceToCanvas());
             viewMenu.add(toggle);
         }
-        JMenu colorByMenu = new JMenu("Color by ...");
-        EdgeFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
-            String name = EdgeFeature.VALUE_LABELS.get(key);
-            JMenuItem colorByMenuEntry = new JMenuItem(name);
-            colorByMenuEntry.setToolTipText("Colors the track edges by their " + name.toLowerCase());
-            colorByMenuEntry.addActionListener(e -> {
-                displaySettings.setTrackColorBy(DisplaySettings.TrackMateObject.EDGES, key);
-                double min = Double.POSITIVE_INFINITY;
-                double max = Double.NEGATIVE_INFINITY;
-                for (DefaultWeightedEdge edge : getTracksCollection().getTracks().edgeSet()) {
-                    double feature = tracksCollection.getEdgeFeature(edge, key, Double.NaN);
-                    if(Double.isNaN(feature))
-                        continue;
-                    min = Math.min(feature, min);
-                    max = Math.max(feature, max);
-                }
-                if(Double.isFinite(min)) {
-                    displaySettings.setSpotMinMax(min, max);
-                }
-                tracksListCellRenderer.updateColorMaps();
-                uploadSliceToCanvas();
+        {
+            JMenu colorByMenu = new JMenu("Color by ...");
+            EdgeFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
+                String name = EdgeFeature.VALUE_LABELS.get(key);
+                JMenuItem colorByMenuEntry = new JMenuItem(name);
+                colorByMenuEntry.setToolTipText("Colors the track edges by their " + name.toLowerCase());
+                colorByMenuEntry.addActionListener(e -> {
+                    trackDrawer.setUniformStrokeColor(false);
+                    trackDrawer.setStrokeColorFeature(new EdgeFeature(key));
+                    tracksListCellRenderer.updateColorMaps();
+                    uploadSliceToCanvas();
+                });
+                colorByMenu.add(colorByMenuEntry);
             });
-            colorByMenu.add(colorByMenuEntry);
-        });
-        viewMenu.add(colorByMenu);
+            viewMenu.add(colorByMenu);
+        }
+        viewMenu.addSeparator();
+        {
+            JMenuItem item = new JMenuItem("More settings ...", UIUtils.getIconFromResources("actions/configure.png"));
+            item.addActionListener(e->openDrawingSettings());
+            viewMenu.add(item);
+        }
+        {
+            JMenuItem item = new JMenuItem("Save settings as default", UIUtils.getIconFromResources("actions/save.png"));
+            item.addActionListener(e-> saveDefaults());
+            viewMenu.add(item);
+        }
     }
 
     private void importTracksFromFile() {
         Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import tracks", UIUtils.EXTENSION_FILTER_ZIP);
-        if (path != null && displaySpotsViewMenuItem.getState()) {
+        if (path != null && displayTracksViewMenuItem.getState()) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try(JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
                 TrackCollectionData trackCollectionData = TrackCollectionData.importData(storage, progressInfo);
@@ -250,6 +250,23 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private void saveDefaults() {
+        if(JOptionPane.showConfirmDialog(getViewerPanel(),
+                "Dou you want to save the spot display settings as default?",
+                "Save settings as default",
+                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            ImageViewerUITracksDisplaySettings settings = ImageViewerUITracksDisplaySettings.getInstance();
+            settings.getTrackDrawer().copyFrom(trackDrawer);
+            settings.setShowTracks(displayTracksViewMenuItem.getState());
+            JIPipe.getSettings().save();
+        }
+    }
+
+    private void openDrawingSettings() {
+        ParameterPanel.showDialog(getWorkbench(), getViewerPanel(), trackDrawer, new MarkdownDocument("# Track display settings\n\nPlease use the settings on the left to modify how tracks are visualized."), "Track display settings", ParameterPanel.DEFAULT_DIALOG_FLAGS);
+        uploadSliceToCanvas();
     }
 
     private void exportTracksToFile(SpotsCollectionData rois) {
@@ -267,20 +284,13 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
-        if (tracksCollection != null && displaySpotsViewMenuItem.getState()) {
-            TrackOverlay trackOverlay = new TrackOverlay(tracksCollection.getModel(), tracksCollection.getImage(), displaySettings);
-            ImageJUtils.setRoiCanvas(trackOverlay, getCurrentImage(), getViewerPanel().getZoomedDummyCanvas());
+        if (tracksCollection != null && displayTracksViewMenuItem.getState()) {
             List<Integer> selectedValuesList = tracksListControl.getSelectedValuesList();
-            if (!selectedValuesList.isEmpty()) {
-                Set<DefaultWeightedEdge> highlight = new HashSet<>();
-                for (Integer trackId : selectedValuesList) {
-                    highlight.addAll(tracksCollection.getTracks().trackEdges(trackId));
-                }
-                trackOverlay.setHighlight(highlight);
+            Set<DefaultWeightedEdge> highlight = new HashSet<>();
+            for (Integer trackId : selectedValuesList) {
+                highlight.addAll(tracksCollection.getTrackModel().trackEdges(trackId));
             }
-            graphics2D.translate(renderArea.x, renderArea.y);
-            trackOverlay.drawOverlay(graphics2D);
-            graphics2D.translate(-renderArea.x, -renderArea.y);
+            trackDrawer.drawOnGraphics(tracksCollection, graphics2D, renderArea, sliceIndex, highlight);
         }
     }
 
@@ -288,21 +298,17 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
     public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex) {
         if(tracksCollection != null) {
             ImagePlus imagePlus = tracksCollection.getImage();
+            int oldSlice = imagePlus.getSlice();
             imagePlus.setSlice(sliceIndex.zeroSliceIndexToOneStackIndex(imagePlus));
-            TrackOverlay trackOverlay = new TrackOverlay(tracksCollection.getModel(), imagePlus, displaySettings);
-            ImageJUtils.setRoiCanvas(trackOverlay, getCurrentImage(), getViewerPanel().getExportDummyCanvas());
-            List<Integer> selectedValuesList = tracksListControl.getSelectedValuesList();
-            if (!selectedValuesList.isEmpty()) {
-                Set<DefaultWeightedEdge> highlight = new HashSet<>();
-                for (Integer trackId : selectedValuesList) {
-                    highlight.addAll(tracksCollection.getTracks().trackEdges(trackId));
-                }
-                trackOverlay.setHighlight(highlight);
-            }
             Graphics2D graphics2D = image.createGraphics();
-            trackOverlay.drawOverlay(graphics2D);
+            Set<DefaultWeightedEdge> highlight = new HashSet<>();
+            List<Integer> selectedValuesList = tracksListControl.getSelectedValuesList();
+            for (Integer trackId : selectedValuesList) {
+                highlight.addAll(tracksCollection.getTrackModel().trackEdges(trackId));
+            }
+            trackDrawer.drawOnGraphics(tracksCollection, graphics2D, new Rectangle(0,0,image.getWidth(),image.getHeight()), getCurrentSlicePosition(), highlight);
             graphics2D.dispose();
-            imagePlus.setSlice(1);
+            imagePlus.setSlice(oldSlice);
         }
     }
 
@@ -352,7 +358,7 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
     private void updateTrackJList(boolean deferUploadSlice) {
         DefaultListModel<Integer> model = new DefaultListModel<>();
         int[] selectedIndices = tracksListControl.getSelectedIndices();
-        for (Integer trackID : tracksCollection.getTracks().trackIDs(true)) {
+        for (Integer trackID : tracksCollection.getTrackModel().trackIDs(true)) {
             model.addElement(trackID);
         }
         tracksListControl.setModel(model);

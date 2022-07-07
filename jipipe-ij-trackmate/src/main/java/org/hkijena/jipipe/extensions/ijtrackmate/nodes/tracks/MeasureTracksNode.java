@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks;
 
-import fiji.plugin.trackmate.Spot;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -10,11 +9,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-
-import java.util.Map;
 
 @JIPipeDocumentation(name = "Measure tracks", description = "Measures the tracks and outputs the results into a table")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nMeasure")
@@ -38,7 +34,7 @@ public class MeasureTracksNode extends JIPipeSimpleIteratingAlgorithm {
         // Compute features
         trackCollectionData.computeTrackFeatures(progressInfo.resolve("Compute features"));
 
-        for (Integer trackID : trackCollectionData.getTracks().trackIDs(true)) {
+        for (Integer trackID : trackCollectionData.getTrackModel().trackIDs(true)) {
             int row = tableData.addRow();
             tableData.setValueAt("Track_" + trackID, row, "Name");
             for (String trackFeature : trackCollectionData.getModel().getFeatureModel().getTrackFeatures()) {

@@ -27,6 +27,7 @@ import ij.ImagePlus;
 import ij.gui.EllipseRoi;
 import ij.gui.ImageCanvas;
 import ij.gui.Roi;
+import org.apache.commons.lang3.Range;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
@@ -44,12 +45,17 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
 @JIPipeDocumentation(name = "TrackMate tracks", description = "Tracks detected by TrackMate")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "TODO", jsonSchemaURL = "TODO")
 public class TrackCollectionData extends SpotsCollectionData {
+    private final Map<String, Range<Double>> edgeFeatureRanges = new HashMap<>();
+    private final Map<String, Range<Double>> trackFeatureRanges = new HashMap<>();
+
     public TrackCollectionData(Model model, Settings settings, ImagePlus image) {
         super(model, settings, image);
     }
@@ -63,7 +69,7 @@ public class TrackCollectionData extends SpotsCollectionData {
         return new TrackCollectionData(modelData.getModel(), modelData.getSettings(), modelData.getImage());
     }
 
-    public TrackModel getTracks() {
+    public TrackModel getTrackModel() {
         return getModel().getTrackModel();
     }
 
@@ -95,7 +101,7 @@ public class TrackCollectionData extends SpotsCollectionData {
 
     public ROIListData trackToROIList(int trackId) {
         ROIListData result = new ROIListData();
-        for (Spot spot : getTracks().trackSpots(trackId)) {
+        for (Spot spot : getTrackModel().trackSpots(trackId)) {
             double x = spot.getDoublePosition(0);
             double y = spot.getDoublePosition(1);
             int z = (int) spot.getFloatPosition(2);
@@ -116,11 +122,11 @@ public class TrackCollectionData extends SpotsCollectionData {
     }
 
     public int getNTracks() {
-        return getTracks().nTracks(true);
+        return getTrackModel().nTracks(true);
     }
 
     public Set<Spot> getTrackSpots(int trackId) {
-        return getTracks().trackSpots(trackId);
+        return getTrackModel().trackSpots(trackId);
     }
 
     @Override
@@ -137,7 +143,7 @@ public class TrackCollectionData extends SpotsCollectionData {
      */
     public TrackCollectionData filterTracks(Set<Integer> selectedTrackIds) {
         TrackCollectionData result = new TrackCollectionData(this);
-        for (Integer trackID : result.getTracks().trackIDs(true)) {
+        for (Integer trackID : result.getTrackModel().trackIDs(true)) {
             if(!selectedTrackIds.contains(trackID)) {
                 result.getModel().setTrackVisibility(trackID, false);
             }
@@ -196,6 +202,77 @@ public class TrackCollectionData extends SpotsCollectionData {
             return defaultValue;
         }
     }
+    public Iterable<Integer> getTrackIds() {
+        return getTrackModel().trackIDs(true);
+    }
+
+    /**
+     * Returns the range of values for a feature. This method makes use of a cache for fast access.
+     * @param featureName the feature
+     * @return the range. returns an empty range (min = 0 and max = 0) if no feature values are available
+     */
+    public Range<Double> getEdgeFeatureRange(String featureName) {
+        Range<Double> result = edgeFeatureRanges.getOrDefault(featureName, null);
+        if(result == null) {
+            double min = Double.POSITIVE_INFINITY;
+            double max = Double.NEGATIVE_INFINITY;
+
+            for (Integer trackId : getTrackIds()) {
+                for (DefaultWeightedEdge trackEdge : getTrackModel().trackEdges(trackId)) {
+                    double feature = getEdgeFeature(trackEdge, featureName, Double.NaN);
+                    if (Double.isNaN(feature))
+                        continue;
+                    min = Math.min(feature, min);
+                    max = Math.max(feature, max);
+                }
+            }
+            if(Double.isFinite(min)) {
+                result = Range.between(min, max);
+            }
+            else {
+                result = Range.is(0d);
+            }
+            edgeFeatureRanges.put(featureName, result);
+        }
+        return result;
+    }
+
+    public void recalculateEdgeFeatureRange() {
+        this.edgeFeatureRanges.clear();
+    }
+
+    /**
+     * Returns the range of values for a feature. This method makes use of a cache for fast access.
+     * @param featureName the feature
+     * @return the range. returns an empty range (min = 0 and max = 0) if no feature values are available
+     */
+    public Range<Double> getTrackFeatureRange(String featureName) {
+        Range<Double> result = trackFeatureRanges.getOrDefault(featureName, null);
+        if(result == null) {
+            double min = Double.POSITIVE_INFINITY;
+            double max = Double.NEGATIVE_INFINITY;
+
+            for (Integer trackId : getTrackIds()) {
+                double feature = getTrackFeature(trackId, featureName, Double.NaN);
+                if (Double.isNaN(feature))
+                    continue;
+                min = Math.min(feature, min);
+                max = Math.max(feature, max);
+            }
+            if(Double.isFinite(min)) {
+                result = Range.between(min, max);
+            }
+            else {
+                result = Range.is(0d);
+            }
+            trackFeatureRanges.put(featureName, result);
+        }
+        return result;
+    }
+
+    public void recalculateTrackFeatureRanges() {
+        this.trackFeatureRanges.clear();
+    }
 
     @Override
     public Component preview(int width, int height) {
@@ -217,7 +294,7 @@ public class TrackCollectionData extends SpotsCollectionData {
         displaySettings.setLineThickness(5);
         displaySettings.setTrackDisplayMode(DisplaySettings.TrackDisplayMode.FULL);
         displaySettings.setTrackColorBy(DisplaySettings.TrackMateObject.TRACKS, "TRACK_ID");
-        displaySettings.setTrackMinMax(0, getTracks().nTracks(true));
+        displaySettings.setTrackMinMax(0, getTrackModel().nTracks(true));
         TrackOverlay overlay = new TrackOverlay(getModel(), rgbImage, displaySettings);
         try {
             Field field = Roi.class.getDeclaredField("ic");

@@ -1,7 +1,5 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks;
 
-import fiji.plugin.trackmate.Spot;
-import fiji.plugin.trackmate.SpotCollection;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -16,12 +14,8 @@ import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
-import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotFeatureVariableSource;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackFeatureVariableSource;
-
-import java.util.Map;
 
 @JIPipeDocumentation(name = "Filter tracks", description = "Filter TrackMate spots via expressions")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nFilter")
@@ -48,7 +42,7 @@ public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
 
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
-        for (Integer trackID : trackCollectionData.getTracks().trackIDs(true)) {
+        for (Integer trackID : trackCollectionData.getTrackModel().trackIDs(true)) {
             for (String trackFeature : trackCollectionData.getModel().getFeatureModel().getTrackFeatures()) {
                 Double feature = trackCollectionData.getModel().getFeatureModel().getTrackFeature(trackID, trackFeature);
                 if(feature == null)

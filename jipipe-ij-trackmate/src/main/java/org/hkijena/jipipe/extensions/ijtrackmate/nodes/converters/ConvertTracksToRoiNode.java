@@ -20,13 +20,10 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.NamedTextAnnotationGeneratorExpression;
 import org.hkijena.jipipe.extensions.expressions.OptionalDefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
-import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotFeatureVariableSource;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackFeatureVariableSource;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackSpotFeatureVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.utils.ColorUtils;
 
 import java.awt.Color;
@@ -65,11 +62,11 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
 
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
-        variables.set("n_tracks", trackCollectionData.getTracks().nTracks(true));
+        variables.set("n_tracks", trackCollectionData.getTrackModel().nTracks(true));
 
         int index = 0;
-        for (Integer trackID : trackCollectionData.getTracks().trackIDs(true)) {
-            Set<Spot> spots = trackCollectionData.getTracks().trackSpots(trackID);
+        for (Integer trackID : trackCollectionData.getTrackModel().trackIDs(true)) {
+            Set<Spot> spots = trackCollectionData.getTrackModel().trackSpots(trackID);
             variables.set("track.id", trackID);
             variables.set("track.index", index);
             variables.set("n_spots", spots.size());

@@ -14,9 +14,9 @@
 
 package org.hkijena.jipipe.extensions.ijtrackmate.display.tracks;
 
-import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.features.FeatureUtils;
 import fiji.plugin.trackmate.visualization.FeatureColorGenerator;
+import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -31,30 +31,24 @@ import java.awt.GridBagLayout;
 public class TrackListCellRenderer extends JPanel implements ListCellRenderer<Integer> {
 
     private final TracksManagerPlugin tracksManagerPlugin;
-    private SolidColorIcon strokeFillPreview = new SolidColorIcon(16, 16);
+//    private SolidColorIcon strokeFillPreview = new SolidColorIcon(16, 16);
     private JLabel iconLabel = new JLabel();
     private JLabel nameLabel = new JLabel();
     private JLabel infoLabel = new JLabel();
-
-    private FeatureColorGenerator<DefaultWeightedEdge> strokeColorGenerator;
 
     public TrackListCellRenderer(TracksManagerPlugin tracksManagerPlugin) {
         this.tracksManagerPlugin = tracksManagerPlugin;
         initialize();
         updateColorMaps();
-        tracksManagerPlugin.getDisplaySettings().listeners().add(this::updateColorMaps);
     }
 
     public void updateColorMaps() {
-        if(tracksManagerPlugin.getTracksCollection() != null) {
-            strokeColorGenerator = FeatureUtils.createTrackColorGenerator(tracksManagerPlugin.getTracksCollection().getModel(), tracksManagerPlugin.getDisplaySettings());
-        }
     }
 
     private void initialize() {
         setOpaque(true);
         setLayout(new GridBagLayout());
-        iconLabel.setIcon(strokeFillPreview);
+        iconLabel.setIcon(TrackMateExtension.RESOURCES.getIconFromResources("trackscheme.png"));
         infoLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
         add(iconLabel, new GridBagConstraints() {
             {
@@ -86,9 +80,9 @@ public class TrackListCellRenderer extends JPanel implements ListCellRenderer<In
     @Override
     public Component getListCellRendererComponent(JList<? extends Integer> list, Integer trackId, int index, boolean isSelected, boolean cellHasFocus) {
 
-        nameLabel.setText(tracksManagerPlugin.getTracksCollection().getTracks().name(trackId));
+        nameLabel.setText(tracksManagerPlugin.getTracksCollection().getTrackModel().name(trackId));
 
-        strokeFillPreview.setFillColor(Color.WHITE);
+//        strokeFillPreview.setFillColor(Color.WHITE);
         iconLabel.setText("" + index);
         infoLabel.setText(tracksManagerPlugin.getTracksCollection().getTrackSpots(trackId).size() + " spots");
 

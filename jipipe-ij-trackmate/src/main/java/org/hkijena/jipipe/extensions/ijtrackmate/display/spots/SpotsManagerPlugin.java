@@ -344,11 +344,12 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
     public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex) {
         if(spotsCollection != null) {
             ImagePlus imagePlus = spotsCollection.getImage();
+            int oldSlice = imagePlus.getSlice();
             imagePlus.setSlice(sliceIndex.zeroSliceIndexToOneStackIndex(imagePlus));
             Graphics2D graphics2D = image.createGraphics();
             spotDrawer.drawOnGraphics(spotsCollection, graphics2D, new Rectangle(0,0,image.getWidth(),image.getHeight()), getCurrentSlicePosition(), spotsListControl.getSelectedValuesList());
             graphics2D.dispose();
-            imagePlus.setSlice(1);
+            imagePlus.setSlice(oldSlice);
         }
     }
 

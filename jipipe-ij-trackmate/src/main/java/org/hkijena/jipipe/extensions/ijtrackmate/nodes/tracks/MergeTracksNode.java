@@ -15,7 +15,6 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks;
 
 import fiji.plugin.trackmate.Spot;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -25,10 +24,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.jgrapht.graph.DefaultWeightedEdge;
-import org.jgrapht.graph.SimpleWeightedGraph;
 
 import java.util.List;
 
@@ -69,12 +66,12 @@ public class MergeTracksNode extends JIPipeMergingAlgorithm {
                 }
             }
             newCollection.getModel().beginUpdate();
-            for (DefaultWeightedEdge edge : sourceCollection.getTracks().edgeSet()) {
-                Spot sourceCollectionSource = sourceCollection.getTracks().getEdgeSource(edge);
-                Spot sourceCollectionTarget = sourceCollection.getTracks().getEdgeTarget(edge);
+            for (DefaultWeightedEdge edge : sourceCollection.getTrackModel().edgeSet()) {
+                Spot sourceCollectionSource = sourceCollection.getTrackModel().getEdgeSource(edge);
+                Spot sourceCollectionTarget = sourceCollection.getTrackModel().getEdgeTarget(edge);
                 Spot newCollectionSource = newCollection.getSpots().getClosestSpot(sourceCollectionSource, sourceCollectionSource.getFeature(Spot.FRAME).intValue(), true);
                 Spot newCollectionTarget = newCollection.getSpots().getClosestSpot(sourceCollectionTarget, sourceCollectionTarget.getFeature(Spot.FRAME).intValue(), true);
-                newCollection.getModel().addEdge(newCollectionSource, newCollectionTarget, sourceCollection.getTracks().getEdgeWeight(edge));
+                newCollection.getModel().addEdge(newCollectionSource, newCollectionTarget, sourceCollection.getTrackModel().getEdgeWeight(edge));
             }
             newCollection.getModel().endUpdate();
         }

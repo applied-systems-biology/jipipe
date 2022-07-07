@@ -35,13 +35,13 @@ public class MeasureEdgesNode extends JIPipeSimpleIteratingAlgorithm {
         // Compute features
         trackCollectionData.computeEdgeFeatures(progressInfo.resolve("Compute features"));
 
-        for (Integer trackID : trackCollectionData.getTracks().trackIDs(true)) {
-            for (DefaultWeightedEdge trackEdge : trackCollectionData.getTracks().trackEdges(trackID)) {
+        for (Integer trackID : trackCollectionData.getTrackModel().trackIDs(true)) {
+            for (DefaultWeightedEdge trackEdge : trackCollectionData.getTrackModel().trackEdges(trackID)) {
                 int row = tableData.addRow();
                 tableData.setValueAt("Track_" + trackID, row, "Track");
-                tableData.setValueAt(trackCollectionData.getTracks().getEdgeSource(trackEdge).getName(), row, "Edge source");
-                tableData.setValueAt(trackCollectionData.getTracks().getEdgeTarget(trackEdge).getName(), row, "Edge target");
-                tableData.setValueAt(trackCollectionData.getTracks().getEdgeWeight(trackEdge), row, "Edge weight");
+                tableData.setValueAt(trackCollectionData.getTrackModel().getEdgeSource(trackEdge).getName(), row, "Edge source");
+                tableData.setValueAt(trackCollectionData.getTrackModel().getEdgeTarget(trackEdge).getName(), row, "Edge target");
+                tableData.setValueAt(trackCollectionData.getTrackModel().getEdgeWeight(trackEdge), row, "Edge weight");
                 for (String edgeFeature : trackCollectionData.getModel().getFeatureModel().getEdgeFeatures()) {
                     String columnName = trackCollectionData.getModel().getFeatureModel().getEdgeFeatureNames().get(edgeFeature);
                     Double feature = trackCollectionData.getModel().getFeatureModel().getEdgeFeature(trackEdge, edgeFeature);

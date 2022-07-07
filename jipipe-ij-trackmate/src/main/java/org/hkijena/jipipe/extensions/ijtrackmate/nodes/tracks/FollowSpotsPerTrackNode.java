@@ -32,18 +32,12 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageDimensions;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
-import org.w3c.dom.css.Rect;
 
 import java.awt.Rectangle;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -85,11 +79,11 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
 
         final Rectangle imageArea = new Rectangle(0,0,sourceImage.getWidth(), sourceImage.getHeight());
 
-        for (Integer trackID : data.getTracks().trackIDs(true)) {
+        for (Integer trackID : data.getTrackModel().trackIDs(true)) {
             List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
             trackIDAnnotation.addAnnotationIfEnabled(annotationList, trackID + "");
 
-            Set<Spot> spots = data.getTracks().trackSpots(trackID);
+            Set<Spot> spots = data.getTrackModel().trackSpots(trackID);
             if(spots.isEmpty())
                 continue;
 
