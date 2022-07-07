@@ -15,9 +15,7 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.utils;
 
 import com.google.common.eventbus.EventBus;
-import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
-import fiji.plugin.trackmate.visualization.hyperstack.SpotOverlay;
 import fiji.plugin.trackmate.visualization.hyperstack.TrackOverlay;
 import ij.ImagePlus;
 import ij.gui.ImageCanvas;
@@ -27,15 +25,13 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.EdgeFeature;
-import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
+import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeature;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.awt.Color;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.util.Collection;
@@ -47,25 +43,34 @@ public class TrackDrawer implements JIPipeParameterCollection {
 
     private Color strokeColor = Color.YELLOW;
 
-    private boolean uniformStrokeColor = true;
+    private StrokeColorMode strokeColorMode = StrokeColorMode.PerTrack;
 
-    private EdgeFeature strokeColorFeature = new EdgeFeature("DISPLACEMENT");
+    private int fadeTrackRange = 30;
 
-    private LabelSettings labelSettings = new LabelSettings();
+    private EdgeFeature strokeColorEdgeFeature = new EdgeFeature("DISPLACEMENT");
+
+    private TrackFeature strokeColorTrackFeature = new TrackFeature("TRACK_ID");
+
+//    private LabelSettings labelSettings = new LabelSettings();
+
+    private DisplaySettings.TrackDisplayMode trackDisplayMode = DisplaySettings.TrackDisplayMode.FULL;
 
     public TrackDrawer() {
     }
 
     public TrackDrawer(TrackDrawer other) {
-       copyFrom(other);
+        copyFrom(other);
     }
 
     public void copyFrom(TrackDrawer other) {
         this.strokeWidth = other.strokeWidth;
         this.strokeColor = other.strokeColor;
-        this.uniformStrokeColor = other.uniformStrokeColor;
-        this.strokeColorFeature = new EdgeFeature(other.strokeColorFeature);
-        this.labelSettings = new LabelSettings(other.labelSettings);
+        this.strokeColorMode = other.strokeColorMode;
+        this.strokeColorEdgeFeature = new EdgeFeature(other.strokeColorEdgeFeature);
+//        this.labelSettings = new LabelSettings(other.labelSettings);
+        this.trackDisplayMode = other.trackDisplayMode;
+        this.fadeTrackRange = other.fadeTrackRange;
+        this.strokeColorTrackFeature = new TrackFeature(other.strokeColorTrackFeature);
     }
 
     @Override
@@ -76,13 +81,26 @@ public class TrackDrawer implements JIPipeParameterCollection {
     public DisplaySettings createDisplaySettings(TrackCollectionData trackCollectionData) {
         DisplaySettings displaySettings = new DisplaySettings();
         displaySettings.setLineThickness(strokeWidth);
-        if(uniformStrokeColor) {
-            displaySettings.setTrackUniformColor(strokeColor);
-        } else {
-            Range<Double> range = trackCollectionData.getEdgeFeatureRange(strokeColorFeature.getValue());
-            displaySettings.setTrackColorBy(DisplaySettings.TrackMateObject.EDGES, strokeColorFeature.getValue());
-            displaySettings.setTrackMinMax(range.getMinimum(), range.getMaximum());
+        displaySettings.setTrackDisplayMode(trackDisplayMode);
+        displaySettings.setFadeTrackRange(fadeTrackRange);
+        switch (strokeColorMode) {
+            case Uniform: {
+                displaySettings.setTrackUniformColor(strokeColor);
+            }
+            break;
+            case PerEdge: {
+                Range<Double> range = trackCollectionData.getEdgeFeatureRange(strokeColorEdgeFeature.getValue());
+                displaySettings.setTrackColorBy(DisplaySettings.TrackMateObject.EDGES, strokeColorEdgeFeature.getValue());
+                displaySettings.setTrackMinMax(range.getMinimum(), range.getMaximum());
+            }
+            break;
+            case PerTrack: {
+                Range<Double> range = trackCollectionData.getTrackFeatureRange(strokeColorTrackFeature.getValue());
+                displaySettings.setTrackColorBy(DisplaySettings.TrackMateObject.TRACKS, strokeColorTrackFeature.getValue());
+                displaySettings.setTrackMinMax(range.getMinimum(), range.getMaximum());
+            }
         }
+
         return displaySettings;
     }
 
@@ -133,6 +151,28 @@ public class TrackDrawer implements JIPipeParameterCollection {
         graphics2D.translate(-renderArea.x, -renderArea.y);
     }
 
+    @JIPipeDocumentation(name = "Fade track range", description = "If the display mode is set to local track surroundings, sets the fading range")
+    @JIPipeParameter("fade-track-range")
+    public int getFadeTrackRange() {
+        return fadeTrackRange;
+    }
+
+    @JIPipeParameter("fade-track-range")
+    public void setFadeTrackRange(int fadeTrackRange) {
+        this.fadeTrackRange = fadeTrackRange;
+    }
+
+    @JIPipeDocumentation(name = "Display mode", description = "Determines how tracks are displayed")
+    @JIPipeParameter("track-display-mode")
+    public DisplaySettings.TrackDisplayMode getTrackDisplayMode() {
+        return trackDisplayMode;
+    }
+
+    @JIPipeParameter("track-display-mode")
+    public void setTrackDisplayMode(DisplaySettings.TrackDisplayMode trackDisplayMode) {
+        this.trackDisplayMode = trackDisplayMode;
+    }
+
     @JIPipeDocumentation(name = "Stroke width", description = "Width of the spot stroke")
     @JIPipeParameter("stroke-width")
     public int getStrokeWidth() {
@@ -155,70 +195,99 @@ public class TrackDrawer implements JIPipeParameterCollection {
         this.strokeColor = strokeColor;
     }
 
-    @JIPipeDocumentation(name = "Stroke color", description = "Determines how the stroke is colored")
-    @JIPipeParameter("uniform-stroke-color")
-    @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "Uniform color", falseLabel = "Feature")
-    public boolean isUniformStrokeColor() {
-        return uniformStrokeColor;
+    @JIPipeDocumentation(name = "Stroke color mode", description = "Determines how the stroke is colored")
+    @JIPipeParameter("stroke-color-mode")
+    public StrokeColorMode getStrokeColorMode() {
+        return strokeColorMode;
     }
 
-    @JIPipeParameter("uniform-stroke-color")
-    public void setUniformStrokeColor(boolean uniformStrokeColor) {
-        this.uniformStrokeColor = uniformStrokeColor;
+    @JIPipeParameter("stroke-color-mode")
+    public void setStrokeColorMode(StrokeColorMode strokeColorMode) {
+        this.strokeColorMode = strokeColorMode;
     }
 
-    @JIPipeDocumentation(name = "Stroke color feature", description = "Determines the feature that is utilized for coloring the stroke. Only takes effect if 'Stroke color' is set to 'Feature'")
-    @JIPipeParameter("stroke-color-feature")
-    public EdgeFeature getStrokeColorFeature() {
-        return strokeColorFeature;
+    @JIPipeDocumentation(name = "Stroke color edge feature", description = "Determines the feature that is utilized for coloring the stroke. Only takes effect if 'Stroke color mode' is set to 'Color per edge'")
+    @JIPipeParameter("stroke-color-edge-feature")
+    public EdgeFeature getStrokeColorEdgeFeature() {
+        return strokeColorEdgeFeature;
     }
 
-    @JIPipeParameter("stroke-color-feature")
-    public void setStrokeColorFeature(EdgeFeature strokeColorFeature) {
-        this.strokeColorFeature = strokeColorFeature;
+    @JIPipeParameter("stroke-color-edge-feature")
+    public void setStrokeColorEdgeFeature(EdgeFeature strokeColorEdgeFeature) {
+        this.strokeColorEdgeFeature = strokeColorEdgeFeature;
     }
 
-    @JIPipeDocumentation(name = "Draw label", description = "Please use the following settings to modify how labels are drawn")
-    @JIPipeParameter("label-settings")
-    public LabelSettings getLabelSettings() {
-        return labelSettings;
+    @JIPipeDocumentation(name = "Stroke color track feature", description = "Determines the feature that is utilized for coloring the stroke. Only takes effect if 'Stroke color mode' is set to 'Color per track'")
+    @JIPipeParameter("stroke-color-track-feature")
+    public TrackFeature getStrokeColorTrackFeature() {
+        return strokeColorTrackFeature;
     }
 
-    public static class LabelSettings extends DrawerLabelSettings {
+    @JIPipeParameter("stroke-color-track-feature")
+    public void setStrokeColorTrackFeature(TrackFeature strokeColorTrackFeature) {
+        this.strokeColorTrackFeature = strokeColorTrackFeature;
+    }
 
-        private boolean drawName = true;
-        private SpotFeature drawnFeature = new SpotFeature(Spot.QUALITY);
+//        @JIPipeDocumentation(name = "Draw label", description = "Please use the following settings to modify how labels are drawn")
+//    @JIPipeParameter("label-settings")
+//    public LabelSettings getLabelSettings() {
+//        return labelSettings;
+//    }
 
-        public LabelSettings() {
-        }
+//    public static class LabelSettings extends DrawerLabelSettings {
+//
+//        private boolean drawName = true;
+//        private SpotFeature drawnFeature = new SpotFeature(Spot.QUALITY);
+//
+//        public LabelSettings() {
+//        }
+//
+//        public LabelSettings(LabelSettings other) {
+//            super(other);
+//            this.drawName = other.drawName;
+//            this.drawnFeature = new SpotFeature(other.drawnFeature);
+//        }
+//
+//        @JIPipeDocumentation(name = "Label content", description = "Determines the content of the label")
+//        @JIPipeParameter("draw-name")
+//        @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "Spot name", falseLabel = "Spot feature")
+//        public boolean isDrawName() {
+//            return drawName;
+//        }
+//
+//        @JIPipeParameter("draw-name")
+//        public void setDrawName(boolean drawName) {
+//            this.drawName = drawName;
+//        }
+//
+//        @JIPipeDocumentation(name = "Displayed feature", description = "If 'Label content' is set to 'Spot feature', determines the feature to be displayed in the label")
+//        @JIPipeParameter("drawn-feature")
+//        public SpotFeature getDrawnFeature() {
+//            return drawnFeature;
+//        }
+//
+//        @JIPipeParameter("drawn-feature")
+//        public void setDrawnFeature(SpotFeature drawnFeature) {
+//            this.drawnFeature = drawnFeature;
+//        }
+//    }
 
-        public LabelSettings(LabelSettings other) {
-            super(other);
-            this.drawName = other.drawName;
-            this.drawnFeature = new SpotFeature(other.drawnFeature);
-        }
+    public enum StrokeColorMode {
+        Uniform,
+        PerEdge,
+        PerTrack;
 
-        @JIPipeDocumentation(name = "Label content", description = "Determines the content of the label")
-        @JIPipeParameter("draw-name")
-        @BooleanParameterSettings(comboBoxStyle = true, trueLabel = "Spot name", falseLabel = "Spot feature")
-        public boolean isDrawName() {
-            return drawName;
-        }
 
-        @JIPipeParameter("draw-name")
-        public void setDrawName(boolean drawName) {
-            this.drawName = drawName;
-        }
-
-        @JIPipeDocumentation(name = "Displayed feature", description = "If 'Label content' is set to 'Spot feature', determines the feature to be displayed in the label")
-        @JIPipeParameter("drawn-feature")
-        public SpotFeature getDrawnFeature() {
-            return drawnFeature;
-        }
-
-        @JIPipeParameter("drawn-feature")
-        public void setDrawnFeature(SpotFeature drawnFeature) {
-            this.drawnFeature = drawnFeature;
+        @Override
+        public String toString() {
+            switch (this) {
+                case PerEdge:
+                    return "Color per edge";
+                case PerTrack:
+                    return "Color per track";
+                default:
+                    return super.toString();
+            }
         }
     }
 }

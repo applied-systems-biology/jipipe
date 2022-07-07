@@ -15,6 +15,7 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.display.tracks;
 
 import com.google.common.primitives.Ints;
+import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -28,6 +29,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureEdgesNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureTracksNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.EdgeFeature;
+import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUITracksDisplaySettings;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
@@ -214,17 +216,42 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
             JMenu colorByMenu = new JMenu("Color by ...");
             EdgeFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
                 String name = EdgeFeature.VALUE_LABELS.get(key);
-                JMenuItem colorByMenuEntry = new JMenuItem(name);
+                JMenuItem colorByMenuEntry = new JMenuItem("Edge: " + name);
                 colorByMenuEntry.setToolTipText("Colors the track edges by their " + name.toLowerCase());
                 colorByMenuEntry.addActionListener(e -> {
-                    trackDrawer.setUniformStrokeColor(false);
-                    trackDrawer.setStrokeColorFeature(new EdgeFeature(key));
+                    trackDrawer.setStrokeColorMode(TrackDrawer.StrokeColorMode.PerEdge);
+                    trackDrawer.setStrokeColorEdgeFeature(new EdgeFeature(key));
+                    tracksListCellRenderer.updateColorMaps();
+                    uploadSliceToCanvas();
+                });
+                colorByMenu.add(colorByMenuEntry);
+            });
+            colorByMenu.addSeparator();
+            TrackFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
+                String name = TrackFeature.VALUE_LABELS.get(key);
+                JMenuItem colorByMenuEntry = new JMenuItem("Track: " + name);
+                colorByMenuEntry.setToolTipText("Colors the tracks by their " + name.toLowerCase());
+                colorByMenuEntry.addActionListener(e -> {
+                    trackDrawer.setStrokeColorMode(TrackDrawer.StrokeColorMode.PerTrack);
+                    trackDrawer.setStrokeColorTrackFeature(new TrackFeature(key));
                     tracksListCellRenderer.updateColorMaps();
                     uploadSliceToCanvas();
                 });
                 colorByMenu.add(colorByMenuEntry);
             });
             viewMenu.add(colorByMenu);
+        }
+        {
+            JMenu displayMenu = new JMenu("Display mode");
+            for (DisplaySettings.TrackDisplayMode displayMode : DisplaySettings.TrackDisplayMode.values()) {
+                JMenuItem item = new JMenuItem(displayMode.toString());
+                item.addActionListener(e -> {
+                    trackDrawer.setTrackDisplayMode(displayMode);
+                    uploadSliceToCanvas();
+                });
+                displayMenu.add(item);
+            }
+            viewMenu.add(displayMenu);
         }
         viewMenu.addSeparator();
         {

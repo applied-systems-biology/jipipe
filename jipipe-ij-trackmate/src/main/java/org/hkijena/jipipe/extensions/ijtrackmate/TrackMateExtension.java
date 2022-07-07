@@ -19,6 +19,7 @@ import fiji.plugin.trackmate.detection.SpotDetectorFactory;
 import fiji.plugin.trackmate.features.edges.EdgeAnalyzer;
 import fiji.plugin.trackmate.features.spot.SpotAnalyzerFactoryBase;
 import fiji.plugin.trackmate.features.track.TrackAnalyzer;
+import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import fiji.plugin.trackmate.tracking.SpotTrackerFactory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
@@ -56,6 +57,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeatureFilterParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUISpotsDisplaySettings;
 import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUITracksDisplaySettings;
+import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIRoiDisplaySettings;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -116,6 +118,22 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         PluginService service = context.getService(PluginService.class);
 
+        registerParameters();
+
+        registerSpotFeatures(progressInfo);
+        registerTrackFeatures(progressInfo);
+        registerEdgeFeatures(progressInfo);
+
+        registerDataTypes();
+
+        registerSpotDetectors(progressInfo, service);
+        registerSpotTrackers(progressInfo, service);
+
+        registerNodes();
+        registerSettings();
+    }
+
+    private void registerParameters() {
         registerParameterType("trackmate-spot-feature", SpotFeature.class, "TrackMate spot feature", "A spot feature");
         registerParameterType("trackmate-spot-feature-penalty",
                 SpotFeaturePenaltyParameter.class,
@@ -143,18 +161,14 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "TrackMate track feature filter",
                 "Filters tracks by a feature",
                 null);
-
-        registerSpotFeatures(progressInfo);
-        registerTrackFeatures(progressInfo);
-        registerEdgeFeatures(progressInfo);
-
-        registerDataTypes();
-
-        registerSpotDetectors(progressInfo, service);
-        registerSpotTrackers(progressInfo, service);
-
-        registerNodes();
-        registerSettings();
+        registerEnumParameterType("trackmate-track-display-mode",
+                DisplaySettings.TrackDisplayMode.class,
+                "Track display mode",
+                "Determines how tracks are displayed");
+        registerEnumParameterType("trackmate-track-drawer:stroke-color",
+                TrackDrawer.StrokeColorMode.class,
+                "Track stroke color",
+                "Mode for coloring track strokes");
     }
 
     private void registerSettings() {
