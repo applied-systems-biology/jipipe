@@ -67,6 +67,8 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private final JToggleButton animationStackToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationChannelToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
+
+    private JCheckBoxMenuItem exportDisplayedScaleToggle = new JCheckBoxMenuItem("Export as displayed", true);
     private final JLabel imageInfoLabel = new JLabel();
     private final JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(75, 5, 10000, 1));
     private final JToolBar toolBar = new JToolBar();
@@ -90,8 +92,6 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private JMenuItem exportMovieItem;
     private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
     private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
-    private JButton rotateLeftButton;
-    private JButton rotateRightButton;
     private Component currentContentPanel;
     private boolean isUpdatingSliders = false;
     /**
@@ -384,34 +384,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton exportMenuButton = new JButton(UIUtils.getIconFromResources("actions/camera.png"));
-        exportMenuButton.setToolTipText("Export currently displayed image");
-        JPopupMenu exportMenu = new JPopupMenu();
-
-        JMenuItem saveRawImageItem = new JMenuItem("Export raw image to *.tif", UIUtils.getIconFromResources("actions/save.png"));
-        saveRawImageItem.addActionListener(e -> saveRawImage());
-        exportMenu.add(saveRawImageItem);
-
-        JMenuItem exportCurrentSliceItem = new JMenuItem("Export snapshot of current slice", UIUtils.getIconFromResources("actions/viewimage.png"));
-        exportCurrentSliceItem.addActionListener(e -> exportCurrentSliceToPNG());
-        exportMenu.add(exportCurrentSliceItem);
-
-        exportAllSlicesItem = new JMenuItem("Export snapshot of all slices", UIUtils.getIconFromResources("actions/qlipper.png"));
-        exportAllSlicesItem.addActionListener(e -> exportAllSlicesToPNG());
-        exportMenu.add(exportAllSlicesItem);
-
-        exportMovieItem = new JMenuItem("Export movie", UIUtils.getIconFromResources("actions/filmgrain.png"));
-        exportMovieItem.addActionListener(e -> exportVideo());
-        exportMenu.add(exportMovieItem);
-
-        exportMenu.addSeparator();
-
-        JMenuItem copyCurrentSliceItem = new JMenuItem("Copy snapshot of current slice", UIUtils.getIconFromResources("actions/edit-copy.png"));
-        copyCurrentSliceItem.addActionListener(e -> copyCurrentSliceToClipboard());
-        exportMenu.add(copyCurrentSliceItem);
-
-        UIUtils.addPopupMenuToComponent(exportMenuButton, exportMenu);
-        toolBar.add(exportMenuButton);
+        initializeExportMenu();
         toolBar.addSeparator();
 
 //        rotateLeftButton = new JButton(UIUtils.getIconFromResources("actions/transform-rotate-left.png"));
@@ -491,6 +464,41 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         add(toolBar, BorderLayout.NORTH);
     }
 
+    private void initializeExportMenu() {
+        JButton exportMenuButton = new JButton(UIUtils.getIconFromResources("actions/camera.png"));
+        exportMenuButton.setToolTipText("Export currently displayed image");
+        JPopupMenu exportMenu = new JPopupMenu();
+
+        JMenuItem saveRawImageItem = new JMenuItem("Export raw image to *.tif", UIUtils.getIconFromResources("actions/save.png"));
+        saveRawImageItem.addActionListener(e -> saveRawImage());
+        exportMenu.add(saveRawImageItem);
+
+        exportMenu.addSeparator();
+
+        exportMenu.add(exportDisplayedScaleToggle);
+
+        JMenuItem exportCurrentSliceItem = new JMenuItem("Export snapshot of current slice", UIUtils.getIconFromResources("actions/viewimage.png"));
+        exportCurrentSliceItem.addActionListener(e -> exportCurrentSliceToPNG());
+        exportMenu.add(exportCurrentSliceItem);
+
+        exportAllSlicesItem = new JMenuItem("Export snapshot of all slices", UIUtils.getIconFromResources("actions/qlipper.png"));
+        exportAllSlicesItem.addActionListener(e -> exportAllSlicesToPNG());
+        exportMenu.add(exportAllSlicesItem);
+
+        exportMovieItem = new JMenuItem("Export movie", UIUtils.getIconFromResources("actions/filmgrain.png"));
+        exportMovieItem.addActionListener(e -> exportVideo());
+        exportMenu.add(exportMovieItem);
+
+        exportMenu.addSeparator();
+
+        JMenuItem copyCurrentSliceItem = new JMenuItem("Copy snapshot of current slice", UIUtils.getIconFromResources("actions/edit-copy.png"));
+        copyCurrentSliceItem.addActionListener(e -> copyCurrentSliceToClipboard());
+        exportMenu.add(copyCurrentSliceItem);
+
+        UIUtils.addPopupMenuToComponent(exportMenuButton, exportMenu);
+        toolBar.add(exportMenuButton);
+    }
+
     private void saveRawImage() {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Save as *.tif", UIUtils.EXTENSION_FILTER_TIFF);
         if (path != null) {
@@ -516,6 +524,14 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         repaint();
     }
 
+    /**
+     * Returns the magnification that export/render methods should apply
+     * @return the magnification
+     */
+    public double getExportedMagnification() {
+        return exportDisplayedScaleToggle.getState() ? canvas.getZoom() : 1.0;
+    }
+
     public void exportCurrentSliceToPNG() {
         if (getCanvas().getImage() == null) {
             JOptionPane.showMessageDialog(this, "No image loaded.", "Error", JOptionPane.ERROR_MESSAGE);
@@ -531,7 +547,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
             try {
                 BufferedImage image = ImageJUtils.copyBufferedImage(getCanvas().getImage());
                 for (ImageViewerPanelPlugin plugin : getPlugins()) {
-                    plugin.postprocessDrawForExport(image, getCurrentSliceIndex());
+                    plugin.postprocessDrawForExport(image, getCurrentSliceIndex(), getExportedMagnification());
                 }
                 ImageIO.write(image, format, targetFile.toFile());
             } catch (IOException e) {
@@ -545,10 +561,12 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
             JOptionPane.showMessageDialog(this, "No image loaded.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        BufferedImage image = ImageJUtils.copyBufferedImageToARGB(getCanvas().getImage());
-        for (ImageViewerPanelPlugin plugin : getPlugins()) {
-            plugin.postprocessDrawForExport(image, getCurrentSliceIndex());
-        }
+//        BufferedImage image = ImageJUtils.copyBufferedImageToARGB(getCanvas().getImage());
+//        for (ImageViewerPanelPlugin plugin : getPlugins()) {
+//            plugin.postprocessDrawForExport(image, getCurrentSliceIndex(), getExportedMagnification());
+//        }
+        ImageProcessor processor = generateSlice(getCurrentSliceIndex().getC(), getCurrentSliceIndex().getZ(), getCurrentSliceIndex().getT(), getExportedMagnification(), true);
+        BufferedImage image = ImageJUtils.copyBufferedImageToARGB(processor.getBufferedImage());
         CopyImageToClipboard copyImageToClipboard = new CopyImageToClipboard();
         copyImageToClipboard.copyImage(image);
     }
@@ -900,7 +918,16 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         }
     }
 
-    public ImageProcessor generateSlice(int c, int z, int t, boolean withRotation, boolean withPostprocessing) {
+    /**
+     * Generates a slice
+     * @param c the channel location
+     * @param z the depth location
+     * @param t the frame location
+     * @param magnification the magnification
+     * @param withPostprocessing if postprocessing (export postprocessing) should be applied
+     * @return the new slice
+     */
+    public ImageProcessor generateSlice(int c, int z, int t, double magnification, boolean withPostprocessing) {
         image.setPosition(c + 1, z + 1, t + 1);
         for (ImageViewerPanelPlugin plugin : plugins) {
             plugin.beforeDraw(c, z, t);
@@ -920,10 +947,14 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
 //            else
 //                throw new UnsupportedOperationException("Unknown rotation: " + rotation);
 //        }
+        if(magnification != 1.0) {
+            processor.setInterpolationMethod(ImageProcessor.NONE);
+            processor = processor.resize((int) (magnification * image.getWidth()), (int) (magnification * image.getHeight()), false);
+        }
         if (withPostprocessing) {
-            BufferedImage image = processor.getBufferedImage();
+            BufferedImage image = ImageJUtils.copyBufferedImageToARGB(processor.getBufferedImage());
             for (ImageViewerPanelPlugin plugin : getPlugins()) {
-                plugin.postprocessDrawForExport(image, new ImageSliceIndex(c, z, t));
+                plugin.postprocessDrawForExport(image, new ImageSliceIndex(c, z, t), magnification);
             }
             processor = new ColorProcessor(image);
         }
@@ -934,7 +965,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         if (image != null) {
             ImageProcessor processor = generateSlice(channelSlider.getValue() - 1, stackSlider.getValue() - 1,
                     frameSlider.getValue() - 1,
-                    true, false);
+                    1.0, false);
             if (processor == null) {
                 canvas.setImage(null, null);
                 return;

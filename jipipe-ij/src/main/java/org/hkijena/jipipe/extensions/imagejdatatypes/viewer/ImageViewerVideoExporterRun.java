@@ -34,6 +34,7 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
     private final int timePerFrame;
     private final AVICompression compression;
     private final int jpegQuality;
+    private final double magnification;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public ImageViewerVideoExporterRun(ImageViewerPanel viewerPanel, Path outputFile, ImageSliceIndex referencePosition, HyperstackDimension followedDimension, int timePerFrame, AVICompression compression, int jpegQuality) {
@@ -44,6 +45,7 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
         this.timePerFrame = timePerFrame;
         this.compression = compression;
         this.jpegQuality = jpegQuality;
+        this.magnification = viewerPanel.getExportedMagnification();
     }
 
     @Override
@@ -75,8 +77,7 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
                 subProgress.log("z = " + z);
                 generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(referencePosition.getC(), z,
                         referencePosition.getT(),
-                        true,
-                        true).getBufferedImage()));
+                        magnification, true).getBufferedImage()));
             }
         } else if (followedDimension == HyperstackDimension.Channel) {
             progressInfo.setMaxProgress(image.getNChannels());
@@ -88,8 +89,7 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
                 subProgress.log("c = " + c);
                 generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(c, referencePosition.getZ(),
                         referencePosition.getT(),
-                        true,
-                        true).getBufferedImage()));
+                        magnification, true).getBufferedImage()));
             }
         } else if (followedDimension == HyperstackDimension.Frame) {
             progressInfo.setMaxProgress(image.getNFrames());
@@ -101,8 +101,7 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
                 subProgress.log("t = " + t);
                 generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(referencePosition.getC(), referencePosition.getZ(),
                         t,
-                        true,
-                        true).getBufferedImage()));
+                        magnification, true).getBufferedImage()));
             }
         }
 

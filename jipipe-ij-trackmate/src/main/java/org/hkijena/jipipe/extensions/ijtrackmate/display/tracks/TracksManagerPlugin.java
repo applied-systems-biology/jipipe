@@ -322,7 +322,7 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     @Override
-    public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex) {
+    public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex, double magnification) {
         if(tracksCollection != null) {
             ImagePlus imagePlus = tracksCollection.getImage();
             int oldSlice = imagePlus.getSlice();

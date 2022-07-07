@@ -2,7 +2,6 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.viewer.plugins;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.primitives.Ints;
-import ij.ImagePlus;
 import ij.gui.ImageCanvas;
 import ij.gui.Roi;
 import ij.plugin.frame.RoiManager;
@@ -14,6 +13,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIRoiDisplaySettings;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIEditor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
@@ -373,16 +373,17 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     @Override
-    public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex) {
+    public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex, double magnification) {
         if(renderROIAsOverlayViewMenuItem.getState()) {
             Graphics2D graphics = image.createGraphics();
             ROIListData copy = new ROIListData();
+            ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(getCurrentImage(), magnification);
             for (Roi roi : rois) {
                 Roi clone = (Roi) roi.clone();
-                updateRoiCanvas(clone, getViewerPanel().getExportDummyCanvas());
+                updateRoiCanvas(clone, canvas);
                 copy.add(clone);
             }
-            roiDrawer.drawOverlayOnGraphics(copy, graphics, new Rectangle(0,0,image.getWidth(), image.getHeight()), sliceIndex, new HashSet<>(roiListControl.getSelectedValuesList()), 1.0);
+            roiDrawer.drawOverlayOnGraphics(copy, graphics, new Rectangle(0,0,image.getWidth(), image.getHeight()), sliceIndex, new HashSet<>(roiListControl.getSelectedValuesList()), magnification);
             graphics.dispose();
         }
     }

@@ -17,8 +17,6 @@ package org.hkijena.jipipe.extensions.ijtrackmate.display.spots;
 import com.google.common.primitives.Ints;
 import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.SpotCollection;
-import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
-import fiji.plugin.trackmate.visualization.hyperstack.SpotOverlay;
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -32,11 +30,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MeasureSpotsNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUISpotsDisplaySettings;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotDrawer;
-import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackMateUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIRoiDisplaySettings;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.imagejdatatypes.viewer.ImageViewerPanel;
@@ -48,15 +42,12 @@ import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
@@ -341,7 +332,7 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     @Override
-    public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex) {
+    public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex, double magnification) {
         if(spotsCollection != null) {
             ImagePlus imagePlus = spotsCollection.getImage();
             int oldSlice = imagePlus.getSlice();

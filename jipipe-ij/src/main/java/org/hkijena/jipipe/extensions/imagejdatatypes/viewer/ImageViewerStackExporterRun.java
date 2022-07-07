@@ -29,6 +29,7 @@ public class ImageViewerStackExporterRun implements JIPipeRunnable {
     private final Path outputFolder;
     private final String baseName;
     private final String formatName;
+    private final double magnification;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     public ImageViewerStackExporterRun(ImageViewerPanel viewerPanel, Path outputFolder, String baseName, String formatName) {
@@ -36,6 +37,7 @@ public class ImageViewerStackExporterRun implements JIPipeRunnable {
         this.outputFolder = outputFolder;
         this.baseName = baseName;
         this.formatName = formatName;
+        this.magnification = viewerPanel.getExportedMagnification();
     }
 
     @Override
@@ -74,8 +76,7 @@ public class ImageViewerStackExporterRun implements JIPipeRunnable {
                     progressInfo.log(fileName);
                     BufferedImage bufferedImage = viewerPanel.generateSlice(c, z,
                             t,
-                            true,
-                            true).getBufferedImage();
+                            magnification, true).getBufferedImage();
                     try {
                         ImageIO.write(bufferedImage, formatName, outputFolder.resolve(fileName).toFile());
                     } catch (IOException e) {

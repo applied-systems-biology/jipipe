@@ -108,10 +108,11 @@ public abstract class ImageViewerPanelPlugin implements JIPipeWorkbenchAccess {
      * Called while exporting the image slice.
      * Use this to export items handled by postprocessDraw
      *
-     * @param image      the image
-     * @param sliceIndex the slice
+     * @param image         the image
+     * @param sliceIndex    the slice
+     * @param magnification
      */
-    public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex) {
+    public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex, double magnification) {
 
     }
 

@@ -453,14 +453,17 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     }
 
     @Override
-    public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex) {
+    public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex, double magnification) {
         if (mask == null)
             return;
         int z = Math.min(mask.getNSlices() - 1, sliceIndex.getZ());
         int c = Math.min(mask.getNChannels() - 1, sliceIndex.getC());
         int t = Math.min(mask.getNFrames() - 1, sliceIndex.getT());
         ImageProcessor selectedMaskSlice = ImageJUtils.getSliceZero(mask, c, z, t);
-        BufferedImage renderedMask = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+        BufferedImage renderedMask = new BufferedImage(mask.getWidth(), mask.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
+        if(magnification != 1.0) {
+            renderedMask = UIUtils.toBufferedImage(renderedMask.getScaledInstance(image.getWidth(), image.getHeight(), Image.SCALE_DEFAULT), BufferedImage.TYPE_4BYTE_ABGR);
+        }
         ImageJUtils.maskToBufferedImage(selectedMaskSlice, renderedMask, maskColor, ColorUtils.WHITE_TRANSPARENT);
         Graphics2D graphics = image.createGraphics();
         graphics.drawImage(renderedMask, 0, 0, null);
