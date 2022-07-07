@@ -860,35 +860,35 @@ public class ImageJUtils {
     /**
      * Runs the function for each Z, C, and T slice.
      *
-     * @param img          the image
+     * @param sourceImage          the image
      * @param function     the function. The indices are ZERO-based. Should return the result slice for this index
      * @param progressInfo the progress
      */
-    public static ImagePlus generateForEachIndexedZCTSlice(ImagePlus img, BiFunction<ImageProcessor, ImageSliceIndex, ImageProcessor> function, JIPipeProgressInfo progressInfo) {
-        if (img.isStack()) {
-            ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getStackSize());
+    public static ImagePlus generateForEachIndexedZCTSlice(ImagePlus sourceImage, BiFunction<ImageProcessor, ImageSliceIndex, ImageProcessor> function, JIPipeProgressInfo progressInfo) {
+        if (sourceImage.isStack()) {
+            ImageStack stack = new ImageStack(sourceImage.getWidth(), sourceImage.getHeight(), sourceImage.getStackSize());
             int iterationIndex = 0;
-            for (int t = 0; t < img.getNFrames(); t++) {
-                for (int z = 0; z < img.getNSlices(); z++) {
-                    for (int c = 0; c < img.getNChannels(); c++) {
+            for (int t = 0; t < sourceImage.getNFrames(); t++) {
+                for (int z = 0; z < sourceImage.getNSlices(); z++) {
+                    for (int c = 0; c < sourceImage.getNChannels(); c++) {
                         if (progressInfo.isCancelled())
                             return null;
-                        int index = img.getStackIndex(c + 1, z + 1, t + 1);
-                        progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
-                        ImageProcessor processor = img.getImageStack().getProcessor(index);
+                        int index = sourceImage.getStackIndex(c + 1, z + 1, t + 1);
+                        progressInfo.resolveAndLog("Slice", iterationIndex++, sourceImage.getStackSize()).log("z=" + z + ", c=" + c + ", t=" + t);
+                        ImageProcessor processor = sourceImage.getImageStack().getProcessor(index);
                         ImageProcessor resultProcessor = function.apply(processor, new ImageSliceIndex(c, z, t));
                         stack.setProcessor(resultProcessor, index);
                     }
                 }
             }
-            ImagePlus resultImage = new ImagePlus(img.getTitle(), stack);
-            resultImage.setDimensions(img.getNChannels(), img.getNSlices(), img.getNFrames());
-            resultImage.copyScale(img);
+            ImagePlus resultImage = new ImagePlus(sourceImage.getTitle(), stack);
+            resultImage.setDimensions(sourceImage.getNChannels(), sourceImage.getNSlices(), sourceImage.getNFrames());
+            resultImage.copyScale(sourceImage);
             return resultImage;
         } else {
-            ImageProcessor processor = function.apply(img.getProcessor(), new ImageSliceIndex(0, 0, 0));
-            ImagePlus resultImage = new ImagePlus(img.getTitle(), processor);
-            resultImage.copyScale(img);
+            ImageProcessor processor = function.apply(sourceImage.getProcessor(), new ImageSliceIndex(0, 0, 0));
+            ImagePlus resultImage = new ImagePlus(sourceImage.getTitle(), processor);
+            resultImage.copyScale(sourceImage);
             return resultImage;
         }
     }

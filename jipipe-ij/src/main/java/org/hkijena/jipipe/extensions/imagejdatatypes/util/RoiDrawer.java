@@ -41,7 +41,6 @@ import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -470,7 +469,7 @@ public class RoiDrawer implements JIPipeParameterCollection {
      * @param roisToHighlight highlighted ROI
      * @param magnification the magnification
      */
-    public void drawOverlayOnGraphics(ROIListData roisToDraw, Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex index, HashSet<Roi> roisToHighlight, double magnification) {
+    public void drawOverlayOnGraphics(ROIListData roisToDraw, Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex index, Set<Roi> roisToHighlight, double magnification) {
         // ROI statistics needed for labels
         Map<Roi, Point2D> roiCentroids = new HashMap<>();
         Map<Roi, Integer> roiIndices = new HashMap<>();

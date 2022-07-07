@@ -86,7 +86,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             }
         }
         for (Roi roi : rois) {
-            updateRoiCanvas(roi, getViewerPanel().getZoomedDummyCanvas());
+            ImageJUtils.setRoiCanvas(roi, getCurrentImage(), getViewerPanel().getZoomedDummyCanvas());
         }
         updateROIJList(true);
     }
@@ -380,7 +380,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(getCurrentImage(), magnification);
             for (Roi roi : rois) {
                 Roi clone = (Roi) roi.clone();
-                updateRoiCanvas(clone, canvas);
+                ImageJUtils.setRoiCanvas(clone, getCurrentImage(), canvas);
                 copy.add(clone);
             }
             roiDrawer.drawOverlayOnGraphics(copy, graphics, new Rectangle(0,0,image.getWidth(), image.getHeight()), sliceIndex, new HashSet<>(roiListControl.getSelectedValuesList()), magnification);
@@ -526,24 +526,11 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     public void importROIs(ROIListData rois, boolean deferUploadSlice) {
         for (Roi roi : rois) {
             Roi clone = (Roi) roi.clone();
-            updateRoiCanvas(roi, getViewerPanel().getZoomedDummyCanvas());
+            ImageJUtils.setRoiCanvas(clone, getCurrentImage(), getViewerPanel().getZoomedDummyCanvas());
             this.rois.add(clone);
         }
         updateROIJList(deferUploadSlice);
         uploadSliceToCanvas();
-    }
-
-    private void updateRoiCanvas(Roi roi, ImageCanvas canvas) {
-        // First set the image
-        roi.setImage(getCurrentImage());
-        // We have to set the canvas or overlay rendering will fail
-        try {
-            Field field = Roi.class.getDeclaredField("ic");
-            field.setAccessible(true);
-            field.set(roi, canvas);
-        } catch (IllegalAccessException | NoSuchFieldException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     public void removeSelectedROIs(boolean deferUploadSlice) {

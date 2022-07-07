@@ -15,7 +15,10 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
 import ij.IJ;
 import ij.ImagePlus;
+import ij.ImageStack;
+import ij.gui.ImageCanvas;
 import ij.gui.Roi;
+import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -35,6 +38,8 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.NumberParamet
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -63,6 +68,10 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     private boolean ignoreZ = false;
     private boolean ignoreC = false;
     private boolean ignoreT = false;
+
+    private double magnification = 1.0;
+
+    private boolean preferRenderViaOverlay = false;
 
     /**
      * Instantiates a new node type.
@@ -101,6 +110,8 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.ignoreC = other.ignoreC;
         this.ignoreZ = other.ignoreZ;
         this.ignoreT = other.ignoreT;
+        this.magnification = other.magnification;
+        this.preferRenderViaOverlay = other.preferRenderViaOverlay;
     }
 
     @Override
@@ -115,7 +126,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData inputData = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
+        ROIListData rois = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
         ImagePlus reference = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
 
         RoiDrawer drawer = new RoiDrawer();
@@ -134,8 +145,37 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         drawer.setIgnoreZ(ignoreZ);
         drawer.setIgnoreT(ignoreT);
 
-        ImagePlus result = drawer.draw(reference, inputData, progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+        if(magnification == 1.0 && !preferRenderViaOverlay) {
+            ImagePlus result = drawer.draw(reference, rois, progressInfo);
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+        }
+        else {
+            rois = new ROIListData(rois);
+            ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(reference, magnification);
+            for (Roi roi : rois) {
+                ImageJUtils.setRoiCanvas(roi, reference, canvas);
+            }
+            ROIListData finalRois = rois;
+            final int targetWidth = (int) (magnification * reference.getWidth());
+            final int targetHeight = (int) (magnification * reference.getHeight());
+            ImageStack targetStack = new ImageStack(targetWidth, targetHeight, reference.getStackSize());
+            ImageJUtils.forEachIndexedZCTSlice(reference, (sourceIp, index) -> {
+                ImageProcessor scaledSourceIp = magnification != 1.0 ? sourceIp.resize((int) (magnification * sourceIp.getWidth()), (int) (magnification * sourceIp.getHeight()), false) : sourceIp;
+                BufferedImage bufferedImage = ImageJUtils.copyBufferedImageToARGB(scaledSourceIp.getBufferedImage());
+                Graphics2D graphics2D = bufferedImage.createGraphics();
+                drawer.drawOverlayOnGraphics(finalRois, graphics2D, new Rectangle(0,0,scaledSourceIp.getWidth(),scaledSourceIp.getHeight()), index, Collections.emptySet(), magnification);
+                graphics2D.dispose();
+                ColorProcessor render = new ColorProcessor(bufferedImage);
+                targetStack.setProcessor(render, index.zeroSliceIndexToOneStackIndex(reference));
+            }, progressInfo);
+
+            // Generate final output
+            ImagePlus result = new ImagePlus("ROI", targetStack);
+            ImageJUtils.copyHyperstackDimensions(reference, result);
+            result.copyScale(reference);
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
+        }
+
     }
 
     @JIPipeDocumentation(name = "Opacity", description = "Opacity of the added ROI and labels. If zero, they are not visible. If set to one, they are fully visible.")
@@ -300,5 +340,27 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("ignore-t")
     public void setIgnoreT(boolean ignoreT) {
         this.ignoreT = ignoreT;
+    }
+
+    @JIPipeDocumentation(name = "Magnification", description = "Magnification applied during the rendering")
+    @JIPipeParameter("magnification")
+    public double getMagnification() {
+        return magnification;
+    }
+
+    @JIPipeParameter("magnification")
+    public void setMagnification(double magnification) {
+        this.magnification = magnification;
+    }
+
+    @JIPipeDocumentation(name = "Prefer render via overlay", description = "If enabled, the rendering via an ImageJ overlay is preferred even if the magnification is 1.0")
+    @JIPipeParameter("prefer-render-via-overlay")
+    public boolean isPreferRenderViaOverlay() {
+        return preferRenderViaOverlay;
+    }
+
+    @JIPipeParameter("prefer-render-via-overlay")
+    public void setPreferRenderViaOverlay(boolean preferRenderViaOverlay) {
+        this.preferRenderViaOverlay = preferRenderViaOverlay;
     }
 }
