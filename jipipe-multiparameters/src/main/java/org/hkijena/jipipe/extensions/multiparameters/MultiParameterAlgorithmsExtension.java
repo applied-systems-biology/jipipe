@@ -69,4 +69,5 @@ public class MultiParameterAlgorithmsExtension extends JIPipePrepackagedDefaultJ
         return "org.hkijena.jipipe:multi-parameters-algorithms";
     }
 
+
 }

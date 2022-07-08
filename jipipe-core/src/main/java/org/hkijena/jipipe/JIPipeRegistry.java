@@ -49,6 +49,8 @@ public interface JIPipeRegistry extends Service, JIPipeValidatable {
 
     JIPipeExternalEnvironmentRegistry getExternalEnvironmentRegistry();
 
+    JIPipeExtensionRegistry getExtensionRegistry();
+
     Set<String> getRegisteredExtensionIds();
 
     JIPipeDependency findExtensionById(String dependencyId);

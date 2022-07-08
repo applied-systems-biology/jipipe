@@ -548,15 +548,17 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         managePluginsButton.addActionListener(e -> managePlugins());
         pluginsMenu.add(managePluginsButton);
 
-        pluginsMenu.addSeparator();
+        JMenu pluginsImageJMenu = new JMenu("ImageJ");
 
         JMenuItem manageImageJPlugins = new JMenuItem("Manage ImageJ plugins (via JIPipe)", UIUtils.getIconFromResources("apps/imagej.png"));
         manageImageJPlugins.addActionListener(e -> manageImageJPlugins(true));
-        pluginsMenu.add(manageImageJPlugins);
+        pluginsImageJMenu.add(manageImageJPlugins);
 
         JMenuItem manageImageJPluginsViaUpdater = new JMenuItem("Run ImageJ updater", UIUtils.getIconFromResources("apps/imagej.png"));
         manageImageJPluginsViaUpdater.addActionListener(e -> manageImageJPlugins(false));
-        pluginsMenu.add(manageImageJPluginsViaUpdater);
+        pluginsImageJMenu.add(manageImageJPluginsViaUpdater);
+
+        pluginsMenu.add(pluginsImageJMenu);
 
         UIUtils.installMenuExtension(this, pluginsMenu, JIPipeMenuExtensionTarget.ProjectPluginsMenu, true);
 

@@ -103,6 +103,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     private final JIPipeExpressionRegistry tableOperationRegistry;
     private final JIPipeUtilityRegistry utilityRegistry;
     private final JIPipeExternalEnvironmentRegistry externalEnvironmentRegistry;
+    private final JIPipeExtensionRegistry extensionRegistry;
+
     private FilesCollection imageJPlugins = null;
     private boolean initializing = false;
 
@@ -122,6 +124,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         tableOperationRegistry = new JIPipeExpressionRegistry(this);
         utilityRegistry = new JIPipeUtilityRegistry(this);
         externalEnvironmentRegistry = new JIPipeExternalEnvironmentRegistry(this);
+        extensionRegistry = new JIPipeExtensionRegistry(this);
     }
 
     /**
@@ -480,6 +483,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         List<PluginInfo<JIPipeJavaExtension>> pluginList = pluginService.getPluginsOfType(JIPipeJavaExtension.class).stream()
                 .sorted(JIPipe::comparePlugins).collect(Collectors.toList());
         List<JIPipeDependency> javaExtensions = new ArrayList<>();
+        extensionRegistry.initialize(); // Init extension registry
+        extensionRegistry.load();
         progressInfo.setProgress(1);
         progressInfo.log("Pre-initialization phase ...");
         for (int i = 0; i < pluginList.size(); ++i) {
@@ -487,11 +492,19 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             IJ.showProgress(i + 1, pluginList.size());
             try {
                 JIPipeJavaExtension extension = info.createInstance();
+                extensionRegistry.registerKnownExtension(extension);
 
                 // Validate ID
                 if(!isValidExtensionId(extension.getDependencyId())) {
                     System.err.println("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension.");
                     progressInfo.log("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension.");
+                }
+
+                // Check if the extension should be loaded
+                if(!extension.isCoreExtension() && !extensionRegistry.getActivatedExtensions().contains(extension.getDependencyId())) {
+                    progressInfo.log("Extension with ID " + extension.getDependencyId() + " will not be loaded (deactivated in extension manager)");
+                    javaExtensions.add(null);
+                    continue;
                 }
 
                 getContext().inject(extension);
@@ -516,12 +529,19 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             JIPipeJavaExtension extension = null;
             try {
                 extension = (JIPipeJavaExtension) javaExtensions.get(i);
+
+                if(extension == null) {
+                    registerFeaturesProgress.log("Skipping (deactivated in extension manager)");
+                    continue;
+                }
+
                 extension.register(this, getContext(), progressInfo.resolve(extension.getDependencyId()));
                 registeredExtensions.add(extension);
                 registeredExtensionIds.add(extension.getDependencyId());
                 eventBus.post(new ExtensionRegisteredEvent(this, extension));
             } catch (NoClassDefFoundError | Exception e) {
                 e.printStackTrace();
+                progressInfo.log(e.toString());
                 issues.getErroneousPlugins().add(info);
                 if (extension != null)
                     failedExtensions.add(extension);
@@ -884,6 +904,11 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     }
 
     @Override
+    public JIPipeExtensionRegistry getExtensionRegistry() {
+        return extensionRegistry;
+    }
+
+    @Override
     public JIPipeNodeRegistry getNodeRegistry() {
         return nodeRegistry;
     }
@@ -920,7 +945,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Algorithms").report(nodeRegistry);
+        report.resolve("Nodes").report(nodeRegistry);
         for (JIPipeDependency extension : failedExtensions) {
             if (extension != null) {
                 report.resolve("Extensions").resolve(extension.getDependencyId()).reportIsInvalid("Error during loading the extension!",
@@ -980,7 +1005,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * Triggered when a new data type is registered
      */
     public static class DatatypeRegisteredEvent {
-        private String id;
+        private final String id;
 
         /**
          * @param id the data type id
@@ -998,8 +1023,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * Generated when content is added to an {@link JIPipeJsonExtension}
      */
     public static class ExtensionContentAddedEvent {
-        private JIPipeJsonExtension extension;
-        private Object content;
+        private final JIPipeJsonExtension extension;
+        private final Object content;
 
         /**
          * @param extension event source
@@ -1023,8 +1048,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * Generated when content is removed from an {@link JIPipeJsonExtension}
      */
     public static class ExtensionContentRemovedEvent {
-        private JIPipeJsonExtension extension;
-        private Object content;
+        private final JIPipeJsonExtension extension;
+        private final Object content;
 
         /**
          * @param extension event source
@@ -1069,8 +1094,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * Triggered by {@link JIPipeRegistry} when an extension is registered
      */
     public static class ExtensionRegisteredEvent {
-        private JIPipeRegistry registry;
-        private JIPipeDependency extension;
+        private final JIPipeRegistry registry;
+        private final JIPipeDependency extension;
 
         /**
          * @param registry  event source
@@ -1094,7 +1119,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * Triggered when an algorithm is registered
      */
     public static class NodeInfoRegisteredEvent {
-        private JIPipeNodeInfo nodeInfo;
+        private final JIPipeNodeInfo nodeInfo;
 
         /**
          * @param nodeInfo the algorithm type
