@@ -15,6 +15,7 @@
 package org.hkijena.jipipe.ui.extensions;
 
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.layouts.ModifiedFlowLayout;
@@ -36,9 +37,15 @@ public class ExtensionListPanel extends JIPipeWorkbenchPanel {
     public ExtensionListPanel(JIPipeWorkbench workbench, List<JIPipeDependency> plugins) {
         super(workbench);
         this.plugins = new ArrayList<>(plugins);
-        this.plugins.sort(Comparator.comparing(dependency -> dependency.getMetadata().getName()));
+        this.plugins.sort(Comparator.comparing(this::isCoreDependency).thenComparing(dependency -> dependency.getMetadata().getName()));
         initialize();
         lazyLoad();
+    }
+
+    private boolean isCoreDependency(JIPipeDependency dependency) {
+        if(dependency instanceof JIPipeJavaExtension)
+            return ((JIPipeJavaExtension) dependency).isCoreExtension();
+        return false;
     }
 
     private void initialize() {
