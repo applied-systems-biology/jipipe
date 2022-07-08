@@ -45,7 +45,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "TrackMate spot detector", description = "A spot detector for TrackMate")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "TODO", jsonSchemaURL = "TODO")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a JSON file that stores the properties of the spot detector", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json")
 public class SpotDetectorData implements JIPipeData {
 
     private final SpotDetectorFactory<?> spotDetectorFactory;
