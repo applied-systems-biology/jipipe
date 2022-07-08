@@ -36,4 +36,9 @@ public class BatchAssistantExtension extends JIPipePrepackagedDefaultJavaExtensi
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerDatatype("jipipe:data-batch-status", DataBatchStatusData.class, UIUtils.getIconURLFromResources("actions/help-info.png"));
     }
+
+    @Override
+    public boolean isCoreExtension() {
+        return true;
+    }
 }

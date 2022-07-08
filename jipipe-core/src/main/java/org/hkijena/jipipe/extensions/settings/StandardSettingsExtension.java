@@ -166,4 +166,9 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
                 null);
     }
 
+    @Override
+    public boolean isCoreExtension() {
+        return true;
+    }
+
 }

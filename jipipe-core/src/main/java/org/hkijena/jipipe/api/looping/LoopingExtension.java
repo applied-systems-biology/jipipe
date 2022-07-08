@@ -55,4 +55,9 @@ public class LoopingExtension extends JIPipePrepackagedDefaultJavaExtension {
     public String getDependencyId() {
         return "org.hkijena.jipipe:looping";
     }
+
+    @Override
+    public boolean isCoreExtension() {
+        return true;
+    }
 }

@@ -66,4 +66,9 @@ public class MultiParametersExtension extends JIPipePrepackagedDefaultJavaExtens
         return "org.hkijena.jipipe:multi-parameters";
     }
 
+    @Override
+    public boolean isCoreExtension() {
+        return true;
+    }
+
 }

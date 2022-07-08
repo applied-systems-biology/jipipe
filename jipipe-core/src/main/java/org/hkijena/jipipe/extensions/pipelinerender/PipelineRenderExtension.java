@@ -52,4 +52,9 @@ public class PipelineRenderExtension extends JIPipePrepackagedDefaultJavaExtensi
         return "org.hkijena.jipipe:pipeline-render";
     }
 
+    @Override
+    public boolean isCoreExtension() {
+        return true;
+    }
+
 }

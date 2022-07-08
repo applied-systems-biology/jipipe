@@ -198,4 +198,9 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
     public void onExtensionRegistered(JIPipe.ExtensionRegisteredEvent event) {
         updateRegistrationTasks();
     }
+
+    @Override
+    public boolean isCoreExtension() {
+        return true;
+    }
 }

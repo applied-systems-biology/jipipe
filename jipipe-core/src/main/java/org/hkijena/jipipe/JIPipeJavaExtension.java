@@ -59,11 +59,21 @@ public interface JIPipeJavaExtension extends SciJavaPlugin, JIPipeDependency {
     /**
      * Returns icons that will be displayed in the splash screen.
      * They must have a size of 32x32.
-     * There can only be at most 45 icons
+     * There can only be at most 45 icons, so please do not over-do it
      *
      * @return the icons
      */
     default List<ImageIcon> getSplashIcons() {
         return Collections.emptyList();
+    }
+
+    /**
+     * Returns whether this extension is a core extension and thus cannot be disabled by users.
+     * Defaults to false.
+     * Please be sure if you really want to mark an extension as core extension.
+     * @return if the extension cannot be disabled
+     */
+    default boolean isCoreExtension() {
+        return false;
     }
 }

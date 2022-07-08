@@ -258,4 +258,9 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new SetVariableFunction());
         registerExpressionFunction(new SetVariableIfFunction());
     }
+
+    @Override
+    public boolean isCoreExtension() {
+        return true;
+    }
 }

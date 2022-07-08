@@ -57,4 +57,9 @@ public class ToolsExtension extends JIPipePrepackagedDefaultJavaExtension {
         return "org.hkijena.jipipe:tools";
     }
 
+    @Override
+    public boolean isCoreExtension() {
+        return true;
+    }
+
 }

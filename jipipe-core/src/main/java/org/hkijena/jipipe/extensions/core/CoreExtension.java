@@ -119,4 +119,9 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         return "org.hkijena.jipipe:core";
     }
 
+    @Override
+    public boolean isCoreExtension() {
+        return true;
+    }
+
 }

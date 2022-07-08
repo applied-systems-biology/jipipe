@@ -63,4 +63,9 @@ public class JIPipeCompartmentsExtension extends JIPipePrepackagedDefaultJavaExt
         registerDatatype("jipipe:compartment-output", JIPipeCompartmentOutputData.class,
                 ResourceUtils.getPluginResource("icons/data-types/graph-compartment.png"));
     }
+
+    @Override
+    public boolean isCoreExtension() {
+        return true;
+    }
 }

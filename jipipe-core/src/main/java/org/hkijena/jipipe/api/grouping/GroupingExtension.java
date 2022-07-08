@@ -74,4 +74,9 @@ public class GroupingExtension extends JIPipePrepackagedDefaultJavaExtension {
         return "org.hkijena.jipipe:grouping";
     }
 
+    @Override
+    public boolean isCoreExtension() {
+        return true;
+    }
+
 }

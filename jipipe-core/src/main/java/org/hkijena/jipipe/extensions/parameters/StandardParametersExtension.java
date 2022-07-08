@@ -720,4 +720,9 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         module.addDeserializer(Rectangle.class, new RectangleDeserializer());
         JsonUtils.getObjectMapper().registerModule(module);
     }
+
+    @Override
+    public boolean isCoreExtension() {
+        return true;
+    }
 }

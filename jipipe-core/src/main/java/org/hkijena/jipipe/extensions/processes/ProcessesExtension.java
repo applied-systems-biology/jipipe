@@ -50,4 +50,9 @@ public class ProcessesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 extensionSettings);
     }
+
+    @Override
+    public boolean isCoreExtension() {
+        return true;
+    }
 }

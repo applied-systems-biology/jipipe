@@ -35,4 +35,9 @@ public class NodeTemplateBoxToolExtension extends JIPipePrepackagedDefaultJavaEx
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerContextMenuAction(new AddTemplateContextMenuAction());
     }
+
+    @Override
+    public boolean isCoreExtension() {
+        return true;
+    }
 }
