@@ -120,7 +120,10 @@ public class TrackDrawer implements JIPipeParameterCollection {
 
         // Draw
         graphics2D.translate(renderArea.x, renderArea.y);
+        int oldSliceIndex = imagePlus.getCurrentSlice();
+        imagePlus.setSlice(sliceIndex.zeroSliceIndexToOneStackIndex(imagePlus));
         spotOverlay.drawOverlay(graphics2D);
+        imagePlus.setSlice(oldSliceIndex);
 
         // Draw label
 //        if(labelSettings.isDrawLabels()) {

@@ -41,14 +41,8 @@ import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SplitSpotsNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SpotDetectorNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MeasureSpotsNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SpotFilterNode;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.FollowSpotsPerTrackNode;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureEdgesNode;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureTracksNode;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MergeTracksNode;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.SplitTracksNode;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.TrackFilterNode;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.TrackSchemeRendererNode;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.TrackingNode;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SpotsToRGBNode;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.*;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.EdgeFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeatureFilterParameter;
@@ -135,6 +129,8 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     private void registerParameters() {
         registerParameterType("trackmate-spot-feature", SpotFeature.class, "TrackMate spot feature", "A spot feature");
+        registerParameterType("trackmate-track-feature", TrackFeature.class, "TrackMate track feature", "A track feature");
+        registerParameterType("trackmate-edge-feature", EdgeFeature.class, "TrackMate edge feature", "An edge feature");
         registerParameterType("trackmate-spot-feature-penalty",
                 SpotFeaturePenaltyParameter.class,
                 SpotFeaturePenaltyParameter.List.class,
@@ -151,8 +147,6 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "TrackMate spot feature filter",
                 "Filters spots by a feature",
                 null);
-
-        registerParameterType("trackmate-track-feature", TrackFeature.class, "TrackMate track feature", "A track feature");
         registerParameterType("trackmate-track-feature-filter",
                 TrackFeatureFilterParameter.class,
                 TrackFeatureFilterParameter.List.class,
@@ -207,6 +201,8 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("trackmate-visualize-track-scheme", TrackSchemeRendererNode.class, RESOURCES.getIcon16URLFromResources("trackscheme.png"));
         registerNodeType("trackmate-visualize-follow-spots", FollowSpotsPerTrackNode.class, RESOURCES.getIcon16URLFromResources("trackscheme.png"));
+        registerNodeType("trackmate-visualize-spots", SpotsToRGBNode.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
+        registerNodeType("trackmate-visualize-tracks", TracksToRGBNode.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
     }
 
     private void registerDataTypes() {
