@@ -17,15 +17,17 @@ package org.hkijena.jipipe.ui.extensions;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
+import java.awt.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
 
@@ -49,11 +51,87 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
         setSize(350,350);
 
         logoPanel = new ExtensionItemLogoPanel(extension);
-        logoPanel.setLayout(new BorderLayout());
+        logoPanel.setLayout(new GridBagLayout());
         add(logoPanel, BorderLayout.CENTER);
 
-        JLabel label = new JLabel(extension.getMetadata().getName());
-        logoPanel.add(label, BorderLayout.CENTER);
+        JLabel nameLabel = new JLabel(extension.getMetadata().getName());
+        nameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));
+        logoPanel.add(nameLabel, new GridBagConstraints(0,
+                0,
+                1,
+                1,
+                1,
+                0,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(16,8,16,8),
+                0,
+                0));
+
+        JTextPane descriptionLabel = UIUtils.makeBorderlessReadonlyTextPane(extension.getMetadata().getDescription().getHtml());
+        descriptionLabel.setOpaque(false);
+        logoPanel.add(descriptionLabel, new GridBagConstraints(0,
+                1,
+                1,
+                1,
+                1,
+                1,
+                GridBagConstraints.NORTHWEST,
+                GridBagConstraints.HORIZONTAL,
+                new Insets(4,8,4,8),
+                0,
+                0));
+
+        if(!extension.getMetadata().getAuthors().isEmpty()) {
+            JPanel authorPanel = new JPanel();
+            authorPanel.setLayout(new BoxLayout(authorPanel, BoxLayout.X_AXIS));
+            authorPanel.setOpaque(false);
+
+            if(extension.getMetadata().getAuthors().size() == 1) {
+                JIPipeAuthorMetadata author = extension.getMetadata().getAuthors().get(0);
+                JButton authorButton = new JButton(author.toString(), UIUtils.getIconFromResources("actions/im-user.png"));
+                authorButton.setToolTipText("Click to show more information");
+                authorButton.addActionListener(e -> {
+                    JIPipeAuthorMetadata.openAuthorInfoWindow(getWorkbench().getWindow(), extension.getMetadata().getAuthors(), author);
+                });
+                authorButton.setOpaque(false);
+                authorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+                authorButton.setBackground(new Color(0, 0, 0, 0));
+                authorPanel.add(authorButton);
+            }
+            else {
+                List<JIPipeAuthorMetadata> firstAuthors = extension.getMetadata().getAuthors().stream().filter(JIPipeAuthorMetadata::isFirstAuthor).collect(Collectors.toList());
+                if(firstAuthors.isEmpty()) {
+                    firstAuthors = Arrays.asList(extension.getMetadata().getAuthors().get(0));
+                }
+                String name = firstAuthors.stream().map(JIPipeAuthorMetadata::getLastName).collect(Collectors.joining(", "));
+                if(firstAuthors.size() < extension.getMetadata().getAuthors().size()) {
+                    name += " et al.";
+                }
+
+                JIPipeAuthorMetadata author = firstAuthors.get(0);
+                JButton authorButton = new JButton(name, UIUtils.getIconFromResources("actions/im-user.png"));
+                authorButton.setToolTipText("Click to show more information");
+                authorButton.addActionListener(e -> {
+                    JIPipeAuthorMetadata.openAuthorInfoWindow(getWorkbench().getWindow(), extension.getMetadata().getAuthors(), author);
+                });
+                authorButton.setOpaque(false);
+                authorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+                authorButton.setBackground(new Color(0, 0, 0, 0));
+                authorPanel.add(authorButton);
+            }
+            logoPanel.add(authorPanel, new GridBagConstraints(0,
+                    2,
+                    1,
+                    1,
+                    1,
+                    0,
+                    GridBagConstraints.NORTHWEST,
+                    GridBagConstraints.HORIZONTAL,
+                    new Insets(4, 8, 4, 8),
+                    0,
+                    0));
+        }
 
         initializeButtonPanel();
     }
@@ -66,6 +144,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
 
         if(isCoreExtension()) {
             JLabel infoLabel = new JLabel("Core extension", UIUtils.getIconFromResources("emblems/emblem-important-blue.png"), JLabel.LEFT);
+            infoLabel.setToolTipText("This is a mandatory core extension that cannot be disabled");
             buttonPanel.add(infoLabel);
         }
 
