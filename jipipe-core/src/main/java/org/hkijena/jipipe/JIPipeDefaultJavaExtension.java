@@ -42,6 +42,7 @@ import org.hkijena.jipipe.extensions.expressions.functions.ColumnOperationAdapte
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterGenerator;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterTypeInfo;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
@@ -83,6 +84,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
         metadata.setCitation(getCitation());
         metadata.setLicense(getLicense());
         metadata.setWebsite(getWebsite());
+        metadata.setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("extension-thumbnail-default.png")));
     }
 
     /**
@@ -127,12 +129,6 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      */
     public abstract String getLicense();
 
-    /**
-     * @return The extension logo
-     */
-    public URL getLogo() {
-        return ResourceUtils.getPluginResource("logo-400.png");
-    }
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {

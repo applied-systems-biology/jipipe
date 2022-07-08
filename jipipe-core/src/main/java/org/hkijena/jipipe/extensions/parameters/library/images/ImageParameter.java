@@ -8,14 +8,32 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import org.hkijena.jipipe.utils.UIUtils;
 
+import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Path;
 
 @JsonSerialize(using = ImageParameter.Serializer.class)
 @JsonDeserialize(using = ImageParameter.Deserializer.class)
 public class ImageParameter {
 
     private BufferedImage image;
+
+    public ImageParameter() {
+    }
+
+    public ImageParameter(BufferedImage image) {
+        this.image = image;
+    }
+
+    public ImageParameter(ImageParameter other) {
+        this.image = UIUtils.copyBufferedImage(other.image);
+    }
+
+    public ImageParameter(URL resource) {
+        this(UIUtils.toBufferedImage(new ImageIcon(resource).getImage(), BufferedImage.TYPE_INT_ARGB));
+    }
 
     public BufferedImage getImage() {
         return image;

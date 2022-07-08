@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -27,7 +28,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
  * JSON-serializable project metadata
  */
 public class JIPipeMetadata implements JIPipeParameterCollection {
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private String name = "New project";
     private HTMLText description = new HTMLText("A JIPipe project");
     private JIPipeAuthorMetadata.List authors = new JIPipeAuthorMetadata.List();
@@ -37,6 +38,8 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
     private String license = "";
     private String citation = "";
     private StringList dependencyCitations = new StringList();
+
+    private ImageParameter thumbnail = new ImageParameter();
 
     /**
      * Creates new empty instance
@@ -58,6 +61,7 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
         this.license = other.license;
         this.citation = other.citation;
         this.dependencyCitations = new StringList(other.dependencyCitations);
+        this.thumbnail = new ImageParameter(other.thumbnail);
     }
 
     /**
@@ -224,13 +228,28 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
     @JIPipeDocumentation(name = "Dependency citations", description = "A list of external work to cite")
     @JIPipeParameter(value = "dependency-citations", uiOrder = 6)
     @StringParameterSettings(monospace = true)
+    @JsonGetter("dependency-citations")
     public StringList getDependencyCitations() {
         return dependencyCitations;
     }
 
     @JIPipeParameter("dependency-citations")
+    @JsonSetter("dependency-citations")
     public void setDependencyCitations(StringList dependencyCitations) {
         this.dependencyCitations = dependencyCitations;
 
+    }
+
+    @JIPipeDocumentation(name = "Thumbnail", description = "A thumbnail image for various purposes")
+    @JIPipeParameter("thumbnail")
+    @JsonGetter("thumbnail")
+    public ImageParameter getThumbnail() {
+        return thumbnail;
+    }
+
+    @JIPipeParameter("thumbnail")
+    @JsonSetter("thumbnail")
+    public void setThumbnail(ImageParameter thumbnail) {
+        this.thumbnail = thumbnail;
     }
 }

@@ -57,6 +57,8 @@ import java.awt.*;
 import java.awt.datatransfer.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -501,6 +503,19 @@ public class UIUtils {
     }
 
     /**
+     * Copy a {@link BufferedImage}
+     *
+     * @param bi the image
+     * @return the copy
+     */
+    public static BufferedImage copyBufferedImage(BufferedImage bi) {
+        ColorModel cm = bi.getColorModel();
+        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
+        WritableRaster raster = bi.copyData(null);
+        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
+    }
+
+    /**
      * Returns an icon from JIPipe resources
      * If you want to utilize resources from your Java extension, use {@link ResourceManager}
      *
@@ -923,13 +938,14 @@ public class UIUtils {
 
     /**
      * Converts a given Image into a BufferedImage
+     * Applies conversion if the types do not match (useful for greyscale conversion)
      *
      * @param img  The Image to be converted
      * @param type the output image type
      * @return The converted BufferedImage
      */
     public static BufferedImage toBufferedImage(Image img, int type) {
-        if (img instanceof BufferedImage) {
+        if (img instanceof BufferedImage && ((BufferedImage) img).getType() == type) {
             return (BufferedImage) img;
         }
 

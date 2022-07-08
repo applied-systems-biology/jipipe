@@ -501,7 +501,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                 }
 
                 // Check if the extension should be loaded
-                if(!extension.isCoreExtension() && !extensionRegistry.getActivatedExtensions().contains(extension.getDependencyId())) {
+                if(!extension.isCoreExtension() && !extensionRegistry.getStartupExtensions().contains(extension.getDependencyId())) {
                     progressInfo.log("Extension with ID " + extension.getDependencyId() + " will not be loaded (deactivated in extension manager)");
                     javaExtensions.add(null);
                     continue;

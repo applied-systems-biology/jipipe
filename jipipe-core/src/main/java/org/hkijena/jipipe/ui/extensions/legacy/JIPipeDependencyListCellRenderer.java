@@ -9,9 +9,10 @@
  *
  * The project code is licensed under BSD 2-Clause.
  * See the LICENSE file provided with the code for the full license.
+ *
  */
 
-package org.hkijena.jipipe.ui.extensions;
+package org.hkijena.jipipe.ui.extensions.legacy;
 
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJsonExtension;

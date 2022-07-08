@@ -34,7 +34,9 @@ import org.hkijena.jipipe.api.grouping.JsonNodeRegistrationTask;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -66,6 +68,7 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeDep
      * Creates a new instance
      */
     public JIPipeJsonExtension() {
+        metadata.setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("extension-thumbnail-default.png")));
     }
 
     /**

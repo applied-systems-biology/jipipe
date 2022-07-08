@@ -15,8 +15,6 @@ package org.hkijena.jipipe.api.registries;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.node.MissingNode;
 import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import ij.Prefs;
@@ -61,6 +59,10 @@ public class JIPipeExtensionRegistry {
 
     private final List<JIPipeDependency> knownExtensions = new ArrayList<>();
 
+    private final Set<String> scheduledActivateExtensions = new HashSet<>();
+
+    private final Set<String> scheduledDeactivateExtensions = new HashSet<>();
+
     public JIPipeExtensionRegistry(JIPipe jiPipe) {
         this.jiPipe = jiPipe;
     }
@@ -82,8 +84,22 @@ public class JIPipeExtensionRegistry {
         return Files.isRegularFile(imageJDir.resolve("jipipe.properties.json"));
     }
 
-    public Set<String> getActivatedExtensions() {
+    /**
+     * List of all extensions that are requested during startup
+     * Please note that this may not contain core extensions
+     * Use getActivatedExtensions() instead
+     * @return unmodifiable set
+     */
+    public Set<String> getStartupExtensions() {
         return Collections.unmodifiableSet(settings.getActivatedExtensions());
+    }
+
+    /**
+     * List of all activated extensions
+     * @return unmodifiable set
+     */
+    public Set<String> getActivatedExtensions() {
+        return Collections.unmodifiableSet(jiPipe.getRegisteredExtensionIds());
     }
 
     /**
@@ -100,16 +116,33 @@ public class JIPipeExtensionRegistry {
         return Collections.unmodifiableList(knownExtensions);
     }
 
+    public void clearSchedule(String id) {
+        scheduledDeactivateExtensions.remove(id);
+        scheduledActivateExtensions.remove(id);
+    }
+
     public void scheduleActivateExtension(String id) {
+        scheduledDeactivateExtensions.remove(id);
+        scheduledActivateExtensions.add(id);
         settings.getActivatedExtensions().add(id);
         save();
         eventBus.post(new ScheduledActivateExtension(id));
     }
 
     public void scheduleDeactivateExtension(String id) {
+        scheduledDeactivateExtensions.add(id);
+        scheduledActivateExtensions.remove(id);
         settings.getActivatedExtensions().remove(id);
         save();
         eventBus.post(new ScheduledDeactivateExtension(id));
+    }
+
+    public Set<String> getScheduledActivateExtensions() {
+        return Collections.unmodifiableSet(scheduledActivateExtensions);
+    }
+
+    public Set<String> getScheduledDeactivateExtensions() {
+        return Collections.unmodifiableSet(scheduledDeactivateExtensions);
     }
 
     /**

@@ -46,8 +46,9 @@ import org.hkijena.jipipe.ui.documentation.JIPipeDataTypeCompendiumUI;
 import org.hkijena.jipipe.ui.documentation.WelcomePanel;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
-import org.hkijena.jipipe.ui.extensions.JIPipePluginManagerUIPanel;
-import org.hkijena.jipipe.ui.extensions.JIPipePluginValidityCheckerPanel;
+import org.hkijena.jipipe.ui.extensions.JIPipeModernPluginManagerUI;
+import org.hkijena.jipipe.ui.extensions.legacy.JIPipePluginManagerUIPanel;
+import org.hkijena.jipipe.ui.extensions.legacy.JIPipePluginValidityCheckerPanel;
 import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.compartments.JIPipeCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
@@ -252,7 +253,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         documentTabPane.registerSingletonTab(TAB_PLUGIN_MANAGER,
                 "Plugin manager",
                 UIUtils.getIconFromResources("actions/plugins.png"),
-                () -> new JIPipePluginManagerUIPanel(this),
+                () -> new JIPipeModernPluginManagerUI(this),
                 DocumentTabPane.SingletonTabMode.Hidden);
         validityCheckerPanel = new ReloadableValidityChecker(project);
         documentTabPane.registerSingletonTab(TAB_VALIDITY_CHECK,
