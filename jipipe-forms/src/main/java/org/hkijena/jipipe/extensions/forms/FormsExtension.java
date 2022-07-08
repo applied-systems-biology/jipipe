@@ -42,7 +42,7 @@ public class FormsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public String getDependencyId() {
-        return "forms";
+        return "org.hkijena.jipipe:forms";
     }
 
     @Override

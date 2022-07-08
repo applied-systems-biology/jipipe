@@ -49,6 +49,7 @@ import org.hkijena.jipipe.ui.ijupdater.JIPipeProgressAdapter;
 import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
 import org.hkijena.jipipe.ui.running.JIPipeLogs;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
@@ -78,6 +79,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import java.util.zip.GZIPInputStream;
 
@@ -427,6 +429,36 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     }
 
     /**
+     * Returns if the ID is a valid extension ID
+     * Must have following structure: [group]:[artifact]
+     * [group] should be lower-case and be a valid Maven group ID
+     * [artifact] should be lower-case and a valid Maven artifact ID
+     * @param id the ID
+     * @return if the id is a valid extension id
+     */
+    public static boolean isValidExtensionId(String id) {
+        if(!StringUtils.isNullOrEmpty(id) && id.contains(":")) {
+            if(!id.equals(id.toLowerCase(Locale.ROOT)))
+                return false;
+            String[] split = id.split(":");
+            if(split.length != 2)
+                return false;
+            String groupId = split[0];
+            if(groupId.startsWith(".") || groupId.endsWith(".") || groupId.contains(".."))
+                return false;
+            Pattern groupPattern = Pattern.compile("[a-z0-9-.]+");
+            if(!groupPattern.matcher(groupId).matches())
+                return false;
+            String artifactId = split[1];
+            Pattern artifactPattern = Pattern.compile("[a-z0-9-]+");
+            if(!artifactPattern.matcher(artifactId).matches())
+                return false;
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Initializes JIPipe
      *
      * @param extensionSettings extension settings
@@ -455,6 +487,13 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             IJ.showProgress(i + 1, pluginList.size());
             try {
                 JIPipeJavaExtension extension = info.createInstance();
+
+                // Validate ID
+                if(!isValidExtensionId(extension.getDependencyId())) {
+                    System.err.println("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension.");
+                    progressInfo.log("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension.");
+                }
+
                 getContext().inject(extension);
                 extension.setRegistry(this);
                 if (extension instanceof AbstractService) {

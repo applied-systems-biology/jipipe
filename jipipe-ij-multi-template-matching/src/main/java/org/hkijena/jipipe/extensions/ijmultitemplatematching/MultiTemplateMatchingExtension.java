@@ -43,7 +43,7 @@ public class MultiTemplateMatchingExtension extends JIPipePrepackagedDefaultJava
 
     @Override
     public String getDependencyId() {
-        return "ij-multi-template-matching";
+        return "org.hkijena.jipipe:ij-multi-template-matching";
     }
 
     @Override

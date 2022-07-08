@@ -130,6 +130,10 @@ public class JsonExtensionLoaderExtension extends JIPipePrepackagedDefaultJavaEx
     public void runRegistrationTask(JsonExtensionRegistrationTask task) {
         try {
             JIPipeJsonExtension extension = JsonUtils.getObjectMapper().readerFor(JIPipeJsonExtension.class).readValue(task.getJsonNode());
+            if(!JIPipe.isValidExtensionId(extension.getDependencyId())) {
+                System.err.println("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension.");
+                getRegistry().getProgressInfo().log("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension.");
+            }
             getRegistry().register(extension, getRegistry().getProgressInfo());
         } catch (IOException e) {
             throw new RuntimeException(e);
