@@ -64,6 +64,11 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
         add(buttonPanel, BorderLayout.SOUTH);
 
+        if(isCoreExtension()) {
+            JLabel infoLabel = new JLabel("Core extension", UIUtils.getIconFromResources("emblems/emblem-important-blue.png"), JLabel.LEFT);
+            buttonPanel.add(infoLabel);
+        }
+
         buttonPanel.add(Box.createHorizontalGlue());
         actionButton = new JButton();
         actionButton.addActionListener(e -> executeAction());
@@ -86,7 +91,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
             }
             else {
                 actionButton.setText("Deactivate");
-                actionButton.setIcon(UIUtils.getIconFromResources("actions/error.png"));
+                actionButton.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
             }
         }
         else {
@@ -96,7 +101,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
             }
             else {
                 actionButton.setText("Activate");
-                actionButton.setIcon(UIUtils.getIconFromResources("actions/checkmark.png"));
+                actionButton.setIcon(UIUtils.getIconFromResources("emblems/vcs-normal.png"));
             }
         }
     }
