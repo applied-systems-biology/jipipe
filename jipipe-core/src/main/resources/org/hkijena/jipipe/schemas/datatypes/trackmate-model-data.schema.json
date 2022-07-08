@@ -1,66 +1,31 @@
 {
-  "$id": "https://jipipe.org/schemas/datatypes/imageplus-fft-data.schema.json",
+  "$id": "https://jipipe.org/schemas/datatypes/trackmate-model-data.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "description": "Contains two image files: fht.ome.tif / fht.tif and power_spectrum.ome.tif / power_spectrum.tif, as well as a file fht_info.json. Either the OME TIFF or TIFF must be present. fht.ome.tif / fht.tif contains the FHT (float32). power_spectrum.ome.tif / power_spectrum.tif contains the power spectrum (float32). fht_info.json contains a JSON object that defines following properties: quadrant-swap-needed (boolean), original-width (integer), original-height (integer), original-bit-depth (integer; 8, 16, or 32 are valid values), power-spectrum-mean (double).",
+  "description": "Contains an *.xml file that stores the TrackMate model and a *.tif image file that contains the image that is the basis of the model.",
   "type": "object",
-  "minProperties": 3,
-  "properties": {
-    "fht_info.json": {
-      "$ref": "#/$defs/fht_info",
-      "properties": {
-        "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
-      }
-    }
-  },
+  "minProperties": 2,
   "patternProperties": {
-    "^fht(\\.ome)*\\.tif": {
-      "$ref": "#/$defs/fht",
+    "^.tif": {
+      "$ref": "#/$defs/tif",
       "properties": {
         "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
       }
     },
-    "^power_spectrum(\\.ome)*\\.tif": {
-      "$ref": "#/$defs/power_spectrum",
+    "^.xml": {
+      "$ref": "#/$defs/xml",
       "properties": {
         "fs:entry-type": { "$ref": "https://jipipe.org/schemas/filesystem/type-file.schema.json" }
       }
     }
   },
   "$defs": {
-    "fht": {
+    "tif": {
       "type": "object",
-      "description": "fht.ome.tif / fht.tif contains the FHT (float32)"
+      "description": "Image of the track model"
     },
-    "power_spectrum": {
+    "xml": {
       "type": "object",
-      "description": "power_spectrum.ome.tif / power_spectrum.tif contains the power spectrum (float32)"
-    },
-    "fht_info": {
-      "type": "object",
-      "description": "Metadata about the FFT image",
-      "properties": {
-        "quadrant-swap-needed": {
-          "type": "boolean",
-          "description": "If a quadrant swap is needed"
-        },
-        "original-width": {
-          "type": "number",
-          "description": "Original width of the spatial domain image"
-        },
-        "original-height": {
-          "type": "number",
-          "description": "Original height of the spatial domain image"
-        },
-        "original-bit-depth": {
-          "type": "number",
-          "description": "Original bit depth spatial domain image",
-          "enum": [8,16,32]
-        },
-        "power-spectrum-mean": {
-          "type": "number",
-          "description": "Mean of the power spectrum"
-        }
-      }
+      "description": "TrackMate model"
     }
   }
 }
