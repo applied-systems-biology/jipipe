@@ -47,17 +47,17 @@ import org.hkijena.jipipe.extensions.tables.IntegratingColumnOperation;
 import org.hkijena.jipipe.extensions.tables.TableColumnReference;
 import org.hkijena.jipipe.extensions.tables.display.CachedTableViewerWindow;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.jsoup.Jsoup;
+import org.jsoup.safety.Safelist;
 import org.python.core.PyDictionary;
 
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
+import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import java.awt.*;
 import java.io.IOException;
@@ -301,15 +301,51 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * @param model the model
      * @return the results table
      */
-    public static ResultsTableData fromTableModel(TableModel model) {
+    public static ResultsTableData stringModelFromTableModel(TableModel model) {
         ResultsTableData resultsTableData = new ResultsTableData();
         for (int col = 0; col < model.getColumnCount(); col++) {
-            resultsTableData.addColumn(model.getColumnName(col), true);
+            String newColumnName = StringUtils.makeUniqueString(model.getColumnName(col), " ", resultsTableData.getColumnNames());
+            resultsTableData.addColumn(newColumnName, true);
         }
         for (int row = 0; row < model.getRowCount(); row++) {
             resultsTableData.addRow();
             for (int col = 0; col < model.getColumnCount(); col++) {
                 resultsTableData.setValueAt("" + model.getValueAt(row, col), row, col);
+            }
+        }
+        return resultsTableData;
+    }
+
+    /**
+     * Imports a table from a table model and column model
+     * @param model the table model
+     * @param columnModel the column model (can be null)
+     * @param stripColumnNameHtml if enabled, remove HTML from column names
+     * @return the table
+     */
+    public static ResultsTableData fromTableModel(TableModel model, TableColumnModel columnModel, boolean stripColumnNameHtml) {
+        ResultsTableData resultsTableData = new ResultsTableData();
+        for (int col = 0; col < model.getColumnCount(); col++) {
+            String requestedName;
+            if(columnModel != null) {
+                requestedName = StringUtils.nullToEmpty(columnModel.getColumn(col).getIdentifier());
+                if(requestedName.isEmpty()) {
+                    requestedName = model.getColumnName(col);
+                }
+            }
+            else {
+                requestedName = model.getColumnName(col);
+            }
+            if(stripColumnNameHtml) {
+                requestedName = Jsoup.clean(requestedName, new Safelist());
+            }
+            String newColumnName = StringUtils.makeUniqueString(requestedName, " ", resultsTableData.getColumnNames());
+            resultsTableData.addColumn(newColumnName, false);
+        }
+        for (int row = 0; row < model.getRowCount(); row++) {
+            resultsTableData.addRow();
+            for (int col = 0; col < model.getColumnCount(); col++) {
+                resultsTableData.setValueAt(model.getValueAt(row, col), row, col);
             }
         }
         return resultsTableData;

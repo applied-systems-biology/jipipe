@@ -193,6 +193,7 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("trackmate-filter-tracks", TrackFilterNode.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("trackmate-measure-tracks", MeasureTracksNode.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("trackmate-measure-edges", MeasureEdgesNode.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
+        registerNodeType("trackmate-measure-branches", MeasureBranchesNode.class, UIUtils.getIconURLFromResources("actions/distribute-graph-directed.png"));
 
         registerNodeType("trackmate-split-spots", SplitSpotsNode.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("trackmate-split-tracks", SplitTracksNode.class, UIUtils.getIconURLFromResources("actions/split.png"));

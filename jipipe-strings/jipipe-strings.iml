@@ -190,7 +190,6 @@
     <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark-ext-autolink:0.62.2" level="project" />
     <orderEntry type="library" name="Maven: org.nibor.autolink:autolink:0.6.0" level="project" />
     <orderEntry type="library" name="Maven: com.vladsch.flexmark:flexmark-pdf-converter:0.62.2" level="project" />
-    <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.11.3" level="project" />
     <orderEntry type="library" name="Maven: com.openhtmltopdf:openhtmltopdf-core:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.pdfbox:pdfbox:2.0.16" level="project" />
@@ -265,6 +264,7 @@
     <orderEntry type="library" name="Maven: org.apache.poi:poi-ooxml-lite:5.2.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.xmlbeans:xmlbeans:5.0.3" level="project" />
     <orderEntry type="library" name="Maven: com.github.virtuald:curvesapi:1.06" level="project" />
+    <orderEntry type="library" name="Maven: org.jsoup:jsoup:1.15.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter:5.7.0" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter-api:5.8.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.opentest4j:opentest4j:1.2.0" level="project" />
