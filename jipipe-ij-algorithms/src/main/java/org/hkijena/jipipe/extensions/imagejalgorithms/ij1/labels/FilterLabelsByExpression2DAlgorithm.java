@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -58,7 +59,7 @@ public class FilterLabelsByExpression2DAlgorithm extends JIPipeSimpleIteratingAl
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
 
-        org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             int[] allLabels = LabelImages.findAllLabels(ip);
             int[] numPixels = LabelImages.pixelCount(ip, allLabels);
             TIntArrayList keptLabels = new TIntArrayList();

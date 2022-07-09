@@ -13,6 +13,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
 @JIPipeDocumentation(name = "Insert image (masked)", description = "Overlays the target image with the source image according to a mask or ROI.")
@@ -49,9 +50,9 @@ public class MergeImagesAlgorithm extends JIPipeIteratingAlgorithm {
                     "Please check if the images are correct.");
         }
 
-        org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(output, (ip, index) -> {
+        ImageJUtils.forEachIndexedZCTSlice(output, (ip, index) -> {
             ImageProcessor mask = getMask(dataBatch, index, progressInfo);
-            ImageProcessor srcProcessor = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getSliceZero(src, index);
+            ImageProcessor srcProcessor = ImageJUtils.getSliceZero(src, index);
             for (int y = 0; y < ip.getHeight(); y++) {
                 for (int x = 0; x < ip.getWidth(); x++) {
                     if (mask.get(x, y) > 0) {

@@ -16,8 +16,6 @@ package org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots;
 
 import ij.ImagePlus;
 import ij.ImageStack;
-import ij.gui.ImageCanvas;
-import ij.gui.Roi;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -32,11 +30,10 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotDrawer;
-import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.utils.BufferedImageUtils;
 
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -81,7 +78,7 @@ public class SpotsToRGBNode extends JIPipeIteratingAlgorithm {
         ImageStack targetStack = new ImageStack(targetWidth, targetHeight, reference.getStackSize());
         ImageJUtils.forEachIndexedZCTSlice(reference, (sourceIp, index) -> {
             ImageProcessor scaledSourceIp = magnification != 1.0 ? sourceIp.resize((int) (magnification * sourceIp.getWidth()), (int) (magnification * sourceIp.getHeight()), false) : sourceIp;
-            BufferedImage bufferedImage = ImageJUtils.copyBufferedImageToARGB(scaledSourceIp.getBufferedImage());
+            BufferedImage bufferedImage = BufferedImageUtils.copyBufferedImageToARGB(scaledSourceIp.getBufferedImage());
             Graphics2D graphics2D = bufferedImage.createGraphics();
             spotDrawer.drawOnGraphics(spotsCollectionData, graphics2D,  new Rectangle(0,0,scaledSourceIp.getWidth(),scaledSourceIp.getHeight()), index, Collections.emptySet());
             graphics2D.dispose();

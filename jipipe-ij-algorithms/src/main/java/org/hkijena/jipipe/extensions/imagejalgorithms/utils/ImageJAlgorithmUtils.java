@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
@@ -130,7 +131,7 @@ public class ImageJAlgorithmUtils {
         ImageProcessor mask = new ByteProcessor(label.getWidth(), label.getHeight());
 
         // Ensure the correct type for label
-        label = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.convertToGreyscaleIfNeeded(new ImagePlus("", label)).getProcessor();
+        label = ImageJUtils.convertToGreyscaleIfNeeded(new ImagePlus("", label)).getProcessor();
 
         // Copy image
         image = image.duplicate();
@@ -339,24 +340,24 @@ public class ImageJAlgorithmUtils {
                     return ImageROITargetArea.createWhiteMask(img.getImage());
                 } else {
                     ImagePlus mask = rois.toMask(img.getImage(), true, false, 1);
-                    org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
+                    ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
                         ip.invert();
                     }, progressInfo.resolve("Invert mask"));
-                    return org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
+                    return ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
                 }
             }
             case InsideMask: {
                 ImagePlusData img = dataBatch.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
                 ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getImage();
-                return org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
+                return ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
             }
             case OutsideMask: {
                 ImagePlusData img = dataBatch.getInputData(imageSlotName, ImagePlusData.class, progressInfo);
                 ImagePlus mask = dataBatch.getInputData("Mask", ImagePlusData.class, progressInfo).getDuplicateImage();
-                org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
+                ImageJUtils.forEachIndexedZCTSlice(mask, (ip, index) -> {
                     ip.invert();
                 }, progressInfo.resolve("Invert mask"));
-                return org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
+                return ImageJUtils.ensureEqualSize(mask, img.getImage(), true);
             }
         }
         throw new UnsupportedOperationException();

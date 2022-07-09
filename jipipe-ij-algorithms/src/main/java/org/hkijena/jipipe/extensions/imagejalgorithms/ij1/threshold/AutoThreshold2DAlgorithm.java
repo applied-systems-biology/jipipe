@@ -34,6 +34,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 
@@ -119,7 +120,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
 
         if (thresholdMode == SliceThresholdMode.ApplyPerSlice) {
             List<Integer> thresholds = new ArrayList<>();
-            org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+            ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 ImageProcessor mask = getMask(img.getWidth(),
                         img.getHeight(),
                         finalRoiInput,
@@ -147,7 +148,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                     progressInfo);
         } else if (thresholdMode == SliceThresholdMode.CombineSliceStatistics) {
             int[] combinedHistogram = new int[256];
-            org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+            ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 ImageProcessor mask = getMask(img.getWidth(),
                         img.getHeight(),
                         finalRoiInput,
@@ -166,7 +167,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
             if (thresholdAnnotation.isEnabled()) {
                 annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
             }
-            org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachSlice(img, ip -> {
+            ImageJUtils.forEachSlice(img, ip -> {
                 ip.threshold(threshold);
             }, progressInfo);
             dataBatch.addOutputData(getFirstOutputSlot(),
@@ -176,7 +177,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
                     progressInfo);
         } else if (thresholdMode == SliceThresholdMode.CombineThresholdPerSlice) {
             List<Integer> thresholds = new ArrayList<>();
-            org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
+            ImageJUtils.forEachIndexedZCTSlice(img, (ip, index) -> {
                 ImageProcessor mask = getMask(img.getWidth(),
                         img.getHeight(),
                         finalRoiInput,
@@ -199,7 +200,7 @@ public class AutoThreshold2DAlgorithm extends JIPipeIteratingAlgorithm {
             if (thresholdAnnotation.isEnabled()) {
                 annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
             }
-            org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachSlice(img, ip -> {
+            ImageJUtils.forEachSlice(img, ip -> {
                 ip.threshold(threshold);
             }, progressInfo);
             dataBatch.addOutputData(getFirstOutputSlot(),

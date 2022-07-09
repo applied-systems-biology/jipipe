@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 
@@ -75,11 +76,11 @@ public class FilterLabelsByIdAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
-        ImagePlus outputImage = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.duplicate(inputImage);
+        ImagePlus outputImage = ImageJUtils.duplicate(inputImage);
         outputImage.setTitle(inputImage.getTitle());
         int[] ints = Ints.toArray(values.getIntegers(0, 0));
         if (keepValues) {
-            org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(outputImage, (ip, index) -> ImageJAlgorithmUtils.removeLabelsExcept(ip, ints), progressInfo);
+            ImageJUtils.forEachIndexedZCTSlice(outputImage, (ip, index) -> ImageJAlgorithmUtils.removeLabelsExcept(ip, ints), progressInfo);
         } else {
             LabelImages.replaceLabels(outputImage, ints, 0);
         }

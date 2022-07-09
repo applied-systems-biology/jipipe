@@ -30,6 +30,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -84,13 +85,13 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
 
         ExpressionVariables variables = new ExpressionVariables();
         TIntSet labelsToKeep = new TIntHashSet();
-        org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(labels, (labelProcessor, index) -> {
+        ImageJUtils.forEachIndexedZCTSlice(labels, (labelProcessor, index) -> {
 
             // Measure
             int z = Math.min(index.getZ(), labels.getNSlices() - 1);
             int c = Math.min(index.getC(), labels.getNChannels() - 1);
             int t = Math.min(index.getT(), labels.getNFrames() - 1);
-            ImageProcessor referenceProcessor = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getSliceZero(reference, c, z, t);
+            ImageProcessor referenceProcessor = ImageJUtils.getSliceZero(reference, c, z, t);
             ResultsTableData forRoi = ImageJAlgorithmUtils.measureLabels(labelProcessor, referenceProcessor, this.measurements, index, progressInfo);
 
             // Find labels to keep

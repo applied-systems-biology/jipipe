@@ -28,7 +28,6 @@ import org.hkijena.jipipe.extensions.ijtrackmate.parameters.EdgeFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeature;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
 import java.awt.Color;

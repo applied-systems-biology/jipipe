@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
 
 @JIPipeDocumentation(name = "Keep/Delete labels by overlap", description = "Deletes or keeps labels by a mask image. If the mask is white (value larger than zero) " +
@@ -59,7 +60,7 @@ public class FilterLabelsByMaskAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus labelImage = dataBatch.getInputData("Labels", ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
         ImagePlus maskImage = dataBatch.getInputData("Mask", ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
 
-        if (!org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.imagesHaveSameSize(labelImage, maskImage)) {
+        if (!ImageJUtils.imagesHaveSameSize(labelImage, maskImage)) {
             throw new UserFriendlyRuntimeException("Input images do not have the same size!",
                     "Input images do not have the same size!",
                     getName(),
@@ -68,12 +69,12 @@ public class FilterLabelsByMaskAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         TIntSet labelsToKeep = new TIntHashSet();
-        org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(labelImage, (labelProcessor, index) -> {
+        ImageJUtils.forEachIndexedZCTSlice(labelImage, (labelProcessor, index) -> {
             labelsToKeep.clear();
             int z = Math.min(index.getZ(), maskImage.getNSlices() - 1);
             int c = Math.min(index.getC(), maskImage.getNChannels() - 1);
             int t = Math.min(index.getT(), maskImage.getNFrames() - 1);
-            ImageProcessor maskProcessor = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getSliceZero(maskImage, c, z, t);
+            ImageProcessor maskProcessor = ImageJUtils.getSliceZero(maskImage, c, z, t);
             byte[] maskBytes = (byte[]) maskProcessor.getPixels();
 
             if (labelProcessor instanceof ByteProcessor) {

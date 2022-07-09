@@ -14,6 +14,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D3D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 @JIPipeDocumentation(name = "Seeded watershed", description = "Performs segmentation via watershed on a 2D or 3D image using flooding simulations. Please note that this node returns labels instead of masks. " +
         "The markers need to be labels, so apply a connected components labeling if you only have masks.")
@@ -50,9 +51,9 @@ public class SeededWatershedSegmentationAlgorithm extends JIPipeIteratingAlgorit
         ImagePlus inputImage = dataBatch.getInputData("Image", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
         ImagePlus seedImage = dataBatch.getInputData("Markers", ImagePlus3DGreyscaleData.class, progressInfo).getImage();
         if (applyPerSlice) {
-            ImagePlus resultImage = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.generateForEachIndexedZCTSlice(inputImage, (ip, index) -> {
+            ImagePlus resultImage = ImageJUtils.generateForEachIndexedZCTSlice(inputImage, (ip, index) -> {
                 ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(targetArea, dataBatch, index, progressInfo);
-                ImageProcessor seeds = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getSliceZero(seedImage, index);
+                ImageProcessor seeds = ImageJUtils.getSliceZero(seedImage, index);
                 return Watershed.computeWatershed(new ImagePlus("raw", ip), new ImagePlus("marker", seeds), new ImagePlus("mask", mask), connectivity.getNativeValue2D(), getDams, false).getProcessor();
             }, progressInfo);
             resultImage.copyScale(inputImage);

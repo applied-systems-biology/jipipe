@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -127,7 +128,7 @@ public abstract class JIPipeAsyncResultDataSlotPreview extends JIPipeResultDataS
                     if (thumbnail != null) {
                         Path thumbnailImagePath = thumbnailRootPath.resolve(thumbnail.getImageFile());
                         BufferedImage bufferedImage = ImageIO.read(thumbnailImagePath.toFile());
-                        bufferedImage = UIUtils.scaleImageToFit(bufferedImage, previewSize, previewSize);
+                        bufferedImage = BufferedImageUtils.scaleImageToFit(bufferedImage, previewSize, previewSize);
                         return new JLabel(new ImageIcon(bufferedImage));
                     }
                 } catch (Exception e) {

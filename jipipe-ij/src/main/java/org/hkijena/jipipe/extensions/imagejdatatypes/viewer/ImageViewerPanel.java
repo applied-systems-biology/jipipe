@@ -545,7 +545,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
             else if (UIUtils.EXTENSION_FILTER_JPEG.accept(targetFile.toFile()))
                 format = "JPEG";
             try {
-                BufferedImage image = ImageJUtils.copyBufferedImage(getCanvas().getImage());
+                BufferedImage image = BufferedImageUtils.copyBufferedImage(getCanvas().getImage());
                 for (ImageViewerPanelPlugin plugin : getPlugins()) {
                     plugin.postprocessDrawForExport(image, getCurrentSliceIndex(), getExportedMagnification());
                 }
@@ -566,7 +566,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
 //            plugin.postprocessDrawForExport(image, getCurrentSliceIndex(), getExportedMagnification());
 //        }
         ImageProcessor processor = generateSlice(getCurrentSliceIndex().getC(), getCurrentSliceIndex().getZ(), getCurrentSliceIndex().getT(), getExportedMagnification(), true);
-        BufferedImage image = ImageJUtils.copyBufferedImageToARGB(processor.getBufferedImage());
+        BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(processor.getBufferedImage());
         CopyImageToClipboard copyImageToClipboard = new CopyImageToClipboard();
         copyImageToClipboard.copyImage(image);
     }
@@ -952,7 +952,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
             processor = processor.resize((int) (magnification * image.getWidth()), (int) (magnification * image.getHeight()), false);
         }
         if (withPostprocessing) {
-            BufferedImage image = ImageJUtils.copyBufferedImageToARGB(processor.getBufferedImage());
+            BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(processor.getBufferedImage());
             for (ImageViewerPanelPlugin plugin : getPlugins()) {
                 plugin.postprocessDrawForExport(image, new ImageSliceIndex(c, z, t), magnification);
             }

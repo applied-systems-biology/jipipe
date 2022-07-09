@@ -36,7 +36,6 @@ import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;

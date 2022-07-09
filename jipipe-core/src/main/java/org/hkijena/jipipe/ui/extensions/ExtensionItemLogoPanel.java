@@ -14,12 +14,11 @@
 
 package org.hkijena.jipipe.ui.extensions;
 
-import net.imagej.ui.swing.updater.ImageJUpdater;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.Graphics;
@@ -44,7 +43,7 @@ public class ExtensionItemLogoPanel extends JPanel {
         else {
             thumbnail = new ImageParameter(ResourceUtils.getPluginResource("extension-thumbnail-default.png")).getImage();
         }
-        thumbnailDeactivated = UIUtils.toBufferedImage(thumbnail, BufferedImage.TYPE_BYTE_GRAY);
+        thumbnailDeactivated = BufferedImageUtils.toBufferedImage(thumbnail, BufferedImage.TYPE_BYTE_GRAY);
     }
 
     private boolean drawExtensionActivated() {

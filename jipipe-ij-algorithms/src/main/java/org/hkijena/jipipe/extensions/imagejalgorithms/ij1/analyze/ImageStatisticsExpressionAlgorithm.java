@@ -32,6 +32,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageStatistics5DExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -142,9 +143,9 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
             // Fetch the pixel buffers
             for (ImageSliceIndex index : indices) {
                 JIPipeProgressInfo indexProgress = batchProgress.resolveAndLog("Slice " + index);
-                ImageProcessor ip = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getSliceZero(img, index);
+                ImageProcessor ip = ImageJUtils.getSliceZero(img, index);
                 ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(targetArea, dataBatch, index, indexProgress);
-                org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getMaskedPixels_Slow(ip, mask, pixelsList);
+                ImageJUtils.getMaskedPixels_Slow(ip, mask, pixelsList);
             }
 
             // Generate statistics

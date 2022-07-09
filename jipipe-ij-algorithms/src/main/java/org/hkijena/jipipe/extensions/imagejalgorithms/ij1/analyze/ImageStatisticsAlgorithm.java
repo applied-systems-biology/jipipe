@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
@@ -220,14 +221,14 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             // Fetch the pixel buffers
             for (ImageSliceIndex index : indices) {
                 JIPipeProgressInfo indexProgress = batchProgress.resolveAndLog("Slice " + index);
-                ImageProcessor ip = org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getSliceZero(img, index);
+                ImageProcessor ip = ImageJUtils.getSliceZero(img, index);
                 ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(targetArea, dataBatch, index, indexProgress);
                 if (img.getBitDepth() == 8) {
-                    org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getMaskedPixels_8U(ip, mask, pixels8u);
+                    ImageJUtils.getMaskedPixels_8U(ip, mask, pixels8u);
                 } else if (img.getBitDepth() == 16) {
-                    org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getMaskedPixels_16U(ip, mask, pixels16u);
+                    ImageJUtils.getMaskedPixels_16U(ip, mask, pixels16u);
                 } else if (img.getBitDepth() == 32) {
-                    org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.getMaskedPixels_32F(ip, mask, pixels32f);
+                    ImageJUtils.getMaskedPixels_32F(ip, mask, pixels32f);
                 }
             }
 

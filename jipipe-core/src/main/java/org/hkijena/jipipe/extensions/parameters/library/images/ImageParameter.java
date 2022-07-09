@@ -6,13 +6,12 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.BufferedImageUtils;
 
 import javax.swing.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
-import java.nio.file.Path;
 
 @JsonSerialize(using = ImageParameter.Serializer.class)
 @JsonDeserialize(using = ImageParameter.Deserializer.class)
@@ -28,11 +27,11 @@ public class ImageParameter {
     }
 
     public ImageParameter(ImageParameter other) {
-        this.image = UIUtils.copyBufferedImage(other.image);
+        this.image = BufferedImageUtils.copyBufferedImage(other.image);
     }
 
     public ImageParameter(URL resource) {
-        this(UIUtils.toBufferedImage(new ImageIcon(resource).getImage(), BufferedImage.TYPE_INT_ARGB));
+        this(BufferedImageUtils.toBufferedImage(new ImageIcon(resource).getImage(), BufferedImage.TYPE_INT_ARGB));
     }
 
     public BufferedImage getImage() {
@@ -50,7 +49,7 @@ public class ImageParameter {
             if (imageParameter.image == null) {
                 jsonGenerator.writeNullField("data");
             } else {
-                jsonGenerator.writeStringField("data", UIUtils.imageToBase64(imageParameter.image, "png"));
+                jsonGenerator.writeStringField("data", BufferedImageUtils.imageToBase64(imageParameter.image, "png"));
             }
             jsonGenerator.writeEndObject();
         }
@@ -63,7 +62,7 @@ public class ImageParameter {
             JsonNode node = jsonParser.readValueAsTree();
             if (node.has("data") && !node.get("data").isNull()) {
                 try {
-                    parameter.image = UIUtils.base64ToImage(node.get("data").textValue());
+                    parameter.image = BufferedImageUtils.base64ToImage(node.get("data").textValue());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

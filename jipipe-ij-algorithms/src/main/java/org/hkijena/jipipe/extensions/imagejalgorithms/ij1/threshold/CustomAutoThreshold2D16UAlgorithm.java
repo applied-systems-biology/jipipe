@@ -38,6 +38,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 
 import java.util.ArrayList;
@@ -152,7 +153,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
     private void thresholdCombineThresholds(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus inputImage, ImagePlus outputImage, ExpressionVariables parameters, ROIListData finalRoiInput, ImagePlus finalMaskInput) {
         List<Integer> thresholds = new ArrayList<>();
         TShortArrayList pixels = new TShortArrayList(inputImage.getWidth() * inputImage.getHeight());
-        org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea,
                     inputImage.getWidth(),
                     inputImage.getHeight(),
@@ -176,7 +177,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         if (thresholdAnnotation.isEnabled()) {
             annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
         }
-        org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             // Get target processor and threshold
             ByteProcessor targetProcessor = (ByteProcessor) (outputImage.isStack() ?
                     outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
@@ -193,7 +194,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
     private void thresholdCombineStatistics(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus inputImage, ImagePlus outputImage, ExpressionVariables parameters, ROIListData finalRoiInput, ImagePlus finalMaskInput) {
         TShortArrayList pixels = new TShortArrayList(inputImage.getWidth() * inputImage.getHeight() *
                 inputImage.getNFrames() * inputImage.getNChannels() * inputImage.getNSlices());
-        org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea,
                     inputImage.getWidth(),
                     inputImage.getHeight(),
@@ -209,7 +210,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         if (thresholdAnnotation.isEnabled()) {
             annotations.add(thresholdAnnotation.createAnnotation("" + threshold));
         }
-        org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             // Get target processor and threshold
             ByteProcessor targetProcessor = (ByteProcessor) (outputImage.isStack() ?
                     outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
@@ -226,7 +227,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
     private void thresholdApplyPerSlice(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo, ImagePlus inputImage, ImagePlus outputImage, ExpressionVariables parameters, ROIListData finalRoiInput, ImagePlus finalMaskInput) {
         List<Integer> thresholds = new ArrayList<>();
         TShortArrayList pixels = new TShortArrayList(inputImage.getWidth() * inputImage.getHeight());
-        org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             ImageProcessor mask = ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea,
                     inputImage.getWidth(),
                     inputImage.getHeight(),

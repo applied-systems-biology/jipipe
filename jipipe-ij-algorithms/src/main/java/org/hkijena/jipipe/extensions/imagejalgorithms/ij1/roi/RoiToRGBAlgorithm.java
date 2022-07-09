@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi;
 
-import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.gui.ImageCanvas;
@@ -36,12 +35,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.NumberParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
+import org.hkijena.jipipe.utils.BufferedImageUtils;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Wrapper around {@link RoiDrawer}
@@ -161,7 +159,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
             ImageStack targetStack = new ImageStack(targetWidth, targetHeight, reference.getStackSize());
             ImageJUtils.forEachIndexedZCTSlice(reference, (sourceIp, index) -> {
                 ImageProcessor scaledSourceIp = magnification != 1.0 ? sourceIp.resize((int) (magnification * sourceIp.getWidth()), (int) (magnification * sourceIp.getHeight()), false) : sourceIp;
-                BufferedImage bufferedImage = ImageJUtils.copyBufferedImageToARGB(scaledSourceIp.getBufferedImage());
+                BufferedImage bufferedImage = BufferedImageUtils.copyBufferedImageToARGB(scaledSourceIp.getBufferedImage());
                 Graphics2D graphics2D = bufferedImage.createGraphics();
                 drawer.drawOverlayOnGraphics(finalRois, graphics2D, new Rectangle(0,0,scaledSourceIp.getWidth(),scaledSourceIp.getHeight()), index, Collections.emptySet(), magnification);
                 graphics2D.dispose();

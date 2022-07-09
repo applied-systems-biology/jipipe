@@ -41,9 +41,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
 import java.awt.image.DataBufferByte;
-import java.awt.image.WritableRaster;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Path;
@@ -665,33 +663,6 @@ public class ImageJUtils {
             ImageProcessor sourceProcessor = ImageJUtils.getSliceZero(src, index);
             targetProcessor.copyBits(sourceProcessor, 0, 0, Blitter.COPY);
         }, progressInfo);
-    }
-
-    /**
-     * Copy a {@link BufferedImage}
-     *
-     * @param bi the image
-     * @return the copy
-     */
-    public static BufferedImage copyBufferedImage(BufferedImage bi) {
-        ColorModel cm = bi.getColorModel();
-        boolean isAlphaPremultiplied = cm.isAlphaPremultiplied();
-        WritableRaster raster = bi.copyData(null);
-        return new BufferedImage(cm, raster, isAlphaPremultiplied, null);
-    }
-
-    /**
-     * Copy a {@link BufferedImage}
-     *
-     * @param bi the image
-     * @return the copy
-     */
-    public static BufferedImage copyBufferedImageToARGB(BufferedImage bi) {
-        BufferedImage result = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_INT_ARGB);
-        Graphics2D graphics = result.createGraphics();
-        graphics.drawImage(bi, 0, 0, null);
-        graphics.dispose();
-        return result;
     }
 
     /**
