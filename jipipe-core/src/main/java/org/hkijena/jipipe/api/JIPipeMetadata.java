@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
+import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
@@ -24,6 +25,11 @@ import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.StringUtils;
+
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * JSON-serializable project metadata
@@ -79,6 +85,27 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
     @JsonSetter("categories")
     public void setCategories(PluginCategoriesEnumParameter.List categories) {
         this.categories = categories;
+    }
+
+    /**
+     * Returns the categories of the metadata; processed for ease of use
+     * If the categories list is empty, "Uncategorized" is returned
+     * @return the categories
+     */
+    public Set<String> getProcessedCategories() {
+        if(categories.isEmpty()) {
+            return Collections.singleton(PluginCategoriesEnumParameter.CATEGORY_UNCATEGORIZED);
+        }
+        else {
+            Set<String> result = new HashSet<>();
+            for (PluginCategoriesEnumParameter category : getCategories()) {
+                String value = StringUtils.nullToEmpty(category.getValue());
+                value = value.trim();
+                value = WordUtils.capitalize(value);
+                result.add(value);
+            }
+            return result;
+        }
     }
 
     /**

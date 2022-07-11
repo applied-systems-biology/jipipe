@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions;
 
 import org.hkijena.jipipe.JIPipeDefaultJavaExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
+import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -31,6 +32,7 @@ public abstract class JIPipePrepackagedDefaultJavaExtension extends JIPipeDefaul
     public JIPipePrepackagedDefaultJavaExtension() {
         if(isCoreExtension()) {
             getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("core-extension-thumbnail-default.png")));
+            getMetadata().getCategories().add(new PluginCategoriesEnumParameter("Core"));
         }
     }
 
