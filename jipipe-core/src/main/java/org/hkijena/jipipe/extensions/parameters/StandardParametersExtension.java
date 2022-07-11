@@ -48,6 +48,7 @@ import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameterEd
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.parameters.library.colors.*;
 import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.FilePathParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
@@ -478,6 +479,15 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 SortOrder.class,
                 "Sort order",
                 "Available sort orders");
+
+        registerParameterType("plugin-categories-enum",
+                PluginCategoriesEnumParameter.class,
+                PluginCategoriesEnumParameter.List.class,
+                null,
+                null,
+                "Categories",
+                "ImageJ categories",
+                null);
     }
 
     private void registerPairParameters() {

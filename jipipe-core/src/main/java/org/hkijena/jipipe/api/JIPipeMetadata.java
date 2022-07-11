@@ -18,6 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -41,6 +42,8 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
 
     private ImageParameter thumbnail = new ImageParameter();
 
+    private PluginCategoriesEnumParameter.List categories = new PluginCategoriesEnumParameter.List();
+
     /**
      * Creates new empty instance
      */
@@ -62,6 +65,20 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
         this.citation = other.citation;
         this.dependencyCitations = new StringList(other.dependencyCitations);
         this.thumbnail = new ImageParameter(other.thumbnail);
+        this.categories = new PluginCategoriesEnumParameter.List(other.categories);
+    }
+
+    @JIPipeDocumentation(name = "Categories", description = "List of categories that are useful for organization")
+    @JIPipeParameter("categories")
+    @JsonGetter("categories")
+    public PluginCategoriesEnumParameter.List getCategories() {
+        return categories;
+    }
+
+    @JIPipeParameter("categories")
+    @JsonSetter("categories")
+    public void setCategories(PluginCategoriesEnumParameter.List categories) {
+        this.categories = categories;
     }
 
     /**
