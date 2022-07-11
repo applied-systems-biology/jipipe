@@ -74,6 +74,18 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
         this.categories = new PluginCategoriesEnumParameter.List(other.categories);
     }
 
+    public void addCategory(String category) {
+        if(!getProcessedCategories().contains(category)) {
+            categories.add(new PluginCategoriesEnumParameter(category));
+        }
+    }
+
+    public void addCategories(String... categories) {
+        for (String category : categories) {
+            addCategory(category);
+        }
+    }
+
     @JIPipeDocumentation(name = "Categories", description = "List of categories that are useful for organization")
     @JIPipeParameter("categories")
     @JsonGetter("categories")

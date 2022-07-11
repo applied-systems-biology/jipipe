@@ -25,8 +25,11 @@ import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeature2D;
 import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeature3D;
 import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeatureSet2D;
 import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeatureSet3D;
+import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
@@ -39,6 +42,11 @@ import java.util.List;
 public class WekaExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     public static final String RESOURCE_BASE_PATH = "/org/hkijena/jipipe/extensions/ijweka";
+
+    public WekaExtension() {
+        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
+        getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/weka.png")));
+    }
 
     @Override
     public StringList getDependencyCitations() {

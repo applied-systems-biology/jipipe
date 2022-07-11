@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.forms.algorithms.*;
 import org.hkijena.jipipe.extensions.forms.datatypes.*;
+import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -34,6 +35,10 @@ import java.util.List;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class FormsExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    public FormsExtension() {
+        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_INTERACTIVE, PluginCategoriesEnumParameter.CATEGORY_USER_INTERFACE);
+    }
 
     @Override
     public StringList getDependencyCitations() {

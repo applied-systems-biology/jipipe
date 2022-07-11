@@ -58,7 +58,8 @@ public class ExtensionItemLogoPanel extends JPanel {
             thumbnail = cachedThumbnail;
         }
         else {
-            thumbnail = BufferedImageUtils.spatialBlurLinear(thumbnail, new Point(0,0), new Point(thumbnail.getWidth(), thumbnail.getHeight()), 15);
+            thumbnail = BufferedImageUtils.scaleImageToFit(thumbnail, 350,350);
+            thumbnail = BufferedImageUtils.spatialBlurLinear(thumbnail, new Point(0,0), new Point(thumbnail.getWidth(), thumbnail.getHeight()), 20);
             thumbnailDeactivated = BufferedImageUtils.toBufferedImage(thumbnail, BufferedImage.TYPE_BYTE_GRAY);
             THUMBNAIL_CACHE.put(originalThumbnail, thumbnail);
             THUMBNAIL_DISABLED_CACHE.put(originalThumbnail, thumbnailDeactivated);

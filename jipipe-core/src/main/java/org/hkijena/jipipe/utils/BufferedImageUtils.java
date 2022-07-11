@@ -142,7 +142,7 @@ public class BufferedImageUtils {
         int[] imgPixels = (int[]) img.getPixels();
         int[] blurredPixels = (int[]) blurred.getPixels();
         for (int i = 0; i < maskPixels.length; i++) {
-            double fac = Byte.toUnsignedInt(maskPixels[i]) / 255.0;
+            double fac = Math.min(1.0, 0.25 + Byte.toUnsignedInt(maskPixels[i]) / 255.0);
             int src1 = imgPixels[i];
             int src2 = blurredPixels[i];
             int r1 = (src1 & 0xff0000) >> 16;

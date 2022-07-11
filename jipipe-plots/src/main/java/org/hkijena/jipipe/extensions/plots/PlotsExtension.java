@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataOperation;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
+import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.plots.converters.PlotToTableConverter;
@@ -46,6 +47,10 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
             new OpenInNativeApplicationDataImportOperation("Open *.png", "Opens the rendered PNG image", new String[]{".png"}),
             new OpenInNativeApplicationDataImportOperation("Open *.svg", "Opens the rendered SVG image", new String[]{".svg"})
     };
+
+    public PlotsExtension() {
+        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_VISUALIZATION, PluginCategoriesEnumParameter.CATEGORY_PLOTTING);
+    }
 
     @Override
     public StringList getDependencyCitations() {

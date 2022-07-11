@@ -99,7 +99,10 @@ public class PluginCategoriesEnumParameter extends DynamicStringEnumParameter {
             "Tutorials",
             "Uncategorized",
             "User Interface",
-            "Visualization");
+            "Visualization",
+            "GPU",
+            "Statistics",
+            "Data processing");
 
     public static final String CATEGORY_3D = "3D";
     public static final String CATEGORY_ANALYSIS = "Analysis";
@@ -114,6 +117,7 @@ public class PluginCategoriesEnumParameter extends DynamicStringEnumParameter {
     public static final String CATEGORY_COMPLEXITY = "Complexity";
     public static final String CATEGORY_COOKBOOK = "Cookbook";
     public static final String CATEGORY_DECONVOLUTION = "Deconvolution";
+    public static final String CATEGORY_GPU = "GPU";
     public static final String CATEGORY_DEEP_LEARNING = "Deep-Learning";
     public static final String CATEGORY_DENOISING = "Denoising";
     public static final String CATEGORY_DEVELOPMENT = "Development";
@@ -129,6 +133,9 @@ public class PluginCategoriesEnumParameter extends DynamicStringEnumParameter {
     public static final String CATEGORY_HELP = "Help";
     public static final String CATEGORY_IMAGE_ANNOTATION = "Image Annotation";
     public static final String CATEGORY_IMAGE_ANALYSIS = "Image analysis";
+    public static final String CATEGORY_STATISTICS = "Statistics";
+
+    public static final String CATEGORY_DATA_PROCESSING = "Data processing";
     public static final String CATEGORY_IMAGEJ2 = "ImageJ2";
     public static final String CATEGORY_IMAGE_SCIENCE = "ImageScience";
     public static final String CATEGORY_IMGLIB = "ImgLib";

@@ -33,8 +33,11 @@ import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.*;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.constant.*;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusWindowImageJImporterUI;
+import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.Priority;
@@ -49,6 +52,11 @@ import java.util.List;
  */
 @Plugin(type = JIPipeJavaExtension.class, priority = Priority.LOW)
 public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
+
+    public ImageJ2Extension() {
+        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_IMAGEJ2, PluginCategoriesEnumParameter.CATEGORY_IMGLIB);
+        getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/imagej2.png")));
+    }
 
     @Override
     public StringList getDependencyCitations() {

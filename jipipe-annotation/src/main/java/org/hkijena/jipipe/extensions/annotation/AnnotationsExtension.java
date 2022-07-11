@@ -20,6 +20,7 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.annotation.algorithms.*;
 import org.hkijena.jipipe.extensions.annotation.datasources.AnnotationTableFromFile;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
+import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
@@ -35,6 +36,10 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    public AnnotationsExtension() {
+        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_ANNOTATION);
+    }
 
     @Override
     public StringList getDependencyCitations() {

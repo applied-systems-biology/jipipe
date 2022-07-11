@@ -21,6 +21,8 @@ import org.hkijena.jipipe.extensions.cellpose.compat.CellPoseSizeModelImageJExpo
 import org.hkijena.jipipe.extensions.cellpose.compat.CellPoseSizeModelImageJImporter;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
+import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
@@ -29,6 +31,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -39,6 +42,12 @@ import java.util.List;
 
 @Plugin(type = JIPipeJavaExtension.class)
 public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    public CellPoseExtension() {
+        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DEEP_LEARNING, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
+        getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/cellpose.png")));
+    }
+
     private static void installCellposeCPU(JIPipeWorkbench workbench) {
         CellPoseSettings settings = CellPoseSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);

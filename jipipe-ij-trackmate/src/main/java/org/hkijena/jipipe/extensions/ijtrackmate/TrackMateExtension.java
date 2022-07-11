@@ -53,9 +53,12 @@ import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUISpotsDisp
 import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUITracksDisplaySettings;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIRoiDisplaySettings;
+import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceManager;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -83,6 +86,11 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     public static Map<String, PluginInfo<SpotTrackerFactory>> getSpotTrackers() {
         return Collections.unmodifiableMap(SPOT_TRACKERS);
+    }
+
+    public TrackMateExtension() {
+        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_TRACKING);
+        getMetadata().setThumbnail(new ImageParameter(RESOURCES.getResourceURL("thumbnail.png")));
     }
 
     @Override

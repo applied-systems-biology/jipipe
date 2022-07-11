@@ -17,6 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.tables.algorithms.*;
@@ -40,6 +41,10 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    public TablesExtension() {
+        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_STATISTICS, PluginCategoriesEnumParameter.CATEGORY_DATA_PROCESSING);
+    }
 
     @Override
     public StringList getDependencyCitations() {
