@@ -157,8 +157,14 @@ public class JIPipeExtensionRegistry {
     }
 
     public void clearSchedule(String id) {
-        scheduledDeactivateExtensions.remove(id);
-        scheduledActivateExtensions.remove(id);
+        if(scheduledDeactivateExtensions.contains(id)) {
+            scheduledDeactivateExtensions.remove(id);
+            eventBus.post(new ScheduledActivateExtension(id));
+        }
+        if(scheduledActivateExtensions.contains(id)) {
+            scheduledActivateExtensions.remove(id);
+            eventBus.post(new ScheduledDeactivateExtension(id));
+        }
     }
 
     public void scheduleActivateExtension(String id) {
