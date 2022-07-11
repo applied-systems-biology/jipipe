@@ -1,5 +1,8 @@
 package org.hkijena.jipipe.utils;
 
+import ij.plugin.filter.GaussianBlur;
+import ij.process.ByteProcessor;
+import ij.process.ColorProcessor;
 import sun.misc.BASE64Decoder;
 import sun.misc.BASE64Encoder;
 
@@ -120,4 +123,46 @@ public class BufferedImageUtils {
         graphics.dispose();
         return result;
     }
+
+    public static BufferedImage spatialBlurLinear(BufferedImage bi, Point start, Point end, double sigma) {
+
+        BufferedImage maskImage = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
+        Graphics2D graphics2D = maskImage.createGraphics();
+        LinearGradientPaint paint = new LinearGradientPaint(start.x, start.y, end.x, end.y, new float[] {0f, 1f}, new Color[] {Color.WHITE, Color.BLACK});
+        graphics2D.setPaint(paint);
+        graphics2D.fillRect(0,0,bi.getWidth(), bi.getHeight());
+        graphics2D.dispose();
+
+        ByteProcessor mask = new ByteProcessor(maskImage);
+        ColorProcessor img = new ColorProcessor(bi);
+        ColorProcessor blurred = new ColorProcessor(bi);
+        GaussianBlur blur = new GaussianBlur();
+        blur.blurGaussian(blurred, sigma);
+        byte[] maskPixels = (byte[]) mask.getPixels();
+        int[] imgPixels = (int[]) img.getPixels();
+        int[] blurredPixels = (int[]) blurred.getPixels();
+        for (int i = 0; i < maskPixels.length; i++) {
+            double fac = Byte.toUnsignedInt(maskPixels[i]) / 255.0;
+            int src1 = imgPixels[i];
+            int src2 = blurredPixels[i];
+            int r1 = (src1 & 0xff0000) >> 16;
+            int g1 = ((src1 & 0xff00) >> 8);
+            int b1 = (src1 & 0xff);
+            int r2 = (src2 & 0xff0000) >> 16;
+            int g2 = ((src2 & 0xff00) >> 8);
+            int b2 = (src2 & 0xff);
+            int r = lerpColorValue(r1, r2, fac);
+            int g = lerpColorValue(g1, g2, fac);
+            int b = lerpColorValue(b1, b2, fac);
+            int rgb =  (r << 16) + (g << 8) + b;
+            imgPixels[i] = rgb;
+        }
+
+        return img.getBufferedImage();
+    }
+
+    public static int lerpColorValue(int x0, int x1, double frac) {
+        return (int) (x0 + frac * (x1 - x0));
+    }
+
 }

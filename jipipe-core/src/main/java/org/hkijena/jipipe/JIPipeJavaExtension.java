@@ -88,4 +88,6 @@ public interface JIPipeJavaExtension extends SciJavaPlugin, JIPipeDependency {
     default boolean isCoreExtension() {
         return false;
     }
+
+
 }

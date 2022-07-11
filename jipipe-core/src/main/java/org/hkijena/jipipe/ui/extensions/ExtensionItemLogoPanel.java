@@ -22,9 +22,17 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.image.BufferedImage;
+import java.util.IdentityHashMap;
+import java.util.Map;
 
 public class ExtensionItemLogoPanel extends JPanel {
+
+    private static final Map<BufferedImage, BufferedImage> THUMBNAIL_CACHE = new IdentityHashMap<>();
+
+    private static final Map<BufferedImage, BufferedImage> THUMBNAIL_DISABLED_CACHE = new IdentityHashMap<>();
+
     private final JIPipeDependency extension;
     private BufferedImage thumbnail;
 
@@ -43,7 +51,19 @@ public class ExtensionItemLogoPanel extends JPanel {
         else {
             thumbnail = new ImageParameter(ResourceUtils.getPluginResource("extension-thumbnail-default.png")).getImage();
         }
-        thumbnailDeactivated = BufferedImageUtils.toBufferedImage(thumbnail, BufferedImage.TYPE_BYTE_GRAY);
+        BufferedImage originalThumbnail = thumbnail;
+        BufferedImage cachedThumbnail = THUMBNAIL_CACHE.getOrDefault(thumbnail, null);
+        if(cachedThumbnail != null) {
+            thumbnailDeactivated = THUMBNAIL_DISABLED_CACHE.get(originalThumbnail);
+            thumbnail = cachedThumbnail;
+        }
+        else {
+            thumbnail = BufferedImageUtils.spatialBlurLinear(thumbnail, new Point(0,0), new Point(thumbnail.getWidth(), thumbnail.getHeight()), 15);
+            thumbnailDeactivated = BufferedImageUtils.toBufferedImage(thumbnail, BufferedImage.TYPE_BYTE_GRAY);
+            THUMBNAIL_CACHE.put(originalThumbnail, thumbnail);
+            THUMBNAIL_DISABLED_CACHE.put(originalThumbnail, thumbnailDeactivated);
+        }
+
     }
 
     private boolean drawExtensionActivated() {
