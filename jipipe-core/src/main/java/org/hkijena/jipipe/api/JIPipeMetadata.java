@@ -40,6 +40,8 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
     private HTMLText description = new HTMLText("A JIPipe project");
     private JIPipeAuthorMetadata.List authors = new JIPipeAuthorMetadata.List();
 
+    private JIPipeAuthorMetadata.List citedAuthors = new JIPipeAuthorMetadata.List();
+
     private JIPipeAuthorMetadata.List acknowledgements = new JIPipeAuthorMetadata.List();
     private String website = "";
     private String license = "";
@@ -65,6 +67,7 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
         this.name = other.name;
         this.description = other.description;
         this.authors = new JIPipeAuthorMetadata.List(other.authors);
+        this.citedAuthors = new JIPipeAuthorMetadata.List(other.citedAuthors);
         this.acknowledgements = new JIPipeAuthorMetadata.List(other.acknowledgements);
         this.website = other.website;
         this.license = other.license;
@@ -84,6 +87,19 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
         for (String category : categories) {
             addCategory(category);
         }
+    }
+
+    @JIPipeDocumentation(name = "Cited authors", description = "Allows to cite authors who provided scripts/tools/software that were used")
+    @JIPipeParameter("cited-authors")
+    @JsonGetter("cited-authors")
+    public JIPipeAuthorMetadata.List getCitedAuthors() {
+        return citedAuthors;
+    }
+
+    @JIPipeParameter("cited-authors")
+    @JsonSetter("cited-authors")
+    public void setCitedAuthors(JIPipeAuthorMetadata.List citedAuthors) {
+        this.citedAuthors = citedAuthors;
     }
 
     @JIPipeDocumentation(name = "Categories", description = "List of categories that are useful for organization")

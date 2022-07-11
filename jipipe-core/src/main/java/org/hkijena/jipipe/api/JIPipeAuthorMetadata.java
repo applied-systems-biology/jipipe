@@ -290,6 +290,13 @@ public class JIPipeAuthorMetadata implements JIPipeParameterCollection {
             super(JIPipeAuthorMetadata.class);
         }
 
+        public List(JIPipeAuthorMetadata... authors) {
+            super(JIPipeAuthorMetadata.class);
+            for (JIPipeAuthorMetadata metadata : authors) {
+                add(new JIPipeAuthorMetadata(metadata));
+            }
+        }
+
         /**
          * Makes a copy
          *

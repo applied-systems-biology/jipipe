@@ -42,6 +42,7 @@ import org.hkijena.jipipe.extensions.expressions.functions.ColumnOperationAdapte
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterGenerator;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterTypeInfo;
+import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -84,7 +85,42 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
         metadata.setCitation(getCitation());
         metadata.setLicense(getLicense());
         metadata.setWebsite(getWebsite());
-        metadata.setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("extension-thumbnail-default.png")));
+        metadata.setThumbnail(getThumbnail());
+        metadata.setCitedAuthors(getCitedAuthors());
+        metadata.setCategories(getCategories());
+    }
+
+    /**
+     * The categories of this extension (see {@link PluginCategoriesEnumParameter} for predefined values)
+     * @return the categories
+     */
+    public PluginCategoriesEnumParameter.List getCategories() {
+        PluginCategoriesEnumParameter.List result = new PluginCategoriesEnumParameter.List();
+        if(isCoreExtension()) {
+           result.add(new PluginCategoriesEnumParameter("Core"));
+        }
+        return result;
+    }
+
+    /**
+     * Returns additionally cited authors
+     * @return the authors
+     */
+    public JIPipeAuthorMetadata.List getCitedAuthors() {
+        return new JIPipeAuthorMetadata.List();
+    }
+
+    /**
+     * Returns the thumbnail
+     * @return the thumbnail
+     */
+    public ImageParameter getThumbnail() {
+        if(isCoreExtension()) {
+            return new ImageParameter(ResourceUtils.getPluginResource("core-extension-thumbnail-default.png"));
+        }
+        else {
+            return new ImageParameter(ResourceUtils.getPluginResource("extension-thumbnail-default.png"));
+        }
     }
 
     /**

@@ -42,11 +42,10 @@ public class ExtensionListPanel extends JIPipeWorkbenchPanel {
 
     private final Deque<JIPipeDependency> infiniteScrollingQueue = new ArrayDeque<>();
 
-    public ExtensionListPanel(JIPipeWorkbench workbench, List<JIPipeDependency> plugins) {
+    public ExtensionListPanel(JIPipeWorkbench workbench) {
         super(workbench);
         this.scrollToBeginTimer.setRepeats(false);
         initialize();
-        setPlugins(plugins);
     }
 
     private boolean isCoreDependency(JIPipeDependency dependency) {

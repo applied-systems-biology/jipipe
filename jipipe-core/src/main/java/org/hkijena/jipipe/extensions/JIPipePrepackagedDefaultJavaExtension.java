@@ -30,10 +30,7 @@ import java.util.List;
 public abstract class JIPipePrepackagedDefaultJavaExtension extends JIPipeDefaultJavaExtension {
 
     public JIPipePrepackagedDefaultJavaExtension() {
-        if(isCoreExtension()) {
-            getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("core-extension-thumbnail-default.png")));
-            getMetadata().getCategories().add(new PluginCategoriesEnumParameter("Core"));
-        }
+
     }
 
     @Override

@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -83,43 +84,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
                 0));
 
         if(!extension.getMetadata().getAuthors().isEmpty()) {
-            JPanel authorPanel = new JPanel();
-            authorPanel.setLayout(new BoxLayout(authorPanel, BoxLayout.X_AXIS));
-            authorPanel.setOpaque(false);
-
-            if(extension.getMetadata().getAuthors().size() == 1) {
-                JIPipeAuthorMetadata author = extension.getMetadata().getAuthors().get(0);
-                JButton authorButton = new JButton(author.toString(), UIUtils.getIconFromResources("actions/im-user.png"));
-                authorButton.setToolTipText("Click to show more information");
-                authorButton.addActionListener(e -> {
-                    JIPipeAuthorMetadata.openAuthorInfoWindow(getWorkbench().getWindow(), extension.getMetadata().getAuthors(), author);
-                });
-                authorButton.setOpaque(false);
-                authorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-                authorButton.setBackground(new Color(0, 0, 0, 0));
-                authorPanel.add(authorButton);
-            }
-            else {
-                List<JIPipeAuthorMetadata> firstAuthors = extension.getMetadata().getAuthors().stream().filter(JIPipeAuthorMetadata::isFirstAuthor).collect(Collectors.toList());
-                if(firstAuthors.isEmpty()) {
-                    firstAuthors = Arrays.asList(extension.getMetadata().getAuthors().get(0));
-                }
-                String name = firstAuthors.stream().map(JIPipeAuthorMetadata::getLastName).collect(Collectors.joining(", "));
-                if(firstAuthors.size() < extension.getMetadata().getAuthors().size()) {
-                    name += " et al.";
-                }
-
-                JIPipeAuthorMetadata author = firstAuthors.get(0);
-                JButton authorButton = new JButton(name, UIUtils.getIconFromResources("actions/im-user.png"));
-                authorButton.setToolTipText("Click to show more information");
-                authorButton.addActionListener(e -> {
-                    JIPipeAuthorMetadata.openAuthorInfoWindow(getWorkbench().getWindow(), extension.getMetadata().getAuthors(), author);
-                });
-                authorButton.setOpaque(false);
-                authorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-                authorButton.setBackground(new Color(0, 0, 0, 0));
-                authorPanel.add(authorButton);
-            }
+            JPanel authorPanel = createAuthorPanel(getExtension().getMetadata().getAuthors());
             logoPanel.add(authorPanel, new GridBagConstraints(0,
                     2,
                     1,
@@ -132,8 +97,63 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
                     0,
                     0));
         }
+        if(!extension.getMetadata().getCitedAuthors().isEmpty()) {
+            JPanel authorPanel = createAuthorPanel(getExtension().getMetadata().getCitedAuthors());
+            logoPanel.add(authorPanel, new GridBagConstraints(0,
+                    3,
+                    1,
+                    1,
+                    1,
+                    0,
+                    GridBagConstraints.NORTHWEST,
+                    GridBagConstraints.HORIZONTAL,
+                    new Insets(4, 8, 4, 8),
+                    0,
+                    0));
+        }
 
         initializeButtonPanel();
+    }
+
+    private JPanel createAuthorPanel(JIPipeAuthorMetadata.List authors) {
+        JPanel authorPanel = new JPanel();
+        authorPanel.setLayout(new BoxLayout(authorPanel, BoxLayout.X_AXIS));
+        authorPanel.setOpaque(false);
+
+        if(authors.size() == 1) {
+            JIPipeAuthorMetadata author = authors.get(0);
+            JButton authorButton = new JButton(author.toString(), UIUtils.getIconFromResources("actions/im-user.png"));
+            authorButton.setToolTipText("Click to show more information");
+            authorButton.addActionListener(e -> {
+                JIPipeAuthorMetadata.openAuthorInfoWindow(getWorkbench().getWindow(), authors, author);
+            });
+            authorButton.setOpaque(false);
+            authorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            authorButton.setBackground(new Color(0, 0, 0, 0));
+            authorPanel.add(authorButton);
+        }
+        else {
+            List<JIPipeAuthorMetadata> firstAuthors = authors.stream().filter(JIPipeAuthorMetadata::isFirstAuthor).collect(Collectors.toList());
+            if(firstAuthors.isEmpty()) {
+                firstAuthors = Arrays.asList(authors.get(0));
+            }
+            String name = firstAuthors.stream().map(JIPipeAuthorMetadata::getLastName).collect(Collectors.joining(", "));
+            if(firstAuthors.size() < authors.size()) {
+                name += " et al.";
+            }
+
+            JIPipeAuthorMetadata author = firstAuthors.get(0);
+            JButton authorButton = new JButton(name, UIUtils.getIconFromResources("actions/im-user.png"));
+            authorButton.setToolTipText("Click to show more information");
+            authorButton.addActionListener(e -> {
+                JIPipeAuthorMetadata.openAuthorInfoWindow(getWorkbench().getWindow(), authors, author);
+            });
+            authorButton.setOpaque(false);
+            authorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            authorButton.setBackground(new Color(0, 0, 0, 0));
+            authorPanel.add(authorButton);
+        }
+        return authorPanel;
     }
 
     private void initializeButtonPanel() {

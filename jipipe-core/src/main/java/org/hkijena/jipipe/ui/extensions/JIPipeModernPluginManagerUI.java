@@ -48,14 +48,26 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
     private FormPanel sidePanel;
 
     private SearchTextField searchTextField;
-    private List<JIPipeDependency> currentlyShownItems = new ArrayList<>(JIPipe.getInstance().getExtensionRegistry().getKnownExtensions());
+    private List<JIPipeDependency> currentlyShownItems = new ArrayList<>(getExtensionRegistry().getKnownExtensions());
 
     private final MessagePanel messagePanel = new MessagePanel();
+
+    private JLabel currentListHeading;
 
     public JIPipeModernPluginManagerUI(JIPipeWorkbench workbench) {
         super(workbench);
         initialize();
         JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);
+
+        updateMessagePanel();
+        if(getExtensionRegistry().getNewExtensions().isEmpty()) {
+            currentListHeading.setText("All extensions");
+            showItems(getExtensionRegistry().getKnownExtensions());
+        }
+        else {
+            currentListHeading.setText("New extensions");
+            showItems(getExtensionRegistry().getNewExtensions().stream().map(id -> getExtensionRegistry().getKnownExtensionById(id)).collect(Collectors.toList()));
+        }
     }
 
     private void initialize() {
@@ -66,15 +78,20 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         add(splitPane, BorderLayout.CENTER);
 
         JPanel mainPanel = new JPanel(new BorderLayout());
-        extensionListPanel = new ExtensionListPanel(getWorkbench(), JIPipe.getInstance().getExtensionRegistry().getKnownExtensions());
+        extensionListPanel = new ExtensionListPanel(getWorkbench());
         mainPanel.add(extensionListPanel, BorderLayout.CENTER);
 
         JPanel mainHeaderPanel = new JPanel(new BorderLayout());
 
         JToolBar mainPanelToolbar = new JToolBar();
         mainPanelToolbar.setFloatable(false);
-        mainHeaderPanel.add(mainPanelToolbar, BorderLayout.SOUTH);
+        mainHeaderPanel.add(mainPanelToolbar, BorderLayout.CENTER);
         mainHeaderPanel.add(messagePanel, BorderLayout.NORTH);
+
+        currentListHeading = new JLabel();
+        currentListHeading.setFont(new Font(Font.DIALOG, Font.PLAIN, 32));
+        currentListHeading.setBorder(BorderFactory.createEmptyBorder(16,16,16,16));
+        mainHeaderPanel.add(currentListHeading, BorderLayout.SOUTH);
 
         mainPanel.add(mainHeaderPanel, BorderLayout.NORTH);
 
@@ -91,18 +108,20 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 //        sidePanel.addWideToForm(messagePanel, null);
         initializeSidePanel();
         sidePanel.addVerticalGlue();
-
-        updateMessagePanel();
     }
 
     private void updateMessagePanel() {
         messagePanel.clear();
-        JIPipeExtensionRegistry extensionRegistry = JIPipe.getInstance().getExtensionRegistry();
+        JIPipeExtensionRegistry extensionRegistry = getExtensionRegistry();
         if(!extensionRegistry.getScheduledDeactivateExtensions().isEmpty() || !extensionRegistry.getScheduledActivateExtensions().isEmpty()){
             JButton exitButton = new JButton("Close ImageJ");
             exitButton.addActionListener(e -> System.exit(0));
             messagePanel.addMessage(MessagePanel.MessageType.Info, "To apply the changes, please restart ImageJ.", exitButton);
         }
+    }
+
+    private JIPipeExtensionRegistry getExtensionRegistry() {
+        return JIPipe.getInstance().getExtensionRegistry();
     }
 
     private void updateSearch() {
@@ -166,18 +185,19 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
     private void addSidePanelButton(String label, Icon icon, Supplier<List<JIPipeDependency>> items, boolean small) {
         JButton button = new JButton(label, icon);
-        Insets insets;
         if(small) {
             button.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
-            insets = new Insets(4,16,4,4);
-            button.setBorder(null);
+            button.setBorder(BorderFactory.createEmptyBorder(2,16,2,4));
         }
         else {
             button.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
-            insets = new Insets(4,4,4,4);
+            button.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
         }
         button.setHorizontalAlignment(SwingConstants.LEFT);
-        button.addActionListener(e -> showItems(items.get()));
+        button.addActionListener(e -> {
+            currentListHeading.setText(label);
+            showItems(items.get());
+        });
         sidePanel.addWideToForm(button, null);
     }
 }

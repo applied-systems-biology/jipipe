@@ -2,6 +2,7 @@ package org.hkijena.jipipe.extensions.cellpose;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ui.FileImageJDataImporterUI;
 import org.hkijena.jipipe.api.compat.ui.FolderImageJDataExporterUI;
@@ -68,6 +69,42 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
         DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
         JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
         applicationSettingsUI.selectNode("/Extensions/Cellpose");
+    }
+
+    @Override
+    public JIPipeAuthorMetadata.List getCitedAuthors() {
+        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("",
+                "Carsen",
+                "Stringer",
+                new StringList("HHMI Janelia Research Campus, Ashburn, VA, USA"),
+                "",
+                "",
+                true,
+                false),
+                new JIPipeAuthorMetadata("",
+                        "Tim",
+                        "Wang",
+                        new StringList("HHMI Janelia Research Campus, Ashburn, VA, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Michalis",
+                        "Michaelos",
+                        new StringList("HHMI Janelia Research Campus, Ashburn, VA, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Marius",
+                        "Pachitariu",
+                        new StringList("HHMI Janelia Research Campus, Ashburn, VA, USA"),
+                        "",
+                        "",
+                        false,
+                        true));
     }
 
     @Override
