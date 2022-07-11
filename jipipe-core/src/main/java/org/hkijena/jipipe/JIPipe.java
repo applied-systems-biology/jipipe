@@ -36,6 +36,9 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.notifications.JIPipeNotification;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -44,12 +47,14 @@ import org.hkijena.jipipe.api.registries.*;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.settings.*;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeProgressAdapter;
 import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
 import org.hkijena.jipipe.ui.running.JIPipeLogs;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
@@ -614,6 +619,34 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         progressInfo.setProgress(8);
         progressInfo.log("JIPipe loading finished");
         initializing = false;
+
+        // Check for new extensions
+        extensionRegistry.findNewExtensions();
+        for (String newExtension : extensionRegistry.getNewExtensions()) {
+            progressInfo.log("New extension found: " + newExtension);
+        }
+        if(!extensionRegistry.getNewExtensions().isEmpty()) {
+            JIPipeNotification notification = new JIPipeNotification("org.hkijena.jipipe.core:new-extension");
+            notification.setHeading("New extensions available");
+            String nameList = extensionRegistry.getNewExtensions().stream().map(id -> extensionRegistry.getKnownExtensionById(id).getMetadata().getName()).collect(Collectors.joining(", "));
+            if(extensionRegistry.getNewExtensions().size() != 1) {
+                notification.setDescription("There are " + extensionRegistry.getNewExtensions().size() + " new extensions available: " + nameList + ".\n" +
+                        "You can ignore these or open the extension manager to activate the new extensions.");
+            }
+            else {
+                notification.setDescription("There is 1 new extension available: " + nameList + ".\n" +
+                        "You can ignore these or open the extension manager to activate the new extensions.");
+            }
+            notification.getActions().add(new JIPipeNotificationAction("Ignore", "Ignores the newly available extensions. You will not be warned again about them.", UIUtils.getIconFromResources("actions/archive-remove.png"), workbench -> {
+                extensionRegistry.dismissNewExtensions();
+            }));
+            notification.getActions().add(new JIPipeNotificationAction("Open in extension manager", "Opens the extension manager. You will not be warned again about the new extensions.", UIUtils.getIconFromResources("actions/plugins.png"), workbench -> {
+                extensionRegistry.dismissNewExtensions();
+                workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_PLUGIN_MANAGER);
+            }));
+            JIPipeNotificationInbox.getInstance().push(notification);
+        }
+
 
         // Push progress into log
         JIPipeLogs.getInstance().pushToLog(new JIPipeLogs.LogEntry("JIPipe initialization",

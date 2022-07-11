@@ -32,7 +32,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * Registry for managing extensions
@@ -62,6 +64,8 @@ public class JIPipeExtensionRegistry {
     private final Set<String> scheduledActivateExtensions = new HashSet<>();
 
     private final Set<String> scheduledDeactivateExtensions = new HashSet<>();
+
+    private final Set<String> newExtensions = new HashSet<>();
 
     public JIPipeExtensionRegistry(JIPipe jiPipe) {
         this.jiPipe = jiPipe;
@@ -110,6 +114,42 @@ public class JIPipeExtensionRegistry {
     public void registerKnownExtension(JIPipeDependency dependency) {
         jiPipe.getProgressInfo().resolve("Extension management").log("Discovered extension: " + dependency.getDependencyId() + " version " + dependency.getDependencyVersion() + " (of type " + dependency.getClass().getName() + ")" );
         knownExtensions.add(dependency);
+    }
+
+    /**
+     * Returns a known extension by ID
+     * If multiple extensions share the same ID, only one is returned
+     * If there is none, null will be returned
+     * @param id the ID
+     * @return the extension or null
+     */
+    public JIPipeDependency getKnownExtensionById(String id) {
+        return knownExtensions.stream().filter(dependency -> Objects.equals(dependency.getDependencyId(), id)).findFirst().orElse(null);
+    }
+
+    /**
+     * Updates the list of new extensions
+     */
+    public void findNewExtensions() {
+        Set<String> activatedExtensions = getActivatedExtensions();
+        for (JIPipeDependency knownExtension : getKnownExtensions()) {
+            if(!activatedExtensions.contains(knownExtension.getDependencyId()) && !settings.getSilencedExtensions().contains(knownExtension.getDependencyId())) {
+                newExtensions.add(knownExtension.getDependencyId());
+            }
+        }
+    }
+
+    public void dismissNewExtensions() {
+        settings.getSilencedExtensions().addAll(getNewExtensions());
+        save();
+    }
+
+    /**
+     * A set of extensions that are new and should be made known to the user
+     * @return the extensions (unmodifiable)
+     */
+    public Set<String> getNewExtensions() {
+        return Collections.unmodifiableSet(newExtensions);
     }
 
     public List<JIPipeDependency> getKnownExtensions() {
@@ -237,6 +277,8 @@ public class JIPipeExtensionRegistry {
     public static class Settings {
         private Set<String> activatedExtensions = new HashSet<>();
 
+        private Set<String> silencedExtensions = new HashSet<>();
+
         @JsonGetter("activated-extensions")
         public Set<String> getActivatedExtensions() {
             return activatedExtensions;
@@ -245,6 +287,16 @@ public class JIPipeExtensionRegistry {
         @JsonSetter("activated-extensions")
         public void setActivatedExtensions(Set<String> activatedExtensions) {
             this.activatedExtensions = activatedExtensions;
+        }
+
+        @JsonGetter("silenced-extensions")
+        public Set<String> getSilencedExtensions() {
+            return silencedExtensions;
+        }
+
+        @JsonSetter("silenced-extensions")
+        public void setSilencedExtensions(Set<String> silencedExtensions) {
+            this.silencedExtensions = silencedExtensions;
         }
     }
 }
