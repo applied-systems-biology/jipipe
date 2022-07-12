@@ -35,6 +35,9 @@ import java.nio.file.Path;
 public class OMERODatasetReferenceData implements JIPipeData {
     private long datasetId;
 
+    public OMERODatasetReferenceData() {
+    }
+
     public OMERODatasetReferenceData(long datasetId) {
         this.datasetId = datasetId;
     }

@@ -35,6 +35,9 @@ import java.nio.file.Path;
 public class OMEROImageReferenceData implements JIPipeData {
     private long imageId;
 
+    public OMEROImageReferenceData() {
+    }
+
     public OMEROImageReferenceData(long imageId) {
         this.imageId = imageId;
     }
