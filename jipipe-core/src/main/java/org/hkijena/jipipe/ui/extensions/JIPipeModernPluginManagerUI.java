@@ -324,7 +324,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
             this.updateSites = refreshRepositoryRun.getFilesCollection();
             setToImageJSuccess();
         }
-        else if(event.getRun() instanceof ActivateAndApplyUpdateSiteRun) {
+        else if(event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
             updateSitesApplied = true;
             updateMessagePanel();
         }

@@ -4,6 +4,7 @@ target
 /jipipe.properties.json
 /jipipe.extensions.json
 /jars/
+/update/
 /dist/jipipe-linux-installer/AppDir/
 /dist/jipipe-linux-installer/jdk-11.0.8+10/
 /dist/jipipe-linux-installer/appimagetool-x86_64.AppImage

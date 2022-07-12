@@ -63,7 +63,7 @@ public class ExtensionItemLogoPanel extends JPanel {
 
     @Subscribe
     public void onUpdateSiteActivated(RunWorkerFinishedEvent event) {
-        if(event.getRun() instanceof ActivateAndApplyUpdateSiteRun) {
+        if(event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
             repaint();
         }
     }
