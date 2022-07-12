@@ -72,6 +72,10 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
     private final List<JIPipeExtension> updateSiteWrapperExtensions = new ArrayList<>();
 
+    private AutoResizeSplitPane splitPane;
+
+    private JPanel mainPanel;
+
     public JIPipeModernPluginManagerUI(JIPipeWorkbench workbench) {
         super(workbench);
         initialize();
@@ -155,11 +159,11 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         // Main panel
         setLayout(new BorderLayout());
 
-        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, 1.0 / 5.0);
+        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, 1.0 / 5.0);
         add(splitPane, BorderLayout.CENTER);
 
-        JPanel mainPanel = new JPanel(new BorderLayout());
-        extensionListPanel = new ExtensionListPanel(getWorkbench());
+        mainPanel = new JPanel(new BorderLayout());
+        extensionListPanel = new ExtensionListPanel(this);
         mainPanel.add(extensionListPanel, BorderLayout.CENTER);
 
         JPanel mainHeaderPanel = new JPanel(new BorderLayout());
@@ -278,6 +282,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
     private void showItems(List<JIPipeExtension> items, String heading) {
         this.currentlyShownItems = items;
         currentListHeading.setText(heading);
+        splitPane.setRightComponent(mainPanel);
         updateSearch();
     }
 
@@ -317,4 +322,22 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         }
     }
 
+    public void showExtensionDetails(JIPipeExtension extension) {
+        JPanel detailsPanel = new JPanel(new BorderLayout());
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+
+        JButton backButton = new JButton("Go back", UIUtils.getIconFromResources("actions/back.png"));
+        backButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 20));
+        backButton.addActionListener(e -> {
+            splitPane.setRightComponent(mainPanel);
+        });
+        toolBar.add(backButton);
+        detailsPanel.add(toolBar, BorderLayout.NORTH);
+
+        ExtensionInfoPanel infoPanel = new ExtensionInfoPanel(extension);
+        detailsPanel.add(infoPanel, BorderLayout.CENTER);
+
+        splitPane.setRightComponent(detailsPanel);
+    }
 }

@@ -444,7 +444,7 @@ public class FormPanel extends JXPanel {
             });
             ++columnCount;
 
-            descriptionArea = UIUtils.makeBorderlessReadonlyTextPane("");
+            descriptionArea = UIUtils.makeBorderlessReadonlyTextPane("", true);
             descriptionArea.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, Boolean.TRUE);
             descriptionArea.setOpaque(false);
             descriptionArea.setBorder(null);

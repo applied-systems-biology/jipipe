@@ -1155,13 +1155,15 @@ public class UIUtils {
     /**
      * Creates a readonly text pane (that can do HTML)
      *
-     * @param text text
+     * @param text   text
+     * @param opaque if the area should be opaque
      * @return text area
      */
-    public static JTextPane makeBorderlessReadonlyTextPane(String text) {
+    public static JTextPane makeBorderlessReadonlyTextPane(String text, boolean opaque) {
         JTextPane textPane = new JTextPane();
         textPane.setBorder(BorderFactory.createEtchedBorder());
         textPane.setEditable(false);
+        textPane.setOpaque(opaque);
         textPane.setContentType("text/html");
         textPane.setText(text);
         textPane.setBorder(null);

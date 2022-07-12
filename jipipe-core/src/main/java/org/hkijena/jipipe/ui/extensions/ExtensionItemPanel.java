@@ -17,7 +17,6 @@ package org.hkijena.jipipe.ui.extensions;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeExtension;
-import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -32,11 +31,13 @@ import java.util.stream.Collectors;
 
 public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
 
+    private final JIPipeModernPluginManagerUI pluginManagerUI;
     private final JIPipeExtension extension;
     private ExtensionItemLogoPanel logoPanel;
 
-    public ExtensionItemPanel(JIPipeWorkbench workbench, JIPipeExtension extension) {
-        super(workbench);
+    public ExtensionItemPanel(JIPipeModernPluginManagerUI pluginManagerUI, JIPipeExtension extension) {
+        super(pluginManagerUI.getWorkbench());
+        this.pluginManagerUI = pluginManagerUI;
         this.extension = extension;
         initialize();
     }
@@ -70,7 +71,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
                 0,
                 0));
 
-        JTextPane descriptionLabel = UIUtils.makeBorderlessReadonlyTextPane(extension.getMetadata().getSummary().getHtml());
+        JTextPane descriptionLabel = UIUtils.makeBorderlessReadonlyTextPane(extension.getMetadata().getSummary().getHtml(), true);
         descriptionLabel.setOpaque(false);
         logoPanel.add(descriptionLabel, new GridBagConstraints(0,
                 1,
@@ -85,7 +86,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
                 0));
 
         if(!extension.getMetadata().getAuthors().isEmpty()) {
-            JPanel authorPanel = createAuthorPanel(getExtension().getMetadata().getAuthors(), UIUtils.getIconFromResources("actions/im-user.png"), "Plugin authors. Click to show more information.");
+            JPanel authorPanel = createAuthorPanel(SwingUtilities.getWindowAncestor(this), getExtension().getMetadata().getAuthors(), UIUtils.getIconFromResources("actions/im-user.png"), "Plugin authors. Click to show more information.");
             logoPanel.add(authorPanel, new GridBagConstraints(0,
                     2,
                     1,
@@ -99,7 +100,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
                     0));
         }
         if(!extension.getMetadata().getAcknowledgements().isEmpty()) {
-            JPanel authorPanel = createAuthorPanel(getExtension().getMetadata().getAcknowledgements(), UIUtils.getIconFromResources("actions/configure.png"), "Authors of the underlying functionality. Click to show more information.");
+            JPanel authorPanel = createAuthorPanel(SwingUtilities.getWindowAncestor(this), getExtension().getMetadata().getAcknowledgements(), UIUtils.getIconFromResources("actions/configure.png"), "Authors of the underlying functionality. Click to show more information.");
             logoPanel.add(authorPanel, new GridBagConstraints(0,
                     3,
                     1,
@@ -116,7 +117,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
         initializeButtonPanel();
     }
 
-    private JPanel createAuthorPanel(JIPipeAuthorMetadata.List authors, Icon icon, String tooltip) {
+    public static JPanel createAuthorPanel(Component parent, JIPipeAuthorMetadata.List authors, Icon icon, String tooltip) {
         JPanel authorPanel = new JPanel();
         authorPanel.setLayout(new BoxLayout(authorPanel, BoxLayout.X_AXIS));
         authorPanel.setOpaque(false);
@@ -126,7 +127,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
             JButton authorButton = new JButton(author.toString(), icon);
             authorButton.setToolTipText(tooltip);
             authorButton.addActionListener(e -> {
-                JIPipeAuthorMetadata.openAuthorInfoWindow(getWorkbench().getWindow(), authors, author);
+                JIPipeAuthorMetadata.openAuthorInfoWindow(parent, authors, author);
             });
             authorButton.setOpaque(false);
             authorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -147,7 +148,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
             JButton authorButton = new JButton(name, icon);
             authorButton.setToolTipText(tooltip);
             authorButton.addActionListener(e -> {
-                JIPipeAuthorMetadata.openAuthorInfoWindow(getWorkbench().getWindow(), authors, author);
+                JIPipeAuthorMetadata.openAuthorInfoWindow(parent, authors, author);
             });
             authorButton.setOpaque(false);
             authorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -179,7 +180,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
     }
 
     private void openInformation() {
-        ExtensionInfoPanel.showDialog(SwingUtilities.getWindowAncestor(this), extension);
+        pluginManagerUI.showExtensionDetails(extension);
     }
 
     public JIPipeDependency getExtension() {

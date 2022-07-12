@@ -155,7 +155,7 @@ public class JIPipeAlgorithmSourceFinderAlgorithmUI extends JPanel {
         });
 
         // The description
-        JTextPane description = UIUtils.makeBorderlessReadonlyTextPane(info.getDescription().getHtml());
+        JTextPane description = UIUtils.makeBorderlessReadonlyTextPane(info.getDescription().getHtml(), true);
         description.setOpaque(false);
         centerPanel.add(description, new GridBagConstraints() {
             {

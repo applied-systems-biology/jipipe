@@ -33,7 +33,7 @@ import java.util.stream.Collectors;
 
 public class JIPipeDataTypeCompendiumUI extends JIPipeCompendiumUI<JIPipeDataInfo> {
 
-    List<JIPipeDataInfo> dataInfos;
+    protected List<JIPipeDataInfo> dataInfos;
 
     public JIPipeDataTypeCompendiumUI() {
         super(MarkdownDocument.fromPluginResource("documentation/data-type-compendium.md", new HashMap<>()));
