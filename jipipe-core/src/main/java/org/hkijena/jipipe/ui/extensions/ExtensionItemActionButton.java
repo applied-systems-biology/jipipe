@@ -165,8 +165,10 @@ public class ExtensionItemActionButton extends JButton {
                 }
             }
         }
-        ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(pluginManagerUI.getUpdateSites(), toActivate);
-        JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run);
+        if(!toActivate.isEmpty()) {
+            ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(pluginManagerUI.getUpdateSites(), toActivate);
+            JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run);
+        }
         return true;
     }
 

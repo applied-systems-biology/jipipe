@@ -168,6 +168,11 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
             infoLabel.setToolTipText("This is a mandatory core extension that cannot be disabled");
             buttonPanel.add(infoLabel);
         }
+        else if(extension instanceof UpdateSiteExtension) {
+            JLabel infoLabel = new JLabel("ImageJ plugin", UIUtils.getIconFromResources("apps/imagej.png"), JLabel.LEFT);
+            infoLabel.setToolTipText("This is not an extension for JIPipe, but an ImageJ update site that might contain functionality for JIPipe.");
+            buttonPanel.add(infoLabel);
+        }
 
         buttonPanel.add(Box.createHorizontalGlue());
 

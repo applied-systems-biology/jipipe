@@ -26,6 +26,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MessagePanel;
+import org.hkijena.jipipe.ui.components.icons.AnimatedIcon;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.ijupdater.RefreshRepositoryRun;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
@@ -46,6 +47,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -63,6 +65,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
     private JLabel currentListHeading;
 
     private JButton updateSitesButton;
+
     private RefreshRepositoryRun refreshRepositoryRun;
 
     private MessagePanel.Message updateSiteMessage;
@@ -70,7 +73,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
     private FilesCollection updateSites;
 
-    private final List<JIPipeExtension> updateSiteWrapperExtensions = new ArrayList<>();
+    private final List<UpdateSiteExtension> updateSiteWrapperExtensions = new ArrayList<>();
 
     private AutoResizeSplitPane splitPane;
 
@@ -121,7 +124,6 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
     private void setToImageJFailure() {
         removeUpdateSiteMessage();
-        updateSitesButton.setEnabled(false);
         updateSitesButton.setToolTipText("Could not connect to the ImageJ update service");
         updateSitesButton.setIcon(UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png"));
     }
@@ -136,7 +138,6 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
     private void setToImageJSuccess() {
         removeUpdateSiteMessage();
         createUpdateSitesWrappers();
-        updateSitesButton.setEnabled(true);
         updateSitesButton.setIcon(UIUtils.getIconFromResources("actions/web-browser.png"));
         updateSitesReady = true;
     }
@@ -257,15 +258,13 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         addSidePanelButton("Deactivated extensions", UIUtils.getIconFromResources("actions/close-tab.png"), () -> extensionRegistry.getKnownExtensions().stream().filter(dependency -> !extensionRegistry.getActivatedExtensions().contains(dependency.getDependencyId())).collect(Collectors.toList()), false);
 
         // Update sites button
-        {
-            updateSitesButton = new JButton("ImageJ plugins", UIUtils.getIconFromResources("emblems/hourglass-half.png"));
-            updateSitesButton.setEnabled(false);
-            updateSitesButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
-            updateSitesButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            updateSitesButton.setHorizontalAlignment(SwingConstants.LEFT);
-            updateSitesButton.addActionListener(e -> showUpdateSites());
-            sidePanel.addWideToForm(updateSitesButton, null);
-        }
+        AnimatedIcon hourglassAnimation = new AnimatedIcon(this, UIUtils.getIconFromResources("actions/hourglass-half.png"),
+                UIUtils.getIconFromResources("emblems/hourglass-half.png"),
+                100, 0.05);
+        hourglassAnimation.start();
+        updateSitesButton = addImageJSidePanelButton("ImageJ plugins", hourglassAnimation, site -> true, false);
+        addImageJSidePanelButton("Activated", UIUtils.getIconFromResources("actions/checkmark.png"), site -> site.isActivated(), true);
+        addImageJSidePanelButton("Deactivated", UIUtils.getIconFromResources("actions/close-tab.png"), site -> !site.isActivated(), true);
 
         addSidePanelButton("All extensions", UIUtils.getIconFromResources("actions/plugins.png"), extensionRegistry::getKnownExtensions, false);
 
@@ -277,10 +276,6 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
             addSidePanelButton(category, UIUtils.getIconFromResources("actions/tag.png"), () -> JIPipe.getInstance().getExtensionRegistry().getKnownExtensions().stream().filter(dependency -> dependency.getMetadata().getProcessedCategories().contains(category)).collect(Collectors.toList()), true);
         });
 
-    }
-
-    private void showUpdateSites() {
-        showItems(updateSiteWrapperExtensions, "ImageJ plugins");
     }
 
     private void showItems(List<JIPipeExtension> items, String heading) {
@@ -306,6 +301,28 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
             showItems(items.get(), label);
         });
         sidePanel.addWideToForm(button, null);
+    }
+
+    private JButton addImageJSidePanelButton(String label, Icon icon, Predicate<UpdateSiteExtension> filter, boolean small) {
+        JButton button = new JButton(label, icon);
+        if(small) {
+            button.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
+            button.setBorder(BorderFactory.createEmptyBorder(2,16,2,4));
+        }
+        else {
+            button.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
+            button.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        }
+        button.setHorizontalAlignment(SwingConstants.LEFT);
+        button.addActionListener(e -> {
+            if(isUpdateSitesReady()) {
+                currentListHeading.setText(label);
+                showItems(updateSiteWrapperExtensions.stream().filter(filter).collect(Collectors.toList()), label);
+            }
+        });
+        sidePanel.addWideToForm(button, null);
+//        updateSiteButtons.add(button);
+        return button;
     }
 
     @Subscribe

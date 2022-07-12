@@ -59,7 +59,7 @@ public class ExtensionInfoPanel extends JPanel {
 //        tabPane.getTabbedPane().setTabPlacement(SwingConstants.LEFT);
         add(tabPane, BorderLayout.CENTER);
         initializeOverview(tabPane);
-        if(extension.isActivated()) {
+        if(extension.isActivated() && !(extension instanceof UpdateSiteExtension)) {
             initializeNodeCompendium(tabPane);
             initializeDataTypeCompendium(tabPane);
         }

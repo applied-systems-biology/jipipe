@@ -77,6 +77,7 @@ public class ExtensionListPanel extends JIPipeWorkbenchPanel {
         listPanel.setScrollableWidthHint(ScrollableSizeHint.HORIZONTAL_STRETCH);
         listPanel.setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
         scrollPane = new JScrollPane(listPanel);
+        scrollPane.getVerticalScrollBar().setUnitIncrement(32);
         add(scrollPane, BorderLayout.CENTER);
     }
 
