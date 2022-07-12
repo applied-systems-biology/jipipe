@@ -20,6 +20,7 @@ import ij.IJ;
 import ij.Prefs;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeExtension;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -59,7 +60,7 @@ public class JIPipeExtensionRegistry {
 
     private Settings settings = new Settings();
 
-    private final List<JIPipeDependency> knownExtensions = new ArrayList<>();
+    private final List<JIPipeExtension> knownExtensions = new ArrayList<>();
 
     private final Set<String> scheduledActivateExtensions = new HashSet<>();
 
@@ -109,11 +110,11 @@ public class JIPipeExtensionRegistry {
     /**
      * Registers an extension as known to the extension registry.
      * Will not activate the extension
-     * @param dependency the extension
+     * @param extension the extension
      */
-    public void registerKnownExtension(JIPipeDependency dependency) {
-        jiPipe.getProgressInfo().resolve("Extension management").log("Discovered extension: " + dependency.getDependencyId() + " version " + dependency.getDependencyVersion() + " (of type " + dependency.getClass().getName() + ")" );
-        knownExtensions.add(dependency);
+    public void registerKnownExtension(JIPipeExtension extension) {
+        jiPipe.getProgressInfo().resolve("Extension management").log("Discovered extension: " + extension.getDependencyId() + " version " + extension.getDependencyVersion() + " (of type " + extension.getClass().getName() + ")" );
+        knownExtensions.add(extension);
     }
 
     /**
@@ -123,7 +124,7 @@ public class JIPipeExtensionRegistry {
      * @param id the ID
      * @return the extension or null
      */
-    public JIPipeDependency getKnownExtensionById(String id) {
+    public JIPipeExtension getKnownExtensionById(String id) {
         return knownExtensions.stream().filter(dependency -> Objects.equals(dependency.getDependencyId(), id)).findFirst().orElse(null);
     }
 
@@ -132,7 +133,7 @@ public class JIPipeExtensionRegistry {
      */
     public void findNewExtensions() {
         Set<String> activatedExtensions = getActivatedExtensions();
-        for (JIPipeDependency knownExtension : getKnownExtensions()) {
+        for (JIPipeExtension knownExtension : getKnownExtensions()) {
             if(!activatedExtensions.contains(knownExtension.getDependencyId()) && !settings.getSilencedExtensions().contains(knownExtension.getDependencyId())) {
                 newExtensions.add(knownExtension.getDependencyId());
             }
@@ -152,7 +153,7 @@ public class JIPipeExtensionRegistry {
         return Collections.unmodifiableSet(newExtensions);
     }
 
-    public List<JIPipeDependency> getKnownExtensions() {
+    public List<JIPipeExtension> getKnownExtensions() {
         return Collections.unmodifiableList(knownExtensions);
     }
 

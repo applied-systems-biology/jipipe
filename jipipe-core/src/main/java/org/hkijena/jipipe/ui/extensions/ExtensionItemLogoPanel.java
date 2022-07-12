@@ -14,8 +14,11 @@
 
 package org.hkijena.jipipe.ui.extensions;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -33,15 +36,26 @@ public class ExtensionItemLogoPanel extends JPanel {
 
     private static final Map<BufferedImage, BufferedImage> THUMBNAIL_DISABLED_CACHE = new IdentityHashMap<>();
 
-    private final JIPipeDependency extension;
+    private final JIPipeExtension extension;
     private BufferedImage thumbnail;
 
     private BufferedImage thumbnailDeactivated;
 
-    public ExtensionItemLogoPanel(JIPipeDependency extension) {
+    public ExtensionItemLogoPanel(JIPipeExtension extension) {
         this.extension = extension;
         setOpaque(false);
         initializeThumbnail();
+        JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);
+    }
+
+    @Subscribe
+    public void onExtensionActivated(JIPipeExtensionRegistry.ScheduledActivateExtension event) {
+        repaint();
+    }
+
+    @Subscribe
+    public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtension event) {
+        repaint();
     }
 
     private void initializeThumbnail() {
@@ -67,15 +81,6 @@ public class ExtensionItemLogoPanel extends JPanel {
 
     }
 
-    private boolean drawExtensionActivated() {
-        if( JIPipe.getInstance().getExtensionRegistry().getActivatedExtensions().contains(extension.getDependencyId())) {
-            return !JIPipe.getInstance().getExtensionRegistry().getScheduledDeactivateExtensions().contains(extension.getDependencyId());
-        }
-        else {
-            return JIPipe.getInstance().getExtensionRegistry().getScheduledActivateExtensions().contains(extension.getDependencyId());
-        }
-    }
-
     @Override
     public void paint(Graphics g) {
         double scale = Math.max(1.0 * getWidth() / thumbnail.getWidth(), 1.0 * getHeight() / thumbnail.getHeight());
@@ -83,7 +88,17 @@ public class ExtensionItemLogoPanel extends JPanel {
         int targetHeight = (int) (scale * thumbnail.getHeight());
         int x = getWidth() / 2 - targetWidth / 2;
         int y = getHeight() / 2 - targetHeight / 2;
-        g.drawImage(drawExtensionActivated() ? thumbnail : thumbnailDeactivated, x,y,targetWidth,targetHeight,null);
+        boolean displayMode;
+        if(extension.isScheduledForActivation()) {
+            displayMode = true;
+        }
+        else if(extension.isScheduledForDeactivation()) {
+            displayMode = false;
+        }
+        else {
+            displayMode = extension.isActivated();
+        }
+        g.drawImage(displayMode ? thumbnail : thumbnailDeactivated, x,y,targetWidth,targetHeight,null);
         super.paint(g);
     }
 }

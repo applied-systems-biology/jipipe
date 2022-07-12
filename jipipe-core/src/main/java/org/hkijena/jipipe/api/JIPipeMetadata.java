@@ -38,10 +38,9 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private String name = "New project";
     private HTMLText description = new HTMLText("A JIPipe project");
+
+    private HTMLText summary = new HTMLText();
     private JIPipeAuthorMetadata.List authors = new JIPipeAuthorMetadata.List();
-
-    private JIPipeAuthorMetadata.List citedAuthors = new JIPipeAuthorMetadata.List();
-
     private JIPipeAuthorMetadata.List acknowledgements = new JIPipeAuthorMetadata.List();
     private String website = "";
     private String license = "";
@@ -65,9 +64,9 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
      */
     public JIPipeMetadata(JIPipeMetadata other) {
         this.name = other.name;
-        this.description = other.description;
+        this.description = new HTMLText(other.description);
+        this.summary = new HTMLText(other.summary);
         this.authors = new JIPipeAuthorMetadata.List(other.authors);
-        this.citedAuthors = new JIPipeAuthorMetadata.List(other.citedAuthors);
         this.acknowledgements = new JIPipeAuthorMetadata.List(other.acknowledgements);
         this.website = other.website;
         this.license = other.license;
@@ -87,19 +86,6 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
         for (String category : categories) {
             addCategory(category);
         }
-    }
-
-    @JIPipeDocumentation(name = "Cited authors", description = "Allows to cite authors who provided scripts/tools/software that were used")
-    @JIPipeParameter("cited-authors")
-    @JsonGetter("cited-authors")
-    public JIPipeAuthorMetadata.List getCitedAuthors() {
-        return citedAuthors;
-    }
-
-    @JIPipeParameter("cited-authors")
-    @JsonSetter("cited-authors")
-    public void setCitedAuthors(JIPipeAuthorMetadata.List citedAuthors) {
-        this.citedAuthors = citedAuthors;
     }
 
     @JIPipeDocumentation(name = "Categories", description = "List of categories that are useful for organization")
@@ -162,7 +148,6 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
      */
     @JIPipeDocumentation(name = "Description", description = "A description")
     @JIPipeParameter(value = "description", uiOrder = 1)
-    @StringParameterSettings(multiline = true, monospace = true)
     @JsonGetter("description")
     public HTMLText getDescription() {
         return description;
@@ -177,6 +162,19 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
     @JsonSetter("description")
     public void setDescription(HTMLText description) {
         this.description = description;
+    }
+
+    @JIPipeDocumentation(name = "Summary", description = "A short description")
+    @JIPipeParameter(value = "summary", uiOrder = 1)
+    @JsonGetter("summary")
+    public HTMLText getSummary() {
+        return summary;
+    }
+
+    @JIPipeParameter("summary")
+    @JsonGetter("summary")
+    public void setSummary(HTMLText summary) {
+        this.summary = summary;
     }
 
     /**

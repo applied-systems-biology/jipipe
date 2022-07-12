@@ -60,7 +60,7 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public JIPipeAuthorMetadata.List getCitedAuthors() {
+    public JIPipeAuthorMetadata.List getAcknowledgements() {
         return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("", "Chris", "Allan", new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK",
                 "Glencoe Software, Inc., Seattle, Washington, USA"), "", "", true, false),
                 new JIPipeAuthorMetadata("", "Jean-Marie", "Burel", new StringList("Wellcome Trust Centre for Gene Regulation and Expression, College of Life Sciences, University of Dundee, Dundee, Scotland, UK",

@@ -28,19 +28,29 @@ import java.util.Set;
  */
 public class MessagePanel extends FormPanel {
 
-    private Set<String> existingMessages = new HashSet<>();
+    private final Set<String> existingMessages = new HashSet<>();
 
     public MessagePanel() {
         super(null, FormPanel.NONE);
     }
 
-    public void addMessage(MessageType type, String message, JButton actionButton) {
+    public Message addMessage(MessageType type, String message, JButton actionButton) {
         if (!existingMessages.contains(message)) {
-            addWideToForm(new Message(this, type, message, actionButton), null);
+            Message instance = new Message(this, type, message, actionButton);
+            addWideToForm(instance, null);
             revalidate();
             repaint();
             existingMessages.add(message);
+            return instance;
         }
+        return null;
+    }
+
+    public void removeMessage(Message message) {
+        getContentPanel().remove(message);
+        existingMessages.remove(message.text);
+        revalidate();
+        repaint();
     }
 
     @Override

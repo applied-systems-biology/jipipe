@@ -121,7 +121,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
     }
 
     @Override
-    public JIPipeAuthorMetadata.List getCitedAuthors() {
+    public JIPipeAuthorMetadata.List getAcknowledgements() {
         return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("",
                 "Curtis T.",
                 "Rueden",

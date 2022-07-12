@@ -80,13 +80,14 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
         metadata = new JIPipeMetadata();
         metadata.setName(getName());
         metadata.setDescription(getDescription());
+        metadata.setSummary(getSummary());
         metadata.setAuthors(new JIPipeAuthorMetadata.List(getAuthors()));
         metadata.setDependencyCitations(new StringList(getDependencyCitations()));
         metadata.setCitation(getCitation());
         metadata.setLicense(getLicense());
         metadata.setWebsite(getWebsite());
         metadata.setThumbnail(getThumbnail());
-        metadata.setCitedAuthors(getCitedAuthors());
+        metadata.setAcknowledgements(getAcknowledgements());
         metadata.setCategories(getCategories());
     }
 
@@ -106,7 +107,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * Returns additionally cited authors
      * @return the authors
      */
-    public JIPipeAuthorMetadata.List getCitedAuthors() {
+    public JIPipeAuthorMetadata.List getAcknowledgements() {
         return new JIPipeAuthorMetadata.List();
     }
 
@@ -149,6 +150,14 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @return The extension description
      */
     public abstract HTMLText getDescription();
+
+    /**
+     * A short summary
+     * @return a short summary
+     */
+    public HTMLText getSummary() {
+        return getDescription();
+    }
 
     /**
      * @return The extension authors

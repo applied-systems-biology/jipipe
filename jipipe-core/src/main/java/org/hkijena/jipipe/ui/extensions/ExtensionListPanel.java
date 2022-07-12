@@ -15,10 +15,12 @@
 package org.hkijena.jipipe.ui.extensions;
 
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeExtension;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.layouts.ModifiedFlowLayout;
+import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.ScrollableSizeHint;
 
@@ -33,14 +35,14 @@ import java.util.List;
 
 public class ExtensionListPanel extends JIPipeWorkbenchPanel {
 
-    private List<JIPipeDependency> plugins;
+    private List<JIPipeExtension> plugins;
     private JXPanel listPanel;
 
     private JScrollPane scrollPane;
 
     private final Timer scrollToBeginTimer = new Timer(200, e -> scrollToBeginning());
 
-    private final Deque<JIPipeDependency> infiniteScrollingQueue = new ArrayDeque<>();
+    private final Deque<JIPipeExtension> infiniteScrollingQueue = new ArrayDeque<>();
 
     public ExtensionListPanel(JIPipeWorkbench workbench) {
         super(workbench);
@@ -65,28 +67,29 @@ public class ExtensionListPanel extends JIPipeWorkbenchPanel {
         add(scrollPane, BorderLayout.CENTER);
     }
 
-    public List<JIPipeDependency> getPlugins() {
+    public List<JIPipeExtension> getPlugins() {
         return plugins;
     }
 
-    public void setPlugins(List<JIPipeDependency> plugins) {
+    public void setPlugins(List<JIPipeExtension> plugins) {
         this.plugins = new ArrayList<>(plugins);
-        this.plugins.sort(Comparator.comparing(this::isCoreDependency).thenComparing(dependency -> dependency.getMetadata().getName()));
+        this.plugins.sort(Comparator.comparing(this::isCoreDependency).thenComparing(dependency -> dependency.getMetadata().getName().toLowerCase(), NaturalOrderComparator.INSTANCE));
         listPanel.removeAll();
         revalidate();
         repaint();
         infiniteScrollingQueue.clear();
-        for (JIPipeDependency plugin : this.plugins) {
+        for (JIPipeExtension plugin : this.plugins) {
             infiniteScrollingQueue.addLast(plugin);
         }
-        SwingUtilities.invokeLater(this::updateInfiniteScroll);
-        scrollToBeginTimer.restart();
+//        SwingUtilities.invokeLater(this::updateInfiniteScroll);
+//        scrollToBeginTimer.restart();
+        scrollToBeginning();
     }
 
     private void updateInfiniteScroll() {
         JScrollBar scrollBar =scrollPane.getVerticalScrollBar();
-        if ((!scrollBar.isVisible() || (scrollBar.getValue() + scrollBar.getVisibleAmount()) > (scrollBar.getMaximum() - 32)) && !infiniteScrollingQueue.isEmpty()) {
-            JIPipeDependency value = infiniteScrollingQueue.removeFirst();
+        if ((!scrollBar.isVisible() || (scrollBar.getValue() + scrollBar.getVisibleAmount()) > (scrollBar.getMaximum() - 100)) && !infiniteScrollingQueue.isEmpty()) {
+            JIPipeExtension value = infiniteScrollingQueue.removeFirst();
             ExtensionItemPanel panel = new ExtensionItemPanel(getWorkbench(), value);
             listPanel.add(panel);
             revalidate();
@@ -100,5 +103,6 @@ public class ExtensionListPanel extends JIPipeWorkbenchPanel {
         scrollPane.getVerticalScrollBar().addAdjustmentListener(e -> {
             updateInfiniteScroll();
         });
+        SwingUtilities.invokeLater(this::updateInfiniteScroll);
     }
 }

@@ -59,7 +59,7 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public JIPipeAuthorMetadata.List getCitedAuthors() {
+    public JIPipeAuthorMetadata.List getAcknowledgements() {
         return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("",
                 "Robert",
                 "Haase",

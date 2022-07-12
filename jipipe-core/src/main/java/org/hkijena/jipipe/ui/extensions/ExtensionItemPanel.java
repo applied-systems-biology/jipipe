@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.extensions;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeExtension;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
@@ -31,16 +32,17 @@ import java.util.stream.Collectors;
 
 public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
 
-    private final JIPipeDependency extension;
-    private JButton actionButton;
-
+    private final JIPipeExtension extension;
     private ExtensionItemLogoPanel logoPanel;
 
-    public ExtensionItemPanel(JIPipeWorkbench workbench, JIPipeDependency extension) {
+    public ExtensionItemPanel(JIPipeWorkbench workbench, JIPipeExtension extension) {
         super(workbench);
         this.extension = extension;
         initialize();
-        updateStatus();
+    }
+
+    private JIPipeExtensionRegistry getExtensionRegistry() {
+        return JIPipe.getInstance().getExtensionRegistry();
     }
 
     private void initialize() {
@@ -68,7 +70,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
                 0,
                 0));
 
-        JTextPane descriptionLabel = UIUtils.makeBorderlessReadonlyTextPane(extension.getMetadata().getDescription().getHtml());
+        JTextPane descriptionLabel = UIUtils.makeBorderlessReadonlyTextPane(extension.getMetadata().getSummary().getHtml());
         descriptionLabel.setOpaque(false);
         logoPanel.add(descriptionLabel, new GridBagConstraints(0,
                 1,
@@ -96,8 +98,8 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
                     0,
                     0));
         }
-        if(!extension.getMetadata().getCitedAuthors().isEmpty()) {
-            JPanel authorPanel = createAuthorPanel(getExtension().getMetadata().getCitedAuthors(), UIUtils.getIconFromResources("actions/configure.png"), "Authors of the underlying functionality. Click to show more information.");
+        if(!extension.getMetadata().getAcknowledgements().isEmpty()) {
+            JPanel authorPanel = createAuthorPanel(getExtension().getMetadata().getAcknowledgements(), UIUtils.getIconFromResources("actions/configure.png"), "Authors of the underlying functionality. Click to show more information.");
             logoPanel.add(authorPanel, new GridBagConstraints(0,
                     3,
                     1,
@@ -161,92 +163,23 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
         buttonPanel.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
         add(buttonPanel, BorderLayout.SOUTH);
 
-        if(isCoreExtension()) {
+        if(extension.isCoreExtension()) {
             JLabel infoLabel = new JLabel("Core extension", UIUtils.getIconFromResources("emblems/emblem-important-blue.png"), JLabel.LEFT);
             infoLabel.setToolTipText("This is a mandatory core extension that cannot be disabled");
             buttonPanel.add(infoLabel);
         }
 
         buttonPanel.add(Box.createHorizontalGlue());
-        actionButton = new JButton();
-        actionButton.addActionListener(e -> executeAction());
-        buttonPanel.add(actionButton);
 
-        if(isCoreExtension())
-            actionButton.setEnabled(false);
+        JButton infoButton = new JButton("Read more", UIUtils.getIconFromResources("actions/help.png"));
+        infoButton.addActionListener(e -> openInformation());
+        buttonPanel.add(infoButton);
+
+        buttonPanel.add(new ExtensionItemActionButton(extension));
     }
 
-    private void updateStatus() {
-        updateActionButton();
-        logoPanel.repaint();
-    }
-
-    private void updateActionButton() {
-        if(extensionIsActivated()) {
-            if(extensionIsScheduledToDeactivate()) {
-                actionButton.setText("Undo deactivation");
-                actionButton.setIcon(UIUtils.getIconFromResources("actions/undo.png"));
-            }
-            else {
-                actionButton.setText("Deactivate");
-                actionButton.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
-            }
-        }
-        else {
-            if(extensionIsScheduledToActivate()) {
-                actionButton.setText("Undo activation");
-                actionButton.setIcon(UIUtils.getIconFromResources("actions/undo.png"));
-            }
-            else {
-                actionButton.setText("Activate");
-                actionButton.setIcon(UIUtils.getIconFromResources("emblems/vcs-normal.png"));
-            }
-        }
-    }
-
-    private boolean extensionIsScheduledToDeactivate() {
-        return getExtensionRegistry().getScheduledDeactivateExtensions().contains(extension.getDependencyId());
-    }
-
-    private JIPipeExtensionRegistry getExtensionRegistry() {
-        return JIPipe.getInstance().getExtensionRegistry();
-    }
-
-    private boolean extensionIsScheduledToActivate() {
-        return getExtensionRegistry().getScheduledActivateExtensions().contains(extension.getDependencyId());
-    }
-
-    private boolean extensionIsActivated() {
-        if (isCoreExtension())
-            return true;
-        return getExtensionRegistry().getActivatedExtensions().contains(extension.getDependencyId());
-    }
-
-    private boolean isCoreExtension() {
-        if(extension instanceof JIPipeJavaExtension) {
-            return ((JIPipeJavaExtension) extension).isCoreExtension();
-        }
-        return false;
-    }
-
-    private void executeAction() {
-        if(extensionIsActivated()) {
-            if(extensionIsScheduledToDeactivate()) {
-               getExtensionRegistry().clearSchedule(extension.getDependencyId());
-            }
-            else {
-               getExtensionRegistry().scheduleDeactivateExtension(extension.getDependencyId());
-            }
-        }
-        else {
-            if(extensionIsScheduledToActivate()) {
-                getExtensionRegistry().clearSchedule(extension.getDependencyId());
-            }
-            else {
-                getExtensionRegistry().scheduleActivateExtension(extension.getDependencyId());
-            }
-        }
-        updateStatus();
+    private void openInformation() {
+        ExtensionInfoPanel.showDialog(SwingUtilities.getWindowAncestor(this), extension);
     }
 
     public JIPipeDependency getExtension() {

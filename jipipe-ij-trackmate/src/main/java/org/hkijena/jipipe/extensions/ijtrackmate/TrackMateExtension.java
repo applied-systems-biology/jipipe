@@ -103,7 +103,7 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public JIPipeAuthorMetadata.List getCitedAuthors() {
+    public JIPipeAuthorMetadata.List getAcknowledgements() {
         return new JIPipeAuthorMetadata.List(
                 new JIPipeAuthorMetadata("", "Jean-Yves", "Tinevez", new StringList("Imagopole, Citech, Institut Pasteur, 75724 Paris, France"), "", "", true, true),
                 new JIPipeAuthorMetadata("", "Nick", "Perry", new StringList("Imagopole, Citech, Institut Pasteur, 75724 Paris, France"), "", "", false, false),

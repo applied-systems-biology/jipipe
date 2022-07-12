@@ -52,7 +52,7 @@ import java.util.stream.Collectors;
  * A JSON-serializable extension
  */
 @JsonDeserialize(as = JIPipeJsonExtension.class, using = JIPipeJsonExtension.Deserializer.class)
-public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeDependency, JIPipeValidatable {
+public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeExtension, JIPipeValidatable {
     private EventBus eventBus = new EventBus();
     private String id;
     private String version = "1.0.0";

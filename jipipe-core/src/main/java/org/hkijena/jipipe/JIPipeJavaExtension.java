@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * A Java extension
  */
-public interface JIPipeJavaExtension extends SciJavaPlugin, JIPipeDependency {
+public interface JIPipeJavaExtension extends SciJavaPlugin, JIPipeExtension {
 
     /**
      * URL pointing to the logo of the extension
@@ -78,16 +78,4 @@ public interface JIPipeJavaExtension extends SciJavaPlugin, JIPipeDependency {
     default List<ImageIcon> getSplashIcons() {
         return Collections.emptyList();
     }
-
-    /**
-     * Returns whether this extension is a core extension and thus cannot be disabled by users.
-     * Defaults to false.
-     * Please be sure if you really want to mark an extension as core extension.
-     * @return if the extension cannot be disabled
-     */
-    default boolean isCoreExtension() {
-        return false;
-    }
-
-
 }

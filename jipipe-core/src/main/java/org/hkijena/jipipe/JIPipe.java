@@ -48,11 +48,11 @@ import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDispla
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.settings.*;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeProgressAdapter;
 import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
 import org.hkijena.jipipe.ui.running.JIPipeLogs;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.utils.CoreImageJUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -887,7 +887,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                     UpdaterUtil.useSystemProxies();
                     Authenticator.setDefault(new SwingAuthenticator());
 
-                    imageJPlugins = new FilesCollection(JIPipeImageJPluginManager.getImageJRoot().toFile());
+                    imageJPlugins = new FilesCollection(CoreImageJUtils.getImageJUpdaterRoot().toFile());
                     AvailableSites.initializeAndAddSites(imageJPlugins);
                     imageJPlugins.downloadIndexAndChecksum(progressAdapter);
                 } catch (Exception e) {

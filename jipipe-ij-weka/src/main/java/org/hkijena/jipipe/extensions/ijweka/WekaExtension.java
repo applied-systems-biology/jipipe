@@ -58,7 +58,7 @@ public class WekaExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
-    public JIPipeAuthorMetadata.List getCitedAuthors() {
+    public JIPipeAuthorMetadata.List getAcknowledgements() {
         return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("", "Ignacio", "Arganda-Carreras", new StringList(
                 "Ikerbasque, Basque Foundation for Science, Bilbao, Spain",
                 "Computer Science and Artificial Intelligence Department, Basque Country University, San Sebastian, Spain",
