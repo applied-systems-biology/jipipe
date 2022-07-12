@@ -37,7 +37,11 @@ import java.util.List;
 public class FormsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     public FormsExtension() {
-        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_INTERACTIVE, PluginCategoriesEnumParameter.CATEGORY_USER_INTERFACE);
+    }
+
+    @Override
+    public PluginCategoriesEnumParameter.List getCategories() {
+        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_INTERACTIVE, PluginCategoriesEnumParameter.CATEGORY_USER_INTERFACE);
     }
 
     @Override

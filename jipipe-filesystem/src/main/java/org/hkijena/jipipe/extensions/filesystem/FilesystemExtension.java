@@ -44,7 +44,11 @@ import org.scijava.plugin.Plugin;
 public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     public FilesystemExtension() {
-        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_AUTOMATION, PluginCategoriesEnumParameter.CATEGORY_ANNOTATION, PluginCategoriesEnumParameter.CATEGORY_FILTERING);
+    }
+
+    @Override
+    public PluginCategoriesEnumParameter.List getCategories() {
+        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_AUTOMATION, PluginCategoriesEnumParameter.CATEGORY_ANNOTATION, PluginCategoriesEnumParameter.CATEGORY_FILTERING);
     }
 
     @Override

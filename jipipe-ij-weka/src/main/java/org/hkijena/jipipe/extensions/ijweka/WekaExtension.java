@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.ijweka;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
@@ -44,8 +45,43 @@ public class WekaExtension extends JIPipePrepackagedDefaultJavaExtension {
     public static final String RESOURCE_BASE_PATH = "/org/hkijena/jipipe/extensions/ijweka";
 
     public WekaExtension() {
-        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
-        getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/weka.png")));
+    }
+
+    @Override
+    public PluginCategoriesEnumParameter.List getCategories() {
+        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
+    }
+
+    @Override
+    public ImageParameter getThumbnail() {
+        return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/weka.png"));
+    }
+
+    @Override
+    public JIPipeAuthorMetadata.List getCitedAuthors() {
+        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("", "Ignacio", "Arganda-Carreras", new StringList(
+                "Ikerbasque, Basque Foundation for Science, Bilbao, Spain",
+                "Computer Science and Artificial Intelligence Department, Basque Country University, San Sebastian, Spain",
+                "Donostia International Physics Center, San Sebastian, Spain"
+        ), "", "", true, true),
+                new JIPipeAuthorMetadata("", "Verena", "Kaynig", new StringList(
+                        "Harvard John A. Paulson School of Engineering and Applied Sciences, Harvard University, Cambridge, MA, USA"
+                ), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Curtis", "Rueden", new StringList(
+                        "Laboratory for Optical and Computational Instrumentation, University of Wisconsin, Madison, WI, USA"
+                ), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Kevin W.", "Eliceiri", new StringList(
+                        "Laboratory for Optical and Computational Instrumentation, University of Wisconsin, Madison, WI, USA"
+                ), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Johannes", "Schindelin", new StringList(
+                        "Laboratory for Optical and Computational Instrumentation, University of Wisconsin, Madison, WI, USA"
+                ), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Albert", "Cardona", new StringList(
+                        "Howard Hughes Medical Institute, Janelia Research Campus, Ashburn, VA, USA"
+                ), "", "", false, false),
+                new JIPipeAuthorMetadata("", "H Sebastian", "Seung", new StringList(
+                        "Neuroscience Institute and Computer Science Department, Princeton University, NJ, USA"
+                ), "", "", false, false));
     }
 
     @Override

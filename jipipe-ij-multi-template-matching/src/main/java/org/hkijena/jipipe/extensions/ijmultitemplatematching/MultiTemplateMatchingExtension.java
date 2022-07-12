@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.ijmultitemplatematching;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
@@ -37,8 +38,23 @@ import java.util.List;
 public class MultiTemplateMatchingExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     public MultiTemplateMatchingExtension() {
-        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_FEATURE_EXTRACTION, PluginCategoriesEnumParameter.CATEGORY_OBJECT_DETECTION);
-        getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/multi-template-matching.png")));
+    }
+
+    @Override
+    public PluginCategoriesEnumParameter.List getCategories() {
+        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_FEATURE_EXTRACTION, PluginCategoriesEnumParameter.CATEGORY_OBJECT_DETECTION);
+    }
+
+    @Override
+    public ImageParameter getThumbnail() {
+        return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/multi-template-matching.png"));
+    }
+
+    @Override
+    public JIPipeAuthorMetadata.List getCitedAuthors() {
+        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("", "Laurent S. V.", "Thomas", new StringList("Acquifer is a division of Ditabis, Digital Biomedical Imaging Systems AG, Pforzheim, Germany",
+                "Centre of Paediatrics and Adolescent Medicine, University Hospital Heidelberg, Heidelberg, Germany"), "", "", true, false),
+                new JIPipeAuthorMetadata("", "Jochen", "Gehrig", new StringList("Acquifer is a division of Ditabis, Digital Biomedical Imaging Systems AG, Pforzheim, Germany"), "", "", true, false));
     }
 
     @Override

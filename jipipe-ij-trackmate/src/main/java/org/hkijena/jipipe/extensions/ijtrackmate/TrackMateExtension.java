@@ -23,6 +23,7 @@ import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import fiji.plugin.trackmate.tracking.SpotTrackerFactory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.ModelData;
@@ -89,8 +90,48 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     public TrackMateExtension() {
-        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_TRACKING);
-        getMetadata().setThumbnail(new ImageParameter(RESOURCES.getResourceURL("thumbnail.png")));
+    }
+
+    @Override
+    public PluginCategoriesEnumParameter.List getCategories() {
+        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_TRACKING);
+    }
+
+    @Override
+    public ImageParameter getThumbnail() {
+        return new ImageParameter(RESOURCES.getResourceURL("thumbnail.png"));
+    }
+
+    @Override
+    public JIPipeAuthorMetadata.List getCitedAuthors() {
+        return new JIPipeAuthorMetadata.List(
+                new JIPipeAuthorMetadata("", "Jean-Yves", "Tinevez", new StringList("Imagopole, Citech, Institut Pasteur, 75724 Paris, France"), "", "", true, true),
+                new JIPipeAuthorMetadata("", "Nick", "Perry", new StringList("Imagopole, Citech, Institut Pasteur, 75724 Paris, France"), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Johannes", "Schindelin", new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin-Madison, Madison, WI 53706, USA."), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Genevieve M.", "Hoopes", new StringList("Department of Biochemistry, University of Wisconsin-Madison, Madison, WI 53706, USA."), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Gregory D.", "Reynolds", new StringList("Department of Biochemistry, University of Wisconsin-Madison, Madison, WI 53706, USA."), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Emmanuel", "Laplantine", new StringList("Laboratory of Signaling and Pathogenesis, Centre National de la Recherche Scientifique, UMR 3691, Institut Pasteur, 75724 Paris, France."), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Sebastian Y.", "Bednarek", new StringList("Department of Biochemistry, University of Wisconsin-Madison, Madison, WI 53706, USA."), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Spencer L.", "Shorte", new StringList("Imagopole, Citech, Institut Pasteur, 75724 Paris, France."), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Kevin W.", "Eliceiri", new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin-Madison, Madison, WI 53706, USA; Morgridge Institute for Research, Madison, WI 53719, USA."), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Dmitry", "Ershov", new StringList("Image Analysis Hub, C2RT / DTPS, Institut Pasteur, Paris, FR", "Biostatistics and Bioinformatic Hub, Department of Computational Biology, Institut Pasteur, Paris, FR"), "", "", true, false),
+                new JIPipeAuthorMetadata("", "Minh-Son", "Phan", new StringList("Image Analysis Hub, C2RT / DTPS, Institut Pasteur, Paris, FR"), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Joanna W.", "Pylvänäinen", new StringList("Turku Bioscience Centre, University of Turku and Åbo Akademi University, Turku, FI",
+                        "Åbo Akademi University, Faculty of Science and Engineering, Biosciences, Turku, FI",
+                        "Turku Bioimaging, University of Turku and Åbo Akademi University, Turku, Finland"), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Stéphane U.", "Rigaud", new StringList("Image Analysis Hub, C2RT / DTPS, Institut Pasteur, Paris, FR\", \"Biostatistics and Bioinformatic Hub, Department of Computational Biology, Institut Pasteur, Paris, FR"), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Laure", "Le Blanc", new StringList("Pathogenesis of Vascular Infections unit, INSERM, Institut Pasteur, Paris, FR",
+                        "Université de Paris, 75006, Paris, FR"), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Arthur", "Charles-Orszag", new StringList("Pathogenesis of Vascular Infections unit, INSERM, Institut Pasteur, Paris, FR"), "", "", false, false),
+                new JIPipeAuthorMetadata("", "James R. W.", "Conway", new StringList("Turku Bioscience Centre, University of Turku and Åbo Akademi University, Turku, FI"), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Romain F.", "Laine", new StringList("MRC Laboratory for Molecular Cell Biology, University College London, London, UK",
+                        "The Francis Crick Institute, London, UK"), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Nathan H.", "Roy", new StringList("Department of Microbiology and Immunology, SUNY Upstate Medical University, Syracuse NY, USA"), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Daria", "Bonazzi", new StringList("Pathogenesis of Vascular Infections unit, INSERM, Institut Pasteur, Paris, FR"), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Guillaume", "Duménil", new StringList("Pathogenesis of Vascular Infections unit, INSERM, Institut Pasteur, Paris, FR"), "", "", false, false),
+                new JIPipeAuthorMetadata("", "Guillaume", "Jacquemet", new StringList("Turku Bioscience Centre, University of Turku and Åbo Akademi University, Turku, FI",
+                        "Åbo Akademi University, Faculty of Science and Engineering, Biosciences, Turku, FI", "Turku Bioimaging, University of Turku and Åbo Akademi University, Turku, Finland"), "", "", false, false)
+                );
     }
 
     @Override

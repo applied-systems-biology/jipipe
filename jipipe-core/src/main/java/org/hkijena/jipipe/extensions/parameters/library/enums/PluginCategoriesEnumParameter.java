@@ -208,6 +208,18 @@ public class PluginCategoriesEnumParameter extends DynamicStringEnumParameter {
             super(PluginCategoriesEnumParameter.class);
         }
 
+        public List(PluginCategoriesEnumParameter... items) {
+            this();
+            this.addAll(Arrays.asList(items));
+        }
+
+        public List(String... items) {
+            this();
+            for (String item : items) {
+                add(new PluginCategoriesEnumParameter(item));
+            }
+        }
+
         public List(List other) {
             super(PluginCategoriesEnumParameter.class);
             for (PluginCategoriesEnumParameter parameter : other) {

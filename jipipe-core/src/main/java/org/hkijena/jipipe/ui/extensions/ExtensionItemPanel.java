@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 import java.awt.*;
@@ -84,7 +83,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
                 0));
 
         if(!extension.getMetadata().getAuthors().isEmpty()) {
-            JPanel authorPanel = createAuthorPanel(getExtension().getMetadata().getAuthors());
+            JPanel authorPanel = createAuthorPanel(getExtension().getMetadata().getAuthors(), UIUtils.getIconFromResources("actions/im-user.png"), "Plugin authors. Click to show more information.");
             logoPanel.add(authorPanel, new GridBagConstraints(0,
                     2,
                     1,
@@ -98,7 +97,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
                     0));
         }
         if(!extension.getMetadata().getCitedAuthors().isEmpty()) {
-            JPanel authorPanel = createAuthorPanel(getExtension().getMetadata().getCitedAuthors());
+            JPanel authorPanel = createAuthorPanel(getExtension().getMetadata().getCitedAuthors(), UIUtils.getIconFromResources("actions/configure.png"), "Authors of the underlying functionality. Click to show more information.");
             logoPanel.add(authorPanel, new GridBagConstraints(0,
                     3,
                     1,
@@ -115,15 +114,15 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
         initializeButtonPanel();
     }
 
-    private JPanel createAuthorPanel(JIPipeAuthorMetadata.List authors) {
+    private JPanel createAuthorPanel(JIPipeAuthorMetadata.List authors, Icon icon, String tooltip) {
         JPanel authorPanel = new JPanel();
         authorPanel.setLayout(new BoxLayout(authorPanel, BoxLayout.X_AXIS));
         authorPanel.setOpaque(false);
 
         if(authors.size() == 1) {
             JIPipeAuthorMetadata author = authors.get(0);
-            JButton authorButton = new JButton(author.toString(), UIUtils.getIconFromResources("actions/im-user.png"));
-            authorButton.setToolTipText("Click to show more information");
+            JButton authorButton = new JButton(author.toString(), icon);
+            authorButton.setToolTipText(tooltip);
             authorButton.addActionListener(e -> {
                 JIPipeAuthorMetadata.openAuthorInfoWindow(getWorkbench().getWindow(), authors, author);
             });
@@ -143,8 +142,8 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
             }
 
             JIPipeAuthorMetadata author = firstAuthors.get(0);
-            JButton authorButton = new JButton(name, UIUtils.getIconFromResources("actions/im-user.png"));
-            authorButton.setToolTipText("Click to show more information");
+            JButton authorButton = new JButton(name, icon);
+            authorButton.setToolTipText(tooltip);
             authorButton.addActionListener(e -> {
                 JIPipeAuthorMetadata.openAuthorInfoWindow(getWorkbench().getWindow(), authors, author);
             });

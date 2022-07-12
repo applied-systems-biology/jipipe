@@ -19,6 +19,7 @@ import net.imglib2.outofbounds.OutOfBoundsMirrorFactory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
@@ -54,8 +55,80 @@ import java.util.List;
 public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
 
     public ImageJ2Extension() {
-        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_IMAGEJ2, PluginCategoriesEnumParameter.CATEGORY_IMGLIB);
-        getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/imagej2.png")));
+    }
+
+    @Override
+    public PluginCategoriesEnumParameter.List getCategories() {
+        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_IMAGEJ2, PluginCategoriesEnumParameter.CATEGORY_IMGLIB);
+    }
+
+    @Override
+    public ImageParameter getThumbnail() {
+        return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/imagej2.png"));
+    }
+
+    @Override
+    public JIPipeAuthorMetadata.List getCitedAuthors() {
+        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("",
+                "Curtis T.",
+                "Rueden",
+                new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
+                "",
+                "",
+                true,
+                false),
+                new JIPipeAuthorMetadata("",
+                        "Johannes",
+                        "Schindelin",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
+                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Mark C.",
+                        "Hiner",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Barry E.",
+                        "DeZonia",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Alison E.",
+                        "Walter",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
+                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Ellen T.",
+                        "Arena",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
+                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Kevin W.",
+                        "Eliceiri",
+                        new StringList("Laboratory for Optical and Computational Instrumentation, University of Wisconsin at Madison, Madison, Wisconsin, USA",
+                                "Morgridge Institute for Research, Madison, Wisconsin, USA"),
+                        "",
+                        "",
+                        false,
+                        true));
     }
 
     @Override

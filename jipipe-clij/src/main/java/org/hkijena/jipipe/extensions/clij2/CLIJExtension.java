@@ -5,6 +5,7 @@ import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
@@ -45,8 +46,110 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
     public static final Class[] ALLOWED_PARAMETER_TYPES = new Class[]{Boolean.class, Character.class, Short.class, Integer.class, Float.class, Double.class};
 
     public CLIJExtension() {
-        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_3D, PluginCategoriesEnumParameter.CATEGORY_IMAGE_ANALYSIS, PluginCategoriesEnumParameter.CATEGORY_ANALYSIS, PluginCategoriesEnumParameter.CATEGORY_GPU);
-        getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/clij.png")));
+    }
+
+    @Override
+    public PluginCategoriesEnumParameter.List getCategories() {
+        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_3D, PluginCategoriesEnumParameter.CATEGORY_IMAGE_ANALYSIS, PluginCategoriesEnumParameter.CATEGORY_ANALYSIS, PluginCategoriesEnumParameter.CATEGORY_GPU);
+    }
+
+    @Override
+    public ImageParameter getThumbnail() {
+        return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/clij.png"));
+    }
+
+    @Override
+    public JIPipeAuthorMetadata.List getCitedAuthors() {
+        return new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("",
+                "Robert",
+                "Haase",
+                new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
+                "",
+                "",
+                true,
+                true),
+                new JIPipeAuthorMetadata("",
+                        "Loic A.",
+                        "Royer",
+                        new StringList("Chan Zuckerberg Biohub, San Francisco, CA, USA"),
+                        "",
+                        "",
+                        true,
+                        true),
+                new JIPipeAuthorMetadata("",
+                        "Peter",
+                        "Steinbach",
+                        new StringList("Helmholtz-Zentrum Dresden-Rossendorf, Dresden, Germany",
+                                "Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Deborah",
+                        "Schmidt",
+                        new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Alexandr",
+                        "Dibrov",
+                        new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Uwe",
+                        "Schmidt",
+                        new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Martin",
+                        "Weigert",
+                        new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Nicola",
+                        "Maghelli",
+                        new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Pavel",
+                        "Tomancak",
+                        new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany",
+                                "IT4Innovations, VŠB - Technical University of Ostrava, Ostrava-Poruba, Czech Republic"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Florian",
+                        "Jug",
+                        new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
+                        "",
+                        "",
+                        false,
+                        false),
+                new JIPipeAuthorMetadata("",
+                        "Eugene W.",
+                        "Myers",
+                        new StringList("Max Planck Institute for Molecular Cell Biology and Genetics, Dresden, Germany", "Center for Systems Biology Dresden, Dresden, Germany"),
+                        "",
+                        "",
+                        false,
+                        false));
     }
 
     @Override
