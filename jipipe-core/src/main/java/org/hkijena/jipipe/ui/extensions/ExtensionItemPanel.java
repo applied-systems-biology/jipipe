@@ -19,7 +19,6 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -176,7 +175,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
         infoButton.addActionListener(e -> openInformation());
         buttonPanel.add(infoButton);
 
-        buttonPanel.add(new ExtensionItemActionButton(extension));
+        buttonPanel.add(new ExtensionItemActionButton(pluginManagerUI, extension));
     }
 
     private void openInformation() {

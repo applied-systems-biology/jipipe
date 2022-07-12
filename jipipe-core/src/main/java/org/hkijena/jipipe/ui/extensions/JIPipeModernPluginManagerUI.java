@@ -335,7 +335,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         toolBar.add(backButton);
         detailsPanel.add(toolBar, BorderLayout.NORTH);
 
-        ExtensionInfoPanel infoPanel = new ExtensionInfoPanel(extension);
+        ExtensionInfoPanel infoPanel = new ExtensionInfoPanel(this, extension);
         detailsPanel.add(infoPanel, BorderLayout.CENTER);
 
         splitPane.setRightComponent(detailsPanel);

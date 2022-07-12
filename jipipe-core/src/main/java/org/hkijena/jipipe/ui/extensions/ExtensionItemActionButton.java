@@ -23,9 +23,12 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 
 public class ExtensionItemActionButton extends JButton {
+
+    private final JIPipeModernPluginManagerUI pluginManagerUI;
     private final JIPipeExtension extension;
 
-    public ExtensionItemActionButton(JIPipeExtension extension) {
+    public ExtensionItemActionButton(JIPipeModernPluginManagerUI pluginManagerUI, JIPipeExtension extension) {
+        this.pluginManagerUI = pluginManagerUI;
         this.extension = extension;
         addActionListener(e -> executeAction());
         updateDisplay();
@@ -50,7 +53,36 @@ public class ExtensionItemActionButton extends JButton {
                 getExtensionRegistry().clearSchedule(extension.getDependencyId());
             }
             else {
+                activateExtension();
+            }
+        }
+    }
+
+    private void activateExtension() {
+        if(extension instanceof UpdateSiteExtension) {
+
+        }
+        else {
+            if(extension.isActivated()) {
+                getExtensionRegistry().clearSchedule(extension.getDependencyId());
+                return;
+            }
+            if(extension.getImageJUpdateSiteDependencies().isEmpty()) {
                 getExtensionRegistry().scheduleActivateExtension(extension.getDependencyId());
+            }
+            else {
+                if(!pluginManagerUI.isUpdateSitesReady()) {
+                    int response = JOptionPane.showOptionDialog(SwingUtilities.getWindowAncestor(this), "The selected extension requests various ImageJ update sites, but there is currently no connection to the update site system. You can ignore update sites or wait until the initialization is complete. If you click 'Wait' click the 'Activate' " +
+                                    "button again after the update sites have been initialized.",
+                            "Activate " + extension.getMetadata().getName(), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new Object[]{"Wait", "Ignore", "Cancel"},
+                            "Wait");
+                    if(response == JOptionPane.YES_OPTION || response == JOptionPane.CANCEL_OPTION)
+                        return;
+                    getExtensionRegistry().scheduleActivateExtension(extension.getDependencyId());
+                }
+                else {
+                    TODO
+                }
             }
         }
     }

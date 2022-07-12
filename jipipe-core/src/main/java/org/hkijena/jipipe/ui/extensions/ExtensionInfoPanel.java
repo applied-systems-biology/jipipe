@@ -23,8 +23,6 @@ import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.JIPipeJsonExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.WrapLayout;
-import org.hkijena.jipipe.ui.components.layouts.ModifiedFlowLayout;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -35,23 +33,22 @@ import org.jdesktop.swingx.ScrollableSizeHint;
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Desktop;
-import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.GridLayout;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
 public class ExtensionInfoPanel extends JPanel {
+
+    private final JIPipeModernPluginManagerUI pluginManagerUI;
     private final JIPipeExtension extension;
 
-    public ExtensionInfoPanel(JIPipeExtension extension) {
+    public ExtensionInfoPanel(JIPipeModernPluginManagerUI pluginManagerUI, JIPipeExtension extension) {
+        this.pluginManagerUI = pluginManagerUI;
         this.extension = extension;
         initialize();
     }
@@ -139,7 +136,7 @@ public class ExtensionInfoPanel extends JPanel {
         titlePanel.add(titleLabel);
 
         titlePanel.add(Box.createHorizontalGlue());
-        ExtensionItemActionButton actionButton = new ExtensionItemActionButton(extension);
+        ExtensionItemActionButton actionButton = new ExtensionItemActionButton(pluginManagerUI, extension);
         actionButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 20));
         titlePanel.add(actionButton);
 
