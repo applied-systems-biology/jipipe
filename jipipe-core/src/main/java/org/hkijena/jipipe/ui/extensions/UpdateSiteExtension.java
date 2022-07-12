@@ -59,7 +59,7 @@ public class UpdateSiteExtension implements JIPipeExtension {
 
     @Override
     public String getDependencyVersion() {
-        return "1.0.0";
+        return "N/A";
     }
 
     @Override
