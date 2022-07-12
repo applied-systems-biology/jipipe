@@ -15,12 +15,19 @@
 package org.hkijena.jipipe.ui.extensions;
 
 import com.google.common.eventbus.Subscribe;
+import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
+import org.hkijena.jipipe.ui.ijupdater.ActivateUpdateSiteRun;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.util.*;
 
 public class ExtensionItemActionButton extends JButton {
 
@@ -33,6 +40,7 @@ public class ExtensionItemActionButton extends JButton {
         addActionListener(e -> executeAction());
         updateDisplay();
         getExtensionRegistry().getEventBus().register(this);
+        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
     private JIPipeExtensionRegistry getExtensionRegistry() {
@@ -60,7 +68,13 @@ public class ExtensionItemActionButton extends JButton {
 
     private void activateExtension() {
         if(extension instanceof UpdateSiteExtension) {
-
+            if(!pluginManagerUI.isUpdateSitesReady()) {
+                JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "ImageJ updates sites are currently not ready/unavailable.",
+                        "Activate ImageJ update site", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            if (!showUpdateSiteConfirmationDialog(Collections.singleton(((UpdateSiteExtension) extension).getUpdateSite().getName())))
+                return;
         }
         else {
             if(extension.isActivated()) {
@@ -81,10 +95,57 @@ public class ExtensionItemActionButton extends JButton {
                     getExtensionRegistry().scheduleActivateExtension(extension.getDependencyId());
                 }
                 else {
-                    TODO
+                    // Check if there are missing update sites
+                    Set<String> missing = new HashSet<>();
+                    for (JIPipeImageJUpdateSiteDependency dependency : extension.getImageJUpdateSiteDependencies()) {
+                        missing.add(dependency.getName());
+                    }
+                    if(pluginManagerUI.getUpdateSites() != null) {
+                        for (UpdateSite updateSite : pluginManagerUI.getUpdateSites().getUpdateSites(false)) {
+                            missing.remove(updateSite.getName());
+                        }
+                    }
+                    if(missing.isEmpty()) {
+                        // Can directly activate
+                        getExtensionRegistry().scheduleActivateExtension(extension.getDependencyId());
+                    }
+                    else {
+                        if (!showUpdateSiteConfirmationDialog(missing))
+                            return;
+                        getExtensionRegistry().scheduleActivateExtension(extension.getDependencyId());
+                    }
                 }
             }
         }
+    }
+
+    private boolean showUpdateSiteConfirmationDialog(Set<String> missing) {
+        // Show confirm dialog
+        InstallUpdateSitesConfirmationDialog dialog = new InstallUpdateSitesConfirmationDialog(this, pluginManagerUI, extension, missing);
+        dialog.setModal(true);
+        dialog.setSize(800,600);
+        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
+        dialog.setVisible(true);
+        if(dialog.isCancelled()) {
+            return false;
+        }
+        // Trigger installation run
+        List<UpdateSite> toActivate = new ArrayList<>();
+        for (Map.Entry<JIPipeImageJUpdateSiteDependency, Boolean> entry : dialog.getSitesToInstall().entrySet()) {
+            if(entry.getValue()) {
+                UpdateSite updateSite = pluginManagerUI.getUpdateSites().getUpdateSite(entry.getKey().getName(), true);
+                if(updateSite != null) {
+                    toActivate.add(updateSite);
+                }
+                else {
+                    updateSite = pluginManagerUI.getUpdateSites().addUpdateSite(entry.getKey().toUpdateSite());
+                    toActivate.add(updateSite);
+                }
+            }
+        }
+        ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(pluginManagerUI.getUpdateSites(), toActivate);
+        JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run);
+        return true;
     }
 
     private void updateDisplay() {
@@ -119,5 +180,12 @@ public class ExtensionItemActionButton extends JButton {
     @Subscribe
     public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtension event) {
         updateDisplay();
+    }
+
+    @Subscribe
+    public void onUpdateSiteActivated(RunWorkerFinishedEvent event) {
+        if(event.getRun() instanceof ActivateAndApplyUpdateSiteRun) {
+            updateDisplay();
+        }
     }
 }

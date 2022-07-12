@@ -29,8 +29,8 @@ import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.ijupdater.RefreshRepositoryRun;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
+import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
+import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.CoreImageJUtils;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
@@ -76,6 +76,8 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
     private JPanel mainPanel;
 
+    private boolean updateSitesApplied = false;
+
     public JIPipeModernPluginManagerUI(JIPipeWorkbench workbench) {
         super(workbench);
         initialize();
@@ -87,6 +89,8 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         }
         else {
             showItems(getExtensionRegistry().getNewExtensions().stream().map(id -> getExtensionRegistry().getKnownExtensionById(id)).collect(Collectors.toList()), "New extensions");
+            // Acknowledge the extensions
+            getExtensionRegistry().dismissNewExtensions();
         }
 
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
@@ -198,7 +202,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
     private void updateMessagePanel() {
         messagePanel.clear();
         JIPipeExtensionRegistry extensionRegistry = getExtensionRegistry();
-        if(!extensionRegistry.getScheduledDeactivateExtensions().isEmpty() || !extensionRegistry.getScheduledActivateExtensions().isEmpty()){
+        if(updateSitesApplied || !extensionRegistry.getScheduledDeactivateExtensions().isEmpty() || !extensionRegistry.getScheduledActivateExtensions().isEmpty()){
             JButton exitButton = new JButton("Close ImageJ");
             exitButton.addActionListener(e -> System.exit(0));
             messagePanel.addMessage(MessagePanel.MessageType.Info, "To apply the changes, please restart ImageJ.", exitButton);
@@ -305,7 +309,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
     }
 
     @Subscribe
-    public void onOperationInterrupted(RunUIWorkerInterruptedEvent event) {
+    public void onOperationInterrupted(RunWorkerInterruptedEvent event) {
         if (event.getRun() == refreshRepositoryRun) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the ImageJ update site update.", null);
             getWorkbench().sendStatusBarText("Could not refresh ImageJ plugin information from online resources");
@@ -314,11 +318,15 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
     }
 
     @Subscribe
-    public void onOperationFinished(RunUIWorkerFinishedEvent event) {
+    public void onOperationFinished(RunWorkerFinishedEvent event) {
         if (event.getRun() == refreshRepositoryRun) {
             getWorkbench().sendStatusBarText("Refreshed ImageJ plugin information from online resources");
             this.updateSites = refreshRepositoryRun.getFilesCollection();
             setToImageJSuccess();
+        }
+        else if(event.getRun() instanceof ActivateAndApplyUpdateSiteRun) {
+            updateSitesApplied = true;
+            updateMessagePanel();
         }
     }
 

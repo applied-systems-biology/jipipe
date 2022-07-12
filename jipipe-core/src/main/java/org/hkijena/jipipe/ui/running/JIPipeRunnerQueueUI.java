@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.ui.components.icons.JIPipeRunThrobberIcon;
-import org.hkijena.jipipe.ui.components.icons.ThrobberIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
@@ -116,7 +115,7 @@ public class JIPipeRunnerQueueUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerStarted(RunUIWorkerStartedEvent event) {
+    public void onWorkerStarted(RunWorkerStartedEvent event) {
         updateStatus();
     }
 
@@ -126,7 +125,7 @@ public class JIPipeRunnerQueueUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerEnqueued(RunUIWorkerEnqueuedEvent event) {
+    public void onWorkerEnqueued(RunWorkerEnqueuedEvent event) {
         updateStatus();
     }
 
@@ -136,7 +135,7 @@ public class JIPipeRunnerQueueUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+    public void onWorkerFinished(RunWorkerFinishedEvent event) {
         updateStatus();
     }
 
@@ -146,7 +145,7 @@ public class JIPipeRunnerQueueUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
+    public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
         updateStatus();
     }
 
@@ -156,7 +155,7 @@ public class JIPipeRunnerQueueUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerProgress(RunUIWorkerProgressEvent event) {
+    public void onWorkerProgress(RunWorkerProgressEvent event) {
         runningQueueProgress.setMaximum(event.getStatus().getMaxProgress());
         runningQueueProgress.setValue(event.getStatus().getProgress());
         if (event.getStatus().getMessage() != null)

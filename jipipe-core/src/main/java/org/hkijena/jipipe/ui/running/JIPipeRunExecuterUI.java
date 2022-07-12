@@ -16,7 +16,6 @@ package org.hkijena.jipipe.ui.running;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.ui.components.icons.JIPipeRunThrobberIcon;
-import org.hkijena.jipipe.ui.components.icons.ThrobberIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -58,7 +57,7 @@ public class JIPipeRunExecuterUI extends JPanel {
         dialog.setModal(true);
         JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
             @Subscribe
-            public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+            public void onWorkerFinished(RunWorkerFinishedEvent event) {
                 if (event.getRun() == run)
                     dialog.setVisible(false);
             }
@@ -137,7 +136,7 @@ public class JIPipeRunExecuterUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+    public void onWorkerFinished(RunWorkerFinishedEvent event) {
         if (event.getRun() == run) {
             switchToCloseButtonIfPossible();
             progressBar.setString("Finished");
@@ -150,7 +149,7 @@ public class JIPipeRunExecuterUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
+    public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
         if (event.getRun() == run) {
             switchToCloseButtonIfPossible();
             progressBar.setString("Finished");
@@ -158,7 +157,7 @@ public class JIPipeRunExecuterUI extends JPanel {
     }
 
     @Subscribe
-    public void onWorkerStart(RunUIWorkerStartedEvent event) {
+    public void onWorkerStart(RunWorkerStartedEvent event) {
         if (event.getRun() == run) {
             cancelButton.setEnabled(true);
         }
@@ -170,7 +169,7 @@ public class JIPipeRunExecuterUI extends JPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerProgress(RunUIWorkerProgressEvent event) {
+    public void onWorkerProgress(RunWorkerProgressEvent event) {
         if (event.getRun() == run) {
             progressBar.setIndeterminate(false);
             progressBar.setMaximum(event.getStatus().getMaxProgress());

@@ -82,6 +82,10 @@ public class UpdateSiteExtension implements JIPipeExtension {
         return false;
     }
 
+    public UpdateSite getUpdateSite() {
+        return updateSite;
+    }
+
     @Override
     public void reportValidity(JIPipeIssueReport report) {
 

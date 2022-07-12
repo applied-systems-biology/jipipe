@@ -19,27 +19,28 @@ import org.hkijena.jipipe.JIPipeExtension;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dialog;
+import java.awt.*;
 import java.util.HashMap;
-import java.util.IdentityHashMap;
 import java.util.Map;
+import java.util.Set;
 
 public class InstallUpdateSitesConfirmationDialog extends JDialog {
     private final JIPipeModernPluginManagerUI pluginManagerUI;
     private final JIPipeExtension extension;
     private Map<JIPipeImageJUpdateSiteDependency, Boolean> sitesToInstall = new HashMap<>();
-    private boolean cancelled = false;
+    private boolean cancelled = true;
 
-    public InstallUpdateSitesConfirmationDialog(Component parent, JIPipeModernPluginManagerUI pluginManagerUI, JIPipeExtension extension) {
+    public InstallUpdateSitesConfirmationDialog(Component parent, JIPipeModernPluginManagerUI pluginManagerUI, JIPipeExtension extension, Set<String> filter) {
         super(SwingUtilities.getWindowAncestor(parent));
         this.pluginManagerUI = pluginManagerUI;
         this.extension = extension;
         for (JIPipeImageJUpdateSiteDependency dependency : extension.getImageJUpdateSiteDependencies()) {
-            sitesToInstall.put(dependency, true);
+            if(filter == null || filter.contains(dependency.getName())) {
+                sitesToInstall.put(dependency, true);
+            }
         }
         initialize();
     }
@@ -52,7 +53,7 @@ public class InstallUpdateSitesConfirmationDialog extends JDialog {
         getContentPane().setLayout(new BorderLayout());
         FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
 
-        FormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("ImageJ update site installation", UIUtils.getIconFromResources("apps/image.png"));
+        FormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("ImageJ update site installation", UIUtils.getIconFromResources("apps/imagej.png"));
         if(extension instanceof UpdateSiteExtension) {
             groupHeader.setDescription("You requested the activation of the following ImageJ update site. Please note that an active internet connection is required to download the associated files.");
         }
@@ -61,6 +62,59 @@ public class InstallUpdateSitesConfirmationDialog extends JDialog {
                     "Please note that an active internet connection is required to download the associated files.");
         }
 
+        for (Map.Entry<JIPipeImageJUpdateSiteDependency, Boolean> entry : sitesToInstall.entrySet()) {
+            JIPipeImageJUpdateSiteDependency dependency = entry.getKey();
+            String description = "No description available.";
+            if(pluginManagerUI.isUpdateSitesReady() && pluginManagerUI.getUpdateSites() != null) {
+                UpdateSite updateSite = pluginManagerUI.getUpdateSites().getUpdateSite(dependency.getName(), true);
+                if(updateSite != null) {
+                    description = updateSite.getDescription();
+                }
+            }
+            JPanel sitePanel = new JPanel(new GridBagLayout());
+            sitePanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8,8,8,8)));
+            JLabel nameLabel = new JLabel(dependency.getName());
+            nameLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
+            sitePanel.add(nameLabel, new GridBagConstraints(0,
+                    0,
+                    1,
+                    1,
+                    1,
+                    0,
+                    GridBagConstraints.NORTHWEST,
+                    GridBagConstraints.HORIZONTAL,
+                    new Insets(4,4,4,4),
+                    0,
+                    0));
+            JTextPane descriptionLabel = UIUtils.makeBorderlessReadonlyTextPane(description, false);
+            sitePanel.add(descriptionLabel, new GridBagConstraints(0,
+                    1,
+                    1,
+                    1,
+                    1,
+                    0,
+                    GridBagConstraints.NORTHWEST,
+                    GridBagConstraints.HORIZONTAL,
+                    new Insets(4,4,4,4),
+                    0,
+                    0));
+            JCheckBox installCheckBox = new JCheckBox("Download & install", entry.getValue());
+            installCheckBox.addActionListener(e -> {
+                sitesToInstall.put(dependency, installCheckBox.isSelected());
+            });
+            sitePanel.add(installCheckBox, new GridBagConstraints(1,
+                    1,
+                    1,
+                    1,
+                    0,
+                    0,
+                    GridBagConstraints.NORTHWEST,
+                    GridBagConstraints.HORIZONTAL,
+                    new Insets(4,4,4,4),
+                    0,
+                    0));
+            formPanel.addWideToForm(sitePanel, null);
+        }
 
         formPanel.addVerticalGlue();
         getContentPane().add(formPanel, BorderLayout.CENTER);
@@ -81,7 +135,7 @@ public class InstallUpdateSitesConfirmationDialog extends JDialog {
         });
         buttonPanel.add(cancelButton);
 
-        JButton installButton = new JButton("Activate", UIUtils.getIconFromResources("actions/checkmark.png"));
+        JButton installButton = new JButton("Continue", UIUtils.getIconFromResources("actions/checkmark.png"));
         installButton.addActionListener(e -> {
             cancelled = false;
             setVisible(false);
@@ -89,5 +143,13 @@ public class InstallUpdateSitesConfirmationDialog extends JDialog {
         buttonPanel.add(installButton);
 
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
+    }
+
+    public Map<JIPipeImageJUpdateSiteDependency, Boolean> getSitesToInstall() {
+        return sitesToInstall;
+    }
+
+    public boolean isCancelled() {
+        return cancelled;
     }
 }

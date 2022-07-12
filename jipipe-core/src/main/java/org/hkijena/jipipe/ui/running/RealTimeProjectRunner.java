@@ -120,7 +120,7 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
     }
 
     @Subscribe
-    public void onRunStarted(RunUIWorkerStartedEvent event) {
+    public void onRunStarted(RunWorkerStartedEvent event) {
         if (event.getRun() == currentRun) {
             if (!runtimeSettings.isRealTimeRunEnabled()) {
                 return;
@@ -129,14 +129,14 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
     }
 
     @Subscribe
-    public void onRunFinished(RunUIWorkerFinishedEvent event) {
+    public void onRunFinished(RunWorkerFinishedEvent event) {
         if (event.getRun() == currentRun) {
             getWorkbench().sendStatusBarText("Real-time: Update finished");
         }
     }
 
     @Subscribe
-    public void onRunCancelled(RunUIWorkerInterruptedEvent event) {
+    public void onRunCancelled(RunWorkerInterruptedEvent event) {
         if (event.getRun() == currentRun) {
             getWorkbench().sendStatusBarText("Real-time: Update failed");
         }

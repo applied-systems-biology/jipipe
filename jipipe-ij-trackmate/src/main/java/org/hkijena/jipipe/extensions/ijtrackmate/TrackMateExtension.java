@@ -13,14 +13,7 @@
 
 package org.hkijena.jipipe.extensions.ijtrackmate;
 
-import fiji.plugin.trackmate.Model;
-import fiji.plugin.trackmate.Settings;
-import fiji.plugin.trackmate.detection.SpotDetectorFactory;
-import fiji.plugin.trackmate.features.edges.EdgeAnalyzer;
-import fiji.plugin.trackmate.features.spot.SpotAnalyzerFactoryBase;
-import fiji.plugin.trackmate.features.track.TrackAnalyzer;
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
-import fiji.plugin.trackmate.tracking.SpotTrackerFactory;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
@@ -35,8 +28,6 @@ import org.hkijena.jipipe.extensions.ijtrackmate.display.trackscheme.TrackScheme
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.converters.ConvertSpotsToRoiNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.converters.ConvertTracksToRoiNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.converters.SpotsToRoiConverter;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.detectors.CreateSpotDetectorNodeInfo;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.detectors.CreateSpotTrackerNodeInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MergeSpotsNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SplitSpotsNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SpotDetectorNode;
@@ -53,41 +44,25 @@ import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeatureFilterPa
 import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUISpotsDisplaySettings;
 import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUITracksDisplaySettings;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackDrawer;
-import org.hkijena.jipipe.extensions.imagejdatatypes.settings.ImageViewerUIRoiDisplaySettings;
+import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackMateUtils;
 import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceManager;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
-import org.scijava.plugin.PluginInfo;
 import org.scijava.plugin.PluginService;
 
 import javax.swing.*;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Plugin(type = JIPipeJavaExtension.class)
 public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     public static final ResourceManager RESOURCES = new ResourceManager(TrackMateExtension.class, "/org/hkijena/jipipe/extensions/ijtrackmate");
-
-    private static Map<String, PluginInfo<SpotDetectorFactory>> SPOT_DETECTORS = new HashMap<>();
-
-    private static Map<String, PluginInfo<SpotTrackerFactory>> SPOT_TRACKERS = new HashMap<>();
-
-    public static Map<String, PluginInfo<SpotDetectorFactory>> getSpotDetectors() {
-        return Collections.unmodifiableMap(SPOT_DETECTORS);
-    }
-
-    public static Map<String, PluginInfo<SpotTrackerFactory>> getSpotTrackers() {
-        return Collections.unmodifiableMap(SPOT_TRACKERS);
-    }
 
     public TrackMateExtension() {
     }
@@ -163,14 +138,16 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerParameters();
 
-        registerSpotFeatures(progressInfo);
-        registerTrackFeatures(progressInfo);
-        registerEdgeFeatures(progressInfo);
+        // Moved to different class to prevent crash if TrackMate is not available
+        TrackMateUtils.registerSpotFeatures(progressInfo);
+        TrackMateUtils.registerTrackFeatures(progressInfo);
+        TrackMateUtils.registerEdgeFeatures(progressInfo);
 
         registerDataTypes();
 
-        registerSpotDetectors(progressInfo, service);
-        registerSpotTrackers(progressInfo, service);
+        // Moved to different class to prevent crash if TrackMate is not available
+        TrackMateUtils.registerSpotDetectors(this, progressInfo, service);
+        TrackMateUtils.registerSpotTrackers(this, progressInfo, service);
 
         registerNodes();
         registerSettings();
@@ -262,102 +239,6 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("trackmate-spot-collection", SpotsCollectionData.class, RESOURCES.getIcon16URLFromResources("trackmate-spots.png"));
         registerDatatype("trackmate-track-collection", TrackCollectionData.class, RESOURCES.getIcon16URLFromResources("trackmate-tracker.png"), new TrackSchemeDataDisplayOperation());
         registerDatatypeConversion(new SpotsToRoiConverter());
-    }
-
-    private void registerSpotFeatures(JIPipeProgressInfo progressInfo) {
-        Model model = new Model();
-        for (Map.Entry<String, String> entry : model.getFeatureModel().getSpotFeatureNames().entrySet()) {
-            String internalName = entry.getKey();
-            String displayName = entry.getValue();
-            progressInfo.log("Spot feature detected: " + internalName + " (" + displayName + ")");
-            SpotFeature.ALLOWED_VALUES.add(internalName);
-            SpotFeature.VALUE_LABELS.put(internalName, displayName);
-        }
-        Settings settings = new Settings();
-        settings.addAllAnalyzers();
-        for (SpotAnalyzerFactoryBase<?> spotAnalyzerFactory : settings.getSpotAnalyzerFactories()) {
-            for (Map.Entry<String, String> entry : spotAnalyzerFactory.getFeatureNames().entrySet()) {
-                String internalName = entry.getKey();
-                String displayName = entry.getValue();
-                progressInfo.log("Spot feature detected: " + internalName + " (" + displayName + ")");
-                SpotFeature.ALLOWED_VALUES.add(internalName);
-                SpotFeature.VALUE_LABELS.put(internalName, displayName);
-            }
-        }
-    }
-
-    private void registerEdgeFeatures(JIPipeProgressInfo progressInfo) {
-        Model model = new Model();
-        for (Map.Entry<String, String> entry : model.getFeatureModel().getEdgeFeatureNames().entrySet()) {
-            String internalName = entry.getKey();
-            String displayName = entry.getValue();
-            progressInfo.log("Edge feature detected: " + internalName + " (" + displayName + ")");
-            EdgeFeature.ALLOWED_VALUES.add(internalName);
-            EdgeFeature.VALUE_LABELS.put(internalName, displayName);
-        }
-        Settings settings = new Settings();
-        settings.addAllAnalyzers();
-        for (EdgeAnalyzer edgeAnalyzer : settings.getEdgeAnalyzers()) {
-            for (Map.Entry<String, String> entry : edgeAnalyzer.getFeatureNames().entrySet()) {
-                String internalName = entry.getKey();
-                String displayName = entry.getValue();
-                progressInfo.log("Edge feature detected: " + internalName + " (" + displayName + ")");
-                EdgeFeature.ALLOWED_VALUES.add(internalName);
-                EdgeFeature.VALUE_LABELS.put(internalName, displayName);
-            }
-        }
-    }
-
-    private void registerTrackFeatures(JIPipeProgressInfo progressInfo) {
-        Model model = new Model();
-        for (Map.Entry<String, String> entry : model.getFeatureModel().getTrackFeatureNames().entrySet()) {
-            String internalName = entry.getKey();
-            String displayName = entry.getValue();
-            progressInfo.log("Track feature detected: " + internalName + " (" + displayName + ")");
-            TrackFeature.ALLOWED_VALUES.add(internalName);
-            TrackFeature.VALUE_LABELS.put(internalName, displayName);
-        }
-        Settings settings = new Settings();
-        settings.addAllAnalyzers();
-        for (TrackAnalyzer trackAnalyzer : settings.getTrackAnalyzers()) {
-            for (Map.Entry<String, String> entry : trackAnalyzer.getFeatureNames().entrySet()) {
-                String internalName = entry.getKey();
-                String displayName = entry.getValue();
-                progressInfo.log("Track feature detected: " + internalName + " (" + displayName + ")");
-                TrackFeature.ALLOWED_VALUES.add(internalName);
-                TrackFeature.VALUE_LABELS.put(internalName, displayName);
-            }
-        }
-    }
-
-    private void registerSpotTrackers(JIPipeProgressInfo progressInfo, PluginService service) {
-        JIPipeProgressInfo spotDetectorProgress = progressInfo.resolveAndLog("Spot trackers");
-        for (PluginInfo<SpotTrackerFactory> info : service.getPluginsOfType(SpotTrackerFactory.class)) {
-            JIPipeProgressInfo detectorProgress = spotDetectorProgress.resolveAndLog(info.toString());
-            try {
-                SpotTrackerFactory instance = info.createInstance();
-                CreateSpotTrackerNodeInfo nodeInfo = new CreateSpotTrackerNodeInfo(instance);
-                registerNodeType(nodeInfo, RESOURCES.getIcon16URLFromResources("trackmate.png"));
-                SPOT_TRACKERS.put(instance.getKey(), info);
-            } catch (Throwable throwable) {
-                detectorProgress.log("Unable to register: " + throwable.getMessage());
-            }
-        }
-    }
-
-    private void registerSpotDetectors(JIPipeProgressInfo progressInfo, PluginService service) {
-        JIPipeProgressInfo spotDetectorProgress = progressInfo.resolveAndLog("Spot detectors");
-        for (PluginInfo<SpotDetectorFactory> info : service.getPluginsOfType(SpotDetectorFactory.class)) {
-            JIPipeProgressInfo detectorProgress = spotDetectorProgress.resolveAndLog(info.toString());
-            try {
-                SpotDetectorFactory instance = info.createInstance();
-                CreateSpotDetectorNodeInfo nodeInfo = new CreateSpotDetectorNodeInfo(instance);
-                registerNodeType(nodeInfo, RESOURCES.getIcon16URLFromResources("trackmate.png"));
-                SPOT_DETECTORS.put(instance.getKey(), info);
-            } catch (Throwable throwable) {
-                detectorProgress.log("Unable to register: " + throwable.getMessage());
-            }
-        }
     }
 
     @Override

@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
+import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackMateUtils;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
@@ -64,7 +64,7 @@ public class SpotDetectorData implements JIPipeData {
     public static SpotDetectorData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         JsonNode node = storage.readJSON(storage.findFileByExtension(".json").get(), JsonNode.class);
         String key = node.get("detector-key").textValue();
-        PluginInfo<SpotDetectorFactory> pluginInfo = TrackMateExtension.getSpotDetectors().get(key);
+        PluginInfo<SpotDetectorFactory> pluginInfo = TrackMateUtils.getSpotDetectors().get(key);
         if (pluginInfo == null) {
             throw new NullPointerException("Unknown spot detector: " + key);
         }

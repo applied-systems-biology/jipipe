@@ -23,8 +23,8 @@ import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
+import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
+import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -64,7 +64,7 @@ public class JIPipeDataTableToZIPExporterRun extends JIPipeWorkbenchPanel implem
     }
 
     @Subscribe
-    public void onFinished(RunUIWorkerFinishedEvent event) {
+    public void onFinished(RunWorkerFinishedEvent event) {
         if (event.getRun() == this) {
             if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
                     "The data was successfully exported to " + outputZipFile + ". Do you want to open the file?",
@@ -77,7 +77,7 @@ public class JIPipeDataTableToZIPExporterRun extends JIPipeWorkbenchPanel implem
     }
 
     @Subscribe
-    public void onInterrupted(RunUIWorkerInterruptedEvent event) {
+    public void onInterrupted(RunWorkerInterruptedEvent event) {
         if (event.getRun() == this) {
             JOptionPane.showMessageDialog(getWorkbench().getWindow(), "Could not export slot data to " + outputZipFile + ". Please take a look at the log (Tools > Logs) to find out more.", "Export slot data", JOptionPane.ERROR_MESSAGE);
         }

@@ -50,10 +50,10 @@ public interface JIPipeRunnable extends Runnable {
      *
      * @param function the method to execute when the run finishes (successfully or not successfully)
      */
-    default void onFinished(Consumer<RunUIWorkerFinishedEvent> function) {
+    default void onFinished(Consumer<RunWorkerFinishedEvent> function) {
         JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
             @Subscribe
-            public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+            public void onWorkerFinished(RunWorkerFinishedEvent event) {
                 if (event.getRun() == JIPipeRunnable.this) {
                     function.accept(event);
                 }
@@ -67,10 +67,10 @@ public interface JIPipeRunnable extends Runnable {
      *
      * @param function the method to execute when the run is interrupted (due to error or user cancel)
      */
-    default void onInterrupted(Consumer<RunUIWorkerInterruptedEvent> function) {
+    default void onInterrupted(Consumer<RunWorkerInterruptedEvent> function) {
         JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
             @Subscribe
-            public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
+            public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
                 if (event.getRun() == JIPipeRunnable.this) {
                     function.accept(event);
                 }
@@ -84,10 +84,10 @@ public interface JIPipeRunnable extends Runnable {
      *
      * @param function the method to execute when the run starts
      */
-    default void onStarted(Consumer<RunUIWorkerStartedEvent> function) {
+    default void onStarted(Consumer<RunWorkerStartedEvent> function) {
         JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
             @Subscribe
-            public void onWorkerStarted(RunUIWorkerStartedEvent event) {
+            public void onWorkerStarted(RunWorkerStartedEvent event) {
                 if (event.getRun() == JIPipeRunnable.this) {
                     function.accept(event);
                 }
@@ -101,10 +101,10 @@ public interface JIPipeRunnable extends Runnable {
      *
      * @param function the method to execute when the run progresses
      */
-    default void onProgress(Consumer<RunUIWorkerProgressEvent> function) {
+    default void onProgress(Consumer<RunWorkerProgressEvent> function) {
         JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
             @Subscribe
-            public void onWorkerStarted(RunUIWorkerProgressEvent event) {
+            public void onWorkerStarted(RunWorkerProgressEvent event) {
                 if (event.getRun() == JIPipeRunnable.this) {
                     function.accept(event);
                 }

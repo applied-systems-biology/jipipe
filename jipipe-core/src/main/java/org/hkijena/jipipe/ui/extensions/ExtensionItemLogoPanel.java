@@ -20,6 +20,8 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeExtension;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
@@ -46,6 +48,7 @@ public class ExtensionItemLogoPanel extends JPanel {
         setOpaque(false);
         initializeThumbnail();
         JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);
+        JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
     @Subscribe
@@ -56,6 +59,13 @@ public class ExtensionItemLogoPanel extends JPanel {
     @Subscribe
     public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtension event) {
         repaint();
+    }
+
+    @Subscribe
+    public void onUpdateSiteActivated(RunWorkerFinishedEvent event) {
+        if(event.getRun() instanceof ActivateAndApplyUpdateSiteRun) {
+            repaint();
+        }
     }
 
     private void initializeThumbnail() {

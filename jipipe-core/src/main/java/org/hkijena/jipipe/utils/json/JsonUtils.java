@@ -58,7 +58,7 @@ public class JsonUtils {
 
     public static void saveToFile(Object obj, Path targetFile) {
         try {
-            objectMapper.writeValue(targetFile.toFile(), obj);
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(targetFile.toFile(), obj);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

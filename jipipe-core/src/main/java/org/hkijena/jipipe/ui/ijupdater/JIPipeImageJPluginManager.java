@@ -24,8 +24,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
+import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
+import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.CoreImageJUtils;
 import org.hkijena.jipipe.utils.NetworkUtils;
@@ -197,7 +197,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     }
 
     @Subscribe
-    public void onOperationInterrupted(RunUIWorkerInterruptedEvent event) {
+    public void onOperationInterrupted(RunWorkerInterruptedEvent event) {
         if (event.getRun() == refreshRepositoryRun) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the update.", null);
             getWorkbench().sendStatusBarText("Could not refresh ImageJ plugin information from online resources");
@@ -211,7 +211,7 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     }
 
     @Subscribe
-    public void onOperationFinished(RunUIWorkerFinishedEvent event) {
+    public void onOperationFinished(RunWorkerFinishedEvent event) {
         if (event.getRun() == refreshRepositoryRun) {
             getWorkbench().sendStatusBarText("Refreshed ImageJ plugin information from online resources");
             if (refreshRepositoryRun.getFilesCollection() != null) {

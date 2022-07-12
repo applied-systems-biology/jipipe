@@ -15,9 +15,9 @@ package org.hkijena.jipipe.ui.components.icons;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
-import org.hkijena.jipipe.ui.running.RunUIWorkerStartedEvent;
+import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
+import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
+import org.hkijena.jipipe.ui.running.RunWorkerStartedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -54,19 +54,19 @@ public class JIPipeRunThrobberIcon implements Icon {
     }
 
     @Subscribe
-    public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+    public void onWorkerFinished(RunWorkerFinishedEvent event) {
         if(JIPipeRunnerQueue.getInstance().isEmpty()) {
             stop();
         }
     }
 
     @Subscribe
-    public void onWorkerStart(RunUIWorkerStartedEvent event) {
+    public void onWorkerStart(RunWorkerStartedEvent event) {
         timer.start();
     }
 
     @Subscribe
-    public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
+    public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
         if(JIPipeRunnerQueue.getInstance().isEmpty()) {
             stop();
         }

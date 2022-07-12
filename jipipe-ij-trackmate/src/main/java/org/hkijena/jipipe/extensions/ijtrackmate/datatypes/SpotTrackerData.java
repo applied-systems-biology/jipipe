@@ -28,14 +28,13 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
+import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackMateUtils;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
-import org.python.antlr.ast.Str;
 import org.scijava.InstantiableException;
 import org.scijava.plugin.PluginInfo;
 
@@ -65,7 +64,7 @@ public class SpotTrackerData implements JIPipeData {
     public static SpotTrackerData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         JsonNode node = storage.readJSON(storage.findFileByExtension(".json").get(), JsonNode.class);
         String key = node.get("detector-key").textValue();
-        PluginInfo<SpotTrackerFactory> pluginInfo = TrackMateExtension.getSpotTrackers().get(key);
+        PluginInfo<SpotTrackerFactory> pluginInfo = TrackMateUtils.getSpotTrackers().get(key);
         if (pluginInfo == null) {
             throw new NullPointerException("Unknown spot detector: " + key);
         }

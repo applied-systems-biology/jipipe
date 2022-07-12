@@ -16,28 +16,21 @@ package org.hkijena.jipipe.ui.running;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 
 /**
- * Generated when work of an {@link JIPipeRunWorker} is interrupted
+ * Generated when an {@link JIPipeRunWorker} finished its work
  */
-public class RunUIWorkerInterruptedEvent {
+public class RunWorkerFinishedEvent {
 
-    private Throwable exception;
     private JIPipeRunWorker worker;
 
     /**
-     * @param worker    the worker
-     * @param exception the exception triggered when interrupted
+     * @param worker worker that finished
      */
-    public RunUIWorkerInterruptedEvent(JIPipeRunWorker worker, Throwable exception) {
-        this.exception = exception;
+    public RunWorkerFinishedEvent(JIPipeRunWorker worker) {
         this.worker = worker;
     }
 
     public JIPipeRunWorker getWorker() {
         return worker;
-    }
-
-    public Throwable getException() {
-        return exception;
     }
 
     public JIPipeRunnable getRun() {

@@ -16,9 +16,9 @@ package org.hkijena.jipipe.ui.running;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 
 /**
- * Generated when an {@link JIPipeRunWorker} was enqueued
+ * Generated when an {@link JIPipeRunWorker} was started
  */
-public class RunUIWorkerEnqueuedEvent {
+public class RunWorkerStartedEvent {
 
     private JIPipeRunnable run;
     private JIPipeRunWorker worker;
@@ -27,7 +27,7 @@ public class RunUIWorkerEnqueuedEvent {
      * @param run    the run
      * @param worker the worker
      */
-    public RunUIWorkerEnqueuedEvent(JIPipeRunnable run, JIPipeRunWorker worker) {
+    public RunWorkerStartedEvent(JIPipeRunnable run, JIPipeRunWorker worker) {
         this.run = run;
         this.worker = worker;
     }

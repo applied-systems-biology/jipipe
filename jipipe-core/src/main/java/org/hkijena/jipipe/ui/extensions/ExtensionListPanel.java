@@ -19,13 +19,14 @@ import org.hkijena.jipipe.JIPipeExtension;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.layouts.ModifiedFlowLayout;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.ScrollableSizeHint;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import javax.swing.plaf.LayerUI;
+import java.awt.*;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -33,6 +34,19 @@ import java.util.Deque;
 import java.util.List;
 
 public class ExtensionListPanel extends JIPipeWorkbenchPanel {
+
+    public static final Paint GRADIENT_TOP = new LinearGradientPaint(0,
+            0,
+            0,
+            64,
+            new float[]{0f,1f},
+            new Color[]{UIManager.getColor("Panel.background"), ColorUtils.setAlpha(UIManager.getColor("Panel.background"), 0)});
+    public static final Paint GRADIENT_BOTTOM = new LinearGradientPaint(0,
+            0,
+            0,
+            64,
+            new float[]{0f,1f},
+            new Color[]{ColorUtils.setAlpha(UIManager.getColor("Panel.background"), 0), UIManager.getColor("Panel.background")});
 
     private final JIPipeModernPluginManagerUI pluginManagerUI;
     private List<JIPipeExtension> plugins;
@@ -63,8 +77,6 @@ public class ExtensionListPanel extends JIPipeWorkbenchPanel {
         listPanel.setScrollableWidthHint(ScrollableSizeHint.HORIZONTAL_STRETCH);
         listPanel.setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
         scrollPane = new JScrollPane(listPanel);
-//        scrollPane.getViewport().setScrollMode(JViewport.BACKINGSTORE_SCROLL_MODE);
-//        scrollPane.getVerticalScrollBar().setUnitIncrement(1);
         add(scrollPane, BorderLayout.CENTER);
     }
 

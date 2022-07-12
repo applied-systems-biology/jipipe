@@ -373,7 +373,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+    public void onWorkerFinished(RunWorkerFinishedEvent event) {
         if (event.getRun() == currentQuickRun) {
             tryShowSelectionPanel();
 
@@ -404,7 +404,7 @@ public class QuickRunSetupUI extends JIPipeProjectWorkbenchPanel {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
+    public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
         if (event.getRun() == currentQuickRun) {
             openError(event.getException());
         }

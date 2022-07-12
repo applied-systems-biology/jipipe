@@ -36,7 +36,7 @@ public class JIPipeRunQueueNotifier {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+    public void onWorkerFinished(RunWorkerFinishedEvent event) {
         if (settings.isShowRunNotifications()) {
             if (!canShowNotification(event.getWorker()))
                 return;
@@ -66,7 +66,7 @@ public class JIPipeRunQueueNotifier {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
+    public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
         if (settings.isShowRunNotifications()) {
             if (!canShowNotification(event.getWorker()))
                 return;

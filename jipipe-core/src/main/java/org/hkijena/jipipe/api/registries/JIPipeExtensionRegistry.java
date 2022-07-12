@@ -172,6 +172,7 @@ public class JIPipeExtensionRegistry {
         scheduledDeactivateExtensions.remove(id);
         scheduledActivateExtensions.add(id);
         settings.getActivatedExtensions().add(id);
+        settings.getSilencedExtensions().add(id); // That the user is not warned by it
         save();
         eventBus.post(new ScheduledActivateExtension(id));
     }
@@ -180,6 +181,7 @@ public class JIPipeExtensionRegistry {
         scheduledDeactivateExtensions.add(id);
         scheduledActivateExtensions.remove(id);
         settings.getActivatedExtensions().remove(id);
+        settings.getSilencedExtensions().add(id); // That the user is not warned by it
         save();
         eventBus.post(new ScheduledDeactivateExtension(id));
     }

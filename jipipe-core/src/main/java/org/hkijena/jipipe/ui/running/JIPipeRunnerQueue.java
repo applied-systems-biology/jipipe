@@ -91,7 +91,7 @@ public class JIPipeRunnerQueue {
         worker.getEventBus().register(this);
         assignedWorkers.put(run, worker);
         queue.add(worker);
-        eventBus.post(new RunUIWorkerEnqueuedEvent(run, worker));
+        eventBus.post(new RunWorkerEnqueuedEvent(run, worker));
         tryDequeue();
         return worker;
     }
@@ -112,7 +112,7 @@ public class JIPipeRunnerQueue {
     public void tryDequeue() {
         if (currentlyRunningWorker == null && !queue.isEmpty()) {
             currentlyRunningWorker = queue.remove();
-            eventBus.post(new RunUIWorkerStartedEvent(currentlyRunningWorker.getRun(), currentlyRunningWorker));
+            eventBus.post(new RunWorkerStartedEvent(currentlyRunningWorker.getRun(), currentlyRunningWorker));
             currentlyRunningWorker.execute();
         }
     }
@@ -132,7 +132,7 @@ public class JIPipeRunnerQueue {
                 worker.cancel(true);
             } else {
                 queue.remove(worker);
-                eventBus.post(new RunUIWorkerInterruptedEvent(worker, new InterruptedException("Operation was cancelled.")));
+                eventBus.post(new RunWorkerInterruptedEvent(worker, new InterruptedException("Operation was cancelled.")));
             }
         }
     }
@@ -143,7 +143,7 @@ public class JIPipeRunnerQueue {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerFinished(RunUIWorkerFinishedEvent event) {
+    public void onWorkerFinished(RunWorkerFinishedEvent event) {
         if (event.getWorker() == currentlyRunningWorker) {
             assignedWorkers.remove(currentlyRunningWorker.getRun());
             currentlyRunningWorker = null;
@@ -158,7 +158,7 @@ public class JIPipeRunnerQueue {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerInterrupted(RunUIWorkerInterruptedEvent event) {
+    public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
         if (event.getWorker() == currentlyRunningWorker) {
             assignedWorkers.remove(currentlyRunningWorker.getRun());
             currentlyRunningWorker = null;
@@ -173,7 +173,7 @@ public class JIPipeRunnerQueue {
      * @param event Generated event
      */
     @Subscribe
-    public void onWorkerProgress(RunUIWorkerProgressEvent event) {
+    public void onWorkerProgress(RunWorkerProgressEvent event) {
         eventBus.post(event);
     }
 

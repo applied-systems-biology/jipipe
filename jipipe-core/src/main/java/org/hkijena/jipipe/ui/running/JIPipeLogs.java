@@ -58,12 +58,12 @@ public class JIPipeLogs {
     }
 
     @Subscribe
-    public void onRunFinished(RunUIWorkerFinishedEvent event) {
+    public void onRunFinished(RunWorkerFinishedEvent event) {
         pushToLog(event.getRun(), true);
     }
 
     @Subscribe
-    public void onRunCancelled(RunUIWorkerInterruptedEvent event) {
+    public void onRunCancelled(RunWorkerInterruptedEvent event) {
         pushToLog(event.getRun(), false);
     }
 

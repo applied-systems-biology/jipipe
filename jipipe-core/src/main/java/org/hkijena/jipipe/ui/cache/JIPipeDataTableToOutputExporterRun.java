@@ -24,8 +24,8 @@ import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunUIWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunUIWorkerInterruptedEvent;
+import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
+import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -101,7 +101,7 @@ public class JIPipeDataTableToOutputExporterRun extends JIPipeWorkbenchPanel imp
     }
 
     @Subscribe
-    public void onFinished(RunUIWorkerFinishedEvent event) {
+    public void onFinished(RunWorkerFinishedEvent event) {
         if (event.getRun() == this) {
             if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
                     "The data was successfully exported to " + outputPath + ". Do you want to open the folder?",
@@ -114,7 +114,7 @@ public class JIPipeDataTableToOutputExporterRun extends JIPipeWorkbenchPanel imp
     }
 
     @Subscribe
-    public void onInterrupted(RunUIWorkerInterruptedEvent event) {
+    public void onInterrupted(RunWorkerInterruptedEvent event) {
         if (event.getRun() == this) {
             JOptionPane.showMessageDialog(getWorkbench().getWindow(), "Could not export slot data to " + outputPath + ". Please take a look at the log (Tools > Logs) to find out more.", "Export slot data", JOptionPane.ERROR_MESSAGE);
         }
