@@ -22,6 +22,7 @@ import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MessagePanel;
+import org.hkijena.jipipe.ui.components.icons.AnimatedIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.extensions.ExtensionItemActionButton;
@@ -43,11 +44,10 @@ import java.util.stream.Collectors;
  * Shown when unsatisfied dependencies are found
  */
 public class UnsatisfiedDependenciesDialog extends JDialog {
-    private final JIPipeWorkbench workbench;
     private final Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites;
     private final JIPipePluginManager pluginManager;
-    private Path fileName;
-    private Set<JIPipeDependency> dependencySet;
+    private final Path fileName;
+    private final Set<JIPipeDependency> dependencySet;
     private boolean continueLoading = false;
     private final FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
 
@@ -61,7 +61,6 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
      */
     public UnsatisfiedDependenciesDialog(JIPipeWorkbench workbench, Path fileName, Set<JIPipeDependency> dependencySet, Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites) {
         super(workbench.getWindow());
-        this.workbench = workbench;
         this.fileName = fileName;
         this.dependencySet = dependencySet;
         this.missingUpdateSites = missingUpdateSites;
@@ -96,13 +95,11 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
         setTitle("Missing dependencies detected");
 
         getContentPane().setLayout(new BorderLayout());
-
-
         getContentPane().add(messagePanel, BorderLayout.NORTH);
 
         formPanel.setBorder(BorderFactory.createEmptyBorder(16,16,16,16));
 
-        formPanel.addWideToForm(UIUtils.createJLabel("Unsatisfied dependencies", UIUtils.getIcon32FromResources("dialog-warning.png"), 28));
+        formPanel.addWideToForm(UIUtils.createJLabel("Missing dependencies detected", UIUtils.getIcon32FromResources("dialog-warning.png"), 28));
         formPanel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane("The project '" + fileName.toString() + "' might not be loadable due to missing dependencies. You can choose to activate the dependencies (requires a restart of ImageJ or JIPipe) or ignore this message.", false));
 
         if(!dependencySet.isEmpty()) {
@@ -135,8 +132,11 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
         }
         if(!missingUpdateSites.isEmpty()) {
             formPanel.addWideToForm(Box.createVerticalStrut(32));
+            AnimatedIcon hourglassAnimation = new AnimatedIcon(this, UIUtils.getIconFromResources("actions/hourglass-half.png"),
+                    UIUtils.getIconFromResources("emblems/hourglass-half.png"),
+                    100, 0.05);
             formPanel.addWideToForm(UIUtils.createJLabel("ImageJ update sites", 22));
-            formPanel.addWideToForm(new JLabel("Please wait ..."));
+            formPanel.addWideToForm(UIUtils.createJLabel("Please wait until the update sites are available ...", hourglassAnimation));
         }
 
         formPanel.addVerticalGlue();
