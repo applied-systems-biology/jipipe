@@ -58,6 +58,8 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     private boolean addNameToTable = true;
     private OptionalStringParameter indexAnnotation = new OptionalStringParameter();
 
+    private boolean measureInPhysicalUnits = true;
+
     /**
      * Instantiates a new node type.
      *
@@ -81,6 +83,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
         this.applyPerSlice = other.applyPerSlice;
         this.indexAnnotation = other.indexAnnotation;
         this.addNameToTable = other.addNameToTable;
+        this.measureInPhysicalUnits = other.measureInPhysicalUnits;
     }
 
     @Override
@@ -103,7 +106,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
                     // This is needed, as measuring messes with the image
                     referenceImage = ImageJUtils.duplicate(referenceImage);
                 }
-                ResultsTableData result = data.measure(referenceImage, measurements, addNameToTable);
+                ResultsTableData result = data.measure(referenceImage, measurements, addNameToTable, measureInPhysicalUnits);
                 List<JIPipeTextAnnotation> annotations = new ArrayList<>();
                 if (indexAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(indexAnnotation.getContent())) {
                     annotations.add(new JIPipeTextAnnotation(indexAnnotation.getContent(), entry.getKey().toString()));
@@ -183,5 +186,16 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     @JIPipeParameter("add-name")
     public void setAddNameToTable(boolean addNameToTable) {
         this.addNameToTable = addNameToTable;
+    }
+
+    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @JIPipeParameter("measure-in-physical-units")
+    public boolean isMeasureInPhysicalUnits() {
+        return measureInPhysicalUnits;
+    }
+
+    @JIPipeParameter("measure-in-physical-units")
+    public void setMeasureInPhysicalUnits(boolean measureInPhysicalUnits) {
+        this.measureInPhysicalUnits = measureInPhysicalUnits;
     }
 }

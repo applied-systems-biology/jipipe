@@ -72,6 +72,8 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     private ImageStatisticsSetParameter statisticsParameters = new ImageStatisticsSetParameter();
     private Neighborhood2D neighborhood = Neighborhood2D.EightConnected;
 
+    private boolean measureInPhysicalUnits = true;
+
     /**
      * @param info algorithm info
      */
@@ -102,6 +104,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
         this.blackBackground = other.blackBackground;
         this.includeHoles = other.includeHoles;
         this.neighborhood = other.neighborhood;
+        this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.statisticsParameters = new ImageStatisticsSetParameter(other.statisticsParameters);
     }
 
@@ -154,6 +157,10 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                             minParticleCircularity,
                             maxParticleCircularity);
                     ImagePlus sliceImage = new ImagePlus(inputData.getImage().getTitle() + "_" + index, ip);
+                    // Copy calibration
+                    {
+                        sliceImage.copyScale(inputData.getImage());
+                    }
                     analyzer.analyze(sliceImage, ip);
 
                     // Override for "Slice"
@@ -199,6 +206,9 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                             minParticleCircularity,
                             maxParticleCircularity);
                     ImagePlus sliceImage = new ImagePlus(inputData.getImage().getTitle() + "_" + index, ip);
+                    if(measureInPhysicalUnits) {
+                        sliceImage.copyScale(inputData.getImage());
+                    }
                     analyzer.analyze(sliceImage, ip);
 
                     // Override for "Slice"
@@ -225,6 +235,17 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                 dataBatch.addOutputData("Measurements", mergedResultsTable, progressInfo);
             }
         }
+    }
+
+    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @JIPipeParameter("measure-in-physical-units")
+    public boolean isMeasureInPhysicalUnits() {
+        return measureInPhysicalUnits;
+    }
+
+    @JIPipeParameter("measure-in-physical-units")
+    public void setMeasureInPhysicalUnits(boolean measureInPhysicalUnits) {
+        this.measureInPhysicalUnits = measureInPhysicalUnits;
     }
 
     @JIPipeParameter(value = "min-particle-size", uiOrder = -20)

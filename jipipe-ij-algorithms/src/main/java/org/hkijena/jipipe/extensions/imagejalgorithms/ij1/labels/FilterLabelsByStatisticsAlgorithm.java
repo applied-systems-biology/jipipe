@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
+import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -55,6 +56,8 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
     private DefaultExpressionParameter filters = new DefaultExpressionParameter();
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
 
+    private boolean measureInPhysicalUnits = true;
+
     /**
      * Instantiates a new node type.
      *
@@ -73,6 +76,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
         super(other);
         this.filters = new DefaultExpressionParameter(other.filters);
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
+        this.measureInPhysicalUnits = other.measureInPhysicalUnits;
     }
 
     @Override
@@ -85,6 +89,8 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
             reference = labels;
         }
 
+        Calibration calibration = measureInPhysicalUnits ? labels.getCalibration() : null;
+
         ExpressionVariables variables = new ExpressionVariables();
         TIntSet labelsToKeep = new TIntHashSet();
         ImageJUtils.forEachIndexedZCTSlice(labels, (labelProcessor, index) -> {
@@ -94,7 +100,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
             int c = Math.min(index.getC(), labels.getNChannels() - 1);
             int t = Math.min(index.getT(), labels.getNFrames() - 1);
             ImageProcessor referenceProcessor = ImageJUtils.getSliceZero(reference, c, z, t);
-            ResultsTableData forRoi = ImageJAlgorithmUtils.measureLabels(labelProcessor, referenceProcessor, this.measurements, index, progressInfo);
+            ResultsTableData forRoi = ImageJAlgorithmUtils.measureLabels(labelProcessor, referenceProcessor, this.measurements, index, calibration, progressInfo);
 
             // Find labels to keep
             labelsToKeep.clear();
@@ -150,5 +156,16 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
         if (UIUtils.confirmResetParameters(parent, "Load example")) {
             setFilters(new DefaultExpressionParameter("Area > 100"));
         }
+    }
+
+    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @JIPipeParameter("measure-in-physical-units")
+    public boolean isMeasureInPhysicalUnits() {
+        return measureInPhysicalUnits;
+    }
+
+    @JIPipeParameter("measure-in-physical-units")
+    public void setMeasureInPhysicalUnits(boolean measureInPhysicalUnits) {
+        this.measureInPhysicalUnits = measureInPhysicalUnits;
     }
 }

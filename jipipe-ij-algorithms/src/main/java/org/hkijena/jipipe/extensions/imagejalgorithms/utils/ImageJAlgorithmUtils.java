@@ -4,6 +4,7 @@ import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
 import ij.gui.Roi;
+import ij.measure.Calibration;
 import ij.plugin.filter.Analyzer;
 import ij.process.*;
 import inra.ijpb.label.LabelImages;
@@ -123,10 +124,11 @@ public class ImageJAlgorithmUtils {
      * @param image        the reference image
      * @param measurements the measurements
      * @param index        the current image index (zero-based)
+     * @param calibration  the calibration (can be null to disable measurements with calibrations)
      * @param progressInfo the progress info
      * @return the measurements
      */
-    public static ResultsTableData measureLabels(ImageProcessor label, ImageProcessor image, ImageStatisticsSetParameter measurements, ImageSliceIndex index, JIPipeProgressInfo progressInfo) {
+    public static ResultsTableData measureLabels(ImageProcessor label, ImageProcessor image, ImageStatisticsSetParameter measurements, ImageSliceIndex index, Calibration calibration, JIPipeProgressInfo progressInfo) {
         int measurementsNativeValue = measurements.getNativeValue();
         ImageProcessor mask = new ByteProcessor(label.getWidth(), label.getHeight());
 
@@ -175,7 +177,10 @@ public class ImageJAlgorithmUtils {
             ImageStatistics statistics = image.getStatistics();
 
             ResultsTableData labelResult = new ResultsTableData();
-            Analyzer analyzer = new Analyzer(new ImagePlus("label=" + id, image), measurementsNativeValue, labelResult.getTable());
+            ImagePlus dummyImage = new ImagePlus("label=" + id, image);
+            if(calibration != null)
+                dummyImage.setCalibration(calibration);
+            Analyzer analyzer = new Analyzer(dummyImage, measurementsNativeValue, labelResult.getTable());
             analyzer.saveResults(statistics, null);
 
             int labelIdColumn = labelResult.addNumericColumn("label_id");

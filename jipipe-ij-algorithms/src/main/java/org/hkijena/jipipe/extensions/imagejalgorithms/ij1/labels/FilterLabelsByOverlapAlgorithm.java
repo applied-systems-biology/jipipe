@@ -7,6 +7,7 @@ import gnu.trove.map.hash.TIntIntHashMap;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
+import ij.measure.Calibration;
 import ij.process.ByteProcessor;
 import ij.process.FloatProcessor;
 import ij.process.ImageProcessor;
@@ -149,6 +150,9 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         }
         variables.set("annotations", annotations);
 
+        final Calibration targetLabelsCalibration = settings.measureInPhysicalUnits ? targetLabels.getCalibration() : null;
+        final Calibration otherLabelsCalibration = settings.measureInPhysicalUnits ? otherLabels.getCalibration() : null;
+
         ImageJUtils.forEachIndexedZCTSlice(targetLabels, (targetLabelProcessor, index) -> {
             ImageProcessor outputProcessor = targetLabelProcessor.duplicate();
             ImageProcessor otherLabelProcessor = ImageJUtils.getClosestSliceZero(otherLabels, index);
@@ -171,13 +175,13 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                         targetLabelProcessor,
                         overlapFilterMeasurements,
                         index,
-                        progressInfo.resolve(index.toString()).resolve(targetPrefix));
+                        targetLabelsCalibration, progressInfo.resolve(index.toString()).resolve(targetPrefix));
 
                 otherLabelMeasurements = ImageJAlgorithmUtils.measureLabels(otherLabelProcessor,
                         otherLabelProcessor,
                         overlapFilterMeasurements,
                         index,
-                        progressInfo.resolve(index.toString()).resolve(otherPrefix));
+                        otherLabelsCalibration, progressInfo.resolve(index.toString()).resolve(otherPrefix));
 
 
                 for (int row = 0; row < targetLabelMeasurements.getRowCount(); row++) {
@@ -230,7 +234,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
                     if (withExpression) {
                         // Apply measurements
-                        ResultsTableData overlapMeasurements = ImageJAlgorithmUtils.measureLabels(overlap, overlap, overlapFilterMeasurements, index, progressInfo);
+                        ResultsTableData overlapMeasurements = ImageJAlgorithmUtils.measureLabels(overlap, overlap, overlapFilterMeasurements, index, targetLabelsCalibration, progressInfo);
                         overlapMeasurements.removeColumn("label_id");
 
                         variables.set("z", index.getZ());
@@ -443,6 +447,8 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         private boolean outputOverlaps = false;
         private DefaultExpressionParameter overlapFilter = new DefaultExpressionParameter();
 
+        private boolean measureInPhysicalUnits = true;
+
         public LabelFilterSettings() {
         }
 
@@ -451,6 +457,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             this.invert = other.invert;
             this.outputOverlaps = other.outputOverlaps;
             this.overlapFilter = new DefaultExpressionParameter(other.overlapFilter);
+            this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         }
 
         @Override
@@ -504,6 +511,18 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         @JIPipeParameter("output-overlaps")
         public void setOutputOverlaps(boolean outputOverlaps) {
             this.outputOverlaps = outputOverlaps;
+        }
+
+        @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available. " +
+                "Measurements will be in the physical sizes of the respective images. The overlap is measured in the targeted labels' calibration.")
+        @JIPipeParameter("measure-in-physical-units")
+        public boolean isMeasureInPhysicalUnits() {
+            return measureInPhysicalUnits;
+        }
+
+        @JIPipeParameter("measure-in-physical-units")
+        public void setMeasureInPhysicalUnits(boolean measureInPhysicalUnits) {
+            this.measureInPhysicalUnits = measureInPhysicalUnits;
         }
     }
 }

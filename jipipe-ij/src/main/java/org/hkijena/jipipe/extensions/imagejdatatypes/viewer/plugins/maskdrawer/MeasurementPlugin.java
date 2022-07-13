@@ -35,6 +35,8 @@ public class MeasurementPlugin extends ImageViewerPanelPlugin implements JIPipeP
     private JToggleButton autoMeasureToggle;
     private ImageStatisticsSetParameter statistics = new ImageStatisticsSetParameter();
 
+    private boolean measureInPhysicalUnits = true;
+
     public MeasurementPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
         statistics.setCollapsed(false);
@@ -94,8 +96,10 @@ public class MeasurementPlugin extends ImageViewerPanelPlugin implements JIPipeP
         }
         ROIListData data = new ROIListData();
         data.add(roi);
-        ResultsTableData measurements = data.measure(new ImagePlus("Reference", getViewerPanel().getCurrentSlice().duplicate()),
-                statistics, false);
+        ImagePlus dummy = new ImagePlus("Reference", getViewerPanel().getCurrentSlice().duplicate());
+        dummy.setCalibration(getCurrentImage().getCalibration());
+        ResultsTableData measurements = data.measure(dummy,
+                statistics, false, measureInPhysicalUnits);
         if (measurements.getRowCount() != 1) {
             showNoMeasurements();
             return;
@@ -172,6 +176,17 @@ public class MeasurementPlugin extends ImageViewerPanelPlugin implements JIPipeP
         if (autoMeasureToggle.isSelected()) {
             measureCurrentMask();
         }
+    }
+
+    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @JIPipeParameter("measure-in-physical-units")
+    public boolean isMeasureInPhysicalUnits() {
+        return measureInPhysicalUnits;
+    }
+
+    @JIPipeParameter("measure-in-physical-units")
+    public void setMeasureInPhysicalUnits(boolean measureInPhysicalUnits) {
+        this.measureInPhysicalUnits = measureInPhysicalUnits;
     }
 
     @Override

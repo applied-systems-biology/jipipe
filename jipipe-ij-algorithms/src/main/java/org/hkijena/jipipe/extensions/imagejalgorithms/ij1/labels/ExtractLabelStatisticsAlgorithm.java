@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 
 import ij.ImagePlus;
+import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -26,6 +27,8 @@ public class ExtractLabelStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
 
+    private boolean measureInPhysicalUnits = true;
+
     public ExtractLabelStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
@@ -33,6 +36,7 @@ public class ExtractLabelStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     public ExtractLabelStatisticsAlgorithm(ExtractLabelStatisticsAlgorithm other) {
         super(other);
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
+        this.measureInPhysicalUnits = other.measureInPhysicalUnits;
     }
 
     @JIPipeDocumentation(name = "Measurements", description = "The measurements that should be extracted from the labels. Please note that due to technical limitations, some measurements will not work and instead yield measurements over the whole image.")
@@ -55,6 +59,7 @@ public class ExtractLabelStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         } else {
             reference = labels;
         }
+        Calibration calibration = measureInPhysicalUnits ? (reference.getCalibration() != null ? reference.getCalibration() : labels.getCalibration()) : null;
 
         ResultsTableData result = new ResultsTableData();
 
@@ -63,10 +68,21 @@ public class ExtractLabelStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             int c = Math.min(index.getC(), labels.getNChannels() - 1);
             int t = Math.min(index.getT(), labels.getNFrames() - 1);
             ImageProcessor labelProcessor = ImageJUtils.getSliceZero(labels, c, z, t);
-            ResultsTableData forRoi = ImageJAlgorithmUtils.measureLabels(labelProcessor, referenceProcessor, this.measurements, index, progressInfo);
+            ResultsTableData forRoi = ImageJAlgorithmUtils.measureLabels(labelProcessor, referenceProcessor, this.measurements, index, calibration, progressInfo);
             result.addRows(forRoi);
         }, progressInfo);
 
         dataBatch.addOutputData(getFirstOutputSlot(), result, progressInfo);
+    }
+
+    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available. The calibration of the reference image is preferred.")
+    @JIPipeParameter("measure-in-physical-units")
+    public boolean isMeasureInPhysicalUnits() {
+        return measureInPhysicalUnits;
+    }
+
+    @JIPipeParameter("measure-in-physical-units")
+    public void setMeasureInPhysicalUnits(boolean measureInPhysicalUnits) {
+        this.measureInPhysicalUnits = measureInPhysicalUnits;
     }
 }

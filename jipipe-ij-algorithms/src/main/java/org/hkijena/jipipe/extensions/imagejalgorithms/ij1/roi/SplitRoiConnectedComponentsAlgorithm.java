@@ -57,6 +57,8 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
     private boolean splitAtJunctions = false;
     private boolean trySolveJunctions = true;
 
+    private boolean measureInPhysicalUnits = true;
+
     public SplitRoiConnectedComponentsAlgorithm(JIPipeNodeInfo info) {
         super(info, ROIListData.class, "Components");
         this.setPreferAssociatedImage(false);
@@ -73,6 +75,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         this.splitAtJunctions = other.splitAtJunctions;
         this.trySolveJunctions = other.trySolveJunctions;
         this.graphPostprocessing = new DefaultExpressionParameter(other.graphPostprocessing);
+        this.measureInPhysicalUnits = other.measureInPhysicalUnits;
     }
 
     @Override
@@ -116,7 +119,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
                 // This is needed, as measuring messes with the image
                 referenceImage = ImageJUtils.duplicate(referenceImage);
             }
-            measurements = input.measure(referenceImage, overlapFilterMeasurements, false);
+            measurements = input.measure(referenceImage, overlapFilterMeasurements, false, measureInPhysicalUnits);
         }
         int currentProgress = 0;
         int currentProgressPercentage = 0;
@@ -345,7 +348,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         // Measure overlap
         temp.clear();
         temp.add(overlap);
-        ResultsTableData overlapMeasurements = temp.measure(referenceImage, overlapFilterMeasurements, false);
+        ResultsTableData overlapMeasurements = temp.measure(referenceImage, overlapFilterMeasurements, false, measureInPhysicalUnits);
         for (int col = 0; col < overlapMeasurements.getColumnCount(); col++) {
             variableSet.set("Overlap." + overlapMeasurements.getColumnName(col), overlapMeasurements.getValueAt(0, col));
         }
@@ -490,6 +493,17 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
     @JIPipeParameter("try-solve-junctions")
     public void setTrySolveJunctions(boolean trySolveJunctions) {
         this.trySolveJunctions = trySolveJunctions;
+    }
+
+    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @JIPipeParameter("measure-in-physical-units")
+    public boolean isMeasureInPhysicalUnits() {
+        return measureInPhysicalUnits;
+    }
+
+    @JIPipeParameter("measure-in-physical-units")
+    public void setMeasureInPhysicalUnits(boolean measureInPhysicalUnits) {
+        this.measureInPhysicalUnits = measureInPhysicalUnits;
     }
 
     @JIPipeDocumentationDescription(description = "There are three different modes: <ul><li>Followed dimensions will be tracked</li>" +

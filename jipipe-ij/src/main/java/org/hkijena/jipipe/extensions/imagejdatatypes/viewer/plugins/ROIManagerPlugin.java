@@ -670,6 +670,8 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     public static class MeasureContextPanel extends SelectionContextPanel implements JIPipeParameterCollection {
 
         private ImageStatisticsSetParameter statistics = new ImageStatisticsSetParameter();
+
+        private boolean measureInPhysicalUnits = true;
         private final EventBus eventBus = new EventBus();
 
 //        private final JLabel roiInfoLabel;
@@ -703,8 +705,8 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
         private void measure() {
             ROIListData data = getRoiManagerPlugin().getSelectedROIOrAll("Measure", "Please select which ROI you want to measure");
-            ResultsTableData measurements = data.measure(getViewerPanel().getImage().duplicate(),
-                    statistics, true);
+            ResultsTableData measurements = data.measure(ImageJUtils.duplicate(getViewerPanel().getImage()),
+                    statistics, true, measureInPhysicalUnits);
             TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Measurements");
         }
 
@@ -743,6 +745,17 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         @JIPipeParameter("statistics")
         public void setStatistics(ImageStatisticsSetParameter statistics) {
             this.statistics = statistics;
+        }
+
+        @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+        @JIPipeParameter("measure-in-physical-units")
+        public boolean isMeasureInPhysicalUnits() {
+            return measureInPhysicalUnits;
+        }
+
+        @JIPipeParameter("measure-in-physical-units")
+        public void setMeasureInPhysicalUnits(boolean measureInPhysicalUnits) {
+            this.measureInPhysicalUnits = measureInPhysicalUnits;
         }
     }
 }

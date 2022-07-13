@@ -22,6 +22,7 @@ import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import ij.io.RoiDecoder;
 import ij.io.RoiEncoder;
+import ij.measure.Calibration;
 import ij.measure.ResultsTable;
 import ij.plugin.RoiScaler;
 import ij.plugin.filter.Analyzer;
@@ -1214,53 +1215,65 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     /**
      * Generates ROI statistics
      *
-     * @param imp            the reference image. Can be null to measure on a black image. Warning: If you provide an existing image that should not be changed, make a duplicate!
-     * @param measurements   which measurements to extract
-     * @param addNameToTable if true, add the ROI's name to the table
+     * @param imp                  the reference image. Can be null to measure on a black image. Warning: If you provide an existing image that should not be changed, make a duplicate!
+     * @param measurements         which measurements to extract
+     * @param addNameToTable       if true, add the ROI's name to the table
+     * @param measurePhysicalSizes if true, physical sizes will be measured if available
      * @return the measurements
      */
-    public ResultsTableData measure(ImagePlus imp, ImageStatisticsSetParameter measurements, boolean addNameToTable) {
+    public ResultsTableData measure(ImagePlus imp, ImageStatisticsSetParameter measurements, boolean addNameToTable, boolean measurePhysicalSizes) {
         ResultsTableData result = new ResultsTableData(new ResultsTable());
         if (imp != null) {
-
-            measurements.updateAnalyzer();
-            Analyzer aSys = new Analyzer(imp); // System Analyzer
-            ResultsTable rtSys = Analyzer.getResultsTable();
-            rtSys.reset();
-            for (int z = 0; z < imp.getNSlices(); z++) {
-                for (int c = 0; c < imp.getNChannels(); c++) {
-                    for (int t = 0; t < imp.getNFrames(); t++) {
-                        imp.setSliceWithoutUpdate(imp.getStackIndex(c + 1, z + 1, t + 1));
-                        for (Roi roi : this) {
-                            if ((roi.getZPosition() == 0 || roi.getZPosition() == z + 1) &&
-                                    (roi.getCPosition() == 0 || roi.getCPosition() == c + 1) &&
-                                    (roi.getTPosition() == 0 || roi.getTPosition() == t + 1)) {
-                                imp.setRoi(roi);
-                                rtSys.reset();
-                                aSys.measure();
-                                ResultsTableData forRoi = new ResultsTableData(rtSys);
-                                if (measurements.getValues().contains(Measurement.StackPosition)) {
-                                    int columnChannel = forRoi.getOrCreateColumnIndex("Ch", false);
-                                    int columnStack = forRoi.getOrCreateColumnIndex("Slice", false);
-                                    int columnFrame = forRoi.getOrCreateColumnIndex("Frame", false);
-                                    for (int row = 0; row < forRoi.getRowCount(); row++) {
-                                        forRoi.setValueAt(roi.getCPosition(), row, columnChannel);
-                                        forRoi.setValueAt(roi.getZPosition(), row, columnStack);
-                                        forRoi.setValueAt(roi.getTPosition(), row, columnFrame);
+            Calibration oldCalibration = imp.getCalibration();
+            try {
+                if(!measurePhysicalSizes) {
+                    imp.setCalibration(null);
+                }
+                measurements.updateAnalyzer();
+                Analyzer aSys = new Analyzer(imp); // System Analyzer
+                ResultsTable rtSys = Analyzer.getResultsTable();
+                rtSys.reset();
+                for (int z = 0; z < imp.getNSlices(); z++) {
+                    for (int c = 0; c < imp.getNChannels(); c++) {
+                        for (int t = 0; t < imp.getNFrames(); t++) {
+                            imp.setSliceWithoutUpdate(imp.getStackIndex(c + 1, z + 1, t + 1));
+                            for (Roi roi : this) {
+                                if ((roi.getZPosition() == 0 || roi.getZPosition() == z + 1) &&
+                                        (roi.getCPosition() == 0 || roi.getCPosition() == c + 1) &&
+                                        (roi.getTPosition() == 0 || roi.getTPosition() == t + 1)) {
+                                    imp.setRoi(roi);
+                                    rtSys.reset();
+                                    aSys.measure();
+                                    ResultsTableData forRoi = new ResultsTableData(rtSys);
+                                    if (measurements.getValues().contains(Measurement.StackPosition)) {
+                                        int columnChannel = forRoi.getOrCreateColumnIndex("Ch", false);
+                                        int columnStack = forRoi.getOrCreateColumnIndex("Slice", false);
+                                        int columnFrame = forRoi.getOrCreateColumnIndex("Frame", false);
+                                        for (int row = 0; row < forRoi.getRowCount(); row++) {
+                                            forRoi.setValueAt(roi.getCPosition(), row, columnChannel);
+                                            forRoi.setValueAt(roi.getZPosition(), row, columnStack);
+                                            forRoi.setValueAt(roi.getTPosition(), row, columnFrame);
+                                        }
                                     }
-                                }
-                                if (addNameToTable) {
-                                    int columnName = result.getOrCreateColumnIndex("Name", true);
-                                    for (int row = 0; row < result.getRowCount(); row++) {
-                                        result.setValueAt(roi.getName(), row, columnName);
+                                    if (addNameToTable) {
+                                        int columnName = result.getOrCreateColumnIndex("Name", true);
+                                        for (int row = 0; row < result.getRowCount(); row++) {
+                                            result.setValueAt(roi.getName(), row, columnName);
+                                        }
                                     }
+                                    result.addRows(forRoi);
                                 }
-                                result.addRows(forRoi);
                             }
                         }
                     }
                 }
             }
+            finally {
+                // Restore
+                imp.setSliceWithoutUpdate(1);
+                imp.setCalibration(oldCalibration);
+            }
+
         } else {
             imp = createDummyImage();
             measurements.updateAnalyzer();

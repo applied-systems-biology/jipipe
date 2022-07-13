@@ -38,6 +38,8 @@ public class GenerateROINameAlgorithm extends ImageRoiProcessorAlgorithm {
     private boolean includeAnnotations = true;
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
 
+    private boolean measureInPhysicalUnits = true;
+
     public GenerateROINameAlgorithm(JIPipeNodeInfo info) {
         super(info, ROIListData.class, "ROI");
     }
@@ -47,6 +49,7 @@ public class GenerateROINameAlgorithm extends ImageRoiProcessorAlgorithm {
         this.expression = new StringQueryExpression(other.expression);
         this.includeAnnotations = other.includeAnnotations;
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
+        this.measureInPhysicalUnits = other.measureInPhysicalUnits;
     }
 
     @Override
@@ -75,7 +78,7 @@ public class GenerateROINameAlgorithm extends ImageRoiProcessorAlgorithm {
                 tmp.clear();
                 tmp.add(roi);
 
-                ResultsTableData measured = tmp.measure(referenceImage, measurements, true);
+                ResultsTableData measured = tmp.measure(referenceImage, measurements, true, measureInPhysicalUnits);
                 for (int col = 0; col < measured.getColumnCount(); col++) {
                     parameters.set(measured.getColumnName(col), measured.getValueAt(0, col) + "");
                 }
@@ -125,6 +128,16 @@ public class GenerateROINameAlgorithm extends ImageRoiProcessorAlgorithm {
         this.measurements = measurements;
     }
 
+    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @JIPipeParameter("measure-in-physical-units")
+    public boolean isMeasureInPhysicalUnits() {
+        return measureInPhysicalUnits;
+    }
+
+    @JIPipeParameter("measure-in-physical-units")
+    public void setMeasureInPhysicalUnits(boolean measureInPhysicalUnits) {
+        this.measureInPhysicalUnits = measureInPhysicalUnits;
+    }
     public static class VariableSource implements ExpressionParameterVariableSource {
 
         public static final Set<ExpressionParameterVariable> VARIABLES;
