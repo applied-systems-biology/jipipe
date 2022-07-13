@@ -274,7 +274,7 @@ public class JIPipeProjectWindow extends JFrame {
                 }
                 Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty() || !missingUpdateSites.isEmpty()) {
-                    if (!UnsatisfiedDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, missingUpdateSites))
+                    if (!MissingProjectDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, missingUpdateSites))
                         return;
                 }
 
@@ -302,7 +302,7 @@ public class JIPipeProjectWindow extends JFrame {
                 Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
                 Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty()) {
-                    if (!UnsatisfiedDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, Collections.emptySet()))
+                    if (!MissingProjectDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, Collections.emptySet()))
                         return;
                 }
 

@@ -15,9 +15,6 @@
 package org.hkijena.jipipe.ui.extensions;
 
 import com.google.common.eventbus.Subscribe;
-import net.imagej.ui.swing.updater.ImageJUpdater;
-import net.imagej.updater.FilesCollection;
-import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeExtension;
@@ -28,21 +25,15 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.components.icons.AnimatedIcon;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
-import org.hkijena.jipipe.ui.ijupdater.RefreshRepositoryRun;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
-import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
-import org.hkijena.jipipe.utils.CoreImageJUtils;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
-import org.hkijena.jipipe.utils.NetworkUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Font;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -70,11 +61,11 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
     private JPanel mainPanel;
 
-    private final JIPipePluginManager pluginManager;
+    private final JIPipeModernPluginManager pluginManager;
 
     public JIPipeModernPluginManagerUI(JIPipeWorkbench workbench) {
         super(workbench);
-        this.pluginManager = new JIPipePluginManager(messagePanel);
+        this.pluginManager = new JIPipeModernPluginManager(messagePanel);
 
         initialize();
         JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);
@@ -94,12 +85,12 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
     }
 
     @Subscribe
-    public void onImageJFailed(JIPipePluginManager.UpdateSitesFailedEvent event) {
+    public void onImageJFailed(JIPipeModernPluginManager.UpdateSitesFailedEvent event) {
         updateSitesButton.setToolTipText("Could not connect to the ImageJ update service");
         updateSitesButton.setIcon(UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png"));
     }
     @Subscribe
-    public void onImageJReady(JIPipePluginManager.UpdateSitesReadyEvent event) {
+    public void onImageJReady(JIPipeModernPluginManager.UpdateSitesReadyEvent event) {
         updateSitesButton.setIcon(UIUtils.getIconFromResources("actions/web-browser.png"));
     }
 
@@ -143,7 +134,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         sidePanel.addVerticalGlue();
     }
 
-    public JIPipePluginManager getPluginManager() {
+    public JIPipeModernPluginManager getPluginManager() {
         return pluginManager;
     }
 

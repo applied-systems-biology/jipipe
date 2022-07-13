@@ -21,23 +21,29 @@ import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.ui.ijupdater.ProgressAdapter;
 import org.xml.sax.SAXException;
 
+import javax.swing.*;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class ActivateAndApplyUpdateSiteRun implements JIPipeRunnable {
 
-    private final FilesCollection filesCollection;
+    private final JIPipeModernPluginManager pluginManager;
     private final List<UpdateSite> updateSites;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
-    public ActivateAndApplyUpdateSiteRun(FilesCollection filesCollection, List<UpdateSite> updateSites) {
-        this.filesCollection = filesCollection;
+    public ActivateAndApplyUpdateSiteRun(JIPipeModernPluginManager pluginManager, List<UpdateSite> updateSites) {
+        this.pluginManager = pluginManager;
         this.updateSites = updateSites;
     }
 
     @Override
     public void run() {
+
+        FilesCollection filesCollection = pluginManager.getUpdateSites();
+
+        // Activate
         try {
             for (UpdateSite updateSite : updateSites) {
                 filesCollection.activateUpdateSite(updateSite, new ProgressAdapter(progressInfo));
@@ -45,6 +51,15 @@ public class ActivateAndApplyUpdateSiteRun implements JIPipeRunnable {
         } catch (ParserConfigurationException | IOException | SAXException e) {
             throw new RuntimeException(e);
         }
+
+        // Resolve conflicts
+        try {
+            SwingUtilities.invokeAndWait(pluginManager::resolveConflicts);
+        } catch (InterruptedException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Install
         final Installer installer =
                 new Installer(filesCollection, new ProgressAdapter(progressInfo));
         try {
@@ -56,6 +71,14 @@ public class ActivateAndApplyUpdateSiteRun implements JIPipeRunnable {
         } finally {
             installer.done();
         }
+    }
+
+    public JIPipeModernPluginManager getPluginManager() {
+        return pluginManager;
+    }
+
+    public List<UpdateSite> getUpdateSites() {
+        return updateSites;
     }
 
     @Override

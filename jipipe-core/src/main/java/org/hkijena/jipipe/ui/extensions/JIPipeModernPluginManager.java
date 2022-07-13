@@ -17,13 +17,16 @@ package org.hkijena.jipipe.ui.extensions;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import net.imagej.ui.swing.updater.ImageJUpdater;
+import net.imagej.updater.Conflicts;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
+import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MessagePanel;
+import org.hkijena.jipipe.ui.ijupdater.ConflictDialog;
 import org.hkijena.jipipe.ui.ijupdater.RefreshRepositoryRun;
-import org.hkijena.jipipe.ui.ijupdater.ResolveDependencies;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
@@ -31,12 +34,14 @@ import org.hkijena.jipipe.utils.CoreImageJUtils;
 import org.hkijena.jipipe.utils.NetworkUtils;
 
 import javax.swing.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class JIPipePluginManager {
+public class JIPipeModernPluginManager {
 
     private final EventBus eventBus = new EventBus();
 
@@ -56,7 +61,7 @@ public class JIPipePluginManager {
 
     private boolean updateSitesApplied = false;
 
-    public JIPipePluginManager(MessagePanel messagePanel) {
+    public JIPipeModernPluginManager(MessagePanel messagePanel) {
         this.messagePanel = messagePanel;
         JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
@@ -116,6 +121,34 @@ public class JIPipePluginManager {
         }
     }
 
+    public void updateConflictsMessage() {
+        List<Conflicts.Conflict> conflicts = updateSites.getConflicts();
+        if (updateSites != null && conflicts != null && !conflicts.isEmpty()) {
+            JButton resolveConflictsButton = new JButton("Resolve conflicts ...");
+            resolveConflictsButton.addActionListener(e -> resolveConflicts());
+            messagePanel.addMessage(MessagePanel.MessageType.Warning,
+                    "There are " + conflicts.size() + " ImageJ update site conflicts. Please click the following button to resolve them.",
+                    resolveConflictsButton);
+        }
+    }
+
+    public void resolveConflicts() {
+        final List<Conflicts.Conflict> conflicts = updateSites.getConflicts();
+        if (conflicts != null && conflicts.size() > 0) {
+            ConflictDialog dialog = new ConflictDialog(SwingUtilities.getWindowAncestor(messagePanel), "Conflicting versions") {
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                protected void updateConflictList() {
+                    conflictList = conflicts;
+                }
+            };
+            if (!dialog.resolve()) {
+                updateConflictsMessage();
+            }
+        }
+    }
+
     @Subscribe
     public void onExtensionActivated(JIPipeExtensionRegistry.ScheduledActivateExtension event) {
         updateMessagePanel();
@@ -135,6 +168,7 @@ public class JIPipePluginManager {
         updateSitesReady = true;
         removeUpdateSiteMessage();
         createUpdateSitesWrappers();
+        resolveConflicts();
         eventBus.post(new UpdateSitesReadyEvent(this));
     }
 
@@ -200,25 +234,25 @@ public class JIPipePluginManager {
     }
 
     public static class UpdateSitesReadyEvent {
-        private final JIPipePluginManager pluginManager;
+        private final JIPipeModernPluginManager pluginManager;
 
-        public UpdateSitesReadyEvent(JIPipePluginManager pluginManager) {
+        public UpdateSitesReadyEvent(JIPipeModernPluginManager pluginManager) {
             this.pluginManager = pluginManager;
         }
 
-        public JIPipePluginManager getPluginManager() {
+        public JIPipeModernPluginManager getPluginManager() {
             return pluginManager;
         }
     }
 
     public static class UpdateSitesFailedEvent {
-        private final JIPipePluginManager pluginManager;
+        private final JIPipeModernPluginManager pluginManager;
 
-        public UpdateSitesFailedEvent(JIPipePluginManager pluginManager) {
+        public UpdateSitesFailedEvent(JIPipeModernPluginManager pluginManager) {
             this.pluginManager = pluginManager;
         }
 
-        public JIPipePluginManager getPluginManager() {
+        public JIPipeModernPluginManager getPluginManager() {
             return pluginManager;
         }
     }

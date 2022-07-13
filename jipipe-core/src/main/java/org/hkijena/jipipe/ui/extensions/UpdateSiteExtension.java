@@ -105,7 +105,9 @@ public class UpdateSiteExtension implements JIPipeExtension {
             return updateSite;
         }
         else {
-            this.updateSite = updateSites.addUpdateSite(dependency.toUpdateSite());
+            this.updateSite = updateSites.getUpdateSite(dependency.getName(), true);
+            if(updateSite == null)
+                this.updateSite = updateSites.addUpdateSite(dependency.toUpdateSite());
             return this.updateSite;
         }
     }

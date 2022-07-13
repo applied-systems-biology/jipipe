@@ -33,8 +33,8 @@ import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.events.WindowClosedEvent;
 import org.hkijena.jipipe.ui.events.WindowOpenedEvent;
-import org.hkijena.jipipe.ui.ijupdater.MissingUpdateSiteResolver;
-import org.hkijena.jipipe.ui.project.UnsatisfiedDependenciesDialog;
+import org.hkijena.jipipe.ui.ijupdater.MissingRegistrationUpdateSiteResolver;
+import org.hkijena.jipipe.ui.project.MissingProjectDependenciesDialog;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -134,7 +134,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
             Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
             Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
             if (!missingDependencies.isEmpty()) {
-                if (!UnsatisfiedDependenciesDialog.showDialog(workbench, filePath, missingDependencies, Collections.emptySet()))
+                if (!MissingProjectDependenciesDialog.showDialog(workbench, filePath, missingDependencies, Collections.emptySet()))
                     return;
             }
 
@@ -224,7 +224,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
                 JIPipe.getInstance().getRegisteredExtensions(),
                 new ProgressDialog((Frame) workbench.getWindow(), "Checking dependencies ..."), JIPipe.getInstance().getProgressInfo());
         if (!issues.getMissingImageJSites().isEmpty()) {
-            MissingUpdateSiteResolver resolver = new MissingUpdateSiteResolver(workbench.getContext(), issues);
+            MissingRegistrationUpdateSiteResolver resolver = new MissingRegistrationUpdateSiteResolver(workbench.getContext(), issues);
             resolver.revalidate();
             resolver.repaint();
             resolver.setLocationRelativeTo(null);
@@ -355,7 +355,7 @@ public class JIPipeJsonExtensionWindow extends JFrame {
             }
 
             if (!missingDependencies.isEmpty()) {
-                if (!UnsatisfiedDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, Collections.emptySet()))
+                if (!MissingProjectDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, Collections.emptySet()))
                     return;
             }
 

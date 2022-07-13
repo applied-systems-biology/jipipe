@@ -884,6 +884,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         Set<JIPipeImageJUpdateSiteDependency> dependencies = new HashSet<>();
         Set<JIPipeImageJUpdateSiteDependency> missingSites = new HashSet<>();
         for (JIPipeDependency extension : extensions) {
+            if(extension == null)
+                continue;
             dependencies.addAll(extension.getImageJUpdateSiteDependencies());
             missingSites.addAll(extension.getImageJUpdateSiteDependencies());
         }

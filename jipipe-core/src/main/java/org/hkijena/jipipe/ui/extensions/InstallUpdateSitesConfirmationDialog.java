@@ -28,12 +28,12 @@ import java.util.Map;
 import java.util.Set;
 
 public class InstallUpdateSitesConfirmationDialog extends JDialog {
-    private final JIPipePluginManager pluginManager;
+    private final JIPipeModernPluginManager pluginManager;
     private final JIPipeExtension extension;
     private Map<JIPipeImageJUpdateSiteDependency, Boolean> sitesToInstall = new HashMap<>();
     private boolean cancelled = true;
 
-    public InstallUpdateSitesConfirmationDialog(Component parent, JIPipePluginManager pluginManager, JIPipeExtension extension, Set<String> filter) {
+    public InstallUpdateSitesConfirmationDialog(Component parent, JIPipeModernPluginManager pluginManager, JIPipeExtension extension, Set<String> filter) {
         super(SwingUtilities.getWindowAncestor(parent));
         this.pluginManager = pluginManager;
         this.extension = extension;

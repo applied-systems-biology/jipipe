@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.components.SplashScreen;
-import org.hkijena.jipipe.ui.ijupdater.MissingUpdateSiteResolver;
+import org.hkijena.jipipe.ui.ijupdater.MissingRegistrationUpdateSiteResolver;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.command.Command;
@@ -168,7 +168,7 @@ public class JIPipeGUICommand implements Command {
     private void resolveMissingImageJDependencies(JIPipeRegistryIssues issues) {
         if (issues.getMissingImageJSites().isEmpty())
             return;
-        MissingUpdateSiteResolver resolver = new MissingUpdateSiteResolver(getContext(), issues);
+        MissingRegistrationUpdateSiteResolver resolver = new MissingRegistrationUpdateSiteResolver(getContext(), issues);
         resolver.revalidate();
         resolver.repaint();
         resolver.setLocationRelativeTo(null);

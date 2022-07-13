@@ -19,28 +19,40 @@ import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.ui.ijupdater.ProgressAdapter;
-import org.xml.sax.SAXException;
 
-import javax.xml.parsers.ParserConfigurationException;
-import java.io.IOException;
+import javax.swing.*;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 
 public class DeactivateAndApplyUpdateSiteRun implements JIPipeRunnable {
 
-    private final FilesCollection filesCollection;
+    private final JIPipeModernPluginManager pluginManager;
     private final List<UpdateSite> updateSites;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
-    public DeactivateAndApplyUpdateSiteRun(FilesCollection filesCollection, List<UpdateSite> updateSites) {
-        this.filesCollection = filesCollection;
+    public DeactivateAndApplyUpdateSiteRun(JIPipeModernPluginManager pluginManager, List<UpdateSite> updateSites) {
+        this.pluginManager = pluginManager;
         this.updateSites = updateSites;
     }
 
     @Override
     public void run() {
+
+        FilesCollection filesCollection = pluginManager.getUpdateSites();
+
+        // Deactivate
         for (UpdateSite updateSite : updateSites) {
             filesCollection.deactivateUpdateSite(updateSite);
         }
+
+        // Resolve conflicts
+        try {
+            SwingUtilities.invokeAndWait(pluginManager::resolveConflicts);
+        } catch (InterruptedException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+
+        // Uninstall
         final Installer installer =
                 new Installer(filesCollection, new ProgressAdapter(progressInfo));
         try {
@@ -52,6 +64,14 @@ public class DeactivateAndApplyUpdateSiteRun implements JIPipeRunnable {
         } finally {
             installer.done();
         }
+    }
+
+    public JIPipeModernPluginManager getPluginManager() {
+        return pluginManager;
+    }
+
+    public List<UpdateSite> getUpdateSites() {
+        return updateSites;
     }
 
     @Override

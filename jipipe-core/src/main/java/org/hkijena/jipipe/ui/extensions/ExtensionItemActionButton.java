@@ -30,10 +30,10 @@ import java.util.*;
 
 public class ExtensionItemActionButton extends JButton {
 
-    private final JIPipePluginManager pluginManager;
+    private final JIPipeModernPluginManager pluginManager;
     private final JIPipeExtension extension;
 
-    public ExtensionItemActionButton(JIPipePluginManager pluginManager, JIPipeExtension extension) {
+    public ExtensionItemActionButton(JIPipeModernPluginManager pluginManager, JIPipeExtension extension) {
         this.pluginManager = pluginManager;
         this.extension = extension;
         addActionListener(e -> executeAction());
@@ -77,7 +77,7 @@ public class ExtensionItemActionButton extends JButton {
                 return;
             if(JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this), "Do you really want to deactivate the update site '"
                     + ((UpdateSiteExtension) extension).getUpdateSite(pluginManager.getUpdateSites()).getName() + "'? Please note that this will delete plugin files from the ImageJ directory.", "Deactivate update site", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                DeactivateAndApplyUpdateSiteRun run = new DeactivateAndApplyUpdateSiteRun(pluginManager.getUpdateSites(), Collections.singletonList(((UpdateSiteExtension) extension).getUpdateSite(pluginManager.getUpdateSites())));
+                DeactivateAndApplyUpdateSiteRun run = new DeactivateAndApplyUpdateSiteRun(pluginManager, Collections.singletonList(((UpdateSiteExtension) extension).getUpdateSite(pluginManager.getUpdateSites())));
                 JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run);
             }
         }
@@ -96,7 +96,7 @@ public class ExtensionItemActionButton extends JButton {
             }
             if(JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this), "Do you really want to activate the update site '"
             + ((UpdateSiteExtension) extension).getUpdateSite(pluginManager.getUpdateSites()).getName() + "'? Please note that you need an active internet connection.", "Activate update site", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(pluginManager.getUpdateSites(), Collections.singletonList(((UpdateSiteExtension) extension).getUpdateSite(pluginManager.getUpdateSites())));
+                ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(pluginManager, Collections.singletonList(((UpdateSiteExtension) extension).getUpdateSite(pluginManager.getUpdateSites())));
                 JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run);
             }
         }
@@ -168,7 +168,7 @@ public class ExtensionItemActionButton extends JButton {
             }
         }
         if(!toActivate.isEmpty()) {
-            ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(pluginManager.getUpdateSites(), toActivate);
+            ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(pluginManager, toActivate);
             JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run);
         }
         return true;
@@ -211,6 +211,10 @@ public class ExtensionItemActionButton extends JButton {
     @Subscribe
     public void onUpdateSiteActivated(RunWorkerFinishedEvent event) {
         if(event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
+            if(extension instanceof UpdateSiteExtension) {
+                // Try to update it
+                ((UpdateSiteExtension) extension).getUpdateSite(pluginManager.getUpdateSites());
+            }
             updateDisplay();
         }
     }

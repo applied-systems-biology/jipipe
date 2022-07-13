@@ -50,6 +50,7 @@ public class ToolsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerMenuExtension(RebuildAliasIdsTool.class);
         registerMenuExtension(DissolveCompartmentsTool.class);
         registerMenuExtension(OpenImageJConsoleTool.class);
+        registerMenuExtension(RestartJIPipeTool.class);
     }
 
     @Override

@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.project;
 
 import com.google.common.eventbus.Subscribe;
-import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeExtension;
@@ -23,29 +22,23 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.components.icons.AnimatedIcon;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.extensions.ExtensionItemActionButton;
-import org.hkijena.jipipe.ui.extensions.JIPipePluginManager;
+import org.hkijena.jipipe.ui.extensions.JIPipeModernPluginManager;
 import org.hkijena.jipipe.ui.extensions.UpdateSiteExtension;
-import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Path;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Shown when unsatisfied dependencies are found
  */
-public class UnsatisfiedDependenciesDialog extends JDialog {
+public class MissingProjectDependenciesDialog extends JDialog {
     private final Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites;
-    private final JIPipePluginManager pluginManager;
+    private final JIPipeModernPluginManager pluginManager;
     private final Path fileName;
     private final Set<JIPipeDependency> dependencySet;
     private boolean continueLoading = false;
@@ -59,7 +52,7 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
      * @param dependencySet      the unsatisfied dependencies
      * @param missingUpdateSites the missing update sites
      */
-    public UnsatisfiedDependenciesDialog(JIPipeWorkbench workbench, Path fileName, Set<JIPipeDependency> dependencySet, Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites) {
+    public MissingProjectDependenciesDialog(JIPipeWorkbench workbench, Path fileName, Set<JIPipeDependency> dependencySet, Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites) {
         super(workbench.getWindow());
         this.fileName = fileName;
         this.dependencySet = dependencySet;
@@ -67,7 +60,7 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
 
         initialize();
 
-        pluginManager = new JIPipePluginManager(messagePanel);
+        pluginManager = new JIPipeModernPluginManager(messagePanel);
         pluginManager.getEventBus().register(this);
         pluginManager.initializeUpdateSites();
     }
@@ -82,7 +75,7 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
      * @return if loading should be continued anyways
      */
     public static boolean showDialog(JIPipeWorkbench workbench, Path fileName, Set<JIPipeDependency> dependencySet, Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites) {
-        UnsatisfiedDependenciesDialog dialog = new UnsatisfiedDependenciesDialog(workbench, fileName, dependencySet, missingUpdateSites);
+        MissingProjectDependenciesDialog dialog = new MissingProjectDependenciesDialog(workbench, fileName, dependencySet, missingUpdateSites);
         dialog.setModal(true);
         dialog.pack();
         dialog.setSize(1024, 768);
@@ -135,6 +128,7 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
             AnimatedIcon hourglassAnimation = new AnimatedIcon(this, UIUtils.getIconFromResources("actions/hourglass-half.png"),
                     UIUtils.getIconFromResources("emblems/hourglass-half.png"),
                     100, 0.05);
+            hourglassAnimation.start();
             formPanel.addWideToForm(UIUtils.createJLabel("ImageJ update sites", 22));
             formPanel.addWideToForm(UIUtils.createJLabel("Please wait until the update sites are available ...", hourglassAnimation));
         }
@@ -146,7 +140,7 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
     }
 
     @Subscribe
-    public void onUpdateSitesReady(JIPipePluginManager.UpdateSitesReadyEvent event) {
+    public void onUpdateSitesReady(JIPipeModernPluginManager.UpdateSitesReadyEvent event) {
         if(!missingUpdateSites.isEmpty()) {
             formPanel.removeLastRow(); //Vertical glue
             formPanel.removeLastRow(); // "Please wait..."
