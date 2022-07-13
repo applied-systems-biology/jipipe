@@ -329,12 +329,15 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:AnalyzeSkeleton_:3.4.2" level="project" />
     <orderEntry type="library" name="Maven: org.joml:joml:1.10.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:Skeletonize3D_:2.1.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:Colocalisation_Analysis:3.0.5" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:fiji-lib:2.1.3" level="project" />
+    <orderEntry type="library" name="Maven: net.imglib2:imglib2-algorithm:0.12.1" level="project" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: com.itextpdf:itextpdf:5.5.13.1" level="project" />
     <orderEntry type="module" module-name="jipipe-ij-weka" scope="RUNTIME" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:Trainable_Segmentation:3.3.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:Anisotropic_Diffusion_2D:2.0.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:VIB-lib:2.2.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:pal-optimization:2.0.1" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:fiji-lib:2.1.3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.imglib2:imglib2-algorithm-gpl:0.3.0" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:vecmath:1.6.0-scijava-2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: nz.ac.waikato.cms.weka:weka-dev:3.9.5" level="project" />
@@ -349,11 +352,9 @@
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.glassfish.jaxb:txw2:2.3.3" level="project" />
     <orderEntry type="module" module-name="jipipe-ij-trackmate" scope="RUNTIME" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: sc.fiji:TrackMate:7.6.1" level="project" />
-    <orderEntry type="library" name="Maven: net.imglib2:imglib2-algorithm:0.12.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.scijava:scijava-listeners:1.0.0-beta-3" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.github.vlsi.mxgraph:jgraphx:4.1.0" level="project" />
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.6" level="project" />
-    <orderEntry type="library" scope="RUNTIME" name="Maven: com.itextpdf:itextpdf:5.5.13.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.opencsv:opencsv:5.2" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.xmlgraphics:batik-dom:1.14" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.xmlgraphics:batik-css:1.14" level="project" />

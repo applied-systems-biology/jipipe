@@ -38,6 +38,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.SetPhysicalDimensionsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.SetPhysicalDimensionsByAnnotationsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.SetPhysicalDimensionsByExpressionsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.colocalization.Coloc2Node;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.HistogramContrastEnhancerAlgorithm;
@@ -136,6 +137,7 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
+import sc.fiji.coloc.algorithms.AutoThresholdRegression;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -882,6 +884,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerLabelAlgorithms();
         registerSegmentationAlgorithms();
         registerCalibrationAlgorithms();
+        registerColocalizationAlgorithms();
 
         registerNodeType("ij1-generate-missing-results-table", GenerateMissingTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
         registerNodeType("ij1-generate-filter-kernel", GenerateStructureElement2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
@@ -899,6 +902,12 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerGlobalParameters();
 
 //        registerIJ2Algorithms();
+    }
+
+    private void registerColocalizationAlgorithms() {
+        registerEnumParameterType("ij1-colocalization-coloc2:auto-threshold-regression-implementation",
+                AutoThresholdRegression.Implementation.class, "Auto threshold regression implementation", "Coloc2 Auto threshold regression");
+        registerNodeType("ij1-colocalization-coloc2", Coloc2Node.class, UIUtils.getIconURLFromResources("actions/color-gradient.png"));
     }
 
     private void registerCalibrationAlgorithms() {

@@ -312,6 +312,7 @@
     <orderEntry type="library" name="Maven: sc.fiji:AnalyzeSkeleton_:3.4.2" level="project" />
     <orderEntry type="library" name="Maven: org.joml:joml:1.10.2" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:Skeletonize3D_:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:Colocalisation_Analysis:3.0.5" level="project" />
     <orderEntry type="module" module-name="jipipe-multiparameters" />
     <orderEntry type="library" name="Maven: sc.fiji:TrackMate:7.6.1" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:fiji-lib:2.1.3" level="project" />

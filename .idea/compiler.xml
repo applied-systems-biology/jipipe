@@ -41,6 +41,8 @@
       <module name="jipipe-forms" target="1.8" />
       <module name="jipipe-ij" target="1.8" />
       <module name="jipipe-ij-algorithms" target="1.8" />
+      <module name="jipipe-ij-coloc" target="1.8" />
+      <module name="jipipe-ij-coloc2" target="1.8" />
       <module name="jipipe-ij-multi-template-matching" target="1.8" />
       <module name="jipipe-ij-omero" target="1.8" />
       <module name="jipipe-ij-trackmate" target="1.8" />

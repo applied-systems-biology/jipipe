@@ -220,6 +220,10 @@
             <groupId>sc.fiji</groupId>
             <artifactId>Skeletonize3D_</artifactId>
         </dependency>
+        <dependency>
+            <groupId>sc.fiji</groupId>
+            <artifactId>Colocalisation_Analysis</artifactId>
+        </dependency>
     </dependencies>
 
     <build>

@@ -21,7 +21,6 @@
     <orderEntry type="library" name="Maven: de.erichseifert.vectorgraphics2d:VectorGraphics2D:0.13" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-ops:0.46.1" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-mesh:0.8.1" level="project" />
-    <orderEntry type="library" name="Maven: net.imglib2:imglib2-algorithm:0.12.1" level="project" />
     <orderEntry type="library" name="Maven: net.imglib2:imglib2-algorithm-fft:0.2.1" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:parsington:3.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.scijava:scripting-javascript:0.5.0" level="project" />
@@ -333,6 +332,10 @@
     <orderEntry type="library" name="Maven: sc.fiji:AnalyzeSkeleton_:3.4.2" level="project" />
     <orderEntry type="library" name="Maven: org.joml:joml:1.10.2" level="project" />
     <orderEntry type="library" name="Maven: sc.fiji:Skeletonize3D_:2.1.1" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:Colocalisation_Analysis:3.0.5" level="project" />
+    <orderEntry type="library" name="Maven: sc.fiji:fiji-lib:2.1.3" level="project" />
+    <orderEntry type="library" name="Maven: net.imglib2:imglib2-algorithm:0.12.1" level="project" />
+    <orderEntry type="library" name="Maven: com.itextpdf:itextpdf:5.5.13.1" level="project" />
     <orderEntry type="library" name="Maven: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.5" level="project" />
     <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.29" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.junit.jupiter:junit-jupiter:5.7.0" level="project" />
