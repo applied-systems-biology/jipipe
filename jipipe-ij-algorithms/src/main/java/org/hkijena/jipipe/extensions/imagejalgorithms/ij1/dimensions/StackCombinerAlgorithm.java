@@ -21,7 +21,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Target", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Source", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Combined", autoCreate = true, inheritedSlot = "Target")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks\nTools\nCombine...")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks\nTools", aliasName = "Combine...")
 public class StackCombinerAlgorithm extends JIPipeIteratingAlgorithm {
 
     private HyperstackDimension targetDimension = HyperstackDimension.Depth;
