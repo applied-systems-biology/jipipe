@@ -13,6 +13,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -33,6 +34,7 @@ import java.awt.*;
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Lines", autoCreate = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Junctions", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins", aliasName = "Ridge Detection")
 public class RidgeDetector2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     // Mandatory parameters

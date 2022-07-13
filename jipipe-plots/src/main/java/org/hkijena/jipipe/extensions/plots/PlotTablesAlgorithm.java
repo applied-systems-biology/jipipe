@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.expressions.*;
@@ -45,6 +46,7 @@ import java.util.*;
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(ResultsTableData.class)
 @JIPipeOutputSlot(PlotData.class)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Plot (JFreeChart)")
 public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
 
     private JIPipeDataInfoRef plotType = new JIPipeDataInfoRef();

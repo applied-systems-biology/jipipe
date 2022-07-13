@@ -12,6 +12,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
@@ -43,6 +44,8 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
     private int numArgs = 0;
     private String menuPath = "CLIJ";
 
+    private String aliasMenuPath = "Plugins\nImageJ on GPU (CLIJ2)";
+
     public CLIJCommandNodeInfo(Context context, PluginInfo<CLIJMacroPlugin> pluginInfo, JIPipeProgressInfo moduleProgress) {
         this.nodeId = "clij:" + pluginInfo.getIdentifier();
         this.nodeName = createNodeName(pluginInfo);
@@ -53,6 +56,7 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
             CLIJMacroPlugin pluginInstance = pluginInfo.createInstance();
             if (pluginInstance instanceof IsCategorized) {
                 menuPath = "CLIJ\n" + ((IsCategorized) pluginInstance).getCategories().replace(',', '\n');
+                aliasMenuPath += "\n" + ((IsCategorized) pluginInstance).getCategories().replace(',', '\n');
             }
             String description = "";
             String availableForDimensions = "";
@@ -68,6 +72,11 @@ public class CLIJCommandNodeInfo implements JIPipeNodeInfo {
         } catch (InstantiableException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Override
+    public List<JIPipeNodeMenuLocation> getAliases() {
+        return Collections.singletonList(new JIPipeNodeMenuLocation(new ImageJNodeTypeCategory(), aliasMenuPath, getName().replace("CLIJ2", "").replace("CLIJ", "")));
     }
 
     public Set<String> getIoInputSlots() {

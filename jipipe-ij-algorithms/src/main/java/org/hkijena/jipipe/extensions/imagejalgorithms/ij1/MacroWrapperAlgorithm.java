@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.compat.ImageJExportParameters;
 import org.hkijena.jipipe.api.compat.ImageJImportParameters;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
@@ -79,6 +80,7 @@ import java.util.Map;
 @JIPipeOutputSlot(ImagePlusData.class)
 @JIPipeOutputSlot(ROIListData.class)
 @JIPipeOutputSlot(ResultsTableData.class)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMacros", aliasName = "Run...")
 public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
     public static Class<?>[] ALLOWED_PARAMETER_CLASSES = new Class[]{
             String.class,

@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyNullPointerException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -41,6 +42,7 @@ import java.util.*;
 @JIPipeInputSlot(value = FileData.class, slotName = "Files", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Results table", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File", aliasName = "Open (CSV/XLSX)")
 public class ResultsTableFromFile extends JIPipeSimpleIteratingAlgorithm {
 
     private FileFormat fileFormat = FileFormat.Auto;
