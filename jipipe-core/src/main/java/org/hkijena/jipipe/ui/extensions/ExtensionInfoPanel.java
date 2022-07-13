@@ -86,7 +86,17 @@ public class ExtensionInfoPanel extends JPanel {
         panel.addToForm(UIUtils.makeReadonlyTextField(extension.getDependencyVersion()), new JLabel("Version"), null);
         panel.addToForm(UIUtils.makeReadonlyTextField(extension.getMetadata().getLicense()), new JLabel("License"), null);
         panel.addToForm(UIUtils.makeReadonlyTextField("" + extension.getDependencyLocation()), new JLabel("Defining file"), null);
-        panel.addToForm(new JLabel(extension.isCoreExtension() ? "Core extension [" + extension.getClass() + "]" : "Standard extension [" + extension.getClass() + "]"), new JLabel("Type"), null);
+        String typeName;
+        if(extension instanceof UpdateSiteExtension) {
+            typeName = "ImageJ update site";
+        }
+        else if(extension.isCoreExtension()) {
+            typeName = "Core extension [" + extension.getClass() + "]";
+        }
+        else {
+            typeName = "Standard extension [" + extension.getClass() + "]";
+        }
+        panel.addToForm(new JLabel(typeName), new JLabel("Type"), null);
 
         if(extension.isActivated()) {
             panel.addToForm(UIUtils.makeReadonlyTextField(JIPipe.getDataTypes().getDeclaredBy(extension).size() + " data types, " + JIPipe.getNodes().getDeclaredBy(extension).size() + " nodes"), new JLabel("Registered functions"), null);
@@ -123,6 +133,9 @@ public class ExtensionInfoPanel extends JPanel {
                 titlePanel.add(new JLabel(splashIcon));
                 titlePanel.add(Box.createHorizontalStrut(4));
             }
+        }
+        else if(extension instanceof UpdateSiteExtension)  {
+            titlePanel.add(new JLabel(UIUtils.getIcon32FromResources("module-imagej.png")));
         }
         else if(extension instanceof JIPipeJavaExtension) {
             titlePanel.add(new JLabel(UIUtils.getIcon32FromResources("module-java.png")));

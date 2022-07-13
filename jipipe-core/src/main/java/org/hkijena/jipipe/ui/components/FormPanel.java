@@ -66,14 +66,18 @@ public class FormPanel extends JXPanel {
     private final EventBus eventBus = new EventBus();
     private final boolean isInfiniteScrolling;
     private int numRows = 0;
-    private JXPanel contentPanel = new JXPanel();
-    private MarkdownReader parameterHelp;
+    private final JXPanel contentPanel = new JXPanel();
+    private final MarkdownReader parameterHelp;
     private JScrollPane scrollPane;
-    private JLabel parameterHelpDrillDown = new JLabel();
-    private ArrayDeque<FutureComponent> infiniteScrollingQueue = new ArrayDeque<>();
+    private final JLabel parameterHelpDrillDown = new JLabel();
+    private final ArrayDeque<FutureComponent> infiniteScrollingQueue = new ArrayDeque<>();
 
-    private boolean withDocumentation;
+    private final boolean withDocumentation;
     private boolean hasVerticalGlue;
+
+    public FormPanel(int flags) {
+        this(null,flags);
+    }
 
     /**
      * Creates a new instance
@@ -206,30 +210,12 @@ public class FormPanel extends JXPanel {
      * Adds a component to the form
      *
      * @param component     The component
-     * @param documentation Optional documentation for this component. Can be null.
+     * @param description   A description component displayed on the left hand side
      * @param <T>           Component type
      * @return The component
      */
-    public <T extends Component> T addToForm(T component, MarkdownDocument documentation) {
-        GridBagConstraints contentPosition = new GridBagConstraints() {
-            {
-                anchor = GridBagConstraints.WEST;
-                gridx = 0;
-                gridwidth = 2;
-                gridy = numRows;
-                insets = UI_PADDING;
-                fill = GridBagConstraints.HORIZONTAL;
-                weightx = 1;
-            }
-        };
-        if (!isInfiniteScrolling)
-            contentPanel.add(component, contentPosition);
-        else
-            infiniteScrollingQueue.add(new FutureComponent(null, null, component, contentPosition, false));
-        ++numRows;
-        if (documentation != null)
-            documentComponent(component, documentation);
-        return component;
+    public <T extends Component> T addToForm(T component, Component description) {
+        return addToForm(component, description, null);
     }
 
     /**
@@ -279,6 +265,17 @@ public class FormPanel extends JXPanel {
         if (documentation != null && description != null)
             documentComponent(description, documentation);
         return component;
+    }
+
+    /**
+     * Adds a component. Its size is two columns.
+     *
+     * @param component     The component
+     * @param <T>           Component type
+     * @return The component
+     */
+    public <T extends Component> T addWideToForm(T component) {
+        return addWideToForm(component, null);
     }
 
     /**

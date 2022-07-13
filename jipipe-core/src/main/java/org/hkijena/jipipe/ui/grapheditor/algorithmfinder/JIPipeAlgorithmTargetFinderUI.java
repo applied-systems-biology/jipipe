@@ -255,11 +255,11 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
             if (value instanceof JIPipeNodeInfo) {
                 JIPipeAlgorithmTargetFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmTargetFinderAlgorithmUI(canvasUI, outputSlot, (JIPipeNodeInfo) value);
                 algorithmUI.getEventBus().register(this);
-                formPanel.addToForm(algorithmUI, null);
+                formPanel.addWideToForm(algorithmUI, null);
             } else {
                 JIPipeAlgorithmTargetFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmTargetFinderAlgorithmUI(canvasUI, outputSlot, (JIPipeGraphNode) value);
                 algorithmUI.getEventBus().register(this);
-                formPanel.addToForm(algorithmUI, null);
+                formPanel.addWideToForm(algorithmUI, null);
             }
             formPanel.addVerticalGlue();
             formPanel.revalidate();

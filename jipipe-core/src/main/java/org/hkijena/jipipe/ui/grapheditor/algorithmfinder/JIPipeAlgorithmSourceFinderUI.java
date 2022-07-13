@@ -254,11 +254,11 @@ public class JIPipeAlgorithmSourceFinderUI extends JPanel {
             if (value instanceof JIPipeNodeInfo) {
                 JIPipeAlgorithmSourceFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmSourceFinderAlgorithmUI(canvasUI, inputSlot, (JIPipeNodeInfo) value);
                 algorithmUI.getEventBus().register(this);
-                formPanel.addToForm(algorithmUI, null);
+                formPanel.addWideToForm(algorithmUI, null);
             } else {
                 JIPipeAlgorithmSourceFinderAlgorithmUI algorithmUI = new JIPipeAlgorithmSourceFinderAlgorithmUI(canvasUI, inputSlot, (JIPipeGraphNode) value);
                 algorithmUI.getEventBus().register(this);
-                formPanel.addToForm(algorithmUI, null);
+                formPanel.addWideToForm(algorithmUI, null);
             }
             formPanel.addVerticalGlue();
             formPanel.revalidate();

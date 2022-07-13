@@ -677,6 +677,21 @@ public class UIUtils {
         }
     }
 
+    public static JLabel createJLabel(String text, Icon icon) {
+        return createJLabel(text,icon,12);
+    }
+
+    public static JLabel createJLabel(String text, int fontSize) {
+        return createJLabel(text,null,fontSize);
+    }
+
+    public static JLabel createJLabel(String text, Icon icon, int fontSize) {
+        JLabel label = new JLabel(text);
+        label.setIcon(icon);
+        label.setFont(new Font(Font.DIALOG, Font.PLAIN, fontSize));
+        return label;
+    }
+
     /**
      * Asks the user how to open a project: In the current window or a new window
      *

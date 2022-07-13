@@ -233,7 +233,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         }
         formPanel.addToForm(toolSelectionPanel, new JLabel("Tool"), null);
         currentTool.createPalettePanel(formPanel);
-        formPanel.addToForm(showGuidesToggle, null);
+        formPanel.addWideToForm(showGuidesToggle, null);
         formPanel.addToForm(colorSelectionPanel, new JLabel("Color"), null);
         formPanel.addToForm(highlightColorButton, new JLabel("Highlight color"), null);
         formPanel.addToForm(maskColorButton, new JLabel("Mask color"), null);

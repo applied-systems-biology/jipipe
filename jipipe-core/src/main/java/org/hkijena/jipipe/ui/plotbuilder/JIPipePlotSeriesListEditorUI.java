@@ -79,7 +79,7 @@ public class JIPipePlotSeriesListEditorUI extends JIPipeWorkbenchPanel {
             JIPipePlotSeriesBuilderUI builderUI = new JIPipePlotSeriesBuilderUI(getWorkbench(), seriesBuilder);
             builderUI.setPreferredSize(new Dimension((int) (0.33 * plotBuilderUI.getWidth()),
                     (int) builderUI.getPreferredSize().getHeight()));
-            entriesPanel.addToForm(builderUI,
+            entriesPanel.addWideToForm(builderUI,
                     null);
         }
         entriesPanel.addVerticalGlue();
