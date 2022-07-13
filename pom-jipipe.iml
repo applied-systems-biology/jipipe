@@ -27,7 +27,6 @@
       <excludeFolder url="file://$MODULE_DIR$/ij-updater-cli/target" />
       <excludeFolder url="file://$MODULE_DIR$/dist/offline-package/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/target" />
-      <excludeFolder url="file://$MODULE_DIR$/update" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

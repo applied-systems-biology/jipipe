@@ -133,7 +133,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
     public static List<JIPipeNodeMenuLocation> getAliasesOf(Class<? extends JIPipeGraphNode> klass) {
         List<JIPipeNodeMenuLocation> result = new ArrayList<>();
         for (JIPipeNodeAlias location : klass.getAnnotationsByType(JIPipeNodeAlias.class)) {
-            result.add(new JIPipeNodeMenuLocation((JIPipeNodeTypeCategory) ReflectionUtils.newInstance(location.nodeTypeCategory()), location.menuPath(), location.alternativeName()));
+            result.add(new JIPipeNodeMenuLocation((JIPipeNodeTypeCategory) ReflectionUtils.newInstance(location.nodeTypeCategory()), location.menuPath(), location.aliasName()));
         }
         return result;
     }

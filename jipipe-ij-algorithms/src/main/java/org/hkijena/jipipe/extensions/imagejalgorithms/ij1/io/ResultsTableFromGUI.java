@@ -20,10 +20,12 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeAlias;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -38,6 +40,7 @@ import java.awt.*;
 @JIPipeDocumentation(name = "Table from ImageJ", description = "Imports one or multiple active ImageJ results table windows into JIPipe")
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport")
 public class ResultsTableFromGUI extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter titleFilterExpression = new DefaultExpressionParameter("title EQUALS \"Results\"");

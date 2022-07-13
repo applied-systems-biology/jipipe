@@ -43,6 +43,11 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrast
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.HistogramContrastEnhancerAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.IlluminationCorrection2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ConvertImageAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ConvertImageTo16BitAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ConvertImageTo32BitAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ConvertImageTo8BitAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ConvertImageToHSBAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ConvertImageToLABAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ImageToTableAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.TableToImageAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.ConvolveByImage2DAlgorithm;
@@ -938,6 +943,11 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
     private void registerConverterAlgorithms() {
         registerNodeType("ij-convert-image", ConvertImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-refresh.png"));
+        registerNodeType("ij-convert-image-to-8-bit", ConvertImageTo8BitAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-8u.png"));
+        registerNodeType("ij-convert-image-to-16-bit", ConvertImageTo16BitAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-16u.png"));
+        registerNodeType("ij-convert-image-to-32-bit", ConvertImageTo32BitAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-greyscale-32f.png"));
+        registerNodeType("ij-convert-image-to-hsb-colors", ConvertImageToHSBAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-hsb.png"));
+        registerNodeType("ij-convert-image-to-lab-colors", ConvertImageToLABAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-lab.png"));
         registerNodeType("ij1-convert-image-to-table", ImageToTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
         registerNodeType("ij1-convert-table-to-image", TableToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
     }
@@ -1406,7 +1416,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-color-split-rgb", SplitRGBChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/channelmixer.png"));
         registerNodeType("ij1-color-set-to-color", SetToColorAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
         registerNodeType("ij1-color-set-to-grayscale-value", SetToValueAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
-        registerNodeType("ij1-color-to-rgb", ToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/colors-rgb.png"));
+        registerNodeType("ij1-color-to-rgb", RenderImageToRGBAlgorithm.class, UIUtils.getIconURLFromResources("data-types/imgplus-color-rgb.png"));
         registerNodeType("ij1-color-to-greyscale-expression", ColorToGreyscaleExpression2D.class, UIUtils.getIconURLFromResources("actions/color-picker-grey.png"));
 
         registerEnumParameterType("ij1-color-merge-channels:channel-color", MergeChannelsAlgorithm.ChannelColor.class,

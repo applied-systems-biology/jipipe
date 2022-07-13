@@ -8,6 +8,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -20,8 +21,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colors")
-public class ToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-    public ToRGBAlgorithm(JIPipeNodeInfo info) {
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nType", aliasName = "RGB Color")
+public class RenderImageToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+    public RenderImageToRGBAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", "", ImagePlusData.class)
                 .addOutputSlot("Output", "", ImagePlusColorRGBData.class, "Input", ImageJAlgorithmsExtension.TO_COLOR_RGB_CONVERSION)
@@ -29,7 +31,7 @@ public class ToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 .build());
     }
 
-    public ToRGBAlgorithm(ToRGBAlgorithm other) {
+    public RenderImageToRGBAlgorithm(RenderImageToRGBAlgorithm other) {
         super(other);
     }
 

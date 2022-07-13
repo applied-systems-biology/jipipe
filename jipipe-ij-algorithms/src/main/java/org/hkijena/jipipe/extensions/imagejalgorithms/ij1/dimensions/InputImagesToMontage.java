@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -39,6 +40,7 @@ import java.util.stream.Collectors;
 @JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Dimensions")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Make Montage... (of inputs)")
 public class InputImagesToMontage extends JIPipeMergingAlgorithm {
 
     private CanvasEqualizer canvasEqualizer = new CanvasEqualizer();

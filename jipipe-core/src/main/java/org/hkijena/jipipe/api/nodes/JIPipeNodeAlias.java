@@ -52,5 +52,5 @@ public @interface JIPipeNodeAlias {
      * An alternative name (optional) that will be given to the menu entry
      * @return the alternative name (if empty, the default name shall be used)
      */
-    String alternativeName() default "";
+    String aliasName() default "";
 }

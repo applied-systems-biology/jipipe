@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft.ImagePlusFFT2DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -32,6 +33,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeNode(menuPath = "FFT", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(ImagePlusFFT2DData.class)
 @JIPipeOutputSlot(ImagePlusFFT2DData.class)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFFT", aliasName = "Swap Quadrants")
 public class FFT2DSwapQuadrants extends JIPipeSimpleIteratingAlgorithm {
 
     /**

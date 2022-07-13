@@ -11,6 +11,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
@@ -32,6 +33,7 @@ import java.util.*;
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = FileData.class, slotName = "Exported file", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Tables")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 public class ExportTableAsXLSXAlgorithm extends JIPipeMergingAlgorithm {
     private final JIPipeDataByMetadataExporter exporter;
     private Path outputDirectory = Paths.get("exported-data");

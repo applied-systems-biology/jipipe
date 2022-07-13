@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
@@ -27,6 +28,7 @@ import java.util.Set;
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = FileData.class, slotName = "Exported file", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Tables")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 public class ExportTableAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();

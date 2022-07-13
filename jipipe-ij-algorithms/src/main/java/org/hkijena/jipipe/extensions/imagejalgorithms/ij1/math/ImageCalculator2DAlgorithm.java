@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -46,6 +47,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 1")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 2")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process",aliasName = "Image Calculator...")
 public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     private Operation operation = Operation.Difference;

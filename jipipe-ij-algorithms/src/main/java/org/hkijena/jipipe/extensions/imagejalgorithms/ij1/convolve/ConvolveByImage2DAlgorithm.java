@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
@@ -34,6 +35,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlus2DGreyscale32FData.class, slotName = "Kernel", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", aliasName = "Convolve... (image matrix)")
 public class ConvolveByImage2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     /**

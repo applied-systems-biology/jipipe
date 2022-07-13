@@ -9,6 +9,7 @@ import inra.ijpb.binary.BinaryImages;
 import inra.ijpb.label.LabelImages;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -31,6 +32,7 @@ import java.util.Set;
 @JIPipeNode(menuPath = "Labels", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels", description = "The labels image", autoCreate = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", description = "The generated ROI", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images", aliasName = "Labels to ROI")
 public class LabelsToROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter labelNameExpression = new DefaultExpressionParameter("\"label-\" + TO_INTEGER(index)");

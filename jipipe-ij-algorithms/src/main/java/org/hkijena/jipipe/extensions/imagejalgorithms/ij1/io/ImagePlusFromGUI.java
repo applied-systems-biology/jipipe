@@ -19,10 +19,12 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeAlias;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
@@ -40,6 +42,7 @@ import java.util.List;
 @JIPipeDocumentation(name = "Image from ImageJ", description = "Imports one or multiple active ImageJ image windows into JIPipe")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport")
 public class ImagePlusFromGUI extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean onlyActiveImage = true;

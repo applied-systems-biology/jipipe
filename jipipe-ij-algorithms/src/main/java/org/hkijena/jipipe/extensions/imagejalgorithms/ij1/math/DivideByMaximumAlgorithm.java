@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -33,6 +34,7 @@ import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 @JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nMath")
 public class DivideByMaximumAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean recalibrate = true;

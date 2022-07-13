@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -38,6 +39,7 @@ import java.util.Set;
 @JIPipeInputSlot(value = FolderData.class, slotName = "Output directory", autoCreate = true, description = "Relative to the working directory of the current slot. Convert to absolute path to allow writing outside the output directory.")
 @JIPipeOutputSlot(value = FileData.class, slotName = "Exported file", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class, menuPath = "Images")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nSave")
 public class ExportImage2Algorithm extends JIPipeIteratingAlgorithm {
 
     private final Set<String> existingMetadata = new HashSet<>();

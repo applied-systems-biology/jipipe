@@ -5,6 +5,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
@@ -16,6 +17,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.OMEExporterSetti
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true, optional = true)
 @JIPipeOutputSlot(value = OMEImageData.class, slotName = "OME Image", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nBio-Formats", aliasName = "Bio-Formats Exporter (automated export)")
 public class OMEImageFromImagePlus extends JIPipeIteratingAlgorithm {
 
     private OMEExporterSettings exporterSettings = new OMEExporterSettings();

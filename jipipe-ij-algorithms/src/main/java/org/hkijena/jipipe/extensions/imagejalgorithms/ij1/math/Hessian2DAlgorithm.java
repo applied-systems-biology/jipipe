@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.EigenvalueSelection2D;
@@ -42,6 +43,7 @@ import java.util.Vector;
 @JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nFeatureJ", aliasName = "FeatureJ Hessian")
 public class Hessian2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private EigenvalueSelection2D eigenvalueSelection = EigenvalueSelection2D.Largest;

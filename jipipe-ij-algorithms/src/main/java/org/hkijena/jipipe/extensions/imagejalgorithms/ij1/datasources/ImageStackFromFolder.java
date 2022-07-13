@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.PathQueryExpression;
@@ -52,6 +53,7 @@ import java.util.stream.Collectors;
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(FolderData.class)
 @JIPipeOutputSlot(ImagePlusData.class)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport", aliasName = "Image Sequence...")
 public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
 
     private JIPipeDataInfoRef generatedImageType = new JIPipeDataInfoRef("imagej-imgplus");

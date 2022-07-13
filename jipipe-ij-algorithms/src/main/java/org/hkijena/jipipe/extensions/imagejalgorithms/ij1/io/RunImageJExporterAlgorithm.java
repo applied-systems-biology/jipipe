@@ -15,8 +15,10 @@ import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeAlias;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.ExportNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.parameters.library.references.ImageJDataExporterRef;
@@ -28,6 +30,7 @@ import javax.swing.*;
 @JIPipeDocumentation(name = "Export to ImageJ", description = "Runs an ImageJ exporter. You can select the utilized exporter type in the parameters.")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nExport")
 public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
 
     private ImageJDataExporterRef exporterType = new ImageJDataExporterRef();

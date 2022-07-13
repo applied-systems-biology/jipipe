@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -58,6 +59,7 @@ import java.util.Comparator;
 @JIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Tagged skeletons", description = "End-point voxels are displayed in blue, slab voxels in orange and junction voxels in purple")
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", description = "Label image of the skeletons")
 @JIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Largest shortest paths", description = "The largest shortest path (in magenta)")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nSkeleton", aliasName = "Analyze Skeleton (2D/3D)")
 public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
 
     public static final JIPipeDataSlotInfo ROI_INPUT_SLOT = new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, "ROI", "ROI to exclude on pruning ends", null, true);

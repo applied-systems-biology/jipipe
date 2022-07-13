@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import sc.fiji.skeletonize3D.Skeletonize3D_;
@@ -30,6 +31,7 @@ import sc.fiji.skeletonize3D.Skeletonize3D_;
 @JIPipeOutputSlot(value = ImagePlus3DGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 @JIPipeCitation("Implementation by Ignacio Arganda-Carreras https://imagej.net/plugins/skeletonize3d")
 @JIPipeCitation("Lee et al. “Building skeleton models via 3-D medial surface/axis thinning algorithms. Computer Vision, Graphics, and Image Processing, 56(6):462–478, 1994.”")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nSkeletonize",aliasName = "Skeletonize (3D)")
 public class MorphologySkeletonize3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public MorphologySkeletonize3DAlgorithm(JIPipeNodeInfo info) {
         super(info);
