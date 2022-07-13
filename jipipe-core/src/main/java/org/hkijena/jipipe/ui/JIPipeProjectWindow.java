@@ -118,7 +118,7 @@ public class JIPipeProjectWindow extends JFrame {
     public static JIPipeProjectWindow newWindow(Context context, JIPipeProject project, boolean showIntroduction, boolean isNewProject) {
         JIPipeProjectWindow frame = new JIPipeProjectWindow(context, project, showIntroduction, isNewProject);
         frame.pack();
-        frame.setSize(1024, 768);
+        frame.setSize(1280, 800);
         frame.setVisible(true);
 //        frame.setExtendedState(frame.getExtendedState() | JFrame.MAXIMIZED_BOTH);
         return frame;

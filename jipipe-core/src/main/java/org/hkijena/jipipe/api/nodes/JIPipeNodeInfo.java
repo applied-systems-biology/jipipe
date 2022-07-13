@@ -31,19 +31,33 @@ public interface JIPipeNodeInfo {
     /**
      * Gets the registered algorithms, grouped by their menu paths
      *
-     * @param infos The infos to group
+     * @param category the targeted category
+     * @param infos    The infos to group
      * @return Map from menu path to algorithms with this menu path
      */
-    static Map<String, Set<JIPipeNodeInfo>> groupByMenuPaths(Set<JIPipeNodeInfo> infos) {
+    static Map<String, Set<JIPipeNodeInfo>> groupByMenuPaths(JIPipeNodeTypeCategory category, Set<JIPipeNodeInfo> infos) {
         Map<String, Set<JIPipeNodeInfo>> result = new HashMap<>();
         for (JIPipeNodeInfo info : infos) {
-            String menuPath = StringUtils.getCleanedMenuPath(info.getMenuPath());
-            Set<JIPipeNodeInfo> group = result.getOrDefault(menuPath, null);
-            if (group == null) {
-                group = new HashSet<>();
-                result.put(menuPath, group);
+            if(Objects.equals(info.getCategory().getId(), category.getId())) {
+                String menuPath = StringUtils.getCleanedMenuPath(info.getMenuPath());
+                Set<JIPipeNodeInfo> group = result.getOrDefault(menuPath, null);
+                if (group == null) {
+                    group = new HashSet<>();
+                    result.put(menuPath, group);
+                }
+                group.add(info);
             }
-            group.add(info);
+            for (JIPipeNodeMenuLocation location : info.getAlternativeMenuLocations()) {
+                if(Objects.equals(location.getCategory().getId(), category.getId())) {
+                    String menuPath = StringUtils.getCleanedMenuPath(location.getMenuPath());
+                    Set<JIPipeNodeInfo> group = result.getOrDefault(menuPath, null);
+                    if (group == null) {
+                        group = new HashSet<>();
+                        result.put(menuPath, group);
+                    }
+                    group.add(info);
+                }
+            }
         }
 
         return result;
@@ -201,5 +215,21 @@ public interface JIPipeNodeInfo {
      */
     default URL getIconURL() {
         return JIPipe.getNodes().getIconURLFor(this);
+    }
+
+    /**
+     * A menu location that points towards the primary menu
+     * @return the primary menu location
+     */
+    default JIPipeNodeMenuLocation getPrimaryMenuLocation() {
+        return new JIPipeNodeMenuLocation(getCategory(), getMenuPath(), "");
+    }
+
+    /**
+     * A list of alternative menu locations
+     * @return alternative menu locations. might be empty.
+     */
+    default List<JIPipeNodeMenuLocation> getAlternativeMenuLocations() {
+        return Collections.emptyList();
     }
 }

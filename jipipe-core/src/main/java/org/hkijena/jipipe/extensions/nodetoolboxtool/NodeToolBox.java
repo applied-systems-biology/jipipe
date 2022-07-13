@@ -5,6 +5,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
@@ -61,6 +62,13 @@ public class NodeToolBox extends JPanel {
         nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
         menuHayStack = info.getCategory().getName() + "\n" + info.getMenuPath();
         descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
+
+        for (JIPipeNodeMenuLocation location : info.getAlternativeMenuLocations()) {
+            if(!StringUtils.isNullOrEmpty(location.getAlternativeName())) {
+                nameHayStack += location.getAlternativeName().toLowerCase();
+            }
+            menuHayStack += location.getMenuPath();
+        }
 
         nameHayStack = nameHayStack.toLowerCase();
         menuHayStack = menuHayStack.toLowerCase();

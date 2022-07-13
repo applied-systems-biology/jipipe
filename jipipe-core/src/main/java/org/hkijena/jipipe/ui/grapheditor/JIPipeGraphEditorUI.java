@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -31,6 +32,7 @@ import org.hkijena.jipipe.ui.components.search.SearchBox;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -127,6 +129,12 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
             nameHayStack = node.getName();
             menuHayStack = node.getInfo().getCategory().getName() + "\n" + node.getInfo().getMenuPath();
+            for (JIPipeNodeMenuLocation location : node.getInfo().getAlternativeMenuLocations()) {
+                if(!StringUtils.isNullOrEmpty(location.getAlternativeName())) {
+                    nameHayStack += location.getAlternativeName().toLowerCase();
+                }
+                menuHayStack += location.getMenuPath();
+            }
             descriptionHayStack = StringUtils.orElse(node.getCustomDescription().getBody(), node.getInfo().getDescription().getBody());
         } else if (value instanceof JIPipeNodeInfo) {
             JIPipeNodeInfo info = (JIPipeNodeInfo) value;
@@ -134,6 +142,12 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 return null;
             nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
             menuHayStack = info.getCategory().getName() + "\n" + info.getMenuPath();
+            for (JIPipeNodeMenuLocation location : info.getAlternativeMenuLocations()) {
+                if(!StringUtils.isNullOrEmpty(location.getAlternativeName())) {
+                    nameHayStack += location.getAlternativeName().toLowerCase();
+                }
+                menuHayStack += location.getMenuPath();
+            }
             descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
         } else {
             return null;
@@ -930,6 +944,8 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         private final SolidColorIcon icon;
         private final JLabel actionLabel;
+
+        private final JLabel alternativeLabel;
         private final JLabel algorithmLabel;
         private final JLabel menuLabel;
 
@@ -943,14 +959,14 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
 
 
-            icon = new SolidColorIcon(16, 40);
+            icon = new SolidColorIcon(16, 50);
             JLabel iconLabel = new JLabel(icon);
             Insets border = new Insets(2, 4, 2, 2);
             add(iconLabel, new GridBagConstraints() {
                 {
                     gridx = 0;
                     gridy = 0;
-                    gridheight = 2;
+                    gridheight = 3;
                     anchor = WEST;
                     insets = border;
                 }
@@ -985,6 +1001,19 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                     insets = border;
                 }
             });
+
+            alternativeLabel = new JLabel();
+            alternativeLabel.setForeground(ModernMetalTheme.PRIMARY6);
+            alternativeLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
+            add(alternativeLabel, new GridBagConstraints() {
+                {
+                    gridx = 2;
+                    gridy = 2;
+                    anchor = WEST;
+                    insets = border;
+                }
+            });
+
             JPanel glue = new JPanel();
             glue.setOpaque(false);
             add(glue, new GridBagConstraints() {
@@ -1012,6 +1041,24 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 algorithmLabel.setText(info.getName());
                 algorithmLabel.setIcon(JIPipe.getNodes().getIconFor(info));
                 menuLabel.setText(menuPath);
+
+                if(info.getAlternativeMenuLocations().isEmpty()) {
+                    alternativeLabel.setText("");
+                }
+                else {
+                    StringBuilder builder = new StringBuilder();
+                    builder.append("Alias: ");
+                    List<JIPipeNodeMenuLocation> alternativeMenuLocations = info.getAlternativeMenuLocations();
+                    for (int i = 0; i < alternativeMenuLocations.size(); i++) {
+                        if(i > 0) {
+                            builder.append(", ");
+                        }
+                        JIPipeNodeMenuLocation location = alternativeMenuLocations.get(i);
+                        builder.append(location.getCategory().getName()).append(" > ").append(String.join(" > ", location.getMenuPath().split("\n"))).append(" > ").append(StringUtils.orElse(location.getAlternativeName(), info.getName()));
+                    }
+                    alternativeLabel.setText(builder.toString());
+                }
+
             } else if (value instanceof JIPipeNodeUI) {
                 JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
                 JIPipeNodeInfo info = node.getInfo();
@@ -1027,6 +1074,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 algorithmLabel.setText(node.getName());
                 algorithmLabel.setIcon(JIPipe.getNodes().getIconFor(info));
                 menuLabel.setText(menuPath);
+                alternativeLabel.setText("");
             }
 
             if (isSelected) {

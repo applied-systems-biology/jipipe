@@ -13,12 +13,17 @@
 
 package org.hkijena.jipipe.ui.project;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeExtension;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
+import org.hkijena.jipipe.ui.extensions.ExtensionItemActionButton;
+import org.hkijena.jipipe.ui.extensions.JIPipePluginManager;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -79,11 +84,15 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
 
         getContentPane().setLayout(new BorderLayout());
 
+        MessagePanel messagePanel = new MessagePanel();
+        getContentPane().add(messagePanel, BorderLayout.NORTH);
+        JIPipePluginManager pluginManager = null;
+
         FormPanel content = new FormPanel(null, FormPanel.WITH_SCROLLING);
         content.setBorder(BorderFactory.createEmptyBorder(16,16,16,16));
 
         content.addWideToForm(UIUtils.createJLabel("Unsatisfied dependencies", UIUtils.getIcon32FromResources("dialog-warning.png"), 28));
-        content.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane("The project '" + fileName.toString() + "' might not be loadable due to missing dependencies. You can choose to activate the dependencies (requires a restart of ImageJ) or ignore this message.", false));
+        content.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane("The project '" + fileName.toString() + "' might not be loadable due to missing dependencies. You can choose to activate the dependencies (requires a restart of ImageJ or JIPipe) or ignore this message.", false));
 
         if(!dependencySet.isEmpty()) {
             content.addWideToForm(Box.createVerticalStrut(32));
@@ -96,13 +105,34 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
                 JTextField idField = UIUtils.makeReadonlyBorderlessTextField("ID: " + dependency.getDependencyId() + ", version: " + dependency.getDependencyVersion());
                 idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
                 dependencyPanel.add(idField, new GridBagConstraints(0,1,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
-                dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getMetadata().getDescription().getHtml(), false), new GridBagConstraints(0,3,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
+                dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getMetadata().getDescription().getHtml(), false), new GridBagConstraints(0,2,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
+
+                // Try to find the extension
+                JIPipeExtension extension = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
+                if(extension != null) {
+                    if(pluginManager == null) {
+                        pluginManager = new JIPipePluginManager(messagePanel);
+                        pluginManager.initializeUpdateSites();
+                    }
+                    ExtensionItemActionButton button = new ExtensionItemActionButton(pluginManager, extension);
+                    button.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));
+                    dependencyPanel.add(button, new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,new Insets(4,4,4,4),0,0));
+                }
+                else {
+                    dependencyPanel.add(UIUtils.createJLabel("Extension not installed", UIUtils.getIcon32FromResources("emblems/emblem-rabbitvcs-conflicted.png")), new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,new Insets(4,4,4,4),0,0));
+                }
+
                 content.addWideToForm(dependencyPanel);
             }
         }
         if(!missingUpdateSites.isEmpty()) {
             content.addWideToForm(Box.createVerticalStrut(32));
             content.addWideToForm(UIUtils.createJLabel("ImageJ update sites", 22));
+
+            if(pluginManager == null) {
+                pluginManager = new JIPipePluginManager(messagePanel);
+                pluginManager.initializeUpdateSites();
+            }
         }
 
 

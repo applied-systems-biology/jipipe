@@ -43,7 +43,7 @@ public class JIPipeLauncher {
             windowsOpen += JIPipeProjectWindow.getOpenWindows().size();
             windowsOpen += JIPipeJsonExtensionWindow.getOpenWindows().size();
 
-            if (windowsOpen == 0) {
+            if (windowsOpen == 0 && !JIPipe.isRestarting()) {
                 System.exit(0);
             }
         }

@@ -63,6 +63,7 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeTypeCategory(new RoiNodeTypeCategory());
         registerNodeTypeCategory(new AnnotationsNodeTypeCategory());
         registerNodeTypeCategory(new ExportNodeTypeCategory());
+        registerNodeTypeCategory(new ImageJNodeTypeCategory());
 
         // Global data importers
         registerDatatypeImportOperation("", new CopyContainingFolderDataImportOperation());

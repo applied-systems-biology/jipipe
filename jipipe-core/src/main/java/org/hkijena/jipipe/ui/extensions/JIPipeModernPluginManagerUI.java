@@ -78,8 +78,6 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
         initialize();
         JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);
-
-        updateMessagePanel();
         if(getExtensionRegistry().getNewExtensions().isEmpty()) {
             showItems(getExtensionRegistry().getKnownExtensions(), "All extensions");
         }
@@ -145,16 +143,6 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         sidePanel.addVerticalGlue();
     }
 
-    private void updateMessagePanel() {
-        messagePanel.clear();
-        JIPipeExtensionRegistry extensionRegistry = getExtensionRegistry();
-        if(pluginManager.isUpdateSitesApplied() || !extensionRegistry.getScheduledDeactivateExtensions().isEmpty() || !extensionRegistry.getScheduledActivateExtensions().isEmpty()){
-            JButton exitButton = new JButton("Close ImageJ");
-            exitButton.addActionListener(e -> System.exit(0));
-            messagePanel.addMessage(MessagePanel.MessageType.Info, "To apply the changes, please restart ImageJ.", exitButton);
-        }
-    }
-
     public JIPipePluginManager getPluginManager() {
         return pluginManager;
     }
@@ -184,23 +172,13 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         }
     }
 
-    @Subscribe
-    public void onExtensionActivated(JIPipeExtensionRegistry.ScheduledActivateExtension event) {
-        updateMessagePanel();
-    }
-
-    @Subscribe
-    public void onExtensionDeactivated(JIPipeExtensionRegistry.ScheduledDeactivateExtension event) {
-        updateMessagePanel();
-    }
-
     private void initializeSidePanel() {
         JIPipeExtensionRegistry extensionRegistry = JIPipe.getInstance().getExtensionRegistry();
 
         Set<String> newExtensions = JIPipe.getInstance().getExtensionRegistry().getNewExtensions();
         if(!newExtensions.isEmpty()) {
             addSidePanelButton("New extensions", UIUtils.getIconFromResources("emblems/emblem-important-blue.png"), () -> newExtensions.stream().map(id -> extensionRegistry.getKnownExtensionById(id)).collect(Collectors.toList()), false);
-            messagePanel.addMessage(MessagePanel.MessageType.Info, "New extensions are available", null);
+            messagePanel.addMessage(MessagePanel.MessageType.Info, "New extensions are available");
         }
 
         addSidePanelButton("Activated extensions", UIUtils.getIconFromResources("actions/checkmark.png"), () -> extensionRegistry.getKnownExtensions().stream().filter(dependency -> extensionRegistry.getActivatedExtensions().contains(dependency.getDependencyId())).collect(Collectors.toList()), false);
@@ -272,13 +250,6 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         sidePanel.addWideToForm(button, null);
 //        updateSiteButtons.add(button);
         return button;
-    }
-
-    @Subscribe
-    public void onOperationFinished(RunWorkerFinishedEvent event) {
-        if(event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
-            updateMessagePanel();
-        }
     }
 
     public void showExtensionDetails(JIPipeExtension extension) {

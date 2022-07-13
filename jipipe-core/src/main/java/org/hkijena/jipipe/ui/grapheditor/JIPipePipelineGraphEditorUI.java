@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
@@ -121,13 +122,13 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
     public static void initializeMenuForCategory(JIPipeGraphEditorUI graphEditorUI, JMenu menu, JIPipeNodeTypeCategory category, Set<JIPipeNodeInfo> addedAlgorithms) {
         JIPipeGraph algorithmGraph = graphEditorUI.getAlgorithmGraph();
         JIPipe registryService = JIPipe.getInstance();
-        Set<JIPipeNodeInfo> algorithmsOfCategory = registryService.getNodeRegistry().getNodesOfCategory(category);
+        Set<JIPipeNodeInfo> algorithmsOfCategory = registryService.getNodeRegistry().getNodesOfCategory(category, true);
         if (algorithmsOfCategory.isEmpty()) {
             menu.setVisible(false);
             return;
         }
 
-        Map<String, Set<JIPipeNodeInfo>> byMenuPath = JIPipeNodeInfo.groupByMenuPaths(algorithmsOfCategory);
+        Map<String, Set<JIPipeNodeInfo>> byMenuPath = JIPipeNodeInfo.groupByMenuPaths(category, algorithmsOfCategory);
         Map<String, JMenu> menuTree = UIUtils.createMenuTree(menu, byMenuPath.keySet());
 
         for (Map.Entry<String, Set<JIPipeNodeInfo>> entry : byMenuPath.entrySet()) {
@@ -140,12 +141,34 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                     subMenu.add(moreMenu);
                     subMenu = moreMenu;
                 }
-                JMenuItem addItem = new JMenuItem(info.getName(), JIPipe.getNodes().getIconFor(info));
+                String name = info.getName();
+                boolean hasAlternativeName = false;
+
+                // Alternative names
+                for (JIPipeNodeMenuLocation location : info.getAlternativeMenuLocations()) {
+                    if(StringUtils.isNullOrEmpty(location.getAlternativeName()))
+                        continue;
+                    if(Objects.equals(category.getId(), location.getCategory().getId())) {
+                        String locationPath = StringUtils.getCleanedMenuPath(location.getMenuPath());
+                        if(Objects.equals(locationPath, entry.getKey())) {
+                            name = location.getAlternativeName();
+                            hasAlternativeName = true;
+                            break;
+                        }
+                    }
+                }
+
+                JMenuItem addItem = new JMenuItem(name, JIPipe.getNodes().getIconFor(info));
                 addItem.setToolTipText(TooltipUtils.getAlgorithmTooltip(info));
+                boolean finalHasAlternativeName = hasAlternativeName;
+                String finalName = name;
                 addItem.addActionListener(e -> {
                     if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(graphEditorUI.getWorkbench()))
                         return;
                     JIPipeGraphNode node = info.newInstance();
+                    if(finalHasAlternativeName) {
+                        node.setCustomName(finalName);
+                    }
                     graphEditorUI.getCanvasUI().getHistoryJournal().snapshotBeforeAddNode(node, graphEditorUI.getCompartment());
                     graphEditorUI.getCanvasUI().getScheduledSelection().clear();
                     graphEditorUI.getCanvasUI().getScheduledSelection().add(node);

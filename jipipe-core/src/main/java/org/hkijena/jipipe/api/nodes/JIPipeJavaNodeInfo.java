@@ -32,7 +32,9 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -55,6 +57,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         setDescription(getDescriptionOf(nodeClass));
         setCategory(getCategoryOf(nodeClass));
         setMenuPath(getMenuPathOf(nodeClass));
+        setAlternativeMenuLocations(getAlternativeMenuLocationsOf(nodeClass));
         if (nodeClass.getAnnotation(JIPipeHidden.class) != null) {
             setHidden(true);
         }
@@ -113,13 +116,26 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      * @param klass The algorithm class
      * @return The menu path
      */
-    static String getMenuPathOf(Class<? extends JIPipeGraphNode> klass) {
+    public static String getMenuPathOf(Class<? extends JIPipeGraphNode> klass) {
         JIPipeNode[] annotations = klass.getAnnotationsByType(JIPipeNode.class);
         if (annotations.length > 0) {
             return annotations[0].menuPath();
         } else {
             return "";
         }
+    }
+
+    /**
+     * Gets alternative menu locations
+     * @param klass node class
+     * @return locations
+     */
+    public static List<JIPipeNodeMenuLocation> getAlternativeMenuLocationsOf(Class<? extends JIPipeGraphNode> klass) {
+        List<JIPipeNodeMenuLocation> result = new ArrayList<>();
+        for (JIPipeAlternativeNodeMenuLocation location : klass.getAnnotationsByType(JIPipeAlternativeNodeMenuLocation.class)) {
+            result.add(new JIPipeNodeMenuLocation((JIPipeNodeTypeCategory) ReflectionUtils.newInstance(location.nodeTypeCategory()), location.menuPath(), location.alternativeName()));
+        }
+        return result;
     }
 
     private void initializeSlots() {

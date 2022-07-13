@@ -34,9 +34,9 @@ public class MessagePanel extends FormPanel {
         super(null, FormPanel.NONE);
     }
 
-    public Message addMessage(MessageType type, String message, JButton actionButton) {
+    public Message addMessage(MessageType type, String message, JButton... actionButtons) {
         if (!existingMessages.contains(message)) {
-            Message instance = new Message(this, type, message, actionButton);
+            Message instance = new Message(this, type, message, actionButtons);
             addWideToForm(instance, null);
             revalidate();
             repaint();
@@ -78,13 +78,13 @@ public class MessagePanel extends FormPanel {
         private final MessagePanel parent;
         private final MessageType type;
         private final String text;
-        private final JButton actionButton;
+        private final JButton[] actionButtons;
 
-        public Message(MessagePanel parent, MessageType type, String text, JButton actionButton) {
+        public Message(MessagePanel parent, MessageType type, String text, JButton[] actionButtons) {
             this.parent = parent;
             this.type = type;
             this.text = text;
-            this.actionButton = actionButton;
+            this.actionButtons = actionButtons;
             this.setOpaque(false);
             initialize();
         }
@@ -97,12 +97,13 @@ public class MessagePanel extends FormPanel {
 
             add(messageTextArea);
             add(Box.createHorizontalGlue());
-            if (actionButton != null) {
-                add(actionButton);
-                add(Box.createHorizontalStrut(8));
-                actionButton.addActionListener(e -> closeMessage());
+            for (JButton actionButton : actionButtons) {
+                if (actionButton != null) {
+                    add(actionButton);
+                    add(Box.createHorizontalStrut(8));
+                    actionButton.addActionListener(e -> closeMessage());
+                }
             }
-
             JButton closeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
             UIUtils.makeFlat25x25(closeButton);
             closeButton.addActionListener(e -> {

@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -165,11 +166,21 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     /**
      * Gets all algorithms of specified category
      *
-     * @param category The category
+     * @param category             The category
+     * @param includingAlternative if alternative categorizations should be included (from alternative menu paths)
      * @return Algorithms within the specified category
      */
-    public Set<JIPipeNodeInfo> getNodesOfCategory(JIPipeNodeTypeCategory category) {
-        return registeredNodeInfos.values().stream().filter(d -> Objects.equals(d.getCategory().getId(), category.getId())).collect(Collectors.toSet());
+    public Set<JIPipeNodeInfo> getNodesOfCategory(JIPipeNodeTypeCategory category, boolean includingAlternative) {
+        return registeredNodeInfos.values().stream().filter(d -> {
+            if(includingAlternative) {
+                for (JIPipeNodeMenuLocation location : d.getAlternativeMenuLocations()) {
+                    if(Objects.equals(location.getCategory().getId(), category.getId())) {
+                        return true;
+                    }
+                }
+            }
+            return Objects.equals(d.getCategory().getId(), category.getId());
+        }).collect(Collectors.toSet());
     }
 
     /**

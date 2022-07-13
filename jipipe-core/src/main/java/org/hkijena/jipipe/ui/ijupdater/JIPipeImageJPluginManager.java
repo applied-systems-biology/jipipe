@@ -150,16 +150,16 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
         messagePanel.clear();
         if (ImageJUpdater.isDebian()) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "You are using the Debian packaged version of ImageJ. " +
-                    "You should update ImageJ with your system's usual package manager instead.", null);
+                    "You should update ImageJ with your system's usual package manager instead.");
             return;
         }
         if (!NetworkUtils.hasInternetConnection()) {
             messagePanel.addMessage(MessagePanel.MessageType.Error, "Cannot connect to the Internet. Do you have a network connection? " +
-                    "Are your proxy settings correct? See also http://forum.imagej.net/t/5070", null);
+                    "Are your proxy settings correct? See also http://forum.imagej.net/t/5070");
             return;
         }
         if (Files.exists(CoreImageJUtils.getImageJUpdaterRoot().resolve("update"))) {
-            messagePanel.addMessage(MessagePanel.MessageType.Warning, "We recommend to restart ImageJ, as some updates were applied.", null);
+            messagePanel.addMessage(MessagePanel.MessageType.Warning, "We recommend to restart ImageJ, as some updates were applied.");
         }
 
         refreshRepositoryRun = new RefreshRepositoryRun();
@@ -199,13 +199,13 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
     @Subscribe
     public void onOperationInterrupted(RunWorkerInterruptedEvent event) {
         if (event.getRun() == refreshRepositoryRun) {
-            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the update.", null);
+            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the update.");
             getWorkbench().sendStatusBarText("Could not refresh ImageJ plugin information from online resources");
         } else if (event.getRun() == activateUpdateSiteRun) {
-            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during activation of update sites.", null);
+            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during activation of update sites.");
             getWorkbench().sendStatusBarText("Could not activate update sites");
         } else if (event.getRun() == applyRun) {
-            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during installation.", null);
+            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during installation.");
             getWorkbench().sendStatusBarText("Could not apply changes");
         }
     }
@@ -242,9 +242,9 @@ public class JIPipeImageJPluginManager extends JIPipeWorkbenchPanel {
                         activateStagedUpdateSites();
                     }
                     updateSitesToAddAndActivate.clear();
-                    messagePanel.addMessage(MessagePanel.MessageType.Info, "Activated " + activated + " update sites. Click 'Apply changes' to install the files.", null);
+                    messagePanel.addMessage(MessagePanel.MessageType.Info, "Activated " + activated + " update sites. Click 'Apply changes' to install the files.");
                 } else {
-                    messagePanel.addMessage(MessagePanel.MessageType.Error, "Could not activate update sites.", null);
+                    messagePanel.addMessage(MessagePanel.MessageType.Error, "Could not activate update sites.");
                 }
             }
             managerUI.setMainPanelContent(null);

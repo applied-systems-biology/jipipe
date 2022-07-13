@@ -47,6 +47,7 @@ import org.hkijena.jipipe.api.registries.*;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
 import org.hkijena.jipipe.extensions.settings.*;
+import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeProgressAdapter;
 import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
@@ -68,6 +69,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.swing.*;
 import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -113,6 +115,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     private FilesCollection imageJPlugins = null;
     private boolean initializing = false;
 
+    private static boolean IS_RESTARTING = false;
+
     @Parameter
     private LogService logService;
 
@@ -151,6 +155,15 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         }
     }
 
+    /**
+     * Returns true if a JIPipe restart is in progress.
+     * Can be utilized by methods to prevent the closing of the Java app
+     * @return if JIPipe is restarting
+     */
+    public static boolean isRestarting() {
+        return IS_RESTARTING;
+    }
+
     public static JIPipeParameterTypeRegistry getParameterTypes() {
         return instance.parameterTypeRegistry;
     }
@@ -184,6 +197,24 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      */
     public static JIPipe getInstance() {
         return instance;
+    }
+
+    public static void restartGUI() {
+        try {
+            IS_RESTARTING = true;
+            // Kill all JIPipe windows
+            for (JIPipeProjectWindow openWindow : JIPipeProjectWindow.getOpenWindows()) {
+                openWindow.dispose();
+            }
+            // Set the instance to null
+            instance = null;
+        }
+        finally {
+            IS_RESTARTING = false;
+        }
+        // Restart the GUI
+        final ImageJ ij = new ImageJ();
+        SwingUtilities.invokeLater(() -> ij.command().run(JIPipeGUICommand.class, true));
     }
 
     /**
