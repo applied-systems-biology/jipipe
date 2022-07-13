@@ -76,6 +76,15 @@ public class TooltipUtils {
         StringBuilder builder = new StringBuilder();
         builder.append("# ").append(info.getName()).append("\n\n");
 
+        if(!info.getAlternativeMenuLocations().isEmpty()) {
+            builder.append("<p>");
+            for (JIPipeNodeMenuLocation location : info.getAlternativeMenuLocations()) {
+                builder.append("<i>Alias: ").append(location.getCategory().getName()).append(" &gt; ").append(String.join(" &gt; ", location.getMenuPath().split("\n"))).append(" &gt; ").append(StringUtils.orElse(location.getAlternativeName(), info.getName())).append("<i>\n");
+            }
+            builder.append("</p><br/>\n\n");
+        }
+
+
         // Write description
         String description = info.getDescription().wrap(50).getBody();
         if (description != null && !description.isEmpty())
@@ -134,6 +143,14 @@ public class TooltipUtils {
         JIPipeNodeInfo info = node.getInfo();
         StringBuilder builder = new StringBuilder();
         builder.append("<h1>").append(info.getName()).append("</h1>\n\n");
+
+        if(!info.getAlternativeMenuLocations().isEmpty()) {
+            builder.append("<p>");
+            for (JIPipeNodeMenuLocation location : info.getAlternativeMenuLocations()) {
+                builder.append("<i>Alias: ").append(location.getCategory().getName()).append(" &gt; ").append(String.join(" &gt; ", location.getMenuPath().split("\n"))).append(" &gt; ").append(StringUtils.orElse(location.getAlternativeName(), info.getName())).append("<i>\n");
+            }
+            builder.append("</p><br/>\n\n");
+        }
 
         // Write description
         String description = info.getDescription().getBody();
@@ -211,6 +228,14 @@ public class TooltipUtils {
         builder.append("<html>");
         if (withTitle)
             builder.append("<u><strong>").append(info.getName()).append("</strong></u><br/>");
+
+        if(!info.getAlternativeMenuLocations().isEmpty()) {
+            builder.append("<p>");
+            for (JIPipeNodeMenuLocation location : info.getAlternativeMenuLocations()) {
+                builder.append("<i>Alias: ").append(location.getCategory().getName()).append(" &gt; ").append(String.join(" &gt; ", location.getMenuPath().split("\n"))).append(" &gt; ").append(StringUtils.orElse(location.getAlternativeName(), info.getName())).append("<i>\n");
+            }
+            builder.append("</p><br/>\n\n");
+        }
 
         // Write description
         String description = info.getDescription().wrap(50).getBody();

@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
@@ -55,7 +56,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
 
     @Override
     protected List<JIPipeNodeInfo> getFilteredItems() {
-        Predicate<JIPipeNodeInfo> filterFunction = info -> getSearchField().test(info.getName() + " " + info.getDescription() + " " + info.getMenuPath());
+        Predicate<JIPipeNodeInfo> filterFunction = info -> getSearchField().test(info.getName() + " " + info.getAlternativeMenuLocations().stream().map(location -> location.getCategory().getName() + location.getMenuPath() + location.getAlternativeName()).collect(Collectors.joining(" ")) + " " + info.getDescription() + " " + info.getMenuPath());
 
         return JIPipe.getNodes().getRegisteredNodeInfos().values().stream().filter(filterFunction)
                 .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList());
@@ -70,6 +71,14 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
     public MarkdownDocument generateCompendiumFor(JIPipeNodeInfo info, boolean forJava) {
         StringBuilder builder = new StringBuilder();
         builder.append("# ").append(info.getName()).append("\n\n");
+
+        if(!info.getAlternativeMenuLocations().isEmpty()) {
+            builder.append("<p>");
+            for (JIPipeNodeMenuLocation location : info.getAlternativeMenuLocations()) {
+                builder.append("<i>Alias: ").append(location.getCategory().getName()).append(" &gt; ").append(String.join(" &gt; ", location.getMenuPath().split("\n"))).append(" &gt; ").append(StringUtils.orElse(location.getAlternativeName(), info.getName())).append("<i>\n");
+            }
+            builder.append("</p><br/>\n\n");
+        }
 
         // Write description
         String description = info.getDescription().getBody();
