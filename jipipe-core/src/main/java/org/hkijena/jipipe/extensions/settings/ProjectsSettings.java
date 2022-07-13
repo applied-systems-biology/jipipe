@@ -116,7 +116,7 @@ public class ProjectsSettings implements JIPipeParameterCollection {
         if (projectTemplate != null && projectTemplate.getValue() == null && !projectTemplate.getAllowedValues().isEmpty()) {
             JIPipeProjectTemplate template = new JIPipeProjectTemplate();
             template.setStoredAsResource(true);
-            template.setResourcePath(ResourceUtils.getResourcePath("templates/Empty (3 compartments).jip"));
+            template.setResourcePath(ResourceUtils.getResourcePath("templates/Empty (1 compartment).jip"));
             projectTemplate.setValue(template);
         }
         return projectTemplate;
