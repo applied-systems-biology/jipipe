@@ -14,8 +14,10 @@
 
 package org.hkijena.jipipe.ui.extensions;
 
+import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeMetadata;
@@ -32,7 +34,8 @@ import java.nio.file.Path;
  */
 public class UpdateSiteExtension implements JIPipeExtension {
 
-    private final UpdateSite updateSite;
+    private JIPipeImageJUpdateSiteDependency dependency;
+    private UpdateSite updateSite;
     private final JIPipeMetadata metadata = new JIPipeMetadata();
 
     public UpdateSiteExtension(UpdateSite updateSite) {
@@ -44,6 +47,18 @@ public class UpdateSiteExtension implements JIPipeExtension {
         metadata.setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/imagej-update-site.png")));
         if (!StringUtils.isNullOrEmpty(updateSite.getMaintainer())) {
             metadata.setAuthors(new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("", updateSite.getMaintainer(), "", new StringList(), "", "", true, true)));
+        }
+    }
+
+    public UpdateSiteExtension(JIPipeImageJUpdateSiteDependency dependency) {
+        this.dependency = dependency;
+        metadata.setName(dependency.getName());
+        metadata.setDescription(new HTMLText(dependency.getDescription()));
+        metadata.setSummary(new HTMLText(dependency.getDescription()));
+        metadata.setWebsite(dependency.getUrl());
+        metadata.setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/imagej-update-site.png")));
+        if (!StringUtils.isNullOrEmpty(dependency.getMaintainer())) {
+            metadata.setAuthors(new JIPipeAuthorMetadata.List(new JIPipeAuthorMetadata("", dependency.getMaintainer(), "", new StringList(), "", "", true, true)));
         }
     }
 
@@ -69,7 +84,10 @@ public class UpdateSiteExtension implements JIPipeExtension {
 
     @Override
     public boolean isActivated() {
-        return updateSite.isActive();
+        if(updateSite != null)
+            return updateSite.isActive();
+        else
+            return false;
     }
 
     @Override
@@ -82,8 +100,14 @@ public class UpdateSiteExtension implements JIPipeExtension {
         return false;
     }
 
-    public UpdateSite getUpdateSite() {
-        return updateSite;
+    public UpdateSite getUpdateSite(FilesCollection updateSites) {
+        if(updateSite != null) {
+            return updateSite;
+        }
+        else {
+            this.updateSite = updateSites.addUpdateSite(dependency.toUpdateSite());
+            return this.updateSite;
+        }
     }
 
     @Override

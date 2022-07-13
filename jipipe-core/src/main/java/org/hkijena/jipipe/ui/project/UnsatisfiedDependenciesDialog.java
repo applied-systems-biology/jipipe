@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.ui.project;
 
+import com.google.common.eventbus.Subscribe;
+import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeExtension;
@@ -24,6 +26,7 @@ import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.extensions.ExtensionItemActionButton;
 import org.hkijena.jipipe.ui.extensions.JIPipePluginManager;
+import org.hkijena.jipipe.ui.extensions.UpdateSiteExtension;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -31,6 +34,8 @@ import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Path;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,9 +45,13 @@ import java.util.stream.Collectors;
 public class UnsatisfiedDependenciesDialog extends JDialog {
     private final JIPipeWorkbench workbench;
     private final Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites;
+    private final JIPipePluginManager pluginManager;
     private Path fileName;
     private Set<JIPipeDependency> dependencySet;
     private boolean continueLoading = false;
+    private final FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
+
+    private final MessagePanel messagePanel = new MessagePanel();
 
     /**
      * @param workbench          the workbench
@@ -58,6 +67,10 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
         this.missingUpdateSites = missingUpdateSites;
 
         initialize();
+
+        pluginManager = new JIPipePluginManager(messagePanel);
+        pluginManager.getEventBus().register(this);
+        pluginManager.initializeUpdateSites();
     }
 
     /**
@@ -84,19 +97,17 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
 
         getContentPane().setLayout(new BorderLayout());
 
-        MessagePanel messagePanel = new MessagePanel();
+
         getContentPane().add(messagePanel, BorderLayout.NORTH);
-        JIPipePluginManager pluginManager = null;
 
-        FormPanel content = new FormPanel(null, FormPanel.WITH_SCROLLING);
-        content.setBorder(BorderFactory.createEmptyBorder(16,16,16,16));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(16,16,16,16));
 
-        content.addWideToForm(UIUtils.createJLabel("Unsatisfied dependencies", UIUtils.getIcon32FromResources("dialog-warning.png"), 28));
-        content.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane("The project '" + fileName.toString() + "' might not be loadable due to missing dependencies. You can choose to activate the dependencies (requires a restart of ImageJ or JIPipe) or ignore this message.", false));
+        formPanel.addWideToForm(UIUtils.createJLabel("Unsatisfied dependencies", UIUtils.getIcon32FromResources("dialog-warning.png"), 28));
+        formPanel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane("The project '" + fileName.toString() + "' might not be loadable due to missing dependencies. You can choose to activate the dependencies (requires a restart of ImageJ or JIPipe) or ignore this message.", false));
 
         if(!dependencySet.isEmpty()) {
-            content.addWideToForm(Box.createVerticalStrut(32));
-            content.addWideToForm(UIUtils.createJLabel("JIPipe extensions", 22));
+            formPanel.addWideToForm(Box.createVerticalStrut(32));
+            formPanel.addWideToForm(UIUtils.createJLabel("JIPipe extensions", 22));
 
             for (JIPipeDependency dependency : dependencySet) {
                 JPanel dependencyPanel = new JPanel(new GridBagLayout());
@@ -110,10 +121,7 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
                 // Try to find the extension
                 JIPipeExtension extension = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
                 if(extension != null) {
-                    if(pluginManager == null) {
-                        pluginManager = new JIPipePluginManager(messagePanel);
-                        pluginManager.initializeUpdateSites();
-                    }
+
                     ExtensionItemActionButton button = new ExtensionItemActionButton(pluginManager, extension);
                     button.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));
                     dependencyPanel.add(button, new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,new Insets(4,4,4,4),0,0));
@@ -122,48 +130,45 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
                     dependencyPanel.add(UIUtils.createJLabel("Extension not installed", UIUtils.getIcon32FromResources("emblems/emblem-rabbitvcs-conflicted.png")), new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,new Insets(4,4,4,4),0,0));
                 }
 
-                content.addWideToForm(dependencyPanel);
+                formPanel.addWideToForm(dependencyPanel);
             }
         }
         if(!missingUpdateSites.isEmpty()) {
-            content.addWideToForm(Box.createVerticalStrut(32));
-            content.addWideToForm(UIUtils.createJLabel("ImageJ update sites", 22));
-
-            if(pluginManager == null) {
-                pluginManager = new JIPipePluginManager(messagePanel);
-                pluginManager.initializeUpdateSites();
-            }
+            formPanel.addWideToForm(Box.createVerticalStrut(32));
+            formPanel.addWideToForm(UIUtils.createJLabel("ImageJ update sites", 22));
+            formPanel.addWideToForm(new JLabel("Please wait ..."));
         }
 
-
-//        // Generate message
-//        StringBuilder stringBuilder = new StringBuilder();
-//        stringBuilder.append("# Unsatisfied dependencies\n\n");
-//        stringBuilder.append("The project `").append(fileName.toString()).append("` might not be loadable due to missing dependencies:\n\n\n");
-//        for (JIPipeDependency dependency : dependencySet) {
-//            stringBuilder.append("<div style=\"border: 1px solid gray; border-radius: 4px; margin: 4px; padding: 4px;\">");
-//            stringBuilder.append(JIPipeDependency.toHtmlElement(dependency));
-//            stringBuilder.append("</div>\n");
-//        }
-//
-//        if (!missingUpdateSites.isEmpty()) {
-//            stringBuilder.append("Following ImageJ update sites " +
-//                    "were requested, but are not activated:\n\n");
-//            for (JIPipeImageJUpdateSiteDependency site : missingUpdateSites) {
-//                stringBuilder.append("* `").append(site.getName()).append("` (").append(site.getUrl()).append(")\n");
-//            }
-//            stringBuilder.append("\nClick 'Resolve' to install them.");
-//        }
-//
-//        MarkdownDocument document = new MarkdownDocument(stringBuilder.toString());
-//        MarkdownReader markdownReader = new MarkdownReader(false);
-//        markdownReader.setDocument(document);
-//        content.add(markdownReader, BorderLayout.CENTER);
-
-        content.addVerticalGlue();
-        getContentPane().add(content, BorderLayout.CENTER);
+        formPanel.addVerticalGlue();
+        getContentPane().add(formPanel, BorderLayout.CENTER);
 
         initializeButtonPanel();
+    }
+
+    @Subscribe
+    public void onUpdateSitesReady(JIPipePluginManager.UpdateSitesReadyEvent event) {
+        if(!missingUpdateSites.isEmpty()) {
+            formPanel.removeLastRow(); //Vertical glue
+            formPanel.removeLastRow(); // "Please wait..."
+            for (JIPipeImageJUpdateSiteDependency dependency : missingUpdateSites) {
+                JPanel dependencyPanel = new JPanel(new GridBagLayout());
+                dependencyPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8,8,8,8)));
+                dependencyPanel.add(UIUtils.createJLabel(dependency.getName(), UIUtils.getIcon32FromResources("module-imagej.png"), 16), new GridBagConstraints(0,0,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
+                JTextField idField = UIUtils.makeReadonlyBorderlessTextField("URL: " + dependency.getUrl());
+                idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
+                dependencyPanel.add(idField, new GridBagConstraints(0,1,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
+                dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getDescription(), false), new GridBagConstraints(0,2,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
+
+                // Try to find the extension
+                UpdateSiteExtension extension = new UpdateSiteExtension(dependency);
+                ExtensionItemActionButton button = new ExtensionItemActionButton(pluginManager, extension);
+                button.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));
+                dependencyPanel.add(button, new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,new Insets(4,4,4,4),0,0));
+
+                formPanel.addWideToForm(dependencyPanel);
+            }
+            formPanel.addVerticalGlue();
+        }
     }
 
     private void initializeButtonPanel() {
@@ -179,15 +184,6 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
         });
         buttonPanel.add(cancelButton);
 
-        if (!missingUpdateSites.isEmpty()) {
-            JButton resolveButton = new JButton("Resolve", UIUtils.getIconFromResources("emblems/vcs-normal.png"));
-            resolveButton.addActionListener(e -> {
-                continueLoading = true;
-                showResolver();
-            });
-            buttonPanel.add(resolveButton);
-        }
-
         JButton confirmButton = new JButton("Ignore and load project anyways", UIUtils.getIconFromResources("actions/document-open-folder.png"));
         confirmButton.addActionListener(e -> {
             continueLoading = true;
@@ -195,19 +191,6 @@ public class UnsatisfiedDependenciesDialog extends JDialog {
         });
         buttonPanel.add(confirmButton);
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
-    }
-
-    private void showResolver() {
-        JPanel content = new JPanel(new BorderLayout());
-
-        JIPipeImageJPluginManager pluginManager = new JIPipeImageJPluginManager(workbench, false);
-        content.add(pluginManager, BorderLayout.CENTER);
-        pluginManager.setUpdateSitesToAddAndActivate(missingUpdateSites.stream().map(JIPipeImageJUpdateSiteDependency::toUpdateSite).collect(Collectors.toList()));
-        pluginManager.refreshUpdater();
-
-        setContentPane(content);
-        revalidate();
-        repaint();
     }
 
     public boolean isContinueLoading() {

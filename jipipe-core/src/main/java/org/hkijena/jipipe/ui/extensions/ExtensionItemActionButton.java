@@ -72,9 +72,12 @@ public class ExtensionItemActionButton extends JButton {
                         "Deactivate ImageJ update site", JOptionPane.ERROR_MESSAGE);
                 return;
             }
+            // Is an update site that was not added
+            if(((UpdateSiteExtension) extension).getUpdateSite(pluginManager.getUpdateSites()) == null)
+                return;
             if(JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this), "Do you really want to deactivate the update site '"
-                    + ((UpdateSiteExtension) extension).getUpdateSite().getName() + "'? Please note that this will delete plugin files from the ImageJ directory.", "Deactivate update site", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                DeactivateAndApplyUpdateSiteRun run = new DeactivateAndApplyUpdateSiteRun(pluginManager.getUpdateSites(), Collections.singletonList(((UpdateSiteExtension) extension).getUpdateSite()));
+                    + ((UpdateSiteExtension) extension).getUpdateSite(pluginManager.getUpdateSites()).getName() + "'? Please note that this will delete plugin files from the ImageJ directory.", "Deactivate update site", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                DeactivateAndApplyUpdateSiteRun run = new DeactivateAndApplyUpdateSiteRun(pluginManager.getUpdateSites(), Collections.singletonList(((UpdateSiteExtension) extension).getUpdateSite(pluginManager.getUpdateSites())));
                 JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run);
             }
         }
@@ -92,8 +95,8 @@ public class ExtensionItemActionButton extends JButton {
                 return;
             }
             if(JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this), "Do you really want to activate the update site '"
-            + ((UpdateSiteExtension) extension).getUpdateSite().getName() + "'? Please note that you need an active internet connection.", "Activate update site", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(pluginManager.getUpdateSites(), Collections.singletonList(((UpdateSiteExtension) extension).getUpdateSite()));
+            + ((UpdateSiteExtension) extension).getUpdateSite(pluginManager.getUpdateSites()).getName() + "'? Please note that you need an active internet connection.", "Activate update site", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(pluginManager.getUpdateSites(), Collections.singletonList(((UpdateSiteExtension) extension).getUpdateSite(pluginManager.getUpdateSites())));
                 JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run);
             }
         }
