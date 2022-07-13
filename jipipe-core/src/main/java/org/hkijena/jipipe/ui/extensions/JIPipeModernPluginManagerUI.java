@@ -66,23 +66,16 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
     private JButton updateSitesButton;
 
-    private RefreshRepositoryRun refreshRepositoryRun;
-
-    private MessagePanel.Message updateSiteMessage;
-    private boolean updateSitesReady = false;
-
-    private FilesCollection updateSites;
-
-    private final List<UpdateSiteExtension> updateSiteWrapperExtensions = new ArrayList<>();
-
     private AutoResizeSplitPane splitPane;
 
     private JPanel mainPanel;
 
-    private boolean updateSitesApplied = false;
+    private final JIPipePluginManager pluginManager;
 
     public JIPipeModernPluginManagerUI(JIPipeWorkbench workbench) {
         super(workbench);
+        this.pluginManager = new JIPipePluginManager(messagePanel);
+
         initialize();
         JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);
 
@@ -98,66 +91,18 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
 
-        initializeUpdateSites();
+        pluginManager.getEventBus().register(this);
+        pluginManager.initializeUpdateSites();
     }
 
-    private void initializeUpdateSites() {
-        updateSiteMessage = messagePanel.addMessage(MessagePanel.MessageType.Info, "ImageJ update sites are currently being loaded. Until this process is finished, ImageJ plugins cannot be managed.", null);
-        if (ImageJUpdater.isDebian()) {
-            messagePanel.addMessage(MessagePanel.MessageType.Error, "You are using the Debian packaged version of ImageJ. " +
-                    "You should update ImageJ with your system's usual package manager instead.", null);
-            setToImageJFailure();
-            return;
-        }
-        if (!NetworkUtils.hasInternetConnection()) {
-            messagePanel.addMessage(MessagePanel.MessageType.Error, "Cannot connect to the Internet. Do you have a network connection? " +
-                    "Are your proxy settings correct? See also http://forum.imagej.net/t/5070", null);
-            setToImageJFailure();
-            return;
-        }
-        if (Files.exists(CoreImageJUtils.getImageJUpdaterRoot().resolve("update"))) {
-            messagePanel.addMessage(MessagePanel.MessageType.Warning, "We recommend to restart ImageJ, as some updates were applied.", null);
-        }
-        refreshRepositoryRun = new RefreshRepositoryRun();
-        JIPipeRunnerQueue.getInstance().enqueue(refreshRepositoryRun);
-    }
-
-    private void setToImageJFailure() {
-        removeUpdateSiteMessage();
+    @Subscribe
+    public void onImageJFailed(JIPipePluginManager.UpdateSitesFailedEvent event) {
         updateSitesButton.setToolTipText("Could not connect to the ImageJ update service");
         updateSitesButton.setIcon(UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png"));
     }
-
-    private void removeUpdateSiteMessage() {
-        if(updateSiteMessage != null) {
-            messagePanel.removeMessage(updateSiteMessage);
-            updateSiteMessage = null;
-        }
-    }
-
-    private void setToImageJSuccess() {
-        removeUpdateSiteMessage();
-        createUpdateSitesWrappers();
+    @Subscribe
+    public void onImageJReady(JIPipePluginManager.UpdateSitesReadyEvent event) {
         updateSitesButton.setIcon(UIUtils.getIconFromResources("actions/web-browser.png"));
-        updateSitesReady = true;
-    }
-
-    private void createUpdateSitesWrappers() {
-        updateSiteWrapperExtensions.clear();
-        if(updateSites != null) {
-            for (UpdateSite updateSite : updateSites.getUpdateSites(true)) {
-                UpdateSiteExtension extension = new UpdateSiteExtension(updateSite);
-                updateSiteWrapperExtensions.add(extension);
-            }
-        }
-    }
-
-    public boolean isUpdateSitesReady() {
-        return updateSitesReady;
-    }
-
-    public FilesCollection getUpdateSites() {
-        return updateSites;
     }
 
     private void initialize() {
@@ -203,11 +148,15 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
     private void updateMessagePanel() {
         messagePanel.clear();
         JIPipeExtensionRegistry extensionRegistry = getExtensionRegistry();
-        if(updateSitesApplied || !extensionRegistry.getScheduledDeactivateExtensions().isEmpty() || !extensionRegistry.getScheduledActivateExtensions().isEmpty()){
+        if(pluginManager.isUpdateSitesApplied() || !extensionRegistry.getScheduledDeactivateExtensions().isEmpty() || !extensionRegistry.getScheduledActivateExtensions().isEmpty()){
             JButton exitButton = new JButton("Close ImageJ");
             exitButton.addActionListener(e -> System.exit(0));
             messagePanel.addMessage(MessagePanel.MessageType.Info, "To apply the changes, please restart ImageJ.", exitButton);
         }
+    }
+
+    public JIPipePluginManager getPluginManager() {
+        return pluginManager;
     }
 
     private JIPipeExtensionRegistry getExtensionRegistry() {
@@ -315,9 +264,9 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         }
         button.setHorizontalAlignment(SwingConstants.LEFT);
         button.addActionListener(e -> {
-            if(isUpdateSitesReady()) {
+            if(pluginManager.isUpdateSitesReady()) {
                 currentListHeading.setText(label);
-                showItems(updateSiteWrapperExtensions.stream().filter(filter).collect(Collectors.toList()), label);
+                showItems(pluginManager.getUpdateSiteWrapperExtensions().stream().filter(filter).collect(Collectors.toList()), label);
             }
         });
         sidePanel.addWideToForm(button, null);
@@ -326,23 +275,8 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
     }
 
     @Subscribe
-    public void onOperationInterrupted(RunWorkerInterruptedEvent event) {
-        if (event.getRun() == refreshRepositoryRun) {
-            messagePanel.addMessage(MessagePanel.MessageType.Error, "There was an error during the ImageJ update site update.", null);
-            getWorkbench().sendStatusBarText("Could not refresh ImageJ plugin information from online resources");
-            setToImageJFailure();
-        }
-    }
-
-    @Subscribe
     public void onOperationFinished(RunWorkerFinishedEvent event) {
-        if (event.getRun() == refreshRepositoryRun) {
-            getWorkbench().sendStatusBarText("Refreshed ImageJ plugin information from online resources");
-            this.updateSites = refreshRepositoryRun.getFilesCollection();
-            setToImageJSuccess();
-        }
-        else if(event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
-            updateSitesApplied = true;
+        if(event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
             updateMessagePanel();
         }
     }

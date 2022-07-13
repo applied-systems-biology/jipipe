@@ -180,7 +180,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
         infoButton.addActionListener(e -> openInformation());
         buttonPanel.add(infoButton);
 
-        buttonPanel.add(new ExtensionItemActionButton(pluginManagerUI, extension));
+        buttonPanel.add(new ExtensionItemActionButton(pluginManagerUI.getPluginManager(), extension));
     }
 
     private void openInformation() {

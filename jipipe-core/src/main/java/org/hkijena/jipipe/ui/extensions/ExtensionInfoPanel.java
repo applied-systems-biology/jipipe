@@ -149,7 +149,7 @@ public class ExtensionInfoPanel extends JPanel {
         titlePanel.add(titleLabel);
 
         titlePanel.add(Box.createHorizontalGlue());
-        ExtensionItemActionButton actionButton = new ExtensionItemActionButton(pluginManagerUI, extension);
+        ExtensionItemActionButton actionButton = new ExtensionItemActionButton(pluginManagerUI.getPluginManager(), extension);
         actionButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 20));
         titlePanel.add(actionButton);
 

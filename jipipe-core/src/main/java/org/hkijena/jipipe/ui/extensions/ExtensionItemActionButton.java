@@ -20,7 +20,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeExtension;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
-import org.hkijena.jipipe.ui.ijupdater.ActivateUpdateSiteRun;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
@@ -31,11 +30,11 @@ import java.util.*;
 
 public class ExtensionItemActionButton extends JButton {
 
-    private final JIPipeModernPluginManagerUI pluginManagerUI;
+    private final JIPipePluginManager pluginManager;
     private final JIPipeExtension extension;
 
-    public ExtensionItemActionButton(JIPipeModernPluginManagerUI pluginManagerUI, JIPipeExtension extension) {
-        this.pluginManagerUI = pluginManagerUI;
+    public ExtensionItemActionButton(JIPipePluginManager pluginManager, JIPipeExtension extension) {
+        this.pluginManager = pluginManager;
         this.extension = extension;
         addActionListener(e -> executeAction());
         updateDisplay();
@@ -68,14 +67,14 @@ public class ExtensionItemActionButton extends JButton {
 
     private void deactivateExtension() {
         if(extension instanceof UpdateSiteExtension) {
-            if(!pluginManagerUI.isUpdateSitesReady()) {
+            if(!pluginManager.isUpdateSitesReady()) {
                 JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "ImageJ updates sites are currently not ready/unavailable.",
                         "Deactivate ImageJ update site", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if(JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this), "Do you really want to deactivate the update site '"
                     + ((UpdateSiteExtension) extension).getUpdateSite().getName() + "'? Please note that this will delete plugin files from the ImageJ directory.", "Deactivate update site", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                DeactivateAndApplyUpdateSiteRun run = new DeactivateAndApplyUpdateSiteRun(pluginManagerUI.getUpdateSites(), Collections.singletonList(((UpdateSiteExtension) extension).getUpdateSite()));
+                DeactivateAndApplyUpdateSiteRun run = new DeactivateAndApplyUpdateSiteRun(pluginManager.getUpdateSites(), Collections.singletonList(((UpdateSiteExtension) extension).getUpdateSite()));
                 JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run);
             }
         }
@@ -87,14 +86,14 @@ public class ExtensionItemActionButton extends JButton {
 
     private void activateExtension() {
         if(extension instanceof UpdateSiteExtension) {
-            if(!pluginManagerUI.isUpdateSitesReady()) {
+            if(!pluginManager.isUpdateSitesReady()) {
                 JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "ImageJ updates sites are currently not ready/unavailable.",
                         "Activate ImageJ update site", JOptionPane.ERROR_MESSAGE);
                 return;
             }
             if(JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this), "Do you really want to activate the update site '"
             + ((UpdateSiteExtension) extension).getUpdateSite().getName() + "'? Please note that you need an active internet connection.", "Activate update site", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(pluginManagerUI.getUpdateSites(), Collections.singletonList(((UpdateSiteExtension) extension).getUpdateSite()));
+                ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(pluginManager.getUpdateSites(), Collections.singletonList(((UpdateSiteExtension) extension).getUpdateSite()));
                 JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run);
             }
         }
@@ -107,7 +106,7 @@ public class ExtensionItemActionButton extends JButton {
                 getExtensionRegistry().scheduleActivateExtension(extension.getDependencyId());
             }
             else {
-                if(!pluginManagerUI.isUpdateSitesReady()) {
+                if(!pluginManager.isUpdateSitesReady()) {
                     int response = JOptionPane.showOptionDialog(SwingUtilities.getWindowAncestor(this), "The selected extension requests various ImageJ update sites, but there is currently no connection to the update site system. You can ignore update sites or wait until the initialization is complete. If you click 'Wait' click the 'Activate' " +
                                     "button again after the update sites have been initialized.",
                             "Activate " + extension.getMetadata().getName(), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new Object[]{"Wait", "Ignore", "Cancel"},
@@ -122,8 +121,8 @@ public class ExtensionItemActionButton extends JButton {
                     for (JIPipeImageJUpdateSiteDependency dependency : extension.getImageJUpdateSiteDependencies()) {
                         missing.add(dependency.getName());
                     }
-                    if(pluginManagerUI.getUpdateSites() != null) {
-                        for (UpdateSite updateSite : pluginManagerUI.getUpdateSites().getUpdateSites(false)) {
+                    if(pluginManager.getUpdateSites() != null) {
+                        for (UpdateSite updateSite : pluginManager.getUpdateSites().getUpdateSites(false)) {
                             missing.remove(updateSite.getName());
                         }
                     }
@@ -143,7 +142,7 @@ public class ExtensionItemActionButton extends JButton {
 
     private boolean showUpdateSiteConfirmationDialog(Set<String> missing) {
         // Show confirm dialog
-        InstallUpdateSitesConfirmationDialog dialog = new InstallUpdateSitesConfirmationDialog(this, pluginManagerUI, extension, missing);
+        InstallUpdateSitesConfirmationDialog dialog = new InstallUpdateSitesConfirmationDialog(this, pluginManager, extension, missing);
         dialog.setModal(true);
         dialog.setSize(800,600);
         dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
@@ -155,18 +154,18 @@ public class ExtensionItemActionButton extends JButton {
         List<UpdateSite> toActivate = new ArrayList<>();
         for (Map.Entry<JIPipeImageJUpdateSiteDependency, Boolean> entry : dialog.getSitesToInstall().entrySet()) {
             if(entry.getValue()) {
-                UpdateSite updateSite = pluginManagerUI.getUpdateSites().getUpdateSite(entry.getKey().getName(), true);
+                UpdateSite updateSite = pluginManager.getUpdateSites().getUpdateSite(entry.getKey().getName(), true);
                 if(updateSite != null) {
                     toActivate.add(updateSite);
                 }
                 else {
-                    updateSite = pluginManagerUI.getUpdateSites().addUpdateSite(entry.getKey().toUpdateSite());
+                    updateSite = pluginManager.getUpdateSites().addUpdateSite(entry.getKey().toUpdateSite());
                     toActivate.add(updateSite);
                 }
             }
         }
         if(!toActivate.isEmpty()) {
-            ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(pluginManagerUI.getUpdateSites(), toActivate);
+            ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(pluginManager.getUpdateSites(), toActivate);
             JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(this), run);
         }
         return true;

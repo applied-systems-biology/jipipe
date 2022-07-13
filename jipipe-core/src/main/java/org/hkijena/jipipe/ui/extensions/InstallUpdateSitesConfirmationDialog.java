@@ -28,14 +28,14 @@ import java.util.Map;
 import java.util.Set;
 
 public class InstallUpdateSitesConfirmationDialog extends JDialog {
-    private final JIPipeModernPluginManagerUI pluginManagerUI;
+    private final JIPipePluginManager pluginManager;
     private final JIPipeExtension extension;
     private Map<JIPipeImageJUpdateSiteDependency, Boolean> sitesToInstall = new HashMap<>();
     private boolean cancelled = true;
 
-    public InstallUpdateSitesConfirmationDialog(Component parent, JIPipeModernPluginManagerUI pluginManagerUI, JIPipeExtension extension, Set<String> filter) {
+    public InstallUpdateSitesConfirmationDialog(Component parent, JIPipePluginManager pluginManager, JIPipeExtension extension, Set<String> filter) {
         super(SwingUtilities.getWindowAncestor(parent));
-        this.pluginManagerUI = pluginManagerUI;
+        this.pluginManager = pluginManager;
         this.extension = extension;
         for (JIPipeImageJUpdateSiteDependency dependency : extension.getImageJUpdateSiteDependencies()) {
             if(filter == null || filter.contains(dependency.getName())) {
@@ -65,8 +65,8 @@ public class InstallUpdateSitesConfirmationDialog extends JDialog {
         for (Map.Entry<JIPipeImageJUpdateSiteDependency, Boolean> entry : sitesToInstall.entrySet()) {
             JIPipeImageJUpdateSiteDependency dependency = entry.getKey();
             String description = "No description available.";
-            if(pluginManagerUI.isUpdateSitesReady() && pluginManagerUI.getUpdateSites() != null) {
-                UpdateSite updateSite = pluginManagerUI.getUpdateSites().getUpdateSite(dependency.getName(), true);
+            if(pluginManager.isUpdateSitesReady() && pluginManager.getUpdateSites() != null) {
+                UpdateSite updateSite = pluginManager.getUpdateSites().getUpdateSite(dependency.getName(), true);
                 if(updateSite != null) {
                     description = updateSite.getDescription();
                 }
