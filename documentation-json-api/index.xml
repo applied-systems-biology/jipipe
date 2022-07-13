@@ -113,7 +113,7 @@
       
       <guid>https://www.jipipe.org/documentation-json-api/data-table/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: data-table.schema.json
- Defines a data table   node-id:  string      The node type ID that generated the data. Optional.   slot:  string      The slot name that generated the data. Optional.   rows:  object[]       The data row items See data-table-row        data-type:  string       The data type ID behind the row      Example { &amp;#34;node-id&amp;#34; : &amp;#34;ij1-fft-forward2d&amp;#34;, &amp;#34;slot&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;internal-path&amp;#34; : &amp;#34;/fastdata/projects/JIPipe/Output&amp;#34;, &amp;#34;rows&amp;#34; : [ { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } ], &amp;#34;data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
+Defines a data tablenode-id:stringThe node type ID that generated the data. Optional.slot:stringThe slot name that generated the data. Optional.rows:object[]The data row itemsSee data-table-rowdata-type:stringThe data type ID behind the rowExample { &amp;#34;node-id&amp;#34; : &amp;#34;ij1-fft-forward2d&amp;#34;, &amp;#34;slot&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;internal-path&amp;#34; : &amp;#34;/fastdata/projects/JIPipe/Output&amp;#34;, &amp;#34;rows&amp;#34; : [ { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } ], &amp;#34;data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
     </item>
     
     <item>
@@ -123,7 +123,7 @@
       
       <guid>https://www.jipipe.org/documentation-json-api/data-table-row/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: data-table-row.schema.json
- Defines a data table row   id:  number      Row index within the data table   annotations:  object[]       Annotations attached to the data row See annotation        true-data-type:  string       The true (not the slot) data type ID behind the row      Example { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
+Defines a data table rowid:numberRow index within the data tableannotations:object[]Annotations attached to the data rowSee annotationtrue-data-type:stringThe true (not the slot) data type ID behind the rowExample { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
     </item>
     
     <item>
@@ -133,7 +133,7 @@
       
       <guid>https://www.jipipe.org/documentation-json-api/annotation/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: annotation.schema.json
- An annotation   name:  string       Name of the annotation   value:  string       Value of the annotation      Example { &amp;#34;name&amp;#34; : &amp;#34;#Dataset&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;Experiment 1&amp;#34; } </description>
+An annotationname:stringName of the annotationvalue:stringValue of the annotationExample { &amp;#34;name&amp;#34; : &amp;#34;#Dataset&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;Experiment 1&amp;#34; } </description>
     </item>
     
   </channel>
