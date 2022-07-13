@@ -145,7 +145,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                 boolean hasAlternativeName = false;
 
                 // Alternative names
-                for (JIPipeNodeMenuLocation location : info.getAlternativeMenuLocations()) {
+                for (JIPipeNodeMenuLocation location : info.getAliases()) {
                     if(StringUtils.isNullOrEmpty(location.getAlternativeName()))
                         continue;
                     if(Objects.equals(category.getId(), location.getCategory().getId())) {

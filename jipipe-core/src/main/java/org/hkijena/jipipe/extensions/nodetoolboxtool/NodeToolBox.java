@@ -63,7 +63,7 @@ public class NodeToolBox extends JPanel {
         menuHayStack = info.getCategory().getName() + "\n" + info.getMenuPath();
         descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
 
-        for (JIPipeNodeMenuLocation location : info.getAlternativeMenuLocations()) {
+        for (JIPipeNodeMenuLocation location : info.getAliases()) {
             if(!StringUtils.isNullOrEmpty(location.getAlternativeName())) {
                 nameHayStack += location.getAlternativeName().toLowerCase();
             }

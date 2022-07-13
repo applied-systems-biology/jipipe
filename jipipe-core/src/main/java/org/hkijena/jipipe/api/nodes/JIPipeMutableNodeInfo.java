@@ -35,7 +35,7 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private boolean runnable = true;
     private List<String> additionalCitations = new ArrayList<>();
 
-    private List<JIPipeNodeMenuLocation> alternativeMenuLocations = new ArrayList<>();
+    private List<JIPipeNodeMenuLocation> aliases = new ArrayList<>();
 
     @Override
     public Class<? extends JIPipeGraphNode> getInstanceClass() {
@@ -178,11 +178,11 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     }
 
     @Override
-    public List<JIPipeNodeMenuLocation> getAlternativeMenuLocations() {
-        return alternativeMenuLocations;
+    public List<JIPipeNodeMenuLocation> getAliases() {
+        return aliases;
     }
 
-    public void setAlternativeMenuLocations(List<JIPipeNodeMenuLocation> alternativeMenuLocations) {
-        this.alternativeMenuLocations = alternativeMenuLocations;
+    public void setAliases(List<JIPipeNodeMenuLocation> aliases) {
+        this.aliases = aliases;
     }
 }

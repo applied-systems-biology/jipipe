@@ -47,7 +47,7 @@ public interface JIPipeNodeInfo {
                 }
                 group.add(info);
             }
-            for (JIPipeNodeMenuLocation location : info.getAlternativeMenuLocations()) {
+            for (JIPipeNodeMenuLocation location : info.getAliases()) {
                 if(Objects.equals(location.getCategory().getId(), category.getId())) {
                     String menuPath = StringUtils.getCleanedMenuPath(location.getMenuPath());
                     Set<JIPipeNodeInfo> group = result.getOrDefault(menuPath, null);
@@ -229,7 +229,7 @@ public interface JIPipeNodeInfo {
      * A list of alternative menu locations
      * @return alternative menu locations. might be empty.
      */
-    default List<JIPipeNodeMenuLocation> getAlternativeMenuLocations() {
+    default List<JIPipeNodeMenuLocation> getAliases() {
         return Collections.emptyList();
     }
 }

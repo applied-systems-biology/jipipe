@@ -21,6 +21,6 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface JIPipeAlternativeNodeMenuLocations {
-    JIPipeAlternativeNodeMenuLocation[] value();
+public @interface JIPipeNodeAliases {
+    JIPipeNodeAlias[] value();
 }

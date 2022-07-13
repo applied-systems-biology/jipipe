@@ -111,13 +111,13 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
             nameLabel.setText(info.getName());
             nodeIcon.setIcon(JIPipe.getNodes().getIconFor(info));
 
-            if(info.getAlternativeMenuLocations().isEmpty()) {
+            if(info.getAliases().isEmpty()) {
                 alternativeLabel.setText("");
             }
             else {
                 StringBuilder builder = new StringBuilder();
                 builder.append("Alias: ");
-                List<JIPipeNodeMenuLocation> alternativeMenuLocations = info.getAlternativeMenuLocations();
+                List<JIPipeNodeMenuLocation> alternativeMenuLocations = info.getAliases();
                 for (int i = 0; i < alternativeMenuLocations.size(); i++) {
                     if(i > 0) {
                         builder.append(", ");

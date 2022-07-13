@@ -27,8 +27,8 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Repeatable(JIPipeAlternativeNodeMenuLocations.class)
-public @interface JIPipeAlternativeNodeMenuLocation {
+@Repeatable(JIPipeNodeAliases.class)
+public @interface JIPipeNodeAlias {
     /**
      * A submenu where the entry should be located.
      * This is valid for {@link JIPipeGraphNode} and {@link org.hkijena.jipipe.api.data.JIPipeData}

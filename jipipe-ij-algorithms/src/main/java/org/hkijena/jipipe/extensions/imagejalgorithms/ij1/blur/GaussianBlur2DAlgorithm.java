@@ -39,7 +39,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeNode(menuPath = "Blur", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
-@JIPipeAlternativeNodeMenuLocation(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", alternativeName = "Gaussian Blur...")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", alternativeName = "Gaussian Blur...")
 public class GaussianBlur2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double sigmaX = 1;

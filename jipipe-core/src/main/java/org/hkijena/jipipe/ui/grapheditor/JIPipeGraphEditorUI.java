@@ -129,7 +129,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             JIPipeGraphNode node = ((JIPipeNodeUI) value).getNode();
             nameHayStack = node.getName();
             menuHayStack = node.getInfo().getCategory().getName() + "\n" + node.getInfo().getMenuPath();
-            for (JIPipeNodeMenuLocation location : node.getInfo().getAlternativeMenuLocations()) {
+            for (JIPipeNodeMenuLocation location : node.getInfo().getAliases()) {
                 if(!StringUtils.isNullOrEmpty(location.getAlternativeName())) {
                     nameHayStack += location.getAlternativeName().toLowerCase();
                 }
@@ -142,7 +142,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 return null;
             nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
             menuHayStack = info.getCategory().getName() + "\n" + info.getMenuPath();
-            for (JIPipeNodeMenuLocation location : info.getAlternativeMenuLocations()) {
+            for (JIPipeNodeMenuLocation location : info.getAliases()) {
                 if(!StringUtils.isNullOrEmpty(location.getAlternativeName())) {
                     nameHayStack += location.getAlternativeName().toLowerCase();
                 }
@@ -1042,13 +1042,13 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 algorithmLabel.setIcon(JIPipe.getNodes().getIconFor(info));
                 menuLabel.setText(menuPath);
 
-                if(info.getAlternativeMenuLocations().isEmpty()) {
+                if(info.getAliases().isEmpty()) {
                     alternativeLabel.setText("");
                 }
                 else {
                     StringBuilder builder = new StringBuilder();
                     builder.append("Alias: ");
-                    List<JIPipeNodeMenuLocation> alternativeMenuLocations = info.getAlternativeMenuLocations();
+                    List<JIPipeNodeMenuLocation> alternativeMenuLocations = info.getAliases();
                     for (int i = 0; i < alternativeMenuLocations.size(); i++) {
                         if(i > 0) {
                             builder.append(", ");

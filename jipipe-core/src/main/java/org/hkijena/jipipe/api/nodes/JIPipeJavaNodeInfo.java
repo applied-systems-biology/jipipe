@@ -57,7 +57,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         setDescription(getDescriptionOf(nodeClass));
         setCategory(getCategoryOf(nodeClass));
         setMenuPath(getMenuPathOf(nodeClass));
-        setAlternativeMenuLocations(getAlternativeMenuLocationsOf(nodeClass));
+        setAliases(getAliasesOf(nodeClass));
         if (nodeClass.getAnnotation(JIPipeHidden.class) != null) {
             setHidden(true);
         }
@@ -130,9 +130,9 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
      * @param klass node class
      * @return locations
      */
-    public static List<JIPipeNodeMenuLocation> getAlternativeMenuLocationsOf(Class<? extends JIPipeGraphNode> klass) {
+    public static List<JIPipeNodeMenuLocation> getAliasesOf(Class<? extends JIPipeGraphNode> klass) {
         List<JIPipeNodeMenuLocation> result = new ArrayList<>();
-        for (JIPipeAlternativeNodeMenuLocation location : klass.getAnnotationsByType(JIPipeAlternativeNodeMenuLocation.class)) {
+        for (JIPipeNodeAlias location : klass.getAnnotationsByType(JIPipeNodeAlias.class)) {
             result.add(new JIPipeNodeMenuLocation((JIPipeNodeTypeCategory) ReflectionUtils.newInstance(location.nodeTypeCategory()), location.menuPath(), location.alternativeName()));
         }
         return result;
