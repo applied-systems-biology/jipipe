@@ -1458,4 +1458,10 @@ public class UIUtils {
                     JOptionPane.ERROR_MESSAGE);
         }
     }
+
+    public static void invokeScrollToTop(JScrollPane scrollPane) {
+        SwingUtilities.invokeLater(() -> {
+            scrollPane.getVerticalScrollBar().setValue(0);
+        });
+    }
 }

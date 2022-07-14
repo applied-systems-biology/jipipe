@@ -22,6 +22,11 @@ import org.hkijena.jipipe.extensions.cellpose.compat.CellPoseSizeModelImageJExpo
 import org.hkijena.jipipe.extensions.cellpose.compat.CellPoseSizeModelImageJImporter;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
+import org.hkijena.jipipe.extensions.cellpose.installers.CellPoseEasyInstaller;
+import org.hkijena.jipipe.extensions.cellpose.installers.MinicondaCellPoseEnvInstaller;
+import org.hkijena.jipipe.extensions.cellpose.installers.MinicondaCellPoseGPUEnvInstaller;
+import org.hkijena.jipipe.extensions.cellpose.installers.PortableCellPoseEnvInstaller;
+import org.hkijena.jipipe.extensions.cellpose.installers.PortableCellPoseGPUEnvInstaller;
 import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -146,6 +151,7 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerEnvironmentInstaller(PythonEnvironment.class, MinicondaCellPoseGPUEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, PortableCellPoseEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, PortableCellPoseGPUEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, CellPoseEasyInstaller.class, UIUtils.getIconFromResources("emblems/vcs-normal.png"));
 
         registerEnumParameterType("cellpose-model", CellPoseModel.class, "Cellpose model", "A Cellpose model");
         registerEnumParameterType("cellpose-pretrained-model", CellPosePretrainedModel.class, "Cellpose pre-trained model", "A pretrained model for Cellpose");

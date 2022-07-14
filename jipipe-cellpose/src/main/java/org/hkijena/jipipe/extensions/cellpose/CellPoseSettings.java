@@ -7,6 +7,7 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterSettings;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonExtensionSettings;
@@ -19,8 +20,11 @@ public class CellPoseSettings implements JIPipeParameterCollection {
 
     private OptionalPythonEnvironment overridePythonEnvironment = new OptionalPythonEnvironment();
 
+    private StringList easyInstallerRepositories = new StringList();
+
     public CellPoseSettings() {
         overridePythonEnvironment.setEnabled(true);
+        easyInstallerRepositories.add("https://github.com/applied-systems-biology/jipipe/releases/download/current/easyinstall-cellpose.json");
     }
 
     public static CellPoseSettings getInstance() {
@@ -76,6 +80,17 @@ public class CellPoseSettings implements JIPipeParameterCollection {
     @JIPipeParameter("python-environment")
     public void setOverridePythonEnvironment(OptionalPythonEnvironment overridePythonEnvironment) {
         this.overridePythonEnvironment = overridePythonEnvironment;
+    }
+
+    @JIPipeDocumentation(name = "Easy installer repositories", description = "Allows to change the repositories for the EasyInstaller")
+    @JIPipeParameter("easy-installer-repositories")
+    public StringList getEasyInstallerRepositories() {
+        return easyInstallerRepositories;
+    }
+
+    @JIPipeParameter("easy-installer-repositories")
+    public void setEasyInstallerRepositories(StringList easyInstallerRepositories) {
+        this.easyInstallerRepositories = easyInstallerRepositories;
     }
 
     public PythonEnvironment getPythonEnvironment() {
