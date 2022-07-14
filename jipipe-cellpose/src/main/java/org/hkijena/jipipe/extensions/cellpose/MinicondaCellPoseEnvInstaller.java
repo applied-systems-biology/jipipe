@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 
-@JIPipeDocumentation(name = "Miniconda: Download & install Cellpose (CPU)", description = "Creates a new Python environment with Cellpose installed. " +
+@JIPipeDocumentation(name = "Miniconda: Download & install Cellpose (CPU) [deprecated]", description = "Creates a new Python environment with Cellpose installed. " +
         "Uses a Miniconda-based installer. ")
 @ExternalEnvironmentInfo(category = "Cellpose")
 public class MinicondaCellPoseEnvInstaller extends BasicMinicondaEnvPythonInstaller {

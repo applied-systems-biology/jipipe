@@ -8,7 +8,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.nio.file.Paths;
 
-@JIPipeDocumentation(name = "Miniconda: Download & install Cellpose (GPU)", description = "Creates a new Python environment with Cellpose installed. " +
+@JIPipeDocumentation(name = "Miniconda: Download & install Cellpose (GPU) [deprecated]", description = "Creates a new Python environment with Cellpose installed. " +
         "Requires a graphics card suitable for GPU computing. Uses a Miniconda-based installer.")
 @ExternalEnvironmentInfo(category = "Cellpose")
 public class MinicondaCellPoseGPUEnvInstaller extends MinicondaCellPoseEnvInstaller {
