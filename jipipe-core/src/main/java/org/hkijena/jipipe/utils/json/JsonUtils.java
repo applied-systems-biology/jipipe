@@ -58,7 +58,7 @@ public class JsonUtils {
 
     public static void saveToFile(Object obj, Path targetFile) {
         try {
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(targetFile.toFile(), obj);
+            getObjectMapper().writerWithDefaultPrettyPrinter().writeValue(targetFile.toFile(), obj);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -66,7 +66,7 @@ public class JsonUtils {
 
     public static <T> T readFromString(String json, Class<T> klass) {
         try {
-            return objectMapper.readerFor(klass).readValue(json);
+            return getObjectMapper().readerFor(klass).readValue(json);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -74,7 +74,7 @@ public class JsonUtils {
 
     public static <T> T readFromFile(Path file, Class<T> klass) {
         try {
-            return objectMapper.readerFor(klass).readValue(file.toFile());
+            return getObjectMapper().readerFor(klass).readValue(file.toFile());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -82,7 +82,7 @@ public class JsonUtils {
 
     public static String toJsonString(Object data) {
         try {
-            return objectMapper.writerFor(data.getClass()).writeValueAsString(data);
+            return getObjectMapper().writerFor(data.getClass()).writeValueAsString(data);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
@@ -90,7 +90,7 @@ public class JsonUtils {
 
     public static String toPrettyJsonString(Object data) {
         try {
-            return objectMapper.writerWithDefaultPrettyPrinter().writeValueAsString(data);
+            return getObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(data);
         } catch (JsonProcessingException e) {
             throw new RuntimeException(e);
         }
