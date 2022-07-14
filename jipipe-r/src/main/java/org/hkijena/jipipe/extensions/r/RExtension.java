@@ -19,6 +19,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringLi
 import org.hkijena.jipipe.extensions.r.algorithms.ImportRDatasetAlgorithm;
 import org.hkijena.jipipe.extensions.r.algorithms.IteratingRScriptAlgorithm;
 import org.hkijena.jipipe.extensions.r.algorithms.MergingRScriptAlgorithm;
+import org.hkijena.jipipe.extensions.r.installers.REasyInstaller;
 import org.hkijena.jipipe.extensions.r.installers.REnvInstaller;
 import org.hkijena.jipipe.extensions.r.parameters.RScriptParameter;
 import org.hkijena.jipipe.extensions.r.ui.RTokenMaker;
@@ -43,6 +44,14 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("r-environment");
         REnvInstaller installer = new REnvInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
+    private static void easyInstallR(JIPipeWorkbench workbench) {
+        RExtensionSettings settings = RExtensionSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("r-environment");
+        REasyInstaller installer = new REasyInstaller(workbench, parameterAccess);
         JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
@@ -103,6 +112,7 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "An optional R environment",
                 null);
         registerEnvironmentInstaller(REnvironment.class, REnvInstaller.class, UIUtils.getIconFromResources("actions/browser-download.png"));
+        registerEnvironmentInstaller(REnvironment.class, REasyInstaller.class, UIUtils.getIconFromResources("emblems/vcs-normal.png"));
 
         AbstractTokenMakerFactory atmf = (AbstractTokenMakerFactory) TokenMakerFactory.getDefaultInstance();
         atmf.putMapping("text/x-r-script", RTokenMaker.class.getName());
@@ -138,9 +148,9 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
                     "For more information, please visit https://www.jipipe.org/installation/third-party/r/");
             if(SystemUtils.IS_OS_WINDOWS) {
                 notification.getActions().add(new JIPipeNotificationAction("Install R",
-                        "Installs R (Currently only Windows)",
+                        "Installs a prepackaged version of R",
                         UIUtils.getIconFromResources("actions/browser-download.png"),
-                        RExtension::installR));
+                        RExtension::easyInstallR));
             }
             notification.getActions().add(new JIPipeNotificationAction("Configure R",
                     "Opens the applications settings page",
