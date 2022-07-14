@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.r;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.JIPipe;
@@ -133,11 +134,14 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
             notification.setHeading("R is not configured");
             notification.setDescription("To make use of R within JIPipe, you need to either provide JIPipe with an " +
                     "existing R installation or let JIPipe install a R distribution for you. Please note that we cannot provide you with an R " +
-                    "setup tool for Linux and Mac.");
-            notification.getActions().add(new JIPipeNotificationAction("Install R",
-                    "Installs R (Currently only Windows)",
-                    UIUtils.getIconFromResources("actions/browser-download.png"),
-                    RExtension::installR));
+                    "setup tool for Linux and Mac.\n\n" +
+                    "For more information, please visit https://www.jipipe.org/installation/third-party/r/");
+            if(SystemUtils.IS_OS_WINDOWS) {
+                notification.getActions().add(new JIPipeNotificationAction("Install R",
+                        "Installs R (Currently only Windows)",
+                        UIUtils.getIconFromResources("actions/browser-download.png"),
+                        RExtension::installR));
+            }
             notification.getActions().add(new JIPipeNotificationAction("Configure R",
                     "Opens the applications settings page",
                     UIUtils.getIconFromResources("actions/configure.png"),

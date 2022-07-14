@@ -331,4 +331,19 @@ public class PathUtils {
             }
         }
     }
+
+    /**
+     * Returns the first path if it exists or the alternative path if it doesn't
+     * @param firstChoice the first choice. can be null.
+     * @param alternative the alternative
+     * @return firstChoice if it is not null and if it does exist, alternative instead
+     */
+    public static Path orElse(Path firstChoice, Path alternative) {
+        if(firstChoice != null && Files.exists(firstChoice)) {
+            return firstChoice;
+        }
+        else {
+            return alternative;
+        }
+    }
 }

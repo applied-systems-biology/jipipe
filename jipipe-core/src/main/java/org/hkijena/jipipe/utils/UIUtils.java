@@ -1182,7 +1182,22 @@ public class UIUtils {
         textPane.setContentType("text/html");
         textPane.setText(text);
         textPane.setBorder(null);
+        addHyperlinkListener(textPane);
         return textPane;
+    }
+
+    private static void addHyperlinkListener(JTextPane textPane) {
+        textPane.addHyperlinkListener(e -> {
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                if (Desktop.isDesktopSupported()) {
+                    try {
+                        Desktop.getDesktop().browse(e.getURL().toURI());
+                    } catch (Exception e1) {
+                        throw new RuntimeException(e1);
+                    }
+                }
+            }
+        });
     }
 
     /**
