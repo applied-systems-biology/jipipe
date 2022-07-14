@@ -30,6 +30,7 @@ target
 /r/
 /jipipe/
 /dist/zip/*
+/db.xml.gz
 /dist/*.zip
 **/__pycache__/
 
