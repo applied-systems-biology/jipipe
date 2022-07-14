@@ -14,20 +14,30 @@
 
 package org.hkijena.jipipe.extensions.cellpose.installers;
 
+import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstaller;
-import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
+import org.hkijena.jipipe.extensions.python.PythonEnvironment;
+import org.hkijena.jipipe.extensions.python.PythonEnvironmentType;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.PathUtils;
+import org.jetbrains.annotations.NotNull;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Install Cellpose (EasyInstaller)", description = "Downloads a pre-packaged version of Cellpose")
 @ExternalEnvironmentInfo(category = "Cellpose")
-public class CellPoseEasyInstaller extends EasyInstallExternalEnvironmentInstaller {
+public class CellPoseEasyInstaller extends EasyInstallExternalEnvironmentInstaller<PythonEnvironment> {
     /**
      * @param workbench       the workbench
      * @param parameterAccess the parameter access that will receive the generated environment
@@ -57,7 +67,43 @@ public class CellPoseEasyInstaller extends EasyInstallExternalEnvironmentInstall
     }
 
     @Override
-    public ExternalEnvironment getInstalledEnvironment() {
-        return null;
+    protected void writeEnvironmentToParameters(PythonEnvironment environment, JIPipeParameterAccess parameterAccess) {
+        if(OptionalParameter.class.isAssignableFrom(parameterAccess.getFieldClass())) {
+            parameterAccess.set(new OptionalPythonEnvironment(environment));
+        }
+        else {
+            parameterAccess.set(environment);
+        }
+    }
+
+    @Override
+    protected void executePostprocess() {
+        if(!SystemUtils.IS_OS_WINDOWS) {
+            getProgressInfo().log("Postprocess: Marking all files in " + getPythonBinaryDir() + " as executable");
+            try {
+                Files.list(getPythonBinaryDir()).forEach(path -> {
+                    if(Files.isRegularFile(path)) {
+                        getProgressInfo().log(" - chmod +x " + path);
+                        PathUtils.makeUnixExecutable(path);
+                    }
+                });
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+    @Override
+    protected PythonEnvironment generateEnvironment() {
+        PythonEnvironment environment = new PythonEnvironment();
+        environment.setType(PythonEnvironmentType.System);
+        environment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
+        environment.setExecutablePath(getPythonBinaryDir().resolve("python3"));
+        environment.setName(getTargetPackage().getName());
+        return environment;
+    }
+
+    private Path getPythonBinaryDir() {
+        return getRelativeInstallationPath().resolve("python").resolve("bin");
     }
 }

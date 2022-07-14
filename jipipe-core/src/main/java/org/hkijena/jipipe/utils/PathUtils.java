@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.utils;
 
+import ij.IJ;
 import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -235,6 +236,26 @@ public class PathUtils {
         return null;
     }
 
+    public static Path getImageJDir() {
+        Path imageJDir = Paths.get(StringUtils.nullToEmpty(Prefs.getImageJDir()));
+        if(!imageJDir.isAbsolute())
+            imageJDir = imageJDir.toAbsolutePath();
+        if (!Files.isDirectory(imageJDir)) {
+            try {
+                Files.createDirectories(imageJDir);
+            } catch (IOException e) {
+                IJ.handleException(e);
+            }
+        }
+        return imageJDir;
+    }
+
+    public static Path absoluteToImageJRelative(Path path) {
+        if(!path.isAbsolute())
+            return path;
+        return getImageJDir().relativize(path);
+    }
+
     /**
      * Converts relative paths to absolute paths, relative to the ImageJ directory
      * Absolute paths are left unchanged
@@ -245,8 +266,7 @@ public class PathUtils {
     public static Path relativeToImageJToAbsolute(Path path) {
         if (path.isAbsolute())
             return path;
-        Path imageJDir = Paths.get(Prefs.getImageJDir());
-        return imageJDir.resolve(path);
+        return getImageJDir().resolve(path);
     }
 
     /**

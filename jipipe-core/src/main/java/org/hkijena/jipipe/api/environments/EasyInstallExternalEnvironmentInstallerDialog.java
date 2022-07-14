@@ -14,10 +14,7 @@
 
 package org.hkijena.jipipe.api.environments;
 
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeExtension;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.extensions.ExtensionItemActionButton;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
@@ -31,21 +28,21 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class EasyInstallExternalEnvironmentInstallerDialog extends JDialog {
-    private final EasyInstallExternalEnvironmentInstaller installer;
+    private final EasyInstallExternalEnvironmentInstaller<?> installer;
 
     private final FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
 
-    private EasyInstallExternalEnvironmentInstaller.AvailablePackage targetPackage;
+    private EasyInstallExternalEnvironmentInstallerPackage targetPackage;
 
-    public EasyInstallExternalEnvironmentInstallerDialog(EasyInstallExternalEnvironmentInstaller installer) {
+    public EasyInstallExternalEnvironmentInstallerDialog(EasyInstallExternalEnvironmentInstaller<?> installer) {
         super(installer.getWorkbench().getWindow());
         this.installer = installer;
         initialize();
     }
     private void initialize() {
 
-        List<EasyInstallExternalEnvironmentInstaller.AvailablePackage> supportedPackages = installer.getAvailablePackages().stream().filter(EasyInstallExternalEnvironmentInstaller.AvailablePackage::isSupported).collect(Collectors.toList());
-        List<EasyInstallExternalEnvironmentInstaller.AvailablePackage> unsupportedPackages = installer.getAvailablePackages().stream().filter(EasyInstallExternalEnvironmentInstaller.AvailablePackage::isUnsupported).collect(Collectors.toList());
+        List<EasyInstallExternalEnvironmentInstallerPackage> supportedPackages = installer.getAvailablePackages().stream().filter(EasyInstallExternalEnvironmentInstallerPackage::isSupported).collect(Collectors.toList());
+        List<EasyInstallExternalEnvironmentInstallerPackage> unsupportedPackages = installer.getAvailablePackages().stream().filter(EasyInstallExternalEnvironmentInstallerPackage::isUnsupported).collect(Collectors.toList());
 
         setTitle(installer.getTaskLabel());
 
@@ -57,7 +54,7 @@ public class EasyInstallExternalEnvironmentInstallerDialog extends JDialog {
         formPanel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane(installer.getDialogDescription().getHtml(), false));
 
         formPanel.addWideToForm(Box.createVerticalStrut(16));
-        formPanel.addWideToForm(UIUtils.createJLabel("Please be aware that some downloads can be as large as multiple gigabytes", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
+        formPanel.addWideToForm(UIUtils.createJLabel("Please be aware that some downloads can be multiple gigabytes", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
         formPanel.addWideToForm(UIUtils.createJLabel("We recommend to always review the download URL", UIUtils.getIconFromResources("emblems/emblem-important-blue.png")));
 
         formPanel.addWideToForm(Box.createVerticalStrut(32));
@@ -67,7 +64,7 @@ public class EasyInstallExternalEnvironmentInstallerDialog extends JDialog {
             formPanel.addWideToForm(UIUtils.createJLabel("No supported packages found.", UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png")));
         }
         else {
-            for (EasyInstallExternalEnvironmentInstaller.AvailablePackage availablePackage : supportedPackages) {
+            for (EasyInstallExternalEnvironmentInstallerPackage availablePackage : supportedPackages) {
                 addPackagePanel(availablePackage);
             }
         }
@@ -75,7 +72,7 @@ public class EasyInstallExternalEnvironmentInstallerDialog extends JDialog {
         if(!unsupportedPackages.isEmpty()) {
             formPanel.addWideToForm(Box.createVerticalStrut(32));
             formPanel.addWideToForm(UIUtils.createJLabel("Unsupported packages", 22));
-            for (EasyInstallExternalEnvironmentInstaller.AvailablePackage availablePackage : unsupportedPackages) {
+            for (EasyInstallExternalEnvironmentInstallerPackage availablePackage : unsupportedPackages) {
                 addPackagePanel(availablePackage);
             }
         }
@@ -88,7 +85,7 @@ public class EasyInstallExternalEnvironmentInstallerDialog extends JDialog {
         initializeButtonPanel();
     }
 
-    private void addPackagePanel(EasyInstallExternalEnvironmentInstaller.AvailablePackage availablePackage) {
+    private void addPackagePanel(EasyInstallExternalEnvironmentInstallerPackage availablePackage) {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8,8,8,8)));
         panel.add(UIUtils.createJLabel(availablePackage.getName(), UIUtils.getIcon32FromResources("module-json.png"), 16), new GridBagConstraints(0,0,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
@@ -104,7 +101,7 @@ public class EasyInstallExternalEnvironmentInstallerDialog extends JDialog {
         formPanel.addWideToForm(panel);
     }
 
-    private void confirmInstallation(EasyInstallExternalEnvironmentInstaller.AvailablePackage availablePackage) {
+    private void confirmInstallation(EasyInstallExternalEnvironmentInstallerPackage availablePackage) {
        this.targetPackage = availablePackage;
        setVisible(false);
     }
@@ -126,4 +123,7 @@ public class EasyInstallExternalEnvironmentInstallerDialog extends JDialog {
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
     }
 
+    public EasyInstallExternalEnvironmentInstallerPackage getTargetPackage() {
+        return targetPackage;
+    }
 }

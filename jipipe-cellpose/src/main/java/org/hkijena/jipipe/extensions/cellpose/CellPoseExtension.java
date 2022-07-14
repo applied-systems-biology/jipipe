@@ -54,19 +54,11 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
         getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/cellpose.png")));
     }
 
-    private static void installCellposeCPU(JIPipeWorkbench workbench) {
+    private static void easyInstallCellpose(JIPipeWorkbench workbench) {
         CellPoseSettings settings = CellPoseSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        PortableCellPoseEnvInstaller installer = new PortableCellPoseEnvInstaller(workbench, parameterAccess);
-        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
-    }
-
-    private static void installCellposeGPU(JIPipeWorkbench workbench) {
-        CellPoseSettings settings = CellPoseSettings.getInstance();
-        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
-        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        PortableCellPoseGPUEnvInstaller installer = new PortableCellPoseGPUEnvInstaller(workbench, parameterAccess);
+        CellPoseEasyInstaller installer = new CellPoseEasyInstaller(workbench, parameterAccess);
         JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
@@ -174,16 +166,14 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
         if (!CellPoseSettings.pythonSettingsAreValid()) {
             JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":python-not-configured");
             notification.setHeading("Cellpose is not configured");
-            notification.setDescription("You need to setup a Python environment that contains Cellpose." + "Click 'Install Cellpose' to let JIPipe setup a Python distribution with Cellpose automatically. You can choose between the standard CPU and GPU-accelerated installation (choose CPU if you are unsure). " +
-                    "Alternatively, click 'Configure' to visit the settings page with more options, including the selection of an existing Python environment.");
-            notification.getActions().add(new JIPipeNotificationAction("Install Cellpose (CPU)",
-                    "Installs Cellpose (CPU version)",
+            notification.setDescription("You need to setup a Python environment that contains Cellpose." + "Click 'Install Cellpose' to let JIPipe setup a Python distribution with Cellpose automatically. " +
+                    "You can choose between the standard CPU and GPU-accelerated installation (choose CPU if you are unsure). " +
+                    "Alternatively, click 'Configure' to visit the settings page with more options, including the selection of an existing Python environment.\n\n" +
+                    "For more information, please visit https://www.jipipe.org/installation/third-party/cellpose/");
+            notification.getActions().add(new JIPipeNotificationAction("Install Cellpose",
+                    "Installs Cellpose via the EasyInstaller",
                     UIUtils.getIconFromResources("actions/browser-download.png"),
-                    CellPoseExtension::installCellposeCPU));
-            notification.getActions().add(new JIPipeNotificationAction("Install Cellpose (GPU)",
-                    "Installs Cellpose (GPU version)",
-                    UIUtils.getIconFromResources("actions/browser-download.png"),
-                    CellPoseExtension::installCellposeGPU));
+                    CellPoseExtension::easyInstallCellpose));
             notification.getActions().add(new JIPipeNotificationAction("Configure Python",
                     "Opens the applications settings page",
                     UIUtils.getIconFromResources("actions/configure.png"),
