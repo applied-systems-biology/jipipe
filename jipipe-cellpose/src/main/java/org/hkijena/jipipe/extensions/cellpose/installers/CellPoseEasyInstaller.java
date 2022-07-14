@@ -108,6 +108,6 @@ public class CellPoseEasyInstaller extends EasyInstallExternalEnvironmentInstall
     }
 
     private Path getAbsolutePythonBinaryDir() {
-        return getAbsolutePythonBinaryDir().resolve("python").resolve("bin");
+        return getAbsoluteInstallationPath().resolve("python").resolve("bin");
     }
 }
