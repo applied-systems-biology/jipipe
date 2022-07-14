@@ -20,6 +20,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.IntegerL
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ProcessUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.scripting.MacroUtils;
@@ -240,7 +241,7 @@ public class RUtils {
     }
 
     public static void runR(Path scriptFile, REnvironment environment, JIPipeProgressInfo progressInfo) {
-        Path rExecutable = environment.getRScriptExecutablePath();
+        Path rExecutable = PathUtils.relativeToImageJToAbsolute(environment.getRScriptExecutablePath());
         CommandLine commandLine = new CommandLine(rExecutable.toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();

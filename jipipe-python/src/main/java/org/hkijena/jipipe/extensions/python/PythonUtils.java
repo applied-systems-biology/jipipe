@@ -367,7 +367,7 @@ public class PythonUtils {
      * @param progressInfo the progress info
      */
     public static void runPython(String[] arguments, PythonEnvironment environment, List<Path> libraryPaths, JIPipeProgressInfo progressInfo) {
-        Path pythonExecutable = environment.getExecutablePath();
+        Path pythonExecutable = PathUtils.relativeToImageJToAbsolute(environment.getExecutablePath());
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 
         Map<String, String> environmentVariables = new HashMap<>();
