@@ -71,6 +71,14 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
+    private static void easyInstallPython(JIPipeWorkbench workbench) {
+        PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(settings);
+        JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
+        PythonEasyInstaller installer = new PythonEasyInstaller(workbench, parameterAccess);
+        JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
+    }
+
     private static void openSettingsPage(JIPipeWorkbench workbench) {
         DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
         JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
@@ -138,6 +146,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerEnvironmentInstaller(PythonEnvironment.class, SelectCondaEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectSystemPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
         registerEnvironmentInstaller(PythonEnvironment.class, SelectVirtualEnvPythonInstaller.class, UIUtils.getIconFromResources("actions/project-open.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, PythonEasyInstaller.class, UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-normal.png"));
 
         registerNodeType("python-script", JythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("python-script-iterating-simple", SimpleIteratingJythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
@@ -156,11 +165,12 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
             notification.setDescription("To make use of Python within JIPipe, you need to either provide JIPipe with an " +
                     "existing Python installation or let JIPipe install a Python distribution for you. " +
                     "Click 'Install Python' to let JIPipe setup a Python distribution automatically. " +
-                    "Alternatively, click 'Configure' to visit the settings page with more options, including the selection of an existing Python environment.");
+                    "Alternatively, click 'Configure' to visit the settings page with more options, including the selection of an existing Python environment.\n\n" +
+                    "For more information, please visit https://www.jipipe.org/installation/third-party/python/");
             notification.getActions().add(new JIPipeNotificationAction("Install Python",
-                    "Installs a portable Python distribution",
+                    "Installs a pre-packaged Python distribution",
                     UIUtils.getIconFromResources("actions/browser-download.png"),
-                    PythonExtension::installPython));
+                    PythonExtension::easyInstallPython));
             notification.getActions().add(new JIPipeNotificationAction("Configure Python",
                     "Opens the applications settings page",
                     UIUtils.getIconFromResources("actions/configure.png"),
@@ -171,7 +181,8 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
             JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":old-python-adapter");
             notification.setHeading("Old library version");
             notification.setDescription("JIPipe has detected that the installed version of the JIPipe Python adapter library is outdated. " +
-                    "Please click the button below to install the newest version.");
+                    "Please click the button below to install the newest version.\n\n" +
+                    "For more information, please visit https://www.jipipe.org/installation/third-party/python/");
             notification.getActions().add(new JIPipeNotificationAction("Install newest version",
                     "Installs the newest version of the Python library",
                     UIUtils.getIconFromResources("actions/run-install.png"),
