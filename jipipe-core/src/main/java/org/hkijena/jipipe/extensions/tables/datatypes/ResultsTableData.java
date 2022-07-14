@@ -51,7 +51,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Safelist;
+import org.jsoup.safety.Whitelist;
 import org.python.core.PyDictionary;
 
 import javax.swing.*;
@@ -337,7 +337,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
                 requestedName = model.getColumnName(col);
             }
             if(stripColumnNameHtml) {
-                requestedName = Jsoup.clean(requestedName, new Safelist());
+                requestedName = Jsoup.clean(requestedName, new Whitelist());
             }
             String newColumnName = StringUtils.makeUniqueString(requestedName, " ", resultsTableData.getColumnNames());
             resultsTableData.addColumn(newColumnName, false);
