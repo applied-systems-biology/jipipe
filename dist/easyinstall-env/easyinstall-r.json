@@ -1,0 +1,12 @@
+{
+  "name": "R",
+  "files": [
+    {
+      "name": "R (Windows)",
+      "install-dir": "easyinstall-r",
+      "description": "Installs R for Windows",
+      "url": "https://github.com/applied-systems-biology/jipipe/releases/download/current/easy-r4.1.2-win.zip",
+      "operating-systems": ["windows"]
+    }
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "name": "Cellpose",
+  "files": [
+    {
+      "name": "Cellpose CPU (Windows)",
+      "install-dir": "easyinstall-cellpose-cpu",
+      "description": "Installs Cellpose for Windows. Please note that this version of Cellpose is not GPU-accelerated.",
+      "url": "https://github.com/applied-systems-biology/jipipe/releases/download/current/easy-python3.8-cellpose2.1.0-cpu-win.zip",
+      "operating-systems": ["windows"]
+    },
+    {
+      "name": "Cellpose GPU (Windows)",
+      "install-dir": "easyinstall-cellpose-gpu",
+      "description": "Installs Cellpose for Windows. This version is based on Torch version 1.10.2 and utilizes CUDA for GPU acceleration.",
+      "url": "https://github.com/applied-systems-biology/jipipe/releases/download/current/easy-python3.8-cellpose2.1.0-gpu-torch1.10.2-win.zip",
+      "operating-systems": ["windows"]
+    },
+    {
+      "name": "Cellpose CPU (Linux)",
+      "install-dir": "easyinstall-cellpose-cpu",
+      "description": "Installs Cellpose for Linux. Please note that this version of Cellpose is not GPU-accelerated. The package was generated on Ubuntu 22.04.",
+      "url": "https://github.com/applied-systems-biology/jipipe/releases/download/current/easy-python3.8-cellpose2.1.0-cpu-linux-ubuntu22.04.tar.gz",
+      "operating-systems": ["linux"]
+    },
+    {
+      "name": "Cellpose GPU (Linux)",
+      "install-dir": "easyinstall-cellpose-gpu",
+      "description": "Installs Cellpose for Linux. This version is based on Torch version 1.10.2 and utilizes CUDA for GPU acceleration.",
+      "url": "https://github.com/applied-systems-biology/jipipe/releases/download/current/easy-python3.8-cellpose2.1.0-gpu-torch1.10.2-linux-ubuntu22.04.tar.gz",
+      "operating-systems": ["linux"]
+    },
+    {
+      "name": "Cellpose CPU (macOS, Intel)",
+      "install-dir": "easyinstall-cellpose-cpu",
+      "description": "Installs Cellpose for macOS. Please note that this version of Cellpose is not GPU-accelerated. The package was generated on macOS 12.4 (Intel).",
+      "url": "https://github.com/applied-systems-biology/jipipe/releases/download/current/easy-python3.8-cellpose2.1.0-cpu-macos-intel.tar.gz",
+      "operating-systems": ["macos"]
+    }
+  ]
+}

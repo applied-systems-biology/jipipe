@@ -26,10 +26,10 @@
       <excludeFolder url="file://$MODULE_DIR$/dist/zip/package" />
       <excludeFolder url="file://$MODULE_DIR$/ij-updater-cli/target" />
       <excludeFolder url="file://$MODULE_DIR$/dist/offline-package/tmp" />
-      <excludeFolder url="file://$MODULE_DIR$/target" />
       <excludeFolder url="file://$MODULE_DIR$/.idea/copyright" />
       <excludeFolder url="file://$MODULE_DIR$/dist/.idea" />
       <excludeFolder url="file://$MODULE_DIR$/dist/.vscode" />
+      <excludeFolder url="file://$MODULE_DIR$/target" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
