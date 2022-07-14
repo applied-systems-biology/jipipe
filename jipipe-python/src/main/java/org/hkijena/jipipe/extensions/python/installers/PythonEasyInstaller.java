@@ -78,9 +78,9 @@ public class PythonEasyInstaller extends EasyInstallExternalEnvironmentInstaller
     @Override
     protected void executePostprocess() {
         if(!SystemUtils.IS_OS_WINDOWS) {
-            getProgressInfo().log("Postprocess: Marking all files in " + getPythonBinaryDir() + " as executable");
+            getProgressInfo().log("Postprocess: Marking all files in " + getAbsolutePythonBinaryDir() + " as executable");
             try {
-                Files.list(getPythonBinaryDir()).forEach(path -> {
+                Files.list(getAbsolutePythonBinaryDir()).forEach(path -> {
                     if(Files.isRegularFile(path)) {
                         getProgressInfo().log(" - chmod +x " + path);
                         PathUtils.makeUnixExecutable(path);
@@ -97,12 +97,16 @@ public class PythonEasyInstaller extends EasyInstallExternalEnvironmentInstaller
         PythonEnvironment environment = new PythonEnvironment();
         environment.setType(PythonEnvironmentType.System);
         environment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
-        environment.setExecutablePath(getPythonBinaryDir().resolve("python3"));
+        environment.setExecutablePath(getRelativePythonBinaryDir().resolve("python3"));
         environment.setName(getTargetPackage().getName());
         return environment;
     }
 
-    private Path getPythonBinaryDir() {
+    private Path getRelativePythonBinaryDir() {
         return getRelativeInstallationPath().resolve("python").resolve("bin");
+    }
+
+    private Path getAbsolutePythonBinaryDir() {
+        return getAbsolutePythonBinaryDir().resolve("python").resolve("bin");
     }
 }
