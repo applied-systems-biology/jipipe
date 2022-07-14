@@ -69,6 +69,7 @@
     "jipipe-ij-algorithms",
     "jipipe-ij-weka",
     "jipipe-ij-multi-template-matching",
+    "jipipe-ij-trackmate",
     "jipipe-python",
     "jipipe-plots",
     "jipipe-tables",
@@ -78,8 +79,7 @@
     "jipipe-forms",
     "jipipe-r",
     "jipipe-cellpose",
-    "jipipe-launcher",
-    "jipipe-ij-updater-cli"
+    "jipipe-launcher"
   ],
-  "jipipe-version": "1.73.0"
+  "jipipe-version": "1.74.0"
 }
