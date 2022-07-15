@@ -91,7 +91,8 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
     }
 
     @JIPipeParameter("target-slots")
-    @JIPipeDocumentation(name = "Target slots", description = "Data that matches the filter on the right-hand side are redirected to the data slot on the left-hand side. " +
+    @JIPipeDocumentation(name = "Filters", description = "One filter is created for each output slot of this node. The filter is an expression that should return a boolean value " +
+            "that indicates whether a data item should be put into the corresponding output." +
             "Annotation values are available as variables. If an annotation has spaces special characters, use $ to access its value. Examples: <pre>" +
             "#Dataset CONTAINS \"Raw\" AND condition EQUALS \"mock\"</pre>" +
             "<pre>TO_NUMBER($\"my column\") < 10</pre>")
