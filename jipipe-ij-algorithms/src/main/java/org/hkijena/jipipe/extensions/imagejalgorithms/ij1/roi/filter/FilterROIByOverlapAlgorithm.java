@@ -34,7 +34,7 @@ import java.util.*;
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI 1", autoCreate = true)
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI 2", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "An optional reference image", optional = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, description = "An optional reference image", optional = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI 1", autoCreate = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI 2", autoCreate = true)
 public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
