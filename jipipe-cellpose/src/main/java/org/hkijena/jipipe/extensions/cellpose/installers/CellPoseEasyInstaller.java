@@ -98,16 +98,31 @@ public class CellPoseEasyInstaller extends EasyInstallExternalEnvironmentInstall
         PythonEnvironment environment = new PythonEnvironment();
         environment.setType(PythonEnvironmentType.System);
         environment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
-        environment.setExecutablePath(getRelativePythonBinaryDir().resolve("python3"));
+        if(SystemUtils.IS_OS_WINDOWS) {
+            environment.setExecutablePath(getRelativePythonBinaryDir().resolve("python.exe"));
+        }
+        else {
+            environment.setExecutablePath(getRelativePythonBinaryDir().resolve("python3"));
+        }
         environment.setName(getTargetPackage().getName());
         return environment;
     }
 
     private Path getRelativePythonBinaryDir() {
-        return getRelativeInstallationPath().resolve("python").resolve("bin");
+        if(SystemUtils.IS_OS_WINDOWS) {
+            return getRelativeInstallationPath().resolve("python");
+        }
+        else {
+            return getRelativeInstallationPath().resolve("python").resolve("bin");
+        }
     }
 
     private Path getAbsolutePythonBinaryDir() {
-        return getAbsoluteInstallationPath().resolve("python").resolve("bin");
+        if(SystemUtils.IS_OS_WINDOWS) {
+            return getAbsoluteInstallationPath().resolve("python");
+        }
+        else {
+            return getAbsoluteInstallationPath().resolve("python").resolve("bin");
+        }
     }
 }
