@@ -75,19 +75,19 @@ public class REasyInstaller extends EasyInstallExternalEnvironmentInstaller<REnv
 
     @Override
     protected void executePostprocess() {
-//        if(!SystemUtils.IS_OS_WINDOWS) {
-//            getProgressInfo().log("Postprocess: Marking all files in " + getRBinaryDir() + " as executable");
-//            try {
-//                Files.list(getRBinaryDir()).forEach(path -> {
-//                    if(Files.isRegularFile(path)) {
-//                        getProgressInfo().log(" - chmod +x " + path);
-//                        PathUtils.makeUnixExecutable(path);
-//                    }
-//                });
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }
+        if(!SystemUtils.IS_OS_WINDOWS) {
+            getProgressInfo().log("Postprocess: Marking all files in " + getAbsoluteRBinaryDir() + " as executable");
+            try {
+                Files.list(getAbsoluteRBinaryDir()).forEach(path -> {
+                    if(Files.isRegularFile(path)) {
+                        getProgressInfo().log(" - chmod +x " + path);
+                        PathUtils.makeUnixExecutable(path);
+                    }
+                });
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     @Override
@@ -95,12 +95,12 @@ public class REasyInstaller extends EasyInstallExternalEnvironmentInstaller<REnv
         REnvironment environment = new REnvironment();
         environment.setArguments(new DefaultExpressionParameter("ARRAY(script_file)"));
         if(SystemUtils.IS_OS_WINDOWS) {
-            environment.setRExecutablePath(getRelativeInstallationPath().resolve("R.exe"));
-            environment.setRScriptExecutablePath(getRelativeInstallationPath().resolve("Rscript.exe"));
+            environment.setRExecutablePath(getRelativeRBinaryDir().resolve("R.exe"));
+            environment.setRScriptExecutablePath(getRelativeRBinaryDir().resolve("Rscript.exe"));
         }
         else {
-            environment.setRExecutablePath(getRelativeInstallationPath().resolve("R"));
-            environment.setRScriptExecutablePath(getRelativeInstallationPath().resolve("Rscript"));
+            environment.setRExecutablePath(getRelativeRBinaryDir().resolve("R"));
+            environment.setRScriptExecutablePath(getRelativeRBinaryDir().resolve("Rscript"));
         }
         environment.setName(getTargetPackage().getName());
         return environment;
