@@ -72,6 +72,22 @@ public class JIPipeExtensionRegistry {
         this.jiPipe = jiPipe;
     }
 
+    /**
+     * Finds all dependencies that cannot be met
+     *
+     * @param dependencies List of dependencies to be checked. Only the ID will be checked.
+     * @return Set of dependencies whose IDs are not registered
+     */
+    public static Set<JIPipeDependency> findUnsatisfiedDependencies(Set<JIPipeDependency> dependencies) {
+        Set<JIPipeDependency> result = new HashSet<>();
+        for (JIPipeDependency dependency : dependencies) {
+            boolean found = JIPipe.getInstance().getRegisteredExtensions().stream().anyMatch(d -> d.getDependencyId().equals(dependency.getDependencyId()));
+            if (!found)
+                result.add(dependency);
+        }
+        return result;
+    }
+
     public void initialize() {
         if(isLegacy()) {
             settings.getActivatedExtensions().addAll(Arrays.asList(STANDARD_EXTENSIONS_LEGACY));

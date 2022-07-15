@@ -28,7 +28,6 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -39,7 +38,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
@@ -429,10 +427,10 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * @return All project dependencies
      */
-    public Set<JIPipeDependency> getDependencies() {
+    public Set<JIPipeDependency> getSimplifiedMinimalDependencies() {
         Set<JIPipeDependency> dependencies = graph.getDependencies();
         dependencies.addAll(compartmentGraph.getDependencies());
-        return dependencies;
+        return JIPipeDependency.simplifyAndMinimize(dependencies);
     }
 
     /**
@@ -470,12 +468,7 @@ public class JIPipeProject implements JIPipeValidatable {
         generator.writeStringField("jipipe:project-type", "project");
         generator.writeNumberField("jipipe:project-format-version", CURRENT_PROJECT_FORMAT_VERSION);
         generator.writeObjectField("metadata", metadata);
-        generator.writeObjectField("dependencies", getDependencies().stream().map(dependency -> {
-            JIPipeMutableDependency copy = new JIPipeMutableDependency(dependency);
-            // Clear away the very expensive thumbnail
-            copy.getMetadata().setThumbnail(new ImageParameter());
-            return copy;
-        }).collect(Collectors.toList()));
+        generator.writeObjectField("dependencies", getSimplifiedMinimalDependencies());
         if (!getAdditionalMetadata().isEmpty()) {
             generator.writeObjectFieldStart("additional-metadata");
             for (Map.Entry<String, Object> entry : getAdditionalMetadata().entrySet()) {

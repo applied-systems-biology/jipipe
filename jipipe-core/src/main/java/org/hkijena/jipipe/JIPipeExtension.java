@@ -14,6 +14,10 @@
 
 package org.hkijena.jipipe;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+
+import java.util.Set;
+
 /**
  * Interface shared between all JIPipe extensions
  */
@@ -54,4 +58,5 @@ public interface JIPipeExtension extends JIPipeDependency {
     default boolean isCoreExtension() {
         return false;
     }
+
 }

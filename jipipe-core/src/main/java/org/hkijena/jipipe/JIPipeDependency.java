@@ -18,12 +18,10 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeMetadata;
 import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Encapsulates a dependency such as an extension or JSON extension
@@ -51,22 +49,6 @@ public interface JIPipeDependency extends JIPipeValidatable {
         if (dependency.getMetadata().getCitation() != null && !dependency.getMetadata().getCitation().isEmpty())
             stringBuilder.append("<strong>").append("Please cite: ").append(dependency.getMetadata().getCitation()).append("</strong><br/>");
         return stringBuilder.toString();
-    }
-
-    /**
-     * Finds all dependencies that cannot be met
-     *
-     * @param dependencies List of dependencies to be checked. Only the ID will be checked.
-     * @return Set of dependencies whose IDs are not registered
-     */
-    static Set<JIPipeDependency> findUnsatisfiedDependencies(Set<JIPipeDependency> dependencies) {
-        Set<JIPipeDependency> result = new HashSet<>();
-        for (JIPipeDependency dependency : dependencies) {
-            boolean found = JIPipe.getInstance().getRegisteredExtensions().stream().anyMatch(d -> d.getDependencyId().equals(dependency.getDependencyId()));
-            if (!found)
-                result.add(dependency);
-        }
-        return result;
     }
 
     /**
@@ -102,6 +84,51 @@ public interface JIPipeDependency extends JIPipeValidatable {
     @JsonGetter("ij:update-site-dependencies")
     default List<JIPipeImageJUpdateSiteDependency> getImageJUpdateSiteDependencies() {
         return Collections.emptyList();
+    }
+
+    /**
+     * Gets a flat list of all dependencies (no nested dependencies)
+     * This method returns the dependencies to be stored into JSON
+     * {@link JIPipeMutableDependency} instances are returned instead of the original type and the thumbnail metadata is removed
+     * @return flat list of dependencies
+     */
+    @JsonGetter("dependencies")
+    default Set<JIPipeDependency> getSimplifiedMinimalDependencies() {
+      return simplifyAndMinimize(getDependencies());
+    }
+
+    /**
+     * Flattens the hierarchy of dependencies into a list and removes large metadata (e.g. thumbnails)
+     * @param dependencies the dependencies
+     * @return simplified dependencies
+     */
+    static Set<JIPipeDependency> simplifyAndMinimize(Set<JIPipeDependency> dependencies) {
+        Set<JIPipeDependency> result = new HashSet<>();
+        Set<String> visited = new HashSet<>();
+        Stack<JIPipeDependency> stack = new Stack<>();
+        stack.addAll(dependencies);
+        while(!stack.isEmpty()) {
+            JIPipeDependency dependency = stack.pop();
+            if(visited.contains(dependency.getDependencyId()))
+                continue;
+            JIPipeMutableDependency copy = new JIPipeMutableDependency(dependency);
+            copy.getMetadata().setThumbnail(new ImageParameter());
+            copy.setDependencies(new HashSet<>());
+            result.add(copy);
+            stack.addAll(dependency.getDependencies());
+            visited.add(dependency.getDependencyId());
+        }
+        return result;
+    }
+
+    /**
+     * List of JIPipe dependencies.
+     * This can contain nested or even cyclic dependencies.
+     * The storage of dependencies into JSON format is handled by getTraversedDependencies()
+     * @return the list of JIPipe dependencies
+     */
+    default Set<JIPipeDependency> getDependencies() {
+        return Collections.emptySet();
     }
 
     /**

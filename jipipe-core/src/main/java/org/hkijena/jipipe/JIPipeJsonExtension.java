@@ -184,7 +184,7 @@ public class JIPipeJsonExtension implements JIPipeParameterCollection, JIPipeExt
     /**
      * @return The dependencies of this extension
      */
-    @JsonGetter("dependencies")
+    @Override
     public Set<JIPipeDependency> getDependencies() {
         Set<JIPipeDependency> result = new HashSet<>();
         for (JIPipeNodeInfo info : getNodeInfos()) {

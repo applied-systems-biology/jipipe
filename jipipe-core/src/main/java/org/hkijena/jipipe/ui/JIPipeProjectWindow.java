@@ -21,6 +21,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
@@ -272,7 +273,7 @@ public class JIPipeProjectWindow extends JFrame {
                         }
                     }
                 }
-                Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
+                Set<JIPipeDependency> missingDependencies = JIPipeExtensionRegistry.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty() || !missingUpdateSites.isEmpty()) {
                     if (!MissingProjectDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, missingUpdateSites))
                         return;
@@ -300,7 +301,7 @@ public class JIPipeProjectWindow extends JFrame {
                 Path parameterFilePath = path.resolve("project.jip");
                 JsonNode jsonData = JsonUtils.getObjectMapper().readValue(parameterFilePath.toFile(), JsonNode.class);
                 Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
-                Set<JIPipeDependency> missingDependencies = JIPipeDependency.findUnsatisfiedDependencies(dependencySet);
+                Set<JIPipeDependency> missingDependencies = JIPipeExtensionRegistry.findUnsatisfiedDependencies(dependencySet);
                 if (!missingDependencies.isEmpty()) {
                     if (!MissingProjectDependenciesDialog.showDialog(getProjectUI(), path, missingDependencies, Collections.emptySet()))
                         return;
