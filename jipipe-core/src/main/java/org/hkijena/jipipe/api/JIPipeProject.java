@@ -39,6 +39,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
@@ -469,7 +470,12 @@ public class JIPipeProject implements JIPipeValidatable {
         generator.writeStringField("jipipe:project-type", "project");
         generator.writeNumberField("jipipe:project-format-version", CURRENT_PROJECT_FORMAT_VERSION);
         generator.writeObjectField("metadata", metadata);
-        generator.writeObjectField("dependencies", getDependencies().stream().map(JIPipeMutableDependency::new).collect(Collectors.toList()));
+        generator.writeObjectField("dependencies", getDependencies().stream().map(dependency -> {
+            JIPipeMutableDependency copy = new JIPipeMutableDependency(dependency);
+            // Clear away the very expensive thumbnail
+            copy.getMetadata().setThumbnail(new ImageParameter());
+            return copy;
+        }).collect(Collectors.toList()));
         if (!getAdditionalMetadata().isEmpty()) {
             generator.writeObjectFieldStart("additional-metadata");
             for (Map.Entry<String, Object> entry : getAdditionalMetadata().entrySet()) {
