@@ -662,11 +662,13 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             String nameList = extensionRegistry.getNewExtensions().stream().map(id -> extensionRegistry.getKnownExtensionById(id).getMetadata().getName()).collect(Collectors.joining(", "));
             if(extensionRegistry.getNewExtensions().size() != 1) {
                 notification.setDescription("There are " + extensionRegistry.getNewExtensions().size() + " new extensions available: " + nameList + ".\n" +
-                        "You can ignore these or open the extension manager to activate the new extensions.");
+                        "You can ignore these or open the extension manager to activate the new extensions.\n\n" +
+                        "For more information, please visit https://www.jipipe.org/installation/extensions/");
             }
             else {
                 notification.setDescription("There is 1 new extension available: " + nameList + ".\n" +
-                        "You can ignore these or open the extension manager to activate the new extensions.");
+                        "You can ignore these or open the extension manager to activate the new extensions.\n\n" +
+                        "For more information, please visit https://www.jipipe.org/installation/extensions/");
             }
             notification.getActions().add(new JIPipeNotificationAction("Ignore", "Ignores the newly available extensions. You will not be warned again about them.", UIUtils.getIconFromResources("actions/archive-remove.png"), workbench -> {
                 extensionRegistry.dismissNewExtensions();
