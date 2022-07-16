@@ -62,7 +62,7 @@ public class MissingRegistrationUpdateSiteResolver extends JDialog implements JI
         getContentPane().setLayout(new BorderLayout());
         initialize();
 
-        pluginManager = new JIPipeModernPluginManager(messagePanel);
+        pluginManager = new JIPipeModernPluginManager(this, messagePanel);
         pluginManager.getEventBus().register(this);
         pluginManager.initializeUpdateSites();
 

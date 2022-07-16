@@ -93,16 +93,42 @@ public interface JIPipeDependency extends JIPipeValidatable {
      * @return flat list of dependencies
      */
     @JsonGetter("dependencies")
-    default Set<JIPipeDependency> getSimplifiedMinimalDependencies() {
-      return simplifyAndMinimize(getDependencies());
+    default Set<JIPipeDependency> getAllDependencies() {
+      return simplifyAndMinimize(getDependencies(), true);
+    }
+
+    /**
+     * Gets a flat list of all dependencies (no nested dependencies)
+     * This method returns the dependencies to be stored into JSON
+     * {@link JIPipeMutableDependency} instances are returned instead of the original type and the thumbnail metadata is removed
+     * @param minimize whether heavy data (e.g. thumbnails should be removed)
+     * @return flat list of dependencies
+     */
+    default Set<JIPipeDependency> getAllDependencies(boolean minimize) {
+        return simplifyAndMinimize(getDependencies(), minimize);
+    }
+
+    /**
+     * Gets a flat list of all ImageJ update site dependencies (including transitive dependencies)
+     * This method returns the dependencies to be stored into JSON
+     * @return flat list of all current and transitive dependencies
+     */
+    default Set<JIPipeImageJUpdateSiteDependency> getAllImageJUpdateSiteDependencies() {
+        Set<JIPipeImageJUpdateSiteDependency> dependencies = new HashSet<>(getImageJUpdateSiteDependencies());
+        for (JIPipeDependency dependency : getAllDependencies(true)) {
+            dependencies.addAll(dependency.getImageJUpdateSiteDependencies());
+        }
+        return dependencies;
     }
 
     /**
      * Flattens the hierarchy of dependencies into a list and removes large metadata (e.g. thumbnails)
+     *
      * @param dependencies the dependencies
+     * @param minimize whether heavy data (e.g. thumbnails should be removed)
      * @return simplified dependencies
      */
-    static Set<JIPipeDependency> simplifyAndMinimize(Set<JIPipeDependency> dependencies) {
+    static Set<JIPipeDependency> simplifyAndMinimize(Set<JIPipeDependency> dependencies, boolean minimize) {
         Set<JIPipeDependency> result = new HashSet<>();
         Set<String> visited = new HashSet<>();
         Stack<JIPipeDependency> stack = new Stack<>();
@@ -112,7 +138,9 @@ public interface JIPipeDependency extends JIPipeValidatable {
             if(visited.contains(dependency.getDependencyId()))
                 continue;
             JIPipeMutableDependency copy = new JIPipeMutableDependency(dependency);
-            copy.getMetadata().setThumbnail(new ImageParameter());
+            if(minimize) {
+                copy.getMetadata().setThumbnail(new ImageParameter());
+            }
             copy.setDependencies(new HashSet<>());
             result.add(copy);
             stack.addAll(dependency.getDependencies());

@@ -60,7 +60,7 @@ public class MissingProjectDependenciesDialog extends JDialog {
 
         initialize();
 
-        pluginManager = new JIPipeModernPluginManager(messagePanel);
+        pluginManager = new JIPipeModernPluginManager(this, messagePanel);
         pluginManager.getEventBus().register(this);
         pluginManager.initializeUpdateSites();
     }
@@ -117,7 +117,7 @@ public class MissingProjectDependenciesDialog extends JDialog {
                     dependencyPanel.add(button, new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,new Insets(4,4,4,4),0,0));
                 }
                 else {
-                    dependencyPanel.add(UIUtils.createJLabel("Extension not installed", UIUtils.getIcon32FromResources("emblems/emblem-rabbitvcs-conflicted.png")), new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,new Insets(4,4,4,4),0,0));
+                    dependencyPanel.add(UIUtils.createJLabel("Extension not installed", UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png")), new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,new Insets(4,4,4,4),0,0));
                 }
 
                 formPanel.addWideToForm(dependencyPanel);

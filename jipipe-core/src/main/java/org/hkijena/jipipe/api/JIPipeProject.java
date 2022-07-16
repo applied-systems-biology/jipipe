@@ -52,7 +52,6 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * A JIPipe project.
@@ -430,7 +429,7 @@ public class JIPipeProject implements JIPipeValidatable {
     public Set<JIPipeDependency> getSimplifiedMinimalDependencies() {
         Set<JIPipeDependency> dependencies = graph.getDependencies();
         dependencies.addAll(compartmentGraph.getDependencies());
-        return JIPipeDependency.simplifyAndMinimize(dependencies);
+        return JIPipeDependency.simplifyAndMinimize(dependencies, true);
     }
 
     /**

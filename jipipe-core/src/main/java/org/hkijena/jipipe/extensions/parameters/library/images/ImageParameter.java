@@ -27,7 +27,9 @@ public class ImageParameter {
     }
 
     public ImageParameter(ImageParameter other) {
-        this.image = BufferedImageUtils.copyBufferedImage(other.image);
+        if(other.image != null) {
+            this.image = BufferedImageUtils.copyBufferedImage(other.image);
+        }
     }
 
     public ImageParameter(URL resource) {

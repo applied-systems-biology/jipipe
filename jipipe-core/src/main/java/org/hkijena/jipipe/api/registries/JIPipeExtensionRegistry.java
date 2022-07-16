@@ -23,8 +23,7 @@ import ij.Prefs;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeExtension;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
+import org.hkijena.jipipe.utils.GraphUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jgrapht.alg.cycle.CycleDetector;
@@ -36,7 +35,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
 
 /**
  * Registry for managing extensions
@@ -61,7 +59,7 @@ public class JIPipeExtensionRegistry {
 
     private Settings settings = new Settings();
 
-    private final List<JIPipeExtension> knownExtensions = new ArrayList<>();
+    private final Map<String, JIPipeExtension> knownExtensions = new HashMap<>();
 
     private final Set<String> scheduledActivateExtensions = new HashSet<>();
 
@@ -133,7 +131,7 @@ public class JIPipeExtensionRegistry {
      */
     public void registerKnownExtension(JIPipeExtension extension) {
         jiPipe.getProgressInfo().resolve("Extension management").log("Discovered extension: " + extension.getDependencyId() + " version " + extension.getDependencyVersion() + " (of type " + extension.getClass().getName() + ")" );
-        knownExtensions.add(extension);
+        knownExtensions.put(extension.getDependencyId(), extension);
         dependencyGraph = null;
     }
 
@@ -145,7 +143,7 @@ public class JIPipeExtensionRegistry {
      * @return the extension or null
      */
     public JIPipeExtension getKnownExtensionById(String id) {
-        return knownExtensions.stream().filter(dependency -> Objects.equals(dependency.getDependencyId(), id)).findFirst().orElse(null);
+        return knownExtensions.getOrDefault(id, null);
     }
 
     /**
@@ -153,7 +151,7 @@ public class JIPipeExtensionRegistry {
      */
     public void findNewExtensions() {
         Set<String> activatedExtensions = getActivatedExtensions();
-        for (JIPipeExtension knownExtension : getKnownExtensions()) {
+        for (JIPipeExtension knownExtension : getKnownExtensionsList()) {
             if(!activatedExtensions.contains(knownExtension.getDependencyId()) && !settings.getSilencedExtensions().contains(knownExtension.getDependencyId())) {
                 newExtensions.add(knownExtension.getDependencyId());
             }
@@ -173,37 +171,83 @@ public class JIPipeExtensionRegistry {
         return Collections.unmodifiableSet(newExtensions);
     }
 
-    public List<JIPipeExtension> getKnownExtensions() {
-        return Collections.unmodifiableList(knownExtensions);
+    public List<JIPipeExtension> getKnownExtensionsList() {
+        return new ArrayList<>(knownExtensions.values());
+    }
+
+    public Map<String, JIPipeExtension> getKnownExtensionsById() {
+        return Collections.unmodifiableMap(knownExtensions);
     }
 
     public void clearSchedule(String id) {
         if(scheduledDeactivateExtensions.contains(id)) {
-            scheduledDeactivateExtensions.remove(id);
-            eventBus.post(new ScheduledActivateExtension(id));
+           scheduleActivateExtension(id);
         }
         if(scheduledActivateExtensions.contains(id)) {
-            scheduledActivateExtensions.remove(id);
-            eventBus.post(new ScheduledDeactivateExtension(id));
+           scheduleDeactivateExtension(id);
         }
+    }
+
+    /**
+     * Returns the dependency IDs that are dependencies of the provided extension ID
+     * @param id the extension id
+     * @return set of dependency ids
+     */
+    public Set<String> getAllDependenciesOf(String id) {
+        Set<String> ids = new HashSet<>();
+        for (JIPipeDependency predecessor : GraphUtils.getAllPredecessors(getDependencyGraph(), getKnownExtensionById(id))) {
+            ids.add(predecessor.getDependencyId());
+        }
+        ids.remove(id);
+        return ids;
+    }
+
+    /**
+     * Returns the dependency IDs that are depentents of the provided extension ID
+     * @param id the extension id
+     * @return set of dependency ids
+     */
+    public Set<String> getAllDependentsOf(String id) {
+        Set<String> ids = new HashSet<>();
+        for (JIPipeDependency successor : GraphUtils.getAllSuccessors(getDependencyGraph(), getKnownExtensionById(id))) {
+            ids.add(successor.getDependencyId());
+        }
+        ids.remove(id);
+        return ids;
     }
 
     public void scheduleActivateExtension(String id) {
-        scheduledDeactivateExtensions.remove(id);
-        scheduledActivateExtensions.add(id);
-        settings.getActivatedExtensions().add(id);
-        settings.getSilencedExtensions().add(id); // That the user is not warned by it
+        JIPipeExtension extension = getKnownExtensionById(id);
+        Set<String> ids = new HashSet<>();
+        ids.add(id);
+        ids.addAll(getAllDependenciesOf(id));
+        for (String s : ids) {
+            scheduledDeactivateExtensions.remove(s);
+            scheduledActivateExtensions.add(s);
+            settings.getActivatedExtensions().add(s);
+            settings.getSilencedExtensions().add(s); // That the user is not warned by it
+        }
         save();
-        eventBus.post(new ScheduledActivateExtension(id));
+        for (String s : ids) {
+            eventBus.post(new ScheduledActivateExtension(s));
+        }
     }
 
     public void scheduleDeactivateExtension(String id) {
-        scheduledDeactivateExtensions.add(id);
-        scheduledActivateExtensions.remove(id);
-        settings.getActivatedExtensions().remove(id);
-        settings.getSilencedExtensions().add(id); // That the user is not warned by it
+        JIPipeExtension extension = getKnownExtensionById(id);
+        Set<String> ids = new HashSet<>();
+        ids.add(id);
+        ids.addAll(getAllDependentsOf(id));
+        for (String s : ids) {
+            scheduledDeactivateExtensions.add(s);
+            scheduledActivateExtensions.remove(s);
+            settings.getActivatedExtensions().remove(s);
+            settings.getSilencedExtensions().add(s); // That the user is not warned by it
+        }
         save();
-        eventBus.post(new ScheduledDeactivateExtension(id));
+        for (String s : ids) {
+            eventBus.post(new ScheduledDeactivateExtension(id));
+        }
     }
 
     /**
@@ -216,13 +260,13 @@ public class JIPipeExtensionRegistry {
             dependencyGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
             BiMap<String, JIPipeDependency> dependencyGraphNodeIds = HashBiMap.create();
             // Add the initial vertices
-            for (JIPipeDependency knownExtension : knownExtensions) {
+            for (JIPipeDependency knownExtension : knownExtensions.values()) {
                 dependencyGraph.addVertex(knownExtension);
                 dependencyGraphNodeIds.put(knownExtension.getDependencyId(), knownExtension);
             }
             // Add edges
             Stack<JIPipeDependency> stack = new Stack<>();
-            stack.addAll(knownExtensions);
+            stack.addAll(knownExtensions.values());
             while(!stack.isEmpty()) {
                 JIPipeDependency target = stack.pop();
                 for (JIPipeDependency source : target.getDependencies()) {
@@ -248,6 +292,46 @@ public class JIPipeExtensionRegistry {
             }
         }
         return dependencyGraph;
+    }
+
+    public boolean isKnownDependency(String id) {
+        return knownExtensions.containsKey(id);
+    }
+
+    /**
+     * Resolves as many dependencies in the provided set against a known dependency, so there is access to other metadata.
+     * If a dependency is not known, the original object is preserved
+     * @param dependencies the dependencies
+     * @return set where known extensions are replacing dummy objects
+     */
+    public Set<JIPipeDependency> tryResolveToKnownDependencies(Set<JIPipeDependency> dependencies) {
+        Set<JIPipeDependency> result = new HashSet<>();
+        for (JIPipeDependency dependency : dependencies) {
+            JIPipeExtension known = knownExtensions.getOrDefault(dependency.getDependencyId(), null);
+            if(known == null)
+                result.add(dependency);
+            else
+                result.add(known);
+        }
+        return result;
+    }
+
+    public boolean willBeActivatedOnNextStartup(String id) {
+        if(getActivatedExtensions().contains(id)) {
+            return !getScheduledDeactivateExtensions().contains(id);
+        }
+        else {
+            return getScheduledActivateExtensions().contains(id);
+        }
+    }
+
+    public boolean willBeDeactivatedOnNextStartup(String id) {
+        if(getActivatedExtensions().contains(id)) {
+            return getScheduledDeactivateExtensions().contains(id);
+        }
+        else {
+            return !getScheduledActivateExtensions().contains(id);
+        }
     }
 
     public Set<String> getScheduledActivateExtensions() {

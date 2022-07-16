@@ -14,6 +14,7 @@
 
 package org.hkijena.jipipe.ui.extensions;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import net.imagej.ui.swing.updater.ImageJUpdater;
@@ -21,12 +22,14 @@ import net.imagej.updater.Conflicts;
 import net.imagej.updater.FilesCollection;
 import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
-import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.MessagePanel;
 import org.hkijena.jipipe.ui.ijupdater.ConflictDialog;
 import org.hkijena.jipipe.ui.ijupdater.RefreshRepositoryRun;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
@@ -34,16 +37,17 @@ import org.hkijena.jipipe.utils.CoreImageJUtils;
 import org.hkijena.jipipe.utils.NetworkUtils;
 
 import javax.swing.*;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
+import java.awt.*;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class JIPipeModernPluginManager {
 
     private final EventBus eventBus = new EventBus();
+
+    private final Component parent;
 
     private final MessagePanel messagePanel;
 
@@ -61,7 +65,8 @@ public class JIPipeModernPluginManager {
 
     private boolean updateSitesApplied = false;
 
-    public JIPipeModernPluginManager(MessagePanel messagePanel) {
+    public JIPipeModernPluginManager(Component parent, MessagePanel messagePanel) {
+        this.parent = parent;
         this.messagePanel = messagePanel;
         JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
@@ -95,25 +100,24 @@ public class JIPipeModernPluginManager {
     }
 
     private void updateMessagePanel() {
-        if(restartMessage != null) {
+        if (restartMessage != null) {
             messagePanel.removeMessage(restartMessage);
             restartMessage = null;
         }
-        if(isUpdateSitesApplied()){
+        if (isUpdateSitesApplied()) {
             JButton exitButton = new JButton("Close ImageJ");
             exitButton.addActionListener(e -> System.exit(0));
             restartMessage = messagePanel.addMessage(MessagePanel.MessageType.Info, "To apply the changes, please restart ImageJ.", exitButton);
-        }
-        else if(!getExtensionRegistry().getScheduledDeactivateExtensions().isEmpty() || !getExtensionRegistry().getScheduledActivateExtensions().isEmpty()) {
+        } else if (!getExtensionRegistry().getScheduledDeactivateExtensions().isEmpty() || !getExtensionRegistry().getScheduledActivateExtensions().isEmpty()) {
             JButton exitButton = new JButton("Close ImageJ");
             exitButton.addActionListener(e -> {
-                if(JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(messagePanel), "Do you really want to close ImageJ? You will lose all unsaved changes.", "Close ImageJ", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(messagePanel), "Do you really want to close ImageJ? You will lose all unsaved changes.", "Close ImageJ", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     System.exit(0);
                 }
             });
             JButton restartJIPipeGUIButton = new JButton("Restart JIPipe");
             restartJIPipeGUIButton.addActionListener(e -> {
-                if(JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(messagePanel), "Do you really want to restart JIPipe? You will lose all unsaved changes.", "Restart JIPipe", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(messagePanel), "Do you really want to restart JIPipe? You will lose all unsaved changes.", "Restart JIPipe", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     JIPipe.restartGUI();
                 }
             });
@@ -135,7 +139,7 @@ public class JIPipeModernPluginManager {
     public void resolveConflicts() {
         final List<Conflicts.Conflict> conflicts = updateSites.getConflicts();
         if (conflicts != null && conflicts.size() > 0) {
-            ConflictDialog dialog = new ConflictDialog(SwingUtilities.getWindowAncestor(messagePanel), "Conflicting versions") {
+            ConflictDialog dialog = new ConflictDialog(SwingUtilities.getWindowAncestor(parent), "Conflicting versions") {
                 private static final long serialVersionUID = 1L;
 
                 @Override
@@ -173,7 +177,7 @@ public class JIPipeModernPluginManager {
     }
 
     private void removeUpdateSiteMessage() {
-        if(updateSiteMessage != null) {
+        if (updateSiteMessage != null) {
             messagePanel.removeMessage(updateSiteMessage);
             updateSiteMessage = null;
         }
@@ -205,7 +209,7 @@ public class JIPipeModernPluginManager {
 
     private void createUpdateSitesWrappers() {
         updateSiteWrapperExtensions.clear();
-        if(updateSites != null) {
+        if (updateSites != null) {
             for (UpdateSite updateSite : updateSites.getUpdateSites(true)) {
                 UpdateSiteExtension extension = new UpdateSiteExtension(updateSite);
                 updateSiteWrapperExtensions.add(extension);
@@ -226,10 +230,151 @@ public class JIPipeModernPluginManager {
         if (event.getRun() == refreshRepositoryRun) {
             this.updateSites = refreshRepositoryRun.getFilesCollection();
             onSuccess();
-        }
-        else if(event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
+        } else if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
             updateSitesApplied = true;
             updateMessagePanel();
+        }
+    }
+
+    public void deactivateExtension(JIPipeExtension extension) {
+        if (extension instanceof UpdateSiteExtension) {
+            deactivateUpdateSiteExtension((UpdateSiteExtension) extension);
+        } else {
+            deactivateJIPipeExtension(extension);
+        }
+    }
+
+    private void deactivateJIPipeExtension(JIPipeExtension extension) {
+
+        Set<String> dependents = getExtensionRegistry().getAllDependentsOf(extension.getDependencyId());
+        for (String s : ImmutableList.copyOf(dependents)) {
+            if(getExtensionRegistry().willBeDeactivatedOnNextStartup(s))
+                dependents.remove(s);
+        }
+        if (!dependents.isEmpty()) {
+            DeactivateDependentsConfirmationDialog dialog = new DeactivateDependentsConfirmationDialog(SwingUtilities.getWindowAncestor(parent), this, extension);
+            dialog.setModal(true);
+            dialog.setSize(800, 600);
+            dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(parent));
+            dialog.setVisible(true);
+            if (dialog.isCancelled()) {
+                return;
+            }
+        }
+
+        // Straight-forward
+        getExtensionRegistry().scheduleDeactivateExtension(extension.getDependencyId());
+    }
+
+    private void deactivateUpdateSiteExtension(UpdateSiteExtension extension) {
+        if (!isUpdateSitesReady()) {
+            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(parent), "ImageJ updates sites are currently not ready/unavailable.",
+                    "Deactivate ImageJ update site", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        // Is an update site that was not added
+        if (extension.getUpdateSite(getUpdateSites()) == null)
+            return;
+        if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(parent), "Do you really want to deactivate the update site '"
+                + extension.getUpdateSite(getUpdateSites()).getName() + "'? Please note that this will delete plugin files from the ImageJ directory.", "Deactivate update site", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            DeactivateAndApplyUpdateSiteRun run = new DeactivateAndApplyUpdateSiteRun(this, Collections.singletonList(extension.getUpdateSite(getUpdateSites())));
+            JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(parent), run);
+        }
+    }
+
+    public void activateExtension(JIPipeExtension extension) {
+        if (extension instanceof UpdateSiteExtension) {
+            activateUpdateSiteExtension((UpdateSiteExtension) extension);
+        } else {
+            activateJIPipeExtension(extension);
+        }
+    }
+
+    private void activateJIPipeExtension(JIPipeExtension extension) {
+
+        // Get all dependencies and attempt to resolve them against the known extensions
+        Set<JIPipeDependency> allDependencies = getExtensionRegistry().tryResolveToKnownDependencies(extension.getAllDependencies());
+        Set<JIPipeDependency> missingDependencies = new HashSet<>();
+        for (JIPipeDependency dependency : allDependencies) {
+            if(getExtensionRegistry().willBeDeactivatedOnNextStartup(dependency.getDependencyId())) {
+                missingDependencies.add(dependency);
+            }
+        }
+
+        // Collect all [missing] update sites
+        Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites = new HashSet<>();
+        Set<JIPipeImageJUpdateSiteDependency> allUpdateSites = extension.getAllImageJUpdateSiteDependencies();
+
+        if (!allUpdateSites.isEmpty()) {
+            if (!isUpdateSitesReady()) {
+                int response = JOptionPane.showOptionDialog(SwingUtilities.getWindowAncestor(parent), "The selected extension requests various ImageJ update sites, but there is currently no connection to the update site system. You can ignore update sites or wait until the initialization is complete. If you click 'Wait' click the 'Activate' " +
+                                "button again after the update sites have been initialized.",
+                        "Activate " + extension.getMetadata().getName(), JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE, null, new Object[]{"Wait", "Ignore", "Cancel"},
+                        "Wait");
+                if (response == JOptionPane.YES_OPTION || response == JOptionPane.CANCEL_OPTION)
+                    return;
+                getExtensionRegistry().scheduleActivateExtension(extension.getDependencyId());
+            } else {
+                // Check if there are missing update sites
+                for (JIPipeImageJUpdateSiteDependency dependency : allUpdateSites) {
+                    missingUpdateSites.add(dependency);
+                }
+                if (getUpdateSites() != null) {
+                    for (UpdateSite updateSite : getUpdateSites().getUpdateSites(false)) {
+                        missingUpdateSites.remove(updateSite.getName());
+                    }
+                }
+            }
+        }
+
+        // Show confirm dialog
+        if (!missingUpdateSites.isEmpty() || !missingDependencies.isEmpty()) {
+            ActivateDependenciesConfirmationDialog dialog = new ActivateDependenciesConfirmationDialog(SwingUtilities.getWindowAncestor(parent),
+                    this,
+                    extension,
+                    missingDependencies,
+                    missingUpdateSites);
+            dialog.setModal(true);
+            dialog.setSize(800, 600);
+            dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(parent));
+            dialog.setVisible(true);
+            if (dialog.isCancelled()) {
+                return;
+            }
+            // Trigger installation run of update sites
+            List<UpdateSite> toActivate = new ArrayList<>();
+            for (Map.Entry<JIPipeImageJUpdateSiteDependency, Boolean> entry : dialog.getDependencySitesToInstall().entrySet()) {
+                if (entry.getValue()) {
+                    UpdateSite updateSite = getUpdateSites().getUpdateSite(entry.getKey().getName(), true);
+                    if (updateSite != null) {
+                        toActivate.add(updateSite);
+                    } else {
+                        updateSite = getUpdateSites().addUpdateSite(entry.getKey().toUpdateSite());
+                        toActivate.add(updateSite);
+                    }
+                }
+            }
+            if (!toActivate.isEmpty()) {
+                ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(this, toActivate);
+                JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(parent), run);
+            }
+        }
+
+        // Schedule activation of extension
+        getExtensionRegistry().scheduleActivateExtension(extension.getDependencyId());
+
+    }
+
+    private void activateUpdateSiteExtension(UpdateSiteExtension extension) {
+        if (!isUpdateSitesReady()) {
+            JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(parent), "ImageJ updates sites are currently not ready/unavailable.",
+                    "Activate ImageJ update site", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(parent), "Do you really want to activate the update site '"
+                + extension.getUpdateSite(getUpdateSites()).getName() + "'? Please note that you need an active internet connection.", "Activate update site", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            ActivateAndApplyUpdateSiteRun run = new ActivateAndApplyUpdateSiteRun(this, Collections.singletonList(extension.getUpdateSite(getUpdateSites())));
+            JIPipeRunExecuterUI.runInDialog(SwingUtilities.getWindowAncestor(parent), run);
         }
     }
 

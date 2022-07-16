@@ -49,7 +49,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
     private FormPanel sidePanel;
 
     private SearchTextField searchTextField;
-    private List<JIPipeExtension> currentlyShownItems = new ArrayList<>(getExtensionRegistry().getKnownExtensions());
+    private List<JIPipeExtension> currentlyShownItems = new ArrayList<>(getExtensionRegistry().getKnownExtensionsList());
 
     private final MessagePanel messagePanel = new MessagePanel();
 
@@ -65,12 +65,12 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
     public JIPipeModernPluginManagerUI(JIPipeWorkbench workbench) {
         super(workbench);
-        this.pluginManager = new JIPipeModernPluginManager(messagePanel);
+        this.pluginManager = new JIPipeModernPluginManager(this, messagePanel);
 
         initialize();
         JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);
         if(getExtensionRegistry().getNewExtensions().isEmpty()) {
-            showItems(getExtensionRegistry().getKnownExtensions(), "All extensions");
+            showItems(getExtensionRegistry().getKnownExtensionsList(), "All extensions");
         }
         else {
             showItems(getExtensionRegistry().getNewExtensions().stream().map(id -> getExtensionRegistry().getKnownExtensionById(id)).collect(Collectors.toList()), "New extensions");
@@ -172,8 +172,8 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
             messagePanel.addMessage(MessagePanel.MessageType.Info, "New extensions are available");
         }
 
-        addSidePanelButton("Activated extensions", UIUtils.getIconFromResources("actions/checkmark.png"), () -> extensionRegistry.getKnownExtensions().stream().filter(dependency -> extensionRegistry.getActivatedExtensions().contains(dependency.getDependencyId())).collect(Collectors.toList()), false);
-        addSidePanelButton("Deactivated extensions", UIUtils.getIconFromResources("actions/close-tab.png"), () -> extensionRegistry.getKnownExtensions().stream().filter(dependency -> !extensionRegistry.getActivatedExtensions().contains(dependency.getDependencyId())).collect(Collectors.toList()), false);
+        addSidePanelButton("Activated extensions", UIUtils.getIconFromResources("actions/checkmark.png"), () -> extensionRegistry.getKnownExtensionsList().stream().filter(dependency -> extensionRegistry.getActivatedExtensions().contains(dependency.getDependencyId())).collect(Collectors.toList()), false);
+        addSidePanelButton("Deactivated extensions", UIUtils.getIconFromResources("actions/close-tab.png"), () -> extensionRegistry.getKnownExtensionsList().stream().filter(dependency -> !extensionRegistry.getActivatedExtensions().contains(dependency.getDependencyId())).collect(Collectors.toList()), false);
 
         // Update sites button
         AnimatedIcon hourglassAnimation = new AnimatedIcon(this, UIUtils.getIconFromResources("actions/hourglass-half.png"),
@@ -184,14 +184,14 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         addImageJSidePanelButton("Activated", UIUtils.getIconFromResources("actions/checkmark.png"), site -> site.isActivated(), true);
         addImageJSidePanelButton("Deactivated", UIUtils.getIconFromResources("actions/close-tab.png"), site -> !site.isActivated(), true);
 
-        addSidePanelButton("All extensions", UIUtils.getIconFromResources("actions/plugins.png"), extensionRegistry::getKnownExtensions, false);
+        addSidePanelButton("All extensions", UIUtils.getIconFromResources("actions/plugins.png"), extensionRegistry::getKnownExtensionsList, false);
 
         Set<String> categories = new HashSet<>();
-        for (JIPipeDependency extension : JIPipe.getInstance().getExtensionRegistry().getKnownExtensions()) {
+        for (JIPipeDependency extension : JIPipe.getInstance().getExtensionRegistry().getKnownExtensionsList()) {
             categories.addAll(extension.getMetadata().getProcessedCategories());
         }
         categories.stream().sorted(NaturalOrderComparator.INSTANCE).forEach(category -> {
-            addSidePanelButton(category, UIUtils.getIconFromResources("actions/tag.png"), () -> JIPipe.getInstance().getExtensionRegistry().getKnownExtensions().stream().filter(dependency -> dependency.getMetadata().getProcessedCategories().contains(category)).collect(Collectors.toList()), true);
+            addSidePanelButton(category, UIUtils.getIconFromResources("actions/tag.png"), () -> JIPipe.getInstance().getExtensionRegistry().getKnownExtensionsList().stream().filter(dependency -> dependency.getMetadata().getProcessedCategories().contains(category)).collect(Collectors.toList()), true);
         });
 
     }
