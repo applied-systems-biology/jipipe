@@ -13,11 +13,16 @@
 
 package org.hkijena.jipipe.extensions.ijweka;
 
+import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
+import org.hkijena.jipipe.extensions.filesystem.FilesystemExtension;
 import org.hkijena.jipipe.extensions.ijweka.datatypes.WekaModelData;
 import org.hkijena.jipipe.extensions.ijweka.nodes.*;
 import org.hkijena.jipipe.extensions.ijweka.parameters.WekaClassifierParameter;
@@ -26,6 +31,8 @@ import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeature2D;
 import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeature3D;
 import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeatureSet2D;
 import org.hkijena.jipipe.extensions.ijweka.parameters.features.WekaFeatureSet3D;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
+import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -38,13 +45,25 @@ import javax.swing.*;
 import java.net.URL;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Plugin(type = JIPipeJavaExtension.class)
 public class WekaExtension extends JIPipePrepackagedDefaultJavaExtension {
 
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:ij-weka",
+            JIPipe.getJIPipeVersion(),
+            "IJ Trainable Weka Filter integration");
     public static final String RESOURCE_BASE_PATH = "/org/hkijena/jipipe/extensions/ijweka";
 
     public WekaExtension() {
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, FilesystemExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY, ImageJAlgorithmsExtension.AS_DEPENDENCY);
     }
 
     @Override

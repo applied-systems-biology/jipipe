@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe;
 
+import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
@@ -37,6 +38,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.api.registries.JIPipeJavaNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeNodeRegistrationTask;
 import org.hkijena.jipipe.api.registries.JIPipeParameterTypeRegistry;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.ColumnOperationAdapterFunction;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
@@ -62,6 +64,7 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -122,6 +125,11 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
         else {
             return new ImageParameter(ResourceUtils.getPluginResource("extension-thumbnail-default.png"));
         }
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY);
     }
 
     /**

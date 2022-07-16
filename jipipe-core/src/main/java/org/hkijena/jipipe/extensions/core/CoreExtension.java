@@ -1,7 +1,9 @@
 package org.hkijena.jipipe.extensions.core;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
@@ -25,13 +27,20 @@ import org.scijava.plugin.Plugin;
 
 import javax.swing.*;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * The core extension
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:core", JIPipe.getJIPipeVersion(), "Core");
 
     @Override
     public String getName() {
@@ -41,6 +50,11 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public HTMLText getDescription() {
         return new HTMLText("Provides core data types");
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Collections.emptySet();
     }
 
     @Override

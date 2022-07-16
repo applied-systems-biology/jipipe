@@ -1,10 +1,13 @@
 package org.hkijena.jipipe.extensions.r;
 
+import org.apache.commons.compress.utils.Sets;
 import org.apache.commons.lang3.SystemUtils;
 import org.fife.ui.rsyntaxtextarea.AbstractTokenMakerFactory;
 import org.fife.ui.rsyntaxtextarea.TokenMakerFactory;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
@@ -12,6 +15,8 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
+import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -36,9 +41,18 @@ import org.scijava.plugin.Plugin;
 import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Plugin(type = JIPipeJavaExtension.class)
 public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:r",
+            JIPipe.getJIPipeVersion(),
+            "R integration");
+
     private static void installR(JIPipeWorkbench workbench) {
         RExtensionSettings settings = RExtensionSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
@@ -64,6 +78,11 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
     public RExtension() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
         getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/r.png")));
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY);
     }
 
     @Override

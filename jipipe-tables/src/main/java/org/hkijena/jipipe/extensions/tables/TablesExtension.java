@@ -13,10 +13,15 @@
 
 package org.hkijena.jipipe.extensions.tables;
 
+import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.annotation.AnnotationsExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -36,14 +41,28 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
+import java.util.Set;
+
 /**
  * Standard set of table operations
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:table-operations",
+            JIPipe.getJIPipeVersion(),
+            "Standard table operations");
+
     public TablesExtension() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_STATISTICS, PluginCategoriesEnumParameter.CATEGORY_DATA_PROCESSING);
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, AnnotationsExtension.AS_DEPENDENCY);
     }
 
     @Override

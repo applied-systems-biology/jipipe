@@ -16,13 +16,13 @@ package org.hkijena.jipipe.extensions.imagej2;
 import net.imagej.ops.OpInfo;
 import net.imagej.ops.OpService;
 import net.imglib2.outofbounds.OutOfBoundsMirrorFactory;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
-import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.apache.commons.compress.utils.Sets;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.imagej2.algorithms.CreateIJ2OutOfBoundsFactoryAlgorithm;
 import org.hkijena.jipipe.extensions.imagej2.algorithms.CreateIJ2ShapeAlgorithm;
 import org.hkijena.jipipe.extensions.imagej2.compat.IJ2DataFromImageWindowImageJImporter;
@@ -33,6 +33,7 @@ import org.hkijena.jipipe.extensions.imagej2.datatypes.ImageJ2DatasetData;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.*;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.constant.*;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusWindowImageJImporterUI;
 import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
@@ -47,12 +48,20 @@ import org.scijava.plugin.Plugin;
 import javax.swing.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Extension that adds ImageJ2 algorithms
  */
 @Plugin(type = JIPipeJavaExtension.class, priority = Priority.LOW)
 public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:imagej2",
+            JIPipe.getJIPipeVersion(),
+            "ImageJ2 algorithms");
 
     public ImageJ2Extension() {
     }
@@ -65,6 +74,11 @@ public class ImageJ2Extension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public ImageParameter getThumbnail() {
         return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/imagej2.png"));
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY);
     }
 
     @Override

@@ -56,6 +56,7 @@ import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.CoreImageJUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.VersionUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
@@ -450,6 +451,14 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             throw new UserFriendlyRuntimeException(e, "Cannot create data instance!", "Undefined", "There is an error in the code that provides the annotation type.",
                     "Please contact the author of the plugin that provides the annotation type " + klass);
         }
+    }
+
+    /**
+     * The current version of JIPipe according to the Maven-proved information
+     * @return the version string or 'Development' if none is available
+     */
+    public static String getJIPipeVersion() {
+        return VersionUtils.getJIPipeVersion();
     }
 
     public JIPipeProgressInfo getProgressInfo() {

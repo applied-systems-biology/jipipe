@@ -14,6 +14,8 @@
 
 package org.hkijena.jipipe.utils;
 
+import org.hkijena.jipipe.extensions.core.CoreExtension;
+
 public class VersionUtils {
 
     /**
@@ -24,5 +26,13 @@ public class VersionUtils {
      */
     public static String getVersionString(Class<?> klass) {
         return StringUtils.orElse(klass.getPackage().getImplementationVersion(), "Development");
+    }
+
+    /**
+     * The current version of JIPipe according to the Maven-proved information
+     * @return the version string or 'Development' if none is available
+     */
+    public static String getJIPipeVersion() {
+        return getVersionString(CoreExtension.class);
     }
 }

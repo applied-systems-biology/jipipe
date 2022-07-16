@@ -13,16 +13,19 @@
 
 package org.hkijena.jipipe.extensions.ijmultitemplatematching;
 
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
-import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.apache.commons.compress.utils.Sets;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
+import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.extensions.strings.StringsExtension;
+import org.hkijena.jipipe.extensions.tables.TablesExtension;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -30,6 +33,7 @@ import org.scijava.plugin.Plugin;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Extension that adds ImageJ2 algorithms
@@ -37,7 +41,18 @@ import java.util.List;
 @Plugin(type = JIPipeJavaExtension.class)
 public class MultiTemplateMatchingExtension extends JIPipePrepackagedDefaultJavaExtension {
 
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:ij-multi-template-matching",
+            JIPipe.getJIPipeVersion(),
+            "Multi-Template matching");
     public MultiTemplateMatchingExtension() {
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, TablesExtension.AS_DEPENDENCY, StringsExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY);
     }
 
     @Override

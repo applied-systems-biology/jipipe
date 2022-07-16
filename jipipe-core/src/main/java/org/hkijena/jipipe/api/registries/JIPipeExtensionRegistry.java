@@ -239,8 +239,13 @@ public class JIPipeExtensionRegistry {
             CycleDetector<JIPipeDependency, DefaultEdge> cycleDetector = new CycleDetector<>(dependencyGraph);
             boolean hasCycles = cycleDetector.detectCycles();
             jiPipe.getProgressInfo().log("Created dependency graph: " + dependencyGraph.vertexSet().size() + " nodes, " + dependencyGraph.edgeSet().size() + " edges, has cycles: " + hasCycles);
-            if(hasCycles)
+            if(hasCycles) {
                 jiPipe.getProgressInfo().log("WARNING: Cyclic dependencies detected in dependency graph!");
+                jiPipe.getProgressInfo().log("Dependencies that are part of a cycle:");
+                for (JIPipeDependency dependency : cycleDetector.findCycles()) {
+                    jiPipe.getProgressInfo().log(" - " + dependency.getDependencyId());
+                }
+            }
         }
         return dependencyGraph;
     }

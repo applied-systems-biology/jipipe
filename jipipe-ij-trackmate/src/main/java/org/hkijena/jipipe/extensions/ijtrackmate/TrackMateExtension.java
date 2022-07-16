@@ -14,11 +14,16 @@
 package org.hkijena.jipipe.extensions.ijtrackmate;
 
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
+import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
+import org.hkijena.jipipe.extensions.filesystem.FilesystemExtension;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.ModelData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotDetectorData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotTrackerData;
@@ -45,6 +50,8 @@ import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUISpotsDisp
 import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUITracksDisplaySettings;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackDrawer;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackMateUtils;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
+import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -58,13 +65,26 @@ import org.scijava.plugin.PluginService;
 import javax.swing.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 @Plugin(type = JIPipeJavaExtension.class)
 public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
 
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:ij-trackmate",
+            JIPipe.getJIPipeVersion(),
+            "IJ TrackMate integration");
+
     public static final ResourceManager RESOURCES = new ResourceManager(TrackMateExtension.class, "/org/hkijena/jipipe/extensions/ijtrackmate");
 
     public TrackMateExtension() {
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, FilesystemExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY, ImageJAlgorithmsExtension.AS_DEPENDENCY);
     }
 
     @Override

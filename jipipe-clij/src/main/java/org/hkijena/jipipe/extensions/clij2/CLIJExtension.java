@@ -2,9 +2,8 @@ package org.hkijena.jipipe.extensions.clij2;
 
 import net.haesleinhuepf.clij.macro.CLIJMacroPlugin;
 import net.imagej.updater.UpdateSite;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
-import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.apache.commons.compress.utils.Sets;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
@@ -20,6 +19,8 @@ import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageToImagePlusDataCon
 import org.hkijena.jipipe.extensions.clij2.datatypes.ImagePlusDataToCLIJImageDataConverter;
 import org.hkijena.jipipe.extensions.clij2.parameters.OpenCLKernelScript;
 import org.hkijena.jipipe.extensions.clij2.ui.CLIJControlPanelJIPipeMenuExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
+import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusWindowImageJImporterUI;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
@@ -36,12 +37,20 @@ import org.scijava.plugin.PluginService;
 import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Integrates CLIJ
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:clij2-integration",
+            JIPipe.getJIPipeVersion(),
+            "CLIJ2 integration");
 
     public static final Class[] ALLOWED_PARAMETER_TYPES = new Class[]{Boolean.class, Character.class, Short.class, Integer.class, Float.class, Double.class};
 
@@ -56,6 +65,11 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public ImageParameter getThumbnail() {
         return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/clij.png"));
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY);
     }
 
     @Override

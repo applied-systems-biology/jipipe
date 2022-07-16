@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.extensions.annotation;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.annotation.algorithms.*;
@@ -36,6 +38,13 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:annotations",
+            JIPipe.getJIPipeVersion(),
+            "Annotation data types and algorithms");
 
     public AnnotationsExtension() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_ANNOTATION);

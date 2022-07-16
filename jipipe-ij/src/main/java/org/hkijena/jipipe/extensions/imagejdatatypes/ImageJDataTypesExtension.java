@@ -14,8 +14,11 @@
 package org.hkijena.jipipe.extensions.imagejdatatypes;
 
 import ome.xml.model.enums.DimensionOrder;
+import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
@@ -23,7 +26,9 @@ import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.registries.JIPipeDatatypeRegistry;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
+import org.hkijena.jipipe.extensions.filesystem.FilesystemExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.color.ToHSBColorSpaceConverterAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.color.ToLABColorSpaceConverterAlgorithm;
@@ -82,7 +87,9 @@ import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
+import org.hkijena.jipipe.extensions.strings.StringsExtension;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataPreview;
+import org.hkijena.jipipe.extensions.tables.TablesExtension;
 import org.hkijena.jipipe.extensions.tables.compat.ResultsTableDataImageJExporter;
 import org.hkijena.jipipe.extensions.tables.compat.ResultsTableDataImageJImporter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
@@ -107,7 +114,19 @@ import java.util.stream.Collectors;
 @Plugin(type = JIPipeJavaExtension.class)
 public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:imagej-integration",
+            JIPipe.getJIPipeVersion(),
+            "ImageJ integration");
+
     public ImageJDataTypesExtension() {
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, TablesExtension.AS_DEPENDENCY, StringsExtension.AS_DEPENDENCY, FilesystemExtension.AS_DEPENDENCY);
     }
 
     @Override

@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.extensions.filesystem;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.DefaultImageJDataImporterUI;
@@ -42,6 +44,13 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:filesystem",
+            JIPipe.getJIPipeVersion(),
+            "Filesystem types and algorithms");
 
     public FilesystemExtension() {
     }

@@ -47,6 +47,12 @@ public class JIPipeMutableDependency implements JIPipeDependency {
     public JIPipeMutableDependency() {
     }
 
+    public JIPipeMutableDependency(String dependencyId, String dependencyVersion, String name) {
+        this.dependencyId = dependencyId;
+        this.dependencyVersion = dependencyVersion;
+        this.metadata.setName(name);
+    }
+
     /**
      * Copies the dependency
      *

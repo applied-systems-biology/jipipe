@@ -13,16 +13,22 @@
 
 package org.hkijena.jipipe.extensions.utils;
 
+import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.IOInterfaceAlgorithm;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
+import org.hkijena.jipipe.extensions.filesystem.FilesystemExtension;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.CopyPathDataOperation;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOperation;
+import org.hkijena.jipipe.extensions.multiparameters.MultiParameterAlgorithmsExtension;
 import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -43,11 +49,25 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
+import java.util.Set;
+
 @Plugin(type = JIPipeJavaExtension.class)
 public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:utils",
+            JIPipe.getJIPipeVersion(),
+            "Utilities");
+
     public UtilitiesExtension() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DATA_PROCESSING, PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, FilesystemExtension.AS_DEPENDENCY, MultiParameterAlgorithmsExtension.AS_DEPENDENCY);
     }
 
     @Override

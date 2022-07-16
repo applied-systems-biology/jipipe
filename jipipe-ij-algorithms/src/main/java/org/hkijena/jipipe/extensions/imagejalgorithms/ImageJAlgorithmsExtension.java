@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import de.biomedical_imaging.ij.steger.OverlapOption;
 import ij.process.AutoThresholder;
 import inra.ijpb.binary.ChamferWeights;
@@ -23,13 +24,13 @@ import inra.ijpb.morphology.Morphology;
 import inra.ijpb.morphology.Strel;
 import inra.ijpb.morphology.Strel3D;
 import inra.ijpb.morphology.directional.DirectionalFilter;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
-import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
+import org.hkijena.jipipe.extensions.forms.FormsExtension;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.background.RollingBallBackgroundEstimator2DAlgorithm;
@@ -101,6 +102,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OverlapStatistics;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OverlapStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SourceWrapMode;
+import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
@@ -132,6 +134,8 @@ import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEn
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.extensions.strings.StringsExtension;
+import org.hkijena.jipipe.extensions.tables.TablesExtension;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -139,10 +143,7 @@ import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 import sc.fiji.coloc.algorithms.AutoThresholdRegression;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Extension that adds ImageJ2 algorithms
@@ -150,12 +151,24 @@ import java.util.Map;
 @Plugin(type = JIPipeJavaExtension.class)
 public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:imagej-algorithms",
+            JIPipe.getJIPipeVersion(),
+            "ImageJ algorithms");
+
     public ImageJAlgorithmsExtension() {
     }
 
     @Override
     public ImageParameter getThumbnail() {
         return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/fiji.png"));
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, TablesExtension.AS_DEPENDENCY, StringsExtension.AS_DEPENDENCY, FormsExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY);
     }
 
     @Override

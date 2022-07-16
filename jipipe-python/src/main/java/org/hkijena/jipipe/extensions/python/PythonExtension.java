@@ -14,7 +14,9 @@
 package org.hkijena.jipipe.extensions.python;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
@@ -47,6 +49,14 @@ import java.util.List;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:python",
+            JIPipe.getJIPipeVersion(),
+            "Python integration");
+
     private static void installPythonAdapterLibrary(JIPipeWorkbench workbench) {
         PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);

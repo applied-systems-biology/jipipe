@@ -1,7 +1,10 @@
 package org.hkijena.jipipe.extensions.cellpose;
 
+import com.google.common.collect.Sets;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ui.FileImageJDataImporterUI;
@@ -27,11 +30,15 @@ import org.hkijena.jipipe.extensions.cellpose.installers.MinicondaCellPoseEnvIns
 import org.hkijena.jipipe.extensions.cellpose.installers.MinicondaCellPoseGPUEnvInstaller;
 import org.hkijena.jipipe.extensions.cellpose.installers.PortableCellPoseEnvInstaller;
 import org.hkijena.jipipe.extensions.cellpose.installers.PortableCellPoseGPUEnvInstaller;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
+import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
+import org.hkijena.jipipe.extensions.python.PythonExtension;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
@@ -45,9 +52,17 @@ import org.scijava.plugin.Plugin;
 import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 @Plugin(type = JIPipeJavaExtension.class)
 public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:cellpose",
+            JIPipe.getJIPipeVersion(),
+            "Cellpose integration");
 
     public CellPoseExtension() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DEEP_LEARNING, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
@@ -66,6 +81,11 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
         DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
         JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
         applicationSettingsUI.selectNode("/Extensions/Cellpose");
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY, PythonExtension.AS_DEPENDENCY, ImageJAlgorithmsExtension.AS_DEPENDENCY);
     }
 
     @Override
@@ -130,6 +150,8 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
     public List<ImageIcon> getSplashIcons() {
         return Arrays.asList(UIUtils.getIcon32FromResources("apps/cellpose.png"));
     }
+
+
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {

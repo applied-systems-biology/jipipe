@@ -13,11 +13,16 @@
 
 package org.hkijena.jipipe.extensions.omero;
 
+import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeJavaExtension;
+import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
+import org.hkijena.jipipe.extensions.core.CoreExtension;
+import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.omero.algorithms.DownloadOMEROImageAlgorithm;
 import org.hkijena.jipipe.extensions.omero.algorithms.DownloadOMEROTableAlgorithm;
 import org.hkijena.jipipe.extensions.omero.algorithms.UploadOMEROImageAlgorithm;
@@ -39,12 +44,20 @@ import org.scijava.plugin.Plugin;
 import javax.swing.*;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Provides data types dor handling strings
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    /**
+     * Dependency instance to be used for creating the set of dependencies
+     */
+    public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:omero",
+            JIPipe.getJIPipeVersion(),
+            "OMERO Integration");
 
     public OMEROExtension() {
     }
@@ -57,6 +70,11 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
     @Override
     public ImageParameter getThumbnail() {
         return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/omero.png"));
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY);
     }
 
     @Override

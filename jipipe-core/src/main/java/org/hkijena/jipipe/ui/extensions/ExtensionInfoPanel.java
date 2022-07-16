@@ -103,12 +103,9 @@ public class ExtensionInfoPanel extends JPanel {
         }
 
         // Dependencies
-        Set<JIPipeDependency> dependencies = new HashSet<>();
-        if(extension instanceof JIPipeJsonExtension) {
-            dependencies = ((JIPipeJsonExtension) extension).getDependencies();
-        }
+        Set<JIPipeDependency> dependencies = extension.getDependencies();
         if(!dependencies.isEmpty() || !extension.getImageJUpdateSiteDependencies().isEmpty()) {
-            panel.addGroupHeader("Dependencies", UIUtils.getIconFromResources("actions/distribute-graph-directed.png"));
+            panel.addGroupHeader("ImageJ update site depen", UIUtils.getIconFromResources("actions/distribute-graph-directed.png"));
             for (JIPipeDependency dependency : dependencies) {
                 panel.addToForm(UIUtils.makeReadonlyTextField("id=" + dependency.getDependencyId() + ", version=" + dependency.getDependencyVersion()), new JLabel("Dependency"), null);
             }
