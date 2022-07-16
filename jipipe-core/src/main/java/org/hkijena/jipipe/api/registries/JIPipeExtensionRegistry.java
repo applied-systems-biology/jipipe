@@ -207,7 +207,7 @@ public class JIPipeExtensionRegistry {
     }
 
     /**
-     * Returns a graph of all dependencies.
+     * Returns a directed graph of all dependencies. The dependencies are the sources.
      * Might contain cycles
      * @return the dependency graph
      */
