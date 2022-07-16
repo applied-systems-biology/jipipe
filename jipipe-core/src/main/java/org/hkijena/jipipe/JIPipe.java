@@ -598,6 +598,9 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             validateNodeTypes(issues);
         }
 
+        // Create dependency graph
+        extensionRegistry.getDependencyGraph();
+
         // Check for update sites
         if (extensionSettings.isValidateImageJDependencies()) {
             JIPipeProgressInfo dependencyProgress = progressInfo.resolve("ImageJ dependencies").detachProgress();

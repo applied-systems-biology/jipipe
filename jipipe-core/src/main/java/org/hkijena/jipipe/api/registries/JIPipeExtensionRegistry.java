@@ -15,26 +15,27 @@ package org.hkijena.jipipe.api.registries;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.eventbus.EventBus;
 import ij.IJ;
 import ij.Prefs;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeExtension;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.jgrapht.alg.cycle.CycleDetector;
+import org.jgrapht.graph.DefaultDirectedGraph;
+import org.jgrapht.graph.DefaultEdge;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 /**
@@ -67,6 +68,8 @@ public class JIPipeExtensionRegistry {
     private final Set<String> scheduledDeactivateExtensions = new HashSet<>();
 
     private final Set<String> newExtensions = new HashSet<>();
+
+    private DefaultDirectedGraph<JIPipeDependency, DefaultEdge> dependencyGraph;
 
     public JIPipeExtensionRegistry(JIPipe jiPipe) {
         this.jiPipe = jiPipe;
@@ -131,6 +134,7 @@ public class JIPipeExtensionRegistry {
     public void registerKnownExtension(JIPipeExtension extension) {
         jiPipe.getProgressInfo().resolve("Extension management").log("Discovered extension: " + extension.getDependencyId() + " version " + extension.getDependencyVersion() + " (of type " + extension.getClass().getName() + ")" );
         knownExtensions.add(extension);
+        dependencyGraph = null;
     }
 
     /**
@@ -200,6 +204,45 @@ public class JIPipeExtensionRegistry {
         settings.getSilencedExtensions().add(id); // That the user is not warned by it
         save();
         eventBus.post(new ScheduledDeactivateExtension(id));
+    }
+
+    /**
+     * Returns a graph of all dependencies.
+     * Might contain cycles
+     * @return the dependency graph
+     */
+    public DefaultDirectedGraph<JIPipeDependency, DefaultEdge> getDependencyGraph() {
+        if(dependencyGraph == null) {
+            dependencyGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
+            BiMap<String, JIPipeDependency> dependencyGraphNodeIds = HashBiMap.create();
+            // Add the initial vertices
+            for (JIPipeDependency knownExtension : knownExtensions) {
+                dependencyGraph.addVertex(knownExtension);
+                dependencyGraphNodeIds.put(knownExtension.getDependencyId(), knownExtension);
+            }
+            // Add edges
+            Stack<JIPipeDependency> stack = new Stack<>();
+            stack.addAll(knownExtensions);
+            while(!stack.isEmpty()) {
+                JIPipeDependency target = stack.pop();
+                for (JIPipeDependency source : target.getDependencies()) {
+                    JIPipeDependency sourceInGraph = dependencyGraphNodeIds.getOrDefault(source.getDependencyId(), null);
+                    if(sourceInGraph == null) {
+                        sourceInGraph = source;
+                        dependencyGraph.addVertex(sourceInGraph);
+                        dependencyGraphNodeIds.put(sourceInGraph.getDependencyId(), sourceInGraph);
+                    }
+                    dependencyGraph.addEdge(sourceInGraph, target);
+                    stack.addAll(source.getDependencies());
+                }
+            }
+            CycleDetector<JIPipeDependency, DefaultEdge> cycleDetector = new CycleDetector<>(dependencyGraph);
+            boolean hasCycles = cycleDetector.detectCycles();
+            jiPipe.getProgressInfo().log("Created dependency graph: " + dependencyGraph.vertexSet().size() + " nodes, " + dependencyGraph.edgeSet().size() + " edges, has cycles: " + hasCycles);
+            if(hasCycles)
+                jiPipe.getProgressInfo().log("WARNING: Cyclic dependencies detected in dependency graph!");
+        }
+        return dependencyGraph;
     }
 
     public Set<String> getScheduledActivateExtensions() {
