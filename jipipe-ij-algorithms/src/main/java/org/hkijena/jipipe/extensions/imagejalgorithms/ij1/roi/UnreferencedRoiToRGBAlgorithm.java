@@ -157,7 +157,6 @@ public class UnreferencedRoiToRGBAlgorithm extends JIPipeSimpleIteratingAlgorith
             RoiStatisticsAlgorithm statisticsAlgorithm =
                     JIPipe.createNode("ij1-roi-statistics");
             statisticsAlgorithm.setAllSlotsVirtual(false, false, null);
-            statisticsAlgorithm.setOverrideReferenceImage(false);
             statisticsAlgorithm.getMeasurements().setNativeValue(Measurement.Centroid.getNativeValue());
             statisticsAlgorithm.getInputSlot("ROI").addData(inputData, progressInfo);
             statisticsAlgorithm.run(progressInfo);

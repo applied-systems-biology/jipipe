@@ -20,10 +20,7 @@ import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -44,9 +41,10 @@ import java.util.*;
 
 @JIPipeDocumentation(name = "Split into connected components", description = "Algorithm that extracts connected components across one or multiple dimensions. The output consists of multiple ROI lists, one for each connected component.")
 @JIPipeNode(menuPath = "Split", nodeTypeCategory = RoiNodeTypeCategory.class)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Components")
-public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgorithm {
+@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Components", autoCreate = true)
+public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorithm {
     private DimensionOperation dimensionZOperation = DimensionOperation.Split;
     private DimensionOperation dimensionCOperation = DimensionOperation.Merge;
     private DimensionOperation dimensionTOperation = DimensionOperation.Follow;
@@ -60,8 +58,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
     private boolean measureInPhysicalUnits = true;
 
     public SplitRoiConnectedComponentsAlgorithm(JIPipeNodeInfo info) {
-        super(info, ROIListData.class, "Components");
-        this.setPreferAssociatedImage(false);
+        super(info);
     }
 
     public SplitRoiConnectedComponentsAlgorithm(SplitRoiConnectedComponentsAlgorithm other) {
@@ -105,15 +102,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
         ImagePlus referenceImage = null;
         if (withFiltering) {
             // Generate measurements
-            Map<ImagePlusData, ROIListData> referenceImages = getReferenceImage(dataBatch, progressInfo);
-            if (referenceImages.size() != 1) {
-                throw new UserFriendlyRuntimeException("Require unique reference image!",
-                        "Algorithm " + getName(),
-                        "Different reference images!",
-                        "For the statistics, each ROI must be associated to the same image. This is not the case.",
-                        "Try to remove the images associated to the ROI.");
-            }
-            ImagePlusData referenceImageData = referenceImages.keySet().iterator().next();
+            ImagePlusData referenceImageData = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
             if (referenceImageData != null) {
                 referenceImage = referenceImageData.getImage();
                 // This is needed, as measuring messes with the image
@@ -384,16 +373,6 @@ public class SplitRoiConnectedComponentsAlgorithm extends ImageRoiProcessorAlgor
             return roi;
         }
         return null;
-    }
-
-    @Override
-    public boolean isPreferAssociatedImage() {
-        return super.isPreferAssociatedImage();
-    }
-
-    @Override
-    public void setPreferAssociatedImage(boolean preferAssociatedImage) {
-        super.setPreferAssociatedImage(preferAssociatedImage);
     }
 
     @JIPipeDocumentation(name = "Dimension Z", description = "Operation for the Z (Slice) dimension. ")

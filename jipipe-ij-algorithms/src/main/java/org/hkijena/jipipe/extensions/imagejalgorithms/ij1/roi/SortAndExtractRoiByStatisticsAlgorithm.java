@@ -18,10 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -45,14 +42,14 @@ import java.util.Map;
 @JIPipeDocumentation(name = "Sort and extract ROI by statistics", description = "Sorts the ROI list elements via statistics and allows to you extract the n top values. " +
         "Optionally, line and fill colors of the output rows can be colored according to the output order. ")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
-public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
+@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+public class SortAndExtractRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private MeasurementColumnSortOrder.List sortOrderList = new MeasurementColumnSortOrder.List();
     private NumericFunctionExpression selection = new NumericFunctionExpression();
-    private RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics"
+    private final RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics"
     );
     private boolean autoClamp = true;
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
@@ -64,7 +61,7 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
      * @param info the info
      */
     public SortAndExtractRoiByStatisticsAlgorithm(JIPipeNodeInfo info) {
-        super(info, ROIListData.class, "Output");
+        super(info);
         roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
         selection.ensureExactValue(true);
         sortOrderList.addNewInstance();
@@ -98,61 +95,59 @@ public class SortAndExtractRoiByStatisticsAlgorithm extends ImageRoiProcessorAlg
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
 
+        ROIListData inputRois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+        ImagePlusData inputReference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+
         ROIListData outputData = new ROIListData();
 
-        for (Map.Entry<ImagePlusData, ROIListData> entry : getReferenceImage(dataBatch, progressInfo).entrySet()) {
-            ROIListData data = entry.getValue();
-            // Obtain statistics
-            roiStatisticsAlgorithm.clearSlotData();
-            roiStatisticsAlgorithm.getInputSlot("ROI").addData(data, progressInfo);
-            if (entry.getKey() == null) {
-                roiStatisticsAlgorithm.setOverrideReferenceImage(false);
-            } else {
-                roiStatisticsAlgorithm.setOverrideReferenceImage(true);
-                roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey(), progressInfo);
-            }
-            roiStatisticsAlgorithm.run(progressInfo);
-            ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
+        ROIListData data = inputRois;
+        // Obtain statistics
+        roiStatisticsAlgorithm.clearSlotData();
+        roiStatisticsAlgorithm.getInputSlot("ROI").addData(data, progressInfo);
+        if (inputReference != null) {
+            roiStatisticsAlgorithm.getInputSlot("Reference").addData(inputReference, progressInfo);
+        }
+        roiStatisticsAlgorithm.run(progressInfo);
+        ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
 
-            // Apply sorting
-            if (!sortOrderList.isEmpty()) {
-                Comparator<Integer> comparator = sortOrderList.get(0).getRowComparator(statistics);
-                for (int i = 1; i < sortOrderList.size(); i++) {
-                    comparator = comparator.thenComparing(sortOrderList.get(i).getRowComparator(statistics));
-                }
-                List<Integer> rowIndices = new ArrayList<>(statistics.getRowCount());
-                for (int i = 0; i < statistics.getRowCount(); i++) {
-                    rowIndices.add(i);
-                }
-                rowIndices.sort(comparator);
-
-                ROIListData sortedData = new ROIListData();
-                for (int i = 0; i < data.size(); i++) {
-                    sortedData.add(null);
-                }
-                for (int i = 0; i < data.size(); i++) {
-                    sortedData.set(i, data.get(rowIndices.get(i)));
-                }
-                data = sortedData;
+        // Apply sorting
+        if (!sortOrderList.isEmpty()) {
+            Comparator<Integer> comparator = sortOrderList.get(0).getRowComparator(statistics);
+            for (int i = 1; i < sortOrderList.size(); i++) {
+                comparator = comparator.thenComparing(sortOrderList.get(i).getRowComparator(statistics));
             }
-
-            ExpressionVariables variables = new ExpressionVariables();
-            variables.putAnnotations(dataBatch.getMergedTextAnnotations());
-            int topN = (int) selection.apply(data.size(), variables);
-            if (autoClamp) {
-                topN = Math.min(topN, data.size());
+            List<Integer> rowIndices = new ArrayList<>(statistics.getRowCount());
+            for (int i = 0; i < statistics.getRowCount(); i++) {
+                rowIndices.add(i);
             }
+            rowIndices.sort(comparator);
 
-            for (int i = 0; i < topN; i++) {
-                Roi roi = data.get(i);
-                if (mapFillColor.isEnabled()) {
-                    roi.setFillColor(mapFillColor.getContent().apply(i * 1.0 / topN));
-                }
-                if (mapLineColor.isEnabled()) {
-                    roi.setStrokeColor(mapLineColor.getContent().apply(i * 1.0 / topN));
-                }
-                outputData.add(roi);
+            ROIListData sortedData = new ROIListData();
+            for (int i = 0; i < data.size(); i++) {
+                sortedData.add(null);
             }
+            for (int i = 0; i < data.size(); i++) {
+                sortedData.set(i, data.get(rowIndices.get(i)));
+            }
+            data = sortedData;
+        }
+
+        ExpressionVariables variables = new ExpressionVariables();
+        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        int topN = (int) selection.apply(data.size(), variables);
+        if (autoClamp) {
+            topN = Math.min(topN, data.size());
+        }
+
+        for (int i = 0; i < topN; i++) {
+            Roi roi = data.get(i);
+            if (mapFillColor.isEnabled()) {
+                roi.setFillColor(mapFillColor.getContent().apply(i * 1.0 / topN));
+            }
+            if (mapLineColor.isEnabled()) {
+                roi.setStrokeColor(mapLineColor.getContent().apply(i * 1.0 / topN));
+            }
+            outputData.add(roi);
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);

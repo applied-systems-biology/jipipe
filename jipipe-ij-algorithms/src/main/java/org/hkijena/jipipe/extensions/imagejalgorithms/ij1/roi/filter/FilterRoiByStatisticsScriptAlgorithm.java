@@ -20,16 +20,12 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.ImageRoiProcessorAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.RoiStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -53,13 +49,12 @@ import java.util.Map;
 @JIPipeDocumentation(name = "Filter ROI by statistics (Script)", description = "Filters the ROI list elements via statistics. The Python script contains a variable 'roi_list' " +
         "that contains dictionaries. Each one has an item 'data' containing the ImageJ ROI, and a dictionary 'stats' containing the statistics.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Filter")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
-public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgorithm {
+@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+public class FilterRoiByStatisticsScriptAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics"
-    );
+    private final RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode(RoiStatisticsAlgorithm.class);
     private PythonInterpreter pythonInterpreter;
     private PythonScript code = new PythonScript();
     private JIPipeDynamicParameterCollection scriptParameters = new JIPipeDynamicParameterCollection(true,
@@ -71,7 +66,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
      * @param info the info
      */
     public FilterRoiByStatisticsScriptAlgorithm(JIPipeNodeInfo info) {
-        super(info, ROIListData.class, "Output");
+        super(info);
         registerSubParameter(scriptParameters);
     }
 
@@ -116,34 +111,27 @@ public class FilterRoiByStatisticsScriptAlgorithm extends ImageRoiProcessorAlgor
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData allROIs = new ROIListData();
-        ResultsTableData allStatistics = new ResultsTableData();
+        ROIListData inputRois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+        ImagePlusData inputReference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
 
-        for (Map.Entry<ImagePlusData, ROIListData> entry : getReferenceImage(dataBatch, progressInfo).entrySet()) {
-            // Obtain statistics
-            roiStatisticsAlgorithm.clearSlotData();
-            roiStatisticsAlgorithm.getInputSlot("ROI").addData(entry.getValue(), progressInfo);
-            if (entry.getKey() == null) {
-                roiStatisticsAlgorithm.setOverrideReferenceImage(false);
-            } else {
-                roiStatisticsAlgorithm.setOverrideReferenceImage(true);
-                roiStatisticsAlgorithm.getInputSlot("Reference").addData(entry.getKey(), progressInfo);
-            }
-            roiStatisticsAlgorithm.run(progressInfo);
-            ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
-            allROIs.addAll(entry.getValue());
-            allStatistics.addRows(statistics);
+        // Obtain statistics
+        roiStatisticsAlgorithm.clearSlotData();
+        roiStatisticsAlgorithm.getInputSlot("ROI").addData(inputRois, progressInfo);
+        if(inputReference != null) {
+            roiStatisticsAlgorithm.getInputSlot("Reference").addData(inputReference, progressInfo);
         }
+        roiStatisticsAlgorithm.run(progressInfo);
+        ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
 
         List<PyDictionary> roiList = new ArrayList<>();
-        for (int row = 0; row < allROIs.size(); row++) {
+        for (int row = 0; row < inputRois.size(); row++) {
             PyDictionary roiItemDictionary = new PyDictionary();
             PyDictionary statisticsDictionary = new PyDictionary();
-            for (int col = 0; col < allStatistics.getColumnCount(); col++) {
-                statisticsDictionary.put(allStatistics.getColumnName(col), allStatistics.getValueAsDouble(row, col));
+            for (int col = 0; col < statistics.getColumnCount(); col++) {
+                statisticsDictionary.put(statistics.getColumnName(col), statistics.getValueAsDouble(row, col));
             }
             roiItemDictionary.put("stats", statisticsDictionary);
-            roiItemDictionary.put("data", allROIs.get(row));
+            roiItemDictionary.put("data", inputRois.get(row));
             roiList.add(roiItemDictionary);
         }
 

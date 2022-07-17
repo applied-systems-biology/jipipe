@@ -6,10 +6,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -28,20 +25,19 @@ import java.util.Set;
 
 @JIPipeDocumentation(name = "Set ROI name by expression", description = "Utilizes an expression to generate a ROI name for each individual ROI in the supplied ROI lists." +
         "The expression has access to annotations and statistics.")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-public class GenerateROINameAlgorithm extends ImageRoiProcessorAlgorithm {
+public class GenerateROINameAlgorithm extends JIPipeIteratingAlgorithm {
 
     private StringQueryExpression expression = new StringQueryExpression();
     private boolean includeAnnotations = true;
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
-
     private boolean measureInPhysicalUnits = true;
 
     public GenerateROINameAlgorithm(JIPipeNodeInfo info) {
-        super(info, ROIListData.class, "ROI");
+        super(info);
     }
 
     public GenerateROINameAlgorithm(GenerateROINameAlgorithm other) {
@@ -54,6 +50,10 @@ public class GenerateROINameAlgorithm extends ImageRoiProcessorAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+
+        ROIListData inputRois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+        ImagePlusData inputReference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+
         ROIListData result = new ROIListData();
         ExpressionVariables parameters = new ExpressionVariables();
         ROIListData tmp = new ROIListData();
@@ -64,30 +64,27 @@ public class GenerateROINameAlgorithm extends ImageRoiProcessorAlgorithm {
             }
         }
 
-        Map<ImagePlusData, ROIListData> groupedByReference = getReferenceImage(dataBatch, progressInfo);
-        for (Map.Entry<ImagePlusData, ROIListData> referenceEntry : groupedByReference.entrySet()) {
-            ImagePlus referenceImage = null;
-            if (referenceEntry.getKey() != null) {
-                referenceImage = referenceEntry.getKey().getImage();
-            }
-            if (referenceImage != null) {
-                // This is needed, as measuring messes with the image
-                referenceImage = ImageJUtils.duplicate(referenceImage);
-            }
-            for (Roi roi : referenceEntry.getValue()) {
-                tmp.clear();
-                tmp.add(roi);
+        ImagePlus referenceImage = null;
+        if (inputReference != null) {
+            referenceImage = inputReference.getImage();
+        }
+        if (referenceImage != null) {
+            // This is needed, as measuring messes with the image
+            referenceImage = ImageJUtils.duplicate(referenceImage);
+        }
+        for (Roi roi : inputRois) {
+            tmp.clear();
+            tmp.add(roi);
 
-                ResultsTableData measured = tmp.measure(referenceImage, measurements, true, measureInPhysicalUnits);
-                for (int col = 0; col < measured.getColumnCount(); col++) {
-                    parameters.set(measured.getColumnName(col), measured.getValueAt(0, col) + "");
-                }
-
-                String newName = StringUtils.nullToEmpty(expression.evaluate(parameters));
-                Roi copy = (Roi) roi.clone();
-                copy.setName(newName);
-                result.add(copy);
+            ResultsTableData measured = tmp.measure(referenceImage, measurements, true, measureInPhysicalUnits);
+            for (int col = 0; col < measured.getColumnCount(); col++) {
+                parameters.set(measured.getColumnName(col), measured.getValueAt(0, col) + "");
             }
+
+            String newName = StringUtils.nullToEmpty(expression.evaluate(parameters));
+            Roi copy = (Roi) roi.clone();
+            copy.setName(newName);
+            result.add(copy);
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), result, progressInfo);

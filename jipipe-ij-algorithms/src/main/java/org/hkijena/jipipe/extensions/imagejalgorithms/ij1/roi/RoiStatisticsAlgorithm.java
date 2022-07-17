@@ -20,10 +20,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -36,6 +33,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,10 +44,10 @@ import java.util.Map;
  */
 @JIPipeDocumentation(name = "Extract ROI statistics", description = "Generates a results table containing ROI statistics.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference")
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
-public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
+@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true)
+public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
     private boolean applyPerSlice = false;
@@ -66,7 +64,7 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
      * @param info the info
      */
     public RoiStatisticsAlgorithm(JIPipeNodeInfo info) {
-        super(info, ResultsTableData.class, "Measurements");
+        super(info);
         indexAnnotation.setContent("Image index");
     }
 
@@ -89,32 +87,33 @@ public class RoiStatisticsAlgorithm extends ImageRoiProcessorAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ROIListData roi = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
+        ImagePlus reference = getReferenceImage(dataBatch, progressInfo);
         if (roi.isEmpty()) {
             dataBatch.addOutputData(getFirstOutputSlot(), new ResultsTableData(), progressInfo);
             return;
         }
-        Map<ImagePlusData, ROIListData> groupedByReference = getReferenceImage(dataBatch, progressInfo);
-        for (Map.Entry<ImagePlusData, ROIListData> referenceEntry : groupedByReference.entrySet()) {
-            Map<ImageSliceIndex, List<Roi>> grouped = referenceEntry.getValue().groupByPosition(applyPerSlice, applyPerChannel, applyPerFrame);
-            for (Map.Entry<ImageSliceIndex, List<Roi>> entry : grouped.entrySet()) {
-                ROIListData data = new ROIListData(entry.getValue());
-                ImagePlus referenceImage = null;
-                if (referenceEntry.getKey() != null) {
-                    referenceImage = referenceEntry.getKey().getImage();
-                }
-                if (referenceImage != null) {
-                    // This is needed, as measuring messes with the image
-                    referenceImage = ImageJUtils.duplicate(referenceImage);
-                }
-                ResultsTableData result = data.measure(referenceImage, measurements, addNameToTable, measureInPhysicalUnits);
-                List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-                if (indexAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(indexAnnotation.getContent())) {
-                    annotations.add(new JIPipeTextAnnotation(indexAnnotation.getContent(), entry.getKey().toString()));
-                }
+        Map<ImageSliceIndex, List<Roi>> grouped = roi.groupByPosition(applyPerSlice, applyPerChannel, applyPerFrame);
+        for (Map.Entry<ImageSliceIndex, List<Roi>> entry : grouped.entrySet()) {
+            ROIListData data = new ROIListData(entry.getValue());
+            ResultsTableData result = data.measure(reference, measurements, addNameToTable, measureInPhysicalUnits);
+            List<JIPipeTextAnnotation> annotations = new ArrayList<>();
+            if (indexAnnotation.isEnabled() && !StringUtils.isNullOrEmpty(indexAnnotation.getContent())) {
+                annotations.add(new JIPipeTextAnnotation(indexAnnotation.getContent(), entry.getKey().toString()));
+            }
 
-                dataBatch.addOutputData(getFirstOutputSlot(), result, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+            dataBatch.addOutputData(getFirstOutputSlot(), result, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
+        }
+    }
+
+    private ImagePlus getReferenceImage(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+        ImagePlus reference = null;
+        {
+            ImagePlusData data = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+            if(data != null) {
+                reference = data.getDuplicateImage();
             }
         }
+        return reference;
     }
 
     @JIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
