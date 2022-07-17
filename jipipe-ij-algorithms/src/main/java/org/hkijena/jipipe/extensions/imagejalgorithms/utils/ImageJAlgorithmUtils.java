@@ -22,6 +22,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
+import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 public class ImageJAlgorithmUtils {
@@ -366,5 +367,27 @@ public class ImageJAlgorithmUtils {
             }
         }
         throw new UnsupportedOperationException();
+    }
+
+    public static void setLutFromColorMap(ImagePlus image, ColorMap colorMap, boolean applyToAllPlanes) {
+        LUT lut = colorMap.toLUT();
+        setLut(image, lut, applyToAllPlanes);
+    }
+
+    public static void setLut(ImagePlus image, LUT lut, boolean applyToAllPlanes) {
+        if (applyToAllPlanes && image.isStack()) {
+            ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
+            for (int z = 0; z < image.getNSlices(); z++) {
+                for (int c = 0; c < image.getNChannels(); c++) {
+                    for (int t = 0; t < image.getNFrames(); t++) {
+                        image.setPosition(c, z, t);
+                        image.getProcessor().setLut(lut);
+                    }
+                }
+            }
+            image.setPosition(original.getC(), original.getZ(), original.getT());
+        } else {
+            image.getProcessor().setLut(lut);
+        }
     }
 }

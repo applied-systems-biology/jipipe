@@ -34,6 +34,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
@@ -41,6 +42,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collections;
 
 /**
@@ -351,12 +353,24 @@ public class ImagePlusData implements JIPipeData {
             int imageWidth = (int) (image.getWidth() * factor);
             int imageHeight = (int) (image.getHeight() * factor);
             ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
+            if(rgbImage.getStackSize() != 1) {
+                // Reduce processing time
+                rgbImage = new ImagePlus("Preview", rgbImage.getProcessor());
+            }
+            if(rgbImage == image) {
+                rgbImage = ImageJUtils.duplicate(rgbImage);
+            }
+            ImageJUtils.calibrate(rgbImage, ImageJCalibrationMode.AutomaticImageJ,0,1);
+            rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
 
             // ROI rendering
-            if (image.getRoi() != null) {
-                rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
-                ROIListData rois = new ROIListData();
+            ROIListData rois = new ROIListData();
+            if(image.getRoi() != null)
                 rois.add(image.getRoi());
+            if(image.getOverlay() != null) {
+                rois.addAll(Arrays.asList(image.getOverlay().toArray()));
+            }
+            if(!rois.isEmpty()) {
                 rois.draw(rgbImage.getProcessor(),
                         new ImageSliceIndex(0, 0, 0),
                         false,

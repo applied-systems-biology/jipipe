@@ -97,6 +97,20 @@ public interface JIPipeParameterCollection {
     }
 
     /**
+     * Adds a listener to the change of any parameter.
+     * Wrapper around creating an anonymous object
+     * @param consumer the listener
+     */
+    default void addParameterChangeListener(Consumer<ParameterChangedEvent> consumer) {
+        getEventBus().register(new Object() {
+            @Subscribe
+            public void onParameterChanged(ParameterChangedEvent event) {
+            consumer.accept(event);
+            }
+        });
+    }
+
+    /**
      * Sets a parameter and triggers the associated events
      *
      * @param key   the parameter key
