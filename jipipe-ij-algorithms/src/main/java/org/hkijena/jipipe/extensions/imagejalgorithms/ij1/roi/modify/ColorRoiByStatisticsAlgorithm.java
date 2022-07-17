@@ -126,7 +126,7 @@ public class ColorRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             double relativeFill = (fillValue - fillMin) / (fillMax - fillMin);
             double lineValue = lineValues.get(row);
             double relativeLine = (lineValue - lineMin) / (lineMax - lineMin);
-            Roi roi = inputRois.get(row);
+            Roi roi = (Roi) inputRois.get(row).clone();
             if (mapFillColor.isEnabled()) {
                 roi.setFillColor(mapFillColor.getContent().apply(relativeFill));
             }
