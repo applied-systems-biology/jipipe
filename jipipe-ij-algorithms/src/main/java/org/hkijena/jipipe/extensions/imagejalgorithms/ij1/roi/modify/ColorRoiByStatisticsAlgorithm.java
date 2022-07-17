@@ -133,9 +133,8 @@ public class ColorRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             if (mapLineColor.isEnabled()) {
                 roi.setStrokeColor(mapLineColor.getContent().apply(relativeLine));
             }
+            outputData.add(roi);
         }
-
-        outputData.addAll(inputRois);
 
         dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
