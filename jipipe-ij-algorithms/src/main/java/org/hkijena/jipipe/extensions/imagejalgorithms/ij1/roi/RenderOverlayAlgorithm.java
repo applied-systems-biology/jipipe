@@ -31,6 +31,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
@@ -151,13 +152,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             final int targetHeight = (int) (magnification * reference.getHeight());
             ImageStack targetStack = new ImageStack(targetWidth, targetHeight, reference.getStackSize());
             ImageJUtils.forEachIndexedZCTSlice(reference, (sourceIp, index) -> {
-                ImageProcessor scaledSourceIp = magnification != 1.0 ? sourceIp.resize((int) (magnification * sourceIp.getWidth()), (int) (magnification * sourceIp.getHeight()), false) : sourceIp;
-                BufferedImage bufferedImage = BufferedImageUtils.copyBufferedImageToARGB(scaledSourceIp.getBufferedImage());
-                Graphics2D graphics2D = bufferedImage.createGraphics();
-                drawer.drawOverlayOnGraphics(finalRois, graphics2D, new Rectangle(0,0,scaledSourceIp.getWidth(),scaledSourceIp.getHeight()), index, Collections.emptySet(), magnification);
-                graphics2D.dispose();
-                ColorProcessor render = new ColorProcessor(bufferedImage);
-                targetStack.setProcessor(render, index.zeroSliceIndexToOneStackIndex(reference));
+                drawScaledRoi(reference, drawer, finalRois, targetStack, sourceIp, index);
             }, progressInfo);
 
             // Generate final output
@@ -168,6 +163,21 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         }
 
+    }
+
+    private void drawScaledRoi(ImagePlus reference, RoiDrawer drawer, ROIListData finalRois, ImageStack targetStack, ImageProcessor sourceIp, ImageSliceIndex index) {
+        ImageProcessor scaledSourceIp = magnification != 1.0 ? sourceIp.resize((int) (magnification * sourceIp.getWidth()), (int) (magnification * sourceIp.getHeight()), false) : sourceIp;
+        ImagePlus sliceImage = new ImagePlus("slice", scaledSourceIp);
+        sliceImage.copyScale(reference);
+        sliceImage.setCalibration(reference.getCalibration());
+        sliceImage = ImageJUtils.convertToColorRGBIfNeeded(sliceImage);
+//                sliceImage = drawer.draw(sliceImage, finalRois, progressInfo);
+        BufferedImage bufferedImage = BufferedImageUtils.copyBufferedImageToARGB(sliceImage.getBufferedImage());
+        Graphics2D graphics2D = bufferedImage.createGraphics();
+        drawer.drawOverlayOnGraphics(finalRois, graphics2D, new Rectangle(0,0,scaledSourceIp.getWidth(),scaledSourceIp.getHeight()), index, Collections.emptySet(), magnification);
+        graphics2D.dispose();
+        ColorProcessor render = new ColorProcessor(bufferedImage);
+        targetStack.setProcessor(render, index.zeroSliceIndexToOneStackIndex(reference));
     }
 
     @JIPipeDocumentation(name = "Opacity", description = "Opacity of the added ROI and labels. If zero, they are not visible. If set to one, they are fully visible.")

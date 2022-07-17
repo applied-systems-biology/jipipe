@@ -367,6 +367,9 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     @Override
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
         if(renderROIAsOverlayViewMenuItem.getState()) {
+            for (Roi roi : rois) {
+                ImageJUtils.setRoiCanvas(roi, getCurrentImage(), getViewerPanel().getZoomedDummyCanvas());
+            }
             roiDrawer.drawOverlayOnGraphics(rois, graphics2D, renderArea, sliceIndex, new HashSet<>(roiListControl.getSelectedValuesList()), getViewerPanel().getCanvas().getZoom());
         }
     }
