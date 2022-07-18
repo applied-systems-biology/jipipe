@@ -38,7 +38,7 @@ import org.hkijena.jipipe.ui.cache.JIPipeDataTableToFilesByMetadataExporterRun;
 import org.hkijena.jipipe.ui.cache.JIPipeDataTableToOutputExporterRun;
 import org.hkijena.jipipe.ui.cache.JIPipeDataTableToZIPExporterRun;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.PreviewControlUI;
+import org.hkijena.jipipe.ui.components.DataPreviewControlUI;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeComponentCellRenderer;
 import org.hkijena.jipipe.ui.components.search.ExtendedDataTableSearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
@@ -188,7 +188,7 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
         // Export menu
         initializeExportMenu();
 
-        PreviewControlUI previewControlUI = new PreviewControlUI();
+        DataPreviewControlUI previewControlUI = new DataPreviewControlUI();
         menuManager.add(previewControlUI);
     }
 

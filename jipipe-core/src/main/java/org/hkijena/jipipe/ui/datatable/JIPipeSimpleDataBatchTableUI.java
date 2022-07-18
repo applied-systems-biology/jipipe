@@ -18,7 +18,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
-import org.hkijena.jipipe.ui.components.PreviewControlUI;
+import org.hkijena.jipipe.ui.components.DataPreviewControlUI;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeComponentCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.search.SearchTextFieldTableRowFilter;
@@ -88,7 +88,7 @@ public class JIPipeSimpleDataBatchTableUI extends JPanel {
         searchTextField.addActionListener(e -> reloadTable());
         toolBar.add(searchTextField);
 
-        PreviewControlUI previewControlUI = new PreviewControlUI();
+        DataPreviewControlUI previewControlUI = new DataPreviewControlUI();
         toolBar.add(previewControlUI);
 
         GeneralDataSettings.getInstance().getEventBus().register(new Object() {

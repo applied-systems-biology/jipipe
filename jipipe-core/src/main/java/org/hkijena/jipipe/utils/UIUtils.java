@@ -1348,6 +1348,24 @@ public class UIUtils {
         return label;
     }
 
+    public static JPanel boxVertical(Component... components) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        for (Component component : components) {
+            panel.add(component);
+        }
+        return panel;
+    }
+
+    public static JPanel boxHorizontal(Component... components) {
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
+        for (Component component : components) {
+            panel.add(component);
+        }
+        return panel;
+    }
+
 
     /**
      * Installs an extension menu

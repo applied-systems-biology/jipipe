@@ -22,12 +22,12 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.util.Optional;
 
-public class PreviewControlUI extends JPanel {
+public class DataPreviewControlUI extends JPanel {
 
     private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
     private final JButton zoomStatusButton = new JButton();
 
-    public PreviewControlUI() {
+    public DataPreviewControlUI() {
         initialize();
         refreshZoomStatus();
         dataSettings.getEventBus().register(this);
@@ -46,13 +46,39 @@ public class PreviewControlUI extends JPanel {
         add(zoomOutButton);
 
         UIUtils.makeBorderlessWithoutMargin(zoomStatusButton);
-        zoomStatusButton.addActionListener(e -> setSizeManually());
+        JPopupMenu zoomMenu = UIUtils.addPopupMenuToComponent(zoomStatusButton);
+        initializeZoomMenu(zoomMenu);
         add(zoomStatusButton);
 
         JButton zoomInButton = new JButton(UIUtils.getIconFromResources("actions/zoom-in.png"));
         UIUtils.makeFlat25x25(zoomInButton);
         zoomInButton.addActionListener(e -> increaseSize());
         add(zoomInButton);
+    }
+
+    private void initializeZoomMenu(JPopupMenu zoomMenu) {
+        addZoomOption(zoomMenu, 32);
+        addZoomOption(zoomMenu, 48);
+        addZoomOption(zoomMenu, 64);
+        addZoomOption(zoomMenu, 120);
+        addZoomOption(zoomMenu, 180);
+        addZoomOption(zoomMenu, 240);
+        addZoomOption(zoomMenu, 350);
+        zoomMenu.addSeparator();
+        {
+            JMenuItem menuItem = new JMenuItem("Custom preview size ...");
+            menuItem.addActionListener(e -> setSizeManually());
+            zoomMenu.add(menuItem);
+        }
+    }
+
+    private void addZoomOption(JPopupMenu zoomMenu, int size) {
+        JMenuItem menuItem = new JMenuItem(size + " px" );
+        menuItem.setIcon(UIUtils.getIconFromResources("actions/zoom.png"));
+        menuItem.addActionListener(e->{
+            ParameterUtils.setParameter(dataSettings, "preview-size", size);
+        });
+        zoomMenu.add(menuItem);
     }
 
     private void setSizeManually() {

@@ -28,7 +28,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.*;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.PreviewControlUI;
+import org.hkijena.jipipe.ui.components.DataPreviewControlUI;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeComponentCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.search.SearchTextFieldTableRowFilter;
@@ -173,7 +173,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
         // Export menu
         initializeExportMenu();
 
-        PreviewControlUI previewControlUI = new PreviewControlUI();
+        DataPreviewControlUI previewControlUI = new DataPreviewControlUI();
         menuManager.add(previewControlUI);
     }
 
