@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -47,6 +48,7 @@ import java.util.Map;
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true)
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (ROI)")
 public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
