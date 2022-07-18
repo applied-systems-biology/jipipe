@@ -33,6 +33,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -510,32 +511,32 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.diameter = diameter;
     }
 
-    @JIPipeDocumentation(name = "Model", description = "The following settings are related to the model.")
-    @JIPipeParameter("model-parameters")
+    @JIPipeDocumentation(name = "Cellpose: Model", description = "The following settings are related to the model.")
+    @JIPipeParameter(value = "model-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
     public ModelParameters getModelParameters() {
         return modelParameters;
     }
 
-    @JIPipeDocumentation(name = "Performance", description = "The following settings are related to the performance of the operation (e.g., tiling).")
-    @JIPipeParameter(value = "performance-parameters", collapsed = true)
+    @JIPipeDocumentation(name = "Cellpose: Performance", description = "The following settings are related to the performance of the operation (e.g., tiling).")
+    @JIPipeParameter(value = "performance-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
     public PerformanceParameters getPerformanceParameters() {
         return performanceParameters;
     }
 
-    @JIPipeDocumentation(name = "Tweaks", description = "Additional options like augmentation and averaging over multiple networks")
-    @JIPipeParameter("enhancement-parameters")
+    @JIPipeDocumentation(name = "Cellpose: Tweaks", description = "Additional options like augmentation and averaging over multiple networks")
+    @JIPipeParameter(value = "enhancement-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
     public EnhancementParameters getEnhancementParameters() {
         return enhancementParameters;
     }
 
-    @JIPipeDocumentation(name = "Thresholds", description = "Parameters that control which objects are selected.")
-    @JIPipeParameter("threshold-parameters")
+    @JIPipeDocumentation(name = "Cellpose: Thresholds", description = "Parameters that control which objects are selected.")
+    @JIPipeParameter(value = "threshold-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
     public ThresholdParameters getThresholdParameters() {
         return thresholdParameters;
     }
 
-    @JIPipeDocumentation(name = "Outputs", description = "The following settings allow you to select which outputs are generated.")
-    @JIPipeParameter(value = "output-parameters", collapsed = true)
+    @JIPipeDocumentation(name = "Cellpose: Outputs", description = "The following settings allow you to select which outputs are generated.")
+    @JIPipeParameter(value = "output-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
     public OutputParameters getOutputParameters() {
         return outputParameters;
     }
