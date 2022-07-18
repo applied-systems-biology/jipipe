@@ -49,7 +49,7 @@ public class MenuManager {
         for (int i = components.length - 1; i >= 0; i--) {
             Component c = components[i];
             if(targetType.isAssignableFrom(c.getClass())) {
-                menuBar.add(component, i);
+                menuBar.add(component, i + 1);
                 found = true;
                 break;
             }

@@ -197,6 +197,10 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
         menuManager.add(previewControlUI);
     }
 
+    public MenuManager getMenuManager() {
+        return menuManager;
+    }
+
     private void initializeViewMenu() {
         JMenu viewMenu = menuManager.getOrCreateMenu("View");
 
