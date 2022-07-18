@@ -63,7 +63,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private JIPipeGraphNode batchesNodeCopy;
     private boolean autoRefresh = true;
     private DataBatchGeneratorWorker lastWorker = null;
-    private DataBatchTableUI2 batchTable;
+    private DataBatchAssistantDataTableUI batchTable;
 
 
     /**
@@ -263,7 +263,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         batchPreviewOverview.setFloatable(false);
         batchPanel.add(batchPreviewOverview, BorderLayout.NORTH);
 
-        this.batchTable = new DataBatchTableUI2(getWorkbench(), new JIPipeDataTable(JIPipeData.class));
+        this.batchTable = new DataBatchAssistantDataTableUI(getWorkbench(), new JIPipeDataTable(JIPipeData.class));
         batchPanel.add(batchTable, BorderLayout.CENTER);
     }
 

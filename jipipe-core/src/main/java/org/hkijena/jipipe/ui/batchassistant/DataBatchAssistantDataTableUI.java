@@ -56,20 +56,20 @@ import java.util.Set;
 /**
  * UI that displays a {@link JIPipeDataTable} that is cached
  */
-public class DataBatchTableUI2 extends JIPipeWorkbenchPanel {
+public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
 
     private final SearchTextField searchTextField = new SearchTextField();
     private JIPipeDataTable dataTable;
     private JXTable table;
     private FormPanel rowUIList;
-    private DataBatchTableModel2 dataTableModel;
+    private DataBatchAssistantTableModel dataTableModel;
     private JScrollPane scrollPane;
 
     /**
      * @param workbenchUI the workbench UI
      * @param dataTable   The slot
      */
-    public DataBatchTableUI2(JIPipeWorkbench workbenchUI, JIPipeDataTable dataTable) {
+    public DataBatchAssistantDataTableUI(JIPipeWorkbench workbenchUI, JIPipeDataTable dataTable) {
         super(workbenchUI);
         this.dataTable = dataTable;
 
@@ -96,7 +96,7 @@ public class DataBatchTableUI2 extends JIPipeWorkbenchPanel {
     }
 
     private void reloadTable() {
-        dataTableModel = new DataBatchTableModel2(table, dataTable);
+        dataTableModel = new DataBatchAssistantTableModel(table, dataTable);
         table.setModel(dataTableModel);
         dataTableModel.setScrollPane(scrollPane);
         if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
@@ -202,7 +202,7 @@ public class DataBatchTableUI2 extends JIPipeWorkbenchPanel {
             String name = "Data batches: " + getDataTable().getDisplayName();
             getWorkbench().getDocumentTabPane().addTab(name,
                     UIUtils.getIconFromResources("actions/database.png"),
-                    new DataBatchTableUI2(getWorkbench(), getDataTable()),
+                    new DataBatchAssistantDataTableUI(getWorkbench(), getDataTable()),
                     DocumentTabPane.CloseMode.withSilentCloseButton,
                     true);
             getWorkbench().getDocumentTabPane().switchToLastTab();
@@ -323,7 +323,7 @@ public class DataBatchTableUI2 extends JIPipeWorkbenchPanel {
     }
 
     /**
-     * Renders the column header of {@link DataBatchTableModel2}
+     * Renders the column header of {@link DataBatchAssistantTableModel}
      */
     public static class WrapperColumnHeaderRenderer implements TableCellRenderer {
         private final JIPipeDataTable dataTable;

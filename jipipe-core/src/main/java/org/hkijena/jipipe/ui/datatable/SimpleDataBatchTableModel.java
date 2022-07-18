@@ -1,4 +1,18 @@
-package org.hkijena.jipipe.ui.batchassistant;
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ *
+ */
+
+package org.hkijena.jipipe.ui.datatable;
 
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -16,7 +30,7 @@ import java.util.*;
 /**
  * A table model that displays data batches
  */
-public class DataBatchTableModel implements TableModel {
+public class SimpleDataBatchTableModel implements TableModel {
 
     private final List<JIPipeMergingDataBatch> dataBatchList;
     private final List<String> inputSlotNames = new ArrayList<>();
@@ -26,7 +40,7 @@ public class DataBatchTableModel implements TableModel {
     private final JTable table;
     private JScrollPane scrollPane;
 
-    public DataBatchTableModel(JTable table, List<JIPipeMergingDataBatch> dataBatchList) {
+    public SimpleDataBatchTableModel(JTable table, List<JIPipeMergingDataBatch> dataBatchList) {
         this.table = table;
         this.dataBatchList = dataBatchList;
 

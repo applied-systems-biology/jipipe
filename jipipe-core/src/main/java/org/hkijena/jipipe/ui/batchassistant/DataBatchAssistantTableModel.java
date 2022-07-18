@@ -32,7 +32,7 @@ import java.util.Map;
  * Wraps around a {@link JIPipeDataTable} to display additional columns.
  * For example, it is capable of displaying previews.
  */
-public class DataBatchTableModel2 implements TableModel {
+public class DataBatchAssistantTableModel implements TableModel {
 
     private final JTable table;
     private final JIPipeDataTable dataTable;
@@ -48,7 +48,7 @@ public class DataBatchTableModel2 implements TableModel {
      * @param table     the table
      * @param dataTable the wrapped slot
      */
-    public DataBatchTableModel2(JTable table, JIPipeDataTable dataTable) {
+    public DataBatchAssistantTableModel(JTable table, JIPipeDataTable dataTable) {
         this.table = table;
         this.dataTable = dataTable;
         for (int i = 0; i < dataTable.getRowCount(); i++) {

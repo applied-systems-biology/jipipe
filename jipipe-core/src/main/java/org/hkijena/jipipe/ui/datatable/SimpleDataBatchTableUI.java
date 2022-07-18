@@ -1,4 +1,18 @@
-package org.hkijena.jipipe.ui.batchassistant;
+/*
+ * Copyright by Zoltán Cseresnyés, Ruman Gerst
+ *
+ * Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge
+ * https://www.leibniz-hki.de/en/applied-systems-biology.html
+ * HKI-Center for Systems Biology of Infection
+ * Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI)
+ * Adolf-Reichwein-Straße 23, 07745 Jena, Germany
+ *
+ * The project code is licensed under BSD 2-Clause.
+ * See the LICENSE file provided with the code for the full license.
+ *
+ */
+
+package org.hkijena.jipipe.ui.datatable;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
@@ -20,14 +34,14 @@ import java.util.List;
 /**
  * Panel that displays a data batch table
  */
-public class DataBatchTableUI extends JPanel {
+public class SimpleDataBatchTableUI extends JPanel {
     private final List<JIPipeMergingDataBatch> dataBatchList;
     private JXTable table;
     private JScrollPane scrollPane;
     private SearchTextField searchTextField;
-    private DataBatchTableModel dataTable;
+    private SimpleDataBatchTableModel dataTable;
 
-    public DataBatchTableUI(List<JIPipeMergingDataBatch> dataBatchList) {
+    public SimpleDataBatchTableUI(List<JIPipeMergingDataBatch> dataBatchList) {
         this.dataBatchList = dataBatchList;
         initialize();
         reloadTable();
@@ -45,7 +59,7 @@ public class DataBatchTableUI extends JPanel {
         return dataBatchList;
     }
 
-    public DataBatchTableModel getDataTable() {
+    public SimpleDataBatchTableModel getDataTable() {
         return dataTable;
     }
 
@@ -88,7 +102,7 @@ public class DataBatchTableUI extends JPanel {
     }
 
     private void reloadTable() {
-        dataTable = new DataBatchTableModel(table, dataBatchList);
+        dataTable = new SimpleDataBatchTableModel(table, dataBatchList);
         table.setModel(dataTable);
         dataTable.setScrollPane(scrollPane);
         if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
