@@ -31,6 +31,10 @@ public class ImageViewerUISpotsDisplaySettings implements JIPipeParameterCollect
     public ImageViewerUISpotsDisplaySettings() {
     }
 
+    public static ImageViewerUISpotsDisplaySettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, ImageViewerUISpotsDisplaySettings.class);
+    }
+
     @JIPipeDocumentation(name = "Spot visualization")
     @JIPipeParameter("spot-drawer")
     public SpotDrawer getSpotDrawer() {
@@ -55,9 +59,5 @@ public class ImageViewerUISpotsDisplaySettings implements JIPipeParameterCollect
     @Override
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    public static ImageViewerUISpotsDisplaySettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, ImageViewerUISpotsDisplaySettings.class);
     }
 }

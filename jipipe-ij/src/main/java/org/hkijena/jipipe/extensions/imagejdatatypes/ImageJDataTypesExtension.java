@@ -86,7 +86,6 @@ import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEn
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.extensions.strings.StringsExtension;
 import org.hkijena.jipipe.extensions.tables.ResultsTableDataPreview;
 import org.hkijena.jipipe.extensions.tables.TablesExtension;

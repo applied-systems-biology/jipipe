@@ -151,10 +151,10 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
 
     public void setZoom(double zoom) {
         // Based on limits of ImageCanvas
-        zoom = Math.min(32.0, Math.max(zoom, 1/72.0));
+        zoom = Math.min(32.0, Math.max(zoom, 1 / 72.0));
 
         // Limit zoom based on impact to image
-        if(image!=null) {
+        if (image != null) {
             final double minSize = 128;
             // Math.min to handle long 1px images
             double minZoom = Math.min(minSize / image.getWidth(), minSize / image.getHeight());
@@ -496,13 +496,13 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
      * Moves the image back into the view if its not visible
      */
     public void moveBackIntoViewIfOutside() {
-        if(image != null) {
+        if (image != null) {
             double width = zoom * image.getWidth();
             double height = zoom * image.getHeight();
-            if(contentX < (-width + 16)) {
+            if (contentX < (-width + 16)) {
                 setContentX(0);
             }
-            if(contentY < (-height + 16)) {
+            if (contentY < (-height + 16)) {
                 setContentY(0);
             }
         }

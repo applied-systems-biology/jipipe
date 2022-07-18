@@ -58,10 +58,9 @@ public class PortableCellPoseGPUEnvInstaller extends PortableCellPoseEnvInstalle
         private String pyTorchPipPackage;
 
         public Configuration() {
-            if(SystemUtils.IS_OS_MAC_OSX) {
+            if (SystemUtils.IS_OS_MAC_OSX) {
                 pyTorchPipPackage = "torch torchvision torchaudio";
-            }
-            else {
+            } else {
                 pyTorchPipPackage = "torch==1.10.2+cu102 torchvision==0.11.3+cu102 torchaudio===0.10.2+cu102 -f https://download.pytorch.org/whl/cu102/torch_stable.html";
             }
         }

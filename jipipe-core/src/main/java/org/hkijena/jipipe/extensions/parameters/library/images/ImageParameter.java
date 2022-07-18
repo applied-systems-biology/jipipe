@@ -27,7 +27,7 @@ public class ImageParameter {
     }
 
     public ImageParameter(ImageParameter other) {
-        if(other.image != null) {
+        if (other.image != null) {
             this.image = BufferedImageUtils.copyBufferedImage(other.image);
         }
     }

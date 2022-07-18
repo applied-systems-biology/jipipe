@@ -14,10 +14,6 @@
 
 package org.hkijena.jipipe;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-
-import java.util.Set;
-
 /**
  * Interface shared between all JIPipe extensions
  */
@@ -25,16 +21,18 @@ public interface JIPipeExtension extends JIPipeDependency {
     /**
      * Returns true if the extension is activated.
      * Utilizes the extension ID (default)
+     *
      * @return if the extension is active
      */
     default boolean isActivated() {
-        if(isCoreExtension())
+        if (isCoreExtension())
             return true;
         return JIPipe.getInstance().getExtensionRegistry().getActivatedExtensions().contains(getDependencyId());
     }
 
     /**
      * Returns true if the extension is scheduled to be activated upon the next restart
+     *
      * @return if the extension is scheduled to be activated
      */
     default boolean isScheduledForActivation() {
@@ -43,6 +41,7 @@ public interface JIPipeExtension extends JIPipeDependency {
 
     /**
      * Returns true if the extension is scheduled to be deactivated upon the next restart
+     *
      * @return if the extension is scheduled to be deactivated
      */
     default boolean isScheduledForDeactivation() {
@@ -53,6 +52,7 @@ public interface JIPipeExtension extends JIPipeDependency {
      * Returns whether this extension is a core extension and thus cannot be disabled by users.
      * Defaults to false.
      * Please be sure if you really want to mark an extension as core extension.
+     *
      * @return if the extension cannot be disabled
      */
     default boolean isCoreExtension() {

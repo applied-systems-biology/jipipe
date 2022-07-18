@@ -29,15 +29,15 @@ import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
+import java.awt.*;
 
 public class TrackSchemeCachedDataViewerWindow extends JIPipeCacheDataViewerWindow {
 
     private JToolBar toolBar;
     private AutoResizeSplitPane splitPane;
-    private  JIPipeCachedDataViewerAnnotationInfoPanel annotationInfoPanel;
+    private JIPipeCachedDataViewerAnnotationInfoPanel annotationInfoPanel;
 
-    private  DisplaySettings displaySettings = new DisplaySettings();
+    private DisplaySettings displaySettings = new DisplaySettings();
 
     public TrackSchemeCachedDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);

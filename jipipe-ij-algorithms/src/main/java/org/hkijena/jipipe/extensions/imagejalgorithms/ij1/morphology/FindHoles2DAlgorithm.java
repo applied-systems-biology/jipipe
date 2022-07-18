@@ -23,7 +23,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 @JIPipeCitation("Legland, D.; Arganda-Carreras, I. & Andrey, P. (2016), \"MorphoLibJ: integrated library and plugins for mathematical morphology with ImageJ\", " +
         "Bioinformatics (Oxford Univ Press) 32(22): 3532-3534, PMID 27412086, doi:10.1093/bioinformatics/btw413")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nBinary",aliasName = "Find Holes")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nBinary", aliasName = "Find Holes")
 public class FindHoles2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean blackBackground = true;

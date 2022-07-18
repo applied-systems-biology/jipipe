@@ -22,10 +22,8 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -116,7 +114,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus reference = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ROIListData rois = new ROIListData();
-        if(reference.getOverlay() != null) {
+        if (reference.getOverlay() != null) {
             rois.addAll(Arrays.asList(reference.getOverlay().toArray()));
         }
 
@@ -136,12 +134,11 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         drawer.setIgnoreZ(ignoreZ);
         drawer.setIgnoreT(ignoreT);
 
-        if(magnification == 1.0 && !preferRenderViaOverlay) {
+        if (magnification == 1.0 && !preferRenderViaOverlay) {
             ImagePlus result = drawer.draw(reference, rois, progressInfo);
             result.setOverlay(null);
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
-        }
-        else {
+        } else {
             rois = new ROIListData(rois);
             ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(reference, magnification);
             for (Roi roi : rois) {
@@ -174,7 +171,7 @@ public class RenderOverlayAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 //                sliceImage = drawer.draw(sliceImage, finalRois, progressInfo);
         BufferedImage bufferedImage = BufferedImageUtils.copyBufferedImageToARGB(sliceImage.getBufferedImage());
         Graphics2D graphics2D = bufferedImage.createGraphics();
-        drawer.drawOverlayOnGraphics(finalRois, graphics2D, new Rectangle(0,0,scaledSourceIp.getWidth(),scaledSourceIp.getHeight()), index, Collections.emptySet(), magnification);
+        drawer.drawOverlayOnGraphics(finalRois, graphics2D, new Rectangle(0, 0, scaledSourceIp.getWidth(), scaledSourceIp.getHeight()), index, Collections.emptySet(), magnification);
         graphics2D.dispose();
         ColorProcessor render = new ColorProcessor(bufferedImage);
         targetStack.setProcessor(render, index.zeroSliceIndexToOneStackIndex(reference));

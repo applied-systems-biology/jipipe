@@ -23,11 +23,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
@@ -35,7 +31,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -77,14 +73,14 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
         ImagePlus sourceImage = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo).getImage();
         TrackCollectionData data = dataBatch.getInputData("Tracks", TrackCollectionData.class, progressInfo);
 
-        final Rectangle imageArea = new Rectangle(0,0,sourceImage.getWidth(), sourceImage.getHeight());
+        final Rectangle imageArea = new Rectangle(0, 0, sourceImage.getWidth(), sourceImage.getHeight());
 
         for (Integer trackID : data.getTrackModel().trackIDs(true)) {
             List<JIPipeTextAnnotation> annotationList = new ArrayList<>();
             trackIDAnnotation.addAnnotationIfEnabled(annotationList, trackID + "");
 
             Set<Spot> spots = data.getTrackModel().trackSpots(trackID);
-            if(spots.isEmpty())
+            if (spots.isEmpty())
                 continue;
 
             int spotWidth = minWidth;
@@ -110,8 +106,8 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
                 int x = (int) spot.getDoublePosition(0);
                 int y = (int) spot.getDoublePosition(1);
                 int z = (int) spot.getFloatPosition(2);
-                spotWidth = (int) Math.max(spotWidth, 2*radius);
-                spotHeight = (int) Math.max(spotHeight, 2*radius);
+                spotWidth = (int) Math.max(spotWidth, 2 * radius);
+                spotHeight = (int) Math.max(spotHeight, 2 * radius);
                 int t = Optional.ofNullable(spot.getFeature(Spot.POSITION_T)).orElse(0d).intValue();
                 maxZ = Math.max(z, maxZ);
                 minZ = Math.min(z, minZ);
@@ -130,17 +126,17 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
             maxY += spotHeight / 2;
 
             // If we do not want cropping, set it to the image dimensions
-            if(!cropXY) {
+            if (!cropXY) {
                 minX = 0;
                 maxX = sourceImage.getWidth() - 1;
                 minY = 0;
                 maxY = sourceImage.getHeight() - 1;
             }
-            if(!cropT) {
+            if (!cropT) {
                 minT = 0;
                 maxT = sourceImage.getNFrames() - 1;
             }
-            if(!cropZ) {
+            if (!cropZ) {
                 minZ = 0;
                 maxZ = sourceImage.getNSlices() - 1;
             }
@@ -165,7 +161,7 @@ public class FollowSpotsPerTrackNode extends JIPipeIteratingAlgorithm {
                 int targetZ = z - minZ;
                 int targetT = t - minT;
 
-                Rectangle sourceRect = new Rectangle(x,y,spotWidth,spotHeight);
+                Rectangle sourceRect = new Rectangle(x, y, spotWidth, spotHeight);
                 Rectangle actualSourceRect = sourceRect.intersection(imageArea);
 
                 targetX += actualSourceRect.x - sourceRect.x;

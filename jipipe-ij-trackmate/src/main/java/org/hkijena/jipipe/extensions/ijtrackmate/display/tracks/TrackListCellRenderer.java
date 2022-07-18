@@ -14,24 +14,16 @@
 
 package org.hkijena.jipipe.extensions.ijtrackmate.display.tracks;
 
-import fiji.plugin.trackmate.features.FeatureUtils;
-import fiji.plugin.trackmate.visualization.FeatureColorGenerator;
 import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
-import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.jgrapht.graph.DefaultWeightedEdge;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 
 public class TrackListCellRenderer extends JPanel implements ListCellRenderer<Integer> {
 
     private final TracksManagerPlugin tracksManagerPlugin;
-//    private SolidColorIcon strokeFillPreview = new SolidColorIcon(16, 16);
+    //    private SolidColorIcon strokeFillPreview = new SolidColorIcon(16, 16);
     private JLabel iconLabel = new JLabel();
     private JLabel nameLabel = new JLabel();
     private JLabel infoLabel = new JLabel();

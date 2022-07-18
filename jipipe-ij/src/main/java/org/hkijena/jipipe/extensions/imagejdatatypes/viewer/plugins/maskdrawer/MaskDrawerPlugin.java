@@ -18,8 +18,8 @@ import org.hkijena.jipipe.ui.components.ColorChooserButton;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
@@ -462,7 +462,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         int t = Math.min(mask.getNFrames() - 1, sliceIndex.getT());
         ImageProcessor selectedMaskSlice = ImageJUtils.getSliceZero(mask, c, z, t);
         BufferedImage renderedMask = new BufferedImage(mask.getWidth(), mask.getHeight(), BufferedImage.TYPE_4BYTE_ABGR);
-        if(magnification != 1.0) {
+        if (magnification != 1.0) {
             renderedMask = BufferedImageUtils.toBufferedImage(renderedMask.getScaledInstance(image.getWidth(), image.getHeight(), Image.SCALE_DEFAULT), BufferedImage.TYPE_4BYTE_ABGR);
         }
         ImageJUtils.maskToBufferedImage(selectedMaskSlice, renderedMask, maskColor, ColorUtils.WHITE_TRANSPARENT);

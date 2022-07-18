@@ -27,15 +27,14 @@ import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import javax.swing.*;
 import java.awt.*;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 public class ActivateDependenciesConfirmationDialog extends JDialog {
     private final JIPipeModernPluginManager pluginManager;
     private final JIPipeExtension extension;
-    private Map<JIPipeImageJUpdateSiteDependency, Boolean> dependencySitesToInstall = new HashMap<>();
     private final Set<JIPipeDependency> dependencyExtensionsToActivate;
+    private Map<JIPipeImageJUpdateSiteDependency, Boolean> dependencySitesToInstall = new HashMap<>();
     private boolean cancelled = true;
 
     public ActivateDependenciesConfirmationDialog(Component parent, JIPipeModernPluginManager pluginManager, JIPipeExtension extension, Set<JIPipeDependency> missingDependencies, Set<JIPipeImageJUpdateSiteDependency> missingUpdateSites) {
@@ -59,10 +58,10 @@ public class ActivateDependenciesConfirmationDialog extends JDialog {
         getContentPane().setLayout(new BorderLayout());
         FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
 
-        if(!dependencySitesToInstall.isEmpty()) {
+        if (!dependencySitesToInstall.isEmpty()) {
             initializeUpdateSites(formPanel);
         }
-        if(!dependencyExtensionsToActivate.isEmpty()) {
+        if (!dependencyExtensionsToActivate.isEmpty()) {
             initializeExtensions(formPanel);
         }
 
@@ -77,20 +76,19 @@ public class ActivateDependenciesConfirmationDialog extends JDialog {
         groupHeader.setDescription("The selected extension requires the activation of the following JIPipe extensions.");
         for (JIPipeDependency dependency : dependencyExtensionsToActivate) {
             JPanel dependencyPanel = new JPanel(new GridBagLayout());
-            dependencyPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8,8,8,8)));
-            dependencyPanel.add(UIUtils.createJLabel(dependency.getMetadata().getName(), UIUtils.getIcon32FromResources("module-json.png"), 16), new GridBagConstraints(0,0,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
+            dependencyPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
+            dependencyPanel.add(UIUtils.createJLabel(dependency.getMetadata().getName(), UIUtils.getIcon32FromResources("module-json.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
             JTextField idField = UIUtils.makeReadonlyBorderlessTextField("ID: " + dependency.getDependencyId() + ", version: " + dependency.getDependencyVersion());
             idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
-            dependencyPanel.add(idField, new GridBagConstraints(0,1,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
-            dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getMetadata().getDescription().getHtml(), false), new GridBagConstraints(0,2,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
+            dependencyPanel.add(idField, new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
+            dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getMetadata().getDescription().getHtml(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
             // Try to find the extension
             JIPipeExtension extension = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
-            if(extension != null) {
-                dependencyPanel.add(UIUtils.createJLabel("Extension will be activated", UIUtils.getIconFromResources("emblems/vcs-normal.png")), new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,new Insets(4,4,4,4),0,0));
-            }
-            else {
-                dependencyPanel.add(UIUtils.createJLabel("Extension not installed", UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png")), new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,new Insets(4,4,4,4),0,0));
+            if (extension != null) {
+                dependencyPanel.add(UIUtils.createJLabel("Extension will be activated", UIUtils.getIconFromResources("emblems/vcs-normal.png")), new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
+            } else {
+                dependencyPanel.add(UIUtils.createJLabel("Extension not installed", UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png")), new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
             }
             formPanel.addWideToForm(dependencyPanel);
         }

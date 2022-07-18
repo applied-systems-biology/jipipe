@@ -5,7 +5,6 @@ import com.google.common.collect.HashBiMap;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeature;
 
 import java.util.HashSet;

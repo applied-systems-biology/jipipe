@@ -32,8 +32,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Font;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -44,24 +43,16 @@ import java.util.stream.Collectors;
 
 public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
+    private final MessagePanel messagePanel = new MessagePanel();
+    private final JIPipeModernPluginManager pluginManager;
     private ExtensionListPanel extensionListPanel;
-
     private FormPanel sidePanel;
-
     private SearchTextField searchTextField;
     private List<JIPipeExtension> currentlyShownItems = new ArrayList<>(getExtensionRegistry().getKnownExtensionsList());
-
-    private final MessagePanel messagePanel = new MessagePanel();
-
     private JLabel currentListHeading;
-
     private JButton updateSitesButton;
-
     private AutoResizeSplitPane splitPane;
-
     private JPanel mainPanel;
-
-    private final JIPipeModernPluginManager pluginManager;
 
     public JIPipeModernPluginManagerUI(JIPipeWorkbench workbench) {
         super(workbench);
@@ -69,10 +60,9 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
         initialize();
         JIPipe.getInstance().getExtensionRegistry().getEventBus().register(this);
-        if(getExtensionRegistry().getNewExtensions().isEmpty()) {
+        if (getExtensionRegistry().getNewExtensions().isEmpty()) {
             showItems(getExtensionRegistry().getKnownExtensionsList(), "All extensions");
-        }
-        else {
+        } else {
             showItems(getExtensionRegistry().getNewExtensions().stream().map(id -> getExtensionRegistry().getKnownExtensionById(id)).collect(Collectors.toList()), "New extensions");
             // Acknowledge the extensions
             getExtensionRegistry().dismissNewExtensions();
@@ -89,6 +79,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         updateSitesButton.setToolTipText("Could not connect to the ImageJ update service");
         updateSitesButton.setIcon(UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png"));
     }
+
     @Subscribe
     public void onImageJReady(JIPipeModernPluginManager.UpdateSitesReadyEvent event) {
         updateSitesButton.setIcon(UIUtils.getIconFromResources("actions/web-browser.png"));
@@ -114,14 +105,14 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
         currentListHeading = new JLabel();
         currentListHeading.setFont(new Font(Font.DIALOG, Font.PLAIN, 32));
-        currentListHeading.setBorder(BorderFactory.createEmptyBorder(16,16,16,16));
+        currentListHeading.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
         mainHeaderPanel.add(currentListHeading, BorderLayout.SOUTH);
 
         mainPanel.add(mainHeaderPanel, BorderLayout.NORTH);
 
         searchTextField = new SearchTextField();
         mainPanelToolbar.add(searchTextField);
-        searchTextField.addActionListener(e ->  updateSearch());
+        searchTextField.addActionListener(e -> updateSearch());
 
         splitPane.setRightComponent(mainPanel);
 
@@ -144,16 +135,15 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
     private void updateSearch() {
         String[] searchStrings = searchTextField.getSearchStrings();
-        if(searchStrings == null || searchStrings.length == 0) {
+        if (searchStrings == null || searchStrings.length == 0) {
             extensionListPanel.setPlugins(currentlyShownItems);
-        }
-        else {
+        } else {
             List<JIPipeExtension> filtered = new ArrayList<>();
             for (JIPipeExtension item : currentlyShownItems) {
                 String combined = item.getMetadata().getName() + item.getMetadata().getDescription() + String.join("", item.getMetadata().getProcessedCategories());
                 combined = combined.toLowerCase();
                 for (String searchString : searchStrings) {
-                    if(combined.contains(StringUtils.nullToEmpty(searchString).toLowerCase())) {
+                    if (combined.contains(StringUtils.nullToEmpty(searchString).toLowerCase())) {
                         filtered.add(item);
                         break;
                     }
@@ -167,7 +157,7 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
         JIPipeExtensionRegistry extensionRegistry = JIPipe.getInstance().getExtensionRegistry();
 
         Set<String> newExtensions = JIPipe.getInstance().getExtensionRegistry().getNewExtensions();
-        if(!newExtensions.isEmpty()) {
+        if (!newExtensions.isEmpty()) {
             addSidePanelButton("New extensions", UIUtils.getIconFromResources("emblems/emblem-important-blue.png"), () -> newExtensions.stream().map(id -> extensionRegistry.getKnownExtensionById(id)).collect(Collectors.toList()), false);
             messagePanel.addMessage(MessagePanel.MessageType.Info, "New extensions are available");
         }
@@ -205,13 +195,12 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
     private void addSidePanelButton(String label, Icon icon, Supplier<List<JIPipeExtension>> items, boolean small) {
         JButton button = new JButton(label, icon);
-        if(small) {
+        if (small) {
             button.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
-            button.setBorder(BorderFactory.createEmptyBorder(2,16,2,4));
-        }
-        else {
+            button.setBorder(BorderFactory.createEmptyBorder(2, 16, 2, 4));
+        } else {
             button.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
-            button.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+            button.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         }
         button.setHorizontalAlignment(SwingConstants.LEFT);
         button.addActionListener(e -> {
@@ -223,17 +212,16 @@ public class JIPipeModernPluginManagerUI extends JIPipeWorkbenchPanel {
 
     private JButton addImageJSidePanelButton(String label, Icon icon, Predicate<UpdateSiteExtension> filter, boolean small) {
         JButton button = new JButton(label, icon);
-        if(small) {
+        if (small) {
             button.setFont(new Font(Font.DIALOG, Font.PLAIN, 12));
-            button.setBorder(BorderFactory.createEmptyBorder(2,16,2,4));
-        }
-        else {
+            button.setBorder(BorderFactory.createEmptyBorder(2, 16, 2, 4));
+        } else {
             button.setFont(new Font(Font.DIALOG, Font.PLAIN, 16));
-            button.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+            button.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         }
         button.setHorizontalAlignment(SwingConstants.LEFT);
         button.addActionListener(e -> {
-            if(pluginManager.isUpdateSitesReady()) {
+            if (pluginManager.isUpdateSitesReady()) {
                 currentListHeading.setText(label);
                 showItems(pluginManager.getUpdateSiteWrapperExtensions().stream().filter(filter).collect(Collectors.toList()), label);
             }

@@ -16,7 +16,6 @@ package org.hkijena.jipipe.ui.extensions;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeExtension;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
@@ -26,8 +25,7 @@ import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import javax.swing.*;
-import java.awt.Graphics;
-import java.awt.Point;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.IdentityHashMap;
 import java.util.Map;
@@ -63,27 +61,25 @@ public class ExtensionItemLogoPanel extends JPanel {
 
     @Subscribe
     public void onUpdateSiteActivated(RunWorkerFinishedEvent event) {
-        if(event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
+        if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
             repaint();
         }
     }
 
     private void initializeThumbnail() {
-        if(extension.getMetadata().getThumbnail() != null && extension.getMetadata().getThumbnail().getImage() != null) {
+        if (extension.getMetadata().getThumbnail() != null && extension.getMetadata().getThumbnail().getImage() != null) {
             thumbnail = extension.getMetadata().getThumbnail().getImage();
-        }
-        else {
+        } else {
             thumbnail = new ImageParameter(ResourceUtils.getPluginResource("extension-thumbnail-default.png")).getImage();
         }
         BufferedImage originalThumbnail = thumbnail;
         BufferedImage cachedThumbnail = THUMBNAIL_CACHE.getOrDefault(thumbnail, null);
-        if(cachedThumbnail != null) {
+        if (cachedThumbnail != null) {
             thumbnailDeactivated = THUMBNAIL_DISABLED_CACHE.get(originalThumbnail);
             thumbnail = cachedThumbnail;
-        }
-        else {
-            thumbnail = BufferedImageUtils.scaleImageToFit(thumbnail, 350,350);
-            thumbnail = BufferedImageUtils.spatialBlurLinear(thumbnail, new Point(0,0), new Point(thumbnail.getWidth(), thumbnail.getHeight()), 20);
+        } else {
+            thumbnail = BufferedImageUtils.scaleImageToFit(thumbnail, 350, 350);
+            thumbnail = BufferedImageUtils.spatialBlurLinear(thumbnail, new Point(0, 0), new Point(thumbnail.getWidth(), thumbnail.getHeight()), 20);
             thumbnailDeactivated = BufferedImageUtils.toBufferedImage(thumbnail, BufferedImage.TYPE_BYTE_GRAY);
             THUMBNAIL_CACHE.put(originalThumbnail, thumbnail);
             THUMBNAIL_DISABLED_CACHE.put(originalThumbnail, thumbnailDeactivated);
@@ -99,16 +95,14 @@ public class ExtensionItemLogoPanel extends JPanel {
         int x = getWidth() / 2 - targetWidth / 2;
         int y = getHeight() / 2 - targetHeight / 2;
         boolean displayMode;
-        if(extension.isScheduledForActivation()) {
+        if (extension.isScheduledForActivation()) {
             displayMode = true;
-        }
-        else if(extension.isScheduledForDeactivation()) {
+        } else if (extension.isScheduledForDeactivation()) {
             displayMode = false;
-        }
-        else {
+        } else {
             displayMode = extension.isActivated();
         }
-        g.drawImage(displayMode ? thumbnail : thumbnailDeactivated, x,y,targetWidth,targetHeight,null);
+        g.drawImage(displayMode ? thumbnail : thumbnailDeactivated, x, y, targetWidth, targetHeight, null);
         super.paint(g);
     }
 }

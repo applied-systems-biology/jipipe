@@ -130,6 +130,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     /**
      * Returns a standard error label that simplifies the creation of cache windows.
      * It must be included into the UI manually
+     *
      * @return the standard error label
      */
     public JLabel getStandardErrorLabel() {

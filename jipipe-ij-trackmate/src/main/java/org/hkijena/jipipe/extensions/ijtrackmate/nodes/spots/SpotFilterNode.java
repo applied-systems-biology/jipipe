@@ -12,17 +12,15 @@ import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotDetectorData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotFeatureVariableSource;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 import java.util.Map;
 
 @JIPipeDocumentation(name = "Filter spots", description = "Filter TrackMate spots via expressions")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nFilter")
 @JIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output",autoCreate = true)
+@JIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output", autoCreate = true)
 public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter filter = new DefaultExpressionParameter("quality > 30");
@@ -53,7 +51,7 @@ public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
                 String variableName = SpotFeatureVariableSource.keyToVariable(entry.getKey());
                 variables.set(variableName, entry.getValue());
             }
-            if(filter.test(variables)) {
+            if (filter.test(variables)) {
                 newCollection.add(spot, spot.getFeature(Spot.FRAME).intValue());
             }
         }

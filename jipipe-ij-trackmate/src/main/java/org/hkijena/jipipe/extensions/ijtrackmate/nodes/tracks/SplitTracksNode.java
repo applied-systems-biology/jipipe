@@ -5,11 +5,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
@@ -26,7 +22,7 @@ import java.util.Set;
 @JIPipeDocumentation(name = "Split tracks", description = "Creates a list for each individual track")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nSplit/Merge")
 @JIPipeInputSlot(value = TrackCollectionData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = TrackCollectionData.class, slotName = "Output",autoCreate = true)
+@JIPipeOutputSlot(value = TrackCollectionData.class, slotName = "Output", autoCreate = true)
 public class SplitTracksNode extends JIPipeSimpleIteratingAlgorithm {
 
     private NamedTextAnnotationGeneratorExpression.List annotationGenerator = new NamedTextAnnotationGeneratorExpression.List();
@@ -54,7 +50,7 @@ public class SplitTracksNode extends JIPipeSimpleIteratingAlgorithm {
             variables.set("id", trackID);
             for (String trackFeature : oldTrackCollectionData.getModel().getFeatureModel().getTrackFeatures()) {
                 Double feature = oldTrackCollectionData.getModel().getFeatureModel().getTrackFeature(trackID, trackFeature);
-                if(feature == null)
+                if (feature == null)
                     feature = Double.NaN;
 
                 String variableName = TrackFeatureVariableSource.keyToVariable(trackFeature);

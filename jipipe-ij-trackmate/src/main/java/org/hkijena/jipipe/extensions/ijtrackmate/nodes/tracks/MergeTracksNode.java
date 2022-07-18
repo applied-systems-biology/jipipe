@@ -18,11 +18,7 @@ import fiji.plugin.trackmate.Spot;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.jgrapht.graph.DefaultWeightedEdge;
@@ -32,7 +28,7 @@ import java.util.List;
 @JIPipeDocumentation(name = "Merge tracks", description = "Merges track lists. Please ensure that the spots are sourced from the same image.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nSplit/Merge")
 @JIPipeInputSlot(value = TrackCollectionData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = TrackCollectionData.class, slotName = "Output",autoCreate = true)
+@JIPipeOutputSlot(value = TrackCollectionData.class, slotName = "Output", autoCreate = true)
 public class MergeTracksNode extends JIPipeMergingAlgorithm {
 
     public MergeTracksNode(JIPipeNodeInfo info) {
@@ -46,9 +42,9 @@ public class MergeTracksNode extends JIPipeMergingAlgorithm {
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<TrackCollectionData> spotCollections = dataBatch.getInputData(getFirstInputSlot(), TrackCollectionData.class, progressInfo);
-        if(spotCollections.isEmpty())
+        if (spotCollections.isEmpty())
             return;
-        if(spotCollections.size() == 1) {
+        if (spotCollections.size() == 1) {
             dataBatch.addOutputData(getFirstOutputSlot(), spotCollections.get(0), progressInfo);
             return;
         }
@@ -60,7 +56,7 @@ public class MergeTracksNode extends JIPipeMergingAlgorithm {
             for (Spot spot : sourceCollection.getSpots().iterable(true)) {
                 int frame = spot.getFeature(Spot.FRAME).intValue();
                 Spot closestSpot = newCollection.getSpots().getClosestSpot(spot, frame, true);
-                if(closestSpot == null || closestSpot.squareDistanceTo(spot) > 0.00001d) {
+                if (closestSpot == null || closestSpot.squareDistanceTo(spot) > 0.00001d) {
                     // Add the missing spot
                     newCollection.getSpots().add(spot, frame);
                 }

@@ -21,10 +21,7 @@ import org.hkijena.jipipe.ui.running.RunWorkerStartedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Component;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 public class JIPipeRunThrobberIcon implements Icon {
@@ -40,7 +37,7 @@ public class JIPipeRunThrobberIcon implements Icon {
 
     public JIPipeRunThrobberIcon(Component parent) {
         this.parent = parent;
-        this.wrappedIcon =  UIUtils.getIconFromResources("status/throbber.png");
+        this.wrappedIcon = UIUtils.getIconFromResources("status/throbber.png");
         this.timer = new Timer(ANIMATION_DELAY, e -> updateIcon());
         this.timer.setRepeats(true);
         this.timer.setCoalesce(false);
@@ -48,14 +45,14 @@ public class JIPipeRunThrobberIcon implements Icon {
         this.rotationStep = ANIMATION_STEP;
 
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
-        if(!JIPipeRunnerQueue.getInstance().isEmpty()) {
+        if (!JIPipeRunnerQueue.getInstance().isEmpty()) {
             timer.start();
         }
     }
 
     @Subscribe
     public void onWorkerFinished(RunWorkerFinishedEvent event) {
-        if(JIPipeRunnerQueue.getInstance().isEmpty()) {
+        if (JIPipeRunnerQueue.getInstance().isEmpty()) {
             stop();
         }
     }
@@ -67,7 +64,7 @@ public class JIPipeRunThrobberIcon implements Icon {
 
     @Subscribe
     public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
-        if(JIPipeRunnerQueue.getInstance().isEmpty()) {
+        if (JIPipeRunnerQueue.getInstance().isEmpty()) {
             stop();
         }
     }
@@ -112,14 +109,13 @@ public class JIPipeRunThrobberIcon implements Icon {
 
     private void updateIcon() {
         rotation += rotationStep;
-        while(rotation > 360) {
+        while (rotation > 360) {
             rotation -= 360;
         }
         if (parent != null && parent.isDisplayable()) {
             parent.repaint();
             parent.getToolkit().sync();
-        }
-        else {
+        } else {
             timer.stop();
         }
     }

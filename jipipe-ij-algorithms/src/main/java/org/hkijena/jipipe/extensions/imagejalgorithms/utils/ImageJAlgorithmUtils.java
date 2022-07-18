@@ -179,7 +179,7 @@ public class ImageJAlgorithmUtils {
 
             ResultsTableData labelResult = new ResultsTableData();
             ImagePlus dummyImage = new ImagePlus("label=" + id, image);
-            if(calibration != null)
+            if (calibration != null)
                 dummyImage.setCalibration(calibration);
             Analyzer analyzer = new Analyzer(dummyImage, measurementsNativeValue, labelResult.getTable());
             analyzer.saveResults(statistics, null);

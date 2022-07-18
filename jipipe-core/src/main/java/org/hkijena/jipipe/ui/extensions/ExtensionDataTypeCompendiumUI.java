@@ -34,7 +34,7 @@ public class ExtensionDataTypeCompendiumUI extends JIPipeDataTypeCompendiumUI {
 
     @Override
     protected List<JIPipeDataInfo> getFilteredItems() {
-        if(extension == null)
+        if (extension == null)
             return Collections.emptyList();
         if (dataInfos == null)
             dataInfos = JIPipe.getDataTypes().getDeclaredBy(extension).stream().sorted(Comparator.comparing(JIPipeDataInfo::getName)).collect(Collectors.toList());

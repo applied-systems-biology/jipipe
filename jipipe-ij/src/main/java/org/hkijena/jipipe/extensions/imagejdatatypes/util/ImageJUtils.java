@@ -383,7 +383,8 @@ public class ImageJUtils {
 
     /**
      * Creates a dummy canvas that contains the appropriate magnification settings
-     * @param image the image
+     *
+     * @param image      the image
      * @param renderArea the area where the image will be rendered
      * @return the canvas
      */
@@ -394,7 +395,8 @@ public class ImageJUtils {
 
     /**
      * Creates a dummy canvas that contains the appropriate magnification settings
-     * @param image the image
+     *
+     * @param image         the image
      * @param magnification the magnification. See {@link ImageCanvas} for the minimum and maximum values
      * @return the canvas
      */
@@ -404,7 +406,7 @@ public class ImageJUtils {
         canvas.setSize((int) (image.getWidth() * magnification), (int) (image.getHeight() * magnification));
         return canvas;
     }
-    
+
     /**
      * Returns an image that has the specified size by copying
      *
@@ -418,7 +420,7 @@ public class ImageJUtils {
     public static ImagePlus ensureSize(ImagePlus target, int nChannels, int nSlices, int nFrames, boolean copySlices) {
         if (target.getNChannels() == nChannels && target.getNSlices() == nSlices && target.getNFrames() == nFrames)
             return target;
-        if(target.getStackSize() == nChannels * nSlices * nFrames) {
+        if (target.getStackSize() == nChannels * nSlices * nFrames) {
             // Use the native ImageJ function
             target.setDimensions(nChannels, nSlices, nFrames);
             return target;
@@ -831,7 +833,7 @@ public class ImageJUtils {
     /**
      * Runs the function for each Z, C, and T slice.
      *
-     * @param sourceImage          the image
+     * @param sourceImage  the image
      * @param function     the function. The indices are ZERO-based. Should return the result slice for this index
      * @param progressInfo the progress
      */
@@ -1754,9 +1756,10 @@ public class ImageJUtils {
     /**
      * Uses reflection to manually set the canvas of a {@link Roi}
      * Please note that the image of the Roi will be set.
-     * @param roi the ROI
+     *
+     * @param roi       the ROI
      * @param imagePlus the image
-     * @param canvas the canvas
+     * @param canvas    the canvas
      */
     public static void setRoiCanvas(Roi roi, ImagePlus imagePlus, ImageCanvas canvas) {
         // First set the image

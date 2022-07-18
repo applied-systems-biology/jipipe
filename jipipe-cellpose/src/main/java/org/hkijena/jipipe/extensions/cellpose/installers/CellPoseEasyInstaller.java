@@ -28,7 +28,6 @@ import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironmentType;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -68,21 +67,20 @@ public class CellPoseEasyInstaller extends EasyInstallExternalEnvironmentInstall
 
     @Override
     protected void writeEnvironmentToParameters(PythonEnvironment environment, JIPipeParameterAccess parameterAccess) {
-        if(OptionalParameter.class.isAssignableFrom(parameterAccess.getFieldClass())) {
+        if (OptionalParameter.class.isAssignableFrom(parameterAccess.getFieldClass())) {
             parameterAccess.set(new OptionalPythonEnvironment(environment));
-        }
-        else {
+        } else {
             parameterAccess.set(environment);
         }
     }
 
     @Override
     protected void executePostprocess() {
-        if(!SystemUtils.IS_OS_WINDOWS) {
+        if (!SystemUtils.IS_OS_WINDOWS) {
             getProgressInfo().log("Postprocess: Marking all files in " + getAbsolutePythonBinaryDir() + " as executable");
             try {
                 Files.list(getAbsolutePythonBinaryDir()).forEach(path -> {
-                    if(Files.isRegularFile(path)) {
+                    if (Files.isRegularFile(path)) {
                         getProgressInfo().log(" - chmod +x " + path);
                         PathUtils.makeUnixExecutable(path);
                     }
@@ -98,10 +96,9 @@ public class CellPoseEasyInstaller extends EasyInstallExternalEnvironmentInstall
         PythonEnvironment environment = new PythonEnvironment();
         environment.setType(PythonEnvironmentType.System);
         environment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             environment.setExecutablePath(getRelativePythonBinaryDir().resolve("python.exe"));
-        }
-        else {
+        } else {
             environment.setExecutablePath(getRelativePythonBinaryDir().resolve("python3"));
         }
         environment.setName(getTargetPackage().getName());
@@ -109,19 +106,17 @@ public class CellPoseEasyInstaller extends EasyInstallExternalEnvironmentInstall
     }
 
     private Path getRelativePythonBinaryDir() {
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             return getRelativeInstallationPath().resolve("python");
-        }
-        else {
+        } else {
             return getRelativeInstallationPath().resolve("python").resolve("bin");
         }
     }
 
     private Path getAbsolutePythonBinaryDir() {
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             return getAbsoluteInstallationPath().resolve("python");
-        }
-        else {
+        } else {
             return getAbsoluteInstallationPath().resolve("python").resolve("bin");
         }
     }

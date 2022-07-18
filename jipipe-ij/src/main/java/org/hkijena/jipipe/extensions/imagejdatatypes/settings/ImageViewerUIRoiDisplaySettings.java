@@ -32,6 +32,10 @@ public class ImageViewerUIRoiDisplaySettings implements JIPipeParameterCollectio
     public ImageViewerUIRoiDisplaySettings() {
     }
 
+    public static ImageViewerUIRoiDisplaySettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, ImageViewerUIRoiDisplaySettings.class);
+    }
+
     @JIPipeDocumentation(name = "ROI visualization")
     @JIPipeParameter("roi-drawer")
     public RoiDrawer getRoiDrawer() {
@@ -67,9 +71,5 @@ public class ImageViewerUIRoiDisplaySettings implements JIPipeParameterCollectio
     @Override
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    public static ImageViewerUIRoiDisplaySettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, ImageViewerUIRoiDisplaySettings.class);
     }
 }

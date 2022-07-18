@@ -65,21 +65,20 @@ public class REasyInstaller extends EasyInstallExternalEnvironmentInstaller<REnv
 
     @Override
     protected void writeEnvironmentToParameters(REnvironment environment, JIPipeParameterAccess parameterAccess) {
-        if(OptionalParameter.class.isAssignableFrom(parameterAccess.getFieldClass())) {
+        if (OptionalParameter.class.isAssignableFrom(parameterAccess.getFieldClass())) {
             parameterAccess.set(new OptionalREnvironment(environment));
-        }
-        else {
+        } else {
             parameterAccess.set(environment);
         }
     }
 
     @Override
     protected void executePostprocess() {
-        if(!SystemUtils.IS_OS_WINDOWS) {
+        if (!SystemUtils.IS_OS_WINDOWS) {
             getProgressInfo().log("Postprocess: Marking all files in " + getAbsoluteRBinaryDir() + " as executable");
             try {
                 Files.list(getAbsoluteRBinaryDir()).forEach(path -> {
-                    if(Files.isRegularFile(path)) {
+                    if (Files.isRegularFile(path)) {
                         getProgressInfo().log(" - chmod +x " + path);
                         PathUtils.makeUnixExecutable(path);
                     }
@@ -94,11 +93,10 @@ public class REasyInstaller extends EasyInstallExternalEnvironmentInstaller<REnv
     protected REnvironment generateEnvironment() {
         REnvironment environment = new REnvironment();
         environment.setArguments(new DefaultExpressionParameter("ARRAY(script_file)"));
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             environment.setRExecutablePath(getRelativeRBinaryDir().resolve("R.exe"));
             environment.setRScriptExecutablePath(getRelativeRBinaryDir().resolve("Rscript.exe"));
-        }
-        else {
+        } else {
             environment.setRExecutablePath(getRelativeRBinaryDir().resolve("R"));
             environment.setRScriptExecutablePath(getRelativeRBinaryDir().resolve("Rscript"));
         }

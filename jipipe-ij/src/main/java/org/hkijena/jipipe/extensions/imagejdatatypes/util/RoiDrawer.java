@@ -32,13 +32,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.NumberParamet
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.utils.ColorUtils;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.util.HashMap;
 import java.util.Map;
@@ -70,6 +64,35 @@ public class RoiDrawer implements JIPipeParameterCollection {
 
     public RoiDrawer(RoiDrawer other) {
         copyFrom(other);
+    }
+
+    /**
+     * Draws a label on graphics
+     *
+     * @param text           the text
+     * @param graphics2D     the graphics
+     * @param centroidX      the x location (centroid)
+     * @param centroidY      the y location (centroid)
+     * @param magnification  the magnification
+     * @param foreground     the foreground
+     * @param background     the background
+     * @param font           the font
+     * @param drawBackground if a background should be drawn
+     */
+    public static void drawLabelOnGraphics(String text, Graphics2D graphics2D, double centroidX, double centroidY, double magnification, Color foreground, Color background, Font font, boolean drawBackground) {
+        graphics2D.setFont(font);
+        FontMetrics fontMetrics = graphics2D.getFontMetrics();
+        int width = fontMetrics.stringWidth(text);
+        int height = fontMetrics.getHeight();
+        int ascent = fontMetrics.getAscent();
+        int x = (int) (centroidX * magnification - width / 2);
+        int y = (int) (centroidY * magnification - height / 2);
+        if (drawBackground) {
+            graphics2D.setColor(background);
+            graphics2D.fillRect(x - 1, y - 1, width + 2, height + 2);
+        }
+        graphics2D.setColor(foreground);
+        graphics2D.drawString(text, x, y + ascent);
     }
 
     public void copyFrom(RoiDrawer other) {
@@ -467,7 +490,7 @@ public class RoiDrawer implements JIPipeParameterCollection {
      * @param renderArea      area where the ROI are rendered
      * @param index           position of the ROI (zero-based)
      * @param roisToHighlight highlighted ROI
-     * @param magnification the magnification
+     * @param magnification   the magnification
      */
     public void drawOverlayOnGraphics(ROIListData roisToDraw, Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex index, Set<Roi> roisToHighlight, double magnification) {
         // ROI statistics needed for labels
@@ -508,34 +531,6 @@ public class RoiDrawer implements JIPipeParameterCollection {
     }
 
     /**
-     * Draws a label on graphics
-     * @param text the text
-     * @param graphics2D the graphics
-     * @param centroidX the x location (centroid)
-     * @param centroidY the y location (centroid)
-     * @param magnification the magnification
-     * @param foreground the foreground
-     * @param background the background
-     * @param font the font
-     * @param drawBackground if a background should be drawn
-     */
-    public static void drawLabelOnGraphics(String text, Graphics2D graphics2D, double centroidX, double centroidY, double magnification, Color foreground, Color background, Font font, boolean drawBackground) {
-        graphics2D.setFont(font);
-        FontMetrics fontMetrics = graphics2D.getFontMetrics();
-        int width = fontMetrics.stringWidth(text);
-        int height = fontMetrics.getHeight();
-        int ascent = fontMetrics.getAscent();
-        int x = (int) (centroidX * magnification - width / 2);
-        int y = (int) (centroidY * magnification - height / 2);
-        if(drawBackground) {
-            graphics2D.setColor(background);
-            graphics2D.fillRect(x -1, y - 1, width + 2, height + 2);
-        }
-        graphics2D.setColor(foreground);
-        graphics2D.drawString(text,x,y + ascent);
-    }
-
-    /**
      * Draws a ROI on graphics
      * Assumes that the ROI has an appropriate image canvas (ic) for its magnification
      *
@@ -573,8 +568,8 @@ public class RoiDrawer implements JIPipeParameterCollection {
             if (drawMuted) {
                 color = ColorUtils.scaleHSV(color, 0.8f, 1, 0.5f);
             }
-            if(opacity < 1) {
-                color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha() * opacity));
+            if (opacity < 1) {
+                color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (color.getAlpha() * opacity));
             }
             roi.setFillColor(color);
         } else {
@@ -586,8 +581,8 @@ public class RoiDrawer implements JIPipeParameterCollection {
             if (drawMuted) {
                 color = ColorUtils.scaleHSV(color, 0.8f, 1, 0.5f);
             }
-            if(opacity < 1) {
-                color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int)(color.getAlpha() * opacity));
+            if (opacity < 1) {
+                color = new Color(color.getRed(), color.getGreen(), color.getBlue(), (int) (color.getAlpha() * opacity));
             }
             roi.setStrokeWidth(width);
             roi.setStrokeColor(color);
@@ -617,15 +612,15 @@ public class RoiDrawer implements JIPipeParameterCollection {
 
         graphics2D.translate(-renderArea.x, -renderArea.y);
 
-        if(highlighted) {
+        if (highlighted) {
             Rectangle bounds = roi.getBounds();
-            int x = renderArea.x + (int)(bounds.x * magnification );
-            int y = renderArea.y + (int)(bounds.y * magnification);
+            int x = renderArea.x + (int) (bounds.x * magnification);
+            int y = renderArea.y + (int) (bounds.y * magnification);
             int w = (int) (bounds.width * magnification);
             int h = (int) (bounds.height * magnification);
             graphics2D.setStroke(new BasicStroke(1));
             graphics2D.setColor(Color.CYAN);
-            graphics2D.drawRect(x,y,w,h);
+            graphics2D.drawRect(x, y, w, h);
         }
 
         // Restore old values

@@ -15,13 +15,9 @@ package org.hkijena.jipipe.extensions.tools;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.scijava.ui.UIService;
-import org.scijava.ui.UserInterface;
-import org.scijava.ui.swing.console.SwingConsolePane;
 
 import javax.swing.*;
 
@@ -36,7 +32,7 @@ public class RestartJIPipeTool extends JIPipeMenuExtension {
         setText("Restart JIPipe");
         setIcon(UIUtils.getIconFromResources("apps/jipipe.png"));
         addActionListener(e -> {
-            if(JOptionPane.showConfirmDialog(workbench.getWindow(), "Do you really want to restart JIPipe? You will lose all unsaved changes.", "Restart JIPipe", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            if (JOptionPane.showConfirmDialog(workbench.getWindow(), "Do you really want to restart JIPipe? You will lose all unsaved changes.", "Restart JIPipe", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 JIPipe.restartGUI();
             }
         });

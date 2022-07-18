@@ -38,7 +38,7 @@ public interface JIPipeNodeInfo {
     static Map<String, Set<JIPipeNodeInfo>> groupByMenuPaths(JIPipeNodeTypeCategory category, Set<JIPipeNodeInfo> infos) {
         Map<String, Set<JIPipeNodeInfo>> result = new HashMap<>();
         for (JIPipeNodeInfo info : infos) {
-            if(Objects.equals(info.getCategory().getId(), category.getId())) {
+            if (Objects.equals(info.getCategory().getId(), category.getId())) {
                 String menuPath = StringUtils.getCleanedMenuPath(info.getMenuPath());
                 Set<JIPipeNodeInfo> group = result.getOrDefault(menuPath, null);
                 if (group == null) {
@@ -48,7 +48,7 @@ public interface JIPipeNodeInfo {
                 group.add(info);
             }
             for (JIPipeNodeMenuLocation location : info.getAliases()) {
-                if(Objects.equals(location.getCategory().getId(), category.getId())) {
+                if (Objects.equals(location.getCategory().getId(), category.getId())) {
                     String menuPath = StringUtils.getCleanedMenuPath(location.getMenuPath());
                     Set<JIPipeNodeInfo> group = result.getOrDefault(menuPath, null);
                     if (group == null) {
@@ -219,6 +219,7 @@ public interface JIPipeNodeInfo {
 
     /**
      * A menu location that points towards the primary menu
+     *
      * @return the primary menu location
      */
     default JIPipeNodeMenuLocation getPrimaryMenuLocation() {
@@ -227,6 +228,7 @@ public interface JIPipeNodeInfo {
 
     /**
      * A list of alternative menu locations
+     *
      * @return alternative menu locations. might be empty.
      */
     default List<JIPipeNodeMenuLocation> getAliases() {

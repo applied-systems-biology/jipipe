@@ -39,9 +39,8 @@ import org.hkijena.jipipe.utils.NetworkUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.nio.file.Files;
-import java.util.*;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class JIPipeModernPluginManager {
 
@@ -50,19 +49,12 @@ public class JIPipeModernPluginManager {
     private final Component parent;
 
     private final MessagePanel messagePanel;
-
-    private MessagePanel.Message updateSiteMessage;
-
-    private MessagePanel.Message restartMessage;
-
-    private RefreshRepositoryRun refreshRepositoryRun;
-
-    private boolean updateSitesReady = false;
-
-    private FilesCollection updateSites;
-
     private final List<UpdateSiteExtension> updateSiteWrapperExtensions = new ArrayList<>();
-
+    private MessagePanel.Message updateSiteMessage;
+    private MessagePanel.Message restartMessage;
+    private RefreshRepositoryRun refreshRepositoryRun;
+    private boolean updateSitesReady = false;
+    private FilesCollection updateSites;
     private boolean updateSitesApplied = false;
 
     public JIPipeModernPluginManager(Component parent, MessagePanel messagePanel) {
@@ -248,7 +240,7 @@ public class JIPipeModernPluginManager {
 
         Set<String> dependents = getExtensionRegistry().getAllDependentsOf(extension.getDependencyId());
         for (String s : ImmutableList.copyOf(dependents)) {
-            if(getExtensionRegistry().willBeDeactivatedOnNextStartup(s))
+            if (getExtensionRegistry().willBeDeactivatedOnNextStartup(s))
                 dependents.remove(s);
         }
         if (!dependents.isEmpty()) {
@@ -296,7 +288,7 @@ public class JIPipeModernPluginManager {
         Set<JIPipeDependency> allDependencies = getExtensionRegistry().tryResolveToKnownDependencies(extension.getAllDependencies());
         Set<JIPipeDependency> missingDependencies = new HashSet<>();
         for (JIPipeDependency dependency : allDependencies) {
-            if(getExtensionRegistry().willBeDeactivatedOnNextStartup(dependency.getDependencyId())) {
+            if (getExtensionRegistry().willBeDeactivatedOnNextStartup(dependency.getDependencyId())) {
                 missingDependencies.add(dependency);
             }
         }

@@ -28,7 +28,7 @@ import java.util.Map;
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class)
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process",aliasName = "Image Calculator... (expression)")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Image Calculator... (expression)")
 public class ImageCalculator2DExpression extends JIPipeIteratingAlgorithm {
 
     private DefaultExpressionParameter expression = new DefaultExpressionParameter("(I1 + I2) / 2");

@@ -31,6 +31,7 @@ public interface JIPipeJavaExtension extends SciJavaPlugin, JIPipeExtension {
     /**
      * URL pointing to the logo of the extension
      * Note: This is currently unused and only kept for backwards compatibility. Please instead use the thumbnail property of the metadata to provide thumbnails for the extension manager.
+     *
      * @return the logo URL
      */
     @Deprecated

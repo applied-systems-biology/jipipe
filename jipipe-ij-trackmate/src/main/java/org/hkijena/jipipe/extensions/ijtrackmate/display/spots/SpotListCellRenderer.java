@@ -26,11 +26,7 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
+import java.awt.*;
 import java.text.DecimalFormat;
 
 public class SpotListCellRenderer extends JPanel implements ListCellRenderer<Spot> {
@@ -80,12 +76,11 @@ public class SpotListCellRenderer extends JPanel implements ListCellRenderer<Spo
     }
 
     public void updateColorMaps() {
-        if(spotsManagerPlugin.getSpotsCollection() != null) {
+        if (spotsManagerPlugin.getSpotsCollection() != null) {
             SpotDrawer spotDrawer = spotsManagerPlugin.getSpotDrawer();
-            if(spotDrawer.isUniformStrokeColor()) {
+            if (spotDrawer.isUniformStrokeColor()) {
                 strokeColorGenerator = new UniformSpotColorGenerator(spotDrawer.getStrokeColor());
-            }
-            else {
+            } else {
                 DisplaySettings displaySettings = spotDrawer.createDisplaySettings(spotsManagerPlugin.getSpotsCollection());
                 strokeColorGenerator = FeatureUtils.createSpotColorGenerator(spotsManagerPlugin.getSpotsCollection().getModel(), displaySettings);
             }
@@ -101,10 +96,9 @@ public class SpotListCellRenderer extends JPanel implements ListCellRenderer<Spo
             nameLabel.setText("Unnamed [" + index + "]");
 
         strokeFillPreview.setFillColor(Color.WHITE);
-        if(strokeColorGenerator == null) {
+        if (strokeColorGenerator == null) {
             strokeFillPreview.setBorderColor(spotsManagerPlugin.getSpotDrawer().getStrokeColor());
-        }
-        else {
+        } else {
             strokeFillPreview.setBorderColor(strokeColorGenerator.color(value));
         }
 

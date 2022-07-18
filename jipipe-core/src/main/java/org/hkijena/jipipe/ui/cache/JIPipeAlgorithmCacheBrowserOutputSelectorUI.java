@@ -22,8 +22,7 @@ import org.hkijena.jipipe.ui.components.layouts.ModifiedFlowLayout;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
+import java.awt.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,10 +36,8 @@ public class JIPipeAlgorithmCacheBrowserOutputSelectorUI extends JPanel {
     private final JIPipeGraphNode graphNode;
 
     private final Map<String, JToggleButton> buttonMap = new HashMap<>();
-
-    private String selectedOutput;
-
     private final List<String> outputOrder = new ArrayList<>();
+    private String selectedOutput;
 
     public JIPipeAlgorithmCacheBrowserOutputSelectorUI(JIPipeGraphNode graphNode) {
         this.graphNode = graphNode;
@@ -52,30 +49,30 @@ public class JIPipeAlgorithmCacheBrowserOutputSelectorUI extends JPanel {
 
         JButton previousButton = new JButton(UIUtils.getIconFromResources("actions/draw-triangle1.png"));
         previousButton.setBorder(null);
-        previousButton.addActionListener(e->showPrevious());
+        previousButton.addActionListener(e -> showPrevious());
         add(previousButton, BorderLayout.WEST);
 
         JButton nextButton = new JButton(UIUtils.getIconFromResources("actions/draw-triangle2.png"));
         nextButton.setBorder(null);
-        nextButton.addActionListener(e->showNext());
+        nextButton.addActionListener(e -> showNext());
         add(nextButton, BorderLayout.EAST);
 
         JPanel wrapperPanel = new JPanel(new ModifiedFlowLayout(FlowLayout.CENTER));
         {
             JToggleButton outputButton = new JToggleButton("All outputs", UIUtils.getIconFromResources("actions/stock_select-all.png"));
-            outputButton.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+            outputButton.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
             wrapperPanel.add(outputButton);
             buttonMap.put("", outputButton);
             outputOrder.add("");
-            outputButton.addActionListener(e->selectOutput(SELECT_ALL_OUTPUTS));
+            outputButton.addActionListener(e -> selectOutput(SELECT_ALL_OUTPUTS));
         }
         for (JIPipeOutputDataSlot outputSlot : graphNode.getOutputSlots()) {
             JToggleButton outputButton = new JToggleButton(outputSlot.getName(), JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()));
-            outputButton.setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+            outputButton.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
             wrapperPanel.add(outputButton);
             buttonMap.put(outputSlot.getName(), outputButton);
             outputOrder.add(outputSlot.getName());
-            outputButton.addActionListener(e->selectOutput(outputSlot.getName()));
+            outputButton.addActionListener(e -> selectOutput(outputSlot.getName()));
         }
 
         add(wrapperPanel, BorderLayout.CENTER);
@@ -87,10 +84,11 @@ public class JIPipeAlgorithmCacheBrowserOutputSelectorUI extends JPanel {
 
     /**
      * Selects an output
+     *
      * @param name the name. if left empty, all outputs will be selected.
      */
     public void selectOutput(String name) {
-        if(!buttonMap.containsKey(name)) {
+        if (!buttonMap.containsKey(name)) {
             name = "";
         }
         this.selectedOutput = name;
@@ -106,10 +104,9 @@ public class JIPipeAlgorithmCacheBrowserOutputSelectorUI extends JPanel {
 
     private void showPrevious() {
         int i = outputOrder.indexOf(selectedOutput);
-        if(i - 1 < 0) {
+        if (i - 1 < 0) {
             i = outputOrder.size() - 1;
-        }
-        else {
+        } else {
             --i;
         }
         selectOutput(outputOrder.get(i));
@@ -117,7 +114,7 @@ public class JIPipeAlgorithmCacheBrowserOutputSelectorUI extends JPanel {
 
     private void showNext() {
         int i = outputOrder.indexOf(selectedOutput);
-        if(i < 0)
+        if (i < 0)
             i = 0;
         selectOutput(outputOrder.get((i + 1) % outputOrder.size()));
     }

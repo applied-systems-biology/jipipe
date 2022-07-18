@@ -238,7 +238,7 @@ public class PathUtils {
 
     public static Path getImageJDir() {
         Path imageJDir = Paths.get(StringUtils.nullToEmpty(Prefs.getImageJDir()));
-        if(!imageJDir.isAbsolute())
+        if (!imageJDir.isAbsolute())
             imageJDir = imageJDir.toAbsolutePath();
         if (!Files.isDirectory(imageJDir)) {
             try {
@@ -251,7 +251,7 @@ public class PathUtils {
     }
 
     public static Path absoluteToImageJRelative(Path path) {
-        if(!path.isAbsolute())
+        if (!path.isAbsolute())
             return path;
         return getImageJDir().relativize(path);
     }
@@ -354,15 +354,15 @@ public class PathUtils {
 
     /**
      * Returns the first path if it exists or the alternative path if it doesn't
+     *
      * @param firstChoice the first choice. can be null.
      * @param alternative the alternative
      * @return firstChoice if it is not null and if it does exist, alternative instead
      */
     public static Path orElse(Path firstChoice, Path alternative) {
-        if(firstChoice != null && Files.exists(firstChoice)) {
+        if (firstChoice != null && Files.exists(firstChoice)) {
             return firstChoice;
-        }
-        else {
+        } else {
             return alternative;
         }
     }

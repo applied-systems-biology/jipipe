@@ -17,7 +17,7 @@ package org.hkijena.jipipe.extensions.ijtrackmate.utils;
 import fiji.plugin.trackmate.Logger;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class JIPipeLogger extends Logger {
 

@@ -46,23 +46,21 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
     private final JList<Spot> spotsListControl = new JList<>();
+    private final JCheckBoxMenuItem displaySpotsViewMenuItem = new JCheckBoxMenuItem("Display spots", UIUtils.getIconFromResources("actions/eye.png"));
+    private final JCheckBoxMenuItem displayLabelsViewMenuItem = new JCheckBoxMenuItem("Display labels", UIUtils.getIconFromResources("actions/tag.png"));
     private SpotsCollectionData spotsCollection;
     private List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private JPanel selectionContentPanelUI = new JPanel();
-    private final JCheckBoxMenuItem displaySpotsViewMenuItem = new JCheckBoxMenuItem("Display spots",  UIUtils.getIconFromResources("actions/eye.png"));
-    private final JCheckBoxMenuItem displayLabelsViewMenuItem = new JCheckBoxMenuItem("Display labels", UIUtils.getIconFromResources("actions/tag.png"));
     private SpotDrawer spotDrawer = new SpotDrawer();
     private SpotListCellRenderer spotsListCellRenderer;
 
@@ -226,7 +224,7 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
             viewMenu.add(toggle);
         }
         {
-            displayLabelsViewMenuItem.addActionListener(e->uploadSliceToCanvas());
+            displayLabelsViewMenuItem.addActionListener(e -> uploadSliceToCanvas());
             viewMenu.add(displayLabelsViewMenuItem);
         }
         {
@@ -271,18 +269,18 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
         viewMenu.addSeparator();
         {
             JMenuItem item = new JMenuItem("More settings ...", UIUtils.getIconFromResources("actions/configure.png"));
-            item.addActionListener(e->openDrawingSettings());
+            item.addActionListener(e -> openDrawingSettings());
             viewMenu.add(item);
         }
         {
             JMenuItem item = new JMenuItem("Save settings as default", UIUtils.getIconFromResources("actions/save.png"));
-            item.addActionListener(e-> saveDefaults());
+            item.addActionListener(e -> saveDefaults());
             viewMenu.add(item);
         }
     }
 
     private void saveDefaults() {
-        if(JOptionPane.showConfirmDialog(getViewerPanel(),
+        if (JOptionPane.showConfirmDialog(getViewerPanel(),
                 "Dou you want to save the spot display settings as default?",
                 "Save settings as default",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
@@ -302,7 +300,7 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
         Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import spots", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null && displaySpotsViewMenuItem.getState()) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            try(JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
+            try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
                 SpotsCollectionData spotsCollectionData = SpotsCollectionData.importData(storage, progressInfo);
                 setSpotCollection(spotsCollectionData, false);
             } catch (IOException e) {
@@ -312,11 +310,11 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     private void exportSpotsToFile(SpotsCollectionData rois) {
-        FileNameExtensionFilter[] fileNameExtensionFilters = new FileNameExtensionFilter[] { UIUtils.EXTENSION_FILTER_ZIP };
+        FileNameExtensionFilter[] fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ZIP};
         Path path = FileChooserSettings.saveFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Export spots", fileNameExtensionFilters);
         if (path != null) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            try(JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {
+            try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {
                 rois.exportData(storage, "Spots", false, progressInfo);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -326,19 +324,19 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
-        if(spotsCollection != null && displaySpotsViewMenuItem.getState()) {
-           spotDrawer.drawOnGraphics(spotsCollection, graphics2D, renderArea, getCurrentSlicePosition(), spotsListControl.getSelectedValuesList());
+        if (spotsCollection != null && displaySpotsViewMenuItem.getState()) {
+            spotDrawer.drawOnGraphics(spotsCollection, graphics2D, renderArea, getCurrentSlicePosition(), spotsListControl.getSelectedValuesList());
         }
     }
 
     @Override
     public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex, double magnification) {
-        if(spotsCollection != null) {
+        if (spotsCollection != null) {
             ImagePlus imagePlus = spotsCollection.getImage();
             int oldSlice = imagePlus.getSlice();
             imagePlus.setSlice(sliceIndex.zeroSliceIndexToOneStackIndex(imagePlus));
             Graphics2D graphics2D = image.createGraphics();
-            spotDrawer.drawOnGraphics(spotsCollection, graphics2D, new Rectangle(0,0,image.getWidth(),image.getHeight()), getCurrentSlicePosition(), spotsListControl.getSelectedValuesList());
+            spotDrawer.drawOnGraphics(spotsCollection, graphics2D, new Rectangle(0, 0, image.getWidth(), image.getHeight()), getCurrentSlicePosition(), spotsListControl.getSelectedValuesList());
             graphics2D.dispose();
             imagePlus.setSlice(oldSlice);
         }
@@ -437,7 +435,7 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
         public SelectionInfoContextPanel(SpotsManagerPlugin parent) {
             super(parent);
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-            setBorder(BorderFactory.createEmptyBorder(4,2,4,2));
+            setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
             this.roiInfoLabel = new JLabel();
             roiInfoLabel.setIcon(TrackMateExtension.RESOURCES.getIconFromResources("trackmate-spots.png"));
             roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -482,7 +480,7 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
 
         @Override
         public void selectionUpdated(SpotsCollectionData spotsCollectionData, List<Spot> selectedSpots) {
-            if(selectedSpots.isEmpty())
+            if (selectedSpots.isEmpty())
                 roiInfoLabel.setText(spotsCollectionData.getNSpots() + " spots");
             else
                 roiInfoLabel.setText(selectedSpots.size() + "/" + spotsCollectionData.getNSpots() + " spots");
@@ -499,7 +497,7 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
             statistics.getValues().add(Measurement.PixelValueMean);
 
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-            setBorder(BorderFactory.createEmptyBorder(4,2,4,2));
+            setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
 //            this.roiInfoLabel = new JLabel("");
 //            roiInfoLabel.setIcon(UIUtils.getIconFromResources("data-types/results-table.png"));
 //            roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

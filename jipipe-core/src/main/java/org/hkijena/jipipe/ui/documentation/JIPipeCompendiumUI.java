@@ -196,7 +196,7 @@ public abstract class JIPipeCompendiumUI<T> extends JPanel {
      * @param item the algorithm. if null, the compendium documentation is shown
      */
     public void selectItem(T item) {
-        if(item == null)
+        if (item == null)
             return;
         if (item != itemList.getSelectedValue()) {
             itemList.setSelectedValue(item, true);

@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.ijtrackmate.io;
 
 public interface SettingsIO {
     Object settingToParameter(Object obj);
+
     Object parameterToSetting(Object obj);
 
     Class<?> getSettingClass();

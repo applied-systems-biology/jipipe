@@ -172,9 +172,9 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      */
     public Set<JIPipeNodeInfo> getNodesOfCategory(JIPipeNodeTypeCategory category, boolean includingAlternative) {
         return registeredNodeInfos.values().stream().filter(d -> {
-            if(includingAlternative) {
+            if (includingAlternative) {
                 for (JIPipeNodeMenuLocation location : d.getAliases()) {
-                    if(Objects.equals(location.getCategory().getId(), category.getId())) {
+                    if (Objects.equals(location.getCategory().getId(), category.getId())) {
                         return true;
                     }
                 }

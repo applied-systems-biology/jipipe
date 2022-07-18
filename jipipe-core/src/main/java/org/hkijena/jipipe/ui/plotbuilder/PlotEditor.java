@@ -26,8 +26,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -47,7 +45,10 @@ import org.hkijena.jipipe.ui.components.PlotReader;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Priority;
 
 import javax.swing.*;
@@ -129,7 +130,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Save plot", UIUtils.EXTENSION_FILTER_ZIP);
         if (UIUtils.checkAndAskIfFileExists(this, path, "Save plot")) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            try(JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {
+            try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {
                 getCurrentPlot().exportData(storage, path.getFileName().toString(), false, progressInfo);
             } catch (IOException e) {
                 throw new RuntimeException(e);

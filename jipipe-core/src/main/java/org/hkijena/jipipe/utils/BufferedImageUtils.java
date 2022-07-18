@@ -128,9 +128,9 @@ public class BufferedImageUtils {
 
         BufferedImage maskImage = new BufferedImage(bi.getWidth(), bi.getHeight(), BufferedImage.TYPE_BYTE_GRAY);
         Graphics2D graphics2D = maskImage.createGraphics();
-        LinearGradientPaint paint = new LinearGradientPaint(start.x, start.y, end.x, end.y, new float[] {0f, 1f}, new Color[] {Color.WHITE, Color.BLACK});
+        LinearGradientPaint paint = new LinearGradientPaint(start.x, start.y, end.x, end.y, new float[]{0f, 1f}, new Color[]{Color.WHITE, Color.BLACK});
         graphics2D.setPaint(paint);
-        graphics2D.fillRect(0,0,bi.getWidth(), bi.getHeight());
+        graphics2D.fillRect(0, 0, bi.getWidth(), bi.getHeight());
         graphics2D.dispose();
 
         ByteProcessor mask = new ByteProcessor(maskImage);
@@ -154,7 +154,7 @@ public class BufferedImageUtils {
             int r = lerpColorValue(r1, r2, fac);
             int g = lerpColorValue(g1, g2, fac);
             int b = lerpColorValue(b1, b2, fac);
-            int rgb =  (r << 16) + (g << 8) + b;
+            int rgb = (r << 16) + (g << 8) + b;
             imgPixels[i] = rgb;
         }
 

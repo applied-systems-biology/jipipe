@@ -73,9 +73,9 @@ public class DataPreviewControlUI extends JPanel {
     }
 
     private void addZoomOption(JPopupMenu zoomMenu, int size) {
-        JMenuItem menuItem = new JMenuItem(size + " px" );
+        JMenuItem menuItem = new JMenuItem(size + " px");
         menuItem.setIcon(UIUtils.getIconFromResources("actions/zoom.png"));
-        menuItem.addActionListener(e->{
+        menuItem.addActionListener(e -> {
             ParameterUtils.setParameter(dataSettings, "preview-size", size);
         });
         zoomMenu.add(menuItem);

@@ -34,11 +34,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Environment installer that extracts a premade package of the environment and generates the appropriate environment
@@ -80,6 +76,7 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
 
     /**
      * Installation path relative to the ImageJ root
+     *
      * @return the installation path
      */
     public Path getRelativeInstallationPath() {
@@ -97,12 +94,12 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
 
     @Override
     public void run() {
-        progressInfo.setProgress(0,5);
+        progressInfo.setProgress(0, 5);
         loadAvailablePackages(progressInfo.resolve("Load available packages"));
         progressInfo.setProgress(1);
 
         executeUserConfiguration();
-        if(targetPackage != null && absoluteInstallationPath != null) {
+        if (targetPackage != null && absoluteInstallationPath != null) {
             executeOutputDirectoryPreparation();
             executeArchiveDownload();
             executePostprocess();
@@ -110,7 +107,7 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
 
             if (getParameterAccess() != null && generatedEnvironment != null) {
                 SwingUtilities.invokeLater(() -> {
-                   writeEnvironmentToParameters(generatedEnvironment, getParameterAccess());
+                    writeEnvironmentToParameters(generatedEnvironment, getParameterAccess());
                 });
             }
         }
@@ -127,13 +124,15 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
     /**
      * This method should write the environment to the parameter access
      * Will be executed on the Swing thread (via invokeLater)
-     * @param environment the environment
+     *
+     * @param environment     the environment
      * @param parameterAccess the parameter
      */
     protected abstract void writeEnvironmentToParameters(T environment, JIPipeParameterAccess parameterAccess);
 
     /**
      * Generates the final environment. Has access to the target package (getTargetPackage()) and the installation path
+     *
      * @return the environment or null if there is an error
      */
     protected abstract T generateEnvironment();
@@ -143,14 +142,12 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
         progressInfo.log("The following URL will be downloaded: " + targetPackage.getUrl());
 
         String extension;
-        if(targetPackage.getUrl().contains(".tar.gz")) {
+        if (targetPackage.getUrl().contains(".tar.gz")) {
             extension = ".tar.gz";
 
-        }
-        else if(targetPackage.getUrl().contains(".tar.xz")) {
+        } else if (targetPackage.getUrl().contains(".tar.xz")) {
             extension = ".tar.xz";
-        }
-        else {
+        } else {
             String[] split = targetPackage.getUrl().split("\\.");
             extension = "." + split[split.length - 1];
         }
@@ -165,14 +162,13 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
 
         // Extract archive
         progressInfo.log("Extracting archive ...");
-        if(extension.equals(".zip")) {
+        if (extension.equals(".zip")) {
             try {
                 ArchiveUtils.decompressZipFile(outputFile, absoluteInstallationPath, progressInfo.resolve("Extract package"));
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        }
-        else {
+        } else {
             try {
                 ArchiveUtils.decompressTarGZ(outputFile, absoluteInstallationPath, progressInfo.resolve("Extract package"));
             } catch (IOException e) {
@@ -225,14 +221,14 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
     }
 
     private void loadAvailablePackages(JIPipeProgressInfo progressInfo) {
-        if(getRepositories().isEmpty()) {
+        if (getRepositories().isEmpty()) {
             throw new UnsupportedOperationException("No repositories set! Cancelling.");
         }
         progressInfo.log("Following repositories will be contacted:");
         List<String> repositories = getRepositories();
         for (int i = 0; i < repositories.size(); i++) {
             String repository = repositories.get(i);
-            progressInfo.log(" - [Repository " + i + "] "  + repository);
+            progressInfo.log(" - [Repository " + i + "] " + repository);
         }
         for (int i = 0; i < repositories.size(); i++) {
             String repository = repositories.get(i);
@@ -256,12 +252,11 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
                 availablePackage.setUrl(packageNodeEntry.get("url").textValue());
                 availablePackage.setAdditionalData(packageNodeEntry);
                 JsonNode operatingSystemsNode = packageNodeEntry.path("operating-systems");
-                if(operatingSystemsNode.isMissingNode()) {
+                if (operatingSystemsNode.isMissingNode()) {
                     availablePackage.setSupportsLinux(true);
                     availablePackage.setSupportsMacOS(true);
                     availablePackage.setSupportsWindows(true);
-                }
-                else {
+                } else {
                     Set<String> supported = new HashSet<>();
                     for (JsonNode element : ImmutableList.copyOf(operatingSystemsNode.elements())) {
                         supported.add(element.textValue().toLowerCase());
@@ -293,7 +288,7 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
         dialog.setVisible(true);
 
         targetPackage = dialog.getTargetPackage();
-        if(targetPackage == null) {
+        if (targetPackage == null) {
             getProgressInfo().log("Cancelled by user.");
             return;
         }
@@ -310,6 +305,7 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
 
     /**
      * This method should return all repositories that are available
+     *
      * @return the repositories
      */
     public abstract List<String> getRepositories();
@@ -317,12 +313,14 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
 
     /**
      * The heading of the installation dialog
+     *
      * @return the heading
      */
     public abstract String getDialogHeading();
 
     /**
      * The description of the installation dialog
+     *
      * @return the description
      */
     public abstract HTMLText getDialogDescription();

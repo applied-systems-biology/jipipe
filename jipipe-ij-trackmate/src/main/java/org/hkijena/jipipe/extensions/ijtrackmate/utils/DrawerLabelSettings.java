@@ -14,14 +14,12 @@
 
 package org.hkijena.jipipe.extensions.ijtrackmate.utils;
 
-import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
 
-import java.awt.Color;
+import java.awt.*;
 
 public class DrawerLabelSettings extends AbstractJIPipeParameterCollection {
     private boolean drawLabels = true;

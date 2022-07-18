@@ -21,11 +21,7 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
@@ -35,8 +31,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusCo
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 
@@ -66,10 +61,9 @@ public class TracksToRGBNode extends JIPipeIteratingAlgorithm {
         ImagePlus reference;
         {
             ImagePlusData data = dataBatch.getInputData("Image", ImagePlusData.class, progressInfo);
-            if(data != null) {
+            if (data != null) {
                 reference = data.getImage();
-            }
-            else {
+            } else {
                 reference = spotsCollectionData.getImage();
             }
         }
@@ -80,7 +74,7 @@ public class TracksToRGBNode extends JIPipeIteratingAlgorithm {
             ImageProcessor scaledSourceIp = magnification != 1.0 ? sourceIp.resize((int) (magnification * sourceIp.getWidth()), (int) (magnification * sourceIp.getHeight()), false) : sourceIp;
             BufferedImage bufferedImage = BufferedImageUtils.copyBufferedImageToARGB(scaledSourceIp.getBufferedImage());
             Graphics2D graphics2D = bufferedImage.createGraphics();
-            trackDrawer.drawOnGraphics(spotsCollectionData, graphics2D,  new Rectangle(0,0,scaledSourceIp.getWidth(),scaledSourceIp.getHeight()), index, Collections.emptySet());
+            trackDrawer.drawOnGraphics(spotsCollectionData, graphics2D, new Rectangle(0, 0, scaledSourceIp.getWidth(), scaledSourceIp.getHeight()), index, Collections.emptySet());
             graphics2D.dispose();
             ColorProcessor render = new ColorProcessor(bufferedImage);
             targetStack.setProcessor(render, index.zeroSliceIndexToOneStackIndex(reference));

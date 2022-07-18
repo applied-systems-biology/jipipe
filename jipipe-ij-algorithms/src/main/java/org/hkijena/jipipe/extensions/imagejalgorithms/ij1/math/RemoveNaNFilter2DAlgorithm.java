@@ -37,7 +37,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nNoise",aliasName = "Remove NaNs...")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nNoise", aliasName = "Remove NaNs...")
 public class RemoveNaNFilter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double radius = 1;

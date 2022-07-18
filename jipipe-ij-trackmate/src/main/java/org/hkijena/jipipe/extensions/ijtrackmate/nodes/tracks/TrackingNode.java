@@ -18,19 +18,12 @@ import fiji.plugin.trackmate.tracking.SpotTracker;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotDetectorData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotTrackerData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.JIPipeLogger;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
 @JIPipeDocumentation(name = "Track spots", description = "Track spots using TrackMate")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking")
@@ -54,12 +47,12 @@ public class TrackingNode extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         SpotsCollectionData spotsCollectionData = dataBatch.getInputData("Spots", SpotsCollectionData.class, progressInfo);
         SpotTrackerData spotTrackerData = dataBatch.getInputData("Spot tracker", SpotTrackerData.class, progressInfo);
-        final SpotTracker tracker = spotTrackerData.getTrackerFactory().create( spotsCollectionData.getSpots(), spotTrackerData.getSettings() );
-        tracker.setNumThreads( numThreads );
-        tracker.setLogger( new JIPipeLogger(progressInfo.resolve("TrackMate")));
-        if(!tracker.checkInput())
+        final SpotTracker tracker = spotTrackerData.getTrackerFactory().create(spotsCollectionData.getSpots(), spotTrackerData.getSettings());
+        tracker.setNumThreads(numThreads);
+        tracker.setLogger(new JIPipeLogger(progressInfo.resolve("TrackMate")));
+        if (!tracker.checkInput())
             throw new RuntimeException("Tracker input is invalid: " + tracker.getErrorMessage());
-        if(!tracker.process())
+        if (!tracker.process())
             throw new RuntimeException("Error while tracking: " + tracker.getErrorMessage());
         TrackCollectionData trackCollectionData = new TrackCollectionData(spotsCollectionData);
         trackCollectionData.getModel().setTracks(tracker.getResult(), true);

@@ -44,29 +44,23 @@ public class JIPipeExtensionRegistry {
     /**
      * Standard set of extension IDs (1.74.0+)
      */
-    public static final String[] STANDARD_EXTENSIONS = new String[] { "org.hkijena.jipipe:annotations", "org.hkijena.jipipe:filesystem", "org.hkijena.jipipe:forms", "org.hkijena.jipipe:imagej-algorithms",
-            "org.hkijena.jipipe:imagej-integration", "org.hkijena.jipipe:plots", "org.hkijena.jipipe:python", "org.hkijena.jipipe:r", "org.hkijena.jipipe:strings", "org.hkijena.jipipe:table-operations", "org.hkijena.jipipe:tools", "org.hkijena.jipipe:utils", "org.hkijena.jipipe:imagej2", "org.hkijena.jipipe:multi-parameters-algorithms" };
+    public static final String[] STANDARD_EXTENSIONS = new String[]{"org.hkijena.jipipe:annotations", "org.hkijena.jipipe:filesystem", "org.hkijena.jipipe:forms", "org.hkijena.jipipe:imagej-algorithms",
+            "org.hkijena.jipipe:imagej-integration", "org.hkijena.jipipe:plots", "org.hkijena.jipipe:python", "org.hkijena.jipipe:r", "org.hkijena.jipipe:strings", "org.hkijena.jipipe:table-operations", "org.hkijena.jipipe:tools", "org.hkijena.jipipe:utils", "org.hkijena.jipipe:imagej2", "org.hkijena.jipipe:multi-parameters-algorithms"};
 
     /**
      * Standard set of extension IDs (for users updating from 1.73.x or older)
      */
-    public static final String[] STANDARD_EXTENSIONS_LEGACY = new String[] { "org.hkijena.jipipe:annotations", "org.hkijena.jipipe:filesystem", "org.hkijena.jipipe:forms", "org.hkijena.jipipe:imagej-algorithms",
+    public static final String[] STANDARD_EXTENSIONS_LEGACY = new String[]{"org.hkijena.jipipe:annotations", "org.hkijena.jipipe:filesystem", "org.hkijena.jipipe:forms", "org.hkijena.jipipe:imagej-algorithms",
             "org.hkijena.jipipe:imagej-integration", "org.hkijena.jipipe:plots", "org.hkijena.jipipe:python", "org.hkijena.jipipe:r", "org.hkijena.jipipe:strings", "org.hkijena.jipipe:table-operations", "org.hkijena.jipipe:tools", "org.hkijena.jipipe:utils", "org.hkijena.jipipe:imagej2", "org.hkijena.jipipe:multi-parameters-algorithms",
             "org.hkijena.jipipe:cellpose", "org.hkijena.jipipe:clij2-integration", "org.hkijena.jipipe:ij-multi-template-matching", "org.hkijena.jipipe:ij-weka", "org.hkijena.jipipe:omero"};
 
     private final JIPipe jiPipe;
     private final EventBus eventBus = new EventBus();
-
-    private Settings settings = new Settings();
-
     private final Map<String, JIPipeExtension> knownExtensions = new HashMap<>();
-
     private final Set<String> scheduledActivateExtensions = new HashSet<>();
-
     private final Set<String> scheduledDeactivateExtensions = new HashSet<>();
-
     private final Set<String> newExtensions = new HashSet<>();
-
+    private Settings settings = new Settings();
     private DefaultDirectedGraph<JIPipeDependency, DefaultEdge> dependencyGraph;
 
     public JIPipeExtensionRegistry(JIPipe jiPipe) {
@@ -89,27 +83,42 @@ public class JIPipeExtensionRegistry {
         return result;
     }
 
-    public void initialize() {
-        if(isLegacy()) {
-            settings.getActivatedExtensions().addAll(Arrays.asList(STANDARD_EXTENSIONS_LEGACY));
-        }
-        else {
-            settings.getActivatedExtensions().addAll(Arrays.asList(STANDARD_EXTENSIONS));
-        }
-        if(!Files.isRegularFile(getPropertyFile())) {
-            save();
-        }
-    }
-
     public static boolean isLegacy() {
         Path imageJDir = Paths.get(Prefs.getImageJDir());
         return Files.isRegularFile(imageJDir.resolve("jipipe.properties.json"));
     }
 
     /**
+     * @return The location of the file where the settings are stored
+     */
+    public static Path getPropertyFile() {
+        Path imageJDir = Paths.get(Prefs.getImageJDir());
+        if (!Files.isDirectory(imageJDir)) {
+            try {
+                Files.createDirectories(imageJDir);
+            } catch (IOException e) {
+                IJ.handleException(e);
+            }
+        }
+        return imageJDir.resolve("jipipe.extensions.json");
+    }
+
+    public void initialize() {
+        if (isLegacy()) {
+            settings.getActivatedExtensions().addAll(Arrays.asList(STANDARD_EXTENSIONS_LEGACY));
+        } else {
+            settings.getActivatedExtensions().addAll(Arrays.asList(STANDARD_EXTENSIONS));
+        }
+        if (!Files.isRegularFile(getPropertyFile())) {
+            save();
+        }
+    }
+
+    /**
      * List of all extensions that are requested during startup
      * Please note that this may not contain core extensions
      * Use getActivatedExtensions() instead
+     *
      * @return unmodifiable set
      */
     public Set<String> getStartupExtensions() {
@@ -118,6 +127,7 @@ public class JIPipeExtensionRegistry {
 
     /**
      * List of all activated extensions
+     *
      * @return unmodifiable set
      */
     public Set<String> getActivatedExtensions() {
@@ -127,10 +137,11 @@ public class JIPipeExtensionRegistry {
     /**
      * Registers an extension as known to the extension registry.
      * Will not activate the extension
+     *
      * @param extension the extension
      */
     public void registerKnownExtension(JIPipeExtension extension) {
-        jiPipe.getProgressInfo().resolve("Extension management").log("Discovered extension: " + extension.getDependencyId() + " version " + extension.getDependencyVersion() + " (of type " + extension.getClass().getName() + ")" );
+        jiPipe.getProgressInfo().resolve("Extension management").log("Discovered extension: " + extension.getDependencyId() + " version " + extension.getDependencyVersion() + " (of type " + extension.getClass().getName() + ")");
         knownExtensions.put(extension.getDependencyId(), extension);
         dependencyGraph = null;
     }
@@ -139,6 +150,7 @@ public class JIPipeExtensionRegistry {
      * Returns a known extension by ID
      * If multiple extensions share the same ID, only one is returned
      * If there is none, null will be returned
+     *
      * @param id the ID
      * @return the extension or null
      */
@@ -152,7 +164,7 @@ public class JIPipeExtensionRegistry {
     public void findNewExtensions() {
         Set<String> activatedExtensions = getActivatedExtensions();
         for (JIPipeExtension knownExtension : getKnownExtensionsList()) {
-            if(!activatedExtensions.contains(knownExtension.getDependencyId()) && !settings.getSilencedExtensions().contains(knownExtension.getDependencyId())) {
+            if (!activatedExtensions.contains(knownExtension.getDependencyId()) && !settings.getSilencedExtensions().contains(knownExtension.getDependencyId())) {
                 newExtensions.add(knownExtension.getDependencyId());
             }
         }
@@ -165,6 +177,7 @@ public class JIPipeExtensionRegistry {
 
     /**
      * A set of extensions that are new and should be made known to the user
+     *
      * @return the extensions (unmodifiable)
      */
     public Set<String> getNewExtensions() {
@@ -180,16 +193,17 @@ public class JIPipeExtensionRegistry {
     }
 
     public void clearSchedule(String id) {
-        if(scheduledDeactivateExtensions.contains(id)) {
-           scheduleActivateExtension(id);
+        if (scheduledDeactivateExtensions.contains(id)) {
+            scheduleActivateExtension(id);
         }
-        if(scheduledActivateExtensions.contains(id)) {
-           scheduleDeactivateExtension(id);
+        if (scheduledActivateExtensions.contains(id)) {
+            scheduleDeactivateExtension(id);
         }
     }
 
     /**
      * Returns the dependency IDs that are dependencies of the provided extension ID
+     *
      * @param id the extension id
      * @return set of dependency ids
      */
@@ -204,6 +218,7 @@ public class JIPipeExtensionRegistry {
 
     /**
      * Returns the dependency IDs that are depentents of the provided extension ID
+     *
      * @param id the extension id
      * @return set of dependency ids
      */
@@ -253,10 +268,11 @@ public class JIPipeExtensionRegistry {
     /**
      * Returns a directed graph of all dependencies. The dependencies are the sources.
      * Might contain cycles
+     *
      * @return the dependency graph
      */
     public DefaultDirectedGraph<JIPipeDependency, DefaultEdge> getDependencyGraph() {
-        if(dependencyGraph == null) {
+        if (dependencyGraph == null) {
             dependencyGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
             BiMap<String, JIPipeDependency> dependencyGraphNodeIds = HashBiMap.create();
             // Add the initial vertices
@@ -267,11 +283,11 @@ public class JIPipeExtensionRegistry {
             // Add edges
             Stack<JIPipeDependency> stack = new Stack<>();
             stack.addAll(knownExtensions.values());
-            while(!stack.isEmpty()) {
+            while (!stack.isEmpty()) {
                 JIPipeDependency target = stack.pop();
                 for (JIPipeDependency source : target.getDependencies()) {
                     JIPipeDependency sourceInGraph = dependencyGraphNodeIds.getOrDefault(source.getDependencyId(), null);
-                    if(sourceInGraph == null) {
+                    if (sourceInGraph == null) {
                         sourceInGraph = source;
                         dependencyGraph.addVertex(sourceInGraph);
                         dependencyGraphNodeIds.put(sourceInGraph.getDependencyId(), sourceInGraph);
@@ -283,7 +299,7 @@ public class JIPipeExtensionRegistry {
             CycleDetector<JIPipeDependency, DefaultEdge> cycleDetector = new CycleDetector<>(dependencyGraph);
             boolean hasCycles = cycleDetector.detectCycles();
             jiPipe.getProgressInfo().log("Created dependency graph: " + dependencyGraph.vertexSet().size() + " nodes, " + dependencyGraph.edgeSet().size() + " edges, has cycles: " + hasCycles);
-            if(hasCycles) {
+            if (hasCycles) {
                 jiPipe.getProgressInfo().log("WARNING: Cyclic dependencies detected in dependency graph!");
                 jiPipe.getProgressInfo().log("Dependencies that are part of a cycle:");
                 for (JIPipeDependency dependency : cycleDetector.findCycles()) {
@@ -301,6 +317,7 @@ public class JIPipeExtensionRegistry {
     /**
      * Resolves as many dependencies in the provided set against a known dependency, so there is access to other metadata.
      * If a dependency is not known, the original object is preserved
+     *
      * @param dependencies the dependencies
      * @return set where known extensions are replacing dummy objects
      */
@@ -308,7 +325,7 @@ public class JIPipeExtensionRegistry {
         Set<JIPipeDependency> result = new HashSet<>();
         for (JIPipeDependency dependency : dependencies) {
             JIPipeExtension known = knownExtensions.getOrDefault(dependency.getDependencyId(), null);
-            if(known == null)
+            if (known == null)
                 result.add(dependency);
             else
                 result.add(known);
@@ -317,19 +334,17 @@ public class JIPipeExtensionRegistry {
     }
 
     public boolean willBeActivatedOnNextStartup(String id) {
-        if(getActivatedExtensions().contains(id)) {
+        if (getActivatedExtensions().contains(id)) {
             return !getScheduledDeactivateExtensions().contains(id);
-        }
-        else {
+        } else {
             return getScheduledActivateExtensions().contains(id);
         }
     }
 
     public boolean willBeDeactivatedOnNextStartup(String id) {
-        if(getActivatedExtensions().contains(id)) {
+        if (getActivatedExtensions().contains(id)) {
             return getScheduledDeactivateExtensions().contains(id);
-        }
-        else {
+        } else {
             return !getScheduledActivateExtensions().contains(id);
         }
     }
@@ -340,21 +355,6 @@ public class JIPipeExtensionRegistry {
 
     public Set<String> getScheduledDeactivateExtensions() {
         return Collections.unmodifiableSet(scheduledDeactivateExtensions);
-    }
-
-    /**
-     * @return The location of the file where the settings are stored
-     */
-    public static Path getPropertyFile() {
-        Path imageJDir = Paths.get(Prefs.getImageJDir());
-        if (!Files.isDirectory(imageJDir)) {
-            try {
-                Files.createDirectories(imageJDir);
-            } catch (IOException e) {
-                IJ.handleException(e);
-            }
-        }
-        return imageJDir.resolve("jipipe.extensions.json");
     }
 
     /**

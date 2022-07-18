@@ -44,16 +44,13 @@ import java.util.stream.Collectors;
 public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     private final ROIListData overlayRois = new ROIListData();
     private final JList<Roi> roiListControl = new JList<>();
-    private ROIListData rois = new ROIListData();
     private final RoiDrawer roiDrawer = new RoiDrawer();
+    private final JCheckBoxMenuItem displayROIViewMenuItem = new JCheckBoxMenuItem("Display ROI", UIUtils.getIconFromResources("actions/eye.png"));
+    private final JCheckBoxMenuItem renderROIAsOverlayViewMenuItem = new JCheckBoxMenuItem("Draw ROI as overlay", UIUtils.getIconFromResources("actions/path-break-apart.png"));
+    private ROIListData rois = new ROIListData();
     private boolean roiFilterList = false;
-
     private List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
-
     private JPanel selectionContentPanelUI = new JPanel();
-    private final JCheckBoxMenuItem displayROIViewMenuItem = new JCheckBoxMenuItem("Display ROI",  UIUtils.getIconFromResources("actions/eye.png"));
-
-    private final JCheckBoxMenuItem renderROIAsOverlayViewMenuItem = new JCheckBoxMenuItem("Draw ROI as overlay",  UIUtils.getIconFromResources("actions/path-break-apart.png"));
 
     public ROIManagerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
@@ -304,18 +301,18 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         viewMenu.addSeparator();
         {
             JMenuItem item = new JMenuItem("More settings ...", UIUtils.getIconFromResources("actions/configure.png"));
-            item.addActionListener(e->openRoiDrawingSettings());
+            item.addActionListener(e -> openRoiDrawingSettings());
             viewMenu.add(item);
         }
         {
             JMenuItem item = new JMenuItem("Save settings as default", UIUtils.getIconFromResources("actions/save.png"));
-            item.addActionListener(e-> saveDefaults());
+            item.addActionListener(e -> saveDefaults());
             viewMenu.add(item);
         }
     }
 
     private void saveDefaults() {
-        if(JOptionPane.showConfirmDialog(getViewerPanel(),
+        if (JOptionPane.showConfirmDialog(getViewerPanel(),
                 "Dou you want to save the ROI display settings as default?",
                 "Save settings as default",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
@@ -355,7 +352,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public ImageProcessor draw(int c, int z, int t, ImageProcessor processor) {
-        if(!renderROIAsOverlayViewMenuItem.getState()) {
+        if (!renderROIAsOverlayViewMenuItem.getState()) {
             if (!rois.isEmpty()) {
                 processor = new ColorProcessor(processor.getBufferedImage());
                 roiDrawer.drawOnProcessor(rois, (ColorProcessor) processor, new ImageSliceIndex(c, z, t), new HashSet<>(roiListControl.getSelectedValuesList()));
@@ -366,7 +363,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
-        if(renderROIAsOverlayViewMenuItem.getState()) {
+        if (renderROIAsOverlayViewMenuItem.getState()) {
             for (Roi roi : rois) {
                 ImageJUtils.setRoiCanvas(roi, getCurrentImage(), getViewerPanel().getZoomedDummyCanvas());
             }
@@ -376,7 +373,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex, double magnification) {
-        if(renderROIAsOverlayViewMenuItem.getState()) {
+        if (renderROIAsOverlayViewMenuItem.getState()) {
             Graphics2D graphics = image.createGraphics();
             ROIListData copy = new ROIListData();
             ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(getCurrentImage(), magnification);
@@ -385,7 +382,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
                 ImageJUtils.setRoiCanvas(clone, getCurrentImage(), canvas);
                 copy.add(clone);
             }
-            roiDrawer.drawOverlayOnGraphics(copy, graphics, new Rectangle(0,0,image.getWidth(), image.getHeight()), sliceIndex, new HashSet<>(roiListControl.getSelectedValuesList()), magnification);
+            roiDrawer.drawOverlayOnGraphics(copy, graphics, new Rectangle(0, 0, image.getWidth(), image.getHeight()), sliceIndex, new HashSet<>(roiListControl.getSelectedValuesList()), magnification);
             graphics.dispose();
         }
     }
@@ -618,7 +615,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         public SelectionInfoContextPanel(ROIManagerPlugin parent) {
             super(parent);
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-            setBorder(BorderFactory.createEmptyBorder(4,2,4,2));
+            setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
             this.roiInfoLabel = new JLabel();
             roiInfoLabel.setIcon(UIUtils.getIconFromResources("data-types/roi.png"));
             roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -663,7 +660,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
         @Override
         public void selectionUpdated(ROIListData allROI, List<Roi> selectedROI) {
-            if(selectedROI.isEmpty())
+            if (selectedROI.isEmpty())
                 roiInfoLabel.setText(allROI.size() + " ROI");
             else
                 roiInfoLabel.setText(selectedROI.size() + "/" + allROI.size() + " ROI");
@@ -672,12 +669,10 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     public static class MeasureContextPanel extends SelectionContextPanel implements JIPipeParameterCollection {
 
-        private ImageStatisticsSetParameter statistics = new ImageStatisticsSetParameter();
-
-        private boolean measureInPhysicalUnits = true;
         private final EventBus eventBus = new EventBus();
-
-//        private final JLabel roiInfoLabel;
+        private ImageStatisticsSetParameter statistics = new ImageStatisticsSetParameter();
+        private boolean measureInPhysicalUnits = true;
+        //        private final JLabel roiInfoLabel;
         private List<Roi> selectedROI;
 
         protected MeasureContextPanel(ROIManagerPlugin roiManagerPlugin) {
@@ -686,7 +681,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             statistics.getValues().add(Measurement.PixelValueMean);
 
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-            setBorder(BorderFactory.createEmptyBorder(4,2,4,2));
+            setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
 //            this.roiInfoLabel = new JLabel("");
 //            roiInfoLabel.setIcon(UIUtils.getIconFromResources("data-types/results-table.png"));
 //            roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -697,7 +692,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             measureButton.addActionListener(e -> measure());
             add(measureButton);
 
-            JButton settingsButton = new JButton( UIUtils.getIconFromResources("actions/configure.png"));
+            JButton settingsButton = new JButton(UIUtils.getIconFromResources("actions/configure.png"));
             settingsButton.setToolTipText("Configure measurements");
             UIUtils.makeFlat25x25(settingsButton);
             settingsButton.addActionListener(e -> showSettings());

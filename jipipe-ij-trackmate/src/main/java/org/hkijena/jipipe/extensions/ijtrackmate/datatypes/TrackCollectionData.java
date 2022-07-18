@@ -14,11 +14,7 @@
 
 package org.hkijena.jipipe.extensions.ijtrackmate.datatypes;
 
-import fiji.plugin.trackmate.Logger;
-import fiji.plugin.trackmate.Model;
-import fiji.plugin.trackmate.Settings;
-import fiji.plugin.trackmate.Spot;
-import fiji.plugin.trackmate.TrackModel;
+import fiji.plugin.trackmate.*;
 import fiji.plugin.trackmate.features.EdgeFeatureCalculator;
 import fiji.plugin.trackmate.features.TrackFeatureCalculator;
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
@@ -76,12 +72,11 @@ public class TrackCollectionData extends SpotsCollectionData {
     public void computeTrackFeatures(JIPipeProgressInfo progressInfo) {
         final Logger logger = new JIPipeLogger(progressInfo);
         getModel().setLogger(logger);
-        final TrackFeatureCalculator calculator = new TrackFeatureCalculator( getModel(), getSettings(), true );
-        calculator.setNumThreads( 1 );
-        if ( calculator.checkInput() && calculator.process() ) {
-           getModel().notifyFeaturesComputed();
-        }
-        else {
+        final TrackFeatureCalculator calculator = new TrackFeatureCalculator(getModel(), getSettings(), true);
+        calculator.setNumThreads(1);
+        if (calculator.checkInput() && calculator.process()) {
+            getModel().notifyFeaturesComputed();
+        } else {
             throw new RuntimeException("Unable to compute track features: " + calculator.getErrorMessage());
         }
     }
@@ -89,12 +84,11 @@ public class TrackCollectionData extends SpotsCollectionData {
     public void computeEdgeFeatures(JIPipeProgressInfo progressInfo) {
         final Logger logger = new JIPipeLogger(progressInfo);
         getModel().setLogger(logger);
-        final EdgeFeatureCalculator calculator = new EdgeFeatureCalculator( getModel(), getSettings(), true );
-        calculator.setNumThreads( 1 );
-        if ( calculator.checkInput() && calculator.process() ) {
+        final EdgeFeatureCalculator calculator = new EdgeFeatureCalculator(getModel(), getSettings(), true);
+        calculator.setNumThreads(1);
+        if (calculator.checkInput() && calculator.process()) {
             getModel().notifyFeaturesComputed();
-        }
-        else {
+        } else {
             throw new RuntimeException("Unable to compute track features: " + calculator.getErrorMessage());
         }
     }
@@ -113,7 +107,7 @@ public class TrackCollectionData extends SpotsCollectionData {
             double y1 = y - radius;
             double y2 = y + radius;
             EllipseRoi roi = new EllipseRoi(x1, y1, x2, y2, 1);
-            roi.setPosition(0, z+1, t+1);
+            roi.setPosition(0, z + 1, t + 1);
             roi.setName(spot.getName());
 
             result.add(roi);
@@ -138,13 +132,14 @@ public class TrackCollectionData extends SpotsCollectionData {
     /**
      * Returns a copy of this track collection that has only the selected track IDs
      * Please note that all spots are still present
+     *
      * @param selectedTrackIds the selected tracks
      * @return collection with only the selected tracks
      */
     public TrackCollectionData filterTracks(Set<Integer> selectedTrackIds) {
         TrackCollectionData result = new TrackCollectionData(this);
         for (Integer trackID : result.getTrackModel().trackIDs(true)) {
-            if(!selectedTrackIds.contains(trackID)) {
+            if (!selectedTrackIds.contains(trackID)) {
                 result.getModel().setTrackVisibility(trackID, false);
             }
         }
@@ -162,17 +157,15 @@ public class TrackCollectionData extends SpotsCollectionData {
      */
     public double getTrackFeature(int trackId, String feature, double defaultValue) {
         Double trackFeature = getModel().getFeatureModel().getTrackFeature(trackId, feature);
-        if(trackFeature == null) {
+        if (trackFeature == null) {
             computeTrackFeatures(new JIPipeProgressInfo());
-        }
-        else {
+        } else {
             return trackFeature;
         }
         trackFeature = getModel().getFeatureModel().getTrackFeature(trackId, feature);
-        if(trackFeature != null) {
+        if (trackFeature != null) {
             return trackFeature;
-        }
-        else {
+        } else {
             return defaultValue;
         }
     }
@@ -188,32 +181,32 @@ public class TrackCollectionData extends SpotsCollectionData {
      */
     public double getEdgeFeature(DefaultWeightedEdge edge, String feature, double defaultValue) {
         Double trackFeature = getModel().getFeatureModel().getEdgeFeature(edge, feature);
-        if(trackFeature == null) {
+        if (trackFeature == null) {
             computeEdgeFeatures(new JIPipeProgressInfo());
-        }
-        else {
+        } else {
             return trackFeature;
         }
         trackFeature = getModel().getFeatureModel().getEdgeFeature(edge, feature);
-        if(trackFeature != null) {
+        if (trackFeature != null) {
             return trackFeature;
-        }
-        else {
+        } else {
             return defaultValue;
         }
     }
+
     public Iterable<Integer> getTrackIds() {
         return getTrackModel().trackIDs(true);
     }
 
     /**
      * Returns the range of values for a feature. This method makes use of a cache for fast access.
+     *
      * @param featureName the feature
      * @return the range. returns an empty range (min = 0 and max = 0) if no feature values are available
      */
     public Range<Double> getEdgeFeatureRange(String featureName) {
         Range<Double> result = edgeFeatureRanges.getOrDefault(featureName, null);
-        if(result == null) {
+        if (result == null) {
             double min = Double.POSITIVE_INFINITY;
             double max = Double.NEGATIVE_INFINITY;
 
@@ -226,10 +219,9 @@ public class TrackCollectionData extends SpotsCollectionData {
                     max = Math.max(feature, max);
                 }
             }
-            if(Double.isFinite(min)) {
+            if (Double.isFinite(min)) {
                 result = Range.between(min, max);
-            }
-            else {
+            } else {
                 result = Range.is(0d);
             }
             edgeFeatureRanges.put(featureName, result);
@@ -243,12 +235,13 @@ public class TrackCollectionData extends SpotsCollectionData {
 
     /**
      * Returns the range of values for a feature. This method makes use of a cache for fast access.
+     *
      * @param featureName the feature
      * @return the range. returns an empty range (min = 0 and max = 0) if no feature values are available
      */
     public Range<Double> getTrackFeatureRange(String featureName) {
         Range<Double> result = trackFeatureRanges.getOrDefault(featureName, null);
-        if(result == null) {
+        if (result == null) {
             double min = Double.POSITIVE_INFINITY;
             double max = Double.NEGATIVE_INFINITY;
 
@@ -259,10 +252,9 @@ public class TrackCollectionData extends SpotsCollectionData {
                 min = Math.min(feature, min);
                 max = Math.max(feature, max);
             }
-            if(Double.isFinite(min)) {
+            if (Double.isFinite(min)) {
                 result = Range.between(min, max);
-            }
-            else {
+            } else {
                 result = Range.is(0d);
             }
             trackFeatureRanges.put(featureName, result);

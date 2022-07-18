@@ -57,6 +57,11 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
             JIPipe.getJIPipeVersion(),
             "Python integration");
 
+    public PythonExtension() {
+        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
+        getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/python.png")));
+    }
+
     private static void installPythonAdapterLibrary(JIPipeWorkbench workbench) {
         PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
@@ -93,11 +98,6 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
         JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
         applicationSettingsUI.selectNode("/Extensions/Python integration");
-    }
-
-    public PythonExtension() {
-        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
-        getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/python.png")));
     }
 
     @Override

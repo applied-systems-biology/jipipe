@@ -26,7 +26,6 @@ import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -34,7 +33,6 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -111,7 +109,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus reference = null;
         {
             ImagePlusData data = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
-            if(data != null) {
+            if (data != null) {
                 reference = data.getDuplicateImage();
             }
         }

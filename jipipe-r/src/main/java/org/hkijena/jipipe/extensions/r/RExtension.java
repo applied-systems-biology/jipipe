@@ -53,6 +53,11 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
             JIPipe.getJIPipeVersion(),
             "R integration");
 
+    public RExtension() {
+        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
+        getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/r.png")));
+    }
+
     private static void installR(JIPipeWorkbench workbench) {
         RExtensionSettings settings = RExtensionSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
@@ -73,11 +78,6 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
         DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
         JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
         applicationSettingsUI.selectNode("/Extensions/R integration");
-    }
-
-    public RExtension() {
-        getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
-        getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/r.png")));
     }
 
     @Override
@@ -165,7 +165,7 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
                     "existing R installation or let JIPipe install a R distribution for you. Please note that we cannot provide you with an R " +
                     "setup tool for Linux and Mac.\n\n" +
                     "For more information, please visit https://www.jipipe.org/installation/third-party/r/");
-            if(SystemUtils.IS_OS_WINDOWS) {
+            if (SystemUtils.IS_OS_WINDOWS) {
                 notification.getActions().add(new JIPipeNotificationAction("Install R",
                         "Installs a prepackaged version of R",
                         UIUtils.getIconFromResources("actions/browser-download.png"),

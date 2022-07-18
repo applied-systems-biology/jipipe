@@ -16,7 +16,6 @@ package org.hkijena.jipipe.extensions.ijtrackmate.datatypes;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import fiji.plugin.trackmate.tracking.SpotTrackerFactory;
-import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -26,20 +25,12 @@ import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
-import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.extensions.ijtrackmate.display.algorithms.CachedTrackmateAlgorithmViewerWindow;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackMateUtils;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.strings.CachedTextViewerWindow;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
-import org.jetbrains.annotations.NotNull;
 import org.scijava.InstantiableException;
 import org.scijava.plugin.PluginInfo;
 

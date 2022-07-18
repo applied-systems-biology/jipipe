@@ -54,7 +54,7 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         ImageStack newStack = new ImageStack(image.getWidth(), image.getHeight(), image.getStackSize());
 
-        ImageJUtils.forEachIndexedZCTSlice(image, (ip, sourceIndex ) -> {
+        ImageJUtils.forEachIndexedZCTSlice(image, (ip, sourceIndex) -> {
             int z, c, t;
             switch (targetZ) {
                 case Channel:

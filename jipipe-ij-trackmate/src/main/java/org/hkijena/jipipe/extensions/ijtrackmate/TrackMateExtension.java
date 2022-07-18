@@ -24,28 +24,14 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.filesystem.FilesystemExtension;
-import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.ModelData;
-import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotDetectorData;
-import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotTrackerData;
-import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
-import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
+import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.*;
 import org.hkijena.jipipe.extensions.ijtrackmate.display.trackscheme.TrackSchemeDataDisplayOperation;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.converters.ConvertSpotsToRoiNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.converters.ConvertTracksToRoiNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.converters.SpotsToRoiConverter;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MergeSpotsNode;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SplitSpotsNode;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SpotDetectorNode;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MeasureSpotsNode;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SpotFilterNode;
-import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.SpotsToRGBNode;
+import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.*;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.*;
-import org.hkijena.jipipe.extensions.ijtrackmate.parameters.EdgeFeature;
-import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
-import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeatureFilterParameter;
-import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeaturePenaltyParameter;
-import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeature;
-import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeatureFilterParameter;
+import org.hkijena.jipipe.extensions.ijtrackmate.parameters.*;
 import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUISpotsDisplaySettings;
 import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUITracksDisplaySettings;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackDrawer;
@@ -126,7 +112,7 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
                 new JIPipeAuthorMetadata("", "Guillaume", "Duménil", new StringList("Pathogenesis of Vascular Infections unit, INSERM, Institut Pasteur, Paris, FR"), "", "", false, false),
                 new JIPipeAuthorMetadata("", "Guillaume", "Jacquemet", new StringList("Turku Bioscience Centre, University of Turku and Åbo Akademi University, Turku, FI",
                         "Åbo Akademi University, Faculty of Science and Engineering, Biosciences, Turku, FI", "Turku Bioimaging, University of Turku and Åbo Akademi University, Turku, Finland"), "", "", false, false)
-                );
+        );
     }
 
     @Override

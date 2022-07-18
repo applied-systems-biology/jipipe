@@ -105,12 +105,12 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus referenceImage = null;
         {
             ImagePlusData reference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
-            if(reference != null) {
+            if (reference != null) {
                 referenceImage = reference.getDuplicateImage(); // Measurements tend to break the image
             }
         }
-        if(referenceImage == null) {
-        referenceImage =ROIListData.createDummyImageFor(Arrays.asList(roi1_original, roi2_original));
+        if (referenceImage == null) {
+            referenceImage = ROIListData.createDummyImageFor(Arrays.asList(roi1_original, roi2_original));
         }
         if (roi1Settings.isEnabled()) {
             ROIListData roi1 = new ROIListData(roi1_original);

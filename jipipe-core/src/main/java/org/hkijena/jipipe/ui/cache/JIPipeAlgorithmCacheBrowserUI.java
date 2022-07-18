@@ -34,13 +34,11 @@ import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.MenuManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -54,10 +52,8 @@ import java.util.*;
 public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     private final JIPipeGraphNode graphNode;
     private final JIPipeGraphCanvasUI graphCanvasUI;
-
-    private Component currentContent;
-
     private final JIPipeAlgorithmCacheBrowserOutputSelectorUI selectorUI;
+    private Component currentContent;
 
     /**
      * @param workbenchUI   the workbench
@@ -81,19 +77,18 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        selectorUI.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,1, 0, UIManager.getColor("TabbedPane.darkShadow")),
-                BorderFactory.createEmptyBorder(8,2,8,2)));
+        selectorUI.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, UIManager.getColor("TabbedPane.darkShadow")),
+                BorderFactory.createEmptyBorder(8, 2, 8, 2)));
         add(selectorUI, BorderLayout.NORTH);
     }
 
     private void showAllDataSlots() {
         JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(getProject());
         Map<String, JIPipeDataSlot> cachedData = query.getCachedData(graphNode);
-        if(cachedData.size() == 1) {
+        if (cachedData.size() == 1) {
             JIPipeDataSlot first = cachedData.values().iterator().next();
             showDataSlot(first);
-        }
-        else {
+        } else {
             showDataSlots(new ArrayList<>(cachedData.values()));
         }
     }
@@ -101,16 +96,15 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     private void showDataSlot(String name) {
         JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(getProject());
         Map<String, JIPipeDataSlot> cachedData = query.getCachedData(graphNode);
-        if(cachedData.containsKey(name)) {
+        if (cachedData.containsKey(name)) {
             showDataSlot(cachedData.get(name));
-        }
-        else {
+        } else {
             showDataSlots(Collections.emptyList());
         }
     }
 
     private void showDataSlots(List<JIPipeDataSlot> slots) {
-        if(currentContent != null) {
+        if (currentContent != null) {
             remove(currentContent);
         }
         JIPipeExtendedMultiDataTableUI ui = new JIPipeExtendedMultiDataTableUI(getProjectWorkbench(), slots, false);
@@ -170,7 +164,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void showDataSlot(JIPipeDataSlot dataSlot) {
-        if(currentContent != null) {
+        if (currentContent != null) {
             remove(currentContent);
         }
         JIPipeExtendedDataTableUI ui = new JIPipeExtendedDataTableUI(getProjectWorkbench(), dataSlot, true);
@@ -302,10 +296,9 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
 
     @Subscribe
     public void onOutputSelected(JIPipeAlgorithmCacheBrowserOutputSelectorUI.OutputSelectedEvent event) {
-        if(JIPipeAlgorithmCacheBrowserOutputSelectorUI.SELECT_ALL_OUTPUTS.equals(event.getName())) {
+        if (JIPipeAlgorithmCacheBrowserOutputSelectorUI.SELECT_ALL_OUTPUTS.equals(event.getName())) {
             showAllDataSlots();
-        }
-        else {
+        } else {
             showDataSlot(event.getName());
         }
     }

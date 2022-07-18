@@ -19,11 +19,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
+import java.awt.*;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -39,6 +35,7 @@ public class EasyInstallExternalEnvironmentInstallerDialog extends JDialog {
         this.installer = installer;
         initialize();
     }
+
     private void initialize() {
 
         List<EasyInstallExternalEnvironmentInstallerPackage> supportedPackages = installer.getAvailablePackages().stream().filter(EasyInstallExternalEnvironmentInstallerPackage::isSupported).collect(Collectors.toList());
@@ -48,7 +45,7 @@ public class EasyInstallExternalEnvironmentInstallerDialog extends JDialog {
 
         getContentPane().setLayout(new BorderLayout());
 
-        formPanel.setBorder(BorderFactory.createEmptyBorder(16,16,16,16));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
         formPanel.addWideToForm(UIUtils.createJLabel(installer.getDialogHeading(), UIUtils.getIcon32FromResources("install.png"), 28));
         formPanel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane(installer.getDialogDescription().getHtml(), false));
@@ -60,16 +57,15 @@ public class EasyInstallExternalEnvironmentInstallerDialog extends JDialog {
         formPanel.addWideToForm(Box.createVerticalStrut(32));
         formPanel.addWideToForm(UIUtils.createJLabel("Available packages", 22));
 
-        if(supportedPackages.isEmpty()) {
+        if (supportedPackages.isEmpty()) {
             formPanel.addWideToForm(UIUtils.createJLabel("No supported packages found.", UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png")));
-        }
-        else {
+        } else {
             for (EasyInstallExternalEnvironmentInstallerPackage availablePackage : supportedPackages) {
                 addPackagePanel(availablePackage);
             }
         }
 
-        if(!unsupportedPackages.isEmpty()) {
+        if (!unsupportedPackages.isEmpty()) {
             formPanel.addWideToForm(Box.createVerticalStrut(32));
             formPanel.addWideToForm(UIUtils.createJLabel("Unsupported packages", 22));
             for (EasyInstallExternalEnvironmentInstallerPackage availablePackage : unsupportedPackages) {
@@ -87,29 +83,29 @@ public class EasyInstallExternalEnvironmentInstallerDialog extends JDialog {
 
     private void addPackagePanel(EasyInstallExternalEnvironmentInstallerPackage availablePackage) {
         JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8,8,8,8)));
-        panel.add(UIUtils.createJLabel(availablePackage.getName(), UIUtils.getIcon32FromResources("module-json.png"), 16), new GridBagConstraints(0,0,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
+        panel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
+        panel.add(UIUtils.createJLabel(availablePackage.getName(), UIUtils.getIcon32FromResources("module-json.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
         JTextArea idField = UIUtils.makeReadonlyBorderlessTextArea(availablePackage.getUrl());
-        panel.add(idField, new GridBagConstraints(0,1,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
-        panel.add(UIUtils.makeBorderlessReadonlyTextPane(availablePackage.getDescription(), false), new GridBagConstraints(0,2,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
+        panel.add(idField, new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
+        panel.add(UIUtils.makeBorderlessReadonlyTextPane(availablePackage.getDescription(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
         JButton installButton = new JButton("Install now", UIUtils.getIconFromResources("emblems/vcs-normal.png"));
         installButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));
         installButton.addActionListener(e -> confirmInstallation(availablePackage));
-        panel.add(installButton, new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,new Insets(4,4,4,4),0,0));
+        panel.add(installButton, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
 
         formPanel.addWideToForm(panel);
     }
 
     private void confirmInstallation(EasyInstallExternalEnvironmentInstallerPackage availablePackage) {
-       this.targetPackage = availablePackage;
-       setVisible(false);
+        this.targetPackage = availablePackage;
+        setVisible(false);
     }
 
 
     private void initializeButtonPanel() {
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 

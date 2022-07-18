@@ -24,14 +24,11 @@ import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.jdesktop.swingx.JXPanel;
 import org.jdesktop.swingx.ScrollableSizeHint;
 
+import javax.swing.Timer;
 import javax.swing.*;
-import javax.swing.plaf.LayerUI;
 import java.awt.*;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Deque;
 import java.util.List;
+import java.util.*;
 
 public class ExtensionListPanel extends JIPipeWorkbenchPanel {
 
@@ -39,24 +36,21 @@ public class ExtensionListPanel extends JIPipeWorkbenchPanel {
             0,
             0,
             64,
-            new float[]{0f,1f},
+            new float[]{0f, 1f},
             new Color[]{UIManager.getColor("Panel.background"), ColorUtils.setAlpha(UIManager.getColor("Panel.background"), 0)});
     public static final Paint GRADIENT_BOTTOM = new LinearGradientPaint(0,
             0,
             0,
             64,
-            new float[]{0f,1f},
+            new float[]{0f, 1f},
             new Color[]{ColorUtils.setAlpha(UIManager.getColor("Panel.background"), 0), UIManager.getColor("Panel.background")});
 
     private final JIPipeModernPluginManagerUI pluginManagerUI;
+    private final Deque<JIPipeExtension> infiniteScrollingQueue = new ArrayDeque<>();
     private List<JIPipeExtension> plugins;
     private JXPanel listPanel;
-
     private JScrollPane scrollPane;
-
     private final Timer scrollToBeginTimer = new Timer(200, e -> scrollToBeginning());
-
-    private final Deque<JIPipeExtension> infiniteScrollingQueue = new ArrayDeque<>();
 
     public ExtensionListPanel(JIPipeModernPluginManagerUI pluginManagerUI) {
         super(pluginManagerUI.getWorkbench());
@@ -66,7 +60,7 @@ public class ExtensionListPanel extends JIPipeWorkbenchPanel {
     }
 
     private boolean isCoreDependency(JIPipeDependency dependency) {
-        if(dependency instanceof JIPipeJavaExtension)
+        if (dependency instanceof JIPipeJavaExtension)
             return ((JIPipeJavaExtension) dependency).isCoreExtension();
         return false;
     }
@@ -101,7 +95,7 @@ public class ExtensionListPanel extends JIPipeWorkbenchPanel {
     }
 
     private void updateInfiniteScroll() {
-        JScrollBar scrollBar =scrollPane.getVerticalScrollBar();
+        JScrollBar scrollBar = scrollPane.getVerticalScrollBar();
         if ((!scrollBar.isVisible() || (scrollBar.getValue() + scrollBar.getVisibleAmount()) > (scrollBar.getMaximum() - 100)) && !infiniteScrollingQueue.isEmpty()) {
             JIPipeExtension value = infiniteScrollingQueue.removeFirst();
             ExtensionItemPanel panel = new ExtensionItemPanel(pluginManagerUI, value);

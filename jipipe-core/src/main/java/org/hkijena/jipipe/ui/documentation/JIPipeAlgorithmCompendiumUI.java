@@ -19,11 +19,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
@@ -72,7 +68,7 @@ public class JIPipeAlgorithmCompendiumUI extends JIPipeCompendiumUI<JIPipeNodeIn
         StringBuilder builder = new StringBuilder();
         builder.append("# ").append(info.getName()).append("\n\n");
 
-        if(!info.getAliases().isEmpty()) {
+        if (!info.getAliases().isEmpty()) {
             builder.append("<p>");
             for (JIPipeNodeMenuLocation location : info.getAliases()) {
                 builder.append("<i>Alias: ").append(location.getCategory().getName()).append(" &gt; ").append(String.join(" &gt; ", location.getMenuPath().split("\n"))).append(" &gt; ").append(StringUtils.orElse(location.getAlternativeName(), info.getName())).append("<i>\n");

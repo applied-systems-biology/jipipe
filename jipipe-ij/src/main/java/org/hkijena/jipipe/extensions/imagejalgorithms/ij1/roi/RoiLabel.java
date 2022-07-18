@@ -34,14 +34,15 @@ public enum RoiLabel {
 
     /**
      * Draws a label on an image processor
-     * @param imp the image
-     * @param ip the target processor
-     * @param roi the ROI
-     * @param roiIndex the index of the ROI
-     * @param r Rectangle where x and y are the centroid (width, height are zero)
-     * @param foreground foreground color
-     * @param background background color
-     * @param font the font
+     *
+     * @param imp            the image
+     * @param ip             the target processor
+     * @param roi            the ROI
+     * @param roiIndex       the index of the ROI
+     * @param r              Rectangle where x and y are the centroid (width, height are zero)
+     * @param foreground     foreground color
+     * @param background     background color
+     * @param font           the font
      * @param drawBackground if a background should be drawn
      */
     public void draw(ImagePlus imp, ImageProcessor ip, Roi roi, int roiIndex, Rectangle r, Color foreground, Color background, Font font, boolean drawBackground) {
@@ -53,7 +54,8 @@ public enum RoiLabel {
 
     /**
      * Generates a string label based on the ROI
-     * @param roi the roi
+     *
+     * @param roi      the roi
      * @param roiIndex the index of the roi
      * @return the label or null if no label should be generated
      */
@@ -82,11 +84,11 @@ public enum RoiLabel {
         int height = fontMetrics.getHeight();
         int x = (int) (center.getX() * magnification - width / 2);
         int y = (int) (center.getY() * magnification - height / 2);
-        if(drawBackground) {
+        if (drawBackground) {
             graphics2D.setColor(background);
-            graphics2D.fillRect(x -1, y - 1, width + 2, height + 2);
+            graphics2D.fillRect(x - 1, y - 1, width + 2, height + 2);
         }
         graphics2D.setColor(foreground);
-        graphics2D.drawString(label,x,y + fontMetrics.getAscent());
+        graphics2D.drawString(label, x, y + fontMetrics.getAscent());
     }
 }

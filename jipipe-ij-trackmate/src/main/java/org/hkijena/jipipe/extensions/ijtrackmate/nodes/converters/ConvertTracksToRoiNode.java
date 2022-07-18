@@ -7,18 +7,10 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.AnnotationGeneratorExpression;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.NamedTextAnnotationGeneratorExpression;
-import org.hkijena.jipipe.extensions.expressions.OptionalDefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackFeatureVariableSource;
@@ -26,12 +18,9 @@ import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackSpotFeatureVariableS
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.utils.ColorUtils;
 
-import java.awt.Color;
-import java.util.ArrayList;
+import java.awt.*;
 import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @JIPipeDocumentation(name = "Convert tracks to ROI", description = "Converts TrackMate tracks into ROI lists. Each lists contains the spot ROI of one track.")
 @JIPipeNode(menuPath = "Tracking\nConvert", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -53,7 +42,7 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
 
     public ConvertTracksToRoiNode(ConvertTracksToRoiNode other) {
         super(other);
-        annotationGenerator =  new NamedTextAnnotationGeneratorExpression.List(other.annotationGenerator);
+        annotationGenerator = new NamedTextAnnotationGeneratorExpression.List(other.annotationGenerator);
     }
 
     @Override
@@ -72,7 +61,7 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
             variables.set("n_spots", spots.size());
             for (String trackFeature : trackCollectionData.getModel().getFeatureModel().getTrackFeatures()) {
                 Double feature = trackCollectionData.getModel().getFeatureModel().getTrackFeature(trackID, trackFeature);
-                if(feature == null)
+                if (feature == null)
                     feature = Double.NaN;
                 String variableName = TrackSpotFeatureVariableSource.trackKeyToVariable(trackFeature);
                 variables.set(variableName, feature);
@@ -92,14 +81,14 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
                 double y1 = y - radius;
                 double y2 = y + radius;
                 EllipseRoi roi = new EllipseRoi(x1, y1, x2, y2, 1);
-                roi.setPosition(0, z+1, t+1);
+                roi.setPosition(0, z + 1, t + 1);
 
                 String name = spot.getName();
                 Color lineColor = Color.YELLOW;
                 Color fillColor = null;
                 int lineWidth = 1;
 
-                if(this.roiName.isEnabled() || this.fillColor.isEnabled() || this.lineColor.isEnabled() || this.lineWidth.isEnabled()) {
+                if (this.roiName.isEnabled() || this.fillColor.isEnabled() || this.lineColor.isEnabled() || this.lineWidth.isEnabled()) {
                     // Generate variables
                     for (Map.Entry<String, Double> entry : spot.getFeatures().entrySet()) {
                         String variableName = TrackSpotFeatureVariableSource.spotKeyToVariable(entry.getKey());
@@ -108,16 +97,16 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
                     variables.set("spot.id", spot.ID());
                     variables.set("spot.index", spotIndex);
 
-                    if(this.roiName.isEnabled()) {
+                    if (this.roiName.isEnabled()) {
                         name = this.roiName.getContent().evaluateToString(variables);
                     }
-                    if(this.fillColor.isEnabled()) {
+                    if (this.fillColor.isEnabled()) {
                         fillColor = this.fillColor.getContent().evaluateToColor(variables);
                     }
-                    if(this.lineColor.isEnabled()) {
+                    if (this.lineColor.isEnabled()) {
                         lineColor = this.lineColor.getContent().evaluateToColor(variables);
                     }
-                    if(this.lineWidth.isEnabled()) {
+                    if (this.lineWidth.isEnabled()) {
                         lineWidth = this.lineWidth.getContent().evaluateToInteger(variables);
                     }
                 }

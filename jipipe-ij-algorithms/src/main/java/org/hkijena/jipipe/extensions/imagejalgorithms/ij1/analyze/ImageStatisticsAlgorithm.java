@@ -13,12 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze;
 
-import gnu.trove.list.array.TByteArrayList;
-import gnu.trove.list.array.TFloatArrayList;
-import gnu.trove.list.array.TShortArrayList;
-import ij.ImagePlus;
 import ij.gui.ShapeRoi;
-import ij.process.*;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -28,26 +23,15 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.RoiStatisticsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageROITargetArea;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
-import java.awt.Rectangle;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+import java.awt.*;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
@@ -62,15 +46,13 @@ import java.util.stream.Collectors;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (whole image)")
 public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
+    private final RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode(RoiStatisticsAlgorithm.class);
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
     private boolean applyPerSlice = false;
     private boolean applyPerChannel = false;
     private boolean applyPerFrame = false;
     private OptionalStringParameter indexAnnotation = new OptionalStringParameter();
-
     private boolean measureInPhysicalUnits = true;
-
-    private final RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode(RoiStatisticsAlgorithm.class);
 
     /**
      * Instantiates a new node type.
@@ -100,9 +82,9 @@ public class ImageStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusGreyscaleData inputImage = dataBatch.getInputData("Image", ImagePlusGreyscaleData.class, progressInfo);
         ROIListData inputRois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-        if(inputRois == null || inputRois.isEmpty()) {
+        if (inputRois == null || inputRois.isEmpty()) {
             inputRois = new ROIListData();
-            inputRois.add(new ShapeRoi(new Rectangle(0,0,inputImage.getWidth(),inputImage.getHeight())));
+            inputRois.add(new ShapeRoi(new Rectangle(0, 0, inputImage.getWidth(), inputImage.getHeight())));
         }
 
         roiStatisticsAlgorithm.setMeasurements(measurements);

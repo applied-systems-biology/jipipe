@@ -27,8 +27,8 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.DataPreviewControlUI;
+import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.search.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
@@ -58,14 +58,13 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
     private final JIPipeProjectRun run;
     private final JIPipeDataSlot slot;
+    private final SearchTextField searchTextField = new SearchTextField();
+    private final MenuManager menuManager = new MenuManager();
     private JXTable table;
     private JIPipeDataTableMetadata dataTable;
     private FormPanel rowUIList;
-    private final SearchTextField searchTextField = new SearchTextField();
     private JIPipeRowDataTableCellRenderer previewRenderer;
     private JIPipeRowDataAnnotationTableCellRenderer dataAnnotationPreviewRenderer;
-
-    private final MenuManager menuManager = new MenuManager();
 
     /**
      * @param workbenchUI the workbench UI

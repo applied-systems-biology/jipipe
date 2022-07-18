@@ -318,8 +318,9 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     /**
      * Imports a table from a table model and column model
-     * @param model the table model
-     * @param columnModel the column model (can be null)
+     *
+     * @param model               the table model
+     * @param columnModel         the column model (can be null)
      * @param stripColumnNameHtml if enabled, remove HTML from column names
      * @return the table
      */
@@ -327,16 +328,15 @@ public class ResultsTableData implements JIPipeData, TableModel {
         ResultsTableData resultsTableData = new ResultsTableData();
         for (int col = 0; col < model.getColumnCount(); col++) {
             String requestedName;
-            if(columnModel != null) {
+            if (columnModel != null) {
                 requestedName = StringUtils.nullToEmpty(columnModel.getColumn(col).getIdentifier());
-                if(requestedName.isEmpty()) {
+                if (requestedName.isEmpty()) {
                     requestedName = model.getColumnName(col);
                 }
-            }
-            else {
+            } else {
                 requestedName = model.getColumnName(col);
             }
-            if(stripColumnNameHtml) {
+            if (stripColumnNameHtml) {
                 requestedName = Jsoup.clean(requestedName, new Whitelist());
             }
             String newColumnName = StringUtils.makeUniqueString(requestedName, " ", resultsTableData.getColumnNames());

@@ -31,6 +31,10 @@ public class ImageViewerUITracksDisplaySettings implements JIPipeParameterCollec
     public ImageViewerUITracksDisplaySettings() {
     }
 
+    public static ImageViewerUITracksDisplaySettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, ImageViewerUITracksDisplaySettings.class);
+    }
+
     @JIPipeDocumentation(name = "Track visualization")
     @JIPipeParameter("track-drawer")
     public TrackDrawer getTrackDrawer() {
@@ -55,9 +59,5 @@ public class ImageViewerUITracksDisplaySettings implements JIPipeParameterCollec
     @Override
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    public static ImageViewerUITracksDisplaySettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, ImageViewerUITracksDisplaySettings.class);
     }
 }

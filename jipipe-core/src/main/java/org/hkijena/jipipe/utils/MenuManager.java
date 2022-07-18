@@ -15,7 +15,7 @@
 package org.hkijena.jipipe.utils;
 
 import javax.swing.*;
-import java.awt.Component;
+import java.awt.*;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +43,7 @@ public class MenuManager {
         menuBar.add(component, 0);
     }
 
-    public void addAfterLastOfType(Component component, Class<? extends  Component> targetType) {
+    public void addAfterLastOfType(Component component, Class<? extends Component> targetType) {
         Component[] components = menuBar.getComponents();
         boolean found = false;
         for (int i = components.length - 1; i >= 0; i--) {
@@ -62,12 +62,11 @@ public class MenuManager {
     public JMenu getOrCreateMenu(String... hierarchy) {
         String id = String.join("\n", hierarchy);
         JMenu result = menus.getOrDefault(id, null);
-        if(result == null) {
-            if(hierarchy.length == 1) {
+        if (result == null) {
+            if (hierarchy.length == 1) {
                 result = new JMenu(hierarchy[0]);
                 addAfterLastOfType(result, JMenu.class);
-            }
-            else {
+            } else {
                 result = new JMenu(hierarchy[hierarchy.length - 1]);
                 getOrCreateMenu(Arrays.copyOf(hierarchy, hierarchy.length - 1)).add(result);
             }

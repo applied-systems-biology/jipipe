@@ -25,11 +25,7 @@ import org.hkijena.jipipe.extensions.cellpose.compat.CellPoseSizeModelImageJExpo
 import org.hkijena.jipipe.extensions.cellpose.compat.CellPoseSizeModelImageJImporter;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
-import org.hkijena.jipipe.extensions.cellpose.installers.CellPoseEasyInstaller;
-import org.hkijena.jipipe.extensions.cellpose.installers.MinicondaCellPoseEnvInstaller;
-import org.hkijena.jipipe.extensions.cellpose.installers.MinicondaCellPoseGPUEnvInstaller;
-import org.hkijena.jipipe.extensions.cellpose.installers.PortableCellPoseEnvInstaller;
-import org.hkijena.jipipe.extensions.cellpose.installers.PortableCellPoseGPUEnvInstaller;
+import org.hkijena.jipipe.extensions.cellpose.installers.*;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
@@ -150,7 +146,6 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
     public List<ImageIcon> getSplashIcons() {
         return Arrays.asList(UIUtils.getIcon32FromResources("apps/cellpose.png"));
     }
-
 
 
     @Override

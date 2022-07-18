@@ -47,6 +47,7 @@ public class MultiTemplateMatchingExtension extends JIPipePrepackagedDefaultJava
     public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:ij-multi-template-matching",
             JIPipe.getJIPipeVersion(),
             "Multi-Template matching");
+
     public MultiTemplateMatchingExtension() {
     }
 

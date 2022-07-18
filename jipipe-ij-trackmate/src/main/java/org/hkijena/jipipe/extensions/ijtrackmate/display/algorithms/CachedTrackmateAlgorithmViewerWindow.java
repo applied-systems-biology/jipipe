@@ -96,13 +96,12 @@ public class CachedTrackmateAlgorithmViewerWindow extends JIPipeCacheDataViewerW
     @Override
     protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
         JIPipeData data = virtualData.getData(progressInfo);
-       if(data instanceof SpotTrackerData) {
-           textArea.setText(((SpotTrackerData) data).toJson());
-           textArea.setSyntaxEditingStyle("application-json");
-       }
-       else if(data instanceof SpotDetectorData) {
-           textArea.setText(((SpotDetectorData) data).toJson());
-           textArea.setSyntaxEditingStyle("application-json");
-       }
+        if (data instanceof SpotTrackerData) {
+            textArea.setText(((SpotTrackerData) data).toJson());
+            textArea.setSyntaxEditingStyle("application-json");
+        } else if (data instanceof SpotDetectorData) {
+            textArea.setText(((SpotDetectorData) data).toJson());
+            textArea.setSyntaxEditingStyle("application-json");
+        }
     }
 }

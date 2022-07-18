@@ -36,8 +36,6 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
-import java.util.Map;
-
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
@@ -48,9 +46,9 @@ import java.util.Map;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private DefaultExpressionParameter filters = new DefaultExpressionParameter();
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
             JIPipe.createNode(RoiStatisticsAlgorithm.class);
+    private DefaultExpressionParameter filters = new DefaultExpressionParameter();
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
     private boolean outputEmptyLists = true;
 
@@ -94,7 +92,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData();
         roiStatisticsAlgorithm.getInputSlot("ROI").addData(inputRois, progressInfo);
-        if(inputReference != null) {
+        if (inputReference != null) {
             roiStatisticsAlgorithm.getInputSlot("Reference").addData(inputReference, progressInfo);
         }
         roiStatisticsAlgorithm.run(progressInfo);
@@ -124,7 +122,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         ImagePlus reference = null;
         {
             ImagePlusData data = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
-            if(data != null) {
+            if (data != null) {
                 reference = data.getDuplicateImage();
             }
         }

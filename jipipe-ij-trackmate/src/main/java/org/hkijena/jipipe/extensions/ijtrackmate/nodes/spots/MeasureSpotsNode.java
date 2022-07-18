@@ -6,11 +6,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
-import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotFeatureVariableSource;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.Map;

@@ -31,11 +31,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.io.DefaultSettingsIO;
 import org.hkijena.jipipe.extensions.ijtrackmate.io.SettingsIO;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class CreateSpotDetectorNodeInfo implements JIPipeNodeInfo {
 

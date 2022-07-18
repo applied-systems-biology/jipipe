@@ -27,8 +27,8 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.*;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.DataPreviewControlUI;
+import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeComponentCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.search.SearchTextFieldTableRowFilter;
@@ -60,13 +60,12 @@ import java.util.Set;
 public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
 
     private final SearchTextField searchTextField = new SearchTextField();
+    private final MenuManager menuManager = new MenuManager();
     private JIPipeDataTable dataTable;
     private JXTable table;
     private FormPanel rowUIList;
     private DataBatchAssistantTableModel dataTableModel;
     private JScrollPane scrollPane;
-
-    private final MenuManager menuManager = new MenuManager();
 
     /**
      * @param workbenchUI the workbench UI

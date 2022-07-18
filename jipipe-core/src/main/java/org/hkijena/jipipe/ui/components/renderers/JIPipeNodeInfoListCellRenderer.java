@@ -36,6 +36,7 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
     private JLabel pathLabel;
 
     private JLabel alternativeLabel;
+
     /**
      * Creates a new renderer
      */
@@ -111,15 +112,14 @@ public class JIPipeNodeInfoListCellRenderer extends JPanel implements ListCellRe
             nameLabel.setText(info.getName());
             nodeIcon.setIcon(JIPipe.getNodes().getIconFor(info));
 
-            if(info.getAliases().isEmpty()) {
+            if (info.getAliases().isEmpty()) {
                 alternativeLabel.setText("");
-            }
-            else {
+            } else {
                 StringBuilder builder = new StringBuilder();
                 builder.append("Alias: ");
                 List<JIPipeNodeMenuLocation> alternativeMenuLocations = info.getAliases();
                 for (int i = 0; i < alternativeMenuLocations.size(); i++) {
-                    if(i > 0) {
+                    if (i > 0) {
                         builder.append(", ");
                     }
                     JIPipeNodeMenuLocation location = alternativeMenuLocations.get(i);

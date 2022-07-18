@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeAlgorithmCacheBrowserUI;
-import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;

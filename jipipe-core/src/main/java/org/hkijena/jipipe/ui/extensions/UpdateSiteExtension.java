@@ -34,9 +34,9 @@ import java.nio.file.Path;
  */
 public class UpdateSiteExtension implements JIPipeExtension {
 
+    private final JIPipeMetadata metadata = new JIPipeMetadata();
     private JIPipeImageJUpdateSiteDependency dependency;
     private UpdateSite updateSite;
-    private final JIPipeMetadata metadata = new JIPipeMetadata();
 
     public UpdateSiteExtension(UpdateSite updateSite) {
         this.updateSite = updateSite;
@@ -84,7 +84,7 @@ public class UpdateSiteExtension implements JIPipeExtension {
 
     @Override
     public boolean isActivated() {
-        if(updateSite != null)
+        if (updateSite != null)
             return updateSite.isActive();
         else
             return false;
@@ -101,12 +101,11 @@ public class UpdateSiteExtension implements JIPipeExtension {
     }
 
     public UpdateSite getUpdateSite(FilesCollection updateSites) {
-        if(updateSite != null) {
+        if (updateSite != null) {
             return updateSite;
-        }
-        else {
+        } else {
             this.updateSite = updateSites.getUpdateSite(dependency.getName(), true);
-            if(updateSite == null)
+            if (updateSite == null)
                 this.updateSite = updateSites.addUpdateSite(dependency.toUpdateSite());
             return this.updateSite;
         }

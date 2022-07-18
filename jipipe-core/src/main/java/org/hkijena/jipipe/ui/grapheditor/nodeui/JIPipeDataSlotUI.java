@@ -30,7 +30,6 @@ import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmSourceFinderUI;
 import org.hkijena.jipipe.ui.grapheditor.algorithmfinder.JIPipeAlgorithmTargetFinderUI;
-import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;

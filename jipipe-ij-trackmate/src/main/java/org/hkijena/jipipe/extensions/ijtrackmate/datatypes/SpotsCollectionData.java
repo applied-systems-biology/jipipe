@@ -1,6 +1,9 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.datatypes;
 
-import fiji.plugin.trackmate.*;
+import fiji.plugin.trackmate.Model;
+import fiji.plugin.trackmate.Settings;
+import fiji.plugin.trackmate.Spot;
+import fiji.plugin.trackmate.SpotCollection;
 import ij.ImagePlus;
 import ij.gui.EllipseRoi;
 import ij.gui.Roi;
@@ -20,8 +23,7 @@ import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMap;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import javax.swing.*;
-import java.awt.Color;
-import java.awt.Component;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,6 +35,7 @@ import java.util.Optional;
 public class SpotsCollectionData extends ModelData {
 
     private final Map<String, Range<Double>> spotFeatureRanges = new HashMap<>();
+
     public SpotsCollectionData(Model model, Settings settings, ImagePlus image) {
         super(model, settings, image);
     }
@@ -66,12 +69,13 @@ public class SpotsCollectionData extends ModelData {
 
     /**
      * Returns the range of values for a feature. This method makes use of a cache for fast access.
+     *
      * @param featureName the feature
      * @return the range. returns an empty range (min = 0 and max = 0) if no feature values are available
      */
     public Range<Double> getSpotFeatureRange(String featureName) {
         Range<Double> result = spotFeatureRanges.getOrDefault(featureName, null);
-        if(result == null) {
+        if (result == null) {
             double min = Double.POSITIVE_INFINITY;
             double max = Double.NEGATIVE_INFINITY;
             for (Spot spot : getSpots().iterable(true)) {
@@ -81,10 +85,9 @@ public class SpotsCollectionData extends ModelData {
                 min = Math.min(feature, min);
                 max = Math.max(feature, max);
             }
-            if(Double.isFinite(min)) {
+            if (Double.isFinite(min)) {
                 result = Range.between(min, max);
-            }
-            else {
+            } else {
                 result = Range.is(0d);
             }
             spotFeatureRanges.put(featureName, result);
@@ -153,7 +156,7 @@ public class SpotsCollectionData extends ModelData {
      */
     public double getSpotFeature(Spot spot, String feature, double defaultValue) {
         Double result = spot.getFeature(feature);
-        if(result == null)
+        if (result == null)
             return defaultValue;
         else
             return result;
@@ -173,7 +176,7 @@ public class SpotsCollectionData extends ModelData {
             double y1 = y - radius;
             double y2 = y + radius;
             EllipseRoi roi = new EllipseRoi(x1, y1, x2, y2, 1);
-            roi.setPosition(0, z+1, t+1);
+            roi.setPosition(0, z + 1, t + 1);
             roi.setName(spot.getName());
 
             result.add(roi);

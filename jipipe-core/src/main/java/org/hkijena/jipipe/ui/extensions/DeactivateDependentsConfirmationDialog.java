@@ -14,10 +14,8 @@
 
 package org.hkijena.jipipe.ui.extensions;
 
-import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeExtension;
-import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
@@ -26,8 +24,6 @@ import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 public class DeactivateDependentsConfirmationDialog extends JDialog {
@@ -60,12 +56,12 @@ public class DeactivateDependentsConfirmationDialog extends JDialog {
         dependents.stream().sorted(NaturalOrderComparator.INSTANCE).forEach(id -> {
             JIPipeExtension dependency = getExtensionRegistry().getKnownExtensionById(id);
             JPanel dependencyPanel = new JPanel(new GridBagLayout());
-            dependencyPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8,8,8,8)));
-            dependencyPanel.add(UIUtils.createJLabel(dependency.getMetadata().getName(), UIUtils.getIcon32FromResources("module-json.png"), 16), new GridBagConstraints(0,0,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
+            dependencyPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
+            dependencyPanel.add(UIUtils.createJLabel(dependency.getMetadata().getName(), UIUtils.getIcon32FromResources("module-json.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
             JTextField idField = UIUtils.makeReadonlyBorderlessTextField("ID: " + dependency.getDependencyId() + ", version: " + dependency.getDependencyVersion());
             idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
-            dependencyPanel.add(idField, new GridBagConstraints(0,1,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
-            dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getMetadata().getDescription().getHtml(), false), new GridBagConstraints(0,2,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
+            dependencyPanel.add(idField, new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
+            dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getMetadata().getDescription().getHtml(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
             formPanel.addWideToForm(dependencyPanel);
         });
 

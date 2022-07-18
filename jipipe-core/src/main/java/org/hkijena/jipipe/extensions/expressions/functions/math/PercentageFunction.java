@@ -19,15 +19,14 @@ public class PercentageFunction extends ExpressionFunction {
         double min = ((Number) parameters.get(1)).doubleValue();
         double max = ((Number) parameters.get(2)).doubleValue();
         boolean wrap = parameters.size() >= 4 && (boolean) parameters.get(3);
-        if(wrap) {
+        if (wrap) {
             double x = (value - min) / (max - min);
-            while(x < 0)
-                x+=1.0;
-            while(x > 1)
+            while (x < 0)
+                x += 1.0;
+            while (x > 1)
                 x -= 1.0;
             return x;
-        }
-        else {
+        } else {
             return Math.max(0, Math.min(1, (value - min) / (max - min)));
         }
     }
@@ -38,10 +37,9 @@ public class PercentageFunction extends ExpressionFunction {
             return new ParameterInfo("Value", "The value", Number.class);
         } else if (index == 1) {
             return new ParameterInfo("Minimum", "The minimum", Number.class);
-        } else if(index == 2) {
+        } else if (index == 2) {
             return new ParameterInfo("Maximum", "The maximum", Number.class);
-        }
-        else {
+        } else {
             return new ParameterInfo("Wrap", "If true, wrap values outside the specified range (default FALSE)", Boolean.class);
         }
     }

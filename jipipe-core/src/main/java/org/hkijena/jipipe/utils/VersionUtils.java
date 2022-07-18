@@ -30,6 +30,7 @@ public class VersionUtils {
 
     /**
      * The current version of JIPipe according to the Maven-proved information
+     *
      * @return the version string or 'Development' if none is available
      */
     public static String getJIPipeVersion() {

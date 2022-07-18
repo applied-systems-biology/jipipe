@@ -1226,7 +1226,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         if (imp != null) {
             Calibration oldCalibration = imp.getCalibration();
             try {
-                if(!measurePhysicalSizes) {
+                if (!measurePhysicalSizes) {
                     imp.setCalibration(null);
                 }
                 measurements.updateAnalyzer();
@@ -1267,8 +1267,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                         }
                     }
                 }
-            }
-            finally {
+            } finally {
                 // Restore
                 imp.setSliceWithoutUpdate(1);
                 imp.setCalibration(oldCalibration);

@@ -15,12 +15,7 @@
 package org.hkijena.jipipe.ui.extensions;
 
 import com.google.common.html.HtmlEscapers;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.JIPipeExtension;
-import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
-import org.hkijena.jipipe.JIPipeJavaExtension;
-import org.hkijena.jipipe.JIPipeJsonExtension;
+import org.hkijena.jipipe.*;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
@@ -32,13 +27,8 @@ import org.jdesktop.swingx.ScrollableSizeHint;
 
 import javax.swing.*;
 import javax.swing.event.HyperlinkEvent;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Desktop;
-import java.awt.Font;
-import java.awt.GridLayout;
+import java.awt.*;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
 
@@ -53,13 +43,35 @@ public class ExtensionInfoPanel extends JPanel {
         initialize();
     }
 
+    public static Component createAuthorPanel(Component parent, Collection<JIPipeAuthorMetadata> authors, Icon icon) {
+        JXPanel projectAuthors = new JXPanel(new GridLayout((int) Math.ceil(authors.size() / 4.0), 4));
+        projectAuthors.setScrollableWidthHint(ScrollableSizeHint.FIT);
+        projectAuthors.setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
+        for (JIPipeAuthorMetadata author : authors) {
+            JButton authorButton = new JButton(author.toString(), icon);
+            authorButton.setHorizontalAlignment(SwingConstants.LEFT);
+            authorButton.setToolTipText("Click to show more information");
+            authorButton.addActionListener(e -> {
+                JIPipeAuthorMetadata.openAuthorInfoWindow(parent, authors, author);
+            });
+            authorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            projectAuthors.add(authorButton);
+        }
+        while (projectAuthors.getComponents().length % 4 != 0) {
+            projectAuthors.add(new JPanel());
+        }
+        projectAuthors.revalidate();
+        projectAuthors.repaint();
+        return projectAuthors;
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
         DocumentTabPane tabPane = new DocumentTabPane();
 //        tabPane.getTabbedPane().setTabPlacement(SwingConstants.LEFT);
         add(tabPane, BorderLayout.CENTER);
         initializeOverview(tabPane);
-        if(extension.isActivated() && !(extension instanceof UpdateSiteExtension)) {
+        if (extension.isActivated() && !(extension instanceof UpdateSiteExtension)) {
             initializeNodeCompendium(tabPane);
             initializeDataTypeCompendium(tabPane);
         }
@@ -87,24 +99,22 @@ public class ExtensionInfoPanel extends JPanel {
         panel.addToForm(UIUtils.makeReadonlyTextField(extension.getMetadata().getLicense()), new JLabel("License"), null);
         panel.addToForm(UIUtils.makeReadonlyTextField("" + extension.getDependencyLocation()), new JLabel("Defining file"), null);
         String typeName;
-        if(extension instanceof UpdateSiteExtension) {
+        if (extension instanceof UpdateSiteExtension) {
             typeName = "ImageJ update site";
-        }
-        else if(extension.isCoreExtension()) {
+        } else if (extension.isCoreExtension()) {
             typeName = "Core extension [" + extension.getClass() + "]";
-        }
-        else {
+        } else {
             typeName = "Standard extension [" + extension.getClass() + "]";
         }
         panel.addToForm(new JLabel(typeName), new JLabel("Type"), null);
 
-        if(extension.isActivated()) {
+        if (extension.isActivated()) {
             panel.addToForm(UIUtils.makeReadonlyTextField(JIPipe.getDataTypes().getDeclaredBy(extension).size() + " data types, " + JIPipe.getNodes().getDeclaredBy(extension).size() + " nodes"), new JLabel("Registered functions"), null);
         }
 
         // Dependencies
         Set<JIPipeDependency> dependencies = extension.getDependencies();
-        if(!dependencies.isEmpty() || !extension.getImageJUpdateSiteDependencies().isEmpty()) {
+        if (!dependencies.isEmpty() || !extension.getImageJUpdateSiteDependencies().isEmpty()) {
             panel.addGroupHeader("Dependencies", UIUtils.getIconFromResources("actions/distribute-graph-directed.png"));
             for (JIPipeDependency dependency : dependencies) {
                 panel.addToForm(UIUtils.makeReadonlyTextField("id=" + dependency.getDependencyId() + ", version=" + dependency.getDependencyVersion()), new JLabel("Dependency"), null);
@@ -123,21 +133,18 @@ public class ExtensionInfoPanel extends JPanel {
 
         // Title panel
         JPanel titlePanel = new JPanel();
-        titlePanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8,8,8,8)));
+        titlePanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
         titlePanel.setLayout(new BoxLayout(titlePanel, BoxLayout.X_AXIS));
-        if(extension instanceof JIPipeJavaExtension && !((JIPipeJavaExtension) extension).getSplashIcons().isEmpty()) {
+        if (extension instanceof JIPipeJavaExtension && !((JIPipeJavaExtension) extension).getSplashIcons().isEmpty()) {
             for (ImageIcon splashIcon : ((JIPipeJavaExtension) extension).getSplashIcons()) {
                 titlePanel.add(new JLabel(splashIcon));
                 titlePanel.add(Box.createHorizontalStrut(4));
             }
-        }
-        else if(extension instanceof UpdateSiteExtension)  {
+        } else if (extension instanceof UpdateSiteExtension) {
             titlePanel.add(new JLabel(UIUtils.getIcon32FromResources("module-imagej.png")));
-        }
-        else if(extension instanceof JIPipeJavaExtension) {
+        } else if (extension instanceof JIPipeJavaExtension) {
             titlePanel.add(new JLabel(UIUtils.getIcon32FromResources("module-java.png")));
-        }
-        else {
+        } else {
             titlePanel.add(new JLabel(UIUtils.getIcon32FromResources("module-json.png")));
         }
         titlePanel.add(Box.createHorizontalStrut(8));
@@ -154,7 +161,7 @@ public class ExtensionInfoPanel extends JPanel {
 
         // Description
         panel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane(extension.getMetadata().getSummary().getHtml(), false), null);
-        if(!StringUtils.isNullOrEmpty(extension.getMetadata().getWebsite())) {
+        if (!StringUtils.isNullOrEmpty(extension.getMetadata().getWebsite())) {
             JTextPane pane = UIUtils.makeBorderlessReadonlyTextPane("<html><a href=\"" + HtmlEscapers.htmlEscaper().escape(extension.getMetadata().getWebsite()) + "\">" + HtmlEscapers.htmlEscaper().escape(extension.getMetadata().getWebsite()) + "</a></html>", false);
             pane.addHyperlinkListener(e -> {
                 if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
@@ -171,13 +178,13 @@ public class ExtensionInfoPanel extends JPanel {
             });
             panel.addWideToForm(pane, null);
         }
-        if(!Objects.equals(extension.getMetadata().getSummary().getHtml(), extension.getMetadata().getDescription().getHtml())) {
+        if (!Objects.equals(extension.getMetadata().getSummary().getHtml(), extension.getMetadata().getDescription().getHtml())) {
             panel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane(extension.getMetadata().getDescription().getHtml(), false), null);
         }
         panel.addWideToForm(Box.createVerticalStrut(32), null);
 
         // Authors
-        if(!extension.getMetadata().getAuthors().isEmpty() || !extension.getMetadata().getAcknowledgements().isEmpty()) {
+        if (!extension.getMetadata().getAuthors().isEmpty() || !extension.getMetadata().getAcknowledgements().isEmpty()) {
             panel.addGroupHeader("Authors/Acknowledgements", UIUtils.getIconFromResources("actions/im-user.png"));
             if (!extension.getMetadata().getAuthors().isEmpty()) {
                 panel.addToForm(createAuthorPanel(this, extension.getMetadata().getAuthors(), UIUtils.getIconFromResources("actions/im-user.png")), new JLabel("Extension authors"), null);
@@ -188,9 +195,9 @@ public class ExtensionInfoPanel extends JPanel {
         }
 
         // Citations
-        if(!StringUtils.isNullOrEmpty(extension.getMetadata().getCitation()) || !extension.getMetadata().getDependencyCitations().isEmpty()) {
+        if (!StringUtils.isNullOrEmpty(extension.getMetadata().getCitation()) || !extension.getMetadata().getDependencyCitations().isEmpty()) {
             panel.addGroupHeader("Citations", UIUtils.getIconFromResources("actions/contents.png"));
-            if(!StringUtils.isNullOrEmpty(extension.getMetadata().getCitation())) {
+            if (!StringUtils.isNullOrEmpty(extension.getMetadata().getCitation())) {
                 panel.addToForm(UIUtils.makeBorderlessReadonlyTextPane(extension.getMetadata().getCitation(), false), new JLabel("Extension citation"), null);
             }
             for (String citation : extension.getMetadata().getDependencyCitations()) {
@@ -200,28 +207,6 @@ public class ExtensionInfoPanel extends JPanel {
 
         panel.addVerticalGlue();
         tabPane.addTab("Overview", UIUtils.getIconFromResources("actions/plugins.png"), panel, DocumentTabPane.CloseMode.withoutCloseButton);
-    }
-
-    public static Component createAuthorPanel(Component parent, Collection<JIPipeAuthorMetadata> authors, Icon icon) {
-        JXPanel projectAuthors = new JXPanel(new GridLayout((int)Math.ceil(authors.size() / 4.0), 4));
-        projectAuthors.setScrollableWidthHint(ScrollableSizeHint.FIT);
-        projectAuthors.setScrollableHeightHint(ScrollableSizeHint.VERTICAL_STRETCH);
-        for (JIPipeAuthorMetadata author : authors) {
-            JButton authorButton = new JButton(author.toString(), icon);
-            authorButton.setHorizontalAlignment(SwingConstants.LEFT);
-            authorButton.setToolTipText("Click to show more information");
-            authorButton.addActionListener(e -> {
-                JIPipeAuthorMetadata.openAuthorInfoWindow(parent, authors, author);
-            });
-            authorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-            projectAuthors.add(authorButton);
-        }
-        while(projectAuthors.getComponents().length % 4 != 0) {
-            projectAuthors.add(new JPanel());
-        }
-        projectAuthors.revalidate();
-        projectAuthors.repaint();
-        return projectAuthors;
     }
 
     private void initializeButtonPanel() {

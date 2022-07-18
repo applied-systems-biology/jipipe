@@ -84,19 +84,19 @@ public class ParameterPanel extends FormPanel implements Contextual {
     public static final int DEFAULT_DIALOG_FLAGS = WITH_SEARCH_BAR | WITH_DOCUMENTATION | WITH_SCROLLING;
 
     private final JIPipeWorkbench workbench;
-    private Context context;
-    private JIPipeParameterCollection displayedParameters;
     private final boolean noGroupHeaders;
     private final boolean noEmptyGroupHeaders;
     private final boolean forceTraverse;
     private final boolean withSearchBar;
     private final boolean withoutLabelSeparation;
     private final boolean allowCollapse;
-    private JIPipeParameterTree traversed;
     private final SearchTextField searchField = new SearchTextField();
+    private final Map<JIPipeParameterCollection, Boolean> collapseStates = new HashMap<>();
+    private Context context;
+    private JIPipeParameterCollection displayedParameters;
+    private JIPipeParameterTree traversed;
     private BiFunction<JIPipeParameterTree, JIPipeParameterAccess, Boolean> customIsParameterVisible;
     private BiFunction<JIPipeParameterTree, JIPipeParameterCollection, Boolean> customIsParameterCollectionVisible;
-    private final Map<JIPipeParameterCollection, Boolean> collapseStates = new HashMap<>();
 
     /**
      * @param workbench           SciJava context
@@ -478,7 +478,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
             // Get the entry
             FormPanelEntry entry = getEntries().get(getNumRows() - 1);
-            if(entry.getProperties() != null) {
+            if (entry.getProperties() != null) {
                 uiComponents.add(entry.getProperties());
             }
 
@@ -517,7 +517,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
         propertyPanel.add(helpButton, BorderLayout.WEST);
 
         // Options menu
-        if(component instanceof JIPipeParameterEditorUI) {
+        if (component instanceof JIPipeParameterEditorUI) {
             JIPipeParameterEditorUI editorUI = (JIPipeParameterEditorUI) component;
             JButton optionsButton = new JButton(UIUtils.getIconFromResources("actions/draw-triangle4-muted.png"));
             optionsButton.setBorder(null);
@@ -538,10 +538,9 @@ public class ParameterPanel extends FormPanel implements Contextual {
                     Object o = JsonUtils.readFromString(UIUtils.getStringFromClipboard(), editorUI.getParameterAccess().getFieldClass());
                     editorUI.getParameterAccess().set(o);
                     workbench.sendStatusBarText("Pasted value into parameter '" + editorUI.getParameterAccess().getName() + "'.");
-                }
-                catch (Throwable ex) {
+                } catch (Throwable ex) {
                     ex.printStackTrace();
-                    JOptionPane.showMessageDialog(workbench.getWindow(), "Unable to paste data into parameter '" +  editorUI.getParameterAccess().getName() + "'!", "Paste parameter value", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(workbench.getWindow(), "Unable to paste data into parameter '" + editorUI.getParameterAccess().getName() + "'!", "Paste parameter value", JOptionPane.ERROR_MESSAGE);
                 }
             });
             optionsMenu.add(pasteItem);
@@ -549,7 +548,6 @@ public class ParameterPanel extends FormPanel implements Contextual {
             propertyPanel.add(optionsButton, BorderLayout.EAST);
             installComponentHighlighter(optionsButton, Sets.newHashSet(component, description));
         }
-
 
 
         return propertyPanel;

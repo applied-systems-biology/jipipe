@@ -130,7 +130,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             nameHayStack = node.getName();
             menuHayStack = node.getInfo().getCategory().getName() + "\n" + node.getInfo().getMenuPath();
             for (JIPipeNodeMenuLocation location : node.getInfo().getAliases()) {
-                if(!StringUtils.isNullOrEmpty(location.getAlternativeName())) {
+                if (!StringUtils.isNullOrEmpty(location.getAlternativeName())) {
                     nameHayStack += location.getAlternativeName().toLowerCase();
                 }
                 menuHayStack += location.getMenuPath();
@@ -143,7 +143,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             nameHayStack = StringUtils.orElse(info.getName(), "").toLowerCase();
             menuHayStack = info.getCategory().getName() + "\n" + info.getMenuPath();
             for (JIPipeNodeMenuLocation location : info.getAliases()) {
-                if(!StringUtils.isNullOrEmpty(location.getAlternativeName())) {
+                if (!StringUtils.isNullOrEmpty(location.getAlternativeName())) {
                     nameHayStack += location.getAlternativeName().toLowerCase();
                 }
                 menuHayStack += location.getMenuPath();
@@ -1042,15 +1042,14 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 algorithmLabel.setIcon(JIPipe.getNodes().getIconFor(info));
                 menuLabel.setText(menuPath);
 
-                if(info.getAliases().isEmpty()) {
+                if (info.getAliases().isEmpty()) {
                     alternativeLabel.setText("");
-                }
-                else {
+                } else {
                     StringBuilder builder = new StringBuilder();
                     builder.append("Alias: ");
                     List<JIPipeNodeMenuLocation> alternativeMenuLocations = info.getAliases();
                     for (int i = 0; i < alternativeMenuLocations.size(); i++) {
-                        if(i > 0) {
+                        if (i > 0) {
                             builder.append(", ");
                         }
                         JIPipeNodeMenuLocation location = alternativeMenuLocations.get(i);

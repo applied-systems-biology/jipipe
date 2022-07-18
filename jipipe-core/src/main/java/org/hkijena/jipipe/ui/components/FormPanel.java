@@ -29,14 +29,10 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.*;
 
 import static org.hkijena.jipipe.utils.UIUtils.UI_PADDING;
-
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Organizes UI in a form layout with integrated help functionality, and grouping with conditional visibility
@@ -73,18 +69,18 @@ public class FormPanel extends JXPanel {
     private static final int COLUMN_LABELLED_CONTENT = 1;
 
     private final EventBus eventBus = new EventBus();
-    private int numRows = 0;
     private final FormPanelContentPanel contentPanel = new FormPanelContentPanel();
     private final MarkdownReader parameterHelp;
-    private JScrollPane scrollPane;
     private final JLabel parameterHelpDrillDown = new JLabel();
     private final boolean withDocumentation;
+    private int numRows = 0;
+    private JScrollPane scrollPane;
     private boolean hasVerticalGlue;
 
     private List<FormPanelEntry> entries = new ArrayList<>();
 
     public FormPanel(int flags) {
-        this(null,flags);
+        this(null, flags);
     }
 
     /**
@@ -187,9 +183,9 @@ public class FormPanel extends JXPanel {
     /**
      * Adds a component to the form
      *
-     * @param component     The component
-     * @param description   A description component displayed on the left hand side
-     * @param <T>           Component type
+     * @param component   The component
+     * @param description A description component displayed on the left hand side
+     * @param <T>         Component type
      * @return The component
      */
     public <T extends Component> T addToForm(T component, Component description) {
@@ -238,7 +234,7 @@ public class FormPanel extends JXPanel {
 
     private Component createAndAddEntryPropertiesComponent(Component component, Component description, int row, MarkdownDocument documentation) {
         Component newComponent = createEntryPropertiesComponent(component, description, row, documentation);
-        if(newComponent != null) {
+        if (newComponent != null) {
             GridBagConstraints gridBagConstraints = new GridBagConstraints() {
                 {
                     anchor = GridBagConstraints.WEST;
@@ -257,8 +253,8 @@ public class FormPanel extends JXPanel {
     /**
      * Adds a component. Its size is two columns.
      *
-     * @param component     The component
-     * @param <T>           Component type
+     * @param component The component
+     * @param <T>       Component type
      * @return The component
      */
     public <T extends Component> T addWideToForm(T component) {
@@ -293,7 +289,7 @@ public class FormPanel extends JXPanel {
     }
 
     protected Component createEntryPropertiesComponent(Component component, Component description, int row, MarkdownDocument documentation) {
-        if(documentation != null) {
+        if (documentation != null) {
             JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help-muted.png"));
             helpButton.setBorder(null);
             helpButton.addActionListener(e -> {
@@ -302,7 +298,7 @@ public class FormPanel extends JXPanel {
                 updateParameterHelpDrillDown();
             });
             installComponentHighlighter(helpButton, Sets.newHashSet(component, description));
-           return helpButton;
+            return helpButton;
         }
         return null;
     }
@@ -482,13 +478,14 @@ public class FormPanel extends JXPanel {
 
     public static class FormPanelContentPanel extends JXPanel {
         private Set<Component> highlightedComponents;
+
         @Override
         public void paint(Graphics g) {
             super.paint(g);
-            if(highlightedComponents != null) {
+            if (highlightedComponents != null) {
                 g.setColor(Color.RED);
                 for (Component component : highlightedComponents) {
-                    if(component != null && component.isDisplayable() && component.isVisible()) {
+                    if (component != null && component.isDisplayable() && component.isVisible()) {
                         g.drawRect(component.getX(), component.getY(), component.getWidth(), component.getHeight());
                     }
                 }
@@ -505,7 +502,7 @@ public class FormPanel extends JXPanel {
         }
 
         public void removeHighlightedComponents(Set<Component> highlightedComponents) {
-            if(this.highlightedComponents != null) {
+            if (this.highlightedComponents != null) {
                 this.highlightedComponents.removeAll(highlightedComponents);
                 repaint();
             }

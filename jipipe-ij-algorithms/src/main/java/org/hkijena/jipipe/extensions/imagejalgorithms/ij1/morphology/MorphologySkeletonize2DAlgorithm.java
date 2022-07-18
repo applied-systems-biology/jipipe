@@ -35,7 +35,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeNode(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nBinary",aliasName = "Skeletonize")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nBinary", aliasName = "Skeletonize")
 public class MorphologySkeletonize2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private boolean darkBackground = true;

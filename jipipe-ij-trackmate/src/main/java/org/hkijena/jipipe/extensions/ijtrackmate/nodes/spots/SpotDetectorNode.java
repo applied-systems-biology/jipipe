@@ -1,6 +1,8 @@
 package org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots;
 
-import fiji.plugin.trackmate.*;
+import fiji.plugin.trackmate.Model;
+import fiji.plugin.trackmate.Settings;
+import fiji.plugin.trackmate.TrackMate;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -55,7 +57,7 @@ public class SpotDetectorNode extends JIPipeIteratingAlgorithm {
 //                    "Please check the parameters");
 //        }
 
-        if(!trackMate.process()) {
+        if (!trackMate.process()) {
             progressInfo.log(trackMate.getErrorMessage());
             throw new UserFriendlyRuntimeException(trackMate.getErrorMessage(),
                     "TrackMate: Error while processing",

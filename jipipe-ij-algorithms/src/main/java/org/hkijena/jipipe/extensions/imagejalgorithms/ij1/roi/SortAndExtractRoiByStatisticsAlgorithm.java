@@ -34,7 +34,6 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
@@ -47,10 +46,10 @@ import java.util.Map;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class SortAndExtractRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private MeasurementColumnSortOrder.List sortOrderList = new MeasurementColumnSortOrder.List();
-    private NumericFunctionExpression selection = new NumericFunctionExpression();
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm = JIPipe.createNode("ij1-roi-statistics"
     );
+    private MeasurementColumnSortOrder.List sortOrderList = new MeasurementColumnSortOrder.List();
+    private NumericFunctionExpression selection = new NumericFunctionExpression();
     private boolean autoClamp = true;
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
     private OptionalColorMapParameter mapLineColor = new OptionalColorMapParameter();

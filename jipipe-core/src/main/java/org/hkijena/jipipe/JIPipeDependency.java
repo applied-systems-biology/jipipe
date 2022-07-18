@@ -52,6 +52,34 @@ public interface JIPipeDependency extends JIPipeValidatable {
     }
 
     /**
+     * Flattens the hierarchy of dependencies into a list and removes large metadata (e.g. thumbnails)
+     *
+     * @param dependencies the dependencies
+     * @param minimize     whether heavy data (e.g. thumbnails should be removed)
+     * @return simplified dependencies
+     */
+    static Set<JIPipeDependency> simplifyAndMinimize(Set<JIPipeDependency> dependencies, boolean minimize) {
+        Set<JIPipeDependency> result = new HashSet<>();
+        Set<String> visited = new HashSet<>();
+        Stack<JIPipeDependency> stack = new Stack<>();
+        stack.addAll(dependencies);
+        while (!stack.isEmpty()) {
+            JIPipeDependency dependency = stack.pop();
+            if (visited.contains(dependency.getDependencyId()))
+                continue;
+            JIPipeMutableDependency copy = new JIPipeMutableDependency(dependency);
+            if (minimize) {
+                copy.getMetadata().setThumbnail(new ImageParameter());
+            }
+            copy.setDependencies(new HashSet<>());
+            result.add(copy);
+            stack.addAll(dependency.getDependencies());
+            visited.add(dependency.getDependencyId());
+        }
+        return result;
+    }
+
+    /**
      * @return The dependency metadata
      */
     @JsonGetter("metadata")
@@ -90,17 +118,19 @@ public interface JIPipeDependency extends JIPipeValidatable {
      * Gets a flat list of all dependencies (no nested dependencies)
      * This method returns the dependencies to be stored into JSON
      * {@link JIPipeMutableDependency} instances are returned instead of the original type and the thumbnail metadata is removed
+     *
      * @return flat list of dependencies
      */
     @JsonGetter("dependencies")
     default Set<JIPipeDependency> getAllDependencies() {
-      return simplifyAndMinimize(getDependencies(), true);
+        return simplifyAndMinimize(getDependencies(), true);
     }
 
     /**
      * Gets a flat list of all dependencies (no nested dependencies)
      * This method returns the dependencies to be stored into JSON
      * {@link JIPipeMutableDependency} instances are returned instead of the original type and the thumbnail metadata is removed
+     *
      * @param minimize whether heavy data (e.g. thumbnails should be removed)
      * @return flat list of dependencies
      */
@@ -111,6 +141,7 @@ public interface JIPipeDependency extends JIPipeValidatable {
     /**
      * Gets a flat list of all ImageJ update site dependencies (including transitive dependencies)
      * This method returns the dependencies to be stored into JSON
+     *
      * @return flat list of all current and transitive dependencies
      */
     default Set<JIPipeImageJUpdateSiteDependency> getAllImageJUpdateSiteDependencies() {
@@ -122,37 +153,10 @@ public interface JIPipeDependency extends JIPipeValidatable {
     }
 
     /**
-     * Flattens the hierarchy of dependencies into a list and removes large metadata (e.g. thumbnails)
-     *
-     * @param dependencies the dependencies
-     * @param minimize whether heavy data (e.g. thumbnails should be removed)
-     * @return simplified dependencies
-     */
-    static Set<JIPipeDependency> simplifyAndMinimize(Set<JIPipeDependency> dependencies, boolean minimize) {
-        Set<JIPipeDependency> result = new HashSet<>();
-        Set<String> visited = new HashSet<>();
-        Stack<JIPipeDependency> stack = new Stack<>();
-        stack.addAll(dependencies);
-        while(!stack.isEmpty()) {
-            JIPipeDependency dependency = stack.pop();
-            if(visited.contains(dependency.getDependencyId()))
-                continue;
-            JIPipeMutableDependency copy = new JIPipeMutableDependency(dependency);
-            if(minimize) {
-                copy.getMetadata().setThumbnail(new ImageParameter());
-            }
-            copy.setDependencies(new HashSet<>());
-            result.add(copy);
-            stack.addAll(dependency.getDependencies());
-            visited.add(dependency.getDependencyId());
-        }
-        return result;
-    }
-
-    /**
      * List of JIPipe dependencies.
      * This can contain nested or even cyclic dependencies.
      * The storage of dependencies into JSON format is handled by getTraversedDependencies()
+     *
      * @return the list of JIPipe dependencies
      */
     default Set<JIPipeDependency> getDependencies() {

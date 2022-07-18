@@ -34,7 +34,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeNode(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nBinary",aliasName = "Outline")
+@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nBinary", aliasName = "Outline")
 public class MorphologyOutline2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     /**

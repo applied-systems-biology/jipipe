@@ -129,10 +129,10 @@ public class ImagePlusData implements JIPipeData {
             progressInfo.log("ImageJ import " + targetFile);
             outputImage = IJ.openImage(targetFile.toString());
         }
-        if(outputImage.getOverlay() == null || outputImage.getOverlay().size() == 0) {
+        if (outputImage.getOverlay() == null || outputImage.getOverlay().size() == 0) {
             // Import ROI
             Path roiFile = PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".roi", ".zip");
-            if(roiFile != null) {
+            if (roiFile != null) {
                 ROIListData rois = ROIListData.importData(storage, progressInfo.resolve("Import ROI"));
                 Overlay overlay = new Overlay();
                 for (Roi roi : rois) {
@@ -293,7 +293,7 @@ public class ImagePlusData implements JIPipeData {
                 Path outputPath = storage.getFileSystemPath().resolve(name + ".tif");
                 IJ.saveAsTiff(image, outputPath.toString());
             }
-            if(image.getOverlay() != null) {
+            if (image.getOverlay() != null) {
                 ROIListData rois = new ROIListData();
                 for (Roi roi : image.getOverlay()) {
                     rois.add(roi);
@@ -353,24 +353,24 @@ public class ImagePlusData implements JIPipeData {
             int imageWidth = (int) (image.getWidth() * factor);
             int imageHeight = (int) (image.getHeight() * factor);
             ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
-            if(rgbImage.getStackSize() != 1) {
+            if (rgbImage.getStackSize() != 1) {
                 // Reduce processing time
                 rgbImage = new ImagePlus("Preview", rgbImage.getProcessor());
             }
-            if(rgbImage == image) {
+            if (rgbImage == image) {
                 rgbImage = ImageJUtils.duplicate(rgbImage);
             }
-            ImageJUtils.calibrate(rgbImage, ImageJCalibrationMode.AutomaticImageJ,0,1);
+            ImageJUtils.calibrate(rgbImage, ImageJCalibrationMode.AutomaticImageJ, 0, 1);
             rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
 
             // ROI rendering
             ROIListData rois = new ROIListData();
-            if(image.getRoi() != null)
+            if (image.getRoi() != null)
                 rois.add(image.getRoi());
-            if(image.getOverlay() != null) {
+            if (image.getOverlay() != null) {
                 rois.addAll(Arrays.asList(image.getOverlay().toArray()));
             }
-            if(!rois.isEmpty()) {
+            if (!rois.isEmpty()) {
                 rois.draw(rgbImage.getProcessor(),
                         new ImageSliceIndex(0, 0, 0),
                         false,

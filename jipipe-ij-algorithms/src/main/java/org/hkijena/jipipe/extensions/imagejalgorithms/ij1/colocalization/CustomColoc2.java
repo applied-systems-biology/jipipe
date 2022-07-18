@@ -27,6 +27,7 @@ import java.util.List;
 
 /**
  * Customized version of {@link Coloc_2} because many properties are protected
+ *
  * @param <T> img type
  */
 public class CustomColoc2<T extends RealType<T> & NativeType<T>> extends Coloc_2<T> {
@@ -108,8 +109,8 @@ public class CustomColoc2<T extends RealType<T> & NativeType<T>> extends Coloc_2
      * @return Data structure housing the results.
      */
     public ColocResult<T> customColocalise(final Img<T> image1, final Img<T> image2,
-                                               final BoundingBox roi, final Img<T> mask,
-                                               final List<ResultHandler<T>> extraHandlers)
+                                           final BoundingBox roi, final Img<T> mask,
+                                           final List<ResultHandler<T>> extraHandlers)
             throws MissingPreconditionException {
         // create a new container for the selected images and channels
         DataContainer<T> container;
@@ -247,12 +248,11 @@ public class CustomColoc2<T extends RealType<T> & NativeType<T>> extends Coloc_2
         }
 
         // get information about the mask/ROI to use
-        if(mask == null) {
+        if (mask == null) {
             indexMask = 0;
             roiConfig = RoiConfiguration.None;
             masks.add(new MaskInfo(null, null));
-        }
-        else {
+        } else {
             indexMask = 4;
             roiConfig = RoiConfiguration.Mask;
             final ImagePlus maskImp = mask;

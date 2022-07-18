@@ -3,11 +3,7 @@ package org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -20,7 +16,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackFeatureVariableSourc
 @JIPipeDocumentation(name = "Filter tracks", description = "Filter TrackMate spots via expressions")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nFilter")
 @JIPipeInputSlot(value = TrackCollectionData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = TrackCollectionData.class, slotName = "Output",autoCreate = true)
+@JIPipeOutputSlot(value = TrackCollectionData.class, slotName = "Output", autoCreate = true)
 public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter filter = new DefaultExpressionParameter("track_displacement > 10");
@@ -45,13 +41,13 @@ public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
         for (Integer trackID : trackCollectionData.getTrackModel().trackIDs(true)) {
             for (String trackFeature : trackCollectionData.getModel().getFeatureModel().getTrackFeatures()) {
                 Double feature = trackCollectionData.getModel().getFeatureModel().getTrackFeature(trackID, trackFeature);
-                if(feature == null)
+                if (feature == null)
                     feature = Double.NaN;
 
                 String variableName = TrackFeatureVariableSource.keyToVariable(trackFeature);
                 variables.set(variableName, feature);
             }
-            if(!filter.test(variables)) {
+            if (!filter.test(variables)) {
                 trackCollectionData.getModel().setTrackVisibility(trackID, false);
             }
         }

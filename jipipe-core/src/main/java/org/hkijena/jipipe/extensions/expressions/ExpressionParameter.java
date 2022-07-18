@@ -18,7 +18,7 @@ import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.Color;
+import java.awt.*;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -146,6 +146,7 @@ public abstract class ExpressionParameter {
     /**
      * Runs the expression and returns a color result.
      * Can handle return value of type {@link Color}, hex string, named colors according to {@link ColorUtils}, Collection of RGB or RGBA values (0-255)
+     *
      * @param variables the variables
      * @return the result
      */

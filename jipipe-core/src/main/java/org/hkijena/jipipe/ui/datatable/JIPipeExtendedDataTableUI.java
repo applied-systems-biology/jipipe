@@ -32,13 +32,9 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
-import org.hkijena.jipipe.ui.cache.JIPipeDataTableRowUI;
-import org.hkijena.jipipe.ui.cache.JIPipeDataTableToFilesByMetadataExporterRun;
-import org.hkijena.jipipe.ui.cache.JIPipeDataTableToOutputExporterRun;
-import org.hkijena.jipipe.ui.cache.JIPipeDataTableToZIPExporterRun;
-import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.cache.*;
 import org.hkijena.jipipe.ui.components.DataPreviewControlUI;
+import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeComponentCellRenderer;
 import org.hkijena.jipipe.ui.components.search.ExtendedDataTableSearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
@@ -73,13 +69,12 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
 
     private final boolean updateWithCache;
     private final SearchTextField searchTextField = new SearchTextField();
+    private final MenuManager menuManager = new MenuManager();
     private JIPipeDataTable dataTable;
     private JXTable table;
     private FormPanel rowUIList;
     private JIPipeExtendedDataTableModel dataTableModel;
     private JScrollPane scrollPane;
-
-    private final MenuManager menuManager = new MenuManager();
 
     /**
      * @param workbenchUI     the workbench UI

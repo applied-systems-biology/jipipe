@@ -44,14 +44,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.HistogramContrastEnhancerAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.IlluminationCorrection2DAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ConvertImageAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ConvertImageTo16BitAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ConvertImageTo32BitAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ConvertImageTo8BitAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ConvertImageToHSBAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ConvertImageToLABAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.ImageToTableAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.TableToImageAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convert.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.ConvolveByImage2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve.ConvolveByParameter2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.datasources.ImageStackFromFolder;
@@ -157,30 +150,6 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:imagej-algorithms",
             JIPipe.getJIPipeVersion(),
             "ImageJ algorithms");
-
-    public ImageJAlgorithmsExtension() {
-    }
-
-    @Override
-    public ImageParameter getThumbnail() {
-        return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/fiji.png"));
-    }
-
-    @Override
-    public Set<JIPipeDependency> getDependencies() {
-        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, TablesExtension.AS_DEPENDENCY, StringsExtension.AS_DEPENDENCY, FormsExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY);
-    }
-
-    @Override
-    public PluginCategoriesEnumParameter.List getCategories() {
-        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_IMAGE_ANALYSIS, PluginCategoriesEnumParameter.CATEGORY_IMAGE_ANNOTATION, PluginCategoriesEnumParameter.CATEGORY_ANALYSIS,
-                PluginCategoriesEnumParameter.CATEGORY_ANNOTATION, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_FILTERING, PluginCategoriesEnumParameter.CATEGORY_MONTAGE, PluginCategoriesEnumParameter.CATEGORY_IMPORT_EXPORT, PluginCategoriesEnumParameter.CATEGORY_FIJI,
-                PluginCategoriesEnumParameter.CATEGORY_IMAGE_SCIENCE, PluginCategoriesEnumParameter.CATEGORY_NOISE, PluginCategoriesEnumParameter.CATEGORY_TRANSFORM, PluginCategoriesEnumParameter.CATEGORY_BINARY, PluginCategoriesEnumParameter.CATEGORY_OBJECT_DETECTION, PluginCategoriesEnumParameter.CATEGORY_FEATURE_EXTRACTION,
-                PluginCategoriesEnumParameter.CATEGORY_VISUALIZATION);
-    }
-
-
-
     /**
      * Conversion rules from mask data types to their respective 8-bit types
      */
@@ -191,42 +160,38 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                     ImagePlus3DGreyscaleMaskData.class, ImagePlus3DGreyscale8UData.class,
                     ImagePlus4DGreyscaleMaskData.class, ImagePlus4DGreyscale8UData.class,
                     ImagePlus5DGreyscaleMaskData.class, ImagePlus5DGreyscale8UData.class);
-
     /**
      * Conversion rules that convert any input data type into their respective mask data type
      */
     public static final Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> ADD_MASK_QUALIFIER = getMaskQualifierMap();
-
     /**
      * Conversion rules that convert color types into greyscale
      */
     public static final Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> TO_GRAYSCALE_CONVERSION = getToGrayscaleConversion();
-
     /**
      * Conversion rules that convert color types into colored images
      */
     public static final Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> TO_COLOR_RGB_CONVERSION = getToColorRgbConversion();
-
     /**
      * Conversion rules that convert color types into colored images
      */
     public static final Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> TO_GRAYSCALE32F_CONVERSION = getToGrayscale32FConversion();
-
     /**
      * Conversion rules convert higher-dimensional data to a lower-dimensional counterpart.
      * 2D data remains 2D data.
      */
     public static final Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> DECREASE_DIMENSION_CONVERSION = getDecreaseDimensionConversion();
-
     /**
      * Conversion rules convert higher-dimensional data to their 2D counterparts
      */
     public static final Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> TO_2D_CONVERSION = get2DConversion();
-
     /**
      * Conversion rules convert data to their 3D counterparts
      */
     public static final Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> TO_3D_CONVERSION = get3DConversion();
+
+    public ImageJAlgorithmsExtension() {
+    }
 
     private static Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> get3DConversion() {
         Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> result = new HashMap<>();
@@ -502,6 +467,24 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         result.put(ImagePlus5DGreyscaleMaskData.class, ImagePlus5DColorRGBData.class);
 
         return result;
+    }
+
+    @Override
+    public ImageParameter getThumbnail() {
+        return new ImageParameter(ResourceUtils.getPluginResource("thumbnails/fiji.png"));
+    }
+
+    @Override
+    public Set<JIPipeDependency> getDependencies() {
+        return Sets.newHashSet(CoreExtension.AS_DEPENDENCY, TablesExtension.AS_DEPENDENCY, StringsExtension.AS_DEPENDENCY, FormsExtension.AS_DEPENDENCY, ImageJDataTypesExtension.AS_DEPENDENCY);
+    }
+
+    @Override
+    public PluginCategoriesEnumParameter.List getCategories() {
+        return new PluginCategoriesEnumParameter.List(PluginCategoriesEnumParameter.CATEGORY_IMAGE_ANALYSIS, PluginCategoriesEnumParameter.CATEGORY_IMAGE_ANNOTATION, PluginCategoriesEnumParameter.CATEGORY_ANALYSIS,
+                PluginCategoriesEnumParameter.CATEGORY_ANNOTATION, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_FILTERING, PluginCategoriesEnumParameter.CATEGORY_MONTAGE, PluginCategoriesEnumParameter.CATEGORY_IMPORT_EXPORT, PluginCategoriesEnumParameter.CATEGORY_FIJI,
+                PluginCategoriesEnumParameter.CATEGORY_IMAGE_SCIENCE, PluginCategoriesEnumParameter.CATEGORY_NOISE, PluginCategoriesEnumParameter.CATEGORY_TRANSFORM, PluginCategoriesEnumParameter.CATEGORY_BINARY, PluginCategoriesEnumParameter.CATEGORY_OBJECT_DETECTION, PluginCategoriesEnumParameter.CATEGORY_FEATURE_EXTRACTION,
+                PluginCategoriesEnumParameter.CATEGORY_VISUALIZATION);
     }
 
     @Override

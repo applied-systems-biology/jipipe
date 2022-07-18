@@ -16,11 +16,7 @@ package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.lang.annotation.*;
 
 /**
  * Annotates a node with an additional menu location
@@ -50,6 +46,7 @@ public @interface JIPipeNodeAlias {
 
     /**
      * An alternative name (optional) that will be given to the menu entry
+     *
      * @return the alternative name (if empty, the default name shall be used)
      */
     String aliasName() default "";

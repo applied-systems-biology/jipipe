@@ -15,18 +15,14 @@
 package org.hkijena.jipipe.ui.extensions;
 
 import com.google.common.eventbus.Subscribe;
-import net.imagej.updater.UpdateSite;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeExtension;
-import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
-import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import java.util.*;
 
 public class ExtensionItemActionButton extends JButton {
 
@@ -47,32 +43,28 @@ public class ExtensionItemActionButton extends JButton {
     }
 
     private void executeAction() {
-        if(getExtensionRegistry().willBeActivatedOnNextStartup(extension.getDependencyId())) {
+        if (getExtensionRegistry().willBeActivatedOnNextStartup(extension.getDependencyId())) {
             pluginManager.deactivateExtension(extension);
-        }
-        else {
+        } else {
             pluginManager.activateExtension(extension);
         }
     }
 
     private void updateDisplay() {
         setEnabled(!extension.isCoreExtension());
-        if(extension.isActivated()) {
-            if(extension.isScheduledForDeactivation()) {
+        if (extension.isActivated()) {
+            if (extension.isScheduledForDeactivation()) {
                 setText("Undo deactivation");
                 setIcon(UIUtils.getIconFromResources("actions/undo.png"));
-            }
-            else {
+            } else {
                 setText("Deactivate");
                 setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));
             }
-        }
-        else {
-            if(extension.isScheduledForActivation()) {
+        } else {
+            if (extension.isScheduledForActivation()) {
                 setText("Undo activation");
                 setIcon(UIUtils.getIconFromResources("actions/undo.png"));
-            }
-            else {
+            } else {
                 setText("Activate");
                 setIcon(UIUtils.getIconFromResources("emblems/vcs-normal.png"));
             }
@@ -91,8 +83,8 @@ public class ExtensionItemActionButton extends JButton {
 
     @Subscribe
     public void onUpdateSiteActivated(RunWorkerFinishedEvent event) {
-        if(event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
-            if(extension instanceof UpdateSiteExtension) {
+        if (event.getRun() instanceof ActivateAndApplyUpdateSiteRun || event.getRun() instanceof DeactivateAndApplyUpdateSiteRun) {
+            if (extension instanceof UpdateSiteExtension) {
                 // Try to update it
                 ((UpdateSiteExtension) extension).getUpdateSite(pluginManager.getUpdateSites());
             }

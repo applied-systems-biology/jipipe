@@ -18,6 +18,6 @@ public class SpotsToRoiConverter implements JIPipeDataConverter {
 
     @Override
     public JIPipeData convert(JIPipeData input) {
-        return ((SpotsCollectionData)input).spotsToROIList();
+        return ((SpotsCollectionData) input).spotsToROIList();
     }
 }

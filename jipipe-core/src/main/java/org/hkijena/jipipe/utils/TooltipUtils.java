@@ -76,7 +76,7 @@ public class TooltipUtils {
         StringBuilder builder = new StringBuilder();
         builder.append("# ").append(info.getName()).append("\n\n");
 
-        if(!info.getAliases().isEmpty()) {
+        if (!info.getAliases().isEmpty()) {
             builder.append("<p>");
             for (JIPipeNodeMenuLocation location : info.getAliases()) {
                 builder.append("<i>Alias: ").append(location.getCategory().getName()).append(" &gt; ").append(String.join(" &gt; ", location.getMenuPath().split("\n"))).append(" &gt; ").append(StringUtils.orElse(location.getAlternativeName(), info.getName())).append("<i>\n");
@@ -144,7 +144,7 @@ public class TooltipUtils {
         StringBuilder builder = new StringBuilder();
         builder.append("<h1>").append(info.getName()).append("</h1>\n\n");
 
-        if(!info.getAliases().isEmpty()) {
+        if (!info.getAliases().isEmpty()) {
             builder.append("<p>");
             for (JIPipeNodeMenuLocation location : info.getAliases()) {
                 builder.append("<i>Alias: ").append(location.getCategory().getName()).append(" &gt; ").append(String.join(" &gt; ", location.getMenuPath().split("\n"))).append(" &gt; ").append(StringUtils.orElse(location.getAlternativeName(), info.getName())).append("<i>\n");
@@ -229,7 +229,7 @@ public class TooltipUtils {
         if (withTitle)
             builder.append("<u><strong>").append(info.getName()).append("</strong></u><br/>");
 
-        if(!info.getAliases().isEmpty()) {
+        if (!info.getAliases().isEmpty()) {
             builder.append("<p>");
             for (JIPipeNodeMenuLocation location : info.getAliases()) {
                 builder.append("<i>Alias: ").append(location.getCategory().getName()).append(" &gt; ").append(String.join(" &gt; ", location.getMenuPath().split("\n"))).append(" &gt; ").append(StringUtils.orElse(location.getAlternativeName(), info.getName())).append("<i>\n");

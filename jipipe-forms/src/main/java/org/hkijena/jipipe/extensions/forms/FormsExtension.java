@@ -45,6 +45,7 @@ public class FormsExtension extends JIPipePrepackagedDefaultJavaExtension {
     public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:forms",
             JIPipe.getJIPipeVersion(),
             "Forms");
+
     public FormsExtension() {
     }
 

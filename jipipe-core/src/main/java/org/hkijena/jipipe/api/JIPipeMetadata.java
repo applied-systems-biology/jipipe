@@ -77,7 +77,7 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
     }
 
     public void addCategory(String category) {
-        if(!getProcessedCategories().contains(category)) {
+        if (!getProcessedCategories().contains(category)) {
             categories.add(new PluginCategoriesEnumParameter(category));
         }
     }
@@ -104,13 +104,13 @@ public class JIPipeMetadata implements JIPipeParameterCollection {
     /**
      * Returns the categories of the metadata; processed for ease of use
      * If the categories list is empty, "Uncategorized" is returned
+     *
      * @return the categories
      */
     public Set<String> getProcessedCategories() {
-        if(categories.isEmpty()) {
+        if (categories.isEmpty()) {
             return Collections.singleton(PluginCategoriesEnumParameter.CATEGORY_UNCATEGORIZED);
-        }
-        else {
+        } else {
             Set<String> result = new HashSet<>();
             for (PluginCategoriesEnumParameter category : getCategories()) {
                 String value = StringUtils.nullToEmpty(category.getValue());

@@ -52,7 +52,10 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
-import java.awt.datatransfer.*;
+import java.awt.datatransfer.Clipboard;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.StringSelection;
+import java.awt.datatransfer.Transferable;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -678,11 +681,11 @@ public class UIUtils {
     }
 
     public static JLabel createJLabel(String text, Icon icon) {
-        return createJLabel(text,icon,12);
+        return createJLabel(text, icon, 12);
     }
 
     public static JLabel createJLabel(String text, int fontSize) {
-        return createJLabel(text,null,fontSize);
+        return createJLabel(text, null, fontSize);
     }
 
     public static JLabel createJLabel(String text, Icon icon, int fontSize) {
@@ -712,9 +715,10 @@ public class UIUtils {
 
     /**
      * Checks if a file exists and asks the user if it should be overwritten
+     *
      * @param parent the parent component
-     * @param path the path. can be null, will return false
-     * @param title the title
+     * @param path   the path. can be null, will return false
+     * @param title  the title
      * @return true if the path is OK or the user confirmed, otherwise false
      */
     public static boolean checkAndAskIfFileExists(Component parent, Path path, String title) {

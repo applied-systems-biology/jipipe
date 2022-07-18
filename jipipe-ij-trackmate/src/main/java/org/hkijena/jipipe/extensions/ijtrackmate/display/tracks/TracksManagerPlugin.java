@@ -49,28 +49,20 @@ import org.jgrapht.graph.DefaultWeightedEdge;
 
 import javax.swing.*;
 import javax.swing.filechooser.FileNameExtensionFilter;
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TracksManagerPlugin extends ImageViewerPanelPlugin {
     private final JList<Integer> tracksListControl = new JList<>();
+    private final JCheckBoxMenuItem displayTracksViewMenuItem = new JCheckBoxMenuItem("Display tracks", UIUtils.getIconFromResources("actions/eye.png"));
     private TrackCollectionData tracksCollection;
     private List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private JPanel selectionContentPanelUI = new JPanel();
-    private final JCheckBoxMenuItem displayTracksViewMenuItem = new JCheckBoxMenuItem("Display tracks",  UIUtils.getIconFromResources("actions/eye.png"));
-
     private TrackDrawer trackDrawer = new TrackDrawer();
     private TrackListCellRenderer tracksListCellRenderer;
 
@@ -256,12 +248,12 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
         viewMenu.addSeparator();
         {
             JMenuItem item = new JMenuItem("More settings ...", UIUtils.getIconFromResources("actions/configure.png"));
-            item.addActionListener(e->openDrawingSettings());
+            item.addActionListener(e -> openDrawingSettings());
             viewMenu.add(item);
         }
         {
             JMenuItem item = new JMenuItem("Save settings as default", UIUtils.getIconFromResources("actions/save.png"));
-            item.addActionListener(e-> saveDefaults());
+            item.addActionListener(e -> saveDefaults());
             viewMenu.add(item);
         }
     }
@@ -270,7 +262,7 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
         Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import tracks", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null && displayTracksViewMenuItem.getState()) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            try(JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
+            try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
                 TrackCollectionData trackCollectionData = TrackCollectionData.importData(storage, progressInfo);
                 setTrackCollection(trackCollectionData, false);
             } catch (IOException e) {
@@ -280,7 +272,7 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     private void saveDefaults() {
-        if(JOptionPane.showConfirmDialog(getViewerPanel(),
+        if (JOptionPane.showConfirmDialog(getViewerPanel(),
                 "Dou you want to save the spot display settings as default?",
                 "Save settings as default",
                 JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
@@ -297,11 +289,11 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     private void exportTracksToFile(SpotsCollectionData rois) {
-        FileNameExtensionFilter[] fileNameExtensionFilters = new FileNameExtensionFilter[] { UIUtils.EXTENSION_FILTER_ZIP };
+        FileNameExtensionFilter[] fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ZIP};
         Path path = FileChooserSettings.saveFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Export tracks", fileNameExtensionFilters);
         if (path != null) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            try(JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {
+            try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, path)) {
                 rois.exportData(storage, "Tracks", false, progressInfo);
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -323,7 +315,7 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex, double magnification) {
-        if(tracksCollection != null) {
+        if (tracksCollection != null) {
             ImagePlus imagePlus = tracksCollection.getImage();
             int oldSlice = imagePlus.getSlice();
             imagePlus.setSlice(sliceIndex.zeroSliceIndexToOneStackIndex(imagePlus));
@@ -333,7 +325,7 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
             for (Integer trackId : selectedValuesList) {
                 highlight.addAll(tracksCollection.getTrackModel().trackEdges(trackId));
             }
-            trackDrawer.drawOnGraphics(tracksCollection, graphics2D, new Rectangle(0,0,image.getWidth(),image.getHeight()), getCurrentSlicePosition(), highlight);
+            trackDrawer.drawOnGraphics(tracksCollection, graphics2D, new Rectangle(0, 0, image.getWidth(), image.getHeight()), getCurrentSlicePosition(), highlight);
             graphics2D.dispose();
             imagePlus.setSlice(oldSlice);
         }
@@ -432,7 +424,7 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
         public SelectionInfoContextPanel(TracksManagerPlugin parent) {
             super(parent);
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-            setBorder(BorderFactory.createEmptyBorder(4,2,4,2));
+            setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
             this.roiInfoLabel = new JLabel();
             roiInfoLabel.setIcon(TrackMateExtension.RESOURCES.getIconFromResources("trackmate-tracker.png"));
             roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
@@ -477,7 +469,7 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
 
         @Override
         public void selectionUpdated(TrackCollectionData trackCollectionData, List<Integer> selectedTrackIds) {
-            if(selectedTrackIds.isEmpty())
+            if (selectedTrackIds.isEmpty())
                 roiInfoLabel.setText(trackCollectionData.getNTracks() + " tracks");
             else
                 roiInfoLabel.setText(selectedTrackIds.size() + "/" + trackCollectionData.getNTracks() + " tracks");
@@ -494,7 +486,7 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
             statistics.getValues().add(Measurement.PixelValueMean);
 
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-            setBorder(BorderFactory.createEmptyBorder(4,2,4,2));
+            setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
 //            this.roiInfoLabel = new JLabel("");
 //            roiInfoLabel.setIcon(UIUtils.getIconFromResources("data-types/results-table.png"));
 //            roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));

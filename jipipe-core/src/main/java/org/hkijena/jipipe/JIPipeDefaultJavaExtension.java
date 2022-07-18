@@ -96,18 +96,20 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * The categories of this extension (see {@link PluginCategoriesEnumParameter} for predefined values)
+     *
      * @return the categories
      */
     public PluginCategoriesEnumParameter.List getCategories() {
         PluginCategoriesEnumParameter.List result = new PluginCategoriesEnumParameter.List();
-        if(isCoreExtension()) {
-           result.add(new PluginCategoriesEnumParameter("Core"));
+        if (isCoreExtension()) {
+            result.add(new PluginCategoriesEnumParameter("Core"));
         }
         return result;
     }
 
     /**
      * Returns additionally cited authors
+     *
      * @return the authors
      */
     public JIPipeAuthorMetadata.List getAcknowledgements() {
@@ -116,13 +118,13 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * Returns the thumbnail
+     *
      * @return the thumbnail
      */
     public ImageParameter getThumbnail() {
-        if(isCoreExtension()) {
+        if (isCoreExtension()) {
             return new ImageParameter(ResourceUtils.getPluginResource("core-extension-thumbnail-default.png"));
-        }
-        else {
+        } else {
             return new ImageParameter(ResourceUtils.getPluginResource("extension-thumbnail-default.png"));
         }
     }
@@ -161,6 +163,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
 
     /**
      * A short summary
+     *
      * @return a short summary
      */
     public HTMLText getSummary() {

@@ -135,7 +135,7 @@ public enum ColorMap {
     ColorMap() {
         try {
             InputStream stream = ResourceUtils.getPluginResourceAsStream("colormaps/" + name() + ".png");
-            if(stream == null) {
+            if (stream == null) {
                 throw new RuntimeException("Unable to find colormap " + name());
             }
             this.mapImage = ImageIO.read(stream);

@@ -30,9 +30,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.jgrapht.graph.DefaultWeightedEdge;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Collection;
 
 public class TrackDrawer implements JIPipeParameterCollection {

@@ -20,7 +20,6 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 @JIPipeDocumentation(name = "Set ROI name by expression", description = "Utilizes an expression to generate a ROI name for each individual ROI in the supplied ROI lists." +
@@ -135,6 +134,7 @@ public class GenerateROINameAlgorithm extends JIPipeIteratingAlgorithm {
     public void setMeasureInPhysicalUnits(boolean measureInPhysicalUnits) {
         this.measureInPhysicalUnits = measureInPhysicalUnits;
     }
+
     public static class VariableSource implements ExpressionParameterVariableSource {
 
         public static final Set<ExpressionParameterVariable> VARIABLES;

@@ -39,14 +39,14 @@ public class ResourceManager {
     /**
      * Creates a new instance
      *
-     * @param resourceClass        the class that acts as the base for accessing the resources. Should be in the same package as the extension
-     * @param basePath absolute resource path to the resource root e.g. /org/hkijena/jipipe/extensions/myextension (must be consistent with the resource directory)
-     * @param icons16BasePath resource path to the 16x16 icons
-     * @param icons32BasePath resource path to the 32x32 icons
+     * @param resourceClass       the class that acts as the base for accessing the resources. Should be in the same package as the extension
+     * @param basePath            absolute resource path to the resource root e.g. /org/hkijena/jipipe/extensions/myextension (must be consistent with the resource directory)
+     * @param icons16BasePath     resource path to the 16x16 icons
+     * @param icons32BasePath     resource path to the 32x32 icons
      * @param darkIcons16BasePath resource path to the dark 16x16 icons (icons themselves are optional; the non-dark versions are automatically utilized if no dark version is available)
      * @param darkIcons32BasePath resource path to the dark 32x32 icons (icons themselves are optional; the non-dark versions are automatically utilized if no dark version is available)
-     * @param templateBasePath resource path to the template directory
-     * @param schemaBasePath resource path to the schema directory
+     * @param templateBasePath    resource path to the template directory
+     * @param schemaBasePath      resource path to the schema directory
      */
     public ResourceManager(Class<?> resourceClass, String basePath, String icons16BasePath, String icons32BasePath, String darkIcons16BasePath, String darkIcons32BasePath, String templateBasePath, String schemaBasePath) {
         this.resourceClass = resourceClass;
@@ -69,8 +69,9 @@ public class ResourceManager {
      *     <li>templates path: [basePath]/templates</li>
      *     <li>schemas path: [basePath]/schemas</li>
      * </ul>
+     *
      * @param resourceClass the class that acts as the base for accessing the resources. Should be in the same package as the extension
-     * @param basePath absolute resource path to the resource root e.g. /org/hkijena/jipipe/extensions/myextension (must be consistent with the resource directory)
+     * @param basePath      absolute resource path to the resource root e.g. /org/hkijena/jipipe/extensions/myextension (must be consistent with the resource directory)
      */
     public ResourceManager(Class<?> resourceClass, String basePath) {
         this.resourceClass = resourceClass;
@@ -83,35 +84,37 @@ public class ResourceManager {
         this.schemaBasePath = formatBasePath(basePath + "/schemas");
     }
 
-    public Class<?> getResourceClass() {
-        return resourceClass;
-    }
-
     /**
      * Applies the appropriate formatting for a base path
+     *
      * @param path the base path
      * @return the fixed base path
      */
     public static String formatBasePath(String path) {
         String result = path.replace('\\', '/');
-        while(result.contains("//"))
+        while (result.contains("//"))
             result = result.replace("//", "/");
-        if(!result.startsWith("/"))
+        if (!result.startsWith("/"))
             result = "/" + result;
-        while(result.endsWith("/"))
+        while (result.endsWith("/"))
             result = result.substring(0, result.length() - 1);
         return result;
     }
 
+    public Class<?> getResourceClass() {
+        return resourceClass;
+    }
+
     /**
      * Returns the URL of a 16x16 icon. Adapts to dark theme.
+     *
      * @param iconName the icon name
      * @return the URL or null if the icon does not exists
      */
     public URL getIconURLFromResources(String iconName) {
-        if(UIUtils.DARK_THEME) {
+        if (UIUtils.DARK_THEME) {
             URL resource = resourceClass.getResource(darkIcons16BasePath + "/" + iconName);
-            if(resource != null)
+            if (resource != null)
                 return resource;
         }
         return resourceClass.getResource(icons16BasePath + "/" + iconName);
@@ -119,6 +122,7 @@ public class ResourceManager {
 
     /**
      * Returns the URL of a 16x16 icon. Adapts to dark theme.
+     *
      * @param iconName the icon name
      * @return the URL or null if the icon does not exists
      */
@@ -128,13 +132,14 @@ public class ResourceManager {
 
     /**
      * Returns the URL of a 32x32 icon. Adapts to dark theme.
+     *
      * @param iconName the icon name
      * @return the URL or null if the icon does not exists
      */
     public URL getIcon32URLFromResources(String iconName) {
-        if(UIUtils.DARK_THEME) {
+        if (UIUtils.DARK_THEME) {
             URL resource = resourceClass.getResource(darkIcons32BasePath + "/" + iconName);
-            if(resource != null)
+            if (resource != null)
                 return resource;
         }
         return resourceClass.getResource(icons32BasePath + "/" + iconName);

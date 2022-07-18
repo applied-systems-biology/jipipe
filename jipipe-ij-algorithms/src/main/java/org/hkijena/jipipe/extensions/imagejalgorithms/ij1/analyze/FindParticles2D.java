@@ -206,7 +206,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
                             minParticleCircularity,
                             maxParticleCircularity);
                     ImagePlus sliceImage = new ImagePlus(inputData.getImage().getTitle() + "_" + index, ip);
-                    if(measureInPhysicalUnits) {
+                    if (measureInPhysicalUnits) {
                         sliceImage.copyScale(inputData.getImage());
                     }
                     analyzer.analyze(sliceImage, ip);

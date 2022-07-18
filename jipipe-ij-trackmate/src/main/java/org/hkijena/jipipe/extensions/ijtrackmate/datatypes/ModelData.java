@@ -58,6 +58,19 @@ public class ModelData implements JIPipeData {
         this.image = other.getImage();
     }
 
+    public static ModelData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        Path xmlFileName = storage.findFileByExtension(".xml").get();
+        Path tiffFileName = storage.findFileByExtension(".tif", ".tiff").get();
+
+        ImagePlus imagePlus = IJ.openImage(storage.getFileSystemPath().resolve(tiffFileName).toString());
+
+        TmXmlReader reader = new TmXmlReader(storage.getFileSystemPath().resolve(xmlFileName).toFile());
+        Model model = reader.getModel();
+        Settings settings = reader.readSettings(imagePlus);
+
+        return new ModelData(model, settings, imagePlus);
+    }
+
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         TmXmlWriter writer = new TmXmlWriter(PathUtils.ensureExtension(storage.getFileSystemPath().resolve(StringUtils.orElse(name, "model")), ".xml").toFile());
@@ -91,18 +104,5 @@ public class ModelData implements JIPipeData {
 
     public ImagePlus getImage() {
         return image;
-    }
-
-    public static ModelData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        Path xmlFileName = storage.findFileByExtension(".xml").get();
-        Path tiffFileName = storage.findFileByExtension(".tif", ".tiff").get();
-
-        ImagePlus imagePlus = IJ.openImage(storage.getFileSystemPath().resolve(tiffFileName).toString());
-
-        TmXmlReader reader = new TmXmlReader(storage.getFileSystemPath().resolve(xmlFileName).toFile());
-        Model model = reader.getModel();
-        Settings settings = reader.readSettings(imagePlus);
-
-        return new ModelData(model, settings, imagePlus);
     }
 }

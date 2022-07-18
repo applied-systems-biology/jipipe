@@ -20,11 +20,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.extensions.nodetemplate.NodeTemplateBox;
@@ -146,11 +142,11 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
 
                 // Alternative names
                 for (JIPipeNodeMenuLocation location : info.getAliases()) {
-                    if(StringUtils.isNullOrEmpty(location.getAlternativeName()))
+                    if (StringUtils.isNullOrEmpty(location.getAlternativeName()))
                         continue;
-                    if(Objects.equals(category.getId(), location.getCategory().getId())) {
+                    if (Objects.equals(category.getId(), location.getCategory().getId())) {
                         String locationPath = StringUtils.getCleanedMenuPath(location.getMenuPath());
-                        if(Objects.equals(locationPath, entry.getKey())) {
+                        if (Objects.equals(locationPath, entry.getKey())) {
                             name = location.getAlternativeName();
                             hasAlternativeName = true;
                             break;
@@ -166,7 +162,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                     if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(graphEditorUI.getWorkbench()))
                         return;
                     JIPipeGraphNode node = info.newInstance();
-                    if(finalHasAlternativeName) {
+                    if (finalHasAlternativeName) {
                         node.setCustomName(finalName);
                     }
                     graphEditorUI.getCanvasUI().getHistoryJournal().snapshotBeforeAddNode(node, graphEditorUI.getCompartment());

@@ -67,8 +67,6 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private final JToggleButton animationStackToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationChannelToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
     private final JToggleButton animationFrameToggle = new JToggleButton(UIUtils.getIconFromResources("actions/player_start.png"));
-
-    private JCheckBoxMenuItem exportDisplayedScaleToggle = new JCheckBoxMenuItem("Export as displayed", true);
     private final JLabel imageInfoLabel = new JLabel();
     private final JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(75, 5, 10000, 1));
     private final JToolBar toolBar = new JToolBar();
@@ -76,6 +74,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private final DocumentTabPane tabPane = new DocumentTabPane();
     private final Map<String, FormPanel> formPanels = new HashMap<>();
     private final JIPipeWorkbench workbench;
+    private JCheckBoxMenuItem exportDisplayedScaleToggle = new JCheckBoxMenuItem("Export as displayed", true);
     private ImagePlus image;
 
     private ImageCanvas zoomedDummyCanvas;
@@ -87,12 +86,11 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private FormPanel bottomPanel;
     private long lastTimeZoomed;
     private JScrollPane scrollPane;
-//    private int rotation = 0;
+    //    private int rotation = 0;
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
     private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
-    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
-    private Component currentContentPanel;
+    private Component currentContentPanel;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
     private boolean isUpdatingSliders = false;
     /**
      * Initializes a new image viewer
@@ -178,6 +176,10 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         return null;
     }
 
+    public void setAsActiveViewerPanel() {
+        ACTIVE_PANEL = this;
+    }
+
 //    public void setRotationEnabled(boolean enabled) {
 //        rotateLeftButton.setVisible(enabled);
 //        rotateRightButton.setVisible(enabled);
@@ -187,10 +189,6 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
 //            refreshSlice();
 //        }
 //    }
-
-    public void setAsActiveViewerPanel() {
-        ACTIVE_PANEL = this;
-    }
 
     public void addToOpenPanels() {
         OPEN_PANELS.add(this);
@@ -526,6 +524,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
 
     /**
      * Returns the magnification that export/render methods should apply
+     *
      * @return the magnification
      */
     public double getExportedMagnification() {
@@ -649,6 +648,10 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         }
     }
 
+    private void updateZoomStatus() {
+        zoomStatusButton.setText((int) Math.round(canvas.getZoom() * 100) + "%");
+    }
+
 //    private void rotateLeft() {
 //        if (rotation == 0)
 //            rotation = 270;
@@ -664,14 +667,11 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
 //        refreshSlice();
 //    }
 
-    private void updateZoomStatus() {
-        zoomStatusButton.setText((int) Math.round(canvas.getZoom() * 100) + "%");
-    }
-
     /**
      * A dummy {@link ImageCanvas} that is needed by some visualization algorithms for magnification
      * It is updated by {@link ImageViewerPanelCanvas}
      * Please do not make any changes to the display properties here, as the image viewer has its own canvas
+     *
      * @return the dummy canvas
      */
     public ImageCanvas getZoomedDummyCanvas() {
@@ -681,6 +681,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     /**
      * A dummy {@link ImageCanvas} that is needed by some visualization algorithms for magnification
      * Its magnification should be permanently 1.0
+     *
      * @return the dummy canvas
      */
     public ImageCanvas getExportDummyCanvas() {
@@ -696,7 +697,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
 
         // Multiplicative zoom
         double targetScreenSizeModifier2 = 1.0 + settings.getZoomBaseSpeed() + speedFactor * settings.getZoomDynamicSpeed();
-        if(fac < 0) {
+        if (fac < 0) {
             targetScreenSizeModifier2 = 1.0 / targetScreenSizeModifier2;
         }
 
@@ -758,12 +759,11 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
 
     public void setImage(ImagePlus image) {
         this.image = image;
-        if(image != null) {
+        if (image != null) {
             this.zoomedDummyCanvas = new ImageCanvas(image);
             this.zoomedDummyCanvas.setMagnification(getCanvas().getZoom());
             this.exportDummyCanvas = new ImageCanvas(image);
-        }
-        else {
+        } else {
             this.zoomedDummyCanvas = null;
             this.exportDummyCanvas = null;
         }
@@ -920,10 +920,11 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
 
     /**
      * Generates a slice
-     * @param c the channel location
-     * @param z the depth location
-     * @param t the frame location
-     * @param magnification the magnification
+     *
+     * @param c                  the channel location
+     * @param z                  the depth location
+     * @param t                  the frame location
+     * @param magnification      the magnification
      * @param withPostprocessing if postprocessing (export postprocessing) should be applied
      * @return the new slice
      */
@@ -947,7 +948,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
 //            else
 //                throw new UnsupportedOperationException("Unknown rotation: " + rotation);
 //        }
-        if(magnification != 1.0) {
+        if (magnification != 1.0) {
             processor.setInterpolationMethod(ImageProcessor.NONE);
             processor = processor.resize((int) (magnification * image.getWidth()), (int) (magnification * image.getHeight()), false);
         }

@@ -31,10 +31,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Collection;
 
 public class SpotDrawer implements JIPipeParameterCollection {
@@ -56,7 +53,7 @@ public class SpotDrawer implements JIPipeParameterCollection {
     }
 
     public SpotDrawer(SpotDrawer other) {
-       copyFrom(other);
+        copyFrom(other);
     }
 
     public void copyFrom(SpotDrawer other) {
@@ -77,7 +74,7 @@ public class SpotDrawer implements JIPipeParameterCollection {
         DisplaySettings displaySettings = new DisplaySettings();
         displaySettings.setLineThickness(strokeWidth);
         displaySettings.setSpotFilled(fillSpots);
-        if(uniformStrokeColor) {
+        if (uniformStrokeColor) {
             displaySettings.setSpotUniformColor(strokeColor);
         } else {
             Range<Double> range = spotsCollectionData.getSpotFeatureRange(strokeColorFeature.getValue());
@@ -109,17 +106,16 @@ public class SpotDrawer implements JIPipeParameterCollection {
         imagePlus.setSlice(oldSliceIndex);
 
         // Draw label
-        if(labelSettings.isDrawLabels()) {
+        if (labelSettings.isDrawLabels()) {
             Font labelFont = new Font(Font.DIALOG, Font.PLAIN, labelSettings.getLabelSize());
             for (Spot spot : spotsCollectionData.getSpots().iterable(true)) {
                 int z = (int) spot.getDoublePosition(2);
                 int frame = spot.getFeature(Spot.FRAME).intValue();
-                if(z == sliceIndex.getZ() && frame == sliceIndex.getT()) {
+                if (z == sliceIndex.getZ() && frame == sliceIndex.getT()) {
                     String label;
-                    if(labelSettings.isDrawName()) {
+                    if (labelSettings.isDrawName()) {
                         label = spot.getName();
-                    }
-                    else {
+                    } else {
                         label = TrackMateUtils.FEATURE_DECIMAL_FORMAT.format(spotsCollectionData.getSpotFeature(spot, labelSettings.drawnFeature.getValue(), 0));
                     }
                     RoiDrawer.drawLabelOnGraphics(label,

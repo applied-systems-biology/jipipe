@@ -17,7 +17,6 @@ package org.hkijena.jipipe.extensions.python.installers;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstaller;
-import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.api.optional.OptionalParameter;
@@ -67,21 +66,20 @@ public class PythonEasyInstaller extends EasyInstallExternalEnvironmentInstaller
 
     @Override
     protected void writeEnvironmentToParameters(PythonEnvironment environment, JIPipeParameterAccess parameterAccess) {
-        if(OptionalParameter.class.isAssignableFrom(parameterAccess.getFieldClass())) {
+        if (OptionalParameter.class.isAssignableFrom(parameterAccess.getFieldClass())) {
             parameterAccess.set(new OptionalPythonEnvironment(environment));
-        }
-        else {
+        } else {
             parameterAccess.set(environment);
         }
     }
 
     @Override
     protected void executePostprocess() {
-        if(!SystemUtils.IS_OS_WINDOWS) {
+        if (!SystemUtils.IS_OS_WINDOWS) {
             getProgressInfo().log("Postprocess: Marking all files in " + getAbsolutePythonBinaryDir() + " as executable");
             try {
                 Files.list(getAbsolutePythonBinaryDir()).forEach(path -> {
-                    if(Files.isRegularFile(path)) {
+                    if (Files.isRegularFile(path)) {
                         getProgressInfo().log(" - chmod +x " + path);
                         PathUtils.makeUnixExecutable(path);
                     }
@@ -97,10 +95,9 @@ public class PythonEasyInstaller extends EasyInstallExternalEnvironmentInstaller
         PythonEnvironment environment = new PythonEnvironment();
         environment.setType(PythonEnvironmentType.System);
         environment.setArguments(new DefaultExpressionParameter("ARRAY(\"-u\", script_file)"));
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             environment.setExecutablePath(getRelativePythonBinaryDir().resolve("python.exe"));
-        }
-        else {
+        } else {
             environment.setExecutablePath(getRelativePythonBinaryDir().resolve("python3"));
         }
         environment.setName(getTargetPackage().getName());
@@ -108,19 +105,17 @@ public class PythonEasyInstaller extends EasyInstallExternalEnvironmentInstaller
     }
 
     private Path getRelativePythonBinaryDir() {
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             return getRelativeInstallationPath().resolve("python");
-        }
-        else {
+        } else {
             return getRelativeInstallationPath().resolve("python").resolve("bin");
         }
     }
 
     private Path getAbsolutePythonBinaryDir() {
-        if(SystemUtils.IS_OS_WINDOWS) {
+        if (SystemUtils.IS_OS_WINDOWS) {
             return getAbsoluteInstallationPath().resolve("python");
-        }
-        else {
+        } else {
             return getAbsoluteInstallationPath().resolve("python").resolve("bin");
         }
     }

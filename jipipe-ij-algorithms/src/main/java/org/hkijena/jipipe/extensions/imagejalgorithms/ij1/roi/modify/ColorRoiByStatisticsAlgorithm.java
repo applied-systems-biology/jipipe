@@ -32,8 +32,6 @@ import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMapEnumItemI
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorMapParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
-import java.util.Map;
-
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
@@ -44,10 +42,10 @@ import java.util.Map;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class ColorRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private MeasurementColumn fillMeasurement = MeasurementColumn.Area;
-    private MeasurementColumn lineMeasurement = MeasurementColumn.Area;
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
             JIPipe.createNode(RoiStatisticsAlgorithm.class);
+    private MeasurementColumn fillMeasurement = MeasurementColumn.Area;
+    private MeasurementColumn lineMeasurement = MeasurementColumn.Area;
     private OptionalColorMapParameter mapFillColor = new OptionalColorMapParameter();
     private OptionalColorMapParameter mapLineColor = new OptionalColorMapParameter();
 
@@ -96,7 +94,7 @@ public class ColorRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData();
         roiStatisticsAlgorithm.getInputSlot("ROI").addData(inputRois, progressInfo);
-        if(inputReference != null) {
+        if (inputReference != null) {
             roiStatisticsAlgorithm.getInputSlot("Reference").addData(inputReference, progressInfo);
         }
         roiStatisticsAlgorithm.run(progressInfo);

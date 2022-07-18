@@ -32,10 +32,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.awt.*;
-import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 /**

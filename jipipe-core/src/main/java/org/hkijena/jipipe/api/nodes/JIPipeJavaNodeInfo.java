@@ -127,6 +127,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
 
     /**
      * Gets alternative menu locations
+     *
      * @param klass node class
      * @return locations
      */

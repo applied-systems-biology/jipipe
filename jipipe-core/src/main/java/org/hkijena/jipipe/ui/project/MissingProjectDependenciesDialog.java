@@ -41,10 +41,9 @@ public class MissingProjectDependenciesDialog extends JDialog {
     private final JIPipeModernPluginManager pluginManager;
     private final Path fileName;
     private final Set<JIPipeDependency> dependencySet;
-    private boolean continueLoading = false;
     private final FormPanel formPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
-
     private final MessagePanel messagePanel = new MessagePanel();
+    private boolean continueLoading = false;
 
     /**
      * @param workbench          the workbench
@@ -90,40 +89,39 @@ public class MissingProjectDependenciesDialog extends JDialog {
         getContentPane().setLayout(new BorderLayout());
         getContentPane().add(messagePanel, BorderLayout.NORTH);
 
-        formPanel.setBorder(BorderFactory.createEmptyBorder(16,16,16,16));
+        formPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
         formPanel.addWideToForm(UIUtils.createJLabel("Missing dependencies detected", UIUtils.getIcon32FromResources("dialog-warning.png"), 28));
         formPanel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane("The project '" + fileName.toString() + "' might not be loadable due to missing dependencies. You can choose to activate the dependencies (requires a restart of ImageJ or JIPipe) or ignore this message.", false));
 
-        if(!dependencySet.isEmpty()) {
+        if (!dependencySet.isEmpty()) {
             formPanel.addWideToForm(Box.createVerticalStrut(32));
             formPanel.addWideToForm(UIUtils.createJLabel("JIPipe extensions", 22));
 
             for (JIPipeDependency dependency : dependencySet) {
                 JPanel dependencyPanel = new JPanel(new GridBagLayout());
-                dependencyPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8,8,8,8)));
-                dependencyPanel.add(UIUtils.createJLabel(dependency.getMetadata().getName(), UIUtils.getIcon32FromResources("module-json.png"), 16), new GridBagConstraints(0,0,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
+                dependencyPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
+                dependencyPanel.add(UIUtils.createJLabel(dependency.getMetadata().getName(), UIUtils.getIcon32FromResources("module-json.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
                 JTextField idField = UIUtils.makeReadonlyBorderlessTextField("ID: " + dependency.getDependencyId() + ", version: " + dependency.getDependencyVersion());
                 idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
-                dependencyPanel.add(idField, new GridBagConstraints(0,1,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
-                dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getMetadata().getDescription().getHtml(), false), new GridBagConstraints(0,2,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
+                dependencyPanel.add(idField, new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
+                dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getMetadata().getDescription().getHtml(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
                 // Try to find the extension
                 JIPipeExtension extension = JIPipe.getInstance().getExtensionRegistry().getKnownExtensionById(dependency.getDependencyId());
-                if(extension != null) {
+                if (extension != null) {
 
                     ExtensionItemActionButton button = new ExtensionItemActionButton(pluginManager, extension);
                     button.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));
-                    dependencyPanel.add(button, new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,new Insets(4,4,4,4),0,0));
-                }
-                else {
-                    dependencyPanel.add(UIUtils.createJLabel("Extension not installed", UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png")), new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,new Insets(4,4,4,4),0,0));
+                    dependencyPanel.add(button, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
+                } else {
+                    dependencyPanel.add(UIUtils.createJLabel("Extension not installed", UIUtils.getIconFromResources("emblems/emblem-rabbitvcs-conflicted.png")), new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
                 }
 
                 formPanel.addWideToForm(dependencyPanel);
             }
         }
-        if(!missingUpdateSites.isEmpty()) {
+        if (!missingUpdateSites.isEmpty()) {
             formPanel.addWideToForm(Box.createVerticalStrut(32));
             AnimatedIcon hourglassAnimation = new AnimatedIcon(this, UIUtils.getIconFromResources("actions/hourglass-half.png"),
                     UIUtils.getIconFromResources("emblems/hourglass-half.png"),
@@ -141,23 +139,23 @@ public class MissingProjectDependenciesDialog extends JDialog {
 
     @Subscribe
     public void onUpdateSitesReady(JIPipeModernPluginManager.UpdateSitesReadyEvent event) {
-        if(!missingUpdateSites.isEmpty()) {
+        if (!missingUpdateSites.isEmpty()) {
             formPanel.removeLastRow(); //Vertical glue
             formPanel.removeLastRow(); // "Please wait..."
             for (JIPipeImageJUpdateSiteDependency dependency : missingUpdateSites) {
                 JPanel dependencyPanel = new JPanel(new GridBagLayout());
-                dependencyPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8,8,8,8)));
-                dependencyPanel.add(UIUtils.createJLabel(dependency.getName(), UIUtils.getIcon32FromResources("module-imagej.png"), 16), new GridBagConstraints(0,0,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
+                dependencyPanel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
+                dependencyPanel.add(UIUtils.createJLabel(dependency.getName(), UIUtils.getIcon32FromResources("module-imagej.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
                 JTextField idField = UIUtils.makeReadonlyBorderlessTextField("URL: " + dependency.getUrl());
                 idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
-                dependencyPanel.add(idField, new GridBagConstraints(0,1,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
-                dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getDescription(), false), new GridBagConstraints(0,2,1,1,1,0,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,new Insets(4,4,4,4),0,0));
+                dependencyPanel.add(idField, new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
+                dependencyPanel.add(UIUtils.makeBorderlessReadonlyTextPane(dependency.getDescription(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
                 // Try to find the extension
                 UpdateSiteExtension extension = new UpdateSiteExtension(dependency);
                 ExtensionItemActionButton button = new ExtensionItemActionButton(pluginManager, extension);
                 button.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));
-                dependencyPanel.add(button, new GridBagConstraints(1,0,1,1,0,0,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE,new Insets(4,4,4,4),0,0));
+                dependencyPanel.add(button, new GridBagConstraints(1, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
 
                 formPanel.addWideToForm(dependencyPanel);
             }
@@ -167,7 +165,7 @@ public class MissingProjectDependenciesDialog extends JDialog {
 
     private void initializeButtonPanel() {
         JPanel buttonPanel = new JPanel();
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
         buttonPanel.add(Box.createHorizontalGlue());
 

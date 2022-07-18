@@ -82,14 +82,15 @@ public interface JIPipeParameterCollection {
     /**
      * Adds a listener to the change of a parameter of the specified key.
      * Wrapper around creating an anonymous object
-     * @param key the parameter key
+     *
+     * @param key      the parameter key
      * @param consumer the listener
      */
     default void addParameterChangeListener(String key, Consumer<ParameterChangedEvent> consumer) {
         getEventBus().register(new Object() {
             @Subscribe
             public void onParameterChanged(ParameterChangedEvent event) {
-                if(Objects.equals(key, event.getKey())) {
+                if (Objects.equals(key, event.getKey())) {
                     consumer.accept(event);
                 }
             }
@@ -99,13 +100,14 @@ public interface JIPipeParameterCollection {
     /**
      * Adds a listener to the change of any parameter.
      * Wrapper around creating an anonymous object
+     *
      * @param consumer the listener
      */
     default void addParameterChangeListener(Consumer<ParameterChangedEvent> consumer) {
         getEventBus().register(new Object() {
             @Subscribe
             public void onParameterChanged(ParameterChangedEvent event) {
-            consumer.accept(event);
+                consumer.accept(event);
             }
         });
     }

@@ -19,18 +19,11 @@ import fiji.plugin.trackmate.SpotCollection;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeSimpleIteratingAlgorithm;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.AnnotationGeneratorExpression;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.NamedTextAnnotationGeneratorExpression;
@@ -45,7 +38,7 @@ import java.util.Map;
 @JIPipeDocumentation(name = "Split spots", description = "Creates a list for each individual spot")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Tracking\nSplit/Merge")
 @JIPipeInputSlot(value = SpotsCollectionData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output",autoCreate = true)
+@JIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output", autoCreate = true)
 public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
 
     private NamedTextAnnotationGeneratorExpression.List annotationGenerator = new NamedTextAnnotationGeneratorExpression.List();
@@ -68,7 +61,7 @@ public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
         variables.set("n_spots", oldCollection.getNSpots(true));
         int index = 0;
         for (Spot spot : oldCollection.iterable(true)) {
-            List< JIPipeTextAnnotation> annotations = new ArrayList<>();
+            List<JIPipeTextAnnotation> annotations = new ArrayList<>();
             variables.set("name", spot.getName());
             variables.set("id", spot.ID());
             variables.set("index", index);

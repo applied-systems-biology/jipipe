@@ -21,12 +21,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
-import org.hkijena.jipipe.api.nodes.DefaultJIPipeOutputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
@@ -38,11 +33,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.io.SpotFeaturePenaltyParameterL
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeaturePenaltyParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class CreateSpotTrackerNodeInfo implements JIPipeNodeInfo {
 
@@ -63,7 +54,7 @@ public class CreateSpotTrackerNodeInfo implements JIPipeNodeInfo {
         this.spotTrackerFactory = spotTrackerFactory;
         Map<String, Object> defaultSettings = spotTrackerFactory.getDefaultSettings();
         for (Map.Entry<String, Object> entry : defaultSettings.entrySet()) {
-            if(entry.getValue() == null) {
+            if (entry.getValue() == null) {
                 continue;
             }
             JIPipeParameterTypeInfo parameterTypeInfo = JIPipe.getParameterTypes().getInfoByFieldClass(entry.getValue().getClass());
@@ -74,14 +65,12 @@ public class CreateSpotTrackerNodeInfo implements JIPipeNodeInfo {
             if (parameterTypeInfo != null) {
                 fieldClass = parameterTypeInfo.getFieldClass();
                 settingsIO = new DefaultSettingsIO(fieldClass);
-            }
-            else if(entry.getValue() instanceof Map) {
+            } else if (entry.getValue() instanceof Map) {
                 // Assume it's a penalty
                 fieldClass = SpotFeaturePenaltyParameter.List.class;
                 settingsIO = new SpotFeaturePenaltyParameterListSettingsIO();
                 parameterTypeInfo = JIPipe.getParameterTypes().getInfoByFieldClass(fieldClass);
-            }
-            else {
+            } else {
                 throw new UnsupportedOperationException("Cannot resolve parameter " + entry.getKey() + "=" + entry.getValue());
             }
 

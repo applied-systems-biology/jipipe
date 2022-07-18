@@ -41,7 +41,6 @@ import org.python.util.PythonInterpreter;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
@@ -117,7 +116,7 @@ public class FilterRoiByStatisticsScriptAlgorithm extends JIPipeIteratingAlgorit
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData();
         roiStatisticsAlgorithm.getInputSlot("ROI").addData(inputRois, progressInfo);
-        if(inputReference != null) {
+        if (inputReference != null) {
             roiStatisticsAlgorithm.getInputSlot("Reference").addData(inputReference, progressInfo);
         }
         roiStatisticsAlgorithm.run(progressInfo);

@@ -36,13 +36,9 @@ import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
-import org.hkijena.jipipe.ui.cache.JIPipeDataTableRowUI;
-import org.hkijena.jipipe.ui.cache.JIPipeDataTableToFilesByMetadataExporterRun;
-import org.hkijena.jipipe.ui.cache.JIPipeDataTableToOutputExporterRun;
-import org.hkijena.jipipe.ui.cache.JIPipeDataTableToZIPExporterRun;
-import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.cache.*;
 import org.hkijena.jipipe.ui.components.DataPreviewControlUI;
+import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeComponentCellRenderer;
 import org.hkijena.jipipe.ui.components.search.ExtendedDataTableSearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
@@ -80,12 +76,11 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
 
     private final List<? extends JIPipeDataTable> dataTables;
     private final boolean withCompartmentAndAlgorithm;
-    private JIPipeExtendedMultiDataTableModel multiSlotTable;
     private final JXTable table;
-    private FormPanel rowUIList;
     private final SearchTextField searchTextField = new SearchTextField();
-
     private final MenuManager menuManager = new MenuManager();
+    private JIPipeExtendedMultiDataTableModel multiSlotTable;
+    private FormPanel rowUIList;
 
     /**
      * @param workbenchUI                 the workbench UI

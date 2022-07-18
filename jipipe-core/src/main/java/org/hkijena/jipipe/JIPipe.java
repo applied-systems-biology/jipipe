@@ -97,6 +97,7 @@ import java.util.zip.GZIPInputStream;
 @Plugin(type = JIPipeRegistry.class)
 public class JIPipe extends AbstractService implements JIPipeRegistry {
     private static JIPipe instance;
+    private static boolean IS_RESTARTING = false;
     private final JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private final EventBus eventBus = new EventBus();
     private final Set<String> registeredExtensionIds = new HashSet<>();
@@ -112,12 +113,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     private final JIPipeUtilityRegistry utilityRegistry;
     private final JIPipeExternalEnvironmentRegistry externalEnvironmentRegistry;
     private final JIPipeExtensionRegistry extensionRegistry;
-
     private FilesCollection imageJPlugins = null;
     private boolean initializing = false;
-
-    private static boolean IS_RESTARTING = false;
-
     @Parameter
     private LogService logService;
 
@@ -159,6 +156,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     /**
      * Returns true if a JIPipe restart is in progress.
      * Can be utilized by methods to prevent the closing of the Java app
+     *
      * @return if JIPipe is restarting
      */
     public static boolean isRestarting() {
@@ -209,8 +207,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             }
             // Set the instance to null
             instance = null;
-        }
-        finally {
+        } finally {
             IS_RESTARTING = false;
         }
         // Restart the GUI
@@ -455,10 +452,42 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
     /**
      * The current version of JIPipe according to the Maven-proved information
+     *
      * @return the version string or 'Development' if none is available
      */
     public static String getJIPipeVersion() {
         return VersionUtils.getJIPipeVersion();
+    }
+
+    /**
+     * Returns if the ID is a valid extension ID
+     * Must have following structure: [group]:[artifact]
+     * [group] should be lower-case and be a valid Maven group ID
+     * [artifact] should be lower-case and a valid Maven artifact ID
+     *
+     * @param id the ID
+     * @return if the id is a valid extension id
+     */
+    public static boolean isValidExtensionId(String id) {
+        if (!StringUtils.isNullOrEmpty(id) && id.contains(":")) {
+            if (!id.equals(id.toLowerCase(Locale.ROOT)))
+                return false;
+            String[] split = id.split(":");
+            if (split.length != 2)
+                return false;
+            String groupId = split[0];
+            if (groupId.startsWith(".") || groupId.endsWith(".") || groupId.contains(".."))
+                return false;
+            Pattern groupPattern = Pattern.compile("[a-z0-9-.]+");
+            if (!groupPattern.matcher(groupId).matches())
+                return false;
+            String artifactId = split[1];
+            Pattern artifactPattern = Pattern.compile("[a-z0-9-]+");
+            if (!artifactPattern.matcher(artifactId).matches())
+                return false;
+            return true;
+        }
+        return false;
     }
 
     public JIPipeProgressInfo getProgressInfo() {
@@ -474,36 +503,6 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      */
     public void initialize() {
         initialize(ExtensionSettings.getInstanceFromRaw(), new JIPipeRegistryIssues());
-    }
-
-    /**
-     * Returns if the ID is a valid extension ID
-     * Must have following structure: [group]:[artifact]
-     * [group] should be lower-case and be a valid Maven group ID
-     * [artifact] should be lower-case and a valid Maven artifact ID
-     * @param id the ID
-     * @return if the id is a valid extension id
-     */
-    public static boolean isValidExtensionId(String id) {
-        if(!StringUtils.isNullOrEmpty(id) && id.contains(":")) {
-            if(!id.equals(id.toLowerCase(Locale.ROOT)))
-                return false;
-            String[] split = id.split(":");
-            if(split.length != 2)
-                return false;
-            String groupId = split[0];
-            if(groupId.startsWith(".") || groupId.endsWith(".") || groupId.contains(".."))
-                return false;
-            Pattern groupPattern = Pattern.compile("[a-z0-9-.]+");
-            if(!groupPattern.matcher(groupId).matches())
-                return false;
-            String artifactId = split[1];
-            Pattern artifactPattern = Pattern.compile("[a-z0-9-]+");
-            if(!artifactPattern.matcher(artifactId).matches())
-                return false;
-            return true;
-        }
-        return false;
     }
 
     /**
@@ -540,13 +539,13 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                 extensionRegistry.registerKnownExtension(extension);
 
                 // Validate ID
-                if(!isValidExtensionId(extension.getDependencyId())) {
+                if (!isValidExtensionId(extension.getDependencyId())) {
                     System.err.println("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension.");
                     progressInfo.log("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension.");
                 }
 
                 // Check if the extension should be loaded
-                if(!extension.isCoreExtension() && !extensionRegistry.getStartupExtensions().contains(extension.getDependencyId())) {
+                if (!extension.isCoreExtension() && !extensionRegistry.getStartupExtensions().contains(extension.getDependencyId())) {
                     progressInfo.log("Extension with ID " + extension.getDependencyId() + " will not be loaded (deactivated in extension manager)");
                     javaExtensions.add(null);
                     continue;
@@ -575,7 +574,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             try {
                 extension = (JIPipeJavaExtension) javaExtensions.get(i);
 
-                if(extension == null) {
+                if (extension == null) {
                     registerFeaturesProgress.log("Skipping (deactivated in extension manager)");
                     continue;
                 }
@@ -668,16 +667,15 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         for (String newExtension : extensionRegistry.getNewExtensions()) {
             progressInfo.log("New extension found: " + newExtension);
         }
-        if(!extensionRegistry.getNewExtensions().isEmpty()) {
+        if (!extensionRegistry.getNewExtensions().isEmpty()) {
             JIPipeNotification notification = new JIPipeNotification("org.hkijena.jipipe.core:new-extension");
             notification.setHeading("New extensions available");
             String nameList = extensionRegistry.getNewExtensions().stream().map(id -> extensionRegistry.getKnownExtensionById(id).getMetadata().getName()).collect(Collectors.joining(", "));
-            if(extensionRegistry.getNewExtensions().size() != 1) {
+            if (extensionRegistry.getNewExtensions().size() != 1) {
                 notification.setDescription("There are " + extensionRegistry.getNewExtensions().size() + " new extensions available: " + nameList + ".\n" +
                         "You can ignore these or open the extension manager to activate the new extensions.\n\n" +
                         "For more information, please visit https://www.jipipe.org/installation/extensions/");
-            }
-            else {
+            } else {
                 notification.setDescription("There is 1 new extension available: " + nameList + ".\n" +
                         "You can ignore these or open the extension manager to activate the new extensions.\n\n" +
                         "For more information, please visit https://www.jipipe.org/installation/extensions/");
@@ -898,7 +896,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         Set<JIPipeImageJUpdateSiteDependency> dependencies = new HashSet<>();
         Set<JIPipeImageJUpdateSiteDependency> missingSites = new HashSet<>();
         for (JIPipeDependency extension : extensions) {
-            if(extension == null)
+            if (extension == null)
                 continue;
             dependencies.addAll(extension.getImageJUpdateSiteDependencies());
             missingSites.addAll(extension.getImageJUpdateSiteDependencies());
