@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.parameters;
 
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
@@ -512,6 +513,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
             getEventBus().post(new HoverHelpEvent(documentation));
             updateParameterHelpDrillDown();
         });
+        installComponentHighlighter(helpButton, Sets.newHashSet(component, description));
         propertyPanel.add(helpButton, BorderLayout.WEST);
 
         // Options menu
@@ -545,7 +547,11 @@ public class ParameterPanel extends FormPanel implements Contextual {
             optionsMenu.add(pasteItem);
 
             propertyPanel.add(optionsButton, BorderLayout.EAST);
+            installComponentHighlighter(optionsButton, Sets.newHashSet(component, description));
         }
+
+
+
         return propertyPanel;
     }
 

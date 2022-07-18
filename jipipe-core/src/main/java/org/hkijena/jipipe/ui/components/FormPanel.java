@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
@@ -24,12 +25,18 @@ import org.jdesktop.swingx.ScrollableSizeHint;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import static org.hkijena.jipipe.utils.UIUtils.UI_PADDING;
 
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Organizes UI in a form layout with integrated help functionality, and grouping with conditional visibility
@@ -67,7 +74,7 @@ public class FormPanel extends JXPanel {
 
     private final EventBus eventBus = new EventBus();
     private int numRows = 0;
-    private final JXPanel contentPanel = new JXPanel();
+    private final FormPanelContentPanel contentPanel = new FormPanelContentPanel();
     private final MarkdownReader parameterHelp;
     private JScrollPane scrollPane;
     private final JLabel parameterHelpDrillDown = new JLabel();
@@ -294,6 +301,7 @@ public class FormPanel extends JXPanel {
                 getEventBus().post(new HoverHelpEvent(documentation));
                 updateParameterHelpDrillDown();
             });
+            installComponentHighlighter(helpButton, Sets.newHashSet(component, description));
            return helpButton;
         }
         return null;
@@ -410,6 +418,31 @@ public class FormPanel extends JXPanel {
         hasVerticalGlue = true;
     }
 
+    public void installComponentHighlighter(JComponent triggerComponent, Set<Component> targetComponents) {
+        triggerComponent.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                contentPanel.setHighlightedComponents(targetComponents);
+            }
+
+            @Override
+            public void focusLost(FocusEvent e) {
+                contentPanel.removeHighlightedComponents(targetComponents);
+            }
+        });
+        triggerComponent.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                contentPanel.setHighlightedComponents(targetComponents);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                contentPanel.removeHighlightedComponents(targetComponents);
+            }
+        });
+    }
+
     public static class FormPanelEntry {
 
         private final int row;
@@ -444,6 +477,38 @@ public class FormPanel extends JXPanel {
 
         public boolean isWide() {
             return wide;
+        }
+    }
+
+    public static class FormPanelContentPanel extends JXPanel {
+        private Set<Component> highlightedComponents;
+        @Override
+        public void paint(Graphics g) {
+            super.paint(g);
+            if(highlightedComponents != null) {
+                g.setColor(Color.RED);
+                for (Component component : highlightedComponents) {
+                    if(component != null && component.isDisplayable() && component.isVisible()) {
+                        g.drawRect(component.getX(), component.getY(), component.getWidth(), component.getHeight());
+                    }
+                }
+            }
+        }
+
+        public Set<Component> getHighlightedComponents() {
+            return highlightedComponents;
+        }
+
+        public void setHighlightedComponents(Set<Component> highlightedComponents) {
+            this.highlightedComponents = new HashSet<>(highlightedComponents);
+            repaint();
+        }
+
+        public void removeHighlightedComponents(Set<Component> highlightedComponents) {
+            if(this.highlightedComponents != null) {
+                this.highlightedComponents.removeAll(highlightedComponents);
+                repaint();
+            }
         }
     }
 
