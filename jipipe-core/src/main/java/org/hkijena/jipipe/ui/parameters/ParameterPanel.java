@@ -29,6 +29,7 @@ import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 import org.scijava.Contextual;
 
@@ -81,20 +82,20 @@ public class ParameterPanel extends FormPanel implements Contextual {
      */
     public static final int DEFAULT_DIALOG_FLAGS = WITH_SEARCH_BAR | WITH_DOCUMENTATION | WITH_SCROLLING;
 
-    private JIPipeWorkbench workbench;
+    private final JIPipeWorkbench workbench;
     private Context context;
     private JIPipeParameterCollection displayedParameters;
-    private boolean noGroupHeaders;
-    private boolean noEmptyGroupHeaders;
-    private boolean forceTraverse;
-    private boolean withSearchBar;
-    private boolean withoutLabelSeparation;
-    private boolean allowCollapse;
+    private final boolean noGroupHeaders;
+    private final boolean noEmptyGroupHeaders;
+    private final boolean forceTraverse;
+    private final boolean withSearchBar;
+    private final boolean withoutLabelSeparation;
+    private final boolean allowCollapse;
     private JIPipeParameterTree traversed;
-    private SearchTextField searchField = new SearchTextField();
+    private final SearchTextField searchField = new SearchTextField();
     private BiFunction<JIPipeParameterTree, JIPipeParameterAccess, Boolean> customIsParameterVisible;
     private BiFunction<JIPipeParameterTree, JIPipeParameterCollection, Boolean> customIsParameterCollectionVisible;
-    private Map<JIPipeParameterCollection, Boolean> collapseStates = new HashMap<>();
+    private final Map<JIPipeParameterCollection, Boolean> collapseStates = new HashMap<>();
 
     /**
      * @param workbench           SciJava context
@@ -376,9 +377,10 @@ public class ParameterPanel extends FormPanel implements Contextual {
                         groupIcon = UIUtils.getIconFromResources("actions/configure.png");
                     }
                 }
-                GroupHeaderPanel groupHeaderPanel = new GroupHeaderPanel(tree.getSourceDocumentationName(parameterCollection),
-                        groupIcon, leftComponents);
-                addWideToForm(groupHeaderPanel, null);
+                GroupHeaderPanel groupHeaderPanel = addGroupHeader(tree.getSourceDocumentationName(parameterCollection), groupIcon);
+                for (Component leftComponent : leftComponents) {
+                    groupHeaderPanel.addColumn(leftComponent);
+                }
 
                 if (documentation != null && !StringUtils.isNullOrEmpty(DocumentationUtils.getDocumentationDescription(documentation))) {
                     groupHeaderPanel.getDescriptionArea().setVisible(true);
@@ -433,6 +435,8 @@ public class ParameterPanel extends FormPanel implements Contextual {
             JIPipeParameterAccess parameterAccess = ui.getParameterAccess();
             JPanel labelPanel = new JPanel(new BorderLayout());
             MarkdownDocument documentation = generateParameterDocumentation(parameterAccess, tree);
+
+            // Label panel
             if (ui.isUILabelEnabled() || (parameterAccess.isImportant() && ui.isUIImportantLabelEnabled())) {
                 JLabel label = new JLabel();
                 if (ui.isUILabelEnabled())
@@ -446,6 +450,8 @@ public class ParameterPanel extends FormPanel implements Contextual {
             if (!isWithDocumentation()) {
                 ui.setToolTipText("<html>" + documentation.getRenderedHTML() + "</html>");
             }
+
+            // Editor if modifiable
             if (isModifiable) {
                 JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
                 UIUtils.makeBorderlessWithoutMargin(removeButton);
@@ -453,6 +459,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 labelPanel.add(removeButton, BorderLayout.WEST);
             }
 
+            // Add to form
             if (ui.isUILabelEnabled() || parameterCollection instanceof JIPipeDynamicParameterCollection) {
                 addToForm(ui, labelPanel, documentation);
                 uiComponents.add(labelPanel);
@@ -466,6 +473,12 @@ public class ParameterPanel extends FormPanel implements Contextual {
                     addWideToForm(wrapperPanel, documentation);
                     uiComponents.add(labelPanel);
                 }
+            }
+
+            // Get the entry
+            FormPanelEntry entry = getEntries().get(getNumRows() - 1);
+            if(entry.getProperties() != null) {
+                uiComponents.add(entry.getProperties());
             }
 
         }
@@ -485,6 +498,55 @@ public class ParameterPanel extends FormPanel implements Contextual {
 
             collapseStates.put(parameterCollection, collapseButton.isSelected());
         }
+    }
+
+    @Override
+    protected Component createEntryPropertiesComponent(Component component, Component description, int row, MarkdownDocument documentation) {
+        JPanel propertyPanel = new JPanel(new BorderLayout());
+
+        // Help
+        JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help-muted.png"));
+        helpButton.setBorder(null);
+        helpButton.addActionListener(e -> {
+            getParameterHelp().setTemporaryDocument(documentation);
+            getEventBus().post(new HoverHelpEvent(documentation));
+            updateParameterHelpDrillDown();
+        });
+        propertyPanel.add(helpButton, BorderLayout.WEST);
+
+        // Options menu
+        if(component instanceof JIPipeParameterEditorUI) {
+            JIPipeParameterEditorUI editorUI = (JIPipeParameterEditorUI) component;
+            JButton optionsButton = new JButton(UIUtils.getIconFromResources("actions/draw-triangle4-muted.png"));
+            optionsButton.setBorder(null);
+
+            JPopupMenu optionsMenu = UIUtils.addPopupMenuToComponent(optionsButton);
+
+            JMenuItem copyItem = new JMenuItem("Copy", UIUtils.getIconFromResources("actions/edit-copy.png"));
+            copyItem.addActionListener(e -> {
+                Object parameter = editorUI.getParameter(Object.class);
+                UIUtils.copyToClipboard(JsonUtils.toJsonString(parameter));
+                workbench.sendStatusBarText("Copied parameter '" + editorUI.getParameterAccess().getName() + "' to the clipboard.");
+            });
+            optionsMenu.add(copyItem);
+
+            JMenuItem pasteItem = new JMenuItem("Paste", UIUtils.getIconFromResources("actions/edit-paste.png"));
+            pasteItem.addActionListener(e -> {
+                try {
+                    Object o = JsonUtils.readFromString(UIUtils.getStringFromClipboard(), editorUI.getParameterAccess().getFieldClass());
+                    editorUI.getParameterAccess().set(o);
+                    workbench.sendStatusBarText("Pasted value into parameter '" + editorUI.getParameterAccess().getName() + "'.");
+                }
+                catch (Throwable ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(workbench.getWindow(), "Unable to paste data into parameter '" +  editorUI.getParameterAccess().getName() + "'!", "Paste parameter value", JOptionPane.ERROR_MESSAGE);
+                }
+            });
+            optionsMenu.add(pasteItem);
+
+            propertyPanel.add(optionsButton, BorderLayout.EAST);
+        }
+        return propertyPanel;
     }
 
     private void showCollapse(List<Component> uiComponents, boolean selected) {

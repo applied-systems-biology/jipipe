@@ -35,7 +35,7 @@ import java.util.Map;
  */
 public class UserFriendlyErrorUI extends FormPanel {
 
-    private List<Entry> entries = new ArrayList<>();
+    private List<ErrorEntry> entries = new ArrayList<>();
 
     /**
      * @param helpDocument the help document to be displayed. If null, no help is displayed
@@ -56,7 +56,7 @@ public class UserFriendlyErrorUI extends FormPanel {
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
             UserFriendlyException exception = (UserFriendlyException) e;
-            addEntry(new Entry(exception.getUserWhat(),
+            addEntry(new ErrorEntry(exception.getUserWhat(),
                     exception.getUserWhere(),
                     exception.getUserWhy(),
                     exception.getUserHow(),
@@ -64,7 +64,7 @@ public class UserFriendlyErrorUI extends FormPanel {
         } else {
             StringWriter writer = new StringWriter();
             e.printStackTrace(new PrintWriter(writer));
-            addEntry(new Entry("Internal error",
+            addEntry(new ErrorEntry("Internal error",
                     "Internal plugin, JIPipe, or ImageJ code.",
                     "Cannot be determined. But the response was: " + e.getMessage(),
                     "Please check if your input data has the right format and is not corrupted. " +
@@ -87,7 +87,7 @@ public class UserFriendlyErrorUI extends FormPanel {
         for (Map.Entry<String, JIPipeIssueReport.Issue> entry : report.getIssues().entries()) {
             String key = entry.getKey();
             JIPipeIssueReport.Issue issue = entry.getValue();
-            addEntry(new Entry(issue.getUserWhat(),
+            addEntry(new ErrorEntry(issue.getUserWhat(),
                     key,
                     issue.getUserWhy(),
                     issue.getUserHow(),
@@ -100,7 +100,7 @@ public class UserFriendlyErrorUI extends FormPanel {
      *
      * @param entry the entry
      */
-    public void addEntry(Entry entry) {
+    public void addEntry(ErrorEntry entry) {
         entries.add(entry);
         addWideToForm(new EntryUI(entry), null);
     }
@@ -108,7 +108,7 @@ public class UserFriendlyErrorUI extends FormPanel {
     /**
      * Entry to be displayed
      */
-    public static class Entry {
+    public static class ErrorEntry {
         private final String userWhat;
         private final String userWhere;
         private final String userWhy;
@@ -122,7 +122,7 @@ public class UserFriendlyErrorUI extends FormPanel {
          * @param userHow   how to solve the issue
          * @param details   optional details. Can be null.
          */
-        public Entry(String userWhat, String userWhere, String userWhy, String userHow, String details) {
+        public ErrorEntry(String userWhat, String userWhere, String userWhy, String userHow, String details) {
             this.userWhat = userWhat;
             this.userWhere = userWhere;
             this.userWhy = userWhy;
@@ -152,7 +152,7 @@ public class UserFriendlyErrorUI extends FormPanel {
     }
 
     /**
-     * UI for {@link Entry}
+     * UI for {@link ErrorEntry}
      */
     public static class EntryUI extends FormPanel {
 
@@ -165,12 +165,12 @@ public class UserFriendlyErrorUI extends FormPanel {
                 "th { border-bottom: 1px solid #c8c8c8; }",
                 ".toc-list { list-style: none; }"};
 
-        private final Entry entry;
+        private final ErrorEntry entry;
 
         /**
          * @param entry the entry
          */
-        public EntryUI(Entry entry) {
+        public EntryUI(ErrorEntry entry) {
             super(null, NONE);
             this.entry = entry;
             initialize();

@@ -24,11 +24,12 @@ import org.jdesktop.swingx.ScrollableSizeHint;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.*;
-import java.lang.ref.WeakReference;
-import java.util.ArrayDeque;
+import java.util.ArrayList;
 
 import static org.hkijena.jipipe.utils.UIUtils.UI_PADDING;
+
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Organizes UI in a form layout with integrated help functionality, and grouping with conditional visibility
@@ -58,22 +59,22 @@ public class FormPanel extends JXPanel {
      */
     public static final int DOCUMENTATION_BELOW = 4;
 
-    /**
-     * Flag that items should only be displayed when necessary
-     */
-    public static final int WITH_INFINITE_SCROLLING = 8;
+    private static final int COLUMN_PROPERTIES = 2;
+
+    private static final int COLUMN_LABEL_OR_WIDE_CONTENT = 0;
+
+    private static final int COLUMN_LABELLED_CONTENT = 1;
 
     private final EventBus eventBus = new EventBus();
-    private final boolean isInfiniteScrolling;
     private int numRows = 0;
     private final JXPanel contentPanel = new JXPanel();
     private final MarkdownReader parameterHelp;
     private JScrollPane scrollPane;
     private final JLabel parameterHelpDrillDown = new JLabel();
-    private final ArrayDeque<FutureComponent> infiniteScrollingQueue = new ArrayDeque<>();
-
     private final boolean withDocumentation;
     private boolean hasVerticalGlue;
+
+    private List<FormPanelEntry> entries = new ArrayList<>();
 
     public FormPanel(int flags) {
         this(null,flags);
@@ -86,11 +87,6 @@ public class FormPanel extends JXPanel {
      * @param flags    flags for this component
      */
     public FormPanel(MarkdownDocument document, int flags) {
-
-        if ((flags & WITH_INFINITE_SCROLLING) == WITH_INFINITE_SCROLLING)
-            flags |= WITH_SCROLLING;
-        this.isInfiniteScrolling = (flags & WITH_INFINITE_SCROLLING) == WITH_INFINITE_SCROLLING;
-
         setLayout(new BorderLayout());
         contentPanel.setLayout(new GridBagLayout());
 
@@ -162,32 +158,7 @@ public class FormPanel extends JXPanel {
         return scrollPane;
     }
 
-    private void documentComponent(Component component, MarkdownDocument componentDocument) {
-        if (componentDocument != null) {
-            Toolkit.getDefaultToolkit().addAWTEventListener(new ComponentDocumentationHandler(this, component, componentDocument),
-                    AWTEvent.MOUSE_EVENT_MASK);
-            component.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    super.mouseEntered(e);
-                    parameterHelp.setTemporaryDocument(componentDocument);
-                    getEventBus().post(new HoverHelpEvent(componentDocument));
-                    updateParameterHelpDrillDown();
-                }
-            });
-            component.addFocusListener(new FocusAdapter() {
-                @Override
-                public void focusGained(FocusEvent e) {
-                    super.focusGained(e);
-                    parameterHelp.setTemporaryDocument(componentDocument);
-                    getEventBus().post(new HoverHelpEvent(componentDocument));
-                    updateParameterHelpDrillDown();
-                }
-            });
-        }
-    }
-
-    private void updateParameterHelpDrillDown() {
+    public void updateParameterHelpDrillDown() {
         MarkdownDocument current = parameterHelp.getTemporaryDocument();
         if (current == null) {
             parameterHelpDrillDown.setIcon(null);
@@ -231,7 +202,7 @@ public class FormPanel extends JXPanel {
         GridBagConstraints contentPosition = new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
-                gridx = 1;
+                gridx = COLUMN_LABELLED_CONTENT;
                 gridwidth = 1;
                 gridy = numRows;
                 insets = UI_PADDING;
@@ -239,32 +210,41 @@ public class FormPanel extends JXPanel {
                 weightx = 1;
             }
         };
-        if (!isInfiniteScrolling)
-            contentPanel.add(component, contentPosition);
+        contentPanel.add(component, contentPosition);
         if (description != null) {
             GridBagConstraints labelPosition = new GridBagConstraints() {
                 {
                     anchor = GridBagConstraints.WEST;
-                    gridx = 0;
+                    gridx = COLUMN_LABEL_OR_WIDE_CONTENT;
                     gridwidth = 1;
                     gridy = numRows;
                     insets = UI_PADDING;
                 }
             };
-            if (!isInfiniteScrolling)
-                contentPanel.add(description, labelPosition);
-            else {
-                infiniteScrollingQueue.add(new FutureComponent(description, labelPosition, component, contentPosition, false));
-            }
-        } else if (isInfiniteScrolling) {
-            infiniteScrollingQueue.add(new FutureComponent(null, null, component, contentPosition, false));
+            contentPanel.add(description, labelPosition);
         }
+        Component propertiesComponent = createAndAddEntryPropertiesComponent(component, description, numRows, documentation);
+        entries.add(new FormPanelEntry(numRows, description, component, propertiesComponent, false));
         ++numRows;
-        if (documentation != null)
-            documentComponent(component, documentation);
-        if (documentation != null && description != null)
-            documentComponent(description, documentation);
         return component;
+    }
+
+    private Component createAndAddEntryPropertiesComponent(Component component, Component description, int row, MarkdownDocument documentation) {
+        Component newComponent = createEntryPropertiesComponent(component, description, row, documentation);
+        if(newComponent != null) {
+            GridBagConstraints gridBagConstraints = new GridBagConstraints() {
+                {
+                    anchor = GridBagConstraints.WEST;
+                    gridx = COLUMN_PROPERTIES;
+                    gridwidth = 1;
+                    gridy = row;
+                    insets = UI_PADDING;
+                    fill = GridBagConstraints.NONE;
+                }
+            };
+            contentPanel.add(newComponent, gridBagConstraints);
+        }
+        return newComponent;
     }
 
     /**
@@ -290,7 +270,7 @@ public class FormPanel extends JXPanel {
         GridBagConstraints gridBagConstraints = new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
-                gridx = 0;
+                gridx = COLUMN_LABEL_OR_WIDE_CONTENT;
                 gridwidth = 2;
                 gridy = numRows;
                 insets = UI_PADDING;
@@ -298,14 +278,29 @@ public class FormPanel extends JXPanel {
                 weightx = 1;
             }
         };
-        if (!isInfiniteScrolling)
-            contentPanel.add(component, gridBagConstraints);
-        else
-            infiniteScrollingQueue.add(new FutureComponent(null, null, component, gridBagConstraints, true));
+        Component propertiesComponent = createAndAddEntryPropertiesComponent(component, null, numRows, documentation);
+        contentPanel.add(component, gridBagConstraints);
+        entries.add(new FormPanelEntry(numRows, null, component, propertiesComponent, true));
         ++numRows;
-        if (documentation != null)
-            documentComponent(component, documentation);
         return component;
+    }
+
+    protected Component createEntryPropertiesComponent(Component component, Component description, int row, MarkdownDocument documentation) {
+        if(documentation != null) {
+            JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help-muted.png"));
+            helpButton.setBorder(null);
+            helpButton.addActionListener(e -> {
+                parameterHelp.setTemporaryDocument(documentation);
+                getEventBus().post(new HoverHelpEvent(documentation));
+                updateParameterHelpDrillDown();
+            });
+           return helpButton;
+        }
+        return null;
+    }
+
+    public int getNumRows() {
+        return numRows;
     }
 
     /**
@@ -317,7 +312,20 @@ public class FormPanel extends JXPanel {
      */
     public GroupHeaderPanel addGroupHeader(String text, Icon icon) {
         GroupHeaderPanel panel = new GroupHeaderPanel(text, icon);
-        addWideToForm(panel, null);
+        GridBagConstraints gridBagConstraints = new GridBagConstraints() {
+            {
+                anchor = GridBagConstraints.WEST;
+                gridx = COLUMN_LABEL_OR_WIDE_CONTENT;
+                gridwidth = 3;
+                gridy = numRows;
+                insets = UI_PADDING;
+                fill = GridBagConstraints.HORIZONTAL;
+                weightx = 1;
+            }
+        };
+        contentPanel.add(panel, gridBagConstraints);
+        entries.add(new FormPanelEntry(numRows, null, panel, null, true));
+        ++numRows;
         return panel;
     }
 
@@ -337,6 +345,7 @@ public class FormPanel extends JXPanel {
                 weighty = 1;
             }
         });
+        entries.add(new FormPanelEntry(numRows, null, glue, null, true));
         ++numRows;
         hasVerticalGlue = true;
     }
@@ -345,9 +354,8 @@ public class FormPanel extends JXPanel {
      * Removes the last row. Silently fails if there are no rows.
      */
     public void removeLastRow() {
-        if (isInfiniteScrolling && !infiniteScrollingQueue.isEmpty()) {
-            infiniteScrollingQueue.removeLast();
-        } else if (contentPanel.getComponentCount() > 0) {
+        if (contentPanel.getComponentCount() > 0) {
+            entries.remove(entries.size() - 1);
             contentPanel.remove(contentPanel.getComponentCount() - 1);
             --numRows;
         }
@@ -357,12 +365,16 @@ public class FormPanel extends JXPanel {
      * Removes all components
      */
     public void clear() {
-        infiniteScrollingQueue.clear();
+        entries.clear();
         contentPanel.removeAll();
         numRows = 0;
         hasVerticalGlue = false;
         revalidate();
         repaint();
+    }
+
+    public List<FormPanelEntry> getEntries() {
+        return Collections.unmodifiableList(entries);
     }
 
     public MarkdownReader getParameterHelp() {
@@ -383,7 +395,7 @@ public class FormPanel extends JXPanel {
         contentPanel.add(component, new GridBagConstraints() {
             {
                 anchor = GridBagConstraints.WEST;
-                gridx = 0;
+                gridx = COLUMN_LABEL_OR_WIDE_CONTENT;
                 gridy = numRows;
                 fill = GridBagConstraints.BOTH;
                 gridwidth = 2;
@@ -392,9 +404,47 @@ public class FormPanel extends JXPanel {
                 insets = UI_PADDING;
             }
         });
-        documentComponent(component, document);
+        Component propertiesComponent = createAndAddEntryPropertiesComponent(component, null, numRows, document);
+        entries.add(new FormPanelEntry(numRows, null, component, propertiesComponent, true));
         ++numRows;
         hasVerticalGlue = true;
+    }
+
+    public static class FormPanelEntry {
+
+        private final int row;
+        private final Component label;
+        private final Component content;
+        private final Component properties;
+        private final boolean wide;
+
+        public FormPanelEntry(int row, Component label, Component content, Component properties, boolean wide) {
+            this.row = row;
+            this.label = label;
+            this.content = content;
+            this.properties = properties;
+            this.wide = wide;
+        }
+
+        public int getRow() {
+            return row;
+        }
+
+        public Component getLabel() {
+            return label;
+        }
+
+        public Component getContent() {
+            return content;
+        }
+
+        public Component getProperties() {
+            return properties;
+        }
+
+        public boolean isWide() {
+            return wide;
+        }
     }
 
     /**
@@ -402,7 +452,7 @@ public class FormPanel extends JXPanel {
      */
     public static class GroupHeaderPanel extends JPanel {
         private final JLabel titleLabel;
-        private JTextPane descriptionArea;
+        private final JTextPane descriptionArea;
         private int columnCount = 0;
 
         /**
@@ -491,74 +541,6 @@ public class FormPanel extends JXPanel {
         public void setDescription(String description) {
             descriptionArea.setText(description);
             descriptionArea.setVisible(!StringUtils.isNullOrEmpty(description));
-        }
-    }
-
-    /**
-     * Mouse handler to target specific components
-     */
-    private static class ComponentDocumentationHandler implements AWTEventListener {
-
-        private final WeakReference<FormPanel> formPanel;
-        private final WeakReference<Component> target;
-        private final MarkdownDocument componentDocument;
-
-        private ComponentDocumentationHandler(FormPanel formPanel, Component component, MarkdownDocument componentDocument) {
-            this.formPanel = new WeakReference<>(formPanel);
-            this.target = new WeakReference<>(component);
-            this.componentDocument = componentDocument;
-        }
-
-        @Override
-        public void eventDispatched(AWTEvent event) {
-            Component component = target.get();
-            FormPanel panel = formPanel.get();
-            if (component == null || panel == null) {
-                Toolkit.getDefaultToolkit().removeAWTEventListener(this);
-                return;
-            }
-            if (!component.isDisplayable()) {
-                return;
-            }
-            if (!component.isVisible()) {
-                return;
-            }
-            if (event instanceof MouseEvent) {
-                MouseEvent mouseEvent = (MouseEvent) event;
-                if (((MouseEvent) event).getComponent() == component || SwingUtilities.isDescendingFrom(mouseEvent.getComponent(), component)) {
-                    try {
-                        Point componentLocation = component.getLocationOnScreen();
-                        boolean isInComponent = mouseEvent.getXOnScreen() >= componentLocation.x &&
-                                mouseEvent.getYOnScreen() >= componentLocation.y &&
-                                mouseEvent.getXOnScreen() < (component.getWidth() + componentLocation.x) &&
-                                mouseEvent.getYOnScreen() < (component.getHeight() + componentLocation.y);
-                        if (isInComponent && panel.parameterHelp.getTemporaryDocument() != componentDocument) {
-                            panel.parameterHelp.setTemporaryDocument(componentDocument);
-                            panel.getEventBus().post(new HoverHelpEvent(componentDocument));
-                            panel.updateParameterHelpDrillDown();
-                        }
-                    } catch (IllegalComponentStateException e) {
-                        // Workaround for Java bug
-                        Toolkit.getDefaultToolkit().removeAWTEventListener(this);
-                    }
-                }
-            }
-        }
-    }
-
-    public static class FutureComponent {
-        private final Component label;
-        private final GridBagConstraints labelPosition;
-        private final Component content;
-        private final GridBagConstraints contentPosition;
-        private final boolean wide;
-
-        public FutureComponent(Component label, GridBagConstraints labelPosition, Component content, GridBagConstraints contentPosition, boolean wide) {
-            this.label = label;
-            this.labelPosition = labelPosition;
-            this.content = content;
-            this.contentPosition = contentPosition;
-            this.wide = wide;
         }
     }
 
