@@ -160,7 +160,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("tables-from-expression", GenerateTableFromExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("define-tables", DefineTablesAlgorithm.class, UIUtils.getIconURLFromResources("data-types/results-table.png"));
         registerNodeType("table-rename-columns-expression", ModifyTableColumnNamesAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
-        registerNodeType("table-merge-columns", MergeTableColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("table-merge-columns", MergeTableColumnsSimpleAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("table-annotate-by-merged-columns", ColumnsToAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("data-types/results-table.png"));
         registerNodeType("table-column-to-string", ColumnToStringAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-column-to-numeric", ColumnToNumericAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
