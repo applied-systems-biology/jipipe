@@ -30,7 +30,7 @@ import java.util.*;
 /**
  * A table model that displays data batches
  */
-public class SimpleDataBatchTableModel implements TableModel {
+public class JIPipeSimpleDataBatchTableModel implements TableModel {
 
     private final List<JIPipeMergingDataBatch> dataBatchList;
     private final List<String> inputSlotNames = new ArrayList<>();
@@ -40,7 +40,7 @@ public class SimpleDataBatchTableModel implements TableModel {
     private final JTable table;
     private JScrollPane scrollPane;
 
-    public SimpleDataBatchTableModel(JTable table, List<JIPipeMergingDataBatch> dataBatchList) {
+    public JIPipeSimpleDataBatchTableModel(JTable table, List<JIPipeMergingDataBatch> dataBatchList) {
         this.table = table;
         this.dataBatchList = dataBatchList;
 

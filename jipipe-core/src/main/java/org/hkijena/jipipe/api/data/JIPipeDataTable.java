@@ -17,7 +17,7 @@ import org.hkijena.jipipe.extensions.parameters.library.pairs.IntegerAndIntegerP
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeExtendedDataTableInfoUI;
+import org.hkijena.jipipe.ui.datatable.JIPipeExtendedDataTableUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -1145,7 +1145,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        JIPipeExtendedDataTableInfoUI tableUI = new JIPipeExtendedDataTableInfoUI(workbench, this, true);
+        JIPipeExtendedDataTableUI tableUI = new JIPipeExtendedDataTableUI(workbench, this, true);
         JFrame frame = new JFrame(displayName);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());

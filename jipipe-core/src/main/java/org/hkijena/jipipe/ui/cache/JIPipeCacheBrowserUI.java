@@ -23,6 +23,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.datatable.JIPipeExtendedDataTableUI;
+import org.hkijena.jipipe.ui.datatable.JIPipeExtendedMultiDataTableUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -132,13 +134,13 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void showDataSlots(List<JIPipeDataSlot> slots) {
-        JIPipeExtendedMultiDataTableInfoUI ui = new JIPipeExtendedMultiDataTableInfoUI(getProjectWorkbench(), slots, true);
+        JIPipeExtendedMultiDataTableUI ui = new JIPipeExtendedMultiDataTableUI(getProjectWorkbench(), slots, true);
         splitPane.setRightComponent(ui);
         revalidate();
     }
 
     private void showDataSlot(JIPipeDataSlot dataSlot) {
-        JIPipeExtendedDataTableInfoUI ui = new JIPipeExtendedDataTableInfoUI(getProjectWorkbench(), dataSlot, true);
+        JIPipeExtendedDataTableUI ui = new JIPipeExtendedDataTableUI(getProjectWorkbench(), dataSlot, true);
         splitPane.setRightComponent(ui);
         revalidate();
     }

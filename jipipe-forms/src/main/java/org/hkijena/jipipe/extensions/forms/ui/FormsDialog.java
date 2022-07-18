@@ -11,7 +11,7 @@ import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.ParameterFormData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.batchassistant.DataBatchBrowserUI;
-import org.hkijena.jipipe.ui.datatable.SimpleDataBatchTableUI;
+import org.hkijena.jipipe.ui.datatable.JIPipeSimpleDataBatchTableUI;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
@@ -36,7 +36,7 @@ public class FormsDialog extends JFrame {
     private final List<JIPipeDataSlot> dataBatchForms = new ArrayList<>();
     private final JIPipeDataSlot originalForms;
     private boolean cancelled = false;
-    private SimpleDataBatchTableUI dataBatchTableUI;
+    private JIPipeSimpleDataBatchTableUI dataBatchTableUI;
     private DocumentTabPane tabPane = new DocumentTabPane();
     private String lastTab = "";
     private List<DataBatchStatus> dataBatchStatuses = new ArrayList<>();
@@ -153,7 +153,7 @@ public class FormsDialog extends JFrame {
     private void initialize() {
         JPanel contentPanel = new JPanel(new BorderLayout());
 
-        dataBatchTableUI = new SimpleDataBatchTableUI(dataBatchList);
+        dataBatchTableUI = new JIPipeSimpleDataBatchTableUI(dataBatchList);
         dataBatchTableUI.getTable().setDefaultRenderer(Integer.class, new DataBatchStatusTableCellRenderer(dataBatchStatuses));
         dataBatchTableUI.getTable().setDefaultRenderer(String.class, new DataBatchStatusTableCellRenderer(dataBatchStatuses));
         JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, dataBatchTableUI, tabPane, AutoResizeSplitPane.RATIO_1_TO_3);

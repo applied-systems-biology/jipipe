@@ -9,9 +9,10 @@
  *
  * The project code is licensed under BSD 2-Clause.
  * See the LICENSE file provided with the code for the full license.
+ *
  */
 
-package org.hkijena.jipipe.ui.cache;
+package org.hkijena.jipipe.ui.datatable;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
@@ -35,6 +36,11 @@ import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
+import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
+import org.hkijena.jipipe.ui.cache.JIPipeDataTableRowUI;
+import org.hkijena.jipipe.ui.cache.JIPipeDataTableToFilesByMetadataExporterRun;
+import org.hkijena.jipipe.ui.cache.JIPipeDataTableToOutputExporterRun;
+import org.hkijena.jipipe.ui.cache.JIPipeDataTableToZIPExporterRun;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PreviewControlUI;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeComponentCellRenderer;
@@ -69,11 +75,11 @@ import java.util.stream.Collectors;
 /**
  * Displays multiple {@link JIPipeDataTable} in one table.
  */
-public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
+public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
 
     private final List<? extends JIPipeDataTable> dataTables;
     private final boolean withCompartmentAndAlgorithm;
-    private JIPipeExtendedMultiDataTableInfoModel multiSlotTable;
+    private JIPipeExtendedMultiDataTableModel multiSlotTable;
     private JXTable table;
     private FormPanel rowUIList;
     private SearchTextField searchTextField = new SearchTextField();
@@ -83,12 +89,12 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
      * @param dataTables                  The slots
      * @param withCompartmentAndAlgorithm if the compartment and algorithm are included as columns
      */
-    public JIPipeExtendedMultiDataTableInfoUI(JIPipeWorkbench workbenchUI, List<? extends JIPipeDataTable> dataTables, boolean withCompartmentAndAlgorithm) {
+    public JIPipeExtendedMultiDataTableUI(JIPipeWorkbench workbenchUI, List<? extends JIPipeDataTable> dataTables, boolean withCompartmentAndAlgorithm) {
         super(workbenchUI);
         this.dataTables = dataTables;
         this.withCompartmentAndAlgorithm = withCompartmentAndAlgorithm;
         table = new JXTable();
-        this.multiSlotTable = new JIPipeExtendedMultiDataTableInfoModel(table, withCompartmentAndAlgorithm);
+        this.multiSlotTable = new JIPipeExtendedMultiDataTableModel(table, withCompartmentAndAlgorithm);
         JIPipeProject project = null;
         if (getWorkbench() instanceof JIPipeProjectWorkbench) {
             project = ((JIPipeProjectWorkbench) getWorkbench()).getProject();
@@ -266,7 +272,7 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
         }
         getWorkbench().getDocumentTabPane().addTab(name,
                 UIUtils.getIconFromResources("data-types/data-table.png"),
-                new JIPipeExtendedDataTableInfoUI(getWorkbench(), copy, true),
+                new JIPipeExtendedDataTableUI(getWorkbench(), copy, true),
                 DocumentTabPane.CloseMode.withSilentCloseButton,
                 true);
         getWorkbench().getDocumentTabPane().switchToLastTab();
@@ -276,7 +282,7 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
         String name = "Cache: " + dataTables.stream().map(slot -> slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "")).distinct().collect(Collectors.joining(", "));
         getWorkbench().getDocumentTabPane().addTab(name,
                 UIUtils.getIconFromResources("actions/database.png"),
-                new JIPipeExtendedMultiDataTableInfoUI(getWorkbench(), dataTables, withCompartmentAndAlgorithm),
+                new JIPipeExtendedMultiDataTableUI(getWorkbench(), dataTables, withCompartmentAndAlgorithm),
                 DocumentTabPane.CloseMode.withSilentCloseButton,
                 true);
         getWorkbench().getDocumentTabPane().switchToLastTab();
@@ -439,20 +445,20 @@ public class JIPipeExtendedMultiDataTableInfoUI extends JIPipeWorkbenchPanel {
      * Renders the column header
      */
     public static class MultiDataSlotTableColumnRenderer implements TableCellRenderer {
-        private final JIPipeExtendedMultiDataTableInfoModel dataTable;
+        private final JIPipeExtendedMultiDataTableModel dataTable;
 
         /**
          * Creates a new instance
          *
          * @param dataTable The table
          */
-        public MultiDataSlotTableColumnRenderer(JIPipeExtendedMultiDataTableInfoModel dataTable) {
+        public MultiDataSlotTableColumnRenderer(JIPipeExtendedMultiDataTableModel dataTable) {
             this.dataTable = dataTable;
         }
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            JIPipeExtendedMultiDataTableInfoModel model = (JIPipeExtendedMultiDataTableInfoModel) table.getModel();
+            JIPipeExtendedMultiDataTableModel model = (JIPipeExtendedMultiDataTableModel) table.getModel();
             TableCellRenderer defaultRenderer = table.getTableHeader().getDefaultRenderer();
             int modelColumn = table.convertColumnIndexToModel(column);
             int spacer = model.isWithCompartmentAndAlgorithm() ? 7 : 5;

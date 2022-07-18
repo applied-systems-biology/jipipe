@@ -9,15 +9,17 @@
  *
  * The project code is licensed under BSD 2-Clause.
  * See the LICENSE file provided with the code for the full license.
+ *
  */
 
-package org.hkijena.jipipe.ui.cache;
+package org.hkijena.jipipe.ui.datatable;
 
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.ui.cache.JIPipeCachedDataPreview;
 
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
@@ -32,7 +34,7 @@ import java.util.Map;
  * Wraps around a {@link org.hkijena.jipipe.api.data.JIPipeDataTable} to display additional columns.
  * For example, it is capable of displaying previews.
  */
-public class JIPipeExtendedDataTableInfoModel implements TableModel {
+public class JIPipeExtendedDataTableModel implements TableModel {
 
     private final JTable table;
     private final JIPipeDataTable dataTable;
@@ -48,7 +50,7 @@ public class JIPipeExtendedDataTableInfoModel implements TableModel {
      * @param table     the table
      * @param dataTable the wrapped slot
      */
-    public JIPipeExtendedDataTableInfoModel(JTable table, JIPipeDataTable dataTable) {
+    public JIPipeExtendedDataTableModel(JTable table, JIPipeDataTable dataTable) {
         this.table = table;
         this.dataTable = dataTable;
         for (int i = 0; i < dataTable.getRowCount(); i++) {

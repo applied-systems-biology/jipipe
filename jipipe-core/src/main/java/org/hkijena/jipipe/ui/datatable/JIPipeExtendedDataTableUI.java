@@ -9,9 +9,10 @@
  *
  * The project code is licensed under BSD 2-Clause.
  * See the LICENSE file provided with the code for the full license.
+ *
  */
 
-package org.hkijena.jipipe.ui.cache;
+package org.hkijena.jipipe.ui.datatable;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
@@ -31,6 +32,11 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
+import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
+import org.hkijena.jipipe.ui.cache.JIPipeDataTableRowUI;
+import org.hkijena.jipipe.ui.cache.JIPipeDataTableToFilesByMetadataExporterRun;
+import org.hkijena.jipipe.ui.cache.JIPipeDataTableToOutputExporterRun;
+import org.hkijena.jipipe.ui.cache.JIPipeDataTableToZIPExporterRun;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.PreviewControlUI;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeComponentCellRenderer;
@@ -62,14 +68,14 @@ import java.util.Set;
 /**
  * UI that displays a {@link JIPipeDataTable} that is cached
  */
-public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
+public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
 
     private final boolean updateWithCache;
     private final SearchTextField searchTextField = new SearchTextField();
     private JIPipeDataTable dataTable;
     private JXTable table;
     private FormPanel rowUIList;
-    private JIPipeExtendedDataTableInfoModel dataTableModel;
+    private JIPipeExtendedDataTableModel dataTableModel;
     private JScrollPane scrollPane;
 
     /**
@@ -77,7 +83,7 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
      * @param dataTable       The slot
      * @param updateWithCache if the table should refresh on project cache changes
      */
-    public JIPipeExtendedDataTableInfoUI(JIPipeWorkbench workbenchUI, JIPipeDataTable dataTable, boolean updateWithCache) {
+    public JIPipeExtendedDataTableUI(JIPipeWorkbench workbenchUI, JIPipeDataTable dataTable, boolean updateWithCache) {
         super(workbenchUI);
         this.dataTable = dataTable;
         this.updateWithCache = updateWithCache;
@@ -109,7 +115,7 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
     }
 
     private void reloadTable() {
-        dataTableModel = new JIPipeExtendedDataTableInfoModel(table, dataTable);
+        dataTableModel = new JIPipeExtendedDataTableModel(table, dataTable);
         table.setModel(dataTableModel);
         dataTableModel.setScrollPane(scrollPane);
         if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
@@ -255,7 +261,7 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
         }
         getWorkbench().getDocumentTabPane().addTab(name,
                 UIUtils.getIconFromResources("data-types/data-table.png"),
-                new JIPipeExtendedDataTableInfoUI(getWorkbench(), copy, true),
+                new JIPipeExtendedDataTableUI(getWorkbench(), copy, true),
                 DocumentTabPane.CloseMode.withSilentCloseButton,
                 true);
         getWorkbench().getDocumentTabPane().switchToLastTab();
@@ -265,7 +271,7 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
         String name = "Cache: " + getDataTable().getDisplayName();
         getWorkbench().getDocumentTabPane().addTab(name,
                 UIUtils.getIconFromResources("actions/database.png"),
-                new JIPipeExtendedDataTableInfoUI(getWorkbench(), getDataTable(), true),
+                new JIPipeExtendedDataTableUI(getWorkbench(), getDataTable(), true),
                 DocumentTabPane.CloseMode.withSilentCloseButton,
                 true);
         getWorkbench().getDocumentTabPane().switchToLastTab();
@@ -398,7 +404,7 @@ public class JIPipeExtendedDataTableInfoUI extends JIPipeWorkbenchPanel {
 
 
     /**
-     * Renders the column header of {@link JIPipeExtendedDataTableInfoModel}
+     * Renders the column header of {@link JIPipeExtendedDataTableModel}
      */
     public static class WrapperColumnHeaderRenderer implements TableCellRenderer {
         private final JIPipeDataTable dataTable;

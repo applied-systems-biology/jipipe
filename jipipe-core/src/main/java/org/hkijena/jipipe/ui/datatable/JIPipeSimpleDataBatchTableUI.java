@@ -34,14 +34,14 @@ import java.util.List;
 /**
  * Panel that displays a data batch table
  */
-public class SimpleDataBatchTableUI extends JPanel {
+public class JIPipeSimpleDataBatchTableUI extends JPanel {
     private final List<JIPipeMergingDataBatch> dataBatchList;
     private JXTable table;
     private JScrollPane scrollPane;
     private SearchTextField searchTextField;
-    private SimpleDataBatchTableModel dataTable;
+    private JIPipeSimpleDataBatchTableModel dataTable;
 
-    public SimpleDataBatchTableUI(List<JIPipeMergingDataBatch> dataBatchList) {
+    public JIPipeSimpleDataBatchTableUI(List<JIPipeMergingDataBatch> dataBatchList) {
         this.dataBatchList = dataBatchList;
         initialize();
         reloadTable();
@@ -59,7 +59,7 @@ public class SimpleDataBatchTableUI extends JPanel {
         return dataBatchList;
     }
 
-    public SimpleDataBatchTableModel getDataTable() {
+    public JIPipeSimpleDataBatchTableModel getDataTable() {
         return dataTable;
     }
 
@@ -102,7 +102,7 @@ public class SimpleDataBatchTableUI extends JPanel {
     }
 
     private void reloadTable() {
-        dataTable = new SimpleDataBatchTableModel(table, dataBatchList);
+        dataTable = new JIPipeSimpleDataBatchTableModel(table, dataBatchList);
         table.setModel(dataTable);
         dataTable.setScrollPane(scrollPane);
         if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
