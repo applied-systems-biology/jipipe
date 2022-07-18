@@ -58,9 +58,9 @@ public class MissingProjectDependenciesDialog extends JDialog {
         this.dependencySet = dependencySet;
         this.missingUpdateSites = missingUpdateSites;
 
+        pluginManager = new JIPipeModernPluginManager(this, messagePanel);
         initialize();
 
-        pluginManager = new JIPipeModernPluginManager(this, messagePanel);
         pluginManager.getEventBus().register(this);
         pluginManager.initializeUpdateSites();
     }

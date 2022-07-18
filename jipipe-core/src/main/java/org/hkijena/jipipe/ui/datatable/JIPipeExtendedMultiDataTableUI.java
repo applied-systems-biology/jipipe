@@ -53,6 +53,7 @@ import org.hkijena.jipipe.ui.resultanalysis.JIPipeNodeTableCellRenderer;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeProjectCompartmentTableCellRenderer;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
+import org.hkijena.jipipe.utils.MenuManager;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -80,9 +81,11 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
     private final List<? extends JIPipeDataTable> dataTables;
     private final boolean withCompartmentAndAlgorithm;
     private JIPipeExtendedMultiDataTableModel multiSlotTable;
-    private JXTable table;
+    private final JXTable table;
     private FormPanel rowUIList;
-    private SearchTextField searchTextField = new SearchTextField();
+    private final SearchTextField searchTextField = new SearchTextField();
+
+    private final MenuManager menuManager = new MenuManager();
 
     /**
      * @param workbenchUI                 the workbench UI
@@ -179,20 +182,51 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
         add(rowUIList, BorderLayout.SOUTH);
 
         // Toolbar for searching and export
-        JToolBar toolBar = new JToolBar();
-        add(toolBar, BorderLayout.NORTH);
-        toolBar.setFloatable(false);
+        add(menuManager.getMenuBar(), BorderLayout.NORTH);
 
         searchTextField.addActionListener(e -> reloadTable());
         searchTextField.addButton("Open expression editor",
                 UIUtils.getIconFromResources("actions/insert-math-expression.png"),
                 this::openSearchExpressionEditor);
-        toolBar.add(searchTextField);
+        menuManager.add(searchTextField);
 
-        // Export menu
-        JButton exportButton = new JButton("Export table", UIUtils.getIconFromResources("actions/document-export.png"));
-        toolBar.add(exportButton);
-        JPopupMenu exportMenu = UIUtils.addPopupMenuToComponent(exportButton);
+        initializeViewMenu();
+        initializeExportMenu();
+
+        PreviewControlUI previewControlUI = new PreviewControlUI();
+        menuManager.add(previewControlUI);
+    }
+
+    private void initializeViewMenu() {
+        JMenu viewMenu = menuManager.getOrCreateMenu("View");
+
+        JMenuItem autoSizeFitItem = new JMenuItem("Make columns fit contents", UIUtils.getIconFromResources("actions/zoom-fit-width.png"));
+        autoSizeFitItem.setToolTipText("Auto-size columns to fit their contents");
+        autoSizeFitItem.addActionListener(e -> table.packAll());
+        viewMenu.add(autoSizeFitItem);
+
+        JMenuItem autoSizeSmallItem = new JMenuItem("Compact columns", UIUtils.getIconFromResources("actions/zoom-best-fit.png"));
+        autoSizeSmallItem.setToolTipText("Auto-size columns to the default size");
+        autoSizeSmallItem.addActionListener(e -> UIUtils.packDataTable(table));
+        viewMenu.add(autoSizeSmallItem);
+
+        viewMenu.addSeparator();
+
+        JMenuItem openReferenceWindowItem = new JMenuItem("Open in new tab", UIUtils.getIconFromResources("actions/tab.png"));
+        openReferenceWindowItem.addActionListener(e -> {
+            openTableInNewTab();
+        });
+        viewMenu.add(openReferenceWindowItem);
+
+        JMenuItem openFilteredWindowItem = new JMenuItem("Apply filter", UIUtils.getIconFromResources("actions/filter.png"));
+        openFilteredWindowItem.addActionListener(e -> {
+            openFilteredTableInNewTab();
+        });
+        viewMenu.add(openFilteredWindowItem);
+    }
+
+    private void initializeExportMenu() {
+        JMenu exportMenu = menuManager.getOrCreateMenu("Export");
 
         JMenuItem exportAsTableItem = new JMenuItem("Metadata as table", UIUtils.getIconFromResources("actions/link.png"));
         exportAsTableItem.addActionListener(e -> exportAsTable());
@@ -213,41 +247,6 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
         JMenuItem exportByMetadataExporterItem = new JMenuItem("Data as files", UIUtils.getIconFromResources("actions/save.png"));
         exportByMetadataExporterItem.addActionListener(e -> exportByMetadataExporter());
         exportMenu.add(exportByMetadataExporterItem);
-
-        // Window menu
-        JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/window_new.png"));
-        openWindowButton.setToolTipText("Open in new window/tab");
-        toolBar.add(openWindowButton);
-        JPopupMenu windowMenu = UIUtils.addPopupMenuToComponent(openWindowButton);
-
-        JMenuItem openReferenceWindowItem = new JMenuItem("Open in new tab", UIUtils.getIconFromResources("actions/tab.png"));
-        openReferenceWindowItem.addActionListener(e -> {
-            openTableInNewTab();
-        });
-        windowMenu.add(openReferenceWindowItem);
-
-        JMenuItem openFilteredWindowItem = new JMenuItem("Apply filter", UIUtils.getIconFromResources("actions/filter.png"));
-        openFilteredWindowItem.addActionListener(e -> {
-            openFilteredTableInNewTab();
-        });
-        windowMenu.add(openFilteredWindowItem);
-
-
-        // Size controls
-        JButton autoSizeButton = new JButton(UIUtils.getIconFromResources("actions/zoom-fit-width.png"));
-        autoSizeButton.setToolTipText("Auto-size columns to fit their contents");
-        autoSizeButton.addActionListener(e -> table.packAll());
-        toolBar.add(autoSizeButton);
-
-        JButton smallSizeButton = new JButton(UIUtils.getIconFromResources("actions/zoom-best-fit.png"));
-        smallSizeButton.setToolTipText("Auto-size columns to the default size");
-        smallSizeButton.addActionListener(e -> UIUtils.packDataTable(table));
-        toolBar.add(smallSizeButton);
-
-        toolBar.addSeparator();
-
-        PreviewControlUI previewControlUI = new PreviewControlUI();
-        toolBar.add(previewControlUI);
     }
 
     private void openFilteredTableInNewTab() {
