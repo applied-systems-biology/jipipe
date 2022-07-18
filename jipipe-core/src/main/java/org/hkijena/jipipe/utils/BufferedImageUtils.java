@@ -28,7 +28,7 @@ public class BufferedImageUtils {
             scale = Math.min(1.0 * maxHeight / image.getHeight(), scale);
         }
         if (scale != 1.0) {
-            Image scaledInstance = image.getScaledInstance((int) (image.getWidth() * scale), (int) (image.getHeight() * scale), Image.SCALE_SMOOTH);
+            Image scaledInstance = image.getScaledInstance((int) Math.max(1, image.getWidth() * scale), (int) Math.max(1, image.getHeight() * scale), Image.SCALE_SMOOTH);
             image = toBufferedImage(scaledInstance, BufferedImage.TYPE_INT_ARGB);
         }
         return image;

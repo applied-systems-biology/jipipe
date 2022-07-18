@@ -35,6 +35,7 @@ import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.MenuManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -52,10 +53,11 @@ import java.util.*;
  */
 public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     private final JIPipeGraphNode graphNode;
-    private final JToolBar toolBar = new JToolBar();
-    private JSplitPane splitPane;
-    private JIPipeAlgorithmCacheTree tree;
-    private JIPipeGraphCanvasUI graphCanvasUI;
+    private final JIPipeGraphCanvasUI graphCanvasUI;
+
+    private Component currentContent;
+
+    private final JIPipeAlgorithmCacheBrowserOutputSelectorUI selectorUI;
 
     /**
      * @param workbenchUI   the workbench
@@ -66,123 +68,116 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         super(workbenchUI);
         this.graphNode = graphNode;
         this.graphCanvasUI = graphCanvasUI;
+        this.selectorUI = new JIPipeAlgorithmCacheBrowserOutputSelectorUI(graphNode);
         initialize();
-        showCurrentlySelectedNode();
 
         getProject().getCache().getEventBus().register(this);
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        selectorUI.getEventBus().register(this);
+
+        // Selects all outputs
+        selectorUI.selectOutput(JIPipeAlgorithmCacheBrowserOutputSelectorUI.SELECT_ALL_OUTPUTS);
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
-        tree = new JIPipeAlgorithmCacheTree(getProjectWorkbench(), graphNode);
-
-        splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, tree,
-                new JPanel(), AutoResizeSplitPane.RATIO_1_TO_3);
-        add(splitPane, BorderLayout.CENTER);
-
-        tree.getTree().addTreeSelectionListener(e -> showCurrentlySelectedNode());
-
-        initializeToolbar();
-    }
-
-    private void showCurrentlySelectedNode() {
-        Object lastPathComponent = tree.getTree().getLastSelectedPathComponent();
-        if (lastPathComponent instanceof DefaultMutableTreeNode) {
-            Object userObject = ((DefaultMutableTreeNode) lastPathComponent).getUserObject();
-            if (userObject instanceof JIPipeDataSlot) {
-                showDataSlot((JIPipeDataSlot) userObject);
-            } else if (userObject instanceof JIPipeGraphNode) {
-                showDataSlotsOfAlgorithm((JIPipeGraphNode) userObject);
-            } else if (userObject instanceof JIPipeProjectCacheState) {
-                showDataSlotsOfState((JIPipeProjectCacheState) userObject);
-            } else {
-                showAllDataSlots();
-            }
-        }
-    }
-
-    private void showDataSlotsOfState(JIPipeProjectCacheState state) {
-        List<JIPipeDataSlot> result = new ArrayList<>();
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode.getUUIDInParentGraph());
-        if (stateMap != null) {
-            Map<String, JIPipeDataSlot> slotMap = stateMap.getOrDefault(state, null);
-            if (slotMap != null) {
-                result.addAll(slotMap.values());
-            }
-        }
-        showDataSlots(result);
+        selectorUI.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(0,0,1, 0, UIManager.getColor("TabbedPane.darkShadow")),
+                BorderFactory.createEmptyBorder(8,2,8,2)));
+        add(selectorUI, BorderLayout.NORTH);
     }
 
     private void showAllDataSlots() {
-        List<JIPipeDataSlot> result = new ArrayList<>();
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode.getUUIDInParentGraph());
-        if (stateMap != null) {
-            for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
-                result.addAll(stateEntry.getValue().values());
-            }
+        JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(getProject());
+        Map<String, JIPipeDataSlot> cachedData = query.getCachedData(graphNode);
+        if(cachedData.size() == 1) {
+            JIPipeDataSlot first = cachedData.values().iterator().next();
+            showDataSlot(first);
         }
-        showDataSlots(result);
+        else {
+            showDataSlots(new ArrayList<>(cachedData.values()));
+        }
     }
 
-    private void showDataSlotsOfAlgorithm(JIPipeGraphNode algorithm) {
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(algorithm.getUUIDInParentGraph());
-        if (stateMap != null) {
-            List<JIPipeDataSlot> result = new ArrayList<>();
-            for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
-                result.addAll(stateEntry.getValue().values());
-            }
-            showDataSlots(result);
+    private void showDataSlot(String name) {
+        JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(getProject());
+        Map<String, JIPipeDataSlot> cachedData = query.getCachedData(graphNode);
+        if(cachedData.containsKey(name)) {
+            showDataSlot(cachedData.get(name));
+        }
+        else {
+            showDataSlots(Collections.emptyList());
         }
     }
 
     private void showDataSlots(List<JIPipeDataSlot> slots) {
+        if(currentContent != null) {
+            remove(currentContent);
+        }
         JIPipeExtendedMultiDataTableUI ui = new JIPipeExtendedMultiDataTableUI(getProjectWorkbench(), slots, false);
-        splitPane.setRightComponent(ui);
+        initializeTableMenu(ui.getMenuManager());
+        add(ui, BorderLayout.CENTER);
+        currentContent = ui;
         revalidate();
+    }
+
+    private void initializeTableMenu(MenuManager menuManager) {
+
+        {
+            JButton cacheIntermediateResultsButton = new JButton(UIUtils.getIconFromResources("actions/cache-intermediate-results.png"));
+            cacheIntermediateResultsButton.setToolTipText("Cache intermediate results");
+            cacheIntermediateResultsButton.addActionListener(e -> updateCache(true));
+            menuManager.addFirst(cacheIntermediateResultsButton);
+
+            JButton updateCacheButton = new JButton("Update cache", UIUtils.getIconFromResources("actions/database.png"));
+            updateCacheButton.addActionListener(e -> updateCache(false));
+            menuManager.addFirst(updateCacheButton);
+        }
+        {
+            JMenu cacheMenu = menuManager.getOrCreateMenu("Cache");
+
+            JMenuItem updateCacheItem = new JMenuItem("Update cache", UIUtils.getIconFromResources("actions/database.png"));
+            updateCacheItem.addActionListener(e -> updateCache(false));
+            cacheMenu.add(updateCacheItem);
+
+            JMenuItem cacheIntermediateResultsItem = new JMenuItem("Cache intermediate results", UIUtils.getIconFromResources("actions/cache-intermediate-results.png"));
+            cacheIntermediateResultsItem.addActionListener(e -> updateCache(true));
+            cacheMenu.add(cacheIntermediateResultsItem);
+
+            JMenuItem clearOutdatedButton = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("actions/clear-brush.png"));
+            clearOutdatedButton.addActionListener(e -> getProject().getCache().autoClean(false, true, new JIPipeProgressInfo()));
+            cacheMenu.add(clearOutdatedButton);
+
+            JMenuItem clearAllButton = new JMenuItem("Clear all", UIUtils.getIconFromResources("actions/clear-brush.png"));
+            clearAllButton.addActionListener(e -> getProject().getCache().clear(this.graphNode.getUUIDInParentGraph()));
+            cacheMenu.add(clearAllButton);
+        }
+        {
+            JMenu exportMenu = menuManager.getOrCreateMenu("Export");
+            exportMenu.setText("Import/Export");
+
+            exportMenu.addSeparator();
+
+            JMenuItem importButton = new JMenuItem("Import cache", UIUtils.getIconFromResources("actions/document-import.png"));
+            importButton.setToolTipText("Imports cached data from a folder");
+            importButton.addActionListener(e -> importCache());
+            exportMenu.add(importButton);
+
+            JMenuItem exportButton = new JMenuItem("Export cache", UIUtils.getIconFromResources("actions/document-export.png"));
+            exportButton.setToolTipText("Exports cached data to a folder");
+            exportButton.addActionListener(e -> exportCache());
+            exportMenu.add(exportButton);
+        }
     }
 
     private void showDataSlot(JIPipeDataSlot dataSlot) {
+        if(currentContent != null) {
+            remove(currentContent);
+        }
         JIPipeExtendedDataTableUI ui = new JIPipeExtendedDataTableUI(getProjectWorkbench(), dataSlot, true);
-        splitPane.setRightComponent(ui);
+        initializeTableMenu(ui.getMenuManager());
+        add(ui, BorderLayout.CENTER);
+        currentContent = ui;
         revalidate();
-    }
-
-    private void initializeToolbar() {
-        toolBar.setFloatable(false);
-
-        JButton updateCacheButton = new JButton("Update cache", UIUtils.getIconFromResources("actions/database.png"));
-        updateCacheButton.addActionListener(e -> updateCache(false));
-        toolBar.add(updateCacheButton);
-
-        JButton cacheIntermediateResultsButton = new JButton(UIUtils.getIconFromResources("actions/cache-intermediate-results.png"));
-        cacheIntermediateResultsButton.setToolTipText("Cache intermediate results");
-        cacheIntermediateResultsButton.addActionListener(e -> updateCache(true));
-        toolBar.add(cacheIntermediateResultsButton);
-
-        toolBar.add(Box.createHorizontalStrut(8));
-
-        JButton clearOutdatedButton = new JButton("Clear outdated", UIUtils.getIconFromResources("actions/clear-brush.png"));
-        clearOutdatedButton.addActionListener(e -> getProject().getCache().autoClean(false, true, new JIPipeProgressInfo()));
-        toolBar.add(clearOutdatedButton);
-
-        JButton clearAllButton = new JButton("Clear all", UIUtils.getIconFromResources("actions/clear-brush.png"));
-        clearAllButton.addActionListener(e -> getProject().getCache().clear(this.graphNode.getUUIDInParentGraph()));
-        toolBar.add(clearAllButton);
-
-        toolBar.add(Box.createHorizontalGlue());
-
-        JButton importButton = new JButton("Import cache", UIUtils.getIconFromResources("actions/document-import.png"));
-        importButton.setToolTipText("Imports cached data from a folder");
-        importButton.addActionListener(e -> importCache());
-        toolBar.add(importButton);
-
-        JButton exportButton = new JButton("Export cache", UIUtils.getIconFromResources("actions/document-export.png"));
-        exportButton.setToolTipText("Exports cached data to a folder");
-        exportButton.addActionListener(e -> exportCache());
-        toolBar.add(exportButton);
-
-        add(toolBar, BorderLayout.NORTH);
     }
 
     private void updateCache(boolean storeIntermediateResults) {
@@ -204,30 +199,12 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void exportCache() {
-        Object lastPathComponent = tree.getTree().getLastSelectedPathComponent();
         Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode.getUUIDInParentGraph());
         if (stateMap.isEmpty()) {
             JOptionPane.showMessageDialog(this, "There is no cached data to export!", "Export cache", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        JIPipeProjectCacheState exportedState = null;
-        if (lastPathComponent instanceof DefaultMutableTreeNode) {
-            Object userObject = ((DefaultMutableTreeNode) lastPathComponent).getUserObject();
-            if (userObject instanceof JIPipeDataSlot) {
-                for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMapEntry : stateMap.entrySet()) {
-                    if (stateMapEntry.getValue().containsValue(userObject)) {
-                        exportedState = stateMapEntry.getKey();
-                        break;
-                    }
-                }
-            } else if (userObject instanceof JIPipeProjectCacheState) {
-                exportedState = (JIPipeProjectCacheState) userObject;
-            }
-        }
-        if (exportedState == null) {
-            // Choose the newest state
-            exportedState = stateMap.keySet().stream().max(Comparator.naturalOrder()).get();
-        }
+        JIPipeProjectCacheState exportedState = stateMap.keySet().stream().max(Comparator.naturalOrder()).get();
         Path outputFolder = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export cache");
         if (outputFolder != null) {
             // Save the node's state to a file
@@ -323,12 +300,14 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), run);
     }
 
-    public JToolBar getToolBar() {
-        return toolBar;
-    }
-
-    public JIPipeAlgorithmCacheTree getTree() {
-        return tree;
+    @Subscribe
+    public void onOutputSelected(JIPipeAlgorithmCacheBrowserOutputSelectorUI.OutputSelectedEvent event) {
+        if(JIPipeAlgorithmCacheBrowserOutputSelectorUI.SELECT_ALL_OUTPUTS.equals(event.getName())) {
+            showAllDataSlots();
+        }
+        else {
+            showDataSlot(event.getName());
+        }
     }
 
     /**
@@ -341,8 +320,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         if (!isDisplayable())
             return;
         if (JIPipeRunnerQueue.getInstance().getCurrentRun() == null) {
-            tree.refreshTree();
-            showAllDataSlots();
+            selectorUI.selectOutput(JIPipeAlgorithmCacheBrowserOutputSelectorUI.SELECT_ALL_OUTPUTS);
         }
     }
 
@@ -350,15 +328,13 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     public void onWorkerFinished(RunWorkerFinishedEvent event) {
         if (!isDisplayable())
             return;
-        tree.refreshTree();
-        showAllDataSlots();
+        selectorUI.selectOutput(JIPipeAlgorithmCacheBrowserOutputSelectorUI.SELECT_ALL_OUTPUTS);
     }
 
     @Subscribe
     public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
         if (!isDisplayable())
             return;
-        tree.refreshTree();
-        showAllDataSlots();
+        selectorUI.selectOutput(JIPipeAlgorithmCacheBrowserOutputSelectorUI.SELECT_ALL_OUTPUTS);
     }
 }

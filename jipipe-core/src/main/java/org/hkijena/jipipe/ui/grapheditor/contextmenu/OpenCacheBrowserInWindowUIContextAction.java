@@ -48,9 +48,9 @@ public class OpenCacheBrowserInWindowUIContextAction implements NodeUIContextAct
             frame.setSize(640, 480);
             frame.setLocationRelativeTo(null);
 
-            AlwaysOnTopToggle alwaysOnTopToggle = new AlwaysOnTopToggle(frame);
-            alwaysOnTopToggle.addActionListener(e -> GeneralUISettings.getInstance().setOpenUtilityWindowsAlwaysOnTop(alwaysOnTopToggle.isSelected()));
-            browserUI.getToolBar().add(alwaysOnTopToggle);
+//            AlwaysOnTopToggle alwaysOnTopToggle = new AlwaysOnTopToggle(frame);
+//            alwaysOnTopToggle.addActionListener(e -> GeneralUISettings.getInstance().setOpenUtilityWindowsAlwaysOnTop(alwaysOnTopToggle.isSelected()));
+//            browserUI.getToolBar().add(alwaysOnTopToggle);
 
             frame.setVisible(true);
         }

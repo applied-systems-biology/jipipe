@@ -48,13 +48,13 @@ public class MenuManager {
         boolean found = false;
         for (int i = components.length - 1; i >= 0; i--) {
             Component c = components[i];
-            if(targetType.isAssignableFrom(c.getClass())) {
+            if (targetType.isAssignableFrom(c.getClass())) {
                 menuBar.add(component, i + 1);
                 found = true;
                 break;
             }
         }
-        if(!found) {
+        if (!found) {
             menuBar.add(component);
         }
     }

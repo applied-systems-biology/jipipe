@@ -83,7 +83,7 @@ public class JIPipeProjectCacheQuery {
     /**
      * Returns the cache of the current algorithm state.
      *
-     * @param node the node
+     * @param node the node. can be a different instance if the UUID is the same.
      * @return map of slot name to cache slot
      */
     public Map<String, JIPipeDataSlot> getCachedData(JIPipeGraphNode node) {
