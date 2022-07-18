@@ -23,11 +23,13 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.api.data.JIPipeDataStorageDocumentation;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.extensions.ijtrackmate.display.algorithms.CachedTrackmateAlgorithmViewerWindow;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackMateUtils;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -35,9 +37,11 @@ import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.jetbrains.annotations.NotNull;
 import org.scijava.InstantiableException;
 import org.scijava.plugin.PluginInfo;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.HashMap;
@@ -96,12 +100,21 @@ public class SpotDetectorData implements JIPipeData {
 
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
+        Map<String, Object> data = toMap();
+        name = StringUtils.orElse(name, "settings") + ".json";
+        storage.writeJSON(Paths.get(name), data);
+    }
+
+    private Map<String, Object> toMap() {
         Map<String, Object> data = new HashMap<>();
         data.put("detector-key", spotDetectorFactory.getKey());
         data.put("class", spotDetectorFactory.getClass().getCanonicalName());
         data.put("settings", settings);
-        name = StringUtils.orElse(name, "settings") + ".json";
-        storage.writeJSON(Paths.get(name), data);
+        return data;
+    }
+
+    public String toJson() {
+        return JsonUtils.toPrettyJsonString(toMap());
     }
 
     @Override
@@ -111,21 +124,9 @@ public class SpotDetectorData implements JIPipeData {
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
-        HTMLText description = new HTMLText(spotDetectorFactory.getInfoText());
-        JIPipeDynamicParameterCollection parameters = new JIPipeDynamicParameterCollection();
-        for (Map.Entry<String, Object> entry : settings.entrySet()) {
-            Object value = JIPipe.duplicateParameter(entry.getValue());
-            String key = entry.getKey();
-            String name = WordUtils.capitalize(entry.getKey().replace('_', ' ').toLowerCase());
-            JIPipeMutableParameterAccess parameterAccess = parameters.addParameter(key, entry.getValue().getClass(), name, description.getBody());
-            parameterAccess.set(value);
-        }
-
-        ParameterPanel.showDialog(workbench,
-                parameters,
-                new MarkdownDocument("# Spot detector info"),
-                "Spot detector",
-                ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION);
+        CachedTrackmateAlgorithmViewerWindow window = new CachedTrackmateAlgorithmViewerWindow(workbench, JIPipeDataTableDataSource.wrap(this, source), displayName, false);
+        window.setVisible(true);
+        SwingUtilities.invokeLater(window::reloadDisplayedData);
     }
 
     @Override
