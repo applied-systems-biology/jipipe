@@ -26,9 +26,12 @@ import org.hkijena.jipipe.extensions.settings.DefaultCacheDisplaySettings;
 import org.hkijena.jipipe.extensions.settings.DefaultResultImporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.ui.tableeditor.TableEditor;
+import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
@@ -39,6 +42,7 @@ import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.StringSelection;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -122,6 +126,11 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
         if (!dataTable.getTextAnnotations(row).isEmpty()) {
             textAnnotationsButton = new JButton("Annotations ...", UIUtils.getIconFromResources("data-types/annotation.png"));
             JPopupMenu annotationMenu = UIUtils.addPopupMenuToComponent(textAnnotationsButton);
+            {
+                JMenuItem toTableItem = new JMenuItem("Display as table", UIUtils.getIconFromResources("data-types/results-table.png"));
+                toTableItem.addActionListener(e -> displayAnnotationsAsTable(dataTable.getTextAnnotations(row)));
+                annotationMenu.add(toTableItem);
+            }
             for (JIPipeTextAnnotation annotation : dataTable.getTextAnnotations(row)) {
                 JMenu entryMenu = new JMenu(annotation.getName());
                 entryMenu.setIcon(UIUtils.getIconFromResources("data-types/annotation.png"));
@@ -195,6 +204,21 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
                 add(menuButton);
             }
         }
+    }
+
+    private void displayAnnotationsAsTable(List<JIPipeTextAnnotation> textAnnotations) {
+        ResultsTableData data = new ResultsTableData();
+        data.addStringColumn("Name");
+        data.addStringColumn("Value");
+        textAnnotations.stream().sorted(Comparator.comparing(JIPipeTextAnnotation::getName, NaturalOrderComparator.INSTANCE)).forEach(annotation -> {
+            int row = data.addRow();
+            data.setValueAt(annotation.getName(), row, "Name");
+            data.setValueAt(annotation.getValue(), row, "Value");
+        });
+
+        String displayName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "") +
+                "/" + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row;
+        TableEditor.openWindow(getWorkbench(), data, displayName + " [Annotations]");
     }
 
     private void exportAsFolder() {
