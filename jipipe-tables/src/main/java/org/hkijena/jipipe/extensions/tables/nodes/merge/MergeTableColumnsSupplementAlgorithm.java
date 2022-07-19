@@ -83,8 +83,8 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ResultsTableData inputTarget = dataBatch.getInputData("Target", ResultsTableData.class, progressInfo);
-        ResultsTableData inputSource = dataBatch.getInputData("Source", ResultsTableData.class, progressInfo);
+        ResultsTableData inputTarget = new ResultsTableData(dataBatch.getInputData("Target", ResultsTableData.class, progressInfo));
+        ResultsTableData inputSource = new ResultsTableData(dataBatch.getInputData("Source", ResultsTableData.class, progressInfo));
 
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
@@ -99,7 +99,12 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
         {
             Set<String> existing = new HashSet<>(inputTarget.getColumnNames());
             for (String columnName : inputSource.getColumnNames()) {
-                String newColumnName = StringUtils.makeUniqueString(columnName, ".", existing);
+                String newColumnName;
+                if(selectedReferenceColumns.contains(columnName))
+                    newColumnName =columnName;
+                else {
+                    newColumnName = StringUtils.makeUniqueString(columnName, ".", existing);
+                }
                 existing.add(newColumnName);
                 sourceToTargetColumnNameMap.put(columnName, newColumnName);
             }
@@ -108,9 +113,10 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
         ResultsTableData outputTable = new ResultsTableData();
         outputTable.copyColumnSchemaFrom(inputTarget);
 
-        for (String condition : Sets.union(splitInputTarget.keySet(), splitInputTarget.keySet())) {
+        for (String condition : Sets.union(splitInputTarget.keySet(), splitInputSource.keySet())) {
             ResultsTableData target = splitInputTarget.getOrDefault(condition, new ResultsTableData());
             ResultsTableData source = splitInputSource.getOrDefault(condition, new ResultsTableData());
+            boolean targetWasEmpty = target.getRowCount() == 0;
             if(target.getRowCount() <= 0 && skipEmptyTarget)
                 continue;
             if(!extendTarget && source.getRowCount() > target.getRowCount()) {
@@ -125,7 +131,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
             // Apply merging
             ResultsTableData merged = target;
             for (String columnName : source.getColumnNames()) {
-                if(!selectedReferenceColumns.contains(columnName) && columnFilter.test(columnName, variables)) {
+                if((targetWasEmpty || !selectedReferenceColumns.contains(columnName)) && columnFilter.test(columnName, variables)) {
                     String newColumnName = sourceToTargetColumnNameMap.get(columnName);
                     merged.addColumn(newColumnName, source.getColumnReference(columnName), true);
                 }
@@ -223,7 +229,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
         this.extendTarget = extendTarget;
     }
 
-    @JIPipeDocumentation(name = "Skip empty targe conditions", description = "If enabled, skips the addition of values from the source if the target does not have an equivalent condition.")
+    @JIPipeDocumentation(name = "Skip empty target conditions", description = "If enabled, skips the addition of values from the source if the target does not have an equivalent condition.")
     @JIPipeParameter("skip-empty-target")
     public boolean isSkipEmptyTarget() {
         return skipEmptyTarget;

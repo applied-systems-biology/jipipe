@@ -426,16 +426,9 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
             }
         }
         if (!hasData) {
-            removeAll();
-            setLayout(new BorderLayout());
-            JLabel label = new JLabel("No data available", UIUtils.getIcon64FromResources("no-data.png"), JLabel.LEFT);
-            label.setFont(label.getFont().deriveFont(26.0f));
-            add(label, BorderLayout.CENTER);
-
             if (getWorkbench() instanceof JIPipeProjectWorkbench) {
                 ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().unregister(this);
             }
-            multiSlotTable = null;
         }
     }
 
