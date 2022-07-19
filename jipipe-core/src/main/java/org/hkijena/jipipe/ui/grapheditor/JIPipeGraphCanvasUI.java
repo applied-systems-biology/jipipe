@@ -619,7 +619,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
-        if (!currentlyDraggedOffsets.isEmpty()) {
+        if(currentConnectionDragSource != null) {
+            repaint(50);
+        } else if (!currentlyDraggedOffsets.isEmpty()) {
             for (Map.Entry<JIPipeNodeUI, Point> entry : currentlyDraggedOffsets.entrySet()) {
                 JIPipeNodeUI currentlyDragged = entry.getKey();
                 Point currentlyDraggedOffset = entry.getValue();
@@ -827,16 +829,32 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                         }
                     }
                     this.hasDragSnapshot = false;
-                    for (JIPipeNodeUI nodeUI : selection) {
-                        Point offset = new Point();
-                        offset.x = nodeUI.getX() - mouseEvent.getX();
-                        offset.y = nodeUI.getY() - mouseEvent.getY();
-                        currentlyDraggedOffsets.put(nodeUI, offset);
+                    JIPipeDataSlotUI slotUI = ui.pickSlotComponent(mouseEvent);
+                    if(slotUI != null) {
+                        startDragSlot(slotUI);
+                    }
+                    else {
+                        startDragCurrentNodeSelection(mouseEvent);
                     }
                 } else {
                     selectionFirst = mouseEvent.getPoint();
                 }
             }
+        }
+    }
+
+    private void startDragSlot(JIPipeDataSlotUI startSlot) {
+        setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+        setCurrentConnectionDragSource(startSlot);
+    }
+
+    private void startDragCurrentNodeSelection(MouseEvent mouseEvent) {
+        this.hasDragSnapshot = false;
+        for (JIPipeNodeUI nodeUI : selection) {
+            Point offset = new Point();
+            offset.x = nodeUI.getX() - mouseEvent.getX();
+            offset.y = nodeUI.getY() - mouseEvent.getY();
+            currentlyDraggedOffsets.put(nodeUI, offset);
         }
     }
 
@@ -854,8 +872,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
-        currentlyDraggedOffsets.clear();
-        hasDragSnapshot = false;
+        stopAllDragging();
         if (mouseEvent.getButton() == MouseEvent.BUTTON2)
             return;
 
@@ -894,6 +911,18 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             selectionFirst = null;
             selectionSecond = null;
         }
+    }
+
+    private void stopAllDragging() {
+        // Slot dragging
+        setCurrentConnectionDragSource(null);
+        setCurrentConnectionDragTarget(null);
+        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        repaint(50);
+
+        // Node dragging
+        currentlyDraggedOffsets.clear();
+        hasDragSnapshot = false;
     }
 
     @Override

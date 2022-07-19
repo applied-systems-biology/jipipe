@@ -174,7 +174,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
 
         add(centerPanel, BorderLayout.CENTER);
 
-        new JIPipeConnectionDragAndDropBehavior(this, assignButton, nameLabel);
+//        new JIPipeConnectionDragAndDropBehavior(this, assignButton, nameLabel);
     }
 
     @Override

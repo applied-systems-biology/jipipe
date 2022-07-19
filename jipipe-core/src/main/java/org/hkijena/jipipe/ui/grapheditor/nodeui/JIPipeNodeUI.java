@@ -36,6 +36,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseEvent;
 import java.util.Map;
 
 /**
@@ -353,6 +354,20 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
      * Updates the UIs for slots
      */
     public abstract void refreshSlots();
+
+    public JIPipeDataSlotUI pickSlotComponent(MouseEvent mouseEvent) {
+        for (JIPipeDataSlotUI ui : getInputSlotUIs().values()) {
+            MouseEvent converted = SwingUtilities.convertMouseEvent(getGraphUI(), mouseEvent, ui);
+            if(ui.contains(converted.getX(), converted.getY()))
+                return ui;
+        }
+        for (JIPipeDataSlotUI ui : getOutputSlotUIs().values()) {
+            MouseEvent converted = SwingUtilities.convertMouseEvent(getGraphUI(), mouseEvent, ui);
+            if(ui.contains(converted.getX(), converted.getY()))
+                return ui;
+        }
+        return null;
+    }
 
     /**
      * An event around {@link JIPipeNodeUI}

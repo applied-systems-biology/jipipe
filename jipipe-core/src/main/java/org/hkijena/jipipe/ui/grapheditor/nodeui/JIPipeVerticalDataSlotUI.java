@@ -169,7 +169,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
                 add(assignButton, BorderLayout.SOUTH);
         }
 
-        new JIPipeConnectionDragAndDropBehavior(this, assignButton, nameLabel);
+//        new JIPipeConnectionDragAndDropBehavior(this, assignButton, nameLabel);
     }
 
     @Override
