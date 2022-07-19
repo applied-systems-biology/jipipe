@@ -56,6 +56,8 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
 
     private boolean extendTarget = true;
 
+    private boolean skipEmptyTarget = true;
+
     /**
      * Creates a new instance
      *
@@ -76,6 +78,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
         this.columnFilter = new StringQueryExpression(other.columnFilter);
         this.referenceColumns = new StringQueryExpression(other.referenceColumns);
         this.extendTarget = other.extendTarget;
+        this.skipEmptyTarget = other.skipEmptyTarget;
     }
 
     @Override
@@ -108,6 +111,8 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
         for (String condition : Sets.union(splitInputTarget.keySet(), splitInputTarget.keySet())) {
             ResultsTableData target = splitInputTarget.getOrDefault(condition, new ResultsTableData());
             ResultsTableData source = splitInputSource.getOrDefault(condition, new ResultsTableData());
+            if(target.getRowCount() <= 0 && skipEmptyTarget)
+                continue;
             if(!extendTarget && source.getRowCount() > target.getRowCount()) {
                 // Downsize the source table
                 source = source.getRows(0, target.getRowCount());
@@ -216,5 +221,16 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
     @JIPipeParameter("extend-target")
     public void setExtendTarget(boolean extendTarget) {
         this.extendTarget = extendTarget;
+    }
+
+    @JIPipeDocumentation(name = "Skip empty targe conditions", description = "If enabled, skips the addition of values from the source if the target does not have an equivalent condition.")
+    @JIPipeParameter("skip-empty-target")
+    public boolean isSkipEmptyTarget() {
+        return skipEmptyTarget;
+    }
+
+    @JIPipeParameter("skip-empty-target")
+    public void setSkipEmptyTarget(boolean skipEmptyTarget) {
+        this.skipEmptyTarget = skipEmptyTarget;
     }
 }
