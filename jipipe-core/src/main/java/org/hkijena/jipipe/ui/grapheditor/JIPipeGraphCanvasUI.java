@@ -650,7 +650,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                  */
                 if(currentConnectionDragTarget != null && currentConnectionDragTarget.getNodeUI() == nodeUI) {
                     JIPipeDataSlotUI slotUI = nodeUI.pickSlotComponent(mouseEvent);
-                    if(slotUI != null) {
+                    if(slotUI != null && slotUI.getSlot().isInput() != currentConnectionDragSource.getSlot().isInput()) {
                         setCurrentConnectionDragTarget(slotUI);
                     }
                     snapped = true;
@@ -661,7 +661,12 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                  */
                 if(!snapped) {
                     JIPipeDataSlotUI slotUI = nodeUI.pickSlotComponent(mouseEvent);
-                    setCurrentConnectionDragTarget(slotUI);
+                    if(slotUI.getSlot().isInput() != currentConnectionDragSource.getSlot().isInput()) {
+                        setCurrentConnectionDragTarget(slotUI);
+                    }
+                    else {
+                        setCurrentConnectionDragTarget(null);
+                    }
                 }
             }
             else {
