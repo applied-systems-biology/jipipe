@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.utils.OKCancelDialog;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -46,16 +47,14 @@ public class GraphNodeParameterReferenceEditorUI extends JIPipeParameterEditorUI
     }
 
     private void editParameters() {
-        GraphNodeParameters parameters = getParameter(GraphNodeParameters.class);
-        GraphNodeParametersUI panel = new GraphNodeParametersUI(getWorkbench(), parameters, FormPanel.WITH_SCROLLING, false);
-        JFrame editorDialog = new JFrame();
-        editorDialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
-        editorDialog.setTitle("Edit parameters");
-        editorDialog.setContentPane(panel);
-        editorDialog.pack();
-        editorDialog.setSize(800, 600);
-        editorDialog.setLocationRelativeTo(getWorkbench().getWindow());
-        editorDialog.setVisible(true);
+        GraphNodeParameters original = getParameter(GraphNodeParameters.class);
+        GraphNodeParameters copy = new GraphNodeParameters(original);
+        copy.setGraph(original.getGraph());
+        GraphNodeParametersUI parametersUI = new GraphNodeParametersUI(getWorkbench(), copy, FormPanel.WITH_SCROLLING, false);
+        if(OKCancelDialog.showDialog(getWorkbench().getWindow(), "Edit parameters", parametersUI, "OK", new Dimension(800,600))) {
+            original.setParameterReferenceGroups(copy.getParameterReferenceGroups());
+            setParameter(original, true);
+        }
     }
 
     @Override
