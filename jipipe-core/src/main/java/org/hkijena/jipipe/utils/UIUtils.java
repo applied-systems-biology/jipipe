@@ -1486,4 +1486,55 @@ public class UIUtils {
             scrollPane.getVerticalScrollBar().setValue(0);
         });
     }
+
+    public static void redirectMouseEvents(Component component, Component target) {
+        component.setFocusable(false);
+        ClickThroughMouseListener listener = new ClickThroughMouseListener(component,target);
+        component.addMouseListener(listener);
+        component.addMouseMotionListener(listener);
+    }
+
+    public static class ClickThroughMouseListener implements MouseListener, MouseMotionListener {
+        private final Component component;
+        private final Component target;
+
+        public ClickThroughMouseListener(Component component, Component target) {
+            this.component = component;
+            this.target = target;
+        }
+
+        @Override
+        public void mouseMoved(MouseEvent e) {
+            target.dispatchEvent(SwingUtilities.convertMouseEvent(component, e, target));
+        }
+
+        @Override
+        public void mouseEntered(MouseEvent e) {
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            target.dispatchEvent(SwingUtilities.convertMouseEvent(component, e, target));
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            target.dispatchEvent(SwingUtilities.convertMouseEvent(component, e, target));
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            target.dispatchEvent(SwingUtilities.convertMouseEvent(component, e, target));
+        }
+
+        @Override
+        public void mouseDragged(MouseEvent e) {
+            target.dispatchEvent(SwingUtilities.convertMouseEvent(component, e, target));
+        }
+
+        @Override
+        public void mouseExited(MouseEvent e) {
+
+        }
+    }
 }

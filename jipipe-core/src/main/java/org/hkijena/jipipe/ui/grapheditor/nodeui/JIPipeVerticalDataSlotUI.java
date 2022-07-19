@@ -23,7 +23,6 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeDataSlotCacheManagerUI;
 import org.hkijena.jipipe.ui.components.ZoomLabel;
 import org.hkijena.jipipe.ui.components.icons.ZoomIcon;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeConnectionDragAndDropBehavior;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -134,6 +133,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         }
 
         nameLabel = new ZoomLabel("", null, getGraphUI());
+        UIUtils.redirectMouseEvents(nameLabel, getGraphUI());
         reloadName();
         nameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(getSlot()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));

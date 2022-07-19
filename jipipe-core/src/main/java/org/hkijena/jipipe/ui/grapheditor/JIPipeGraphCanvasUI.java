@@ -620,6 +620,54 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
         if(currentConnectionDragSource != null) {
+            JIPipeNodeUI nodeUI = pickComponent(mouseEvent);
+            if(nodeUI != null && currentConnectionDragSource.getNodeUI() != nodeUI) {
+                // Advanced dragging behavior
+                boolean snapped = false;
+
+                /*
+                Auto snap to input/output if there is only one
+                 */
+                if(currentConnectionDragSource.getSlot().isInput()) {
+                   if(nodeUI.getNode().getOutputSlots().size() == 1) {
+                       // Auto snap to output
+                       JIPipeDataSlotUI slotUI = nodeUI.getOutputSlotUIs().values().iterator().next();
+                       setCurrentConnectionDragTarget(slotUI);
+                       snapped = true;
+                   }
+                }
+                else {
+                    if(nodeUI.getNode().getInputSlots().size() == 1) {
+                        // Auto snap to input
+                        JIPipeDataSlotUI slotUI = nodeUI.getInputSlotUIs().values().iterator().next();
+                        setCurrentConnectionDragTarget(slotUI);
+                        snapped = true;
+                    }
+                }
+
+                /*
+                Sticky snap: Stay in last snapped position if we were in it before
+                 */
+                if(currentConnectionDragTarget != null && currentConnectionDragTarget.getNodeUI() == nodeUI) {
+                    JIPipeDataSlotUI slotUI = nodeUI.pickSlotComponent(mouseEvent);
+                    if(slotUI != null) {
+                        setCurrentConnectionDragTarget(slotUI);
+                    }
+                    snapped = true;
+                }
+
+                /*
+                Default: Snap exactly to input/output
+                 */
+                if(!snapped) {
+                    JIPipeDataSlotUI slotUI = nodeUI.pickSlotComponent(mouseEvent);
+                    setCurrentConnectionDragTarget(slotUI);
+                }
+            }
+            else {
+                setCurrentConnectionDragTarget(null);
+            }
+            setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
             repaint(50);
         } else if (!currentlyDraggedOffsets.isEmpty()) {
             for (Map.Entry<JIPipeNodeUI, Point> entry : currentlyDraggedOffsets.entrySet()) {
@@ -872,44 +920,72 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
-        stopAllDragging();
-        if (mouseEvent.getButton() == MouseEvent.BUTTON2)
+
+        if (mouseEvent.getButton() != MouseEvent.BUTTON1) {
+            stopAllDragging();
             return;
+        }
+        else {
+            if(currentConnectionDragSource != null && currentConnectionDragTarget != null) {
+                connectOrDisconnectSlots(currentConnectionDragSource, currentConnectionDragTarget);
+            }
+            stopAllDragging();
+            if (selectionFirst != null && selectionSecond != null) {
+                int x0 = selectionFirst.x;
+                int y0 = selectionFirst.y;
+                int x1 = selectionSecond.x;
+                int y1 = selectionSecond.y;
+                int x = Math.min(x0, x1);
+                int y = Math.min(y0, y1);
+                int w = Math.abs(x0 - x1);
+                int h = Math.abs(y0 - y1);
+                Rectangle selectionRectangle = new Rectangle(x, y, w, h);
+                Set<JIPipeNodeUI> newSelection = new HashSet<>();
+                for (JIPipeNodeUI ui : nodeUIs.values()) {
+                    if (selectionRectangle.intersects(ui.getBounds())) {
+                        newSelection.add(ui);
+                    }
+                }
+                if (!newSelection.isEmpty()) {
+                    if (!mouseEvent.isShiftDown()) {
+                        this.selection.clear();
+                    }
+                    this.selection.addAll(newSelection);
+                    updateSelection();
+                }
 
-        if (selectionFirst != null && selectionSecond != null) {
-            int x0 = selectionFirst.x;
-            int y0 = selectionFirst.y;
-            int x1 = selectionSecond.x;
-            int y1 = selectionSecond.y;
-            int x = Math.min(x0, x1);
-            int y = Math.min(y0, y1);
-            int w = Math.abs(x0 - x1);
-            int h = Math.abs(y0 - y1);
-            Rectangle selectionRectangle = new Rectangle(x, y, w, h);
-            Set<JIPipeNodeUI> newSelection = new HashSet<>();
-            for (JIPipeNodeUI ui : nodeUIs.values()) {
-                if (selectionRectangle.intersects(ui.getBounds())) {
-                    newSelection.add(ui);
+                selectionFirst = null;
+                selectionSecond = null;
+                repaint();
+            } else {
+                JIPipeNodeUI ui = pickComponent(mouseEvent);
+                if (ui == null) {
+                    selectOnly(null);
+                }
+                selectionFirst = null;
+                selectionSecond = null;
+            }
+        }
+    }
+
+    private void connectOrDisconnectSlots(JIPipeDataSlotUI firstSlot, JIPipeDataSlotUI secondSlot) {
+        JIPipeGraph graph = getGraph();
+        if (graph != secondSlot.getSlot().getNode().getParentGraph())
+            return;
+        if (firstSlot.getSlot().isInput() != secondSlot.getSlot().isInput()) {
+            if (firstSlot.getSlot().isInput()) {
+                if (!graph.getGraph().containsEdge(secondSlot.getSlot(), firstSlot.getSlot())) {
+                    firstSlot.connectSlot(secondSlot.getSlot(), firstSlot.getSlot());
+                } else {
+                    firstSlot.disconnectSlot(secondSlot.getSlot(), firstSlot.getSlot());
+                }
+            } else {
+                if (!graph.getGraph().containsEdge(firstSlot.getSlot(), secondSlot.getSlot())) {
+                    secondSlot.connectSlot(firstSlot.getSlot(), secondSlot.getSlot());
+                } else {
+                    secondSlot.disconnectSlot(firstSlot.getSlot(), secondSlot.getSlot());
                 }
             }
-            if (!newSelection.isEmpty()) {
-                if (!mouseEvent.isShiftDown()) {
-                    this.selection.clear();
-                }
-                this.selection.addAll(newSelection);
-                updateSelection();
-            }
-
-            selectionFirst = null;
-            selectionSecond = null;
-            repaint();
-        } else {
-            JIPipeNodeUI ui = pickComponent(mouseEvent);
-            if (ui == null) {
-                selectOnly(null);
-            }
-            selectionFirst = null;
-            selectionSecond = null;
         }
     }
 
@@ -1132,13 +1208,15 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     currentConnectionDragTarget != currentConnectionDragSource &&
                     currentConnectionDragTarget.getNodeUI().getNode() != currentConnectionDragSource.getNodeUI().getNode()) {
                 JIPipeNodeUI nodeUI = currentConnectionDragTarget.getNodeUI();
-                Point mousePosition = currentConnectionDragTarget.getMousePosition();
-                int width = currentConnectionDragTarget.getWidth();
-                int height = currentConnectionDragTarget.getHeight();
-                if (getMousePosition() == null || (mousePosition != null && mousePosition.x >= 5 && mousePosition.y >= 5 && mousePosition.x <= (width - 5) && mousePosition.y <= (height - 5))) {
-                    targetPoint = nodeUI.getSlotLocation(currentConnectionDragTarget.getSlot());
-                    targetPoint.add(nodeUI.getLocation());
-                }
+//                Point mousePosition = currentConnectionDragTarget.getMousePosition();
+//                int width = currentConnectionDragTarget.getWidth();
+//                int height = currentConnectionDragTarget.getHeight();
+//                if (getMousePosition() == null || (mousePosition != null && mousePosition.x >= 5 && mousePosition.y >= 5 && mousePosition.x <= (width - 5) && mousePosition.y <= (height - 5))) {
+//                    targetPoint = nodeUI.getSlotLocation(currentConnectionDragTarget.getSlot());
+//                    targetPoint.add(nodeUI.getLocation());
+//                }
+                targetPoint = nodeUI.getSlotLocation(currentConnectionDragTarget.getSlot());
+                targetPoint.add(nodeUI.getLocation());
             }
             if (targetPoint != null) {
                 if (currentConnectionDragTarget == null || (!graph.getGraph().containsEdge(currentConnectionDragSource.getSlot(), currentConnectionDragTarget.getSlot())

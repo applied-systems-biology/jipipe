@@ -23,7 +23,6 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeDataSlotCacheManagerUI;
 import org.hkijena.jipipe.ui.components.ZoomLabel;
 import org.hkijena.jipipe.ui.components.icons.ZoomIcon;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeConnectionDragAndDropBehavior;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
