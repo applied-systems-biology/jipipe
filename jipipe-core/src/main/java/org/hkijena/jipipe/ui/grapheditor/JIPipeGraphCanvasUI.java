@@ -661,7 +661,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                  */
                 if(!snapped) {
                     JIPipeDataSlotUI slotUI = nodeUI.pickSlotComponent(mouseEvent);
-                    if(slotUI.getSlot().isInput() != currentConnectionDragSource.getSlot().isInput()) {
+                    if(slotUI != null && slotUI.getSlot().isInput() != currentConnectionDragSource.getSlot().isInput()) {
                         setCurrentConnectionDragTarget(slotUI);
                     }
                     else {
