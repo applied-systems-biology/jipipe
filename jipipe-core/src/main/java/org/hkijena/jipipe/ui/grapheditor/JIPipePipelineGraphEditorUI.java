@@ -250,7 +250,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
     }
 
     private void initializeContextActions() {
-        getCanvasUI().setDragAndDropBehavior(new JIPipeGraphCompartmentDragAndDropBehavior());
+        getCanvasUI().setDragAndDropBehavior(new JIPipeCreateNodesFromDraggedDataDragAndDropBehavior());
         List<NodeUIContextAction> nodeSpecificContextActions = new ArrayList<>();
         if (GeneralUISettings.getInstance().isAddContextActionsToContextMenu()) {
             for (JIPipeNodeInfo info : JIPipe.getNodes().getRegisteredNodeInfos().values()) {

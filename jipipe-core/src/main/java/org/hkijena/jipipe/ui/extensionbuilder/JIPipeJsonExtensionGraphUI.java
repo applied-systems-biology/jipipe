@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbench;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCompartmentDragAndDropBehavior;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeCreateNodesFromDraggedDataDragAndDropBehavior;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
@@ -57,7 +57,7 @@ public class JIPipeJsonExtensionGraphUI extends JIPipeGraphEditorUI {
         setPropertyPanel(defaultPanel);
 
         // Set D&D and Copy&Paste behavior
-        getCanvasUI().setDragAndDropBehavior(new JIPipeGraphCompartmentDragAndDropBehavior());
+        getCanvasUI().setDragAndDropBehavior(new JIPipeCreateNodesFromDraggedDataDragAndDropBehavior());
         getCanvasUI().setContextActions(Arrays.asList(
                 new SelectAllNodeUIContextAction(),
                 new InvertSelectionNodeUIContextAction(),
