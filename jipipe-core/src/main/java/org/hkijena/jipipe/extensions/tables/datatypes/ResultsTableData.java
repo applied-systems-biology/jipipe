@@ -133,6 +133,20 @@ public class ResultsTableData implements JIPipeData, TableModel {
         this.table = (ResultsTable) other.table.clone();
     }
 
+    /**
+     * Adds missing columns from the other table
+     * @param other the other table
+     */
+    public void copyColumnSchemaFrom(ResultsTableData other) {
+        for (int col = 0; col < other.getColumnCount(); col++) {
+            String name = other.getColumnName(col);
+            boolean stringColumn = other.isStringColumn(col);
+            if(!getColumnNames().contains(name)) {
+                addColumn(name, stringColumn);
+            }
+        }
+    }
+
     public static ResultsTableData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         try {
             return new ResultsTableData(ResultsTable.open(PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".csv").toString()));
@@ -715,6 +729,17 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * Returns a column as vector.
      * This is a reference.
      *
+     * @param columnName the column name
+     * @return the column
+     */
+    public TableColumn getColumnReference(String columnName) {
+        return new TableColumnReference(this, getColumnIndex(columnName));
+    }
+
+    /**
+     * Returns a column as vector.
+     * This is a reference.
+     *
      * @param index the column index
      * @return the column
      */
@@ -1124,7 +1149,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
                 continue;
             String name = StringUtils.makeUniqueString(column.getLabel(), ".", existing);
             existing.add(name);
-            addColumn(name, column);
+            addColumn(name, column, true);
         }
     }
 
@@ -1208,12 +1233,16 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * Adds a column with the given name.
      * If the column already exists, the method returns the existing index
      *
-     * @param name column name. cannot be empty.
-     * @param data the data
+     * @param name       column name. cannot be empty.
+     * @param data       the data
+     * @param extendRows if true, add rows if needed to contain all non-generated information in the column
      * @return the column index (this includes any existing column) or -1 if the creation was not possible
      */
-    public int addColumn(String name, TableColumn data) {
+    public int addColumn(String name, TableColumn data, boolean extendRows) {
         int col = addColumn(name, !data.isNumeric());
+        if(extendRows && data.getRows() > getRowCount()) {
+            addRows(data.getRows() - getRowCount());
+        }
 //        System.out.println(name + ": " + col + " / " + getColumnCount());
         for (int row = 0; row < getRowCount(); row++) {
             if (data.isNumeric()) {
@@ -1471,6 +1500,26 @@ public class ResultsTableData implements JIPipeData, TableModel {
                 result.setValueAt(getValueAt(row, col), targetRow, col);
             }
             ++targetRow;
+        }
+        return result;
+    }
+
+    /**
+     * Extracts rows
+     * @param start the first row index (inclusive)
+     * @param end the last row index (exclusive)
+     * @return table with rows within [start, end)
+     */
+    public ResultsTableData getRows(int start, int end) {
+        ResultsTableData result = new ResultsTableData();
+        for (int col = 0; col < getColumnCount(); col++) {
+            result.addColumn(getColumnName(col), !isNumericColumn(col));
+        }
+        for (int row = start; row < end; row++) {
+            int targetRow = result.addRow();
+            for (int col = 0; col < getColumnCount(); col++) {
+                result.setValueAt(getValueAt(row, col), targetRow, col);
+            }
         }
         return result;
     }

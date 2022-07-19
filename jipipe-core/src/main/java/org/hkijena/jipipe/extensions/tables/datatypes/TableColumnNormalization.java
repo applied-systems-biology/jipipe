@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.tables.datatypes;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public enum TableColumnNormalization {
@@ -97,6 +98,22 @@ public enum TableColumnNormalization {
             nRow = Math.max(column.getRows(), nRow);
         }
         return normalize(inputColumns, nRow);
+    }
+
+    /**
+     * Normalizes a whole table
+     * @param tableData the table
+     * @param nRow number of rows
+     * @return table with at least nRow rows
+     */
+    public ResultsTableData normalize(ResultsTableData tableData, int nRow) {
+        ResultsTableData copy = new ResultsTableData();
+        for (String columnName : tableData.getColumnNames()) {
+            TableColumn columnReference = tableData.getColumnReference(tableData.getColumnIndex(columnName));
+            TableColumn generatedColumn = normalize(Collections.singletonList(columnReference), nRow).get(0);
+            copy.addColumn(columnName, generatedColumn, true);
+        }
+        return copy;
     }
 
     @Override
