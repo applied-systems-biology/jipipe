@@ -17,6 +17,8 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.history.JIPipeDedicatedGraphHistoryJournal;
@@ -414,6 +416,15 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                 if (getWorkbench() instanceof JIPipeProjectWorkbench) {
                     JIPipeNodeGroupUI.openGroupNodeGraph(getWorkbench(), (NodeGroup) event.getUi().getNode(), true);
                 }
+            }
+        }
+        else if(event.getUi().getNode() instanceof JIPipeCompartmentOutput) {
+            // Open the compartment
+            if(!Objects.equals(getCompartment(), event.getUi().getNode().getCompartmentUUIDInParentGraph()) && getWorkbench() instanceof JIPipeProjectWorkbench) {
+                JIPipeProjectWorkbench projectWorkbench = (JIPipeProjectWorkbench) getWorkbench();
+                UUID uuid = event.getUi().getNode().getCompartmentUUIDInParentGraph();
+                JIPipeProjectCompartment projectCompartment = projectWorkbench.getProject().getCompartments().get(uuid);
+                projectWorkbench.getOrOpenPipelineEditorTab(projectCompartment, true);
             }
         }
     }
