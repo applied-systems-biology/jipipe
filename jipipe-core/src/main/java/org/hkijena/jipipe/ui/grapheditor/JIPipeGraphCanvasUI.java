@@ -18,6 +18,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
+import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
@@ -709,6 +710,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 currentlyDragged.moveToClosestGridPoint(new Point(x, y), true, true);
             }
             repaint();
+            if(SystemUtils.IS_OS_LINUX) {
+                Toolkit.getDefaultToolkit().sync();
+            }
             if (getParent() != null)
                 getParent().revalidate();
             getEventBus().post(new GraphCanvasUpdatedEvent(this));
