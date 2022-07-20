@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import java.awt.Point;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -103,9 +104,22 @@ public class JIPipeExportedCompartment {
         JIPipeProjectCompartment compartment = project.addCompartment(compartmentName);
         JIPipeCompartmentOutput projectOutputNode = compartment.getOutputNode();
 
+        String locationCompartment = "";
+        for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
+            if (!(algorithm instanceof JIPipeCompartmentOutput)) {
+                if(!algorithm.getLocations().keySet().isEmpty())
+                    locationCompartment = algorithm.getLocations().keySet().iterator().next();
+            }
+        }
+
+        Map<JIPipeGraphNode, Map<String, Point>> locations = new HashMap<>();
         UUID compartmentUUID = compartment.getProjectCompartmentUUID();
         for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
             graph.setCompartment(algorithm.getUUIDInParentGraph(), compartmentUUID);
+            Map<String, Point> map = algorithm.getLocations().getOrDefault(locationCompartment, null);
+            if(map != null) {
+                locations.put(algorithm, map);
+            }
         }
 
         Map<UUID, JIPipeGraphNode> copies = new HashMap<>();
@@ -118,6 +132,8 @@ public class JIPipeExportedCompartment {
                 projectOutputNode.getSlotConfiguration().setTo(algorithm.getSlotConfiguration());
             } else {
                 JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
+                Map<String, Point> locationMapEntry = locations.getOrDefault(algorithm, null);
+                copy.getLocations().put(compartmentUUID.toString(), new HashMap<>(locationMapEntry));
                 project.getGraph().insertNode(copy, compartmentUUID);
                 copies.put(algorithm.getUUIDInParentGraph(), copy);
             }
