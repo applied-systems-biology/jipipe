@@ -14,10 +14,7 @@
 package org.hkijena.jipipe;
 
 import org.apache.commons.compress.utils.Sets;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeMetadata;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
 import org.hkijena.jipipe.api.compat.ImageJDataExporterUI;
 import org.hkijena.jipipe.api.compat.ImageJDataImporter;
@@ -56,9 +53,15 @@ import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;
 import org.hkijena.jipipe.utils.*;
+import org.hkijena.jipipe.utils.json.JsonUtils;
+import org.reflections.Reflections;
+import org.reflections.scanners.ResourcesScanner;
+import org.reflections.util.ClasspathHelper;
+import org.reflections.util.ConfigurationBuilder;
 import org.scijava.service.AbstractService;
 
 import javax.swing.*;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
@@ -67,6 +70,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * Default implementation of {@link JIPipeJavaExtension}
@@ -656,6 +661,62 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      */
     public void registerUtility(Class<?> categoryClass, Class<?> utilityClass) {
         registry.getUtilityRegistry().register(categoryClass, utilityClass);
+    }
+
+    /**
+     * Registers a node template as example for a node.
+     * Silently fails if the template does not contain exactly one node
+     * @param template the template
+     */
+    public void registerNodeExample(JIPipeNodeTemplate template) {
+        registry.getNodeRegistry().registerExample(template);
+    }
+
+    /**
+     * Registers node examples from plugin resources via a {@link ResourceManager}.
+     * Will detect *.json files and attempt to load them (fails silently)
+     * @param resourceManager the resource manager
+     * @param subDirectory the directory within the resource manager's base path
+     */
+    public void registerNodeExamplesFromResources(ResourceManager resourceManager, String subDirectory) {
+        registerNodeExamplesFromResources(resourceManager.getResourceClass(), ResourceManager.formatBasePath(resourceManager.getBasePath() + "/" + subDirectory));
+    }
+
+    /**
+     * Registers node examples from plugin resources.
+     * Will detect *.json files and attempt to load them (fails silently)
+     * @param resourceClass the resource class
+     * @param directory the directory within the resources
+     */
+    public void registerNodeExamplesFromResources(Class<?> resourceClass, String directory) {
+        JIPipe.getInstance().getProgressInfo().log("Scanning for node examples within " + resourceClass + " -> " + directory);
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .setUrls(ClasspathHelper.forClass(resourceClass))
+                .setScanners(new ResourcesScanner()));
+
+        Set<String> jsonResources = reflections.getResources(Pattern.compile(".*\\.json"));
+        jsonResources = jsonResources.stream().map(s -> {
+            if (!s.startsWith("/"))
+                return "/" + s;
+            else
+                return s;
+        }).collect(Collectors.toSet());
+        for (String resource : jsonResources) {
+            if(resource.startsWith(directory)) {
+                JIPipe.getInstance().getProgressInfo().log("Loading node template list " + resource);
+                try {
+                    try (InputStream stream = resourceClass.getResourceAsStream(resource)) {
+                        JIPipeNodeTemplate.List templates = JsonUtils.getObjectMapper().readerFor(JIPipeNodeTemplate.List.class).readValue(stream);
+                        for (JIPipeNodeTemplate template : templates) {
+                            registerNodeExample(template);
+                        }
+                    }
+                }
+                catch (Throwable throwable) {
+                    JIPipe.getInstance().getProgressInfo().log("Error: " + throwable + " @ " + resource);
+                }
+            }
+        }
     }
 
     /**

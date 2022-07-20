@@ -388,7 +388,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
                     groupHeaderPanel.getDescriptionArea().setText(DocumentationUtils.getDocumentationDescription(documentation));
                 }
 
-                for (JIPipeParameterTree.ContextAction action : node.getActions()) {
+                for (JIPipeParameterCollectionContextAction action : node.getActions()) {
                     Icon icon = action.getIconURL() != null ? new ImageIcon(action.getIconURL()) : null;
                     JButton actionButton = new JButton(action.getDocumentation().name(), icon);
                     actionButton.setToolTipText(DocumentationUtils.getDocumentationDescription(action.getDocumentation()));

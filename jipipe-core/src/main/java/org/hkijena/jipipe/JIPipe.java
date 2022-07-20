@@ -53,10 +53,7 @@ import org.hkijena.jipipe.ui.ijupdater.JIPipeProgressAdapter;
 import org.hkijena.jipipe.ui.registries.JIPipeCustomMenuRegistry;
 import org.hkijena.jipipe.ui.running.JIPipeLogs;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.utils.CoreImageJUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.VersionUtils;
+import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 import org.scijava.InstantiableException;
@@ -619,6 +616,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         // Create settings for default importers
         createDefaultImporterSettings();
         createDefaultCacheDisplaySettings();
+        registerNodeExamplesFromFileSystem();
 
         // Reload settings
         progressInfo.setProgress(4);
@@ -696,6 +694,33 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                 LocalDateTime.now(),
                 progressInfo.getLog().toString(),
                 true));
+    }
+
+    private void registerNodeExamplesFromFileSystem() {
+        Path examplesDir = PathUtils.getImageJDir().resolve("jipipe").resolve("examples");
+        try {
+            if(!Files.isDirectory(examplesDir))
+                Files.createDirectories(examplesDir);
+            Files.walk(examplesDir).forEach(path -> {
+                if(Files.isRegularFile(path)) {
+                    if (UIUtils.EXTENSION_FILTER_JSON.accept(path.toFile())) {
+                        try {
+                            progressInfo.log("[Node examples] Importing node template list from " + path);
+                            for (JIPipeNodeTemplate template : JsonUtils.getObjectMapper().readValue(path.toFile(), JIPipeNodeTemplate.List.class)) {
+                                nodeRegistry.registerExample(template);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                            progressInfo.log("Error while loading node examples from " + path + ": " + e);
+                        }
+                    }
+                }
+            });
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            progressInfo.log("Error while loading node examples from " + examplesDir + ": " + e);
+        }
     }
 
     private void validateDataTypes(JIPipeRegistryIssues issues) {

@@ -15,23 +15,24 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.extensions.nodeexamples.JIPipeNodeExamplePickerDialog;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ParameterUtils;
+import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.Map;
+import java.util.*;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * An {@link JIPipeGraphNode} that contains a non-empty workload.
@@ -220,6 +221,67 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
      */
     public void setThreadPool(JIPipeFixedThreadPool threadPool) {
         this.threadPool = threadPool;
+    }
+
+    @Override
+    public List<JIPipeParameterCollectionContextAction> getContextActions() {
+        List<JIPipeParameterCollectionContextAction> result = new ArrayList<>(super.getContextActions());
+        Collection<JIPipeNodeExample> examples = JIPipe.getNodes().getNodeExamples(getInfo().getId());
+        if(examples != null && !examples.isEmpty()) {
+            JIPipeDefaultParameterCollectionContextAction action = new JIPipeDefaultParameterCollectionContextAction(
+                    new JIPipeDefaultDocumentation("Load example", "Loads example parameters"),
+                    UIUtils.getIconURLFromResources("actions/graduation-cap.png"),
+                    this::showLoadExampleDialog
+            );
+            result.add(action);
+        }
+        return result;
+    }
+
+    /**
+     * Opens a dialog where the user can select an example
+     * @param workbench the workbench
+     */
+    public void showLoadExampleDialog(JIPipeWorkbench workbench) {
+        Collection<JIPipeNodeExample> examples = JIPipe.getNodes().getNodeExamples(getInfo().getId());
+        JIPipeNodeExamplePickerDialog pickerDialog = new JIPipeNodeExamplePickerDialog(workbench.getWindow());
+        pickerDialog.setTitle("Load example");
+        pickerDialog.setAvailableItems(examples.stream().sorted(Comparator.comparing(e -> e.getNodeTemplate().getName())).collect(Collectors.toList()));
+        JIPipeNodeExample selection = pickerDialog.showDialog();
+        if(selection != null) {
+            loadExample(selection);
+        }
+    }
+
+    /**
+     * Loads an example.
+     * Warning: This method will not ask for confirmation
+     * @param example the example
+     */
+    public void loadExample(JIPipeNodeExample example) {
+        JIPipeGraph graph = example.getNodeTemplate().getGraph();
+        JIPipeGraphNode node = graph.getGraphNodes().iterator().next();
+        if(node.getInfo() != getInfo()) {
+            throw new RuntimeException("Cannot load example from wrong node type!");
+        }
+        try(StringWriter writer = new StringWriter()) {
+            try(JsonGenerator generator = JsonUtils.getObjectMapper().createGenerator(writer)) {
+                generator.writeStartObject();
+                ParameterUtils.serializeParametersToJson(node, generator, entry -> !entry.getKey().startsWith("jipipe:"));
+                generator.writeEndObject();
+            }
+            String jsonString = writer.toString();
+            JsonNode node2 = JsonUtils.readFromString(jsonString, JsonNode.class);
+            JIPipeIssueReport report = new JIPipeIssueReport();
+            ParameterUtils.deserializeParametersFromJson(this, node2, report);
+            getSlotConfiguration().setTo(node.getSlotConfiguration());
+            if(!report.isValid()) {
+                report.print();
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     /**

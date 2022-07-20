@@ -63,4 +63,6 @@ public @interface JIPipeContextAction {
      * @return if the action is shown in the context menu
      */
     boolean showInContextMenu() default true;
+
+
 }

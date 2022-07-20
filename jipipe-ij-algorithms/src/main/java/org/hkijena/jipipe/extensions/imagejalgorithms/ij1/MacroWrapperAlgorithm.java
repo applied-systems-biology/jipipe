@@ -352,27 +352,6 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
         }
     }
 
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
-            slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("Input", new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Input), true);
-            slotConfiguration.addSlot("Output", new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Output), true);
-            this.code.setCode("// To add variables, click the [+] button below.\n" +
-                    "// They will be created automatically before this code fragment.\n\n" +
-                    "// Each input image slot creates a window with its name.\n" +
-                    "// You have to select it, first\n" +
-                    "selectWindow(\"Input\");\n\n" +
-                    "// Apply your operations here\n\n" +
-                    "// JIPipe extracts output images based on their window name\n" +
-                    "rename(\"Output\");\n");
-            getEventBus().post(new ParameterChangedEvent(this, "code"));
-        }
-    }
-
     /**
      * Loads input data, so it can be discovered by ImageJ
      */

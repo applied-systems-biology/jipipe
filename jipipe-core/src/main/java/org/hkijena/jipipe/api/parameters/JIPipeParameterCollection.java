@@ -16,9 +16,7 @@ package org.hkijena.jipipe.api.parameters;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 /**
@@ -146,6 +144,15 @@ public interface JIPipeParameterCollection {
     default <T> T getParameter(String key, Class<T> klass) {
         JIPipeParameterTree tree = new JIPipeParameterTree(this);
         return tree.getParameters().get(key).get(klass);
+    }
+
+    /**
+     * List of context actions that are added to this collection.
+     * Does no influence the creation of context actions via {@link JIPipeContextAction}
+     * @return list of context actions
+     */
+    default List<JIPipeParameterCollectionContextAction> getContextActions() {
+        return Collections.emptyList();
     }
 
     /**

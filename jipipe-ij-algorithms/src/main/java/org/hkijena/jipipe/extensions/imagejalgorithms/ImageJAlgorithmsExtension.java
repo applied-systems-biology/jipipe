@@ -130,6 +130,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringLi
 import org.hkijena.jipipe.extensions.strings.StringsExtension;
 import org.hkijena.jipipe.extensions.tables.TablesExtension;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
+import org.hkijena.jipipe.utils.ResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -143,6 +144,8 @@ import java.util.*;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    public static final ResourceManager RESOURCES = new ResourceManager(ImageJAlgorithmsExtension.class, "org/hkijena/jipipe/extensions/imagejalgorithms");
 
     /**
      * Dependency instance to be used for creating the set of dependencies
@@ -898,6 +901,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerGlobalParameters();
 
 //        registerIJ2Algorithms();
+
+
+        //// Register examples
+        registerNodeExamplesFromResources(RESOURCES, "examples");
     }
 
     private void registerColocalizationAlgorithms() {

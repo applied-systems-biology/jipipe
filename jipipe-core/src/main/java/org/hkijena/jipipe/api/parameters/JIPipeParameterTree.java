@@ -20,7 +20,6 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.DocumentationUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -30,7 +29,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -210,7 +208,8 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                     iconURL = actionAnnotation.resourceClass().getResource(actionAnnotation.iconURL());
                 }
             }
-            target.actions.add(new ContextAction(source, method, iconURL, documentationAnnotation));
+            target.actions.add(new JIPipeReflectionParameterCollectionContextAction(source, method, iconURL, documentationAnnotation));
+            target.actions.addAll(source.getContextActions());
         }
     }
 
@@ -632,45 +631,6 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
         }
     }
 
-    public static class ContextAction implements Consumer<JIPipeWorkbench> {
-        private Object target;
-        private Method function;
-        private URL iconURL;
-        private JIPipeDocumentation documentation;
-
-        public ContextAction(Object target, Method function, URL iconURL, JIPipeDocumentation documentation) {
-            this.target = target;
-            this.function = function;
-            this.iconURL = iconURL;
-            this.documentation = documentation;
-        }
-
-        public Object getTarget() {
-            return target;
-        }
-
-        public Method getFunction() {
-            return function;
-        }
-
-        public JIPipeDocumentation getDocumentation() {
-            return documentation;
-        }
-
-        public URL getIconURL() {
-            return iconURL;
-        }
-
-        @Override
-        public void accept(JIPipeWorkbench workbench) {
-            try {
-                function.invoke(target, workbench);
-            } catch (IllegalAccessException | InvocationTargetException e) {
-                throw new RuntimeException(e);
-            }
-        }
-    }
-
     /**
      * A node
      */
@@ -685,7 +645,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
         private int uiOrder;
         private BiMap<String, JIPipeParameterAccess> parameters = HashBiMap.create();
         private BiMap<String, Node> children = HashBiMap.create();
-        private List<ContextAction> actions = new ArrayList<>();
+        private List<JIPipeParameterCollectionContextAction> actions = new ArrayList<>();
         private Set<String> uiExcludedSubParameters = new HashSet<>();
         private JIPipeParameterPersistence persistence = JIPipeParameterPersistence.Collection;
         private boolean collapsed;
@@ -835,11 +795,11 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
             this.uiOrder = uiOrder;
         }
 
-        public List<ContextAction> getActions() {
+        public List<JIPipeParameterCollectionContextAction> getActions() {
             return actions;
         }
 
-        public void setActions(List<ContextAction> actions) {
+        public void setActions(List<JIPipeParameterCollectionContextAction> actions) {
             this.actions = actions;
         }
 

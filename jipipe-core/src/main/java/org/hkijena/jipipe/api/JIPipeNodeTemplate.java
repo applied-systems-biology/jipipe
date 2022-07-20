@@ -152,8 +152,7 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
         this.borderColor = borderColor;
     }
 
-    @JIPipeDocumentation(name = "Data", description = "The data contained inside the node template. Must be JSON representation of a single node. " +
-            "Please note that copying a node from the graph yields a list of multiple nodes.")
+    @JIPipeDocumentation(name = "Data", description = "The data contained inside the node template. Must be JSON representation of a graph.")
     @JsonGetter("data")
     @JIPipeParameter(value = "data", uiOrder = 999)
     @StringParameterSettings(monospace = true, multiline = true, visible = false)
@@ -168,20 +167,20 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
         this.data = data;
     }
 
-    @JIPipeDocumentation(name = "Paste from clipboard", description = "Sets the node data from clipboard.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/edit-paste.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/edit-paste.png")
-    public void pasteDataFromClipboard(JIPipeWorkbench workbench) {
-        String json = UIUtils.getStringFromClipboard();
-        if (json != null) {
-            try {
-                JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
-                setData(json);
-                triggerParameterChange("data");
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            }
-        }
-    }
+//    @JIPipeDocumentation(name = "Paste from clipboard", description = "Sets the node data from clipboard.")
+//    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/edit-paste.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/edit-paste.png")
+//    public void pasteDataFromClipboard(JIPipeWorkbench workbench) {
+//        String json = UIUtils.getStringFromClipboard();
+//        if (json != null) {
+//            try {
+//                JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
+//                setData(json);
+//                triggerParameterChange("data");
+//            } catch (JsonProcessingException e) {
+//                e.printStackTrace();
+//            }
+//        }
+//    }
 
     /**
      * Gets the node type stored inside the data.
