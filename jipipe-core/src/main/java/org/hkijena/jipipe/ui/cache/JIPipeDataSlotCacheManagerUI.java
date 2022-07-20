@@ -94,16 +94,18 @@ public class JIPipeDataSlotCacheManagerUI extends JIPipeProjectWorkbenchPanel {
             }
         }
 
-        JMenuItem clearOutdated = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("actions/clock.png"));
+        JMenuItem clearAll = new JMenuItem("Clear all (this node)", UIUtils.getIconFromResources("actions/delete.png"));
+        clearAll.setToolTipText("Removes all cached items for this node.");
+        clearAll.addActionListener(e -> getProject().getCache().clear(dataSlot.getNode().getUUIDInParentGraph()));
+        contextMenu.add(clearAll);
+
+        JMenuItem clearOutdated = new JMenuItem("Clear outdated (this node)", UIUtils.getIconFromResources("actions/clear-brush.png"));
         clearOutdated.setToolTipText("Removes all cached items that are have no representation in the project graph, anymore. " +
                 "This includes items where the algorithm parameters have been changed.");
         clearOutdated.addActionListener(e -> getProject().getCache().autoClean(false, true, new JIPipeProgressInfo()));
         contextMenu.add(clearOutdated);
 
-        JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("actions/delete.png"));
-        clearAll.setToolTipText("Removes all cached items for this node.");
-        clearAll.addActionListener(e -> getProject().getCache().clear(dataSlot.getNode().getUUIDInParentGraph()));
-        contextMenu.add(clearAll);
+
     }
 
     private JMenuItem createOpenStateButton(Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap, JIPipeProjectCacheState state, String label) {

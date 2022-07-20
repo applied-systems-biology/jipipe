@@ -137,13 +137,15 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
             cacheIntermediateResultsItem.addActionListener(e -> updateCache(true));
             cacheMenu.add(cacheIntermediateResultsItem);
 
-            JMenuItem clearOutdatedButton = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("actions/clear-brush.png"));
-            clearOutdatedButton.addActionListener(e -> getProject().getCache().autoClean(false, true, new JIPipeProgressInfo()));
-            cacheMenu.add(clearOutdatedButton);
+            cacheMenu.addSeparator();
 
-            JMenuItem clearAllButton = new JMenuItem("Clear all", UIUtils.getIconFromResources("actions/clear-brush.png"));
+            JMenuItem clearAllButton = new JMenuItem("Clear all (this node)", UIUtils.getIconFromResources("actions/clear-brush.png"));
             clearAllButton.addActionListener(e -> getProject().getCache().clear(this.graphNode.getUUIDInParentGraph()));
             cacheMenu.add(clearAllButton);
+
+            JMenuItem clearOutdatedButton = new JMenuItem("Clear outdated (this node)", UIUtils.getIconFromResources("actions/clear-brush.png"));
+            clearOutdatedButton.addActionListener(e -> getProject().getCache().autoClean(false, true, new JIPipeProgressInfo()));
+            cacheMenu.add(clearOutdatedButton);
         }
         {
             JMenu exportMenu = menuManager.getOrCreateMenu("Export");
