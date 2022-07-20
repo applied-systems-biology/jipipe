@@ -113,12 +113,16 @@ public class JIPipeExportedCompartment {
         }
 
         Map<JIPipeGraphNode, Map<String, Point>> locations = new HashMap<>();
+        Map<String, Point> outputLocation = null;
         UUID compartmentUUID = compartment.getProjectCompartmentUUID();
         for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
             graph.setCompartment(algorithm.getUUIDInParentGraph(), compartmentUUID);
             Map<String, Point> map = algorithm.getLocations().getOrDefault(locationCompartment, null);
             if(map != null) {
                 locations.put(algorithm, map);
+            }
+            if(algorithm instanceof JIPipeCompartmentOutput) {
+                outputLocation = map;
             }
         }
 
@@ -127,6 +131,10 @@ public class JIPipeExportedCompartment {
             if (algorithm instanceof JIPipeCompartmentOutput) {
                 // We just assign the existing project output
                 copies.put(algorithm.getUUIDInParentGraph(), projectOutputNode);
+
+                // Set location
+                if(outputLocation != null)
+                    projectOutputNode.getLocations().put(compartmentUUID.toString(), outputLocation);
 
                 // Copy the slot configuration over
                 projectOutputNode.getSlotConfiguration().setTo(algorithm.getSlotConfiguration());
