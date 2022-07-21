@@ -8,7 +8,7 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import java.util.List;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Gets item with index/key", description = "Gets the item of an array by index N (first is zero) or the (N+1)th character of a string. " +
+@JIPipeDocumentation(name = "Gets item with index/key", description = "Gets the item of an array by index N (first is zero) or the (N+1)th character of a string. If N is negative, the (-N)th last item is returned." +
         "If the first parameter is a map, the entry with the provided key is returned.")
 public class GetItemFunction extends ExpressionFunction {
 
@@ -33,9 +33,19 @@ public class GetItemFunction extends ExpressionFunction {
         Object target = parameters.get(0);
         Object index = parameters.get(1);
         if (target instanceof List) {
-            return ((List<?>) target).get(((Number) index).intValue());
+            int i = ((Number) index).intValue();
+            List<?> list = (List<?>) target;
+            if(i < 0) {
+                i += list.size();
+            }
+            return list.get(i);
         } else if (target instanceof String) {
-            return "" + target.toString().charAt(((Number) index).intValue());
+            int i = ((Number) index).intValue();
+            String string = (String) target;
+            if(i < 0) {
+                i += string.length();
+            }
+            return string.charAt(i) + "";
         } else if (target instanceof Map) {
             return ((Map<?, ?>) target).getOrDefault(index, null);
         } else {
