@@ -133,7 +133,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         }
 
         nameLabel = new ZoomLabel("", null, getGraphUI());
-        UIUtils.redirectMouseEvents(nameLabel, getGraphUI());
+        UIUtils.redirectDragEvents(nameLabel, getGraphUI());
         reloadName();
         nameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(getSlot()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(2, 5, 2, 5));

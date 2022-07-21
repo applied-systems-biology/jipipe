@@ -1487,18 +1487,18 @@ public class UIUtils {
         });
     }
 
-    public static void redirectMouseEvents(Component component, Component target) {
+    public static void redirectDragEvents(Component component, Component target) {
         component.setFocusable(false);
-        ClickThroughMouseListener listener = new ClickThroughMouseListener(component,target);
+        DragThroughMouseListener listener = new DragThroughMouseListener(component,target);
         component.addMouseListener(listener);
         component.addMouseMotionListener(listener);
     }
 
-    public static class ClickThroughMouseListener implements MouseListener, MouseMotionListener {
+    public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;
         private final Component target;
 
-        public ClickThroughMouseListener(Component component, Component target) {
+        public DragThroughMouseListener(Component component, Component target) {
             this.component = component;
             this.target = target;
         }
@@ -1519,7 +1519,7 @@ public class UIUtils {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-            target.dispatchEvent(SwingUtilities.convertMouseEvent(component, e, target));
+
         }
 
         @Override

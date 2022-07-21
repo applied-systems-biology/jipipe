@@ -127,6 +127,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
         centerPanel.setOpaque(false);
 
         nameLabel = new ZoomLabel("", null, getGraphUI());
+        UIUtils.redirectDragEvents(nameLabel, getGraphUI());
         reloadName();
         nameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(getSlot()));
         nameLabel.setBorder(BorderFactory.createEmptyBorder(0, 5, 0, 5));
