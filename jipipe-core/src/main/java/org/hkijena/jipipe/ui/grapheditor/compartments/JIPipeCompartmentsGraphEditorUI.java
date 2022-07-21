@@ -38,8 +38,8 @@ import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentC
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCutNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentPasteNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
-import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeMultiAlgorithmSelectionPanelUI;
-import org.hkijena.jipipe.ui.grapheditor.settings.JIPipeSingleAlgorithmSelectionPanelUI;
+import org.hkijena.jipipe.ui.grapheditor.properties.JIPipeMultiAlgorithmSelectionPanelUI;
+import org.hkijena.jipipe.ui.grapheditor.properties.JIPipeSingleAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.history.HistoryJournalUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.TooltipUtils;
