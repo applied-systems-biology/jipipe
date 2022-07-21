@@ -105,7 +105,7 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
         }
 
         this.assignButton = new JButton();
-        UIUtils.redirectDragEvents(assignButton, getGraphUI()); 
+        UIUtils.redirectDragEvents(assignButton, getGraphUI());
         UIUtils.makeFlat(assignButton, UIUtils.getBorderColorFor(getSlot().getNode().getInfo()), 0, 0, 0, 0);
         assignButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
         this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
