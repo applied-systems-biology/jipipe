@@ -51,7 +51,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
     private JTextPane wysiwygEditorPane;
     private EditorPane htmlEditorPane;
     private HTMLEditorKit wysiwygEditorKit;
-    private Map<JToggleButton, BooleanSupplier> updatedButtons = new HashMap<>();
+    private final Map<JToggleButton, BooleanSupplier> updatedButtons = new HashMap<>();
     private JComboBox<String> fontSelection;
     private JComboBox<Integer> sizeSelection;
     private ColorChooserButton foregroundColorButton;
