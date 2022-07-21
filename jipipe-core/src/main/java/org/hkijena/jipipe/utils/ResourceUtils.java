@@ -41,7 +41,7 @@ public class ResourceUtils {
     /**
      * Gets an internal resource.
      * This is relative to getResourceBasePath()
-     * If you want to utilize resources from your Java extension, use {@link ResourceManager}
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
      *
      * @param internalResourcePath the internal path
      * @return the absolute resource path
@@ -54,7 +54,7 @@ public class ResourceUtils {
 
     /**
      * Gets a plugin-internal resource as URL
-     * If you want to utilize resources from your Java extension, use {@link ResourceManager}
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
      *
      * @param internalResourcePath internal path
      * @return resource URL or null if the resource does not exist

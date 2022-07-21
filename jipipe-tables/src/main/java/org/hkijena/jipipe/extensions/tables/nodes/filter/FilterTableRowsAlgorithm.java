@@ -102,13 +102,4 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void setFilters(DefaultExpressionParameter filters) {
         this.filters = filters;
     }
-
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            setFilters(new DefaultExpressionParameter("Area > 1000 AND Circulary >= 0.6"));
-            getEventBus().post(new ParameterChangedEvent(this, "filters"));
-        }
-    }
 }

@@ -22,7 +22,7 @@ import java.util.Map;
 /**
  * Simplifies the access to resources for extensions
  */
-public class ResourceManager {
+public class JIPipeResourceManager {
     private final Class<?> resourceClass;
     private final String basePath;
     private final String icons16BasePath;
@@ -48,7 +48,7 @@ public class ResourceManager {
      * @param templateBasePath    resource path to the template directory
      * @param schemaBasePath      resource path to the schema directory
      */
-    public ResourceManager(Class<?> resourceClass, String basePath, String icons16BasePath, String icons32BasePath, String darkIcons16BasePath, String darkIcons32BasePath, String templateBasePath, String schemaBasePath) {
+    public JIPipeResourceManager(Class<?> resourceClass, String basePath, String icons16BasePath, String icons32BasePath, String darkIcons16BasePath, String darkIcons32BasePath, String templateBasePath, String schemaBasePath) {
         this.resourceClass = resourceClass;
         this.basePath = formatBasePath(basePath);
         this.icons16BasePath = formatBasePath(icons16BasePath);
@@ -73,7 +73,7 @@ public class ResourceManager {
      * @param resourceClass the class that acts as the base for accessing the resources. Should be in the same package as the extension
      * @param basePath      absolute resource path to the resource root e.g. /org/hkijena/jipipe/extensions/myextension (must be consistent with the resource directory)
      */
-    public ResourceManager(Class<?> resourceClass, String basePath) {
+    public JIPipeResourceManager(Class<?> resourceClass, String basePath) {
         this.resourceClass = resourceClass;
         this.basePath = formatBasePath(basePath);
         this.icons16BasePath = formatBasePath(basePath + "/icons");

@@ -71,22 +71,6 @@ public class ModifyTablesScript extends JIPipeSimpleIteratingAlgorithm {
         registerSubParameter(scriptParameters);
     }
 
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            code.setCode("# This script is executed for each table\n" +
-                    "# Tables are passed as dictionary 'table'\n" +
-                    "# Key are the column names\n" +
-                    "# Values are string/double arrays\n" +
-                    "# Annotations can be modified via a dict 'annotations'\n\n" +
-                    "areas = table[\"Area\"]\n" +
-                    "areas_sq = [ x * x for x in areas ]\n" +
-                    "table[\"Area2\"] = areas_sq");
-            getEventBus().post(new ParameterChangedEvent(this, "code"));
-        }
-    }
-
     @Override
     public void reportValidity(JIPipeIssueReport report) {
         JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, report.resolve("Script"));

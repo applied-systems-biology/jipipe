@@ -97,16 +97,4 @@ public class DistributeDataRandomlyByPercentageAlgorithm extends JIPipeMergingAl
         return weights;
     }
 
-    @JIPipeDocumentation(name = "80:20 distribution", description = "Loads example parameters that distributes the outputs 80:20, labeled by Training and Test.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/distribute-randomize.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/distribute-randomize.png")
-    public void setTo80And20Distribution(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("Training", new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output), true);
-            slotConfiguration.addSlot("Test", new JIPipeDataSlotInfo(JIPipeData.class, JIPipeSlotType.Output), true);
-            weights.get("Training").set(80.0);
-            weights.get("Test").set(20.0);
-        }
-    }
 }

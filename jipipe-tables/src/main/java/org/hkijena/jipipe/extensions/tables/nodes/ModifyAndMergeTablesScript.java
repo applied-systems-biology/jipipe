@@ -80,25 +80,6 @@ public class ModifyAndMergeTablesScript extends JIPipeAlgorithm {
         registerSubParameter(scriptParameters);
     }
 
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            code.setCode("# This script is executed once\n" +
-                    "# All tables are passed as array 'tables'\n" +
-                    "# It contains dictionaries with following structure:\n" +
-                    "# { 'data' : {}, 'nrow': x, 'annotations': {} }\n" +
-                    "# 'data' is a dictionary from column name to a list of row data\n" +
-                    "# 'nrow' is the number of rows (str/float)\n" +
-                    "# 'annotations' is a dictionary from annotation name to value (str)" +
-                    "\n\n" +
-                    "tables = [\n" +
-                    "    { \"data\": { \"example\" : [1,2,3] } }\n" +
-                    "]");
-            getEventBus().post(new ParameterChangedEvent(this, "code"));
-        }
-    }
-
     @Override
     public void reportValidity(JIPipeIssueReport report) {
         JythonUtils.checkScriptValidity(code.getCode(getProjectDirectory()), scriptParameters, report.resolve("Script"));

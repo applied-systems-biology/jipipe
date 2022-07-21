@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
@@ -54,7 +55,7 @@ import java.util.List;
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nHyperstacks")
-public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
+public class StackToDimensionMergerAlgorithm extends JIPipeMergingAlgorithm {
 
     private HyperstackDimension createdDimension = HyperstackDimension.Channel;
 
@@ -82,35 +83,27 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
         return true;
     }
 
+    @JIPipeDocumentation(name = "Created dimension", description = "The dimension that is created by merging the " +
+            "incoming stacks.")
+    @JIPipeParameter("created-dimension")
+    public HyperstackDimension getCreatedDimension() {
+        return createdDimension;
+    }
+
+    @JIPipeParameter("created-dimension")
+    public void setCreatedDimension(HyperstackDimension createdDimension) {
+        this.createdDimension = createdDimension;
+    }
+
     @Override
-    protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        if (getEffectiveInputSlotCount() == 0)
-            return;
-        // We need to identify a proper type, so the bit depths are equal
-        Class<? extends JIPipeData> targetType = getFirstInputSlot().getAcceptedDataType();
-        if (targetType == ImagePlusData.class) {
-            // Identify a proper type
-            ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
-            switch (image.getBitDepth()) {
-                case 8:
-                    targetType = ImagePlusGreyscale8UData.class;
-                    break;
-                case 16:
-                    targetType = ImagePlusGreyscale16UData.class;
-                    break;
-                case 24:
-                    targetType = ImagePlusColorRGBData.class;
-                    break;
-                default:
-                    targetType = ImagePlusGreyscale32FData.class;
-                    break;
-            }
-        }
+    protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
+
         List<ImagePlus> inputImages = new ArrayList<>();
-        for (JIPipeDataSlot slot : getDataInputSlots()) {
-            ImagePlus img = ((ImagePlusData) dataBatch.getInputData(slot, targetType, progressInfo)).getImage();
-            inputImages.add(img);
+        for (ImagePlusData data : dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo)) {
+            inputImages.add(data.getImage());
         }
+        inputImages = ImageJUtils.convertToConsensusBitDepthIfNeeded(inputImages);
+
         if (inputImages.isEmpty())
             return;
         if (inputImages.size() == 1) {
@@ -142,8 +135,9 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
             for (int i = 0; i < inputImages.size(); i++) {
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Slot", i, inputImages.size());
                 final int z = i;
+                List<ImagePlus> finalInputImages = inputImages;
                 ImageJUtils.forEachIndexedZCTSlice(inputImages.get(i), (ip, index) -> {
-                    int targetStackIndex = ImageJUtils.zeroSliceIndexToOneStackIndex(index.getC(), z, index.getT(), numC, inputImages.size(), numT);
+                    int targetStackIndex = ImageJUtils.zeroSliceIndexToOneStackIndex(index.getC(), z, index.getT(), numC, finalInputImages.size(), numT);
                     stack.setProcessor(ip, targetStackIndex);
                 }, slotProgress);
             }
@@ -151,7 +145,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
             result.setDimensions(numC, inputImages.size(), numT);
             if (!inputImages.isEmpty())
                 result.copyScale(inputImages.get(0));
-            dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(targetType, result), progressInfo);
+            dataBatch.addOutputData(getFirstOutputSlot(),new ImagePlusData(result), progressInfo);
         } else if (createdDimension == HyperstackDimension.Channel) {
             if (numC > 1) {
                 throw new UserFriendlyRuntimeException("Images must have no channel dimension!",
@@ -165,9 +159,10 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Slot", i, inputImages.size());
                 final int c = i;
                 int finalI = i;
+                List<ImagePlus> finalInputImages1 = inputImages;
                 ImageJUtils.forEachIndexedZCTSlice(inputImages.get(i), (ip, index) -> {
-                    int targetStackIndex = ImageJUtils.zeroSliceIndexToOneStackIndex(c, index.getZ(), index.getT(), inputImages.size(), numZ, numT);
-                    System.out.println(finalI + "# " + index + " -> " + targetStackIndex + " in " + (inputImages.size() * numZ * numT));
+                    int targetStackIndex = ImageJUtils.zeroSliceIndexToOneStackIndex(c, index.getZ(), index.getT(), finalInputImages1.size(), numZ, numT);
+                    System.out.println(finalI + "# " + index + " -> " + targetStackIndex + " in " + (finalInputImages1.size() * numZ * numT));
                     stack.setProcessor(ip, targetStackIndex);
                 }, slotProgress);
             }
@@ -175,7 +170,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
             result.setDimensions(inputImages.size(), numZ, numT);
             if (!inputImages.isEmpty())
                 result.copyScale(inputImages.get(0));
-            dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(targetType, result), progressInfo);
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         } else if (createdDimension == HyperstackDimension.Frame) {
             if (numT > 1) {
                 throw new UserFriendlyRuntimeException("Images must have no time dimension!",
@@ -188,8 +183,9 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
             for (int i = 0; i < inputImages.size(); i++) {
                 JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Slot", i, inputImages.size());
                 final int t = i;
+                List<ImagePlus> finalInputImages2 = inputImages;
                 ImageJUtils.forEachIndexedZCTSlice(inputImages.get(i), (ip, index) -> {
-                    int targetStackIndex = ImageJUtils.zeroSliceIndexToOneStackIndex(index.getC(), index.getZ(), t, numC, numZ, inputImages.size());
+                    int targetStackIndex = ImageJUtils.zeroSliceIndexToOneStackIndex(index.getC(), index.getZ(), t, numC, numZ, finalInputImages2.size());
                     stack.setProcessor(ip, targetStackIndex);
                 }, slotProgress);
             }
@@ -197,43 +193,7 @@ public class StackToDimensionMergerAlgorithm extends JIPipeIteratingAlgorithm {
             result.setDimensions(numC, numZ, inputImages.size());
             if (!inputImages.isEmpty())
                 result.copyScale(inputImages.get(0));
-            dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.createData(targetType, result), progressInfo);
-        }
-    }
-
-    @JIPipeDocumentation(name = "Created dimension", description = "The dimension that is created by merging the " +
-            "incoming stacks.")
-    @JIPipeParameter("created-dimension")
-    public HyperstackDimension getCreatedDimension() {
-        return createdDimension;
-    }
-
-    @JIPipeParameter("created-dimension")
-    public void setCreatedDimension(HyperstackDimension createdDimension) {
-        this.createdDimension = createdDimension;
-    }
-
-    @JIPipeDocumentation(name = "3 stack merge", description = "Loads example parameters that merge three stacks.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/channelmixer.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/channelmixer.png")
-    public void setTo3ChannelExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
-            for (int i = 0; i < 3; i++) {
-                slotConfiguration.addSlot("C" + (i + 1), new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Input), true);
-            }
-        }
-    }
-
-    @JIPipeDocumentation(name = "2 stack merge", description = "Loads example parameters that merge two stacks.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/channelmixer.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/channelmixer.png")
-    public void setTo2ChannelExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
-            for (int i = 0; i < 2; i++) {
-                slotConfiguration.addSlot("C" + (i + 1), new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Input), true);
-            }
+            dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(result), progressInfo);
         }
     }
 }

@@ -130,7 +130,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringLi
 import org.hkijena.jipipe.extensions.strings.StringsExtension;
 import org.hkijena.jipipe.extensions.tables.TablesExtension;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
-import org.hkijena.jipipe.utils.ResourceManager;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -145,7 +145,7 @@ import java.util.*;
 @Plugin(type = JIPipeJavaExtension.class)
 public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
-    public static final ResourceManager RESOURCES = new ResourceManager(ImageJAlgorithmsExtension.class, "org/hkijena/jipipe/extensions/imagejalgorithms");
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(ImageJAlgorithmsExtension.class, "org/hkijena/jipipe/extensions/imagejalgorithms");
 
     /**
      * Dependency instance to be used for creating the set of dependencies

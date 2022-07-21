@@ -35,6 +35,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -56,6 +57,8 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
     public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:python",
             JIPipe.getJIPipeVersion(),
             "Python integration");
+
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(PythonExtension.class, "org/hkijena/jipipe/extensions/python");
 
     public PythonExtension() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
@@ -165,6 +168,8 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("cpython-script", PythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("cpython-script-iterating", IteratingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
         registerNodeType("cpython-script-merging", MergingPythonScriptAlgorithm.class, UIUtils.getIconURLFromResources("apps/python.png"));
+
+        registerNodeExamplesFromResources(RESOURCES, "examples");
     }
 
     @Override

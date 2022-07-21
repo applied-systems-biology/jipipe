@@ -42,7 +42,7 @@ import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEn
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.utils.ResourceManager;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -63,7 +63,7 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
             JIPipe.getJIPipeVersion(),
             "IJ TrackMate integration");
 
-    public static final ResourceManager RESOURCES = new ResourceManager(TrackMateExtension.class, "/org/hkijena/jipipe/extensions/ijtrackmate");
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(TrackMateExtension.class, "/org/hkijena/jipipe/extensions/ijtrackmate");
 
     public TrackMateExtension() {
     }

@@ -80,39 +80,6 @@ public class IteratingJythonScriptAlgorithm extends JIPipeIteratingAlgorithm {
         registerSubParameter(scriptParameters);
     }
 
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
-            slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("Table", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Input), true);
-            slotConfiguration.addSlot("Table", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output), true);
-            code.setCode("from org.hkijena.jipipe.extensions.tables.datatypes import ResultsTableData\n" +
-                    "\n" +
-                    "# Fetch the input table from the first input slot\n" +
-                    "input_table = data_batch.getInputData(input_slots[0], ResultsTableData, progress_info)\n" +
-                    "\n" +
-                    "table = ResultsTableData()\n" +
-                    "\n" +
-                    "for col in range(input_table.getColumnCount()):\n" +
-                    "\ttable.addColumn(\"MEAN(\" + input_table.getColumnName(col) + \")\", True)\n" +
-                    "\n" +
-                    "table.addRow()\n" +
-                    "\n" +
-                    "for col in range(input_table.getColumnCount()):\n" +
-                    "\tcolumn = input_table.getColumnReference(col)\n" +
-                    "\tcolumn_data = column.getDataAsDouble(column.getRows())\n" +
-                    "\ttable.setValueAt(sum(column_data) / column.getRows(), 0, col)\n" +
-                    "\n" +
-                    "# Write the generated data\n" +
-                    "# Annotations are automatically transferred\n" +
-                    "data_batch.addOutputData(output_slots[0], table, progress_info)\n");
-            getEventBus().post(new ParameterChangedEvent(this, "code"));
-        }
-    }
-
     @Override
     public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);

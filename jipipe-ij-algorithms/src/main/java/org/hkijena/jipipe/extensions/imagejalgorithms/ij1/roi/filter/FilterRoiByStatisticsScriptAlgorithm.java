@@ -81,25 +81,6 @@ public class FilterRoiByStatisticsScriptAlgorithm extends JIPipeIteratingAlgorit
         registerSubParameter(scriptParameters);
     }
 
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            code.setCode("# This script is executed for each ROI list\n" +
-                    "# The list is accessible via 'roi_list'\n" +
-                    "# It contains an entry 'data' with the ROI\n" +
-                    "# And a dictionary 'stats' with statistics" +
-                    "# Annotations can be modified via a dict 'annotations'\n" +
-                    "\n\n" +
-                    "filtered_rois = []\n" +
-                    "for item in roi_list:\n" +
-                    "\tif item[\"stats\"][\"Area\"] < 100:\n" +
-                    "\t\tfiltered_rois.append(item)\n" +
-                    "roi_list = filtered_rois");
-            getEventBus().post(new ParameterChangedEvent(this, "code"));
-        }
-    }
-
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
         this.pythonInterpreter = new PythonInterpreter();

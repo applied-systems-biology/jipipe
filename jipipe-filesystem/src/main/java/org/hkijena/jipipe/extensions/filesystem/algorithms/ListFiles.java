@@ -140,7 +140,7 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Recursive", description = "If enabled, the search is recursive.")
-    @JIPipeParameter("recursive")
+    @JIPipeParameter(value = "recursive", important = true)
     public boolean isRecursive() {
         return recursive;
     }
@@ -160,14 +160,5 @@ public class ListFiles extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("recursive-follows-links")
     public void setRecursiveFollowsLinks(boolean recursiveFollowsLinks) {
         this.recursiveFollowsLinks = recursiveFollowsLinks;
-    }
-
-    @JIPipeDocumentation(name = "Filter only *.tif", description = "Sets the filter, so only *.tif files are returned.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            setFilters(new PathQueryExpression("STRING_MATCHES_GLOB(name, \"*.tif\")"));
-            getEventBus().post(new ParameterChangedEvent(this, "filters"));
-        }
     }
 }

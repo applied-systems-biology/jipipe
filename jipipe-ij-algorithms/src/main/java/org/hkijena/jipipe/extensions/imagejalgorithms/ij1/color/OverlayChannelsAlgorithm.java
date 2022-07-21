@@ -209,30 +209,6 @@ public class OverlayChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         return channelColorAssignment;
     }
 
-    @JIPipeDocumentation(name = "3 channel merge", description = "Loads example parameters that merge three channels.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/channelmixer.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/channelmixer.png")
-    public void setTo3ChannelExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
-            for (int i = 0; i < 3; i++) {
-                slotConfiguration.addSlot("C" + (i + 1), new JIPipeDataSlotInfo(ImagePlusGreyscale8UData.class, JIPipeSlotType.Input), true);
-            }
-        }
-    }
-
-    @JIPipeDocumentation(name = "2 channel merge", description = "Loads example parameters that merge two channels.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/channelmixer.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/channelmixer.png")
-    public void setTo2ChannelExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
-            for (int i = 0; i < 2; i++) {
-                slotConfiguration.addSlot("C" + (i + 1), new JIPipeDataSlotInfo(ImagePlusGreyscale8UData.class, JIPipeSlotType.Input), true);
-            }
-        }
-    }
-
     public static class Channel implements JIPipeParameterCollection {
         private final EventBus eventBus = new EventBus();
         private Color color = Color.RED;

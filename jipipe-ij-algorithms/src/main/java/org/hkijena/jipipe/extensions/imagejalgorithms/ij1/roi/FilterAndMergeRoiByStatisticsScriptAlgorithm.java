@@ -85,24 +85,6 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
         roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
     }
 
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            code.setCode("# This script is executed once\n" +
-                    "# All ROI lists are passed as array 'roi_lists'\n" +
-                    "# It contains dictionaries with following structure:\n" +
-                    "# { 'roi_list' : [], 'annotations': {} }\n" +
-                    "# 'roi_list' contains dictionaries with following structure\n" +
-                    "# { 'data' : x, 'stats' : {} } where x is an ImageJ ROI and stats contains the statistics.\n" +
-                    "# 'annotations' is a dictionary from annotation name to value (str)" +
-                    "\n\n" +
-                    "for item in roi_lists:\n" +
-                    "\titem[\"roi_list\"] = item[\"roi_list\"][:10]");
-            getEventBus().post(new ParameterChangedEvent(this, "code"));
-        }
-    }
-
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
         PythonInterpreter pythonInterpreter = new PythonInterpreter();

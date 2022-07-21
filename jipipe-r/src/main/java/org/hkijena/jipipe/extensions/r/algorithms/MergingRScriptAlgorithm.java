@@ -242,18 +242,6 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            Object result = JOptionPane.showInputDialog(parent.getWindow(), "Please select the example:",
-                    "Load example", JOptionPane.PLAIN_MESSAGE, null, Examples.values(), Examples.LoadIris);
-            if (result instanceof Examples) {
-                ((Examples) result).apply(this);
-            }
-        }
-    }
-
     @JIPipeParameter("variables")
     @JIPipeDocumentation(name = "Script variables", description = "The parameters are passed as variables to the R script. The variables are named according to the " +
             "unique name (if valid variable names) and are also stored in a list 'JIPipe.Variables'.")
@@ -261,53 +249,4 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
         return variables;
     }
 
-    private enum Examples {
-        LoadIris("Load IRIS data set", "library(datasets)\n\nJIPipe.AddOutputDataFrame(slot=\"Table\", data=iris)",
-                new JIPipeInputSlot[0], new JIPipeOutputSlot[]{
-                new DefaultJIPipeOutputSlot(ResultsTableData.class, "Table", "", null, false, JIPipeDataSlotRole.Data)
-        }),
-        PlotIris("Plot IRIS data set", "library(datasets)\n" +
-                "\n" +
-                "# Generate the output file name\n" +
-                "png.file.name <- JIPipe.AddOutputPNGImagePath(slot=\"Plot\")\n\n" +
-                "# Use standard R functions. Write into this file.\n" +
-                "png(png.file.name, width = 800, height = 600)\n" +
-                "plot(iris$Petal.Length, iris$Petal.Width, pch=21, bg=c(\"red\",\"green3\",\"blue\")[unclass(iris$Species)], main=\"Edgar Anderson's Iris Data\")\n" +
-                "dev.off()\n" +
-                "\n" +
-                "# JIPipe will automatically load the data",
-                new JIPipeInputSlot[0], new JIPipeOutputSlot[]{
-                new DefaultJIPipeOutputSlot(ImagePlusColorRGBData.class, "Plot", "", null, false, JIPipeDataSlotRole.Data)
-        });
-
-        private final String name;
-        private final String code;
-        private final JIPipeInputSlot[] inputSlots;
-        private final JIPipeOutputSlot[] outputSlots;
-
-        Examples(String name, String code, JIPipeInputSlot[] inputSlots, JIPipeOutputSlot[] outputSlots) {
-            this.name = name;
-            this.code = code;
-            this.inputSlots = inputSlots;
-            this.outputSlots = outputSlots;
-        }
-
-        public void apply(MergingRScriptAlgorithm algorithm) {
-            ParameterUtils.setParameter(algorithm, "script", new RScriptParameter(code));
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
-            slotConfiguration.clearOutputSlots(true);
-            for (JIPipeInputSlot inputSlot : inputSlots) {
-                slotConfiguration.addInputSlot(inputSlot.slotName(), inputSlot.description(), inputSlot.value(), true);
-            }
-            for (JIPipeOutputSlot outputSlot : outputSlots) {
-                slotConfiguration.addOutputSlot(outputSlot.slotName(), outputSlot.description(), outputSlot.value(), null, true);
-            }
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-    }
 }

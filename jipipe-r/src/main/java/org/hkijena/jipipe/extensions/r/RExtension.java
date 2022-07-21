@@ -33,6 +33,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -52,6 +53,8 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
     public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:r",
             JIPipe.getJIPipeVersion(),
             "R integration");
+
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(RExtension.class, "org/hkijena/jipipe/extensions/r");
 
     public RExtension() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
@@ -154,6 +157,8 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerEnumParameterType("r-import-dataset:dataset", ImportRDatasetAlgorithm.Dataset.class, "R dataset", "A dataset from the R datasets package");
         registerNodeType("r-import-dataset", ImportRDatasetAlgorithm.class, UIUtils.getIconURLFromResources("apps/rlogo_icon.png"));
+
+        registerNodeExamplesFromResources(RESOURCES, "examples");
     }
 
     @Override

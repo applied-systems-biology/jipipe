@@ -108,34 +108,6 @@ public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
-            slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("Input", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Input), true);
-            slotConfiguration.addSlot("Output", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output), true);
-            code.setCode("from jipipe.imagej import *\n" +
-                    "\n" +
-                    "# Get the input slot\n" +
-                    "ds = jipipe_inputs[\"Input\"]\n" +
-                    "\n" +
-                    "# Get the first table from the slot\n" +
-                    "table = load_table_file(data_slot=ds, row=0)\n" +
-                    "\n" +
-                    "print(table)\n" +
-                    "\n" +
-                    "# Get the output slot\n" +
-                    "dso = jipipe_outputs[\"Output\"]\n" +
-                    "\n" +
-                    "# Add the table to the output slot\n" +
-                    "add_table(table, dso)\n\n");
-            getEventBus().post(new ParameterChangedEvent(this, "code"));
-        }
-    }
-
     @Override
     public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);

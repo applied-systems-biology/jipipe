@@ -33,6 +33,11 @@ import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.imagejdatatypes.colorspace.ColorSpace;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 
@@ -56,6 +61,71 @@ import java.util.stream.Collectors;
  * Utility functions for ImageJ
  */
 public class ImageJUtils {
+
+    /**
+     * Returns the lowest ImageJ image type that can contain all images.
+     * If any of the images is RGB, 24 bit will be returned
+     * @param images the images
+     * @return the consensus bit depth. 0 if images is empty
+     */
+    public static int getConsensusBitDepth(Collection<ImagePlus> images) {
+        int type = 0;
+        for (ImagePlus image : images) {
+            if(image.getBitDepth() == 24) {
+                type = 24;
+                break;
+            }
+            else {
+                type = Math.max(type, image.getBitDepth());
+            }
+        }
+        return type;
+    }
+
+    public static List<ImagePlus> convertToConsensusBitDepthIfNeeded(Collection<ImagePlus> images) {
+        List<ImagePlus> result = new ArrayList<>();
+        int bitDepth = getConsensusBitDepth(images);
+        for (ImagePlus image : images) {
+            result.add(convertToBitDepthIfNeeded(image, bitDepth));
+        }
+        return result;
+    }
+
+    public static ImagePlus convertToBitDepthIfNeeded(ImagePlus imagePlus, int bitDepth) {
+        switch (bitDepth) {
+            case 8:
+              return convertToGreyscale8UIfNeeded(imagePlus);
+            case 16:
+                return convertToGrayscale16UIfNeeded(imagePlus);
+            case 32:
+                return convertToGrayscale32FIfNeeded(imagePlus);
+            case 24:
+                return convertToColorRGBIfNeeded(imagePlus);
+            default:
+                return imagePlus;
+
+        }
+    }
+
+    /**
+     * Returns the general {@link ImagePlusData} class for a bit depth
+     * @param bitDepth the bit depth
+     * @return the class. if bit depth is invalid, {@link ImagePlusData} is returned
+     */
+    public static Class<? extends ImagePlusData> bitDepthToImagePlusDataType(int bitDepth) {
+        switch (bitDepth) {
+            case 8:
+                return ImagePlusGreyscale8UData.class;
+            case 16:
+                return ImagePlusGreyscale16UData.class;
+            case 32:
+                return ImagePlusGreyscale32FData.class;
+            case 24:
+                return ImagePlusColorRGBData.class;
+            default:
+                return ImagePlusData.class;
+        }
+    }
 
     /**
      * Faster version of the duplicate() method in {@link ImagePlus}.

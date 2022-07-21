@@ -27,6 +27,7 @@ import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEn
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -51,6 +52,8 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
     public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:clij2-integration",
             JIPipe.getJIPipeVersion(),
             "CLIJ2 integration");
+
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(CLIJExtension.class, "org/hkijena/jipipe/extensions/clij2");
 
     public static final Class[] ALLOWED_PARAMETER_TYPES = new Class[]{Boolean.class, Character.class, Short.class, Integer.class, Float.class, Double.class};
 
@@ -226,6 +229,8 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
                 UIUtils.getIconFromResources("actions/plugins.png"),
                 new CLIJSettings());
         registerMenuExtension(CLIJControlPanelJIPipeMenuExtension.class);
+
+        registerNodeExamplesFromResources(RESOURCES, "examples");
     }
 
     private void registerAlgorithms(JIPipeProgressInfo progressInfo) {

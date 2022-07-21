@@ -53,6 +53,7 @@ import org.hkijena.jipipe.extensions.tables.parameters.collections.*;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameterEditorUI;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.*;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -72,6 +73,8 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
     public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:table-operations",
             JIPipe.getJIPipeVersion(),
             "Standard table operations");
+
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(TablesExtension.class, "org/hkijena/jipipe/extensions/tables");
 
     public TablesExtension() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_STATISTICS, PluginCategoriesEnumParameter.CATEGORY_DATA_PROCESSING);
@@ -120,6 +123,8 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerParameters();
         registerAlgorithms();
+
+        registerNodeExamplesFromResources(RESOURCES, "examples");
     }
 
     private void registerColumnSources() {

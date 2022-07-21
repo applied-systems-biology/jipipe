@@ -34,6 +34,7 @@ import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOpera
 import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -51,6 +52,8 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
     public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:filesystem",
             JIPipe.getJIPipeVersion(),
             "Filesystem types and algorithms");
+
+    public static JIPipeResourceManager RESOURCES = new JIPipeResourceManager(FilesystemExtension.class, "org/hkijena/jipipe/extensions/filesystem");
 
     public FilesystemExtension() {
     }
@@ -154,6 +157,8 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("annotation-table-to-paths", AnnotationTableToPaths.class, UIUtils.getIconURLFromResources("data-types/path.png"));
         registerNodeType("annotate-with-path-properties", AnnotateWithPathProperties.class, UIUtils.getIconURLFromResources("data-types/path.png"));
+
+        registerNodeExamplesFromResources(RESOURCES, "examples");
     }
 
 }

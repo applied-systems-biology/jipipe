@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -44,7 +45,7 @@ import java.util.Set;
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter filters = new DefaultExpressionParameter("num_rows > 0");
+    private DefaultExpressionParameter filters = new DefaultExpressionParameter("");
     private boolean includeAnnotations = true;
 
     /**
@@ -100,6 +101,7 @@ public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Filters", description = "Expression that is applied per table to determine if it is filtered out. Must return a boolean.")
     @JIPipeParameter("filters")
+    @ExpressionParameterSettingsVariable(fromClass = VariableSource.class)
     public DefaultExpressionParameter getFilters() {
         return filters;
     }
@@ -107,15 +109,6 @@ public class FilterTablesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("filters")
     public void setFilters(DefaultExpressionParameter filters) {
         this.filters = filters;
-    }
-
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            setFilters(new DefaultExpressionParameter("num_rows > 0"));
-            getEventBus().post(new ParameterChangedEvent(this, "filters"));
-        }
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {

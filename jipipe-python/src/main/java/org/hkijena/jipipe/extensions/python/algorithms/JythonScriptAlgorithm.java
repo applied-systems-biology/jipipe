@@ -83,33 +83,6 @@ public class JythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {
         registerSubParameter(scriptParameters);
     }
 
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
-            slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("Table", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output), true);
-            code.setCode("from org.hkijena.jipipe.extensions.tables.datatypes import ResultsTableData\n" +
-                    "from org.hkijena.jipipe.api.annotation import JIPipeTextAnnotation, JIPipeTextAnnotationMergeMode\n" +
-                    "from random import random\n" +
-                    "\n" +
-                    "# We generate a table of 10 values\n" +
-                    "table = ResultsTableData()\n" +
-                    "table.addColumn(\"Area\", True)\n" +
-                    "\n" +
-                    "for row in range(10):\n" +
-                    "\ttable.addRow()\n" +
-                    "\ttable.setValueAt(random(), row, 0)\n" +
-                    "\n" +
-                    "# The output is written into the output slot\n" +
-                    "# You can add annotations via an overload of addData()\n" +
-                    "output_slot_map[\"Table\"].addData(table, [JIPipeTextAnnotation(\"Dataset\", \"Generated\")], JIPipeTextAnnotationMergeMode.OverwriteExisting, progress_info)\n");
-            getEventBus().post(new ParameterChangedEvent(this, "code"));
-        }
-    }
-
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         PythonInterpreter pythonInterpreter = new PythonInterpreter();

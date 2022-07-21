@@ -215,15 +215,6 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
         this.filterExpression = filterExpression;
     }
 
-    @JIPipeDocumentation(name = "Filter only *.tif", description = "Sets the filter, so only *.tif files are returned.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            setFilterExpression(new PathQueryExpression("STRING_MATCHES_GLOB(name, \"*.tif\")"));
-            getEventBus().post(new ParameterChangedEvent(this, "filter-expression"));
-        }
-    }
-
     @JIPipeDocumentation(name = "Slices to import", description = "Determines which files should be imported based on the sorted and filtered list of files. The first index is 0. Duplicates are allowed." +
             " If left empty, all slices will be imported. ")
     @JIPipeParameter("slice-indices")

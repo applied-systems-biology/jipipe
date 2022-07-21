@@ -28,7 +28,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringLi
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInImageJDataOperation;
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInJIPipeTabDataOperation;
-import org.hkijena.jipipe.utils.ResourceManager;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -40,7 +40,7 @@ import org.scijava.plugin.Plugin;
 @Plugin(type = JIPipeJavaExtension.class)
 public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
-    public static final ResourceManager RESOURCES = new ResourceManager(AnnotationsExtension.class, "org/hkijena/jipipe/extensions/annotation");
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(AnnotationsExtension.class, "org/hkijena/jipipe/extensions/annotation");
 
     /**
      * Dependency instance to be used for creating the set of dependencies

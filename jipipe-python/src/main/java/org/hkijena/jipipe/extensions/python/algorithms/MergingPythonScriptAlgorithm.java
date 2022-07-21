@@ -95,37 +95,6 @@ public class MergingPythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         this.cleanUpAfterwards = cleanUpAfterwards;
     }
 
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
-            slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("Input", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Input), true);
-            slotConfiguration.addSlot("Output", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output), true);
-            code.setCode("from jipipe.imagej import *\n" +
-                    "\n" +
-                    "# Get the input slot\n" +
-                    "ds = jipipe_inputs[\"Input\"]\n" +
-                    "\n" +
-                    "# Get the output slot\n" +
-                    "dso = jipipe_outputs[\"Output\"]\n" +
-                    "\n" +
-                    "# Go through all tables, print, and add to output\n" +
-                    "for row in range(ds.rows):\n" +
-                    "\n" +
-                    "\t# Get the first table from the slot\n" +
-                    "\ttable = load_table_file(data_slot=ds, row=0)\n" +
-                    "\t\n" +
-                    "\tprint(table)\n" +
-                    "\t\n" +
-                    "\t# Add the table to the output slot\n" +
-                    "\tadd_table(table, dso)\n");
-            getEventBus().post(new ParameterChangedEvent(this, "code"));
-        }
-    }
-
     @JIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node.")
     @JIPipeParameter("override-environment")
     public OptionalPythonEnvironment getOverrideEnvironment() {

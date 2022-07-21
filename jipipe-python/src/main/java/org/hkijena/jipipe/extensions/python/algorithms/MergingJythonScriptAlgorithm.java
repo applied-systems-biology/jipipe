@@ -81,32 +81,6 @@ public class MergingJythonScriptAlgorithm extends JIPipeMergingAlgorithm {
         registerSubParameter(scriptParameters);
     }
 
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-            slotConfiguration.clearInputSlots(true);
-            slotConfiguration.clearOutputSlots(true);
-            slotConfiguration.addSlot("Table", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Input), true);
-            slotConfiguration.addSlot("Table", new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output), true);
-            code.setCode("from org.hkijena.jipipe.extensions.tables.datatypes import ResultsTableData\n" +
-                    "\n" +
-                    "# Fetch the input tables\n" +
-                    "input_tables = data_batch.getInputData(input_slots[0], ResultsTableData, progress_info)\n" +
-                    "\n" +
-                    "# Merge them into one table\n" +
-                    "output_table = ResultsTableData()\n" +
-                    "\n" +
-                    "for input_table in input_tables:\n" +
-                    "\toutput_table.addRows(input_table)\n" +
-                    "\n" +
-                    "# Add into the output slot\n" +
-                    "data_batch.addOutputData(output_slots[0], output_table, progress_info)\n");
-            getEventBus().post(new ParameterChangedEvent(this, "code"));
-        }
-    }
-
     @Override
     public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);

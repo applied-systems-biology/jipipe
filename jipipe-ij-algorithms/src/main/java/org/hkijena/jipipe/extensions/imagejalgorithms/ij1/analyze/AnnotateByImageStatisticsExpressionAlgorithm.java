@@ -169,19 +169,6 @@ public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratin
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), outputAnnotations, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
     }
-
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            annotations.clear();
-            annotations.add(new ExpressionTableColumnGeneratorProcessor("HISTOGRAM_THRESHOLD_OTSU(stat_histogram)", "Otsu threshold"));
-            annotations.add(new ExpressionTableColumnGeneratorProcessor("PERCENTILE(pixels, 30)", "30th percentile"));
-            annotations.add(new ExpressionTableColumnGeneratorProcessor("(stat_max + stat_min) / 2", "Middle gray"));
-            getEventBus().post(new ParameterChangedEvent(this, "annotations"));
-        }
-    }
-
     @JIPipeDocumentation(name = "Get statistics from ...", description = "Determines where the algorithm is applied to.")
     @JIPipeParameter("roi:target-area")
     public ImageROITargetArea getTargetArea() {

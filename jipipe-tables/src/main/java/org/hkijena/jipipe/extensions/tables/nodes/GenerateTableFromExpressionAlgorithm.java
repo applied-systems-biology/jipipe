@@ -125,19 +125,4 @@ public class GenerateTableFromExpressionAlgorithm extends JIPipeSimpleIteratingA
         this.generatedRows = generatedRows;
         return true;
     }
-
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            columns.clear();
-            ExpressionTableColumnGeneratorProcessor columnX = columns.addNewInstance();
-            columnX.setKey(new DefaultExpressionParameter("row / 100"));
-            columnX.setValue("x");
-            ExpressionTableColumnGeneratorProcessor columnY = columns.addNewInstance();
-            columnY.setKey(new DefaultExpressionParameter("SIN(row / 100)"));
-            columnY.setValue("y");
-            getEventBus().post(new ParameterChangedEvent(this, "columns"));
-        }
-    }
 }

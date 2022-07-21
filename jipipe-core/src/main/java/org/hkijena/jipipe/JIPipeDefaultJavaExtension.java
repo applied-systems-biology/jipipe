@@ -673,13 +673,13 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     }
 
     /**
-     * Registers node examples from plugin resources via a {@link ResourceManager}.
+     * Registers node examples from plugin resources via a {@link JIPipeResourceManager}.
      * Will detect *.json files and attempt to load them (fails silently)
      * @param resourceManager the resource manager
      * @param subDirectory the directory within the resource manager's base path
      */
-    public void registerNodeExamplesFromResources(ResourceManager resourceManager, String subDirectory) {
-        registerNodeExamplesFromResources(resourceManager.getResourceClass(), ResourceManager.formatBasePath(resourceManager.getBasePath() + "/" + subDirectory));
+    public void registerNodeExamplesFromResources(JIPipeResourceManager resourceManager, String subDirectory) {
+        registerNodeExamplesFromResources(resourceManager.getResourceClass(), JIPipeResourceManager.formatBasePath(resourceManager.getBasePath() + "/" + subDirectory));
     }
 
     /**
