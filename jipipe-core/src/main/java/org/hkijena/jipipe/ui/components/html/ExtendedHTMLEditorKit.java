@@ -14,39 +14,39 @@ import java.awt.event.MouseMotionListener;
  */
 public class ExtendedHTMLEditorKit extends HTMLEditorKit {
     private static HTMLFactory factory = null;
-    private HyperlinkHoverLinkController handler = new HyperlinkHoverLinkController();
+//    private final HyperlinkHoverLinkController handler = new HyperlinkHoverLinkController();
 
     public ExtendedHTMLEditorKit() {
         super();
         setDefaultCursor(Cursor.getPredefinedCursor(Cursor.TEXT_CURSOR));
     }
 
-    @Override
-    public void install(JEditorPane c) {
-        MouseListener[] oldMouseListeners = c.getMouseListeners();
-        MouseMotionListener[] oldMouseMotionListeners = c.getMouseMotionListeners();
-        super.install(c);
-        //the following code removes link handler added by original
-        //HTMLEditorKit
-
-        for (MouseListener l : c.getMouseListeners()) {
-            c.removeMouseListener(l);
-        }
-        for (MouseListener l : oldMouseListeners) {
-            c.addMouseListener(l);
-        }
-
-        for (MouseMotionListener l : c.getMouseMotionListeners()) {
-            c.removeMouseMotionListener(l);
-        }
-        for (MouseMotionListener l : oldMouseMotionListeners) {
-            c.addMouseMotionListener(l);
-        }
-
-        //add out link handler instead of removed one
-        c.addMouseListener(handler);
-        c.addMouseMotionListener(handler);
-    }
+//    @Override
+//    public void install(JEditorPane c) {
+//        MouseListener[] oldMouseListeners = c.getMouseListeners();
+//        MouseMotionListener[] oldMouseMotionListeners = c.getMouseMotionListeners();
+//        super.install(c);
+//        //the following code removes link handler added by original
+//        //HTMLEditorKit
+//
+//        for (MouseListener l : c.getMouseListeners()) {
+//            c.removeMouseListener(l);
+//        }
+//        for (MouseListener l : oldMouseListeners) {
+//            c.addMouseListener(l);
+//        }
+//
+//        for (MouseMotionListener l : c.getMouseMotionListeners()) {
+//            c.removeMouseMotionListener(l);
+//        }
+//        for (MouseMotionListener l : oldMouseMotionListeners) {
+//            c.addMouseMotionListener(l);
+//        }
+//
+//        //add out link handler instead of removed one
+//        c.addMouseListener(handler);
+//        c.addMouseMotionListener(handler);
+//    }
 
     @Override
     public ViewFactory getViewFactory() {
@@ -72,34 +72,34 @@ public class ExtendedHTMLEditorKit extends HTMLEditorKit {
         return factory;
     }
 
-    public static class HyperlinkHoverLinkController extends LinkController {
-
-        public void mouseClicked(MouseEvent e) {
-            JEditorPane editor = (JEditorPane) e.getSource();
-
-            if (editor.isEditable() && SwingUtilities.isLeftMouseButton(e)) {
-                if (e.getClickCount() == 2) {
-                    editor.setEditable(false);
-                    super.mouseClicked(e);
-                    editor.setEditable(true);
-                }
-            }
-
-        }
-
-        public void mouseMoved(MouseEvent e) {
-            JEditorPane editor = (JEditorPane) e.getSource();
-
-            if (editor.isEditable()) {
-//                isNeedCursorChange=false;
-                editor.setEditable(false);
-//                isNeedCursorChange=true;
-                super.mouseMoved(e);
-//                isNeedCursorChange=false;
-                editor.setEditable(true);
-//                isNeedCursorChange=true;
-            }
-        }
-
-    }
+//    public static class HyperlinkHoverLinkController extends LinkController {
+//
+//        public void mouseClicked(MouseEvent e) {
+//            JEditorPane editor = (JEditorPane) e.getSource();
+//
+//            if (editor.isEditable() && SwingUtilities.isLeftMouseButton(e)) {
+//                if (e.getClickCount() == 2) {
+//                    editor.setEditable(false);
+//                    super.mouseClicked(e);
+//                    editor.setEditable(true);
+//                }
+//            }
+//
+//        }
+//
+//        public void mouseMoved(MouseEvent e) {
+//            JEditorPane editor = (JEditorPane) e.getSource();
+//
+//            if (editor.isEditable()) {
+////                isNeedCursorChange=false;
+//                editor.setEditable(false);
+////                isNeedCursorChange=true;
+//                super.mouseMoved(e);
+////                isNeedCursorChange=false;
+//                editor.setEditable(true);
+////                isNeedCursorChange=true;
+//            }
+//        }
+//
+//    }
 }
