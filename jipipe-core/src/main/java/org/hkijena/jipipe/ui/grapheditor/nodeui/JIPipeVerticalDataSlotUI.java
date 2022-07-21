@@ -108,6 +108,7 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         }
 
         this.assignButton = new JButton();
+        UIUtils.redirectDragEvents(assignButton, getGraphUI());
         UIUtils.makeFlat(assignButton, UIUtils.getBorderColorFor(getSlot().getNode().getInfo()), 0, 0, 0, 0);
         this.assignButtonMenu = UIUtils.addReloadablePopupMenuToComponent(assignButton, new JPopupMenu(), this::reloadPopupMenu);
 
@@ -147,17 +148,20 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
             virtualLabel = new ZoomLabel("", new ZoomIcon(UIUtils.getIconFromResources("actions/rabbitvcs-drive.png"), getGraphUI()), getGraphUI());
             virtualLabel.setToolTipText("Data is stored on hard drive when not in use (reduced memory mode). Enable 'Reduce memory' at the bottom of the window for this to take effect.");
             virtualLabel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+            UIUtils.redirectDragEvents(virtualLabel, getGraphUI());
             centerPanel.add(virtualLabel);
 
             noSaveLabel = new ZoomLabel("", new ZoomIcon(UIUtils.getIconFromResources("actions/no-save.png"), getGraphUI()), getGraphUI());
             noSaveLabel.setToolTipText("Data is not saved to hard drive during full run");
             noSaveLabel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+            UIUtils.redirectDragEvents(noSaveLabel, getGraphUI());
             centerPanel.add(noSaveLabel);
         }
 
         if (getSlot().isOutput() && getSlot().getNode() instanceof JIPipeAlgorithm && getWorkbench() instanceof JIPipeProjectWorkbench) {
             JIPipeProjectWorkbench projectWorkbench = (JIPipeProjectWorkbench) getWorkbench();
             cacheManagerUI = new JIPipeDataSlotCacheManagerUI(projectWorkbench, getSlot(), getGraphUI());
+            UIUtils.redirectDragEvents(cacheManagerUI, getGraphUI());
             centerPanel.add(cacheManagerUI);
         }
 

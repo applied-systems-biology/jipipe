@@ -116,6 +116,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private long lastTimeExpandedNegative = 0;
     private List<NodeUIContextAction> contextActions = new ArrayList<>();
     private JIPipeDataSlotUI currentConnectionDragSource;
+
+    private boolean currentConnectionDragSourceDragged;
     private JIPipeDataSlotUI currentConnectionDragTarget;
     private JIPipeDataSlotUI currentHighlightedForDisconnect;
     private Set<JIPipeDataSlot> currentHighlightedForDisconnectSourceSlots;
@@ -621,6 +623,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
         if(currentConnectionDragSource != null) {
+            // Mark this as actual dragging
+            this.currentConnectionDragSourceDragged = true;
+
             JIPipeNodeUI nodeUI = pickComponent(mouseEvent);
             if(nodeUI != null && currentConnectionDragSource.getNodeUI() != nodeUI) {
                 // Advanced dragging behavior
@@ -901,12 +906,14 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     }
 
     private void startDragSlot(JIPipeDataSlotUI startSlot) {
+        this.currentConnectionDragSourceDragged = false;
         setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         setCurrentConnectionDragSource(startSlot);
     }
 
     private void startDragCurrentNodeSelection(MouseEvent mouseEvent) {
         this.hasDragSnapshot = false;
+        this.currentConnectionDragSourceDragged = false;
         for (JIPipeNodeUI nodeUI : selection) {
             Point offset = new Point();
             offset.x = nodeUI.getX() - mouseEvent.getX();
@@ -1000,6 +1007,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     private void stopAllDragging() {
         // Slot dragging
+        this.currentConnectionDragSourceDragged = false;
         setCurrentConnectionDragSource(null);
         setCurrentConnectionDragTarget(null);
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
@@ -1205,7 +1213,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             paintEdges(g, STROKE_HIGHLIGHT, null, STROKE_COMMENT_HIGHLIGHT, true, true, settings.isColorSelectedNodeEdges(), 1, 0, 0);
 
         // Draw currently dragged connection
-        if (currentConnectionDragSource != null) {
+        if (currentConnectionDragSourceDragged && currentConnectionDragSource != null) {
             g.setStroke(STROKE_HIGHLIGHT);
             PointRange sourcePoint;
             PointRange targetPoint = null;
