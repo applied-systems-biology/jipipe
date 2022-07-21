@@ -112,18 +112,6 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
         this.annotationMergeStrategy = annotationMergeStrategy;
     }
 
-    @JIPipeDocumentation(name = "Load example", description = "Loads example parameters that showcase how to use this algorithm.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/graduation-cap.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/graduation-cap.png")
-    public void setToExample(JIPipeWorkbench parent) {
-        if (UIUtils.confirmResetParameters(parent, "Load example")) {
-            annotations.clear();
-            NamedTextAnnotationGeneratorExpression expression = annotations.addNewInstance();
-            expression.setKey(new AnnotationGeneratorExpression("\"My value\""));
-            expression.setValue("My annotation");
-            getEventBus().post(new ParameterChangedEvent(this, "generated-annotation"));
-        }
-    }
-
     public static class VariableSource implements ExpressionParameterVariableSource {
 
         public static final Set<ExpressionParameterVariable> VARIABLES;

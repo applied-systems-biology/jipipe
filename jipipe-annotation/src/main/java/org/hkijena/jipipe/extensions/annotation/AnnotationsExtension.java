@@ -28,6 +28,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringLi
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInImageJDataOperation;
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInJIPipeTabDataOperation;
+import org.hkijena.jipipe.utils.ResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -38,6 +39,8 @@ import org.scijava.plugin.Plugin;
  */
 @Plugin(type = JIPipeJavaExtension.class)
 public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension {
+
+    public static final ResourceManager RESOURCES = new ResourceManager(AnnotationsExtension.class, "org/hkijena/jipipe/extensions/annotation");
 
     /**
      * Dependency instance to be used for creating the set of dependencies
@@ -112,6 +115,8 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
         registerNodeType("rename-data-annotation", RenameDataAnnotation.class, UIUtils.getIconURLFromResources("actions/edit-find-replace.png"));
         registerNodeType("annotate-with-source-slot", AnnotateWithSourceSlot.class, UIUtils.getIconURLFromResources("actions/distribute-graph-directed.png"));
         registerNodeType("simplify-annotations", SimplifyAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
+
+        registerNodeExamplesFromResources(RESOURCES, "examples");
     }
 
     @Override

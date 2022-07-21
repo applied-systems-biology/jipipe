@@ -273,6 +273,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
             String jsonString = writer.toString();
             JsonNode node2 = JsonUtils.readFromString(jsonString, JsonNode.class);
             JIPipeIssueReport report = new JIPipeIssueReport();
+            getSlotConfiguration().setTo(node.getSlotConfiguration());
             ParameterUtils.deserializeParametersFromJson(this, node2, report);
             getSlotConfiguration().setTo(node.getSlotConfiguration());
             if(!report.isValid()) {
