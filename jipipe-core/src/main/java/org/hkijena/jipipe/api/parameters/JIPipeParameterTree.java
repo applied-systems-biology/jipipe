@@ -209,8 +209,8 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                 }
             }
             target.actions.add(new JIPipeReflectionParameterCollectionContextAction(source, method, iconURL, documentationAnnotation));
-            target.actions.addAll(source.getContextActions());
         }
+        target.actions.addAll(source.getContextActions());
     }
 
     private void addParameter(String initialKey, JIPipeParameterAccess parameterAccess, Node parent) {
