@@ -161,11 +161,15 @@ public class JIPipeExtendedDataTableModel implements TableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if (columnIndex == 0)
+        if (columnIndex == 0) {
             return rowIndex;
-        else if (columnIndex == 1)
-            return JIPipeDataInfo.getInstance(dataTable.getDataClass(rowIndex));
-        else if (columnIndex == 2) {
+        } else if (columnIndex == 1) {
+            try {
+                return JIPipeDataInfo.getInstance(dataTable.getDataClass(rowIndex));
+            }catch (IndexOutOfBoundsException e) {
+                return null;
+            }
+        } else if (columnIndex == 2) {
             revalidatePreviewCache();
             Component preview = previewCache.get(rowIndex);
             if (preview == null) {
@@ -179,7 +183,12 @@ public class JIPipeExtendedDataTableModel implements TableModel {
             }
             return preview;
         } else if (columnIndex == 3)
-            return "" + dataTable.getVirtualData(rowIndex).getStringRepresentation();
+            try {
+                return "" + dataTable.getVirtualData(rowIndex).getStringRepresentation();
+            }
+            catch (IndexOutOfBoundsException e) {
+                return "<Invalid>";
+            }
         else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
             revalidatePreviewCache();
             String dataAnnotationName = dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
@@ -196,7 +205,12 @@ public class JIPipeExtendedDataTableModel implements TableModel {
             }
             return preview;
         } else {
-            return dataTable.getTextAnnotation(rowIndex, toAnnotationColumnIndex(columnIndex));
+            try {
+                return dataTable.getTextAnnotation(rowIndex, toAnnotationColumnIndex(columnIndex));
+            }
+            catch (IndexOutOfBoundsException e) {
+                return null;
+            }
         }
     }
 

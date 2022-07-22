@@ -454,11 +454,17 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
                         info);
                 return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
             } else {
-                String info = dataTable.getAnnotationColumns().get(toAnnotationColumnIndex(modelColumn));
-                String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
-                        UIUtils.getIconFromResources("data-types/annotation.png"),
-                        info);
-                return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
+                int annotationColumnIndex = toAnnotationColumnIndex(modelColumn);
+                if(annotationColumnIndex < dataTable.getAnnotationColumns().size()) {
+                    String info = dataTable.getAnnotationColumns().get(annotationColumnIndex);
+                    String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
+                            UIUtils.getIconFromResources("data-types/annotation.png"),
+                            info);
+                    return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
+                }
+                else {
+                    return defaultRenderer.getTableCellRendererComponent(table, "Annotation", isSelected, hasFocus, row, column);
+                }
             }
         }
     }

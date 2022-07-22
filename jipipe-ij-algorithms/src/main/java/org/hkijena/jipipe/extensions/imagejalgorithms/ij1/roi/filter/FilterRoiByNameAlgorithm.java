@@ -71,7 +71,10 @@ public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         ExpressionVariables parameters = new ExpressionVariables();
         parameters.putAnnotations(dataBatch.getMergedTextAnnotations());
-        for (Roi roi : inputRois) {
+        for (int i = 0; i < inputRois.size(); i++) {
+            Roi roi = inputRois.get(i);
+            parameters.set("num_roi", inputRois.size());
+            parameters.set("index", i);
             parameters.set("name", StringUtils.nullToEmpty(roi.getName()));
             parameters.set("x", roi.getBounds().x);
             parameters.set("y", roi.getBounds().y);
@@ -119,6 +122,8 @@ public class FilterRoiByNameAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             VARIABLES = new HashSet<>();
             VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             VARIABLES.add(new ExpressionParameterVariable("Name", "Name of the ROI (can be empty)", "name"));
+            VARIABLES.add(new ExpressionParameterVariable("Index", "Index of the ROI (First value is zero)", "index"));
+            VARIABLES.add(new ExpressionParameterVariable("Number of ROI", "Number of ROI in the ROI list", "num_roi"));
             VARIABLES.add(new ExpressionParameterVariable("Bounding box X", "Top-left X coordinate of the bounding box around the ROI", "x"));
             VARIABLES.add(new ExpressionParameterVariable("Bounding box Y", "Top-left Y coordinate of the bounding box around around the ROI", "y"));
             VARIABLES.add(new ExpressionParameterVariable("Bounding box width", "Width of the bounding box around around the ROI", "width"));
