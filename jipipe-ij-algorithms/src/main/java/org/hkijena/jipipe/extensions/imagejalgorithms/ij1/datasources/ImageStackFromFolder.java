@@ -23,8 +23,8 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.PathQueryExpression;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.datasources.ImagePlusFromFile;
@@ -32,11 +32,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -120,7 +117,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
             // Slicing
             if (!StringUtils.isNullOrEmpty(slicesToImport.getValue())) {
                 List<Path> inputFilesSliced = new ArrayList<>();
-                for (Integer index : slicesToImport.getIntegers(0, inputFiles.size())) {
+                for (Integer index : slicesToImport.getIntegers(0, inputFiles.size(), new ExpressionVariables())) {
                     if (ignoreInvalidSlices && index < 0 || index >= inputFiles.size()) {
                         continue;
                     }

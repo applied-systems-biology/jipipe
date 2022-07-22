@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerRange;
@@ -95,7 +96,7 @@ public class CropLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         TIntHashSet knownLabels = new TIntHashSet(LabelImages.findAllLabels(inputImage));
         if (labelIdLimit.isEnabled()) {
-            for (Integer i : labelIdLimit.getContent().getIntegers(0, 0)) {
+            for (Integer i : labelIdLimit.getContent().getIntegers(0, 0, new ExpressionVariables())) {
                 if (!knownLabels.contains(i))
                     continue;
                 ImagePlus cropped = LabelImages.cropLabel(inputImage, i, border);

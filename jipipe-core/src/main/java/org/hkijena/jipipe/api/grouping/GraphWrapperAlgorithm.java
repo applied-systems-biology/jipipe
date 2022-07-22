@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.ranges.IntegerRange;
@@ -309,7 +310,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             dataBatches.sort(Comparator.naturalOrder());
             boolean withLimit = batchGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = batchGenerationSettings.getLimit().getContent();
-            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size())) : null;
+            TIntSet allowedIndices = withLimit ? new TIntHashSet(limit.getIntegers(0, dataBatches.size(), new ExpressionVariables())) : null;
             if (withLimit) {
                 List<JIPipeMergingDataBatch> limitedBatches = new ArrayList<>();
                 for (int i = 0; i < dataBatches.size(); i++) {

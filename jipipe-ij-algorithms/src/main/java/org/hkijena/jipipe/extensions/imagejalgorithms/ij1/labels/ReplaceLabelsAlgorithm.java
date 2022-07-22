@@ -24,6 +24,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
@@ -67,7 +68,7 @@ public class ReplaceLabelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus outputImage = ImageJUtils.duplicate(inputImage);
         outputImage.setTitle(inputImage.getTitle());
         for (IntRangeAndIntegerPairParameter replacement : replacements) {
-            LabelImages.replaceLabels(outputImage, Ints.toArray(replacement.getKey().getIntegers(0, 0)), replacement.getValue());
+            LabelImages.replaceLabels(outputImage, Ints.toArray(replacement.getKey().getIntegers(0, 0, new ExpressionVariables())), replacement.getValue());
         }
         outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);

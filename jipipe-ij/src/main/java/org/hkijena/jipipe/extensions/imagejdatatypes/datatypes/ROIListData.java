@@ -103,6 +103,16 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     /**
+     * Creates a shallow copy of this list
+     * @return shallow copy
+     */
+    public ROIListData shallowClone() {
+        ROIListData result = new ROIListData();
+        result.addAll(this);
+        return result;
+    }
+
+    /**
      * Creates a 2D 8-bit black image that covers the region of all provided ROI
      *
      * @param rois the rois

@@ -13,6 +13,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -81,7 +82,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 for (JIPipeDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
                     if (range.isEnabled()) {
-                        if (!range.getContent().getIntegers(0, img.getNChannels()).contains(c)) {
+                        if (!range.getContent().getIntegers(0, img.getNChannels(), new ExpressionVariables()).contains(c)) {
                             continue;
                         }
                     }
@@ -109,7 +110,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 for (JIPipeDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
                     if (range.isEnabled()) {
-                        if (!range.getContent().getIntegers(0, img.getNSlices()).contains(z)) {
+                        if (!range.getContent().getIntegers(0, img.getNSlices(), new ExpressionVariables()).contains(z)) {
                             continue;
                         }
                     }
@@ -137,7 +138,7 @@ public class SplitByDimensionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 for (JIPipeDataSlot outputSlot : getOutputSlots()) {
                     OptionalIntegerRange range = outputIndices.get(outputSlot.getName()).get(OptionalIntegerRange.class);
                     if (range.isEnabled()) {
-                        if (!range.getContent().getIntegers(0, img.getNFrames()).contains(t)) {
+                        if (!range.getContent().getIntegers(0, img.getNFrames(), new ExpressionVariables()).contains(t)) {
                             continue;
                         }
                     }

@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.library.graph.OutputSlotMapParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -102,7 +103,7 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         for (Map.Entry<String, JIPipeParameterAccess> entry : stackAssignments.getParameters().entrySet()) {
             IntegerRange sliceSelection = entry.getValue().get(IntegerRange.class);
-            List<Integer> sliceIndices = sliceSelection.getIntegers(0, img.getStackSize());
+            List<Integer> sliceIndices = sliceSelection.getIntegers(0, img.getStackSize(), new ExpressionVariables());
             if (ignoreMissingSlices) {
                 sliceIndices.removeIf(i -> i >= img.getStackSize());
             } else {

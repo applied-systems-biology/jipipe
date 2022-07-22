@@ -226,7 +226,11 @@ public class FormPanel extends JXPanel {
             };
             contentPanel.add(description, labelPosition);
         }
-        Component propertiesComponent = createAndAddEntryPropertiesComponent(component, description, numRows, documentation);
+        Component propertiesComponent;
+        if(withDocumentation)
+            propertiesComponent = createAndAddEntryPropertiesComponent(component, description, numRows, documentation);
+        else
+            propertiesComponent = null;
         entries.add(new FormPanelEntry(numRows, description, component, propertiesComponent, false));
         ++numRows;
         return component;
@@ -281,7 +285,11 @@ public class FormPanel extends JXPanel {
                 weightx = 1;
             }
         };
-        Component propertiesComponent = createAndAddEntryPropertiesComponent(component, null, numRows, documentation);
+        Component propertiesComponent;
+        if(withDocumentation)
+            propertiesComponent = createAndAddEntryPropertiesComponent(component, null, numRows, documentation);
+        else
+            propertiesComponent = null;
         contentPanel.add(component, gridBagConstraints);
         entries.add(new FormPanelEntry(numRows, null, component, propertiesComponent, true));
         ++numRows;
