@@ -670,15 +670,17 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     public static class MeasureContextPanel extends SelectionContextPanel implements JIPipeParameterCollection {
 
         private final EventBus eventBus = new EventBus();
-        private ImageStatisticsSetParameter statistics = new ImageStatisticsSetParameter();
+        private static ImageStatisticsSetParameter STATISTICS = new ImageStatisticsSetParameter();
         private boolean measureInPhysicalUnits = true;
-        //        private final JLabel roiInfoLabel;
-        private List<Roi> selectedROI;
+
+        static {
+            STATISTICS.setCollapsed(false);
+            STATISTICS.getValues().add(Measurement.PixelValueMean);
+        }
 
         protected MeasureContextPanel(ROIManagerPlugin roiManagerPlugin) {
             super(roiManagerPlugin);
-            statistics.setCollapsed(false);
-            statistics.getValues().add(Measurement.PixelValueMean);
+
 
             setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
             setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
@@ -704,14 +706,14 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         private void measure() {
             ROIListData data = getRoiManagerPlugin().getSelectedROIOrAll("Measure", "Please select which ROI you want to measure");
             ResultsTableData measurements = data.measure(ImageJUtils.duplicate(getViewerPanel().getImage()),
-                    statistics, true, measureInPhysicalUnits);
+                    STATISTICS, true, measureInPhysicalUnits);
             TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Measurements");
         }
 
         @Override
         public void selectionUpdated(ROIListData allROI, List<Roi> selectedROI) {
-            this.selectedROI = selectedROI;
-//            if(selectedROI.isEmpty())
+            //        private final JLabel roiInfoLabel;
+            //            if(selectedROI.isEmpty())
 //                roiInfoLabel.setText("Measure " + allROI.size() + " ROI");
 //            else
 //                roiInfoLabel.setText("Measure " + selectedROI.size() + " ROI");
@@ -737,12 +739,12 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         @JIPipeDocumentation(name = "Statistics", description = "The statistics to measure")
         @JIPipeParameter("statistics")
         public ImageStatisticsSetParameter getStatistics() {
-            return statistics;
+            return STATISTICS;
         }
 
         @JIPipeParameter("statistics")
         public void setStatistics(ImageStatisticsSetParameter statistics) {
-            this.statistics = statistics;
+            this.STATISTICS = statistics;
         }
 
         @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
