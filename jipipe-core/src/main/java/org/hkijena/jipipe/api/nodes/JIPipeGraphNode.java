@@ -975,7 +975,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @param subParameter the sub-parameter
      */
-    protected void registerSubParameter(JIPipeParameterCollection subParameter) {
+    public void registerSubParameter(JIPipeParameterCollection subParameter) {
         subParameter.getEventBus().register(this);
     }
 

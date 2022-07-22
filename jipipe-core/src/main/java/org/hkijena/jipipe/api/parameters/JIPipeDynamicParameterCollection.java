@@ -53,14 +53,18 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
     }
 
     /**
-     * Creates a new instance
+     * Creates a new instance.
+     * Automatically adds all known registered parameter types
      *
      * @param allowUserModification let user modify this collection
-     * @param allowedTypes          The parameter types that can be added by the user (ignored if user cannot add)
      */
-    public JIPipeDynamicParameterCollection(boolean allowUserModification, Class<?>... allowedTypes) {
+    public JIPipeDynamicParameterCollection(boolean allowUserModification) {
         this.allowUserModification = allowUserModification;
-        this.allowedTypes.addAll(Arrays.asList(allowedTypes));
+        if(allowUserModification && JIPipe.isInstantiated()) {
+            for (JIPipeParameterTypeInfo info : JIPipe.getParameterTypes().getRegisteredParameters().values()) {
+                this.allowedTypes.add(info.getFieldClass());
+            }
+        }
     }
 
     /**
@@ -83,13 +87,24 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
      * Creates a new instance
      *
      * @param allowUserModification let user modify this collection
-     * @param allowedTypes          The parameter types that can be added by the user (ignored if user cannot add)
+     * @param allowedTypes          The parameter types that can be added by the user (ignored if user cannot add).
      */
     public JIPipeDynamicParameterCollection(boolean allowUserModification, Set<JIPipeParameterTypeInfo> allowedTypes) {
         this.allowUserModification = allowUserModification;
         for (JIPipeParameterTypeInfo allowedType : allowedTypes) {
             this.allowedTypes.add(allowedType.getFieldClass());
         }
+    }
+
+    /**
+     * Creates a new instance
+     *
+     * @param allowUserModification let user modify this collection
+     * @param allowedTypes          The parameter types that can be added by the user (ignored if user cannot add).
+     */
+    public JIPipeDynamicParameterCollection(boolean allowUserModification, Class<?>[] allowedTypes) {
+        this.allowUserModification = allowUserModification;
+        this.allowedTypes.addAll(Arrays.asList(allowedTypes));
     }
 
     @Override

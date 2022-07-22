@@ -22,15 +22,15 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.RoiStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
@@ -46,6 +46,8 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             JIPipe.createNode(RoiStatisticsAlgorithm.class);
     private DefaultExpressionParameter filters = new DefaultExpressionParameter();
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
+
+    private final CustomExpressionVariablesParameter customFilterVariables;
     private boolean outputEmptyLists = true;
 
     /**
@@ -55,6 +57,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      */
     public FilterRoiByStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.customFilterVariables = new CustomExpressionVariablesParameter(this);
     }
 
     /**
@@ -68,6 +71,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.filters = new DefaultExpressionParameter(other.filters);
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
         this.outputEmptyLists = other.outputEmptyLists;
+        this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
     }
 
     @Override
@@ -100,6 +104,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
+        customFilterVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
         for (int row = 0; row < statistics.getRowCount(); row++) {
             for (int col = 0; col < statistics.getColumnCount(); col++) {
                 variableSet.set(statistics.getColumnName(col), statistics.getValueAt(row, col));
@@ -131,6 +136,9 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             "An example for an expression would be 'Area > 200 AND Mean > 10'." +
             "Annotations are available as variables.")
     @ExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public DefaultExpressionParameter getFilters() {
         return filters;
     }
@@ -160,5 +168,12 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("output-empty-lists")
     public void setOutputEmptyLists(boolean outputEmptyLists) {
         this.outputEmptyLists = outputEmptyLists;
+    }
+
+    @JIPipeDocumentation(name = "Custom filter variables", description = "Here you can add parameters that will be included into the filter as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
+    @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png")
+    public CustomExpressionVariablesParameter getCustomFilterVariables() {
+        return customFilterVariables;
     }
 }
