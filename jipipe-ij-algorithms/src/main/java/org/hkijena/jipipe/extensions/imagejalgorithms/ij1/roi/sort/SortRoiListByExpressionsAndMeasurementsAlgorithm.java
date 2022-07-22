@@ -84,7 +84,7 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
 
             ResultsTableData measured = tmp.measure(referenceImage, measurements, true, measureInPhysicalUnits);
             for (int col = 0; col < measured.getColumnCount(); col++) {
-                parameters.set(measured.getColumnName(col), measured.getValueAt(0, col) + "");
+                parameters.set(measured.getColumnName(col), measured.getValueAt(0, col));
             }
             sortKeys.put(roi, expression.evaluate(parameters));
         }
