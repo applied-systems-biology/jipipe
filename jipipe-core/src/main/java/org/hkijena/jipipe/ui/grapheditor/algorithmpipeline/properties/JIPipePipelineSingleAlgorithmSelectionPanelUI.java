@@ -179,8 +179,13 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
     }
 
     private void updateExampleButton() {
-        List<JIPipeNodeExample> nodeExamples = getProject().getNodeExamples(node.getInfo().getId());
-        loadExampleButton.setVisible(!nodeExamples.isEmpty());
+        if(node instanceof JIPipeAlgorithm) {
+            List<JIPipeNodeExample> nodeExamples = getProject().getNodeExamples(node.getInfo().getId());
+            loadExampleButton.setVisible(!nodeExamples.isEmpty());
+        }
+        else {
+            loadExampleButton.setVisible(false);
+        }
     }
 
     private void initializeToolbar() {
