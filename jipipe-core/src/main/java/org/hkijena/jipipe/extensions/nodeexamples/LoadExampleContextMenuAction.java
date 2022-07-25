@@ -58,9 +58,10 @@ public class LoadExampleContextMenuAction implements NodeUIContextAction {
         pickerDialog.setTitle("Load example");
         List<JIPipeNodeExample> nodeExamples = getExamples(nodeUI);
         pickerDialog.setAvailableItems(nodeExamples);
-        JIPipeNodeExample picked = pickerDialog.showDialog();
-        if(picked != null) {
-            ((JIPipeAlgorithm)node).loadExample(picked);
+        JIPipeNodeExample example = pickerDialog.showDialog();
+        if(example != null) {
+            ((JIPipeAlgorithm)node).loadExample(example);
+            canvasUI.getWorkbench().sendStatusBarText("Loaded example '" + example.getNodeTemplate().getName() + "' into " + node.getDisplayName());
         }
     }
 
