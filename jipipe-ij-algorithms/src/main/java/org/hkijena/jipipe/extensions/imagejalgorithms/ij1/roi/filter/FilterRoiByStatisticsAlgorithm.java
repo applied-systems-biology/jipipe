@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.RoiStatisticsAlgorithm;
@@ -50,6 +51,8 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     private final CustomExpressionVariablesParameter customFilterVariables;
     private boolean outputEmptyLists = true;
 
+    private boolean measureInPhysicalUnits = true;
+
     /**
      * Instantiates a new node type.
      *
@@ -72,6 +75,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
         this.outputEmptyLists = other.outputEmptyLists;
         this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
+        this.measureInPhysicalUnits = other.measureInPhysicalUnits;
     }
 
     @Override
@@ -79,6 +83,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
         // Set parameters of ROI statistics algorithm
         roiStatisticsAlgorithm.setMeasurements(measurements);
+        roiStatisticsAlgorithm.setMeasureInPhysicalUnits(measureInPhysicalUnits);
 
         // Continue with run
         super.run(progressInfo);
@@ -88,6 +93,13 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ROIListData inputRois = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
         ImagePlusData inputReference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
+
+        // Create variables
+        ExpressionVariables variableSet = new ExpressionVariables();
+        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
+            variableSet.set(annotation.getName(), annotation.getValue());
+        }
+        customFilterVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
 
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData();
@@ -100,11 +112,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Apply filter
         ROIListData outputData = new ROIListData();
-        ExpressionVariables variableSet = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
-            variableSet.set(annotation.getName(), annotation.getValue());
-        }
-        customFilterVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
+
         for (int row = 0; row < statistics.getRowCount(); row++) {
             for (int col = 0; col < statistics.getColumnCount(); col++) {
                 variableSet.set(statistics.getColumnName(col), statistics.getValueAt(row, col));
@@ -117,17 +125,6 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         if (!outputData.isEmpty() || outputEmptyLists) {
             dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
         }
-    }
-
-    private ImagePlus getReferenceImage(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus reference = null;
-        {
-            ImagePlusData data = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
-            if (data != null) {
-                reference = data.getDuplicateImage();
-            }
-        }
-        return reference;
     }
 
     @JIPipeParameter(value = "filter", important = true)
@@ -172,8 +169,19 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Custom filter variables", description = "Here you can add parameters that will be included into the filter as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
     @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
-            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png")
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
     public CustomExpressionVariablesParameter getCustomFilterVariables() {
         return customFilterVariables;
+    }
+
+    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @JIPipeParameter("measure-in-physical-units")
+    public boolean isMeasureInPhysicalUnits() {
+        return measureInPhysicalUnits;
+    }
+
+    @JIPipeParameter("measure-in-physical-units")
+    public void setMeasureInPhysicalUnits(boolean measureInPhysicalUnits) {
+        this.measureInPhysicalUnits = measureInPhysicalUnits;
     }
 }

@@ -9,6 +9,7 @@ import java.util.Map;
 
 /**
  * A parameter collection that allows the creation of custom expression variables
+ * Please note that the {@link org.hkijena.jipipe.api.parameters.JIPipeParameter} annotation should have {@link org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence} set to 'NestedCollection'. Otherwise, user-defined parameters will not be saved!
  */
 public class CustomExpressionVariablesParameter extends JIPipeDynamicParameterCollection {
 

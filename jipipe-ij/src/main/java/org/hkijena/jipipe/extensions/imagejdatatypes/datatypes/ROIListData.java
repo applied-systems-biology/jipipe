@@ -1254,7 +1254,15 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                                     imp.setRoi(roi);
                                     rtSys.reset();
                                     aSys.measure();
-                                    ResultsTableData forRoi = new ResultsTableData(rtSys);
+                                    ResultsTableData forRoi;
+                                    if (addNameToTable) {
+                                        forRoi = new ResultsTableData();
+                                        forRoi.addStringColumn("Name");
+                                        forRoi.addRows(new ResultsTableData(rtSys));
+                                    }
+                                    else {
+                                        forRoi = new ResultsTableData(rtSys);
+                                    }
                                     if (measurements.getValues().contains(Measurement.StackPosition)) {
                                         int columnChannel = forRoi.getOrCreateColumnIndex("Ch", false);
                                         int columnStack = forRoi.getOrCreateColumnIndex("Slice", false);
@@ -1266,9 +1274,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                                         }
                                     }
                                     if (addNameToTable) {
-                                        int columnName = result.getOrCreateColumnIndex("Name", true);
-                                        for (int row = 0; row < result.getRowCount(); row++) {
-                                            result.setValueAt(roi.getName(), row, columnName);
+                                        for (int row = 0; row < forRoi.getRowCount(); row++) {
+                                            forRoi.setValueAt(roi.getName(), row, "Name");
                                         }
                                     }
                                     result.addRows(forRoi);
