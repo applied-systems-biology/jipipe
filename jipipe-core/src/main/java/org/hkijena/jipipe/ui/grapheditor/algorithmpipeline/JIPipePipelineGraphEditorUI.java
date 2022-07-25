@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.grapheditor.general;
+package org.hkijena.jipipe.ui.grapheditor.algorithmpipeline;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
@@ -38,7 +38,9 @@ import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.dragdrop.JIPipeCreateNodesFromDraggedDataDragAndDropBehavior;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.actions.RunAndShowResultsAction;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.actions.UpdateCacheAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorMinimap;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
 import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.AlgorithmGraphCopyNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.AlgorithmGraphCutNodeUIContextAction;

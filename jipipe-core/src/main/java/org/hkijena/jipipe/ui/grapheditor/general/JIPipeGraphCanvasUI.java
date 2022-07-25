@@ -32,6 +32,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.components.renderers.DropShadowRenderer;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
+import org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage;
 import org.hkijena.jipipe.ui.grapheditor.general.actions.JIPipeNodeUIAction;
 import org.hkijena.jipipe.ui.grapheditor.general.actions.OpenContextMenuAction;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;

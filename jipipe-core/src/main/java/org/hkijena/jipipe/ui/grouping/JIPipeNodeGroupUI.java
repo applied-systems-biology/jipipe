@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipePipelineGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.*;

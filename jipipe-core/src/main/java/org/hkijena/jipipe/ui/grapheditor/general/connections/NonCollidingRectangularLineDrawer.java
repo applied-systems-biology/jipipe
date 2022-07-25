@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.grapheditor.general.connections;
 
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphViewMode;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 
 import java.awt.*;
 import java.awt.geom.Path2D;

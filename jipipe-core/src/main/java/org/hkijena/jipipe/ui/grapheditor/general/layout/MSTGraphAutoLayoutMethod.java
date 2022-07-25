@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphViewMode;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.jgrapht.alg.spanning.KruskalMinimumSpanningTree;
 import org.jgrapht.graph.DefaultDirectedGraph;

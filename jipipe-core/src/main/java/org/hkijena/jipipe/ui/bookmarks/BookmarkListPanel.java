@@ -12,7 +12,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipePipelineGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;

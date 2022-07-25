@@ -30,6 +30,7 @@ import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.search.SearchBox;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;

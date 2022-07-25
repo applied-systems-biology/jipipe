@@ -26,7 +26,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphViewMode;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.algorithmfinder.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.algorithmfinder.JIPipeAlgorithmSourceFinderUI;
 import org.hkijena.jipipe.ui.algorithmfinder.JIPipeAlgorithmTargetFinderUI;

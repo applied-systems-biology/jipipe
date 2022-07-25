@@ -223,36 +223,6 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         this.threadPool = threadPool;
     }
 
-    @Override
-    public List<JIPipeParameterCollectionContextAction> getContextActions() {
-        List<JIPipeParameterCollectionContextAction> result = new ArrayList<>(super.getContextActions());
-        Collection<JIPipeNodeExample> examples = JIPipe.getNodes().getNodeExamples(getInfo().getId());
-        if(examples != null && !examples.isEmpty()) {
-            JIPipeDefaultParameterCollectionContextAction action = new JIPipeDefaultParameterCollectionContextAction(
-                    new JIPipeDefaultDocumentation("Load example", "Loads example parameters"),
-                    UIUtils.getIconURLFromResources("actions/graduation-cap.png"),
-                    this::showLoadExampleDialog
-            );
-            result.add(action);
-        }
-        return result;
-    }
-
-    /**
-     * Opens a dialog where the user can select an example
-     * @param workbench the workbench
-     */
-    public void showLoadExampleDialog(JIPipeWorkbench workbench) {
-        Collection<JIPipeNodeExample> examples = JIPipe.getNodes().getNodeExamples(getInfo().getId());
-        JIPipeNodeExamplePickerDialog pickerDialog = new JIPipeNodeExamplePickerDialog(workbench.getWindow());
-        pickerDialog.setTitle("Load example");
-        pickerDialog.setAvailableItems(examples.stream().sorted(Comparator.comparing(e -> e.getNodeTemplate().getName())).collect(Collectors.toList()));
-        JIPipeNodeExample selection = pickerDialog.showDialog();
-        if(selection != null) {
-            loadExample(selection);
-        }
-    }
-
     /**
      * Loads an example.
      * Warning: This method will not ask for confirmation

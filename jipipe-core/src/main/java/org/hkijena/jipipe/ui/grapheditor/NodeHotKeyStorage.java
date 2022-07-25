@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.ui.grapheditor.general;
+package org.hkijena.jipipe.ui.grapheditor;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;

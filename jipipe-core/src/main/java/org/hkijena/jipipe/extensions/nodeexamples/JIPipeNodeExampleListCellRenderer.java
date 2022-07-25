@@ -13,17 +13,20 @@
 
 package org.hkijena.jipipe.extensions.nodeexamples;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.List;
 
 /**
- * Renderer for {@link JIPipeNodeInfo}
+ * Renderer for {@link JIPipeNodeExample}
  */
 public class JIPipeNodeExampleListCellRenderer extends JPanel implements ListCellRenderer<JIPipeNodeExample> {
 
@@ -32,9 +35,10 @@ public class JIPipeNodeExampleListCellRenderer extends JPanel implements ListCel
     private JLabel nameLabel;
     private JLabel descriptionLabel;
 
+    private JLabel sourceLabel;
+
     /**
      * Creates a new renderer
-     *
      */
     public JIPipeNodeExampleListCellRenderer() {
         setOpaque(true);
@@ -44,18 +48,20 @@ public class JIPipeNodeExampleListCellRenderer extends JPanel implements ListCel
 
     private void initialize() {
         setLayout(new GridBagLayout());
-        nodeColor = new SolidColorIcon(16, 40);
+        nodeColor = new SolidColorIcon(16, 50);
         nodeIcon = new JLabel();
         nameLabel = new JLabel();
         descriptionLabel = new JLabel();
-        descriptionLabel.setFont(descriptionLabel.getFont().deriveFont(Font.ITALIC));
         descriptionLabel.setForeground(Color.GRAY);
+        sourceLabel = new JLabel();
+        sourceLabel.setForeground(ModernMetalTheme.PRIMARY6);
+        sourceLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 12));
 
         add(new JLabel(nodeColor), new GridBagConstraints() {
             {
                 gridx = 0;
                 gridy = 0;
-                gridheight = 2;
+                gridheight = 3;
             }
         });
         add(nodeIcon, new GridBagConstraints() {
@@ -81,16 +87,29 @@ public class JIPipeNodeExampleListCellRenderer extends JPanel implements ListCel
                 weightx = 1;
             }
         });
+        add(sourceLabel, new GridBagConstraints() {
+            {
+                gridx = 3;
+                gridy = 0;
+            }
+        });
     }
 
     @Override
-    public Component getListCellRendererComponent(JList<? extends JIPipeNodeExample> list, JIPipeNodeExample example, int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList<? extends JIPipeNodeExample> list, JIPipeNodeExample info, int index, boolean isSelected, boolean cellHasFocus) {
+
         setFont(list.getFont());
-        nodeColor.setFillColor(example.getNodeTemplate().getFillColor());
-        nodeColor.setBorderColor(example.getNodeTemplate().getBorderColor());
-        nameLabel.setText(example.getNodeTemplate().getName());
-        descriptionLabel.setText(example.getNodeTemplate().getDescription().getHtml());
-        nodeIcon.setIcon(UIUtils.getIconFromResources(StringUtils.orElse(example.getNodeTemplate().getIcon().getIconName(), "actions/configure.png")));
+
+        if (info != null) {
+            nodeColor.setFillColor(info.getNodeTemplate().getFillColor());
+            descriptionLabel.setText(info.getNodeTemplate().getDescription().getHtml());
+            nameLabel.setText(info.getNodeTemplate().getName());
+            nodeIcon.setIcon(UIUtils.getIconFromResources(info.getNodeTemplate().getIcon().getIconName()));
+            sourceLabel.setText(StringUtils.nullToEmpty(info.getSourceInfo()));
+
+        } else {
+            nameLabel.setText("<Null>");
+        }
 
         if (isSelected) {
             setBackground(UIManager.getColor("List.selectionBackground"));
