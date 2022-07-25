@@ -18,6 +18,9 @@ import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeDataBatchAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
+import org.hkijena.jipipe.extensions.nodeexamples.JIPipeNodeExamplePickerDialog;
+import org.hkijena.jipipe.extensions.nodetemplate.AddTemplateContextMenuAction;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.batchassistant.DataBatchAssistantUI;
@@ -38,6 +41,9 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * UI for a single {@link JIPipeGraphNode}
@@ -46,23 +52,26 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
     private static String SAVED_TAB = null;
     private final JIPipeGraphEditorUI graphEditorUI;
     private final JIPipeGraphCanvasUI canvas;
-    private final JIPipeGraphNode algorithm;
+    private final JIPipeGraphNode node;
     private JPanel testBenchTabContent;
     private JPanel cacheBrowserTabContent;
     private JPanel batchAssistantTabContent;
     private JPanel currentRunTabContent;
     private DocumentTabPane tabbedPane;
 
+    private final JButton loadExampleButton = new JButton("Load example", UIUtils.getIconFromResources("actions/graduation-cap.png"));
+
     /**
      * @param graphEditorUI the graph editor
-     * @param algorithm     the algorithm
+     * @param node     the algorithm
      */
-    public JIPipePipelineSingleAlgorithmSelectionPanelUI(JIPipeGraphEditorUI graphEditorUI, JIPipeGraphNode algorithm) {
+    public JIPipePipelineSingleAlgorithmSelectionPanelUI(JIPipeGraphEditorUI graphEditorUI, JIPipeGraphNode node) {
         super((JIPipeProjectWorkbench) graphEditorUI.getWorkbench());
         this.graphEditorUI = graphEditorUI;
         this.canvas = graphEditorUI.getCanvasUI();
-        this.algorithm = algorithm;
+        this.node = node;
         initialize();
+        updateExampleButton();
     }
 
     private void initialize() {
@@ -70,31 +79,31 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         tabbedPane = new DocumentTabPane();
 
         ParameterPanel parametersUI = new ParameterPanel(getProjectWorkbench(),
-                algorithm,
-                TooltipUtils.getAlgorithmDocumentation(algorithm),
+                node,
+                TooltipUtils.getAlgorithmDocumentation(node),
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_BELOW | ParameterPanel.WITH_SEARCH_BAR);
         tabbedPane.registerSingletonTab("PARAMETERS", "Parameters", UIUtils.getIconFromResources("actions/configure.png"),
                 () -> parametersUI, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
-        JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, algorithm);
+        JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, node);
         tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIconFromResources("actions/plug.png"),
                 () -> slotEditorUI,
                 DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
-        if (algorithm.getParentGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project) {
+        if (node.getParentGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project) {
             tabbedPane.registerSingletonTab("EXAMPLES",
                     "Examples",
                     UIUtils.getIconFromResources("actions/graduation-cap.png"),
-                    () -> new NodeExamplesUI(getProjectWorkbench(), (JIPipeAlgorithm) algorithm),
+                    () -> new NodeExamplesUI(getProjectWorkbench(), (JIPipeAlgorithm) node),
                     DocumentTabPane.CloseMode.withoutCloseButton,
                     DocumentTabPane.SingletonTabMode.Present);
             cacheBrowserTabContent = new JPanel(new BorderLayout());
-            if (algorithm instanceof JIPipeAlgorithm) {
+            if (node instanceof JIPipeAlgorithm) {
                 tabbedPane.registerSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIconFromResources("actions/database.png"),
                         () -> cacheBrowserTabContent,
                         DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             }
-            if (algorithm instanceof JIPipeDataBatchAlgorithm) {
+            if (node instanceof JIPipeDataBatchAlgorithm) {
                 batchAssistantTabContent = new JPanel(new BorderLayout());
                 tabbedPane.registerSingletonTab("DATA_BATCHES", "Data batches", UIUtils.getIconFromResources("actions/package.png"),
                         () -> batchAssistantTabContent,
@@ -102,7 +111,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
             }
 
             testBenchTabContent = new JPanel(new BorderLayout());
-            if (algorithm.getInfo().isRunnable()) {
+            if (node.getInfo().isRunnable()) {
                 tabbedPane.registerSingletonTab("QUICK_RUN", "Quick run", UIUtils.getIconFromResources("actions/media-play.png"),
                         () -> testBenchTabContent,
                         DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
@@ -138,22 +147,22 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
     private void activateLazyContent(DocumentTabPane tabbedPane) {
         if (testBenchTabContent != null && tabbedPane.getCurrentContent() == testBenchTabContent) {
             if (testBenchTabContent.getComponentCount() == 0) {
-                QuickRunSetupUI testBenchSetupUI = new QuickRunSetupUI(getProjectWorkbench(), algorithm);
+                QuickRunSetupUI testBenchSetupUI = new QuickRunSetupUI(getProjectWorkbench(), node);
                 testBenchTabContent.add(testBenchSetupUI, BorderLayout.CENTER);
             }
         }
         if (cacheBrowserTabContent != null && tabbedPane.getCurrentContent() == cacheBrowserTabContent) {
             if (cacheBrowserTabContent.getComponentCount() == 0) {
                 JIPipeAlgorithmCacheBrowserUI browserUI = new JIPipeAlgorithmCacheBrowserUI(getProjectWorkbench(),
-                        algorithm,
+                        node,
                         graphEditorUI.getCanvasUI());
                 cacheBrowserTabContent.add(browserUI, BorderLayout.CENTER);
             }
         }
-        if (algorithm instanceof JIPipeDataBatchAlgorithm) {
+        if (node instanceof JIPipeDataBatchAlgorithm) {
             if (batchAssistantTabContent != null && tabbedPane.getCurrentContent() == batchAssistantTabContent) {
                 if (batchAssistantTabContent.getComponentCount() == 0) {
-                    DataBatchAssistantUI browserUI = new DataBatchAssistantUI(getProjectWorkbench(), algorithm,
+                    DataBatchAssistantUI browserUI = new DataBatchAssistantUI(getProjectWorkbench(), node,
                             () -> executeQuickRun(false,
                                     false,
                                     true,
@@ -169,27 +178,39 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         }
     }
 
+    private void updateExampleButton() {
+        List<JIPipeNodeExample> nodeExamples = getProject().getNodeExamples(node.getInfo().getId());
+        loadExampleButton.setVisible(!nodeExamples.isEmpty());
+    }
+
     private void initializeToolbar() {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
-        JLabel nameLabel = new JLabel(algorithm.getName(), new SolidColorIcon(16, 16, UIUtils.getFillColorFor(algorithm.getInfo())), JLabel.LEFT);
-        nameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getInfo()));
+        JLabel nameLabel = new JLabel(node.getName(), new SolidColorIcon(16, 16, UIUtils.getFillColorFor(node.getInfo())), JLabel.LEFT);
+        nameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(node.getInfo()));
         toolBar.add(nameLabel);
 
         toolBar.add(Box.createHorizontalGlue());
 
         JIPipeGraphEditorUI.installContextActionsInto(toolBar,
-                canvas.getNodeUIsFor(Collections.singleton(algorithm)),
+                canvas.getNodeUIsFor(Collections.singleton(node)),
                 canvas.getContextActions(),
                 canvas);
 
-        if (JIPipe.getNodes().getRegisteredNodeInfos().containsValue(algorithm.getInfo())) {
+        JButton createTemplateButton = new JButton("Create node template", UIUtils.getIconFromResources("actions/starred.png"));
+        createTemplateButton.addActionListener(e -> createNodeTemplate());
+        toolBar.add(createTemplateButton);
+
+        loadExampleButton.addActionListener(e -> loadExample());
+        toolBar.add(loadExampleButton);
+
+        if (JIPipe.getNodes().getRegisteredNodeInfos().containsValue(node.getInfo())) {
             JButton openCompendiumButton = new JButton(UIUtils.getIconFromResources("actions/help.png"));
             UIUtils.makeFlat25x25(openCompendiumButton);
             openCompendiumButton.setToolTipText("Open in algorithm compendium");
             openCompendiumButton.addActionListener(e -> {
                 JIPipeAlgorithmCompendiumUI compendiumUI = new JIPipeAlgorithmCompendiumUI();
-                compendiumUI.selectItem(algorithm.getInfo());
+                compendiumUI.selectItem(node.getInfo());
                 getWorkbench().getDocumentTabPane().addTab("Algorithm compendium",
                         UIUtils.getIconFromResources("actions/help.png"),
                         compendiumUI,
@@ -203,11 +224,27 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         add(toolBar, BorderLayout.NORTH);
     }
 
+    private void loadExample() {
+        JIPipeNodeExamplePickerDialog pickerDialog = new JIPipeNodeExamplePickerDialog(getWorkbench().getWindow());
+        pickerDialog.setTitle("Load example");
+        List<JIPipeNodeExample> nodeExamples = getProject().getNodeExamples(node.getInfo().getId());
+        pickerDialog.setAvailableItems(nodeExamples);
+        JIPipeNodeExample selection = pickerDialog.showDialog();
+        if(selection != null) {
+            ((JIPipeAlgorithm)node).loadExample(selection);
+        }
+    }
+
+    private void createNodeTemplate() {
+        AddTemplateContextMenuAction action = new AddTemplateContextMenuAction();
+        action.run(canvas, canvas.getNodeUIsFor(Collections.singleton(node)));
+    }
+
     /**
      * @return the algorithm
      */
-    public JIPipeGraphNode getAlgorithm() {
-        return algorithm;
+    public JIPipeGraphNode getNode() {
+        return node;
     }
 
     /**
@@ -233,7 +270,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
             if (showCache) {
                 SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(cacheBrowserTabContent));
             } else if (showBatchAssistant) {
-                if (algorithm instanceof JIPipeDataBatchAlgorithm) {
+                if (node instanceof JIPipeDataBatchAlgorithm) {
                     SwingUtilities.invokeLater(() -> tabbedPane.switchToContent(batchAssistantTabContent));
                 }
             }

@@ -1,8 +1,10 @@
 package org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.extensions.nodeexamples.JIPipeNodeExampleListCellRenderer;
+import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -22,6 +24,7 @@ public class NodeExamplesUI extends JIPipeProjectWorkbenchPanel {
         this.algorithm = algorithm;
         initialize();
         reloadList();
+        NodeTemplateSettings.getInstance().getEventBus().register(this);
     }
 
     private void initialize() {
@@ -68,5 +71,10 @@ public class NodeExamplesUI extends JIPipeProjectWorkbenchPanel {
             model.addElement(example);
         }
         exampleJList.setModel(model);
+    }
+
+    @Subscribe
+    public void onNodeTemplatesRefreshed(NodeTemplateSettings.NodeTemplatesRefreshedEvent event) {
+        reloadList();
     }
 }
