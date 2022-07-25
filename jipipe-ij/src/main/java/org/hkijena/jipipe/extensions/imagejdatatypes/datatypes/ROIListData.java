@@ -478,6 +478,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             mask = copy.toRGBImage(new Margin(), ROIElementDrawingMode.Always, ROIElementDrawingMode.IfAvailable, 1, Color.RED, Color.RED);
 //            mask.setLut(LUT.createLutFromColor(Color.RED));
         }
+        if(mask.getWidth() * mask.getHeight() == 0)
+            return null;
         return new ImagePlusData(mask).preview(width, height);
     }
 
