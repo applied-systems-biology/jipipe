@@ -55,6 +55,7 @@ import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
+import java.awt.geom.Point2D;
 import java.io.*;
 import java.nio.file.Path;
 import java.util.List;
@@ -224,6 +225,17 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     public static Point getCentroid(Roi roi) {
         return new Point((int) roi.getContourCentroid()[0], (int) roi.getContourCentroid()[1]);
     }
+
+    /**
+     * Gets the centroid of a ROI
+     *
+     * @param roi the roi
+     * @return the centroid
+     */
+    public static Point2D getCentroidDouble(Roi roi) {
+        return new Point2D.Double(roi.getContourCentroid()[0], roi.getContourCentroid()[1]);
+    }
+
 
     /**
      * Returns true if the ROI is visible at given slice index

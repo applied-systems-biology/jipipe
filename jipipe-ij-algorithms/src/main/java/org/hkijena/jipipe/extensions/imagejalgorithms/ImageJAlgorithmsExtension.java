@@ -1108,6 +1108,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-roi-to-mask", RoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-roi-outline", OutlineRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
+        registerNodeType("ij1-roi-to-centroid", RoiToCentroidAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-connector.png"));
         registerNodeType("ij1-roi-remove-bordering", RemoveBorderRoisAlgorithm.class, UIUtils.getIconURLFromResources("actions/bordertool.png"));
         registerNodeType("ij1-roi-statistics", RoiStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("ij1-roi-count", CountROIAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
@@ -1147,7 +1148,12 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-roi-extract-overlay", ExtractOverlayAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
         registerNodeType("ij1-roi-to-labels-expression", ROIToLabelsExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
         registerNodeType("ij1-roi-to-labels-name", ROIToLabelsByNameAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
+        registerNodeType("ij1-roi-flood-fill", RoiFloodFillAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
 
+        registerEnumParameterType("ij1-roi-flood-fill:mode",
+                RoiFloodFillAlgorithm.Mode.class,
+                "Magic wand mode",
+                "Determines how the flood fill behaves");
         registerEnumParameterType("ij1-roi-from-table-rectangular:anchor",
                 TableToRectangularROIAlgorithm.Anchor.class,
                 "Anchor",
