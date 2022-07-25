@@ -29,17 +29,18 @@ import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeCompartmentGraphDragAndDropBehavior;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorMinimap;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.compartments.dragdrop.JIPipeCompartmentGraphDragAndDropBehavior;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorMinimap;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.contextmenu.*;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCopyNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentCutNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.clipboard.GraphCompartmentPasteNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
-import org.hkijena.jipipe.ui.grapheditor.properties.JIPipeMultiAlgorithmSelectionPanelUI;
-import org.hkijena.jipipe.ui.grapheditor.properties.JIPipeSingleAlgorithmSelectionPanelUI;
+import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
+import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.GraphCompartmentCopyNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.GraphCompartmentCutNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.GraphCompartmentPasteNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties.JIPipePipelineMultiAlgorithmSelectionPanelUI;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties.JIPipePipelineSingleAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.history.HistoryJournalUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -157,14 +158,14 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
                 setPropertyPanel(new JIPipeSingleCompartmentSelectionPanelUI(this,
                         (JIPipeProjectCompartment) node));
             } else {
-                setPropertyPanel(new JIPipeSingleAlgorithmSelectionPanelUI(this, node));
+                setPropertyPanel(new JIPipePipelineSingleAlgorithmSelectionPanelUI(this, node));
             }
         } else {
             if (getSelection().stream().allMatch(ui -> ui.getNode() instanceof JIPipeProjectCompartment)) {
                 setPropertyPanel(new JIPipeMultiCompartmentSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(),
                         getSelection().stream().map(ui -> (JIPipeProjectCompartment) ui.getNode()).collect(Collectors.toSet()), getCanvasUI()));
             } else {
-                setPropertyPanel(new JIPipeMultiAlgorithmSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(), getCanvasUI(),
+                setPropertyPanel(new JIPipePipelineMultiAlgorithmSelectionPanelUI((JIPipeProjectWorkbench) getWorkbench(), getCanvasUI(),
                         getSelection().stream().map(JIPipeNodeUI::getNode).collect(Collectors.toSet())));
             }
         }

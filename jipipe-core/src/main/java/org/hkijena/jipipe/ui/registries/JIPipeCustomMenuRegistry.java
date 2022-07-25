@@ -18,8 +18,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 

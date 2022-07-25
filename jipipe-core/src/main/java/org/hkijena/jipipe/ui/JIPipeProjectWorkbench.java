@@ -48,7 +48,7 @@ import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.extensionbuilder.JIPipeJsonExporter;
 import org.hkijena.jipipe.ui.extensions.JIPipeModernPluginManagerUI;
 import org.hkijena.jipipe.ui.extensions.legacy.JIPipePluginValidityCheckerPanel;
-import org.hkijena.jipipe.ui.grapheditor.JIPipePipelineGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipePipelineGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.compartments.JIPipeCompartmentsGraphEditorUI;
 import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.notifications.NotificationButton;

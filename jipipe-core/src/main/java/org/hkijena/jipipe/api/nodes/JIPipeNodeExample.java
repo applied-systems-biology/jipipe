@@ -11,6 +11,8 @@ public class JIPipeNodeExample {
     private final JIPipeNodeTemplate nodeTemplate;
     private String nodeId;
 
+    private String sourceInfo;
+
     public JIPipeNodeExample(JIPipeNodeTemplate nodeTemplate) {
         this.nodeTemplate = nodeTemplate;
     }
@@ -34,5 +36,18 @@ public class JIPipeNodeExample {
 
     public JIPipeNodeTemplate getNodeTemplate() {
         return nodeTemplate;
+    }
+
+    /**
+     * An additional info label used by the UI.
+     * Not serialized
+     * @return the info
+     */
+    public String getSourceInfo() {
+        return sourceInfo;
+    }
+
+    public void setSourceInfo(String sourceInfo) {
+        this.sourceInfo = sourceInfo;
     }
 }

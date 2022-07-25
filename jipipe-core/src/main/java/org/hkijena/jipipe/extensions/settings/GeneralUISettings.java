@@ -18,7 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 
 /**

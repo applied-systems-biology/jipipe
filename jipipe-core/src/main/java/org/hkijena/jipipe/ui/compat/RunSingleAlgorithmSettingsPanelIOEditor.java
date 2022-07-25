@@ -9,7 +9,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.Map;

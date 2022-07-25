@@ -36,7 +36,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeMergingAlgorithmDataBatchGenerationSet
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphViewMode;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 

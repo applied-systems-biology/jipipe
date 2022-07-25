@@ -18,9 +18,9 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
-import org.hkijena.jipipe.ui.grapheditor.layout.GraphAutoLayout;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphViewMode;
+import org.hkijena.jipipe.ui.grapheditor.general.layout.GraphAutoLayout;
 
 /**
  * All settings for {@link JIPipeGraphEditorUI}

@@ -13,9 +13,9 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.components.renderers.DropShadowRenderer;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
-import org.hkijena.jipipe.ui.grapheditor.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphViewMode;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
 

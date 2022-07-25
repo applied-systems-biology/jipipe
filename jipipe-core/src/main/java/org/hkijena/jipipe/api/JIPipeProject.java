@@ -37,10 +37,13 @@ import org.hkijena.jipipe.api.history.JIPipeProjectHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectInfoParameters;
+import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -52,6 +55,7 @@ import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.file.Path;
 import java.util.*;
+import java.util.List;
 
 /**
  * A JIPipe project.
@@ -718,6 +722,32 @@ public class JIPipeProject implements JIPipeValidatable {
 
     public JIPipeProjectHistoryJournal getHistoryJournal() {
         return historyJournal;
+    }
+
+    /**
+     * Gets all examples for a node type ID.
+     * Includes project templates
+     * @param nodeTypeId the ID
+     * @return the examples
+     */
+    public List<JIPipeNodeExample> getNodeExamples(String nodeTypeId) {
+        List<JIPipeNodeExample> result = new ArrayList<>(JIPipe.getNodes().getNodeExamples(nodeTypeId));
+        for (JIPipeNodeTemplate nodeTemplate : NodeTemplateSettings.getInstance().getNodeTemplates()) {
+            JIPipeNodeExample example = new JIPipeNodeExample(nodeTemplate);
+            if(Objects.equals(example.getNodeId(), nodeTypeId)) {
+                example.setSourceInfo("From node templates (global)");
+                result.add(example);
+            }
+        }
+        for (JIPipeNodeTemplate nodeTemplate : metadata.getNodeTemplates()) {
+            JIPipeNodeExample example = new JIPipeNodeExample(nodeTemplate);
+            example.setSourceInfo("From node templates (project)");
+            if(Objects.equals(example.getNodeId(), nodeTypeId)) {
+                result.add(example);
+            }
+        }
+        result.sort(Comparator.comparing((JIPipeNodeExample example) -> example.getNodeTemplate().getName(), NaturalOrderComparator.INSTANCE));
+        return result;
     }
 
     /**

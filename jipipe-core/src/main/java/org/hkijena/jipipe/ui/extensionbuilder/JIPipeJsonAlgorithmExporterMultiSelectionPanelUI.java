@@ -19,8 +19,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 

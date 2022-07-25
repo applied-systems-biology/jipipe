@@ -1,7 +1,7 @@
 package org.hkijena.jipipe.ui.extension;
 
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 
 import javax.swing.*;
 

@@ -48,7 +48,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringLi
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
-import org.hkijena.jipipe.ui.grapheditor.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotRowUI;

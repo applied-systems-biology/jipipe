@@ -23,7 +23,7 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.ZoomFlatIconButton;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
