@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.multiparameters.datasources.ParametersDataTableDefinition;
+import org.hkijena.jipipe.extensions.multiparameters.nodes.DefineParametersTableAlgorithm;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.library.table.ParameterTable;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -42,12 +42,12 @@ import java.util.Map;
         "[node-id]/[node parameter key]")
 @JIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-public class JIPipeProjectParameterDefinition extends ParametersDataTableDefinition {
+public class JIPipeProjectParameterDefinition extends DefineParametersTableAlgorithm {
     public JIPipeProjectParameterDefinition(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public JIPipeProjectParameterDefinition(ParametersDataTableDefinition other) {
+    public JIPipeProjectParameterDefinition(DefineParametersTableAlgorithm other) {
         super(other);
     }
 

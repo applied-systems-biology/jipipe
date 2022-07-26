@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.multiparameters.datasources;
+package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;

@@ -62,9 +62,9 @@ public class DrawROIAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorit
         List<JIPipeMergingDataBatch> dataBatches;
 
         // No input slots -> Nothing to do
-        if (getEffectiveInputSlotCount() == 0) {
+        if (getDataInputSlotCount() == 0) {
             return;
-        } else if (getEffectiveInputSlotCount() == 1) {
+        } else if (getDataInputSlotCount() == 1) {
             dataBatches = new ArrayList<>();
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
                 if (progressInfo.isCancelled())

@@ -31,10 +31,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.List;
 
 public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI {
 
@@ -147,7 +145,15 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
                 ExpressionParameterVariableSource variableSource = (ExpressionParameterVariableSource) ReflectionUtils.newInstance(settings.variableSource());
                 variables.addAll(variableSource.getVariables(getParameterAccess()));
             }
-            for (ExpressionParameterSettingsVariable variable : getParameterAccess().getAnnotationsOfType(ExpressionParameterSettingsVariable.class)) {
+            List<ExpressionParameterSettingsVariable> variableAnnotations = getParameterAccess().getAnnotationsOfType(ExpressionParameterSettingsVariable.class);
+            if(variableAnnotations.isEmpty()) {
+                // Maybe the repeatable is not resolved
+                ExpressionParameterSettingsVariables container = getParameterAccess().getAnnotationOfType(ExpressionParameterSettingsVariables.class);
+                if(container != null) {
+                    variableAnnotations.addAll(Arrays.asList(container.value()));
+                }
+            }
+            for (ExpressionParameterSettingsVariable variable : variableAnnotations) {
                 if (!StringUtils.isNullOrEmpty(variable.name()) || !StringUtils.isNullOrEmpty(variable.description()) || !StringUtils.isNullOrEmpty(variable.key())) {
                     variables.add(new ExpressionParameterVariable(variable.name(), variable.description(), variable.key()));
                 }

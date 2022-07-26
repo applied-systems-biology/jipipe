@@ -17,7 +17,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJavaExtension;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.multiparameters.algorithms.ConvertParametersToTableAlgorithm;
+import org.hkijena.jipipe.extensions.multiparameters.nodes.ConvertParametersToTableAlgorithm;
 import org.hkijena.jipipe.extensions.multiparameters.converters.ParametersDataToResultsTableDataConverter;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;

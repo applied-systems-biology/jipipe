@@ -70,7 +70,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
      *
      * @return the number of input slots that are not parameter slots.
      */
-    public int getEffectiveInputSlotCount() {
+    public int getDataInputSlotCount() {
         int effectiveSlotSize = getInputSlots().size();
         if (parameterSlotAlgorithmSettings.isHasParameterSlot())
             --effectiveSlotSize;

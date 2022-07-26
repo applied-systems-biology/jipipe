@@ -19,7 +19,7 @@ import java.util.*;
  * A list of multiple {@link org.hkijena.jipipe.api.parameters.JIPipeParameterCollection} items (internally {@link org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection}.
  * We suggest to use this parameter instead of defining custom pairs ({@link org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameter} or functions ({@link org.hkijena.jipipe.extensions.parameters.api.functions.FunctionParameter}
  * <p>
- * You should provide a template {@link JIPipeParameterCollection} class (that is instantiable) to automatically populate newly created {@link JIPipeDynamicParameterCollection} with values.
+ * You should provide a template {@link JIPipeParameterCollection} class (that is instantiable) to automatically populate newly created {@link JIPipeDynamicParameterCollection} with values. Provide this class via the containingCollection() static method
  */
 @JsonSerialize(using = ParameterCollectionList.Serializer.class)
 @JsonDeserialize(using = ParameterCollectionList.Deserializer.class)

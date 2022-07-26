@@ -38,11 +38,11 @@ import java.util.stream.Collectors;
 public class JIPipeNodeInfoPicker extends JPanel {
     boolean reloading = false;
     private Mode mode;
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private SearchTextField searchField;
     private JList<JIPipeNodeInfo> nodeInfoJList;
-    private Set<JIPipeNodeInfo> hiddenItems = new HashSet<>();
-    private List<JIPipeNodeInfo> availableInfos;
+    private final Set<JIPipeNodeInfo> hiddenItems = new HashSet<>();
+    private final List<JIPipeNodeInfo> availableInfos;
     private Set<JIPipeNodeInfo> selectedInfos = new HashSet<>();
 
     /**

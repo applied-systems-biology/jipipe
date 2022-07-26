@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.multiparameters.algorithms;
+package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import org.hkijena.jipipe.JIPipe;

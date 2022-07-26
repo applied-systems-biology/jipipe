@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.multiparameters.datasources;
+package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
@@ -34,16 +34,16 @@ import java.util.Map;
 @JIPipeDocumentation(name = "Define parameter", description = "Defines an algorithm parameter that can be consumed by a multi-parameter algorithm")
 @JIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-public class ParametersDataDefinition extends JIPipeAlgorithm {
+public class DefineParametersAlgorithm extends JIPipeAlgorithm {
 
-    private GeneratedParameters parameters;
+    private final GeneratedParameters parameters;
 
     /**
      * Creates a new instance
      *
      * @param info the algorithm info
      */
-    public ParametersDataDefinition(JIPipeNodeInfo info) {
+    public DefineParametersAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.parameters = new GeneratedParameters(this);
         registerSubParameter(parameters);
@@ -54,7 +54,7 @@ public class ParametersDataDefinition extends JIPipeAlgorithm {
      *
      * @param other the original
      */
-    public ParametersDataDefinition(ParametersDataDefinition other) {
+    public DefineParametersAlgorithm(DefineParametersAlgorithm other) {
         super(other);
         this.parameters = new GeneratedParameters(other.parameters);
         this.parameters.setParent(this);

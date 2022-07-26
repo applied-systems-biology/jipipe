@@ -260,6 +260,7 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new SetVariableIfFunction());
         registerExpressionFunction(new RandomFunction());
         registerExpressionFunction(new SliceFunction());
+        registerExpressionFunction(new ExpressionSequenceFunction());
     }
 
     @Override

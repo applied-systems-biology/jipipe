@@ -82,6 +82,8 @@ public interface JIPipeParameterAccess {
 
     /**
      * Gets annotations for this parameter (including the field class)
+     * Please note that there is no guarantee that repeatable annotations are resolved properly. This is an oversight of Java and cannot be resolved on our side.
+     * We recommend to check both for the repeatable and container annotations.
      *
      * @param klass the annotation class
      * @param <T>   the annotation class

@@ -171,7 +171,7 @@ public abstract class JIPipeMergingAlgorithm extends JIPipeParameterSlotAlgorith
         }
 
         // Special case: No input slots
-        if (getEffectiveInputSlotCount() == 0) {
+        if (getDataInputSlotCount() == 0) {
             if (progressInfo.isCancelled())
                 return;
             final int row = 0;

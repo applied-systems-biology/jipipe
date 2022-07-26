@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.multiparameters.datasources;
+package org.hkijena.jipipe.extensions.multiparameters.nodes;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.parameters.library.table.ParameterTable;
 @JIPipeDocumentation(name = "Define multiple parameters", description = "Defines algorithm parameters that can be consumed by a multi-parameter algorithm")
 @JIPipeOutputSlot(value = ParametersData.class, slotName = "Parameters", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-public class ParametersDataTableDefinition extends JIPipeAlgorithm {
+public class DefineParametersTableAlgorithm extends JIPipeAlgorithm {
 
     private ParameterTable parameterTable = new ParameterTable();
 
@@ -40,7 +40,7 @@ public class ParametersDataTableDefinition extends JIPipeAlgorithm {
      *
      * @param info the algorithm info
      */
-    public ParametersDataTableDefinition(JIPipeNodeInfo info) {
+    public DefineParametersTableAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
@@ -49,7 +49,7 @@ public class ParametersDataTableDefinition extends JIPipeAlgorithm {
      *
      * @param other the original
      */
-    public ParametersDataTableDefinition(ParametersDataTableDefinition other) {
+    public DefineParametersTableAlgorithm(DefineParametersTableAlgorithm other) {
         super(other);
         this.parameterTable = new ParameterTable(other.parameterTable);
     }

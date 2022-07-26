@@ -78,6 +78,9 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.persistence = other.getPersistence();
         this.uiOrder = other.getUIOrder();
         this.priority = other.getPriority();
+        for (Annotation annotation : other.getAnnotations()) {
+            annotationMap.put(annotation.annotationType(), annotation);
+        }
         JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(fieldClass);
         this.value = info.duplicate(other.get(fieldClass)); // Deep copy
     }

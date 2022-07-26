@@ -167,21 +167,16 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
         List<JIPipeDataBatch> dataBatches;
 
         // Special case: No input slots
-        if (getEffectiveInputSlotCount() == 0) {
+        if (getDataInputSlotCount() == 0) {
             if (progressInfo.isCancelled())
                 return;
-            final int row = 0;
-            JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", row, 1);
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
             dataBatch.addMergedTextAnnotations(parameterAnnotations, dataBatchGenerationSettings.getAnnotationMergeStrategy());
             uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
-            if (isPassThrough()) {
-                runPassThrough(slotProgress, dataBatch);
-            } else {
-                runIteration(dataBatch, slotProgress);
-            }
-            return;
-        } else if (getEffectiveInputSlotCount() == 1) {
+
+            dataBatches = new ArrayList<>();
+            dataBatches.add(dataBatch);
+        } else if (getDataInputSlotCount() == 1) {
 
             boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();
             IntegerRange limit = dataBatchGenerationSettings.getLimit().getContent();
@@ -232,6 +227,17 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             }
         }
 
+        // Handle case: All optional input, no data
+        if((dataBatches == null || dataBatches.isEmpty()) && getDataInputSlots().stream().allMatch(slot -> slot.getInfo().isOptional() && slot.isEmpty())) {
+            progressInfo.log("Generating dummy data batch because of the [all inputs empty optional] condition");
+            // Generate a dummy batch
+            JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);
+            dataBatch.addMergedTextAnnotations(parameterAnnotations, JIPipeTextAnnotationMergeMode.Merge);
+            uploadAdaptiveParameters(dataBatch, tree, parameterBackups, progressInfo);
+            dataBatches = new ArrayList<>();
+            dataBatches.add(dataBatch);
+        }
+
         if (dataBatches == null) {
             throw new UserFriendlyRuntimeException("Unable to split data into batches!",
                     "Unable to split data into batches!",
@@ -241,6 +247,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
                             "Try to switch to the 'Data batches' tab to preview how data is split into batches.");
         }
 
+        // Execute the workload
         boolean hasAdaptiveParameters = getAdaptiveParameterSettings().isEnabled() && !getAdaptiveParameterSettings().getOverriddenParameters().isEmpty();
 
         if (!supportsParallelization() || !isParallelizationEnabled() || getThreadPool() == null || getThreadPool().getMaxThreads() <= 1 || dataBatches.size() <= 1 || hasAdaptiveParameters) {
@@ -260,15 +267,16 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
             for (int i = 0; i < dataBatches.size(); i++) {
                 int dataBatchIndex = i;
                 JIPipeParameterTree finalTree = tree;
+                List<JIPipeDataBatch> finalDataBatches = dataBatches;
                 tasks.add(() -> {
                     if (progressInfo.isCancelled())
                         return;
-                    JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", dataBatchIndex, dataBatches.size());
-                    uploadAdaptiveParameters(dataBatches.get(dataBatchIndex), finalTree, parameterBackups, progressInfo);
+                    JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Data row", dataBatchIndex, finalDataBatches.size());
+                    uploadAdaptiveParameters(finalDataBatches.get(dataBatchIndex), finalTree, parameterBackups, progressInfo);
                     if (isPassThrough()) {
-                        runPassThrough(slotProgress, dataBatches.get(dataBatchIndex));
+                        runPassThrough(slotProgress, finalDataBatches.get(dataBatchIndex));
                     } else {
-                        runIteration(dataBatches.get(dataBatchIndex), slotProgress);
+                        runIteration(finalDataBatches.get(dataBatchIndex), slotProgress);
                     }
                 });
             }

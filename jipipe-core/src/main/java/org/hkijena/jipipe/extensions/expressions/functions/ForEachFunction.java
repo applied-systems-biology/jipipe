@@ -14,7 +14,7 @@ import java.util.Map;
 
 import static org.hkijena.jipipe.extensions.expressions.functions.EvaluateFunction.parseVariableAssignment;
 
-@JIPipeDocumentation(name = "Foreach loop", description = "Repeats an expression for all items of the second parameter. ")
+@JIPipeDocumentation(name = "Foreach loop", description = "Repeats an expression for all items of the second parameter. The expression values are assigned to a variable.")
 public class ForEachFunction extends ExpressionFunction {
     public ForEachFunction() {
         super("FOREACH", 2, Integer.MAX_VALUE);
