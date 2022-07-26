@@ -40,7 +40,7 @@ public class ExtractLabelStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Measurements", description = "The measurements that should be extracted from the labels. Please note that due to technical limitations, some measurements will not work and instead yield measurements over the whole image.")
-    @JIPipeParameter("measurements")
+    @JIPipeParameter(value = "measurements", important = true)
     public ImageStatisticsSetParameter getMeasurements() {
         return measurements;
     }

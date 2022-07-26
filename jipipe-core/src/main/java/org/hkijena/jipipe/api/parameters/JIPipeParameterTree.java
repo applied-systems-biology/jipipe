@@ -266,6 +266,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                 parameterAccess.setPriority(pair.getPriority());
                 parameterAccess.setPersistence(pair.getPersistence());
                 parameterAccess.setImportant(pair.isImportant());
+                parameterAccess.setPinned(pair.isPinned());
 
                 addParameter(entry.getKey(), parameterAccess, parent);
             }
@@ -590,6 +591,14 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                 return getterAnnotation.shortKey();
             JIPipeParameter setterAnnotation = setter.getAnnotation(JIPipeParameter.class);
             return setterAnnotation.shortKey();
+        }
+
+        public boolean isPinned() {
+            JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
+            if (getterAnnotation.pinned())
+                return true;
+            JIPipeParameter setterAnnotation = setter.getAnnotation(JIPipeParameter.class);
+            return setterAnnotation.pinned();
         }
 
         public int getUIOrder() {

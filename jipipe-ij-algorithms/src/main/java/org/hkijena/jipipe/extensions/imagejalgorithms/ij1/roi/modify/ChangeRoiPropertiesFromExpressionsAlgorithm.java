@@ -406,7 +406,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     }
 
     @JIPipeDocumentation(name = "Measurements", description = "The measurements to calculate.")
-    @JIPipeParameter("measurements")
+    @JIPipeParameter(value = "measurements", important = true)
     public ImageStatisticsSetParameter getMeasurements() {
         return measurements;
     }

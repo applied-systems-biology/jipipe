@@ -72,6 +72,14 @@ public interface JIPipeParameterAccess {
     boolean isImportant();
 
     /**
+     * Returns true if the parameter is pinned to the top
+     * @return if the parameter is pinned to the top
+     */
+    default boolean isPinned() {
+        return false;
+    }
+
+    /**
      * Gets an annotation for this parameter
      *
      * @param klass Annotation class

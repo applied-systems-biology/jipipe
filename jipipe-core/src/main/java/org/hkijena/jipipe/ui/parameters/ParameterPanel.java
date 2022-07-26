@@ -425,15 +425,34 @@ public class ParameterPanel extends FormPanel implements Contextual {
         }
         Comparator<JIPipeParameterEditorUI> comparator;
         if (withoutLabelSeparation) {
-            comparator = Comparator.comparing((JIPipeParameterEditorUI u) -> u.getParameterAccess().getUIOrder())
+            comparator = Comparator.comparing((JIPipeParameterEditorUI u) -> !u.getParameterAccess().isPinned())
+                    .thenComparing((JIPipeParameterEditorUI u) -> u.getParameterAccess().getUIOrder())
                     .thenComparing(u -> u.getParameterAccess().getName());
         } else {
-            comparator = Comparator.comparing((JIPipeParameterEditorUI u) -> !u.isUILabelEnabled())
+            comparator = Comparator.comparing((JIPipeParameterEditorUI u) -> !u.getParameterAccess().isPinned())
+                    .thenComparing((JIPipeParameterEditorUI u) -> !u.isUILabelEnabled())
                     .thenComparing(u -> u.getParameterAccess().getUIOrder())
                     .thenComparing(u -> u.getParameterAccess().getName());
         }
+
+        boolean pinModeStarted = false;
+
         for (JIPipeParameterEditorUI ui : uiList.stream().sorted(comparator).collect(Collectors.toList())) {
             JIPipeParameterAccess parameterAccess = ui.getParameterAccess();
+
+            if(parameterAccess.isPinned()) {
+                pinModeStarted = true;
+            }
+            else if(pinModeStarted) {
+                // Add some spacing
+                JPanel strut = new JPanel(new BorderLayout());
+                strut.add(new JSeparator(SwingConstants.HORIZONTAL));
+                strut.setBorder(BorderFactory.createEmptyBorder(12,32,12,0));
+                addWideToForm(strut);
+                uiComponents.add(strut);
+                pinModeStarted = false;
+            }
+
             JPanel labelPanel = new JPanel(new BorderLayout());
             MarkdownDocument documentation = generateParameterDocumentation(parameterAccess, tree);
 
@@ -506,15 +525,17 @@ public class ParameterPanel extends FormPanel implements Contextual {
         JPanel propertyPanel = new JPanel(new BorderLayout());
 
         // Help
-        JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help-muted.png"));
-        helpButton.setBorder(null);
-        helpButton.addActionListener(e -> {
-            getParameterHelp().setTemporaryDocument(documentation);
-            getEventBus().post(new HoverHelpEvent(documentation));
-            updateParameterHelpDrillDown();
-        });
-        installComponentHighlighter(helpButton, Sets.newHashSet(component, description));
-        propertyPanel.add(helpButton, BorderLayout.WEST);
+        if(documentation != null || component instanceof JIPipeParameterEditorUI) {
+            JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help-muted.png"));
+            helpButton.setBorder(null);
+            helpButton.addActionListener(e -> {
+                getParameterHelp().setTemporaryDocument(documentation);
+                getEventBus().post(new HoverHelpEvent(documentation));
+                updateParameterHelpDrillDown();
+            });
+            installComponentHighlighter(helpButton, Sets.newHashSet(component, description));
+            propertyPanel.add(helpButton, BorderLayout.WEST);
+        }
 
         // Options menu
         if (component instanceof JIPipeParameterEditorUI) {

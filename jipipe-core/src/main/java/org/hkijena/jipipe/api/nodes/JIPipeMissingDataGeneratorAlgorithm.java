@@ -216,7 +216,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
     @JIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
             "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
             "We recommend to use the runtime parameters to control parallelization in most cases.")
-    @JIPipeParameter(value = "jipipe:parallelization:enabled")
+    @JIPipeParameter(value = "jipipe:parallelization:enabled", pinned = true)
     @Override
     public boolean isParallelizationEnabled() {
         return parallelizationEnabled;
@@ -230,7 +230,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
 
     @JIPipeDocumentation(name = "Keep original annotations", description = "If enabled, outputs that were not generated " +
             "keep their original annotations. Otherwise the merged annotations from the data batch are used.")
-    @JIPipeParameter("keep-original-annotations")
+    @JIPipeParameter(value = "keep-original-annotations", pinned = true)
     public boolean isKeepOriginalAnnotations() {
         return keepOriginalAnnotations;
     }

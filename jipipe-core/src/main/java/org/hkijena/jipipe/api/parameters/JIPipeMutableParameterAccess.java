@@ -57,6 +57,8 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
     private int uiOrder;
     private JIPipeParameterPersistence persistence = JIPipeParameterPersistence.Collection;
 
+    private boolean pinned;
+
     /**
      * Creates a new instance
      */
@@ -83,6 +85,7 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         }
         JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().getInfoByFieldClass(fieldClass);
         this.value = info.duplicate(other.get(fieldClass)); // Deep copy
+        this.pinned = other.isPinned();
     }
 
     /**
@@ -116,6 +119,12 @@ public class JIPipeMutableParameterAccess implements JIPipeParameterAccess {
         this.priority = other.priority;
         this.persistence = other.persistence;
         this.uiOrder = other.uiOrder;
+        this.pinned = other.pinned;
+    }
+
+    @Override
+    public boolean isPinned() {
+        return pinned;
     }
 
     @Override

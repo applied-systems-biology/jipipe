@@ -288,7 +288,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return algorithm name
      */
-    @JIPipeParameter(value = "jipipe:node:name", uiOrder = -9999)
+    @JIPipeParameter(value = "jipipe:node:name", uiOrder = -9999, pinned = true)
     @JIPipeDocumentation(name = "Name", description = "Custom algorithm name.")
     public String getName() {
         if (customName == null || customName.isEmpty())
@@ -315,7 +315,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     }
 
     @JIPipeDocumentation(name = "Bookmark this node", description = "If enabled, the node is highlighted in the graph editor UI and added into the bookmark list.")
-    @JIPipeParameter("jipipe:node:bookmarked")
+    @JIPipeParameter(value = "jipipe:node:bookmarked", pinned = true)
     public boolean isBookmarked() {
         return bookmarked;
     }
@@ -775,7 +775,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     @JIPipeDocumentation(name = "Description", description = "A custom description")
     @StringParameterSettings(multiline = true)
-    @JIPipeParameter(value = "jipipe:node:description", uiOrder = -999)
+    @JIPipeParameter(value = "jipipe:node:description", uiOrder = -999, pinned = true)
     public HTMLText getCustomDescription() {
         if (customDescription == null)
             customDescription = new HTMLText();

@@ -63,7 +63,7 @@ public class OverlapMeasureLabelsAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Measurements", description = "The measurements that will be stored in to the output table")
-    @JIPipeParameter("measurements")
+    @JIPipeParameter(value = "measurements", important = true)
     public OverlapStatisticsSetParameter getMeasurements() {
         return measurements;
     }

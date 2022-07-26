@@ -40,6 +40,17 @@ public class JIPipeReflectionParameterAccess implements JIPipeParameterAccess {
     private boolean important;
     private JIPipeParameterPersistence persistence;
 
+    private boolean pinned;
+
+    @Override
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
+    }
+
     @Override
     public String getKey() {
         return key;

@@ -136,7 +136,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
 
     @JIPipeDocumentation(name = "Enabled", description = "If disabled, this algorithm will be skipped in a run. " +
             "Please note that this will also disable all algorithms dependent on this algorithm.")
-    @JIPipeParameter(value = "jipipe:algorithm:enabled")
+    @JIPipeParameter(value = "jipipe:algorithm:enabled", pinned = true)
     public boolean isEnabled() {
         return enabled;
     }
@@ -151,7 +151,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
             "This is different from enabling/disabling the algorithm as this will not disable dependent algorithms.\n" +
             "Please note that setting this parameter via adaptive parameters (if available) does not always yield the expected result. " +
             "The reason behind this is that pass-through is not trivial for certain nodes. We recommend to use a split node if node execution should be made adaptive.")
-    @JIPipeParameter(value = "jipipe:algorithm:pass-through")
+    @JIPipeParameter(value = "jipipe:algorithm:pass-through", pinned = true)
     public boolean isPassThrough() {
         return passThrough;
     }

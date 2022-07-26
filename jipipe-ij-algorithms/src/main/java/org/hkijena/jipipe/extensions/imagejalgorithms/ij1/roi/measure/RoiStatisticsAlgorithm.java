@@ -118,7 +118,7 @@ public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Extracted measurements", description = "Please select which measurements should be extracted. " +
             "Each measurement will be assigned to one or multiple output table columns.<br/><br/>" + ImageStatisticsSetParameter.ALL_DESCRIPTIONS)
-    @JIPipeParameter("measurements")
+    @JIPipeParameter(value = "measurements", important = true)
     public ImageStatisticsSetParameter getMeasurements() {
         return measurements;
     }

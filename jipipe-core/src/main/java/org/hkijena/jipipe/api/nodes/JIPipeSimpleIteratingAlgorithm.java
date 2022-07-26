@@ -307,7 +307,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     @JIPipeDocumentation(name = "Enable parallelization", description = "If enabled, the workload can be calculated across multiple threads to for speedup. " +
             "Please note that the actual usage of multiple threads depend on the runtime settings and the algorithm implementation. " +
             "We recommend to use the runtime parameters to control parallelization in most cases.")
-    @JIPipeParameter(value = "jipipe:parallelization:enabled")
+    @JIPipeParameter(value = "jipipe:parallelization:enabled", pinned = true)
     @Override
     public boolean isParallelizationEnabled() {
         return parallelizationEnabled;
