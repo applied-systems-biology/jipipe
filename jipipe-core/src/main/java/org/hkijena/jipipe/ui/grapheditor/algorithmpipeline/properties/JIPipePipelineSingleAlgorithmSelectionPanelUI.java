@@ -91,12 +91,14 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                 DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
         if (node.getParentGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project) {
-            tabbedPane.registerSingletonTab("EXAMPLES",
-                    "Examples",
-                    UIUtils.getIconFromResources("actions/graduation-cap.png"),
-                    () -> new NodeExamplesUI(getProjectWorkbench(), (JIPipeAlgorithm) node),
-                    DocumentTabPane.CloseMode.withoutCloseButton,
-                    DocumentTabPane.SingletonTabMode.Present);
+            if (node instanceof JIPipeAlgorithm) {
+                tabbedPane.registerSingletonTab("EXAMPLES",
+                        "Examples",
+                        UIUtils.getIconFromResources("actions/graduation-cap.png"),
+                        () -> new NodeExamplesUI(getProjectWorkbench(), (JIPipeAlgorithm) node),
+                        DocumentTabPane.CloseMode.withoutCloseButton,
+                        DocumentTabPane.SingletonTabMode.Present);
+            }
             cacheBrowserTabContent = new JPanel(new BorderLayout());
             if (node instanceof JIPipeAlgorithm) {
                 tabbedPane.registerSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIconFromResources("actions/database.png"),
