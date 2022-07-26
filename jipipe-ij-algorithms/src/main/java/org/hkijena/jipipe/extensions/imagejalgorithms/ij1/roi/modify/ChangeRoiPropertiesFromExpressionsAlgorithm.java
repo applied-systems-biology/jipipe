@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify;
 
 import ij.gui.Roi;
 import ij.plugin.RoiScaler;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -24,12 +25,17 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.expressions.OptionalDefaultExpressionParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.RoiStatisticsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.ColorUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.HashSet;
@@ -40,9 +46,10 @@ import java.util.Set;
  */
 @JIPipeDocumentation(name = "Change ROI properties from expressions", description = "Sets properties of all ROI to values extracted from expressions.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
-public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
+public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private OptionalDefaultExpressionParameter roiName = new OptionalDefaultExpressionParameter(false, "roi_name");
     private OptionalDefaultExpressionParameter positionX = new OptionalDefaultExpressionParameter(false, "x");
@@ -57,16 +64,23 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
     private OptionalDefaultExpressionParameter scaleY = new OptionalDefaultExpressionParameter(false, "1.0");
     private OptionalDefaultExpressionParameter centerScale = new OptionalDefaultExpressionParameter(false, "false");
 
+    private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipe.createNode(RoiStatisticsAlgorithm.class);
+
+    private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
+
+    private final CustomExpressionVariablesParameter customFilterVariables;
+
+    private boolean measureInPhysicalUnits = true;
+
     /**
      * Instantiates a new node type.
      *
      * @param info the info
      */
     public ChangeRoiPropertiesFromExpressionsAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ROIListData.class)
-                .addOutputSlot("Output", "", ROIListData.class, null)
-                .seal()
-                .build());
+        super(info);
+        this.customFilterVariables = new CustomExpressionVariablesParameter(this);
     }
 
     /**
@@ -88,19 +102,43 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
         this.scaleX = new OptionalDefaultExpressionParameter(other.scaleX);
         this.scaleY = new OptionalDefaultExpressionParameter(other.scaleY);
         this.centerScale = new OptionalDefaultExpressionParameter(other.centerScale);
+        this.measurements = new ImageStatisticsSetParameter(other.measurements);
+        this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
+        this.measureInPhysicalUnits = other.measureInPhysicalUnits;
+    }
+
+    @Override
+    public void run(JIPipeProgressInfo progressInfo) {
+        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
+        // Set parameters of ROI statistics algorithm
+        roiStatisticsAlgorithm.setMeasurements(measurements);
+        roiStatisticsAlgorithm.setMeasureInPhysicalUnits(measureInPhysicalUnits);
+
+        // Continue with run
+        super.run(progressInfo);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData data = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate(progressInfo);
+        ROIListData inputRois = (ROIListData) dataBatch.getInputData("Input", ROIListData.class, progressInfo).duplicate(progressInfo);
+        ImagePlusData inputReference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         org.hkijena.jipipe.extensions.expressions.ExpressionVariables variables = new org.hkijena.jipipe.extensions.expressions.ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
-            variables.set(annotation.getName(), annotation.getValue());
-        }
+        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+        customFilterVariables.writeToVariables(variables, true, "custom.", true, "custom");
 
-        for (int i = 0; i < data.size(); i++) {
-            Roi roi = data.get(i);
+        // Obtain statistics
+        roiStatisticsAlgorithm.clearSlotData();
+        roiStatisticsAlgorithm.getInputSlot("ROI").addData(inputRois, progressInfo);
+        if (inputReference != null) {
+            roiStatisticsAlgorithm.getInputSlot("Reference").addData(inputReference, progressInfo);
+        }
+        roiStatisticsAlgorithm.run(progressInfo);
+        ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
+        roiStatisticsAlgorithm.clearSlotData();
+
+        for (int i = 0; i < inputRois.size(); i++) {
+            Roi roi = inputRois.get(i);
             double x;
             double y;
             int z;
@@ -115,6 +153,12 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
             c = roi.getCPosition();
             t = roi.getTPosition();
 
+            for (int col = 0; col < statistics.getColumnCount(); col++) {
+                variables.set(statistics.getColumnName(col), statistics.getValueAt(i, col));
+            }
+
+            variables.set("index", i);
+            variables.set("num_roi", inputRois.size());
             variables.set("x", x);
             variables.set("y", y);
             variables.set("z", z);
@@ -158,16 +202,20 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
             }
             if (scaleX != 1.0 || scaleY != 1.0) {
                 roi = RoiScaler.scale(roi, scaleX, scaleY, centerScale);
-                data.set(i, roi);
+                inputRois.set(i, roi);
             }
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), inputRois, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Location (X)", description = "The X location. The annotation value is converted to an integer.")
     @JIPipeParameter("position-x")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getPositionX() {
         return positionX;
     }
@@ -180,6 +228,10 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
     @JIPipeDocumentation(name = "Location (Y)", description = "The Y location. The annotation value is converted to an integer.")
     @JIPipeParameter("position-y")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getPositionY() {
         return positionY;
     }
@@ -193,6 +245,10 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
             "The first index is 1. If set to zero, the ROI is located on all slices. The annotation value is converted to an integer.")
     @JIPipeParameter("position-z")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getPositionZ() {
         return positionZ;
     }
@@ -207,6 +263,10 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
             "The first index is 1. If set to zero, the ROI is located on all channels. The annotation value is converted to an integer.")
     @JIPipeParameter("position-c")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getPositionC() {
         return positionC;
     }
@@ -220,6 +280,10 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
             "The first index is 1. If set to zero, the ROI is located on all frames. The annotation value is converted to an integer.")
     @JIPipeParameter("position-t")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getPositionT() {
         return positionT;
     }
@@ -232,6 +296,10 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
     @JIPipeDocumentation(name = "Fill color", description = "Allows to change the fill color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
     @JIPipeParameter("fill-color")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getFillColor() {
         return fillColor;
     }
@@ -244,6 +312,10 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
     @JIPipeDocumentation(name = "Line color", description = "Allows to change the line color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
     @JIPipeParameter("line-color")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getLineColor() {
         return lineColor;
     }
@@ -256,6 +328,10 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
     @JIPipeDocumentation(name = "Line width", description = "Allows to change the line width when rendered as RGB and within ImageJ. The annotation value is converted to an integer.")
     @JIPipeParameter("line-width")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getLineWidth() {
         return lineWidth;
     }
@@ -268,6 +344,10 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
     @JIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
     @JIPipeParameter("roi-name")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getRoiName() {
         return roiName;
     }
@@ -280,6 +360,10 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
     @JIPipeDocumentation(name = "Scale X", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI. Must evaluate to a number.")
     @JIPipeParameter("scale-x")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getScaleX() {
         return scaleX;
     }
@@ -292,6 +376,10 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
     @JIPipeDocumentation(name = "Scale Y", description = "Scales the ROI. Please note that the scale will not be saved inside the ROI. Must evaluate to a number.")
     @JIPipeParameter("scale-y")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getScaleY() {
         return scaleY;
     }
@@ -304,6 +392,10 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
     @JIPipeDocumentation(name = "Center scale", description = "If true, each ROI is scaled relative to its center. Must evaluate to a boolean.")
     @JIPipeParameter("center-scale")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getCenterScale() {
         return centerScale;
     }
@@ -313,12 +405,40 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
         this.centerScale = centerScale;
     }
 
+    @JIPipeDocumentation(name = "Measurements", description = "The measurements to calculate.")
+    @JIPipeParameter("measurements")
+    public ImageStatisticsSetParameter getMeasurements() {
+        return measurements;
+    }
+
+    @JIPipeParameter("measurements")
+    public void setMeasurements(ImageStatisticsSetParameter measurements) {
+        this.measurements = measurements;
+    }
+
+    @JIPipeDocumentation(name = "Custom filter variables", description = "Here you can add parameters that will be included into the filter as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
+    @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
+    public CustomExpressionVariablesParameter getCustomFilterVariables() {
+        return customFilterVariables;
+    }
+
+    @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")
+    @JIPipeParameter("measure-in-physical-units")
+    public boolean isMeasureInPhysicalUnits() {
+        return measureInPhysicalUnits;
+    }
+
+    @JIPipeParameter("measure-in-physical-units")
+    public void setMeasureInPhysicalUnits(boolean measureInPhysicalUnits) {
+        this.measureInPhysicalUnits = measureInPhysicalUnits;
+    }
+
     public static class VariableSource implements ExpressionParameterVariableSource {
 
         private static final Set<ExpressionParameterVariable> VARIABLES = new HashSet<>();
 
         static {
-            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
             VARIABLES.add(new ExpressionParameterVariable("Fill color", "The fill color of the ROI", "fill_color"));
             VARIABLES.add(new ExpressionParameterVariable("Line color", "The line color of the ROI", "line_color"));
             VARIABLES.add(new ExpressionParameterVariable("Line width", "The line width", "line_width"));
@@ -328,6 +448,8 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeSimpleIte
             VARIABLES.add(new ExpressionParameterVariable("X Location", "The X location of the ROI", "x"));
             VARIABLES.add(new ExpressionParameterVariable("Y Location", "The Y location of the ROI", "y"));
             VARIABLES.add(new ExpressionParameterVariable("Name", "The ROI name", "name"));
+            VARIABLES.add(new ExpressionParameterVariable("Index", "The index of the ROI", "index"));
+            VARIABLES.add(new ExpressionParameterVariable("Number of ROI", "The number of ROI in the list", "num_roi"));
         }
 
         @Override

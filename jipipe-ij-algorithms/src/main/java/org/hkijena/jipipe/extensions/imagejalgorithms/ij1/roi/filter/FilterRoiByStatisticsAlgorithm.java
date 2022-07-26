@@ -96,9 +96,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Create variables
         ExpressionVariables variableSet = new ExpressionVariables();
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
-            variableSet.set(annotation.getName(), annotation.getValue());
-        }
+        variableSet.putAnnotations(dataBatch.getMergedTextAnnotations());
         customFilterVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
 
         // Obtain statistics
@@ -109,6 +107,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         }
         roiStatisticsAlgorithm.run(progressInfo);
         ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
+        roiStatisticsAlgorithm.clearSlotData();
 
         // Apply filter
         ROIListData outputData = new ROIListData();
