@@ -14,7 +14,7 @@ import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.CalibrationPlugin;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.LUTManagerPlugin;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.PixelInfoPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.ROIManagerPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MaskToROIDrawerPlugin;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MeasurementPlugin;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;

@@ -186,7 +186,6 @@ public class EllipseMaskDrawerTool extends MaskDrawerTool {
 
     @Subscribe
     public void onMouseMove(MouseMovedEvent event) {
-        System.out.println(toolIsActive());
         if (!toolIsActive())
             return;
         getViewerPanel().getCanvas().repaint();

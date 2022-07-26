@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.ImageViewerPanelPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.ROIManagerPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.renderers.ComponentListCellRenderer;
 import org.hkijena.jipipe.utils.UIUtils;

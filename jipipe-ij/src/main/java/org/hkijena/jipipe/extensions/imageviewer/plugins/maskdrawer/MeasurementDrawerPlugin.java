@@ -9,7 +9,7 @@ import ij.plugin.frame.RoiManager;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.ROIManagerPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 

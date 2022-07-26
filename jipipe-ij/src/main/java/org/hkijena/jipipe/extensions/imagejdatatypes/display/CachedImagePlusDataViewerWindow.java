@@ -24,6 +24,7 @@ import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.*;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MeasurementDrawerPlugin;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MeasurementPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
