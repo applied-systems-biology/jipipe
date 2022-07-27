@@ -192,7 +192,7 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
         if (graph == null) {
             try {
                 graph = JsonUtils.readFromString(data, JIPipeGraph.class);
-            } catch (Exception e) {
+            } catch (Throwable e) {
             }
         }
         return graph;
