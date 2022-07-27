@@ -25,10 +25,14 @@ public class JIPipeNodeExample {
                 if(nodeList.size() != 1)
                     return null;
                 JsonNode node = nodeList.fields().next().getValue();
-                nodeId = node.get("jipipe:node-info-id").textValue();
+                if(node == null)
+                    return null;
+                JsonNode node1 = node.path("jipipe:node-info-id");
+                if(node1.isMissingNode())
+                    return null;
+                nodeId = node1.textValue();
             }
             catch (Throwable throwable) {
-                throwable.printStackTrace();
             }
         }
         return nodeId;

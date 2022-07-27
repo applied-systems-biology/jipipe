@@ -91,7 +91,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                 DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
         if (node.getParentGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project) {
-            if (node instanceof JIPipeAlgorithm) {
+            if (node instanceof JIPipeAlgorithm && !getProjectWorkbench().getProject().getNodeExamples(node.getInfo().getId()).isEmpty()) {
                 tabbedPane.registerSingletonTab("EXAMPLES",
                         "Examples",
                         UIUtils.getIconFromResources("actions/graduation-cap.png"),

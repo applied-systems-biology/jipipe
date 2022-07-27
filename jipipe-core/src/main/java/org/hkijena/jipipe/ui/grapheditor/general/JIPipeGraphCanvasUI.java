@@ -1660,12 +1660,50 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             case Elbow:
                 drawElbowEdge(g, sourcePoint, sourceBounds, targetPoint, scale, viewX, viewY);
                 break;
-            case Line:
+            case Line: {
+                int arrowHeadShift = getArrowHeadShift();
+                int dx;
+                int dy;
+                if(viewMode == JIPipeGraphViewMode.Horizontal) {
+                    dx = arrowHeadShift;
+                    dy = 0;
+                }
+                else {
+                    dx = 0;
+                    dy = arrowHeadShift;
+                }
                 g.drawLine((int) (scale * sourcePoint.x) + viewX,
                         (int) (scale * sourcePoint.y) + viewY,
-                        (int) (scale * targetPoint.x) + viewX,
-                        (int) (scale * targetPoint.y) + viewY);
+                        (int) (scale * targetPoint.x) + viewX + dx,
+                        (int) (scale * targetPoint.y) + viewY + dy);
+                }
                 break;
+        }
+        if(settings.isDrawArrowHeads()) {
+            drawArrowHead(g, targetPoint.x, targetPoint.y);
+        }
+    }
+
+    private int getArrowHeadShift() {
+        if(settings.isDrawArrowHeads()) {
+            int sz = 1;
+            return -2 * sz - 4;
+        }
+        else {
+            return 0;
+        }
+    }
+
+    private void drawArrowHead(Graphics2D g, int x, int y) {
+        if(viewMode == JIPipeGraphViewMode.Horizontal) {
+            int sz = 1;
+            int dx = -2 * sz - 4;
+            g.drawPolygon(new int[]{x + dx, x + sz + dx, x + dx}, new int[]{y - sz, y, y + sz}, 3);
+        }
+        else {
+            int sz = 1;
+            int dy = -2 * sz - 4;
+            g.drawPolygon(new int[]{x - sz, x + sz, x}, new int[]{y - sz + dy, y - sz + dy, y + dy}, 3);
         }
     }
 
@@ -1681,7 +1719,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if (viewMode == JIPipeGraphViewMode.Horizontal) {
             buffer = viewMode.getGridWidth();
             sourceA = sourcePoint.x;
-            targetA = targetPoint.x;
+            targetA = targetPoint.x + getArrowHeadShift();
             sourceB = sourcePoint.y;
             targetB = targetPoint.y;
             componentStartB = sourceBounds.y;
@@ -1689,7 +1727,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         } else {
             buffer = viewMode.getGridHeight() / 2;
             sourceA = sourcePoint.y;
-            targetA = targetPoint.y;
+            targetA = targetPoint.y + getArrowHeadShift();
             sourceB = sourcePoint.x;
             targetB = targetPoint.x;
             componentStartB = sourceBounds.x;

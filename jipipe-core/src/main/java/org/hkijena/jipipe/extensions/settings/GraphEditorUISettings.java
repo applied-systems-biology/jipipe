@@ -49,6 +49,8 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean drawNodeShadows = true;
     private boolean drawImprovedEdges = true;
 
+    private boolean drawArrowHeads = true;
+
     public static GraphEditorUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
     }
@@ -87,6 +89,17 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("draw-node-shadows")
     public void setDrawNodeShadows(boolean drawNodeShadows) {
         this.drawNodeShadows = drawNodeShadows;
+    }
+
+    @JIPipeDocumentation(name = "Draw arrow heads", description = "If enabled, draw arrow heads on connection targets")
+    @JIPipeParameter("draw-arrow-heads")
+    public boolean isDrawArrowHeads() {
+        return drawArrowHeads;
+    }
+
+    @JIPipeParameter("draw-arrow-heads")
+    public void setDrawArrowHeads(boolean drawArrowHeads) {
+        this.drawArrowHeads = drawArrowHeads;
     }
 
     @JIPipeDocumentation(name = "Accurate minimap", description = "If enabled, the minimap shows a screenshot of the whole graph. " +
