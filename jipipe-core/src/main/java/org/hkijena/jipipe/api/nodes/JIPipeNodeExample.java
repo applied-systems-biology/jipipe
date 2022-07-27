@@ -4,12 +4,16 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
+import java.util.Set;
+
 /**
  * Contains functions around a {@link org.hkijena.jipipe.api.JIPipeNodeTemplate} that stores an example of a node
  */
 public class JIPipeNodeExample {
     private final JIPipeNodeTemplate nodeTemplate;
     private String nodeId;
+
+    private boolean nodeIdIdentified;
 
     private String sourceInfo;
 
@@ -18,21 +22,38 @@ public class JIPipeNodeExample {
     }
 
     public String getNodeId() {
-        if(nodeId == null) {
-            try {
-                JsonNode rootNode = JsonUtils.readFromString(nodeTemplate.getData(), JsonNode.class);
-                JsonNode nodeList = rootNode.get("nodes");
-                if(nodeList.size() != 1)
-                    return null;
-                JsonNode node = nodeList.fields().next().getValue();
-                if(node == null)
-                    return null;
-                JsonNode node1 = node.path("jipipe:node-info-id");
-                if(node1.isMissingNode())
-                    return null;
-                nodeId = node1.textValue();
+        if(!nodeIdIdentified) {
+            if(nodeTemplate.getGraph() == null) {
+                try {
+                    JsonNode rootNode = JsonUtils.readFromString(nodeTemplate.getData(), JsonNode.class);
+                    JsonNode nodeList = rootNode.get("nodes");
+                    if(nodeList.size() != 1) {
+                        nodeIdIdentified = true;
+                        return null;
+                    }
+                    JsonNode node = nodeList.fields().next().getValue();
+                    if(node == null) {
+                        nodeIdIdentified = true;
+                        return null;
+                    }
+                    JsonNode node1 = node.path("jipipe:node-info-id");
+                    if(node1.isMissingNode()) {
+                        nodeIdIdentified = true;
+                        return null;
+                    }
+                    nodeId = node1.textValue();
+                }
+                catch (Throwable throwable) {
+                }
             }
-            catch (Throwable throwable) {
+            else {
+                Set<JIPipeGraphNode> graphNodes = nodeTemplate.getGraph().getGraphNodes();
+                if(graphNodes.size() != 1) {
+                    nodeIdIdentified = true;
+                    return null;
+                }
+                nodeId = graphNodes.iterator().next().getInfo().getId();
+                nodeIdIdentified = true;
             }
         }
         return nodeId;
