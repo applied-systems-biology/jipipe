@@ -10,6 +10,9 @@ import org.hkijena.jipipe.utils.ui.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class ROIPickerTool implements ImageViewerPanelCanvasTool {
 
@@ -57,12 +60,12 @@ public class ROIPickerTool implements ImageViewerPanelCanvasTool {
         if (SwingUtilities.isLeftMouseButton(event)) {
             selectionFirst = event.getPoint();
             selectionSecond = event.getPoint();
-            pickRoiFromCanvas();
+            pickRoiFromCanvas(event.isShiftDown());
         }
         cancelPicking();
     }
 
-    private void pickRoiFromCanvas() {
+    private void pickRoiFromCanvas(boolean modify) {
         if(selectionFirst != null && selectionSecond != null) {
             ImageViewerPanelCanvas canvas = roiManagerPlugin.getViewerPanel().getCanvas();
             Point p1 = canvas.screenToImageCoordinate(selectionFirst, false);
@@ -76,11 +79,27 @@ public class ROIPickerTool implements ImageViewerPanelCanvasTool {
             int w = Math.abs(x0 - x1);
             int h = Math.abs(y0 - y1);
             Rectangle selection = new Rectangle(x,y, Math.max(1, w), Math.max(1, h));
-            ROIListData toSelect = new ROIListData();
+            List<Roi> currentSelection = roiManagerPlugin.getRoiListControl().getSelectedValuesList();
+            Set<Roi> toSelect = new HashSet<>();
+            Set<Roi> toDeselect = new HashSet<>();
             for (Roi roi : roiManagerPlugin.getRoiDrawer().filterVisibleROI(roiManagerPlugin.getRois(), roiManagerPlugin.getCurrentSlicePosition())) {
                 if( roi.getPolygon().intersects(selection)) {
-                    toSelect.add(roi);
+                    if(modify) {
+                        if(currentSelection.contains(roi)) {
+                            toDeselect.add(roi);
+                        }
+                        else {
+                            toSelect.add(roi);
+                        }
+                    }
+                    else {
+                        toSelect.add(roi);
+                    }
                 }
+            }
+            if(modify) {
+                toSelect.addAll(currentSelection);
+                toSelect.removeAll(toDeselect);
             }
             roiManagerPlugin.setSelectedROI(toSelect, true);
         }
@@ -117,7 +136,7 @@ public class ROIPickerTool implements ImageViewerPanelCanvasTool {
     @Subscribe
     public void onMouseUp(MouseReleasedEvent event) {
         if(toolIsActive()) {
-            pickRoiFromCanvas();
+            pickRoiFromCanvas(event.isShiftDown());
         }
         cancelPicking();
     }
