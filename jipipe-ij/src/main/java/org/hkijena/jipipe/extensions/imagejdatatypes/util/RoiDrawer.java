@@ -483,6 +483,34 @@ public class RoiDrawer implements JIPipeParameterCollection {
     }
 
     /**
+     * Uses the current settings to filter ROI based on visibility within the current image index
+     * @param rois the ROI
+     * @param index the current image index
+     * @return the filtered ROI
+     */
+    public ROIListData filterVisibleROI(ROIListData  rois, ImageSliceIndex index) {
+        final int z = index.getZ();
+        final int c = index.getC();
+        final int t = index.getT();
+
+        ROIListData result = new ROIListData();
+        for (Roi roi : rois) {
+            int rz = ignoreZ ? 0 : roi.getZPosition();
+            int rc = ignoreC ? 0 : roi.getCPosition();
+            int rt = ignoreT ? 0 : roi.getTPosition();
+            if (rz != 0 && rz != (z + 1))
+                continue;
+            if (rc != 0 && rc != (c + 1))
+                continue;
+            if (rt != 0 && rt != (t + 1))
+                continue;
+            result.add(roi);
+        }
+
+        return result;
+    }
+
+    /**
      * Draws ROI as overlay. Assumes that the ROI's {@link ImageCanvas} (ic) field is set
      *
      * @param roisToDraw      the ROI to draw

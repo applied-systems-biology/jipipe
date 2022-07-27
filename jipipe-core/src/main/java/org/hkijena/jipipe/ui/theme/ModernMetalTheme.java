@@ -224,7 +224,7 @@ public class ModernMetalTheme extends DefaultMetalTheme {
 
                 "ToggleButton.background", LIGHT_GRAY,
                 "ToggleButton.border", BUTTON_BORDER,
-                "ToggleButton.select", PRIMARY5,
+                "ToggleButton.select", PRIMARY1,
 
                 "TextField.inactiveForeground", PRIMARY1,
 

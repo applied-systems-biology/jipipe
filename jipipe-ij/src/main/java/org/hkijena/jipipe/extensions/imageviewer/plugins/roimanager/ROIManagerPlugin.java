@@ -1,5 +1,8 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager;
 
+import com.google.common.primitives.Ints;
+import gnu.trove.list.TIntList;
+import gnu.trove.list.array.TIntArrayList;
 import ij.gui.ImageCanvas;
 import ij.gui.Roi;
 import ij.plugin.frame.RoiManager;
@@ -16,11 +19,15 @@ import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.RoiListCellRenderer;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.ImageViewerPanelPlugin;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
+import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.ribbon.*;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -30,31 +37,37 @@ import java.awt.image.BufferedImage;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     private final ROIListData overlayRois = new ROIListData();
     private final JList<Roi> roiListControl = new JList<>();
     private final RoiDrawer roiDrawer = new RoiDrawer();
-    private final JCheckBoxMenuItem displayROIViewMenuItem = new JCheckBoxMenuItem("Display ROI", UIUtils.getIconFromResources("actions/eye.png"));
-    private final JCheckBoxMenuItem renderROIAsOverlayViewMenuItem = new JCheckBoxMenuItem("Draw ROI as overlay", UIUtils.getIconFromResources("actions/path-break-apart.png"));
+    private final LargeToggleButtonAction displayROIViewMenuItem = new LargeToggleButtonAction("Display ROI", "Determines whether ROI are displayed", UIUtils.getIcon32FromResources("actions/eye.png"));
+    private final SmallToggleButtonAction renderROIAsOverlayViewMenuItem = new SmallToggleButtonAction("Draw ROI as overlay", "If disabled, ROI are drawn as pixels directly into the displayed image.", UIUtils.getIconFromResources("actions/path-break-apart.png"));
     private ROIListData rois = new ROIListData();
-    private boolean roiFilterList = false;
+    private boolean filterListHideInvisible = false;
+
+    private boolean filterListOnlySelected = false;
     private final List<ROIManagerPluginSelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
+
+    private final Ribbon ribbon = new Ribbon(3);
+
+    private JPanel mainPanel;
 
     public ROIManagerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
         loadDefaults();
         initialize();
-        addSelectionContextPanel(new ROIManagerPluginMeasureContextPanel(this));
-        addSelectionContextPanel(new ROIManagerPluginPickerContextPanel(this));
+        addSelectionContextPanel(new ROIManagerPluginInfoContextPanel(this));
     }
 
     private void loadDefaults() {
         ImageViewerUIRoiDisplaySettings settings = ImageViewerUIRoiDisplaySettings.getInstance();
         roiDrawer.copyFrom(settings.getRoiDrawer());
-        displayROIViewMenuItem.setState(settings.isShowROI());
-        renderROIAsOverlayViewMenuItem.setState(settings.isRenderROIAsOverlay());
+        displayROIViewMenuItem.setSelected(settings.isShowROI());
+        renderROIAsOverlayViewMenuItem.setSelected(settings.isRenderROIAsOverlay());
     }
 
     @Override
@@ -74,81 +87,21 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         for (Roi roi : rois) {
             ImageJUtils.setRoiCanvas(roi, getCurrentImage(), getViewerPanel().getZoomedDummyCanvas());
         }
-        updateROIJList(true);
+        updateListModel(true, Collections.emptySet());
     }
 
     @Override
     public void createPalettePanel(FormPanel formPanel) {
         if (getCurrentImage() == null)
             return;
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setMinimumSize(new Dimension(100, 300));
-        panel.setBorder(BorderFactory.createEtchedBorder());
-
-        JMenuBar listMenuBar = new JMenuBar();
-        panel.add(listMenuBar, BorderLayout.NORTH);
-
-        createViewMenu(listMenuBar);
-//        createSelectionMenu(listMenuBar);
-        createImportExportMenu(listMenuBar);
-
-        listMenuBar.add(Box.createHorizontalGlue());
-        createButtons(listMenuBar);
-
-        JScrollPane scrollPane = new JScrollPane(roiListControl);
-        panel.add(scrollPane, BorderLayout.CENTER);
-
-        // Info (bottom toolbar)
-        selectionContentPanelUI.setLayout(new BoxLayout(selectionContentPanelUI, BoxLayout.Y_AXIS));
-        panel.add(selectionContentPanelUI, BorderLayout.SOUTH);
-
-        formPanel.addVerticalGlue(panel, null);
-    }
-
-    private void createImportExportMenu(JMenuBar menuBar) {
-        JMenu ioMenu = new JMenu("Import/Export");
-        menuBar.add(ioMenu);
-        // Import items
-        {
-            JMenuItem item = new JMenuItem("Import from file", UIUtils.getIconFromResources("actions/fileopen.png"));
-            item.addActionListener(e -> importROIsFromFile());
-            ioMenu.add(item);
-        }
-        // Separator
-        ioMenu.addSeparator();
-        // Export items
-        {
-            JMenuItem item = new JMenuItem("Export to ImageJ ROI Manager", UIUtils.getIconFromResources("apps/imagej.png"));
-            item.addActionListener(e -> {
-                if (rois.isEmpty()) {
-                    JOptionPane.showMessageDialog(getViewerPanel(), "No ROI to export.", "Export ROI", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                ROIListData result = getSelectedROIOrAll("Export ROI", "Do you want to export all ROI or only the selected ones?");
-                if (result != null) {
-                    exportROIsToManager(result);
-                }
-            });
-            ioMenu.add(item);
-        }
-        {
-            JMenuItem item = new JMenuItem("Export to file", UIUtils.getIconFromResources("actions/save.png"));
-            item.addActionListener(e -> {
-                if (rois.isEmpty()) {
-                    JOptionPane.showMessageDialog(getViewerPanel(), "No ROI to export.", "Export ROI", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                ROIListData result = getSelectedROIOrAll("Export ROI", "Do you want to export all ROI or only the selected ones?");
-                if (result != null) {
-                    exportROIsToFile(result);
-                }
-            });
-            ioMenu.add(item);
-        }
+        formPanel.addVerticalGlue(mainPanel, null);
     }
 
     public ROIListData getSelectedROIOrAll(String title, String message) {
+        if (rois.isEmpty()) {
+            JOptionPane.showMessageDialog(getViewerPanel(), "There are no ROI in the list", title, JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
         if (!roiListControl.getSelectedValuesList().isEmpty()) {
             int result = JOptionPane.showOptionDialog(getViewerPanel(),
                     message,
@@ -186,27 +139,6 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         selectionContentPanelUI.repaint();
     }
 
-    private void createButtons(JMenuBar menuBar) {
-        {
-            JButton removeButton = new JButton("Delete", UIUtils.getIconFromResources("actions/delete.png"));
-            removeButton.setToolTipText("Remove selected ROIs");
-            removeButton.addActionListener(e -> {
-                if (roiListControl.getSelectedValuesList().isEmpty())
-                    return;
-                if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + roiListControl.getSelectedValuesList().size() + "ROI?", "Edit ROI", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                    removeSelectedROIs(false);
-                }
-            });
-            menuBar.add(removeButton);
-        }
-        {
-            JButton editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
-            JPopupMenu editMenu = new JPopupMenu();
-            UIUtils.addReloadablePopupMenuToComponent(editButton, editMenu, () -> reloadEditRoiMenu(editMenu));
-            menuBar.add(editButton);
-        }
-    }
-
     private void editROIInDialog() {
         List<Roi> selected = roiListControl.getSelectedValuesList();
         if (selected.isEmpty()) {
@@ -230,76 +162,156 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
                 Roi roi = editors.get(i).applyToRoi(selected.get(i));
                 rois.set(i, roi);
             }
-            updateROIJList(false);
+            updateListModel();
         }
     }
 
-    private void createViewMenu(JMenuBar menuBar) {
-        JMenu viewMenu = new JMenu("View");
-        menuBar.add(viewMenu);
+    private void initializeRibbon() {
+
+        // Register necessary actions
+        displayROIViewMenuItem.addActionListener(this::uploadSliceToCanvas);
+        renderROIAsOverlayViewMenuItem.addActionListener(this::uploadSliceToCanvas);
+
+        // View menu for general display
         {
-            JCheckBoxMenuItem toggle = displayROIViewMenuItem;
-            toggle.addActionListener(e -> {
-                uploadSliceToCanvas();
-            });
-            viewMenu.add(toggle);
+            Ribbon.Task viewTask = ribbon.addTask("View");
+            Ribbon.Band renderingBand = viewTask.addBand("Rendering");
+
+            renderingBand.add(displayROIViewMenuItem);
+
+            renderingBand.add(renderROIAsOverlayViewMenuItem);
+            renderingBand.add(new SmallButtonAction("More settings ...", "Opens more rendering settings", UIUtils.getIconFromResources("actions/configure.png"), this::openRoiDrawingSettings));
+            renderingBand.add(new SmallButtonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/save.png"), this::saveDefaults));
         }
+
+        // Filter task
         {
-            JCheckBoxMenuItem toggle = renderROIAsOverlayViewMenuItem;
-            toggle.addActionListener(e -> {
-                uploadSliceToCanvas();
-            });
-            viewMenu.add(toggle);
-        }
-        viewMenu.addSeparator();
-        {
-            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Show only visible ROI in list", UIUtils.getIconFromResources("actions/eye.png"));
-            toggle.setSelected(roiFilterList);
-            toggle.addActionListener(e -> {
-                roiFilterList = toggle.isSelected();
-                updateROIJList(false);
-            });
-            viewMenu.add(toggle);
-        }
-        {
-            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Draw ROI: Ignore Z axis", UIUtils.getIconFromResources("actions/layer-flatten-z.png"));
-            toggle.setSelected(roiDrawer.isIgnoreZ());
-            toggle.addActionListener(e -> {
+            Ribbon.Task filterTask = ribbon.addTask("Filter");
+            Ribbon.Band listBand = filterTask.addBand("List");
+            Ribbon.Band roiBand = filterTask.addBand("ROI");
+
+            // List band
+            listBand.add(new SmallToggleButtonAction("Hide invisible", "Show only visible ROI in list", UIUtils.getIconFromResources("actions/eye-slash.png"), filterListHideInvisible, (toggle) -> {
+                filterListHideInvisible = toggle.isSelected();
+                updateListModel();
+            }));
+            listBand.add(new SmallToggleButtonAction("Only selection", "Show only ROI that are selected", UIUtils.getIconFromResources("actions/edit-select-all.png"), filterListOnlySelected, (toggle) -> {
+                filterListOnlySelected = toggle.isSelected();
+                updateListModel();
+            }));
+
+            // ROI band
+            roiBand.add(new SmallToggleButtonAction("Ignore Z", "If enabled, ROI ignore the Z axis", UIUtils.getIconFromResources("actions/layer-flatten-z.png"), roiDrawer.isIgnoreZ(), (toggle) -> {
                 roiDrawer.setIgnoreZ(toggle.isSelected());
                 uploadSliceToCanvas();
-            });
-            viewMenu.add(toggle);
-        }
-        {
-            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Draw ROI: Ignore time/frame axis", UIUtils.getIconFromResources("actions/layer-flatten-t.png"));
-            toggle.setSelected(roiDrawer.isIgnoreT());
-            toggle.addActionListener(e -> {
-                roiDrawer.setIgnoreT(toggle.isSelected());
-                uploadSliceToCanvas();
-            });
-            viewMenu.add(toggle);
-        }
-        {
-            JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Draw ROI: Ignore channel axis", UIUtils.getIconFromResources("actions/layer-flatten-c.png"));
-            toggle.setSelected(roiDrawer.isIgnoreC());
-            toggle.addActionListener(e -> {
+            }));
+            roiBand.add(new SmallToggleButtonAction("Ignore C", "If enabled, ROI ignore the channel axis", UIUtils.getIconFromResources("actions/layer-flatten-c.png"), roiDrawer.isIgnoreC(), (toggle) -> {
                 roiDrawer.setIgnoreC(toggle.isSelected());
                 uploadSliceToCanvas();
-            });
-            viewMenu.add(toggle);
+            }));
+            roiBand.add(new SmallToggleButtonAction("Ignore T", "If enabled, ROI ignore the time/frame axis", UIUtils.getIconFromResources("actions/layer-flatten-t.png"), roiDrawer.isIgnoreT(), (toggle) -> {
+                roiDrawer.setIgnoreT(toggle.isSelected());
+                uploadSliceToCanvas();
+            }));
         }
-        viewMenu.addSeparator();
+
+        // Select/Edit task
         {
-            JMenuItem item = new JMenuItem("More settings ...", UIUtils.getIconFromResources("actions/configure.png"));
-            item.addActionListener(e -> openRoiDrawingSettings());
-            viewMenu.add(item);
+            Ribbon.Task selectionTask = ribbon.addTask("Selection");
+            Ribbon.Band generalBand = selectionTask.addBand("General");
+            Ribbon.Band modifyBand = selectionTask.addBand("Modify");
+            Ribbon.Band measureBand = selectionTask.addBand("Measure");
+
+            ROIPickerTool pickerTool = new ROIPickerTool(this);
+            LargeToggleButtonAction pickerToggle = new LargeToggleButtonAction("Pick", "Allows to select ROI via the mouse", UIUtils.getIcon32FromResources("actions/followmouse.png"));
+            pickerTool.addToggleButton(pickerToggle.getButton(), getViewerPanel().getCanvas());
+            generalBand.add(pickerToggle);
+
+            generalBand.add(new SmallButtonAction("Select all", "Selects all ROI", UIUtils.getIconFromResources("actions/edit-select-all.png"), this::selectAll));
+            generalBand.add(new SmallButtonAction("Clear selection", "Deselects all ROI", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::selectNone));
+            generalBand.add(new SmallButtonAction("Invert selection", "Inverts the current selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::invertSelection));
+
+            modifyBand.add(new SmallButtonAction("Delete", "Deletes the selected ROI", UIUtils.getIconFromResources("actions/delete.png"), () -> removeSelectedROIs(false)));
+
+            SmallButtonAction modifyEditAction = new SmallButtonAction("Modify", "Modifies the selected ROI", UIUtils.getIconFromResources("actions/edit.png"), () -> {});
+            JPopupMenu modifyEditMenu = new JPopupMenu();
+            UIUtils.addReloadablePopupMenuToComponent(modifyEditAction.getButton(), modifyEditMenu, () -> reloadEditRoiMenu(modifyEditMenu));
+            modifyBand.add(modifyEditAction);
+
+            SmallButtonAction measureAction = new SmallButtonAction("Measure", "Measures the ROI and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedROI);
+            measureBand.add(measureAction);
+            measureBand.add(new SmallButtonAction("Settings ...", "Opens the measurement settings", UIUtils.getIconFromResources("actions/configure.png"), this::openMeasurementSettings));
+
         }
+
+        // Import/Export task
         {
-            JMenuItem item = new JMenuItem("Save settings as default", UIUtils.getIconFromResources("actions/save.png"));
-            item.addActionListener(e -> saveDefaults());
-            viewMenu.add(item);
+            Ribbon.Task importExportTask = ribbon.addTask("Import/Export");
+            Ribbon.Band imageJBand = importExportTask.addBand("ImageJ");
+            Ribbon.Band fileBand = importExportTask.addBand("File");
+
+            imageJBand.add(new LargeButtonAction("To ROI Manager", "Exports the ROI into the ImageJ ROI manager", UIUtils.getIcon32FromResources("apps/imagej2.png"), this::exportROIsToManager));
+
+            fileBand.add(new SmallButtonAction("Import from file", "Imports ROI from a *.roi or *.zip file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importROIsFromFile));
+            fileBand.add(new SmallButtonAction("Export to file", "Exports ROI to a *.zip file", UIUtils.getIconFromResources("actions/save.png"), this::exportROIsToFile));
         }
     }
+
+    private void openMeasurementSettings() {
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(getViewerPanel()));
+        dialog.setTitle("Measurement settings");
+        dialog.setContentPane(new ParameterPanel(new JIPipeDummyWorkbench(), MeasurementSettings.INSTANCE, null, FormPanel.WITH_SCROLLING));
+        UIUtils.addEscapeListener(dialog);
+        dialog.setSize(640, 480);
+        dialog.setLocationRelativeTo(getViewerPanel());
+        dialog.revalidate();
+        dialog.repaint();
+        dialog.setVisible(true);
+    }
+
+    private void measureSelectedROI() {
+        ROIListData data = getSelectedROIOrAll("Measure", "Please select which ROI you want to measure");
+        MeasurementSettings settings = MeasurementSettings.INSTANCE;
+        ResultsTableData measurements = data.measure(ImageJUtils.duplicate(getViewerPanel().getImage()),
+                settings.getStatistics(), true, settings.isMeasureInPhysicalUnits());
+        TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Measurements");
+    }
+
+    private void selectNone() {
+        roiListControl.clearSelection();
+    }
+
+    private void invertSelection() {
+        Set<Integer> selectedIndices = Arrays.stream(roiListControl.getSelectedIndices()).boxed().collect(Collectors.toSet());
+        roiListControl.clearSelection();
+        Set<Integer> newSelectedIndices = new HashSet<>();
+        for (int i = 0; i < roiListControl.getModel().getSize(); i++) {
+            if (!selectedIndices.contains(i))
+                newSelectedIndices.add(i);
+        }
+        roiListControl.setSelectedIndices(Ints.toArray(newSelectedIndices));
+    }
+
+    //    private void createButtons(JMenuBar menuBar) {
+//        {
+//            JButton removeButton = new JButton("Delete", UIUtils.getIconFromResources("actions/delete.png"));
+//            removeButton.setToolTipText("Remove selected ROIs");
+//            removeButton.addActionListener(e -> {
+//                if (roiListControl.getSelectedValuesList().isEmpty())
+//                    return;
+//                if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + roiListControl.getSelectedValuesList().size() + "ROI?", "Edit ROI", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+//                    removeSelectedROIs(false);
+//                }
+//            });
+//            menuBar.add(removeButton);
+//        }
+//        {
+//            JButton editButton = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
+//            JPopupMenu editMenu = new JPopupMenu();
+//            UIUtils.addReloadablePopupMenuToComponent(editButton, editMenu, () -> reloadEditRoiMenu(editMenu));
+//            menuBar.add(editButton);
+//        }
+//    }
 
     private void saveDefaults() {
         if (JOptionPane.showConfirmDialog(getViewerPanel(),
@@ -327,6 +339,13 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         }
     }
 
+    private void exportROIsToFile() {
+        ROIListData result = getSelectedROIOrAll("Export ROI", "Do you want to export all ROI or only the selected ones?");
+        if (result != null) {
+            exportROIsToFile(result);
+        }
+    }
+
     private void exportROIsToFile(ROIListData rois) {
         FileNameExtensionFilter[] fileNameExtensionFilters;
         if (rois.size() == 1) {
@@ -342,7 +361,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public ImageProcessor draw(int c, int z, int t, ImageProcessor processor) {
-        if (!renderROIAsOverlayViewMenuItem.getState()) {
+        if (displayROIViewMenuItem.getState() && !renderROIAsOverlayViewMenuItem.getState()) {
             if (!rois.isEmpty()) {
                 processor = new ColorProcessor(processor.getBufferedImage());
                 roiDrawer.drawOnProcessor(rois, (ColorProcessor) processor, new ImageSliceIndex(c, z, t), new HashSet<>(roiListControl.getSelectedValuesList()));
@@ -353,7 +372,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
-        if (renderROIAsOverlayViewMenuItem.getState()) {
+        if (displayROIViewMenuItem.getState() && renderROIAsOverlayViewMenuItem.getState()) {
             for (Roi roi : rois) {
                 ImageJUtils.setRoiCanvas(roi, getCurrentImage(), getViewerPanel().getZoomedDummyCanvas());
             }
@@ -361,9 +380,13 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         }
     }
 
+    public RoiDrawer getRoiDrawer() {
+        return roiDrawer;
+    }
+
     @Override
     public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex, double magnification) {
-        if (renderROIAsOverlayViewMenuItem.getState()) {
+        if (displayROIViewMenuItem.getState() && renderROIAsOverlayViewMenuItem.getState()) {
             Graphics2D graphics = image.createGraphics();
             ROIListData copy = new ROIListData();
             ImageCanvas canvas = ImageJUtils.createZoomedDummyCanvas(getCurrentImage(), magnification);
@@ -379,7 +402,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void onSliceChanged(boolean deferUploadSlice) {
-        updateROIJList(deferUploadSlice);
+        updateListModel(deferUploadSlice, Collections.emptySet());
     }
 
     @Override
@@ -504,12 +527,39 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     private void initialize() {
-        // Setup ROI
+        // Setup ROI list
         roiListControl.setCellRenderer(new RoiListCellRenderer());
         roiListControl.addListSelectionListener(e -> {
             updateContextPanels();
             uploadSliceToCanvas();
         });
+
+        // Setup ribbon
+        initializeRibbon();
+        ribbon.rebuildRibbon();
+
+        // Setup panel
+        mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setMinimumSize(new Dimension(100, 300));
+        mainPanel.setBorder(BorderFactory.createEtchedBorder());
+
+        mainPanel.add(ribbon, BorderLayout.NORTH);
+
+//        JMenuBar listMenuBar = new JMenuBar();
+//        mainPanel.add(listMenuBar, BorderLayout.NORTH);
+//
+//        createViewMenu(listMenuBar);
+////        createSelectionMenu(listMenuBar);
+//
+//        listMenuBar.add(Box.createHorizontalGlue());
+//        createButtons(listMenuBar);
+
+        JScrollPane scrollPane = new JScrollPane(roiListControl);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Info (bottom toolbar)
+        selectionContentPanelUI.setLayout(new BoxLayout(selectionContentPanelUI, BoxLayout.Y_AXIS));
+        mainPanel.add(selectionContentPanelUI, BorderLayout.SOUTH);
     }
 
     public void importROIs(ROIListData rois, boolean deferUploadSlice) {
@@ -518,18 +568,18 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             ImageJUtils.setRoiCanvas(clone, getCurrentImage(), getViewerPanel().getZoomedDummyCanvas());
             this.rois.add(clone);
         }
-        updateROIJList(deferUploadSlice);
+        updateListModel(deferUploadSlice, Collections.emptySet());
         uploadSliceToCanvas();
     }
 
     public void removeSelectedROIs(boolean deferUploadSlice) {
         rois.removeAll(roiListControl.getSelectedValuesList());
-        updateROIJList(deferUploadSlice);
+        updateListModel(deferUploadSlice, Collections.emptySet());
     }
 
     public void clearROIs(boolean deferUploadSlice) {
         rois.clear();
-        updateROIJList(deferUploadSlice);
+        updateListModel(deferUploadSlice, Collections.emptySet());
     }
 
     public ROIListData getRois() {
@@ -538,7 +588,14 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     public void setRois(ROIListData rois, boolean deferUploadSlice) {
         this.rois = rois;
-        updateROIJList(deferUploadSlice);
+        updateListModel(deferUploadSlice, Collections.emptySet());
+    }
+
+    public void exportROIsToManager() {
+        ROIListData rois = getSelectedROIOrAll("Export ROI to ImageJ", "Please select which ROI should be exported.");
+        if(rois != null) {
+            exportROIsToManager(rois);
+        }
     }
 
     public void exportROIsToManager(ROIListData rois) {
@@ -549,20 +606,45 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         for (Roi roi : RoiManager.getRoiManager().getRoisAsArray()) {
             rois.add((Roi) roi.clone());
         }
-        updateROIJList(deferUploadSlice);
+        updateListModel(deferUploadSlice, Collections.emptySet());
     }
 
-    private void updateROIJList(boolean deferUploadSlice) {
+    public boolean isFilterListHideInvisible() {
+        return filterListHideInvisible;
+    }
+
+    public void setFilterListHideInvisible(boolean filterListHideInvisible) {
+        this.filterListHideInvisible = filterListHideInvisible;
+        updateListModel();
+    }
+
+    public boolean isFilterListOnlySelected() {
+        return filterListOnlySelected;
+    }
+
+    public void setFilterListOnlySelected(boolean filterListOnlySelected) {
+        this.filterListOnlySelected = filterListOnlySelected;
+        updateListModel();
+    }
+
+    public void updateListModel() {
+        updateListModel(false, Collections.emptySet());
+    }
+
+    public void updateListModel(boolean deferUploadSlice, Collection<Roi> excludeFromFilter) {
         DefaultListModel<Roi> model = new DefaultListModel<>();
-        int[] selectedIndices = roiListControl.getSelectedIndices();
+        List<Roi> selectedValuesList = roiListControl.getSelectedValuesList();
         ImageSliceIndex currentIndex = getCurrentSlicePosition();
         for (Roi roi : rois) {
-            if (roiFilterList && !ROIListData.isVisibleIn(roi, currentIndex, roiDrawer.isIgnoreZ(), roiDrawer.isIgnoreC(), roiDrawer.isIgnoreT()))
+            boolean excluded = excludeFromFilter.contains(roi);
+            if (!excluded && (filterListHideInvisible && !ROIListData.isVisibleIn(roi, currentIndex, roiDrawer.isIgnoreZ(), roiDrawer.isIgnoreC(), roiDrawer.isIgnoreT())))
+                continue;
+            if(!excluded && !selectedValuesList.isEmpty() && (filterListOnlySelected && !selectedValuesList.contains(roi)))
                 continue;
             model.addElement(roi);
         }
         roiListControl.setModel(model);
-        roiListControl.setSelectedIndices(selectedIndices);
+        setSelectedROI(selectedValuesList, false);
         updateContextPanels();
         if (!deferUploadSlice)
             uploadSliceToCanvas();
@@ -579,4 +661,35 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         return roiListControl;
     }
 
+    private void selectAll() {
+        roiListControl.setSelectionInterval(0, roiListControl.getModel().getSize() - 1);
+    }
+
+    public void setSelectedROI(Collection<Roi> select, boolean force) {
+        TIntList indices = new TIntArrayList();
+        DefaultListModel<Roi> model = (DefaultListModel<Roi>) roiListControl.getModel();
+
+        if(force) {
+            boolean rebuild =false;
+            for (Roi roi : select) {
+                if(rois.contains(roi) && !model.contains(roi)) {
+                    rebuild = true;
+                    break;
+                }
+            }
+            if(rebuild) {
+                roiListControl.clearSelection();
+                updateListModel(false, select);
+                model = (DefaultListModel<Roi>) roiListControl.getModel();
+            }
+        }
+
+        for (Roi roi : select) {
+            int i = model.indexOf(roi);
+            if(i >= 0) {
+                indices.add(i);
+            }
+        }
+        roiListControl.setSelectedIndices(indices.toArray());
+    }
 }

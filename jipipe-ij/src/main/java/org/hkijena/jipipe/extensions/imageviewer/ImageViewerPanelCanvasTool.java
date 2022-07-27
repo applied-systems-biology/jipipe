@@ -1,7 +1,9 @@
 package org.hkijena.jipipe.extensions.imageviewer;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
+import javax.swing.*;
 import java.awt.*;
 
 /**
@@ -59,4 +61,24 @@ public interface ImageViewerPanelCanvasTool {
      * @return the name
      */
     String getToolName();
+
+    /**
+     * Adds events to {@link JToggleButton} that acts as control for the tool
+     * @param toggleButton the toggle button
+     */
+    default void addToggleButton(JToggleButton toggleButton, ImageViewerPanelCanvas canvas) {
+        toggleButton.setSelected(toolIsActive(canvas));
+        toggleButton.addActionListener( e -> {
+            if(toggleButton.isSelected())
+                canvas.setTool(this);
+            else
+                canvas.setTool(null);
+        });
+        canvas.getEventBus().register(new Object() {
+            @Subscribe
+            public void onToolChanged(ImageViewerPanelCanvas.ToolChangedEvent event) {
+                toggleButton.setSelected(toolIsActive(canvas));
+            }
+        });
+    }
 }
