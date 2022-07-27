@@ -1,5 +1,7 @@
 package org.hkijena.jipipe.extensions.imageviewer;
 
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
+
 import java.awt.*;
 
 /**
@@ -39,6 +41,17 @@ public interface ImageViewerPanelCanvasTool {
      */
     default boolean toolIsActive(ImageViewerPanelCanvas canvas) {
         return canvas.getTool() == this;
+    }
+
+    /**
+     * Called after the image has been drawn after the image has been drawn
+     *
+     * @param graphics2D the graphics
+     * @param renderArea the render area
+     * @param sliceIndex the index of the slice
+     */
+    default void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
+
     }
 
     /**

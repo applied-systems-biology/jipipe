@@ -132,6 +132,9 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
             for (ImageViewerPanelPlugin plugin : imageViewerPanel.getPlugins()) {
                 plugin.postprocessDraw(graphics2D, new Rectangle(x, y, w, h), imageSliceIndex);
             }
+            if(tool != null) {
+                tool.postprocessDraw(graphics2D, new Rectangle(x,y,w,h), imageSliceIndex);
+            }
         }
         if (error != null) {
             graphics2D.setColor(UIManager.getColor("Button.background"));

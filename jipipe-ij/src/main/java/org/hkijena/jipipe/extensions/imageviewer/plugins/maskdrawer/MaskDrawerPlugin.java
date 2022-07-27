@@ -444,7 +444,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         transform.scale(zoom, zoom);
         BufferedImageOp op = new AffineTransformOp(transform, zoom < 1 ? AffineTransformOp.TYPE_BILINEAR : AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
         graphics2D.drawImage(currentMaskSlicePreview, op, renderX, renderY);
-        currentTool.postprocessDraw(graphics2D, renderArea, sliceIndex);
+//        currentTool.postprocessDraw(graphics2D, renderArea, sliceIndex);
         if (showGuidesToggle.isSelected() && currentTool.showGuides()) {
             graphics2D.setStroke(STROKE_GUIDE_LINE);
             graphics2D.setColor(getHighlightColor());
