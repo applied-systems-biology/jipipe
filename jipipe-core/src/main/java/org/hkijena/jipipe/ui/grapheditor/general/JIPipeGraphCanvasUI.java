@@ -821,6 +821,15 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             if (selection.size() <= 1) {
                 JIPipeNodeUI ui = pickComponent(mouseEvent);
                 selectOnly(ui);
+
+                if(ui != null) {
+                    JIPipeDataSlotUI slotUI = ui.pickSlotComponent(mouseEvent);
+                    if (slotUI != null) {
+                        slotUI.reloadPopupMenu();
+                        slotUI.getAssignButtonMenu().show(this, mouseEvent.getX(), mouseEvent.getY());
+                        return;
+                    }
+                }
             }
             openContextMenu(new Point(mouseEvent.getX(), mouseEvent.getY()));
         }

@@ -1519,7 +1519,7 @@ public class UIUtils {
 
         @Override
         public void mouseClicked(MouseEvent e) {
-
+            target.dispatchEvent(SwingUtilities.convertMouseEvent(component, e, target));
         }
 
         @Override

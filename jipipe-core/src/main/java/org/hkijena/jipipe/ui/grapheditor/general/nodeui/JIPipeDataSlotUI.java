@@ -100,10 +100,14 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         return unsorted.stream().sorted(Comparator.comparing(distances::get)).collect(Collectors.toList());
     }
 
+    public JPopupMenu getAssignButtonMenu() {
+        return assignButtonMenu;
+    }
+
     /**
      * Reloads the "Assign" popup menu
      */
-    protected void reloadPopupMenu() {
+    public void reloadPopupMenu() {
         assignButtonMenu.removeAll();
         assignButtonMenu.addPopupMenuListener(new PopupMenuListener() {
             @Override
