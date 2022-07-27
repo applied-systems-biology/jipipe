@@ -30,6 +30,7 @@ import org.jdesktop.swingx.JXStatusBar;
 import org.jdesktop.swingx.plaf.basic.BasicStatusBarUI;
 
 import javax.swing.*;
+import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -61,6 +62,8 @@ public class DocumentTabPane extends JPanel {
 
     private DnDTabbedPane tabbedPane;
     private boolean enableTabContextMenu = true;
+
+    private Border tabPanelBorder = BorderFactory.createEmptyBorder(4, 0, 4, 0);
 
     /**
      * Creates a new instance
@@ -158,6 +161,14 @@ public class DocumentTabPane extends JPanel {
         return tabs.stream().filter(tab -> klass.isAssignableFrom(tab.getContent().getClass())).collect(Collectors.toList());
     }
 
+    public Border getTabPanelBorder() {
+        return tabPanelBorder;
+    }
+
+    public void setTabPanelBorder(Border tabPanelBorder) {
+        this.tabPanelBorder = tabPanelBorder;
+    }
+
     /**
      * Adds a new tab
      *
@@ -176,14 +187,7 @@ public class DocumentTabPane extends JPanel {
         JPanel tabPanel = new JPanel();
 
         tabPanel.setOpaque(false);
-
-//        if (GeneralUISettings.getInstance().getLookAndFeel() == GeneralUISettings.LookAndFeel.FlatIntelliJLaf) {
-//            tabPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createMatteBorder(1, 1, 0, 1, Color.GRAY),
-//                    BorderFactory.createEmptyBorder(4, 4, 2, 4)));
-//        } else {
-//            tabPanel.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
-//        }
-        tabPanel.setBorder(BorderFactory.createEmptyBorder(4, 0, 4, 0));
+        tabPanel.setBorder(tabPanelBorder);
 
         tabPanel.setLayout(new BoxLayout(tabPanel, BoxLayout.LINE_AXIS));
         JLabel titleLabel = new JLabel(title, icon, JLabel.LEFT);

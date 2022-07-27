@@ -126,6 +126,8 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         result.add("Schneider, C. A.; Rasband, W. S. & Eliceiri, K. W. (2012), \"NIH Image to ImageJ: 25 years of image analysis\", " +
                 "Nature methods 9(7): 671-675");
         result.add("Rueden, C., Schindelin, J., Hiner, M. & Eliceiri, K. (2016). SciJava Common [Software]. https://scijava.org/. ");
+        result.add("Papirus Icon Theme: https://github.com/PapirusDevelopmentTeam/papirus-icon-theme (Licensed under GPL-3)");
+        result.add("Breeze Icons: https://github.com/KDE/breeze-icons (Licensed under LGPL-2.1)");
         return result;
     }
 
