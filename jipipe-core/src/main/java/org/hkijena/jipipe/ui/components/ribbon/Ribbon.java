@@ -168,10 +168,29 @@ public class Ribbon extends JPanel {
         return task;
     }
 
+    /**
+     * Adds a new task.
+     * Will not rebuild the ribbon.
+     * @param id the ID
+     * @param label the label
+     * @return the task
+     */
+    public Task addTask(String id, String label) {
+        Task task = new Task(id, label);
+        tasks.add(task);
+        return task;
+    }
+
     public Task getOrCreateTask(String label) {
         Optional<Task> optional = tasks.stream().filter(t -> Objects.equals(t.label, label)).findFirst();
         return optional.orElseGet(() -> addTask(label));
     }
+
+    public Task getOrCreateTask(String id, String label) {
+        Optional<Task> optional = tasks.stream().filter(t -> Objects.equals(t.id, id)).findFirst();
+        return optional.orElseGet(() -> addTask(id, label));
+    }
+
 
     /**
      * The highest-order organization of a ribbon.
@@ -179,18 +198,35 @@ public class Ribbon extends JPanel {
      */
     public static class Task {
 
+        private String id;
+
         private String label;
         private List<Band> bands;
 
         public Task(String label, Band... bands) {
+            this.id = label;
             this.label = label;
             this.bands = new ArrayList<>(Arrays.asList(bands));
         }
 
         public Task(String label, List<Band> bands) {
+            this.id = label;
             this.label = label;
             this.bands = bands;
         }
+
+        public Task(String id, String label, Band... bands) {
+            this.id = id;
+            this.label = label;
+            this.bands = new ArrayList<>(Arrays.asList(bands));
+        }
+
+        public Task(String id, String label, List<Band> bands) {
+            this.id = id;
+            this.label = label;
+            this.bands = bands;
+        }
+
 
         public List<Band> getBands() {
             return bands;
@@ -224,9 +260,28 @@ public class Ribbon extends JPanel {
             return band;
         }
 
+        public Band addBand(String id, String label) {
+            Band band = new Band(id, label);
+            add(band);
+            return band;
+        }
+
         public Band getOrCreateBand(String label) {
-            Optional<Band> optional = bands.stream().filter(t -> Objects.equals(t.label, label)).findFirst();
+            Optional<Band> optional = bands.stream().filter((Band t) -> Objects.equals(t.label, label)).findFirst();
             return optional.orElseGet(() -> addBand(label));
+        }
+
+        public Band getOrCreateBand(String id, String label) {
+            Optional<Band> optional = bands.stream().filter((Band t) -> Objects.equals(t.id, id)).findFirst();
+            return optional.orElseGet(() -> addBand(id, label));
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
         }
     }
 
@@ -237,15 +292,30 @@ public class Ribbon extends JPanel {
      */
     public static class Band {
 
+        private String id;
         private String label;
         private List<Action> actions;
 
         public Band(String label, Action... actions) {
+            this.id = label;
             this.label = label;
             this.actions = new ArrayList<>(Arrays.asList(actions));
         }
 
         public Band(String label, List<Action> actions) {
+            this.id = label;
+            this.label = label;
+            this.actions = actions;
+        }
+
+        public Band(String id, String label, Action... actions) {
+            this.id = id;
+            this.label = label;
+            this.actions = new ArrayList<>(Arrays.asList(actions));
+        }
+
+        public Band(String id, String label, List<Action> actions) {
+            this.id = id;
             this.label = label;
             this.actions = actions;
         }
@@ -264,6 +334,14 @@ public class Ribbon extends JPanel {
 
         public void setLabel(String label) {
             this.label = label;
+        }
+
+        public String getId() {
+            return id;
+        }
+
+        public void setId(String id) {
+            this.id = id;
         }
 
         public Band add(Action action) {

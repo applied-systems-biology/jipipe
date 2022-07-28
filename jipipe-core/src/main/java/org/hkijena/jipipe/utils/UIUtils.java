@@ -440,6 +440,17 @@ public class UIUtils {
      * @param iconName relative to the icons/ plugin resource
      * @return the icon instance
      */
+    public static ImageIcon getIcon16FromResources(String iconName) {
+        return getIconFromResources(iconName);
+    }
+
+    /**
+     * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
     public static ImageIcon getIconFromResources(String iconName) {
         String path = "icons/" + iconName;
         ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(path, null);

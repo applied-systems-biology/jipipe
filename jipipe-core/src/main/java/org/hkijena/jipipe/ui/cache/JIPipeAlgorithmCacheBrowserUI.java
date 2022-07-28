@@ -23,6 +23,10 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.components.ribbon.LargeButtonAction;
+import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
+import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
+import org.hkijena.jipipe.ui.components.ribbon.SmallToggleButtonAction;
 import org.hkijena.jipipe.ui.datatable.JIPipeExtendedDataTableUI;
 import org.hkijena.jipipe.ui.datatable.JIPipeExtendedMultiDataTableUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
@@ -108,61 +112,10 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
             remove(currentContent);
         }
         JIPipeExtendedMultiDataTableUI ui = new JIPipeExtendedMultiDataTableUI(getProjectWorkbench(), slots, false);
-        initializeTableMenu(ui.getMenuManager());
+        initializeCacheRibbon(ui.getRibbon());
         add(ui, BorderLayout.CENTER);
         currentContent = ui;
         revalidate();
-    }
-
-    private void initializeTableMenu(MenuManager menuManager) {
-
-        {
-            JButton cacheIntermediateResultsButton = new JButton(UIUtils.getIconFromResources("actions/cache-intermediate-results.png"));
-            cacheIntermediateResultsButton.setToolTipText("Cache intermediate results");
-            cacheIntermediateResultsButton.addActionListener(e -> updateCache(true));
-            menuManager.addFirst(cacheIntermediateResultsButton);
-
-            JButton updateCacheButton = new JButton("Update cache", UIUtils.getIconFromResources("actions/database.png"));
-            updateCacheButton.addActionListener(e -> updateCache(false));
-            menuManager.addFirst(updateCacheButton);
-        }
-        {
-            JMenu cacheMenu = menuManager.getOrCreateMenu("Cache");
-
-            JMenuItem updateCacheItem = new JMenuItem("Update cache", UIUtils.getIconFromResources("actions/database.png"));
-            updateCacheItem.addActionListener(e -> updateCache(false));
-            cacheMenu.add(updateCacheItem);
-
-            JMenuItem cacheIntermediateResultsItem = new JMenuItem("Cache intermediate results", UIUtils.getIconFromResources("actions/cache-intermediate-results.png"));
-            cacheIntermediateResultsItem.addActionListener(e -> updateCache(true));
-            cacheMenu.add(cacheIntermediateResultsItem);
-
-            cacheMenu.addSeparator();
-
-            JMenuItem clearAllButton = new JMenuItem("Clear all (this node)", UIUtils.getIconFromResources("actions/clear-brush.png"));
-            clearAllButton.addActionListener(e -> getProject().getCache().clear(this.graphNode.getUUIDInParentGraph()));
-            cacheMenu.add(clearAllButton);
-
-            JMenuItem clearOutdatedButton = new JMenuItem("Clear outdated (this node)", UIUtils.getIconFromResources("actions/clear-brush.png"));
-            clearOutdatedButton.addActionListener(e -> getProject().getCache().autoClean(false, true, new JIPipeProgressInfo()));
-            cacheMenu.add(clearOutdatedButton);
-        }
-        {
-            JMenu exportMenu = menuManager.getOrCreateMenu("Export");
-            exportMenu.setText("Import/Export");
-
-            exportMenu.addSeparator();
-
-            JMenuItem importButton = new JMenuItem("Import cache", UIUtils.getIconFromResources("actions/document-import.png"));
-            importButton.setToolTipText("Imports cached data from a folder");
-            importButton.addActionListener(e -> importCache());
-            exportMenu.add(importButton);
-
-            JMenuItem exportButton = new JMenuItem("Export cache", UIUtils.getIconFromResources("actions/document-export.png"));
-            exportButton.setToolTipText("Exports cached data to a folder");
-            exportButton.addActionListener(e -> exportCache());
-            exportMenu.add(exportButton);
-        }
     }
 
     private void showDataSlot(JIPipeDataSlot dataSlot) {
@@ -170,10 +123,31 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
             remove(currentContent);
         }
         JIPipeExtendedDataTableUI ui = new JIPipeExtendedDataTableUI(getProjectWorkbench(), dataSlot, true);
-        initializeTableMenu(ui.getMenuManager());
+        initializeCacheRibbon(ui.getRibbon());
+//        initializeTableMenu(ui.getMenuManager());
         add(ui, BorderLayout.CENTER);
         currentContent = ui;
         revalidate();
+    }
+
+    private void initializeCacheRibbon(Ribbon ribbon) {
+        Ribbon.Task cacheTask = ribbon.getOrCreateTask("Cache");
+        Ribbon.Task exportTask = ribbon.getOrCreateTask("Export");
+        exportTask.setLabel("Import/Export");
+
+        Ribbon.Band cacheUpdateBand = cacheTask.addBand("Update");
+        cacheUpdateBand.add(new LargeButtonAction("Update", "Updates the cache. Intermediate results are not stored", UIUtils.getIcon32FromResources("actions/update-cache.png"),() -> updateCache(true) ));
+        cacheUpdateBand.add(new LargeButtonAction("Intermediate results", "Updates the cache and stores intermediate results", UIUtils.getIcon32FromResources("actions/cache-intermediate-results.png"),() -> updateCache(false) ));
+
+        Ribbon.Band cacheManageBand = cacheTask.addBand("Manage");
+        cacheManageBand.add(new SmallButtonAction("Clear all (this node)", "Clears all cached data of this node", UIUtils.getIconFromResources("actions/clear-brush.png"), () ->  getProject().getCache().clear(this.graphNode.getUUIDInParentGraph())));
+        cacheManageBand.add(new SmallButtonAction("Clear outdated (this node)", "Clears all cached data of this node", UIUtils.getIconFromResources("actions/clear-brush.png"), () ->  getProject().getCache().autoClean(false, true, new JIPipeProgressInfo())));
+
+        Ribbon.Band exportCacheBand = exportTask.addBand("Cache");
+        exportCacheBand.add(new LargeButtonAction("Import", "Imports the whole cache from a directory", UIUtils.getIcon32FromResources("actions/document-import.png"), this::importCache));
+        exportCacheBand.add(new LargeButtonAction("Export", "Exports the whole cache into a directory", UIUtils.getIcon32FromResources("actions/document-export.png"), this::exportCache));
+
+        ribbon.rebuildRibbon();
     }
 
     private void updateCache(boolean storeIntermediateResults) {

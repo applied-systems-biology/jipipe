@@ -348,6 +348,10 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
         return preview;
     }
 
+    public void clearPreviewCache() {
+        Collections.fill(previewCache, null);
+    }
+
     @Override
     public void setValueAt(Object aValue, int rowIndex, int columnIndex) {
 
