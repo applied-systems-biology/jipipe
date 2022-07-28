@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.resultanalysis;
+package org.hkijena.jipipe.ui.resultanalysis.renderers;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -19,6 +19,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataTableMetadataRow;
 import org.hkijena.jipipe.api.data.JIPipeMergedExportedDataTable;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;

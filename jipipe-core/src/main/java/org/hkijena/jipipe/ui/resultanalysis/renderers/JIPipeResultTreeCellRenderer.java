@@ -11,10 +11,10 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.cache;
+package org.hkijena.jipipe.ui.resultanalysis.renderers;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeProjectCacheState;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultAlgorithmTree;
@@ -29,14 +29,14 @@ import java.awt.*;
 /**
  * Renders the tree in {@link JIPipeResultAlgorithmTree}
  */
-public class JIPipeCacheStateTreeCellRenderer extends JLabel implements TreeCellRenderer {
+public class JIPipeResultTreeCellRenderer extends JLabel implements TreeCellRenderer {
     private Icon compartmentIcon = UIUtils.getIconFromResources("data-types/graph-compartment.png");
-    private Icon rootIcon = UIUtils.getIconFromResources("actions/database.png");
+    private Icon rootIcon = UIUtils.getIconFromResources("actions/run-build.png");
 
     /**
      * Creates new renderer
      */
-    public JIPipeCacheStateTreeCellRenderer() {
+    public JIPipeResultTreeCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
     }
@@ -46,9 +46,10 @@ public class JIPipeCacheStateTreeCellRenderer extends JLabel implements TreeCell
 
         if (value instanceof DefaultMutableTreeNode) {
             Object userObject = ((DefaultMutableTreeNode) value).getUserObject();
-            if (userObject instanceof String) {
+            if (userObject instanceof JIPipeProjectCompartment) {
+                JIPipeProjectCompartment compartment = (JIPipeProjectCompartment) userObject;
                 setIcon(compartmentIcon);
-                setText("" + userObject);
+                setText(compartment.getName());
             } else if (userObject instanceof JIPipeGraphNode) {
                 JIPipeGraphNode algorithm = (JIPipeGraphNode) userObject;
                 setIcon(JIPipe.getNodes().getIconFor(algorithm.getInfo()));
@@ -60,13 +61,9 @@ public class JIPipeCacheStateTreeCellRenderer extends JLabel implements TreeCell
                     setText(slot.getInfo().getCustomName() + " [" + slot.getName() + "]");
                 else
                     setText(slot.getName());
-            } else if (userObject instanceof JIPipeProjectCacheState) {
-                JIPipeProjectCacheState state = (JIPipeProjectCacheState) userObject;
-                setIcon(UIUtils.getIconFromResources("actions/camera.png"));
-                setText(state.renderGenerationTime());
             } else {
                 setIcon(rootIcon);
-                setText("Cache");
+                setText("Results");
             }
         } else {
             setIcon(null);

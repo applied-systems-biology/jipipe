@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.ui.cache;
+package org.hkijena.jipipe.ui.cache.importers;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.*;

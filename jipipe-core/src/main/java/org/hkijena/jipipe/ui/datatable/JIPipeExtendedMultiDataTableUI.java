@@ -37,6 +37,9 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.*;
+import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToFilesByMetadataExporterRun;
+import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToOutputExporterRun;
+import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToZIPExporterRun;
 import org.hkijena.jipipe.ui.components.DataPreviewControlUI;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeComponentCellRenderer;
@@ -48,12 +51,11 @@ import org.hkijena.jipipe.ui.components.search.ExtendedDataTableSearchTextFieldT
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeAnnotationTableCellRenderer;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeNodeTableCellRenderer;
-import org.hkijena.jipipe.ui.resultanalysis.JIPipeProjectCompartmentTableCellRenderer;
+import org.hkijena.jipipe.ui.resultanalysis.renderers.JIPipeAnnotationTableCellRenderer;
+import org.hkijena.jipipe.ui.resultanalysis.renderers.JIPipeNodeTableCellRenderer;
+import org.hkijena.jipipe.ui.resultanalysis.renderers.JIPipeProjectCompartmentTableCellRenderer;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
-import org.hkijena.jipipe.utils.MenuManager;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -363,13 +365,18 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void exportMetadataAsFiles() {
-        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export as file", UIUtils.EXTENSION_FILTER_CSV);
+        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export as file", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (path != null) {
             AnnotationTableData tableData = new AnnotationTableData();
             for (JIPipeDataTable slot : multiSlotTable.getSlotList()) {
                 tableData.addRows(slot.toAnnotationTable(true));
             }
-            tableData.saveAsCSV(path);
+            if(UIUtils.EXTENSION_FILTER_XLSX.accept(path.toFile())) {
+                tableData.saveAsXLSX(path);
+            }
+            else {
+                tableData.saveAsCSV(path);
+            }
         }
     }
 

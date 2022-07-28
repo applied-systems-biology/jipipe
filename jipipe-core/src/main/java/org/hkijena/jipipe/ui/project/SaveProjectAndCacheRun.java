@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeDataTableToOutputExporterRun;
+import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToOutputExporterRun;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.io.IOException;

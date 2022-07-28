@@ -18,7 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.cache.JIPipeImportCachedSlotOutputRun;
+import org.hkijena.jipipe.ui.cache.importers.JIPipeImportCachedSlotOutputRun;
 
 import java.nio.file.Files;
 import java.nio.file.Path;

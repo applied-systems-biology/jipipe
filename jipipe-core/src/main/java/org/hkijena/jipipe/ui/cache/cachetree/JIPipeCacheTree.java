@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.cache;
+package org.hkijena.jipipe.ui.cache.cachetree;
 
 import org.hkijena.jipipe.api.JIPipeProjectCacheState;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;

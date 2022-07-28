@@ -31,12 +31,16 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
 import org.hkijena.jipipe.ui.components.DataPreviewControlUI;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.ribbon.LargeButtonAction;
+import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
+import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
+import org.hkijena.jipipe.ui.components.ribbon.SmallToggleButtonAction;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.search.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.ui.resultanalysis.renderers.*;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
-import org.hkijena.jipipe.utils.MenuManager;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
@@ -61,7 +65,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
     private final List<JIPipeDataSlot> slots;
     private final JIPipeProjectRun run;
     private final SearchTextField searchTextField = new SearchTextField();
-    private final MenuManager menuManager = new MenuManager();
+    private final Ribbon ribbon = new Ribbon();
     private JXTable table;
     private JIPipeMergedExportedDataTable mergedDataTable;
     private FormPanel rowUIList;
@@ -128,54 +132,70 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         rowUIList = new FormPanel(null, ParameterPanel.WITH_SCROLLING);
         add(rowUIList, BorderLayout.SOUTH);
 
-        // Toolbar for searching and export
-        add(menuManager.getMenuBar(), BorderLayout.NORTH);
+        // Menu/Toolbar
+        JPanel menuContainerPanel = new JPanel();
+        menuContainerPanel.setLayout(new BoxLayout(menuContainerPanel, BoxLayout.Y_AXIS));
+        add(menuContainerPanel, BorderLayout.NORTH);
 
-        JButton openFolderButton = new JButton("Open folder", UIUtils.getIconFromResources("actions/folder-open.png"));
-        openFolderButton.addActionListener(e -> openResultsFolder());
-        menuManager.add(openFolderButton);
+        // Ribbon
+        initializeRibbon(menuContainerPanel);
 
-        searchTextField.addActionListener(e -> refreshTable());
+        // Search toolbar
+        initializeToolbar(menuContainerPanel);
+    }
+
+    private void initializeRibbon(JPanel menuContainerPanel) {
+        menuContainerPanel.add(ribbon);
+        initializeTableRibbon();
+        initializeExportRibbon();
+        ribbon.rebuildRibbon();
+    }
+
+    private void initializeToolbar(JPanel menuContainerPanel) {
+        JToolBar searchToolbar = new JToolBar();
+        searchToolbar.setFloatable(false);
+        menuContainerPanel.add(Box.createVerticalStrut(8));
+        menuContainerPanel.add(searchToolbar);
+
+        searchTextField.addActionListener(e -> reloadTable());
         searchTextField.addButton("Open expression editor",
                 UIUtils.getIconFromResources("actions/insert-math-expression.png"),
                 this::openSearchExpressionEditor);
-        menuManager.add(searchTextField);
-
-        initializeViewMenu();
-        initializeExportMenu();
-
-        DataPreviewControlUI previewControlUI = new DataPreviewControlUI();
-        menuManager.add(previewControlUI);
+        searchToolbar.add(searchTextField);
     }
 
-    private void initializeViewMenu() {
-        JMenu viewMenu = menuManager.getOrCreateMenu("View");
+    private void initializeTableRibbon() {
+        Ribbon.Task viewTask = ribbon.addTask("Table");
+        Ribbon.Band tableBand = viewTask.addBand("General");
+        Ribbon.Band previewBand = viewTask.addBand("Previews");
+        Ribbon.Band dataBand = viewTask.addBand("Data");
 
-        JMenuItem autoSizeFitItem = new JMenuItem("Make columns fit contents", UIUtils.getIconFromResources("actions/zoom-fit-width.png"));
-        autoSizeFitItem.setToolTipText("Auto-size columns to fit their contents");
-        autoSizeFitItem.addActionListener(e -> table.packAll());
-        viewMenu.add(autoSizeFitItem);
+        // Table band
+        tableBand.add(new SmallButtonAction("Fit columns", "Fits the table columns to their contents", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), table::packAll));
+        tableBand.add(new SmallButtonAction("Compact columns", "Auto-size columns to the default size", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), () ->  UIUtils.packDataTable(table)));
 
-        JMenuItem autoSizeSmallItem = new JMenuItem("Compact columns", UIUtils.getIconFromResources("actions/zoom-best-fit.png"));
-        autoSizeSmallItem.setToolTipText("Auto-size columns to the default size");
-        autoSizeSmallItem.addActionListener(e -> UIUtils.packDataTable(table));
-        viewMenu.add(autoSizeSmallItem);
+        // Preview band
+        previewBand.add(new SmallToggleButtonAction("Enable previews", "Allows to toggle previews on and off", UIUtils.getIconFromResources("actions/zoom.png"), GeneralDataSettings.getInstance().isGenerateResultPreviews(), (toggle) -> {
+            GeneralDataSettings.getInstance().setGenerateResultPreviews(toggle.isSelected());
+            reloadTable();
+        }));
+        previewBand.add(new Ribbon.Action(UIUtils.boxHorizontal(new JLabel("Size"), new DataPreviewControlUI()), 1, new Insets(2,2,2,2)));
+
+        // Data band
+        dataBand.add(new LargeButtonAction("Open directory", "Opens the directory that contains the displayed results", UIUtils.getIcon32FromResources("actions/folder-open.png"), this::openResultsFolder));
     }
 
-    private void initializeExportMenu() {
-        JMenu exportMenu = menuManager.getOrCreateMenu("Export");
+    private void initializeExportRibbon() {
+        Ribbon.Task exportTask = ribbon.addTask("Export");
+        Ribbon.Band dataBand = exportTask.addBand("Data");
+        Ribbon.Band metadataBand = exportTask.addBand("Metadata");
 
-        JMenuItem exportAsTableItem = new JMenuItem("Metadata as table", UIUtils.getIconFromResources("actions/link.png"));
-        exportAsTableItem.addActionListener(e -> exportAsTable());
-        exportMenu.add(exportAsTableItem);
+        // Data band
+        dataBand.add(new LargeButtonAction("As files", "Exports all data as files named according to annotations", UIUtils.getIcon32FromResources("actions/document-export.png"), this::exportFilesByMetadata));
 
-        JMenuItem exportAsCsvItem = new JMenuItem("Metadata as *.csv", UIUtils.getIconFromResources("data-types/results-table.png"));
-        exportAsCsvItem.addActionListener(e -> exportAsCSV());
-        exportMenu.add(exportAsCsvItem);
-
-        JMenuItem exportFilesByMetadataItem = new JMenuItem("Data as files", UIUtils.getIconFromResources("actions/save.png"));
-        exportFilesByMetadataItem.addActionListener(e -> exportFilesByMetadata());
-        exportMenu.add(exportFilesByMetadataItem);
+        // Metadata band
+        metadataBand.add(new SmallButtonAction("To CSV/Excel", "Exports the text annotations as table", UIUtils.getIcon16FromResources("actions/table.png"), this::exportMetadataAsFiles));
+        metadataBand.add(new SmallButtonAction("Open as table", "Opens the text annotations as table", UIUtils.getIcon16FromResources("actions/link.png"), this::exportMetadataAsTableEditor));
     }
 
     private void openSearchExpressionEditor(SearchTextField searchTextField) {
@@ -206,7 +226,7 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         }
     }
 
-    private void exportAsTable() {
+    private void exportMetadataAsTableEditor() {
         AnnotationTableData tableData = new AnnotationTableData();
         for (JIPipeDataTableMetadata exportedDataTable : mergedDataTable.getAddedTables()) {
             tableData.addRows(exportedDataTable.toAnnotationTable());
@@ -214,14 +234,19 @@ public class JIPipeMergedResultDataSlotTableUI extends JIPipeProjectWorkbenchPan
         TableEditor.openWindow(getWorkbench(), tableData, "Metadata");
     }
 
-    private void exportAsCSV() {
-        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export as *.csv", UIUtils.EXTENSION_FILTER_CSV);
+    private void exportMetadataAsFiles() {
+        Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export as file", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (path != null) {
             AnnotationTableData tableData = new AnnotationTableData();
             for (JIPipeDataTableMetadata exportedDataTable : mergedDataTable.getAddedTables()) {
                 tableData.addRows(exportedDataTable.toAnnotationTable());
             }
-            tableData.saveAsCSV(path);
+            if(UIUtils.EXTENSION_FILTER_XLSX.accept(path.toFile())) {
+                tableData.saveAsXLSX(path);
+            }
+            else {
+                tableData.saveAsCSV(path);
+            }
         }
     }
 

@@ -11,32 +11,34 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.resultanalysis;
+package org.hkijena.jipipe.ui.resultanalysis.renderers;
 
-import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
 
 /**
- * Renders the location of of {@link JIPipeDataTableMetadata} and {@link org.hkijena.jipipe.api.data.JIPipeMergedExportedDataTable}
+ * Renders {@link org.hkijena.jipipe.api.annotation.JIPipeAnnotation}
  */
-public class JIPipeRowIndexTableCellRenderer extends JLabel implements TableCellRenderer {
+public class JIPipeAnnotationTableCellRenderer extends JLabel implements TableCellRenderer {
 
     /**
-     * Creates new renderer
+     * Creates a new renderer
      */
-    public JIPipeRowIndexTableCellRenderer() {
+    public JIPipeAnnotationTableCellRenderer() {
         setOpaque(true);
         setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-//        setIcon(UIUtils.getIconFromResources("actions/database.png"));
     }
 
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-
-        setText("" + value);
+        if (value instanceof JIPipeTextAnnotation) {
+            setText(((JIPipeTextAnnotation) value).getValue());
+        } else {
+            setText("<html><p style=\"color: red;\">NA</p></html>");
+        }
 
         if (isSelected) {
             setBackground(UIManager.getColor("List.selectionBackground"));

@@ -11,14 +11,15 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.resultanalysis;
+package org.hkijena.jipipe.ui.resultanalysis.renderers;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.api.data.JIPipeExportedDataAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeMergedExportedDataTable;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultDataSlotPreview;
 
 import javax.swing.*;
 import javax.swing.table.TableCellRenderer;
@@ -29,29 +30,29 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Renders row data of an {@link JIPipeDataTableMetadata}
+ * Renders data in {@link JIPipeMergedExportedDataTable}
  */
-public class JIPipeRowDataAnnotationTableCellRenderer implements TableCellRenderer {
+public class JIPipeRowDataAnnotationMergedTableCellRenderer implements TableCellRenderer {
 
-    private final JTable table;
+    private final JIPipeMergedExportedDataTable mergedDataTable;
     private final JScrollPane scrollPane;
+    private final JTable table;
     private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
     private JIPipeProjectWorkbench workbenchUI;
-    private JIPipeDataSlot slot;
     private Map<String, List<JIPipeResultDataSlotPreview>> previewCache = new HashMap<>();
     private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
 
     /**
-     * @param workbenchUI the workbench
-     * @param slot        the data slot
-     * @param table       the table
-     * @param scrollPane  thr scroll pane
+     * @param workbenchUI     The workbench
+     * @param mergedDataTable the table to be displayed
+     * @param scrollPane      the scroll pane
+     * @param table           the table
      */
-    public JIPipeRowDataAnnotationTableCellRenderer(JIPipeProjectWorkbench workbenchUI, JIPipeDataSlot slot, JTable table, JScrollPane scrollPane) {
+    public JIPipeRowDataAnnotationMergedTableCellRenderer(JIPipeProjectWorkbench workbenchUI, JIPipeMergedExportedDataTable mergedDataTable, JScrollPane scrollPane, JTable table) {
         this.workbenchUI = workbenchUI;
-        this.slot = slot;
-        this.table = table;
+        this.mergedDataTable = mergedDataTable;
         this.scrollPane = scrollPane;
+        this.table = table;
         scrollPane.getVerticalScrollBar().addAdjustmentListener(e -> updateRenderedPreviews());
         updateRenderedPreviews();
     }
@@ -82,15 +83,16 @@ public class JIPipeRowDataAnnotationTableCellRenderer implements TableCellRender
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         if (value instanceof JIPipeExportedDataAnnotation) {
-            JIPipeExportedDataAnnotation exportedDataAnnotation = (JIPipeExportedDataAnnotation) value;
+            JIPipeExportedDataAnnotation dataAnnotation = (JIPipeExportedDataAnnotation) value;
+            JIPipeMergedExportedDataTable model = (JIPipeMergedExportedDataTable) table.getModel();
+            JIPipeDataSlot slot = model.getSlot(table.convertRowIndexToModel(row));
 
-            row = table.convertRowIndexToModel(row);
             revalidatePreviewCache();
-            JIPipeResultDataSlotPreview preview = getPreviewComponent(row, exportedDataAnnotation);
 
+            JIPipeResultDataSlotPreview preview = getPreviewComponent(row, dataAnnotation);
             if (preview == null) {
-                preview = JIPipe.getDataTypes().getCellRendererFor(workbenchUI, table, slot, exportedDataAnnotation.getTableRow(), exportedDataAnnotation);
-                previewCache.get(exportedDataAnnotation.getName()).set(row, preview);
+                preview = JIPipe.getDataTypes().getCellRendererFor(workbenchUI, table, slot, dataAnnotation.getTableRow(), dataAnnotation);
+                previewCache.get(dataAnnotation.getName()).set(row, preview);
             }
             if (isSelected) {
                 preview.setBackground(UIManager.getColor("List.selectionBackground"));

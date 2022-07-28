@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.ui.resultanalysis;
+package org.hkijena.jipipe.ui.resultanalysis.renderers;
 
 import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
 import org.hkijena.jipipe.utils.UIUtils;
