@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
@@ -28,6 +29,7 @@ import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -56,7 +58,9 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     private WeakReference<JIPipeVirtualData> lastVirtualData;
     private JButton previousRowButton;
     private JButton nextRowButton;
-    private JLabel rowInfoLabel;
+    private JButton rowInfoLabel;
+
+    private JPopupMenu rowInfoLabelMenu = new JPopupMenu();
     private Function<JIPipeVirtualData, JIPipeVirtualData> dataConverterFunction;
 
     private JLabel standardErrorLabel;
@@ -101,7 +105,9 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         nextRowButton.setToolTipText("<html>Go to next data row<br/>Ctrl+Down</html>");
         nextRowButton.addActionListener(e -> gotoNextRow());
         UIUtils.makeFlat25x25(nextRowButton);
-        rowInfoLabel = new JLabel("?/?");
+        rowInfoLabel = new JButton("?/?");
+        rowInfoLabel.setBorder(null);
+        UIUtils.addReloadablePopupMenuToComponent(rowInfoLabel, rowInfoLabelMenu, this::reloadInfoLabelMenu);
 
         super.setContentPane(contentPane);
         InputMap inputMap = contentPane.getInputMap(JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
@@ -127,6 +133,31 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         standardErrorLabel = new JLabel(UIUtils.getIconFromResources("emblems/no-data.png"));
     }
 
+    private void reloadInfoLabelMenu() {
+        rowInfoLabelMenu.removeAll();
+        JMenuItem setRowItem = new JMenuItem("Go to row ...", UIUtils.getIconFromResources("actions/go-jump.png"));
+        setRowItem.addActionListener(e-> gotoUserDefinedRow());
+        rowInfoLabelMenu.add(setRowItem);
+
+        int nRow = getDataSource().getDataTable().getRowCount();
+        if(nRow > 0) {
+            rowInfoLabelMenu.addSeparator();
+            JComponent currentMenu = rowInfoLabelMenu;
+            for (int i = 0; i < nRow; i++) {
+                JMenuItem item = new JMenuItem("" + (i + 1));
+                int finalI = i;
+                item.addActionListener(e -> gotoRow(finalI + 1));
+                currentMenu.add(item);
+
+                if(i != nRow - 1 && currentMenu.getComponentCount() >= 10) {
+                    JMenu newMenu = new JMenu("More ...");
+                    currentMenu.add(newMenu);
+                    currentMenu = newMenu;
+                }
+            }
+        }
+    }
+
     /**
      * Returns a standard error label that simplifies the creation of cache windows.
      * It must be included into the UI manually
@@ -149,6 +180,24 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         revalidate();
         repaint();
     }
+
+    private void gotoUserDefinedRow() {
+        String input = JOptionPane.showInputDialog(this,
+                "Please input the target row (1 is the first item):",
+                getDataSource().getRow() + 1);
+        if (!StringUtils.isNullOrEmpty(input)) {
+            Integer index = NumberUtils.createInteger(input);
+            if(index != null) {
+                gotoRow(index);
+            }
+        }
+    }
+
+    private void gotoRow(int row) {
+        row = Math.max(1, Math.min(getDataSource().getDataTable().getRowCount(), row));
+        setDataSourceRow(row - 1);
+    }
+
 
     private void gotoPreviousRow() {
         int row = getDataSource().getRow() - 1;
