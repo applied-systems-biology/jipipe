@@ -43,7 +43,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     private final ROIListData overlayRois = new ROIListData();
     private final JList<Roi> roiListControl = new JList<>();
     private final RoiDrawer roiDrawer = new RoiDrawer();
-    private final LargeToggleButtonAction displayROIViewMenuItem = new LargeToggleButtonAction("Display ROI", "Determines whether ROI are displayed", UIUtils.getIcon32FromResources("actions/eye.png"));
+    private final LargeToggleButtonAction displayROIViewMenuItem = new LargeToggleButtonAction("Display ROI", "Determines whether ROI are displayed", UIUtils.getIcon32FromResources("data-types/roi.png"));
     private final SmallToggleButtonAction renderROIAsOverlayViewMenuItem = new SmallToggleButtonAction("Draw ROI as overlay", "If disabled, ROI are drawn as pixels directly into the displayed image.", UIUtils.getIconFromResources("actions/path-break-apart.png"));
     private ROIListData rois = new ROIListData();
     private boolean filterListHideInvisible = false;
