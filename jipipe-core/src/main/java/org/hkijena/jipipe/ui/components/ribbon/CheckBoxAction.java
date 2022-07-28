@@ -14,7 +14,7 @@ public class CheckBoxAction extends Ribbon.Action {
     public CheckBoxAction(String label, String tooltip, boolean selected, Consumer<JCheckBox> action) {
         super(new JToggleButton(), 1, new Insets(2, 2, 2, 2));
 
-        JCheckBox button = (JCheckBox) getComponent();
+        JCheckBox button = (JCheckBox) getFirstComponent();
         button.setSelected(selected);
         button.setToolTipText(tooltip);
         button.setText(label);
@@ -23,7 +23,7 @@ public class CheckBoxAction extends Ribbon.Action {
     }
 
     public JCheckBox getCheckBox() {
-        return (JCheckBox) getComponent();
+        return (JCheckBox) getFirstComponent();
     }
 
     public boolean getState() {

@@ -9,7 +9,7 @@ public class SmallButtonAction extends Ribbon.Action {
     public SmallButtonAction(String label, String tooltip, Icon icon, Runnable action) {
         super(new JButton(), 1, new Insets(2, 2, 2, 2));
 
-        JButton button = (JButton) getComponent();
+        JButton button = (JButton) getFirstComponent();
         button.setToolTipText(tooltip);
         button.setText(label);
         button.setIcon(icon);
@@ -19,7 +19,7 @@ public class SmallButtonAction extends Ribbon.Action {
     }
 
     public JButton getButton() {
-        return (JButton) getComponent();
+        return (JButton) getFirstComponent();
     }
 
     public void addActionListener(Runnable runnable) {

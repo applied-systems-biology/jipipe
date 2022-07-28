@@ -11,7 +11,7 @@ public class LargeButtonAction extends Ribbon.Action {
         super(new JButton(), Integer.MAX_VALUE, new Insets(2, 6, 2, 6));
 
         // Create a new button
-        JButton button = (JButton) getComponent();
+        JButton button = (JButton) getFirstComponent();
         button.setToolTipText(tooltip);
         button.setText(label);
         button.setIcon(icon);
@@ -22,7 +22,7 @@ public class LargeButtonAction extends Ribbon.Action {
     }
 
     public JButton getButton() {
-        return (JButton) getComponent();
+        return (JButton) getFirstComponent();
     }
 
     public void addActionListener(Runnable runnable) {

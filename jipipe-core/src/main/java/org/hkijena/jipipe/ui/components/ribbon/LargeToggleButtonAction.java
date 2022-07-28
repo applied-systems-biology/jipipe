@@ -15,7 +15,7 @@ public class LargeToggleButtonAction extends Ribbon.Action {
     public LargeToggleButtonAction(String label, String tooltip, Icon icon, boolean selected, Consumer<JToggleButton> action) {
         super(new JToggleButton(), Integer.MAX_VALUE, new Insets(2, 6, 2, 6));
 
-        JToggleButton button = (JToggleButton) getComponent();
+        JToggleButton button = (JToggleButton) getFirstComponent();
         button.setToolTipText(tooltip);
         button.setSelected(selected);
         button.setText(label);
@@ -27,7 +27,7 @@ public class LargeToggleButtonAction extends Ribbon.Action {
     }
 
     public JToggleButton getButton() {
-        return (JToggleButton) getComponent();
+        return (JToggleButton) getFirstComponent();
     }
 
     public boolean getState() {

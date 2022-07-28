@@ -91,7 +91,6 @@ public class DocumentTabPane extends JPanel {
                     if (tabIndex >= 0 && tabIndex < tabbedPane.getTabCount()) {
                         Component component = tabbedPane.getTabComponentAt(tabIndex);
                         DocumentTab tab = getTabContainingTabComponent(component);
-                        System.out.println(tab.getPopupMenu());
                         if (tab.getPopupMenu() != null) {
                             tab.getPopupMenu().show(e.getComponent(), e.getX(), e.getY());
                         }

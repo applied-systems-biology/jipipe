@@ -61,17 +61,24 @@ public class Ribbon extends JPanel {
             // Add actions
             final int startCol = col;
 
+            int maxWidth = 1;
             for (Action action : band.getActions()) {
                 int available = numRows - row;
                 int requested = Math.max(1, Math.min(numRows, action.getHeight()));
                 if (requested > available) {
-                    ++col;
+                    col += maxWidth;
+                    maxWidth = 1;
                     row = 0;
                 }
-                taskPanel.add(action.getComponent(), new GridBagConstraints(col, row, 1, requested, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, action.insets, 0, 0));
+                List<Component> components = action.getComponents();
+                for (int i = 0; i < components.size(); i++) {
+                    Component component = components.get(i);
+                    taskPanel.add(component, new GridBagConstraints(col + i, row, 1, requested, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, action.insets, 0, 0));
+                }
+                maxWidth = Math.max(components.size(), maxWidth);
                 row += requested;
             }
-
+            col = col + maxWidth  - 1;
             final int endCol = col;
 
             // Add label
@@ -181,9 +188,9 @@ public class Ribbon extends JPanel {
         return task;
     }
 
-    public Task getOrCreateTask(String label) {
-        Optional<Task> optional = tasks.stream().filter(t -> Objects.equals(t.label, label)).findFirst();
-        return optional.orElseGet(() -> addTask(label));
+    public Task getOrCreateTask(String id) {
+        Optional<Task> optional = tasks.stream().filter(t -> Objects.equals(t.id, id)).findFirst();
+        return optional.orElseGet(() -> addTask(id));
     }
 
     public Task getOrCreateTask(String id, String label) {
@@ -191,6 +198,37 @@ public class Ribbon extends JPanel {
         return optional.orElseGet(() -> addTask(id, label));
     }
 
+    public void selectTask(String id) {
+        for (int i = 0; i < tasks.size(); i++) {
+            Task task = tasks.get(i);
+            if(Objects.equals(task.getId(), id)) {
+                tabPane.getTabbedPane().setSelectedIndex(i);
+                return;
+            }
+        }
+    }
+
+    /**
+     * Reorders the tasks according to the list of IDs.
+     * If there are tasks outside the ID list, their order will be preserved
+     * Will not rebuild the ribbon.
+     * @param ids the IDs
+     */
+    public void reorderTasks(List<String> ids) {
+        List<Task> newList = new ArrayList<>();
+        for (String id : ids) {
+            Optional<Task> optional = tasks.stream().filter(t -> Objects.equals(t.id, id)).findFirst();
+            if(optional.isPresent()) {
+                newList.add(optional.get());
+            }
+        }
+        for (Task task : tasks) {
+            if(!newList.contains(task)) {
+                newList.add(task);
+            }
+        }
+        this.tasks = newList;
+    }
 
     /**
      * The highest-order organization of a ribbon.
@@ -359,23 +397,33 @@ public class Ribbon extends JPanel {
      * An action within the ribbon
      */
     public static class Action {
-        private Component component;
+        private List<Component> components;
         private int height;
 
         private Insets insets;
 
         public Action(Component component, int height, Insets insets) {
-            this.component = component;
+            this.components = Collections.singletonList(component);
             this.height = height;
             this.insets = insets;
         }
 
-        public Component getComponent() {
-            return component;
+        public Action(List<Component> components, int height, Insets insets) {
+            this.components = components;
+            this.height = height;
+            this.insets = insets;
         }
 
-        public void setComponent(Component component) {
-            this.component = component;
+        public Component getFirstComponent() {
+            return components.get(0);
+        }
+
+        public List<Component> getComponents() {
+            return components;
+        }
+
+        public void setComponents(List<Component> components) {
+            this.components = components;
         }
 
         public int getHeight() {

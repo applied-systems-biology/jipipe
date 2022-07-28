@@ -14,7 +14,7 @@ public class SmallToggleButtonAction extends Ribbon.Action {
     public SmallToggleButtonAction(String label, String tooltip, Icon icon, boolean selected, Consumer<JToggleButton> action) {
         super(new JToggleButton(), 1, new Insets(2, 2, 2, 2));
 
-        JToggleButton button = (JToggleButton) getComponent();
+        JToggleButton button = (JToggleButton) getFirstComponent();
         button.setToolTipText(tooltip);
         button.setSelected(selected);
         button.setText(label);
@@ -25,7 +25,7 @@ public class SmallToggleButtonAction extends Ribbon.Action {
     }
 
     public JToggleButton getButton() {
-        return (JToggleButton) getComponent();
+        return (JToggleButton) getFirstComponent();
     }
 
     public boolean getState() {
