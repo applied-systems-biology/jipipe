@@ -1577,42 +1577,47 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 }
                 Point sourcePoint = new Point();
                 Point targetPoint = new Point();
+                boolean uiIsOutput = getCompartment() == null || getCompartment().equals(ui.getNode().getCompartmentUUIDInParentGraph());
                 if (viewMode == JIPipeGraphViewMode.Horizontal) {
-                    if (getCompartment() == null || getCompartment().equals(ui.getNode().getCompartmentUUIDInParentGraph())) {
+                    if (uiIsOutput) {
+                        // This is an output -> line goes outside
                         sourcePoint.x = ui.getX() + ui.getWidth();
                         sourcePoint.y = ui.getY() + viewMode.getGridHeight() / 2;
                         targetPoint.x = getWidth();
                         targetPoint.y = sourcePoint.y;
                     } else {
+                        // This is an input
                         sourcePoint.x = 0;
                         sourcePoint.y = ui.getY() + viewMode.getGridHeight() / 2;
                         targetPoint.x = ui.getX();
                         targetPoint.y = sourcePoint.y;
                     }
                 } else {
-                    if (getCompartment() == null || getCompartment().equals(ui.getNode().getCompartmentUUIDInParentGraph())) {
-                        sourcePoint.x = ui.getX() + ui.getWidth() / 2;
-                        sourcePoint.y = ui.getY() + ui.getHeight();
-                        targetPoint.x = sourcePoint.x;
-                        targetPoint.y = getHeight();
+                    if (uiIsOutput) {
+                        // This is an output -> line goes outside
+                        targetPoint.x = ui.getX() + ui.getWidth() / 2;
+                        targetPoint.y = ui.getY() + ui.getHeight();
+                        sourcePoint.x = targetPoint.x;
+                        sourcePoint.y = getHeight();
                     } else {
-                        sourcePoint.x = ui.getX() + ui.getWidth() / 2;
-                        sourcePoint.y = ui.getY();
-                        targetPoint.x = sourcePoint.x;
-                        targetPoint.y = 0;
+                        // This is an input
+                        targetPoint.x = ui.getX() + ui.getWidth() / 2;
+                        targetPoint.y = ui.getY();
+                        sourcePoint.x = targetPoint.x;
+                        sourcePoint.y = 0;
                     }
                 }
                 if (settings.isDrawImprovedEdges() && borderStroke != null) {
                     g.setStroke(borderStroke);
                     g.setColor(baseColor);
-                    drawOutsideEdge(g, sourcePoint, targetPoint);
+                    drawOutsideEdge(g, sourcePoint, targetPoint, !uiIsOutput);
                     g.setStroke(stroke);
                     g.setColor(improvedStrokeBackgroundColor);
-                    drawOutsideEdge(g, sourcePoint, targetPoint);
+                    drawOutsideEdge(g, sourcePoint, targetPoint, !uiIsOutput);
                 } else {
                     g.setStroke(stroke);
                     g.setColor(baseColor);
-                    drawOutsideEdge(g, sourcePoint, targetPoint);
+                    drawOutsideEdge(g, sourcePoint, targetPoint, !uiIsOutput);
                 }
             }
         }
@@ -1635,12 +1640,28 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         return null;
     }
 
-    private void drawOutsideEdge(Graphics2D g, Point sourcePoint, Point targetPoint) {
-        if (viewMode == JIPipeGraphViewMode.Horizontal) {
-            g.drawLine(sourcePoint.x, sourcePoint.y, targetPoint.x, sourcePoint.y);
-        } else {
-            g.drawLine(sourcePoint.x, sourcePoint.y, sourcePoint.x, targetPoint.y);
+    private void drawOutsideEdge(Graphics2D g, Point sourcePoint, Point targetPoint, boolean drawArrowHead) {
+        int arrowHeadShift = getArrowHeadShift();
+        int dx;
+        int dy;
+        if(drawArrowHead) {
+            if (viewMode == JIPipeGraphViewMode.Horizontal) {
+                dx = arrowHeadShift;
+                dy = 0;
+            } else {
+                dx = 0;
+                dy = arrowHeadShift;
+            }
         }
+        else {
+            dx = 0;
+            dy = 0;
+        }
+        g.drawLine(sourcePoint.x, sourcePoint.y, targetPoint.x + dx, targetPoint.y + dy);
+        if(drawArrowHead && settings.isDrawArrowHeads()) {
+            drawArrowHead(g, targetPoint.x, targetPoint.y);
+        }
+
     }
 
     /**
@@ -1687,7 +1708,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private int getArrowHeadShift() {
         if(settings.isDrawArrowHeads()) {
             int sz = 1;
-            return -2 * sz - 4;
+            return -2 * sz - 6;
         }
         else {
             return 0;
