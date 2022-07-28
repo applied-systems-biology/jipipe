@@ -172,7 +172,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
             }
 
             if(results.isEmpty()) {
-                outputStack.setProcessor(new ByteProcessor(inputIp.getWidth(), inputIp.getHeight()), index.oneSliceIndexToOneStackIndex(inputImage));
+                outputStack.setProcessor(new ByteProcessor(inputIp.getWidth(), inputIp.getHeight()), index.zeroSliceIndexToOneStackIndex(inputImage));
             }
             else {
                 ThresholdingResult bestResult = results.stream().max(Comparator.comparing(ThresholdingResult::getScore)).get();

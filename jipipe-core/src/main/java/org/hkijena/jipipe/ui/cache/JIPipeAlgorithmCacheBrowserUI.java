@@ -94,6 +94,9 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         List<JIPipeDataSlot> slotsToDisplay = new ArrayList<>();
         Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode.getUUIDInParentGraph());
         if(stateMap != null && !stateMap.isEmpty()) {
+            if(!stateMap.containsKey(selectedCacheState)) {
+                selectedCacheState = null;
+            }
             if(selectedCacheState == null) {
                 // Select the newest available state
                 selectedCacheState = stateMap.keySet().stream().sorted().findFirst().get();
