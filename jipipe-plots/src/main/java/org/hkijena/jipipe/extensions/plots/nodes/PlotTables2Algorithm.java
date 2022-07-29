@@ -16,12 +16,14 @@ package org.hkijena.jipipe.extensions.plots.nodes;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotColumn;
@@ -30,27 +32,20 @@ import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotMetadata;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.plotbuilder.PlotDataClassFilter;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.scijava.Priority;
 
 import java.util.*;
 
 /**
  * Algorithm that creates {@link PlotData} from {@link ResultsTableData}
- * @deprecated Instead, the new dynamically generated plotting should be utilized
+ * This is an improved version of {@link PlotTables2Algorithm} that is linked directly to a specific plot
  */
-@JIPipeDocumentation(name = "Plot tables", description = "Plots incoming tables. First, set the plot type via a parameter. This " +
-        "will then show the available settings for this plot type, and a list of input columns for the plot. " +
-        "Please ensure to correctly setup these input columns.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
-@JIPipeInputSlot(ResultsTableData.class)
-@JIPipeOutputSlot(PlotData.class)
-@JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Plot (JFreeChart)")
-@JIPipeHidden
-@Deprecated
-public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
+public class PlotTables2Algorithm extends JIPipeMergingAlgorithm {
 
-    private JIPipeDataInfoRef plotType = new JIPipeDataInfoRef();
-    private PlotData plotTypeParameters;
+    private final PlotData plotTypeParameters;
+
+    private final JIPipeDataInfo plotType;
     private JIPipeDynamicParameterCollection inputColumns = new JIPipeDynamicParameterCollection(false);
     private StringQueryExpression seriesName = new StringQueryExpression("SUMMARIZE_VARIABLES()");
 
@@ -59,12 +54,15 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
      *
      * @param info The algorithm info
      */
-    public PlotTablesAlgorithm(JIPipeNodeInfo info) {
+    public PlotTables2Algorithm(PlotTables2AlgorithmInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "Tables that will be plotted", ResultsTableData.class)
-                .addOutputSlot("Output", "Generated plots", PlotData.class, null)
+                .addOutputSlot("Output", "Generated plots", info.getPlotDataType().getDataClass(), null)
                 .seal()
                 .build());
+        plotType = info.getPlotDataType();
+        plotTypeParameters = (PlotData) ReflectionUtils.newInstance(info.getPlotDataType().getDataClass());
         registerSubParameter(inputColumns);
+        updateColumnAssignment();
     }
 
     /**
@@ -72,18 +70,17 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
      *
      * @param other the original
      */
-    public PlotTablesAlgorithm(PlotTablesAlgorithm other) {
+    public PlotTables2Algorithm(PlotTables2Algorithm other) {
         super(other);
-        this.plotType = new JIPipeDataInfoRef(other.plotType);
-        if (other.plotTypeParameters != null)
-            this.plotTypeParameters = (PlotData) other.plotTypeParameters.duplicate(new JIPipeProgressInfo());
+        this.plotType = other.plotType;
+        this.plotTypeParameters = (PlotData) other.plotTypeParameters.duplicate(new JIPipeProgressInfo());
         this.inputColumns = new JIPipeDynamicParameterCollection(other.inputColumns);
         this.seriesName = new StringQueryExpression(other.seriesName);
     }
 
     @Override
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        PlotMetadata plotMetadata = plotType.getInfo().getDataClass().getAnnotation(PlotMetadata.class);
+        PlotMetadata plotMetadata = plotType.getDataClass().getAnnotation(PlotMetadata.class);
         Map<String, PlotColumn> plotColumns = new HashMap<>();
         for (PlotColumn column : plotMetadata.columns()) {
             plotColumns.put(column.name(), column);
@@ -129,71 +126,25 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
 
     @Override
     public void reportValidity(JIPipeIssueReport report) {
-        report.resolve("Plot type").checkNonNull(getPlotType().getInfo(), this);
-        if (plotTypeParameters != null) {
-            report.resolve("Plot parameters").report(plotTypeParameters);
-        }
-    }
-
-    @JIPipeDocumentation(name = "Plot type", description = "The type of plot to be generated.")
-    @JIPipeParameter(value = "plot-type", priority = Priority.HIGH, important = true)
-    @JIPipeDataParameterSettings(dataBaseClass = PlotData.class, dataClassFilter = PlotDataClassFilter.class)
-    public JIPipeDataInfoRef getPlotType() {
-        if (plotType == null) {
-            plotType = new JIPipeDataInfoRef();
-        }
-        return plotType;
-    }
-
-    @JIPipeParameter("plot-type")
-    public void setPlotType(JIPipeDataInfoRef plotType) {
-        this.plotType = plotType;
-
-
-        updateOutputSlotType();
-        updatePlotTypeParameters();
-        updateColumnAssignment();
+        report.resolve("Plot parameters").report(plotTypeParameters);
     }
 
     private void updateColumnAssignment() {
         inputColumns.beginModificationBlock();
         inputColumns.clear();
-        if (plotType.getInfo() != null) {
-            PlotMetadata plotMetadata = plotType.getInfo().getDataClass().getAnnotation(PlotMetadata.class);
-            for (PlotColumn column : plotMetadata.columns()) {
-                JIPipeMutableParameterAccess parameterAccess = new JIPipeMutableParameterAccess();
-                parameterAccess.setKey(column.name());
-                parameterAccess.setName(column.name());
-                parameterAccess.setImportant(true);
-                parameterAccess.setFieldClass(TableColumnSourceExpressionParameter.class);
-                TableColumnSourceExpressionParameter initialValue = new TableColumnSourceExpressionParameter();
-                parameterAccess.set(initialValue);
-                parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)"));
-                inputColumns.addParameter(parameterAccess);
-            }
+        PlotMetadata plotMetadata = plotType.getDataClass().getAnnotation(PlotMetadata.class);
+        for (PlotColumn column : plotMetadata.columns()) {
+            JIPipeMutableParameterAccess parameterAccess = new JIPipeMutableParameterAccess();
+            parameterAccess.setKey(column.name());
+            parameterAccess.setName(column.name());
+            parameterAccess.setImportant(true);
+            parameterAccess.setFieldClass(TableColumnSourceExpressionParameter.class);
+            TableColumnSourceExpressionParameter initialValue = new TableColumnSourceExpressionParameter();
+            parameterAccess.set(initialValue);
+            parameterAccess.setDescription(column.description() + " " + (column.isNumeric() ? "(Numeric column)" : "(String column)"));
+            inputColumns.addParameter(parameterAccess);
         }
         inputColumns.endModificationBlock();
-    }
-
-    private void updatePlotTypeParameters() {
-        if (plotTypeParameters == null || (plotType.getInfo() != null && !Objects.equals(plotType.getInfo().getDataClass(), plotTypeParameters.getClass()))) {
-            if (plotType.getInfo() != null) {
-                plotTypeParameters = (PlotData) JIPipe.createData(plotType.getInfo().getDataClass());
-                getEventBus().post(new ParameterStructureChangedEvent(this));
-            }
-        } else if (plotType.getInfo() == null) {
-            plotTypeParameters = null;
-            getEventBus().post(new ParameterStructureChangedEvent(this));
-        }
-    }
-
-    private void updateOutputSlotType() {
-        if (plotType.getInfo() != null) {
-            getFirstOutputSlot().setAcceptedDataType(plotType.getInfo().getDataClass());
-        } else {
-            getFirstOutputSlot().setAcceptedDataType(PlotData.class);
-        }
-        getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
     }
 
     @JIPipeDocumentation(name = "Plot parameters")
@@ -203,15 +154,15 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Input columns", description = "Please define which input table columns are copied into the plot. " +
-            "To find out which columns are available, run the quick run on input data. You can also generate missing columns.")
-    @JIPipeParameter(value = "input-columns", persistence = JIPipeParameterPersistence.NestedCollection)
+            "To find out which columns are available, run the quick run on input data. You can also generate missing columns.<br/><strong>If you want to select existing columns, we recommend to put the names into double quotes, e.g., <code>\"Sepal.Length\"</code>.</strong>")
+    @JIPipeParameter(value = "input-columns")
     public JIPipeDynamicParameterCollection getInputColumns() {
         return inputColumns;
     }
 
     @JIPipeDocumentation(name = "Series name", description = "Expression that is used to generate the series name")
     @JIPipeParameter("series-name")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
     public StringQueryExpression getSeriesName() {
         return seriesName;
     }
@@ -221,18 +172,4 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
         this.seriesName = seriesName;
     }
 
-    public static class VariableSource implements ExpressionParameterVariableSource {
-
-        public static final Set<ExpressionParameterVariable> VARIABLES;
-
-        static {
-            VARIABLES = new HashSet<>();
-            VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
-        }
-
-        @Override
-        public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
-            return VARIABLES;
-        }
-    }
 }
