@@ -32,6 +32,8 @@
 package org.hkijena.jipipe.utils;
 
 
+import org.apache.commons.lang3.math.NumberUtils;
+
 import java.util.*;
 
 public class NaturalOrderComparator<T> implements Comparator<T> {
@@ -156,6 +158,10 @@ public class NaturalOrderComparator<T> implements Comparator<T> {
 
         String a = StringUtils.nullToEmpty(o1);
         String b = StringUtils.nullToEmpty(o2);
+
+        if(NumberUtils.isCreatable(a) && NumberUtils.isCreatable(b)) {
+            return Double.compare(NumberUtils.createDouble(a), NumberUtils.createDouble(b));
+        }
 
         int ia = 0, ib = 0;
         int nza = 0, nzb = 0;

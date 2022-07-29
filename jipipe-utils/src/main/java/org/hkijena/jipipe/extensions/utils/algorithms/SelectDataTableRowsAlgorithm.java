@@ -26,7 +26,7 @@ import java.util.List;
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 public class SelectDataTableRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
 
-    private IntegerRange limit = new IntegerRange();
+    private IntegerRange limit = new IntegerRange("0-10");
 
     public SelectDataTableRowsAlgorithm(JIPipeNodeInfo info) {
         super(info);

@@ -99,7 +99,8 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("io-interface", IOInterfaceAlgorithm.class, UIUtils.getIconURLFromResources("devices/knemo-wireless-transmit-receive.png"));
         registerNodeType("node-group", NodeGroup.class, UIUtils.getIconURLFromResources("actions/object-group.png"));
         registerNodeType("converter", ConverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-refresh.png"));
-        registerNodeType("sort-rows-by-annotation", SortRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sort-name.png"));
+        registerNodeType("sort-rows-by-annotation", SortRowsByAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sort-name.png"));
+        registerNodeType("sort-rows-by-expression", SortRowsByExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/sort-name.png"));
         registerNodeType("jipipe-run-project", RunJIPipeProjectAlgorithm.class, UIUtils.getIconURLFromResources("actions/run-build.png"));
         registerNodeType("jipipe-project-parameters", JIPipeProjectParameterDefinition.class, UIUtils.getIconURLFromResources("apps/jipipe.png"));
         registerNodeType("jipipe-project-parameters-from-paths", PathsToJIPipeProjectParametersAlgorithm.class, UIUtils.getIconURLFromResources("apps/jipipe.png"));

@@ -23,15 +23,15 @@ import java.util.stream.Collectors;
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Sort")
-public class SortRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
+public class SortRowsByAnnotationsAlgorithm extends JIPipeParameterSlotAlgorithm {
     private StringQueryExpressionAndSortOrderPairParameter.List sortOrderList = new StringQueryExpressionAndSortOrderPairParameter.List();
     private SortOrder defaultSortOrder = SortOrder.Ascending;
 
-    public SortRowsAlgorithm(JIPipeNodeInfo info) {
+    public SortRowsByAnnotationsAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public SortRowsAlgorithm(SortRowsAlgorithm other) {
+    public SortRowsByAnnotationsAlgorithm(SortRowsByAnnotationsAlgorithm other) {
         super(other);
         this.sortOrderList = new StringQueryExpressionAndSortOrderPairParameter.List(other.sortOrderList);
         this.defaultSortOrder = other.defaultSortOrder;
