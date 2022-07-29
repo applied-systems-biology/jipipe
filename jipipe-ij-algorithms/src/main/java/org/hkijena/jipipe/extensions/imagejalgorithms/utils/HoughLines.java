@@ -1,8 +1,10 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.utils;
 
+import ij.process.ImageProcessor;
+
 import java.awt.geom.Line2D;
-import java.awt.image.BufferedImage;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Vector;
 
 /**
@@ -23,7 +25,7 @@ public class HoughLines {
     protected int width, height;
 
     // the hough array
-    protected int[][] houghArray;
+    protected float[][] houghArray;
 
     // the coordinates of the centre of the image
     protected float centerX, centerY;
@@ -41,20 +43,7 @@ public class HoughLines {
     private double[] sinCache;
     private double[] cosCache;
 
-    public HoughLines(BufferedImage image) {
-        initialise(image.getWidth(), image.getHeight());
-        addPoints(image);
-    }
-
-    /**
-     * Initialises the hough transform. The dimensions of the input image are needed
-     * in order to initialise the hough array.
-     *
-     * @param width  The width of the input image
-     * @param height The height of the input image
-     */
-    public HoughLines(int width, int height) {
-        initialise(width, height);
+    public HoughLines() {
     }
 
     /**
@@ -73,7 +62,7 @@ public class HoughLines {
         doubleHeight = 2 * houghHeight;
 
         // Create the hough array
-        houghArray = new int[maxTheta][doubleHeight];
+        houghArray = new float[maxTheta][doubleHeight];
 
         // Find edge points and vote in array
         centerX = width / 2;
@@ -96,14 +85,19 @@ public class HoughLines {
      * Adds points from an image. The image is assumed to be greyscale black and white, so all pixels that are
      * not black are counted as edges. The image should have the same dimensions as the one passed to the constructor.
      */
-    public void addPoints(BufferedImage image) {
+    public void addPoints(ImageProcessor image, boolean threshold, float minThreshold) {
 
         // Now find edge points and update the hough array
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
-                // Find non-black pixels
-                if ((image.getRGB(x, y) & 0x000000ff) != 0) {
-                    addPoint(x, y);
+                float value = image.getf(x, y);
+                if(threshold) {
+                    if(value > minThreshold) {
+                        addPoint(x,y,1);
+                    }
+                }
+                else {
+                   addPoint(x,y,value);
                 }
             }
         }
@@ -113,7 +107,7 @@ public class HoughLines {
      * Adds a single point to the hough transform. You can use this method directly
      * if your data isn't represented as a buffered image.
      */
-    public void addPoint(int x, int y) {
+    public void addPoint(int x, int y, float value) {
 
         // Go through each value of theta
         for (int t = 0; t < maxTheta; t++) {
@@ -127,7 +121,7 @@ public class HoughLines {
             if (r < 0 || r >= doubleHeight) continue;
 
             // Increment the hough array
-            houghArray[t][r]++;
+            houghArray[t][r] += value;
         }
 
         numPoints++;
@@ -137,7 +131,7 @@ public class HoughLines {
         return(getLines(n, 0));
     }
 
-    public int[][] getHoughArray() {
+    public float[][] getHoughArray() {
         return houghArray;
     }
 
@@ -163,7 +157,7 @@ public class HoughLines {
                 // Only consider points above threshold
                 if (houghArray[t][r] > threshold) {
 
-                    int peak = houghArray[t][r];
+                    float peak = houghArray[t][r];
 
                     // Check that this peak is indeed the local maxima
                     for (int dx = -neighbourhoodSize; dx <= neighbourhoodSize; dx++) {
@@ -205,12 +199,12 @@ public class HoughLines {
     public static class HoughLine extends Line2D.Float implements Comparable<HoughLine> {
         protected double theta;
         protected double r;
-        protected int score;
+        protected float score;
 
         /**
          * Initialises the hough line
          */
-        public HoughLine(double theta, double r, int width, int height, int score) {
+        public HoughLine(double theta, double r, int width, int height, float score) {
             this.theta = theta;
             this.r = r;
             this.score=score;
@@ -254,13 +248,13 @@ public class HoughLines {
             return r;
         }
 
-        public int getScore() {
+        public float getScore() {
             return score;
         }
 
 
         public int compareTo(HoughLine o) {
-            return(this.score-o.score);
+            return  java.lang.Double.compare(this.score, o.score);
         }
     }
 }

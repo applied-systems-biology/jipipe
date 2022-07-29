@@ -22,17 +22,14 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalFloatParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
 
 @JIPipeDocumentation(name = "Detect lines 2D (Hough)", description = "Finds lines within the image via a Hough lines transformation. " + "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Binary")
 @JIPipeCitation("Based on code by David Chatting, https://github.com/davidchatting/hough_lines/blob/master/HoughTransform.java")
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", description = "Mask that contains the segmented edges. ", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Mask", description = "Mask that contains the segmented edges. ", autoCreate = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Lines", autoCreate = true, description = "The detected lines represented as ROI")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", autoCreate = true, description = "Mask that contains the detected lines")
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Results", autoCreate = true, description = "The detected lines as table")
@@ -40,7 +37,9 @@ import java.util.List;
 public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalIntegerParameter selectTopN = new OptionalIntegerParameter(true, 10);
-    private int threshold = 0;
+    private int accumulatorThreshold = 0;
+
+    private OptionalFloatParameter pixelThreshold = new OptionalFloatParameter(true, 0f);
 
     private DefaultExpressionParameter roiNameExpression = new DefaultExpressionParameter("line_score");
 
@@ -51,13 +50,14 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     public LinesHoughDetection2DAlgorithm(LinesHoughDetection2DAlgorithm other) {
         super(other);
         this.selectTopN = new OptionalIntegerParameter(other.selectTopN);
-        this.threshold = other.threshold;
+        this.accumulatorThreshold = other.accumulatorThreshold;
         this.roiNameExpression = new DefaultExpressionParameter(other.roiNameExpression);
+        this.pixelThreshold = new OptionalFloatParameter(other.pixelThreshold);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputMask = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo).getImage();
+        ImagePlus inputMask = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getImage();
         ROIListData outputROI = new ROIListData();
         ResultsTableData outputTable = new ResultsTableData();
         outputTable.addNumericColumn("Image Z");
@@ -78,9 +78,11 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         final ImageStack[] outputAccumulatorStack = {null};
 
         ImageJUtils.forEachIndexedZCTSlice(inputMask, (ip, index) -> {
-            HoughLines houghLines = new HoughLines(ip.getBufferedImage());
+            HoughLines houghLines = new HoughLines();
+            houghLines.initialise(ip.getWidth(), ip.getHeight());
+            houghLines.addPoints(ip, pixelThreshold.isEnabled(), pixelThreshold.getContent());
             ROIListData localROI = new ROIListData();
-            for (HoughLines.HoughLine line : houghLines.getLines(selectTopN.isEnabled() ? selectTopN.getContent() : -1, threshold)) {
+            for (HoughLines.HoughLine line : houghLines.getLines(selectTopN.isEnabled() ? selectTopN.getContent() : -1, accumulatorThreshold)) {
 
                 // Add to table
                 outputTable.addAndModifyRow().set("Image Z", index.getZ())
@@ -128,16 +130,14 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
             // Generate accumulator
             ImageProcessor accumulator;
             {
-                int[][] houghArray = houghLines.getHoughArray();
+                float[][] houghArray = houghLines.getHoughArray();
                 int accHeight = houghArray.length;
                 int accWidth = houghArray[0].length;
                 accumulator = new FloatProcessor(accWidth, accHeight);
                 float[] pixels = (float[]) accumulator.getPixels();
                 for (int y = 0; y < accHeight; y++) {
-                    int[] row = houghArray[y];
-                    for (int x = 0; x < accWidth; x++) {
-                        pixels[x + y * accWidth] = row[x];
-                    }
+                    float[] row = houghArray[y];
+                    System.arraycopy(row, 0, pixels, y * accWidth, accWidth);
                 }
                 if(outputAccumulatorStack[0] == null) {
                     outputAccumulatorStack[0] = new ImageStack(accWidth, accHeight, inputMask.getStackSize());
@@ -168,15 +168,26 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         this.selectTopN = selectTopN;
     }
 
-    @JIPipeDocumentation(name = "Threshold", description = "The percentage threshold above which lines are determined from the hough array")
-    @JIPipeParameter("threshold")
-    public int getThreshold() {
-        return threshold;
+    @JIPipeDocumentation(name = "Accumulator threshold", description = "The percentage threshold above which lines are determined from the hough array")
+    @JIPipeParameter("accumulator-threshold")
+    public int getAccumulatorThreshold() {
+        return accumulatorThreshold;
     }
 
-    @JIPipeParameter("threshold")
-    public void setThreshold(int threshold) {
-        this.threshold = threshold;
+    @JIPipeParameter("accumulator-threshold")
+    public void setAccumulatorThreshold(int accumulatorThreshold) {
+        this.accumulatorThreshold = accumulatorThreshold;
+    }
+
+    @JIPipeDocumentation(name = "Pixel threshold", description = "If enabled (default), points are only counted if they are above the specified threshold. This this mode is deactivated, each pixel is counted, but weighted by its intensity.")
+    @JIPipeParameter("pixel-threshold")
+    public OptionalFloatParameter getPixelThreshold() {
+        return pixelThreshold;
+    }
+
+    @JIPipeParameter("pixel-threshold")
+    public void setPixelThreshold(OptionalFloatParameter pixelThreshold) {
+        this.pixelThreshold = pixelThreshold;
     }
 
     @JIPipeDocumentation(name = "ROI name", description = "The name of the generated line ROI is calculated from this expression")
