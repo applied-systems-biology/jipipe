@@ -1270,8 +1270,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-threshold-local-auto2d-contrast", ContrastLocalAutoThreshold2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("threshold-brightspots2d", BrightSpotsSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("threshold-hessian2d", HessianSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("threshold-hough2d", HoughSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
-        registerNodeType("threshold-hough2d-fast", FastHoughSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("threshold-hough2d", CircularHoughSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
+        registerNodeType("threshold-hough2d-fast", FastCircularHoughSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("threshold-internalgradient2d", InternalGradientSegmentation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("threshold-by-annotation", ThresholdByAnnotation2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("threshold-iterative-by-roi-statistics-2d", IterativeThresholdByROIStatistics2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
@@ -1325,6 +1325,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-binary-volume-opening-2d", VolumeOpening2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-binary-volume-opening-3d", VolumeOpening3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("ij1-binary-conditional-invert", ConditionalInverterAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
+        registerNodeType("ij1-binary-hough-lines", LinesHoughDetection2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-line-segment.png"));
     }
 
     private void registerMorphologyAlgorithms() {

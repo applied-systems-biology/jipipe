@@ -137,6 +137,10 @@ public class HoughLines {
         return(getLines(n, 0));
     }
 
+    public int[][] getHoughArray() {
+        return houghArray;
+    }
+
     /**
      * Once points have been added in some way this method extracts the lines and returns them as a Vector
      * of HoughLine objects, which can be used to draw on the
@@ -183,8 +187,10 @@ public class HoughLines {
                 }
             }
         }
-        Collections.sort(lines, Collections.reverseOrder());
-        lines.setSize(n);
+        lines.sort(Collections.reverseOrder());
+        if(n >= 0 && lines.size() > n) {
+            lines.setSize(n);
+        }
 
         return lines;
     }
@@ -239,6 +245,19 @@ public class HoughLines {
                 setLine(x1, y1, x2, y2);
             }
         }
+
+        public double getTheta() {
+            return theta;
+        }
+
+        public double getR() {
+            return r;
+        }
+
+        public int getScore() {
+            return score;
+        }
+
 
         public int compareTo(HoughLine o) {
             return(this.score-o.score);

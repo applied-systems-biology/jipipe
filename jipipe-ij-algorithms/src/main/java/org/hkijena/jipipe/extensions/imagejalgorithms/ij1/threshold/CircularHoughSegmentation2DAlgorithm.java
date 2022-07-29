@@ -38,7 +38,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 /**
  * Segments using a Hough circle transform
  */
-@JIPipeDocumentation(name = "Hough segmentation 2D", description = "Finds circular 2D objects via a Hough transform. " +
+@JIPipeDocumentation(name = "Circular Hough segmentation 2D", description = "Finds circular 2D objects via a Hough transform. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
 
@@ -48,7 +48,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
 
 
-public class HoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class CircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private int minRadius = 7;
     private int maxRadius = 25;
@@ -65,7 +65,7 @@ public class HoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
     /**
      * @param info algorithm info
      */
-    public HoughSegmentation2DAlgorithm(JIPipeNodeInfo info) {
+    public CircularHoughSegmentation2DAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale8UData.class)
                 .addOutputSlot("Mask", "", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
                 .addOutputSlot("Measurements", "", ResultsTableData.class, null)
@@ -79,7 +79,7 @@ public class HoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
      *
      * @param other the original
      */
-    public HoughSegmentation2DAlgorithm(HoughSegmentation2DAlgorithm other) {
+    public CircularHoughSegmentation2DAlgorithm(CircularHoughSegmentation2DAlgorithm other) {
         super(other);
         this.minRadius = other.minRadius;
         this.maxRadius = other.maxRadius;

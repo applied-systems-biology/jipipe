@@ -1346,8 +1346,19 @@ public class ResultsTableData implements JIPipeData, TableModel {
      * Adds a new row and returns a {@link RowBuilder} for setting values conveniently
      *
      * @return the row builder
+     * @deprecated Use addAndModifyRow() instead
      */
+    @Deprecated
     public RowBuilder addRowBuilder() {
+        return new RowBuilder(this, addRow());
+    }
+
+    /**
+     * Adds a new row and returns a {@link RowBuilder} for setting values conveniently
+     *
+     * @return the row builder
+     */
+    public RowBuilder addAndModifyRow() {
         return new RowBuilder(this, addRow());
     }
 
@@ -1572,6 +1583,13 @@ public class ResultsTableData implements JIPipeData, TableModel {
         public RowBuilder set(int columnIndex, Object value) {
             tableData.setValueAt(value, row, columnIndex);
             return this;
+        }
+
+        /**
+         * Does nothing
+         */
+        public void build() {
+
         }
 
         public ResultsTableData getTableData() {

@@ -49,7 +49,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  * Segments using a Hough circle transform
  * This code is based on <a href="https://github.com/closms/detectcircles">...</a>
  */
-@JIPipeDocumentation(name = "Hough segmentation 2D (fast)", description = "Finds circular 2D objects via a Hough transform. This implementation is based on code by Michael Closson and is generally faster than the other Hough-based segmentation. " +
+@JIPipeDocumentation(name = "Circular Hough segmentation 2D (fast)", description = "Finds circular 2D objects via a Hough transform. This implementation is based on code by Michael Closson and is generally faster than the other Hough-based segmentation. " +
         "It outputs the segmented mask, the maximum Hough accumulator image, and a table of all detected circles (x, y, Diameter, and Score)." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -58,7 +58,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Accumulator")
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
-public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class FastCircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final int minEdgeVal = 1;
     private int minRadius = 50;
@@ -68,7 +68,7 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
     /**
      * @param info algorithm info
      */
-    public FastHoughSegmentation2DAlgorithm(JIPipeNodeInfo info) {
+    public FastCircularHoughSegmentation2DAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "The input image", ImagePlusGreyscale8UData.class)
                 .addOutputSlot("Mask", "Mask of the detected circles", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
                 .addOutputSlot("Accumulator", "Accumulator image (circle parameter space)", ImagePlusGreyscaleData.class, null)
@@ -78,7 +78,7 @@ public class FastHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgor
                 .build());
     }
 
-    public FastHoughSegmentation2DAlgorithm(FastHoughSegmentation2DAlgorithm other) {
+    public FastCircularHoughSegmentation2DAlgorithm(FastCircularHoughSegmentation2DAlgorithm other) {
         super(other);
         this.minRadius = other.minRadius;
         this.maxRadius = other.maxRadius;
