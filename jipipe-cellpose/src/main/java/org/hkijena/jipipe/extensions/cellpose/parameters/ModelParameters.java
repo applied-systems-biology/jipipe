@@ -6,13 +6,13 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.cellpose.CellPoseModel;
+import org.hkijena.jipipe.extensions.cellpose.CellposeModel;
 
 public class ModelParameters implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private boolean enableGPU = true;
-    private CellPoseModel model = CellPoseModel.Cytoplasm;
+    private CellposeModel model = CellposeModel.Cytoplasm;
     private double meanDiameter = 30;
 
     public ModelParameters() {
@@ -38,12 +38,12 @@ public class ModelParameters implements JIPipeParameterCollection {
 
     @JIPipeDocumentation(name = "Model", description = "The model type that should be used.")
     @JIPipeParameter("model")
-    public CellPoseModel getModel() {
+    public CellposeModel getModel() {
         return model;
     }
 
     @JIPipeParameter("model")
-    public void setModel(CellPoseModel model) {
+    public void setModel(CellposeModel model) {
         this.model = model;
         triggerParameterUIChange();
     }
@@ -51,7 +51,7 @@ public class ModelParameters implements JIPipeParameterCollection {
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
         if (access.getSource() == this && "mean-diameter".equals(access.getKey())) {
-            return model == CellPoseModel.Custom;
+            return model == CellposeModel.Custom;
         }
         return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);
     }

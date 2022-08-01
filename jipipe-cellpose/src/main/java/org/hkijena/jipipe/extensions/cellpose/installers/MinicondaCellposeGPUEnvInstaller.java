@@ -25,12 +25,12 @@ import java.nio.file.Paths;
 @JIPipeDocumentation(name = "Miniconda: Download & install Cellpose (GPU) [deprecated]", description = "Creates a new Python environment with Cellpose installed. " +
         "Requires a graphics card suitable for GPU computing. Uses a Miniconda-based installer.")
 @ExternalEnvironmentInfo(category = "Cellpose")
-public class MinicondaCellPoseGPUEnvInstaller extends MinicondaCellPoseEnvInstaller {
+public class MinicondaCellposeGPUEnvInstaller extends MinicondaCellposeEnvInstaller {
     /**
      * @param workbench       the workbench
      * @param parameterAccess the parameter access that will receive the generated environment
      */
-    public MinicondaCellPoseGPUEnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public MinicondaCellposeGPUEnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         this.setConfiguration(new Configuration());
         getConfiguration().setInstallationPath(Paths.get("jipipe").resolve("miniconda-cellpose-gpu"));
@@ -55,7 +55,7 @@ public class MinicondaCellPoseGPUEnvInstaller extends MinicondaCellPoseEnvInstal
                 "--force-reinstall");
     }
 
-    public static class Configuration extends MinicondaCellPoseEnvInstaller.Configuration {
+    public static class Configuration extends MinicondaCellposeEnvInstaller.Configuration {
         private String cudaToolkitVersion = "10.2";
 
         @JIPipeDocumentation(name = "CUDA Toolkit version", description = "The version of the CUDA toolkit that should be " +

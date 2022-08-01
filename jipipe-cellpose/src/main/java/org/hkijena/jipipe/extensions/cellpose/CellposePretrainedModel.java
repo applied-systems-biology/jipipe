@@ -1,6 +1,6 @@
 package org.hkijena.jipipe.extensions.cellpose;
 
-public enum CellPosePretrainedModel {
+public enum CellposePretrainedModel {
     Cytoplasm("cyto"),
     Nucleus("nuclei"),
     Custom(""),
@@ -8,7 +8,7 @@ public enum CellPosePretrainedModel {
 
     private final String id;
 
-    CellPosePretrainedModel(String id) {
+    CellposePretrainedModel(String id) {
         this.id = id;
     }
 

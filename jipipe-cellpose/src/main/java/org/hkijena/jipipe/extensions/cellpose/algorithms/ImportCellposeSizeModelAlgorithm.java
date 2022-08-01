@@ -5,25 +5,25 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
+import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
 
 @JIPipeDocumentation(name = "Import Cellpose size model", description = "Imports a Cellpose size model from a file")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeInputSlot(value = FileData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = CellPoseSizeModelData.class, slotName = "Output", autoCreate = true)
-public class ImportCellPoseSizeModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-    public ImportCellPoseSizeModelAlgorithm(JIPipeNodeInfo info) {
+@JIPipeOutputSlot(value = CellposeSizeModelData.class, slotName = "Output", autoCreate = true)
+public class ImportCellposeSizeModelAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+    public ImportCellposeSizeModelAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public ImportCellPoseSizeModelAlgorithm(ImportCellPoseSizeModelAlgorithm other) {
+    public ImportCellposeSizeModelAlgorithm(ImportCellposeSizeModelAlgorithm other) {
         super(other);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), new CellPoseSizeModelData(fileData.toPath()), progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new CellposeSizeModelData(fileData.toPath()), progressInfo);
     }
 }

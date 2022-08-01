@@ -3,7 +3,7 @@ package org.hkijena.jipipe.extensions.cellpose;
 import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 
 @JIPipeDocumentationDescription(description = "See https://cellpose.readthedocs.io/en/latest/models.html for a description of all models")
-public enum CellPoseModel {
+public enum CellposeModel {
     Cytoplasm("cyto"),
     Cytoplasm2("cyto2"),
     Nucleus("nuclei"),
@@ -20,7 +20,7 @@ public enum CellPoseModel {
 
     private final String id;
 
-    CellPoseModel(String id) {
+    CellposeModel(String id) {
         this.id = id;
     }
 

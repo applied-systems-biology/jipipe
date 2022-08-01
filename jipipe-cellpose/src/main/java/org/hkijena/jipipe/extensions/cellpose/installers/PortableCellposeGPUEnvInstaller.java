@@ -30,12 +30,12 @@ import java.util.List;
 @JIPipeDocumentation(name = "Python: Download & install Cellpose (GPU)", description = "Creates a new Python environment with Cellpose installed. " +
         "Requires a graphics card suitable for GPU computing. Uses a portable Python distribution.")
 @ExternalEnvironmentInfo(category = "Cellpose")
-public class PortableCellPoseGPUEnvInstaller extends PortableCellPoseEnvInstaller {
+public class PortableCellposeGPUEnvInstaller extends PortableCellposeEnvInstaller {
     /**
      * @param workbench       the workbench
      * @param parameterAccess the parameter access that will receive the generated environment
      */
-    public PortableCellPoseGPUEnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public PortableCellposeGPUEnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         this.setConfiguration(new Configuration());
         getConfiguration().setInstallationPath(Paths.get("jipipe").resolve("python-cellpose-gpu"));
@@ -54,7 +54,7 @@ public class PortableCellPoseGPUEnvInstaller extends PortableCellPoseEnvInstalle
         runPip(args.toArray(new String[0]));
     }
 
-    public static class Configuration extends PortableCellPoseEnvInstaller.Configuration {
+    public static class Configuration extends PortableCellposeEnvInstaller.Configuration {
         private String pyTorchPipPackage;
 
         public Configuration() {

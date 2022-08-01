@@ -7,7 +7,7 @@ import org.hkijena.jipipe.api.compat.ImageJExportParameters;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
-import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
+import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 
 import java.io.IOException;
@@ -18,7 +18,7 @@ import java.util.Collections;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Export Cellpose size model", description = "Exports a Cellpose size model into a directory.")
-public class CellPoseSizeModelImageJExporter implements ImageJDataExporter {
+public class CellposeSizeModelImageJExporter implements ImageJDataExporter {
     @Override
     public List<Object> exportData(JIPipeDataTable dataTable, ImageJExportParameters parameters, JIPipeProgressInfo progressInfo) {
         Path path = Paths.get(parameters.getName());
@@ -37,7 +37,7 @@ public class CellPoseSizeModelImageJExporter implements ImageJDataExporter {
             }
         }
         for (int i = 0; i < dataTable.getRowCount(); i++) {
-            CellPoseSizeModelData modelData = dataTable.getData(i, CellPoseSizeModelData.class, progressInfo);
+            CellposeSizeModelData modelData = dataTable.getData(i, CellposeSizeModelData.class, progressInfo);
             modelData.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path), "data", false, progressInfo);
         }
         return Collections.emptyList();
@@ -45,7 +45,7 @@ public class CellPoseSizeModelImageJExporter implements ImageJDataExporter {
 
     @Override
     public Class<? extends JIPipeData> getExportedJIPipeDataType() {
-        return CellPoseSizeModelData.class;
+        return CellposeSizeModelData.class;
     }
 
     @Override

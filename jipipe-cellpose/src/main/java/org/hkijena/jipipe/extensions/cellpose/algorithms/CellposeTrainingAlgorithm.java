@@ -14,10 +14,10 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.cellpose.CellPosePretrainedModel;
-import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
-import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
-import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
+import org.hkijena.jipipe.extensions.cellpose.CellposePretrainedModel;
+import org.hkijena.jipipe.extensions.cellpose.CellposeSettings;
+import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeModelData;
+import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.extensions.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling2DAlgorithm;
@@ -45,13 +45,13 @@ import java.util.stream.Collectors;
         "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters.")
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Training data", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Test data", autoCreate = true, optional = true)
-@JIPipeInputSlot(value = CellPoseModelData.class)
-@JIPipeOutputSlot(value = CellPoseModelData.class, slotName = "Model", autoCreate = true)
+@JIPipeInputSlot(value = CellposeModelData.class)
+@JIPipeOutputSlot(value = CellposeModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
+public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private boolean enableGPU = true;
-    private CellPosePretrainedModel pretrainedModel = CellPosePretrainedModel.Cytoplasm;
+    private CellposePretrainedModel pretrainedModel = CellposePretrainedModel.Cytoplasm;
     private int numEpochs = 500;
     private double learningRate = 0.2;
     private double weightDecay = 1e-05;
@@ -68,12 +68,12 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("Label");
     private boolean generateConnectedComponents = true;
 
-    public CellPoseTrainingAlgorithm(JIPipeNodeInfo info) {
+    public CellposeTrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
         updateSlots();
     }
 
-    public CellPoseTrainingAlgorithm(CellPoseTrainingAlgorithm other) {
+    public CellposeTrainingAlgorithm(CellposeTrainingAlgorithm other) {
         super(other);
         this.enableGPU = other.enableGPU;
         this.pretrainedModel = other.pretrainedModel;
@@ -96,7 +96,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     private void updateSlots() {
-        if (pretrainedModel != CellPosePretrainedModel.Custom) {
+        if (pretrainedModel != CellposePretrainedModel.Custom) {
             if (getInputSlotMap().containsKey("Pretrained model")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.removeInputSlot("Pretrained model", false);
@@ -104,7 +104,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         } else {
             if (!getInputSlotMap().containsKey("Pretrained model")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellPoseModelData.class, JIPipeSlotType.Input), false);
+                slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input), false);
             }
         }
         if (!trainSizeModel) {
@@ -115,7 +115,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         } else {
             if (!getOutputSlotMap().containsKey("Size model")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.addSlot("Size model", new JIPipeDataSlotInfo(CellPoseSizeModelData.class, JIPipeSlotType.Output), false);
+                slotConfiguration.addSlot("Size model", new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Output), false);
             }
         }
     }
@@ -309,12 +309,12 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
             "<li><b>None</b>: This will train from scratch. You can freely set the diameter. You also can set the diameter to 0 to disable scaling.</li>" +
             "</ul>")
     @JIPipeParameter("pretrained-model")
-    public CellPosePretrainedModel getPretrainedModel() {
+    public CellposePretrainedModel getPretrainedModel() {
         return pretrainedModel;
     }
 
     @JIPipeParameter("pretrained-model")
-    public void setPretrainedModel(CellPosePretrainedModel pretrainedModel) {
+    public void setPretrainedModel(CellposePretrainedModel pretrainedModel) {
         this.pretrainedModel = pretrainedModel;
 
         // Update diameter
@@ -381,7 +381,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         // Extract model if custom
         Path customModelPath = null;
-        if (pretrainedModel == CellPosePretrainedModel.Custom) {
+        if (pretrainedModel == CellposePretrainedModel.Custom) {
             Set<Integer> pretrainedModelRows = dataBatch.getInputRows("Pretrained model");
             if (pretrainedModelRows.size() != 1) {
                 throw new UserFriendlyRuntimeException("Only one pretrained model is allowed",
@@ -390,7 +390,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
                         "You can only provide one pretrained model per data batch for training.",
                         "Ensure that only one pretrained model is in a data batch.");
             }
-            CellPoseModelData modelData = dataBatch.getInputData("Pretrained model", CellPoseModelData.class, progressInfo).get(0);
+            CellposeModelData modelData = dataBatch.getInputData("Pretrained model", CellposeModelData.class, progressInfo).get(0);
             customModelPath = workDirectory.resolve(modelData.getName());
             try {
                 Files.write(customModelPath, modelData.getData());
@@ -429,7 +429,7 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
             arguments.add("--use_gpu");
         if (dataIs3D)
             arguments.add("--do_3D");
-        if (pretrainedModel == CellPosePretrainedModel.Custom || pretrainedModel == CellPosePretrainedModel.None) {
+        if (pretrainedModel == CellposePretrainedModel.Custom || pretrainedModel == CellposePretrainedModel.None) {
             arguments.add("--diameter");
             arguments.add(diameter + "");
             arguments.add("--diam_mean");
@@ -481,18 +481,18 @@ public class CellPoseTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         // Run the module
         PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                CellPoseSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), progressInfo);
+                CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), progressInfo);
 
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");
         Path generatedModelFile = findModelFile(modelsPath);
-        CellPoseModelData modelData = new CellPoseModelData(generatedModelFile);
+        CellposeModelData modelData = new CellposeModelData(generatedModelFile);
         dataBatch.addOutputData("Model", modelData, progressInfo);
 
         // Extract size model
         if (trainSizeModel) {
             Path generatedSizeModelFile = findSizeModelFile(modelsPath);
-            CellPoseSizeModelData sizeModelData = new CellPoseSizeModelData(generatedSizeModelFile);
+            CellposeSizeModelData sizeModelData = new CellposeSizeModelData(generatedSizeModelFile);
             dataBatch.addOutputData("Size model", sizeModelData, progressInfo);
         }
 

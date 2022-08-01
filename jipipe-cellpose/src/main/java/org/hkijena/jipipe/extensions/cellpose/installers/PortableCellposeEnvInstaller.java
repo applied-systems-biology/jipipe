@@ -37,12 +37,12 @@ import java.util.List;
 @JIPipeDocumentation(name = "Python: Download & install Cellpose (CPU)", description = "Creates a new Python environment with Cellpose installed. " +
         "Uses a portable Python distribution. ")
 @ExternalEnvironmentInfo(category = "Cellpose")
-public class PortableCellPoseEnvInstaller extends BasicPortableEnvPythonInstaller {
+public class PortableCellposeEnvInstaller extends BasicPortableEnvPythonInstaller {
     /**
      * @param workbench       the workbench
      * @param parameterAccess the parameter access that will receive the generated environment
      */
-    public PortableCellPoseEnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public PortableCellposeEnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         setConfiguration(new Configuration());
         getConfiguration().setInstallationPath(Paths.get("jipipe").resolve("python-cellpose-cpu"));

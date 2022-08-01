@@ -34,12 +34,12 @@ import java.nio.file.StandardOpenOption;
 @JIPipeDocumentation(name = "Miniconda: Download & install Cellpose (CPU) [deprecated]", description = "Creates a new Python environment with Cellpose installed. " +
         "Uses a Miniconda-based installer. ")
 @ExternalEnvironmentInfo(category = "Cellpose")
-public class MinicondaCellPoseEnvInstaller extends BasicMinicondaEnvPythonInstaller {
+public class MinicondaCellposeEnvInstaller extends BasicMinicondaEnvPythonInstaller {
     /**
      * @param workbench       the workbench
      * @param parameterAccess the parameter access that will receive the generated environment
      */
-    public MinicondaCellPoseEnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public MinicondaCellposeEnvInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         setConfiguration(new Configuration());
         getConfiguration().setInstallationPath(Paths.get("jipipe").resolve("miniconda-cellpose-cpu"));

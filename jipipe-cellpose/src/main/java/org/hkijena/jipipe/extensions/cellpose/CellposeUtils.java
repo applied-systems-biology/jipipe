@@ -28,18 +28,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class CellPoseUtils {
+public class CellposeUtils {
 
     private static String CELLPOSE_CUSTOM_CODE;
 
-    private CellPoseUtils() {
+    private CellposeUtils() {
 
     }
 
     public static String getCellposeCustomCode() {
         if (CELLPOSE_CUSTOM_CODE == null) {
             try {
-                CELLPOSE_CUSTOM_CODE = Resources.toString(CellPoseUtils.class.getResource("/org/hkijena/jipipe/extensions/cellpose/cellpose-custom.py"), StandardCharsets.UTF_8);
+                CELLPOSE_CUSTOM_CODE = Resources.toString(CellposeUtils.class.getResource("/org/hkijena/jipipe/extensions/cellpose/cellpose-custom.py"), StandardCharsets.UTF_8);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

@@ -14,20 +14,21 @@ import javax.swing.*;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.List;
 
 /**
  * Wrapper around Cellpose models
  */
-@JIPipeDocumentation(name = "Cellpose size model", description = "A Cellpose size model")
-@JIPipeDataStorageDocumentation(humanReadableDescription = "A single .npy file that contains the Cellpose size model",
-        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/cellpose-size-model-data.schema.json")
-public class CellPoseSizeModelData implements JIPipeData {
+@JIPipeDocumentation(name = "Cellpose model", description = "A Cellpose model")
+@JIPipeDataStorageDocumentation(humanReadableDescription = "A single file without extension that contains the Cellpose model",
+        jsonSchemaURL = "https://jipipe.org/schemas/datatypes/cellpose-model-data.schema.json")
+public class CellposeModelData implements JIPipeData {
 
-    final byte[] data;
-    final String name;
+    private final byte[] data;
+    private final String name;
 
-    public CellPoseSizeModelData(Path file) {
-        this.name = extractFileName(file);
+    public CellposeModelData(Path file) {
+        this.name = file.getFileName().toString();
         try {
             data = Files.readAllBytes(file);
         } catch (IOException e) {
@@ -35,25 +36,33 @@ public class CellPoseSizeModelData implements JIPipeData {
         }
     }
 
-    public CellPoseSizeModelData(byte[] data, String name) {
+    public CellposeModelData(byte[] data, String name) {
         this.data = data;
         this.name = name;
     }
 
-    public CellPoseSizeModelData(CellPoseSizeModelData other) {
+    public CellposeModelData(CellposeModelData other) {
         this.data = other.data;
         this.name = other.name;
     }
 
-    public static CellPoseSizeModelData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
-        return new CellPoseSizeModelData(PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".npy"));
-    }
+    public static CellposeModelData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
+        List<Path> files = PathUtils.findFilesByExtensionIn(storage.getFileSystemPath());
+        Path file = null;
 
-    private String extractFileName(Path file) {
-        String name = file.getFileName().toString();
-        if (name.endsWith(".npy"))
-            return name.substring(0, name.length() - 4);
-        return name;
+        for (Path path : files) {
+            String name = path.getFileName().toString();
+            // Skip dot files
+            if (name.startsWith("."))
+                continue;
+            if (name.contains("cellpose")) {
+                file = path;
+                break;
+            }
+        }
+        if (file == null)
+            file = files.get(0);
+        return new CellposeModelData(file);
     }
 
     public byte[] getData() {
@@ -69,7 +78,7 @@ public class CellPoseSizeModelData implements JIPipeData {
         if (!forceName)
             name = this.name;
         try {
-            Files.write(storage.getFileSystemPath().resolve(name + ".npy"), data);
+            Files.write(storage.getFileSystemPath().resolve(name), data);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -77,17 +86,17 @@ public class CellPoseSizeModelData implements JIPipeData {
 
     @Override
     public JIPipeData duplicate(JIPipeProgressInfo progressInfo) {
-        return new CellPoseSizeModelData(this);
+        return new CellposeModelData(this);
     }
 
     @Override
     public void display(String displayName, JIPipeWorkbench workbench, JIPipeDataSource source) {
         JOptionPane.showMessageDialog(workbench.getWindow(), "Visualizing the model is currently not supported.",
-                "Show Cellpose size model", JOptionPane.ERROR_MESSAGE);
+                "Show Cellpose model", JOptionPane.ERROR_MESSAGE);
     }
 
     @Override
     public String toString() {
-        return "Cellpose size model: " + name + " (" + (data.length / 1024 / 1024) + " MB)";
+        return "Cellpose model: " + name + " (" + (data.length / 1024 / 1024) + " MB)";
     }
 }

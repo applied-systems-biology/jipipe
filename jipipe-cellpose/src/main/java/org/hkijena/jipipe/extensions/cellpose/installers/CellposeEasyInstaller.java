@@ -19,7 +19,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.environments.EasyInstallExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
+import org.hkijena.jipipe.extensions.cellpose.CellposeSettings;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.api.optional.OptionalParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -36,12 +36,12 @@ import java.util.List;
 
 @JIPipeDocumentation(name = "Install Cellpose (EasyInstaller)", description = "Downloads a pre-packaged version of Cellpose")
 @ExternalEnvironmentInfo(category = "Cellpose")
-public class CellPoseEasyInstaller extends EasyInstallExternalEnvironmentInstaller<PythonEnvironment> {
+public class CellposeEasyInstaller extends EasyInstallExternalEnvironmentInstaller<PythonEnvironment> {
     /**
      * @param workbench       the workbench
      * @param parameterAccess the parameter access that will receive the generated environment
      */
-    public CellPoseEasyInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public CellposeEasyInstaller(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
     }
 
@@ -52,7 +52,7 @@ public class CellPoseEasyInstaller extends EasyInstallExternalEnvironmentInstall
 
     @Override
     public List<String> getRepositories() {
-        return CellPoseSettings.getInstance().getEasyInstallerRepositories();
+        return CellposeSettings.getInstance().getEasyInstallerRepositories();
     }
 
     @Override

@@ -3,10 +3,7 @@ package org.hkijena.jipipe.extensions.cellpose.algorithms;
 import com.google.common.collect.ImmutableList;
 import ij.IJ;
 import ij.ImagePlus;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeNode;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -17,11 +14,11 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.cellpose.CellPoseModel;
-import org.hkijena.jipipe.extensions.cellpose.CellPoseSettings;
-import org.hkijena.jipipe.extensions.cellpose.CellPoseUtils;
-import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
-import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
+import org.hkijena.jipipe.extensions.cellpose.CellposeModel;
+import org.hkijena.jipipe.extensions.cellpose.CellposeSettings;
+import org.hkijena.jipipe.extensions.cellpose.CellposeUtils;
+import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeModelData;
+import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.extensions.cellpose.parameters.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
@@ -42,6 +39,9 @@ import java.nio.file.Path;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * @deprecated New implementation will be CellPoseAlgorithm2 that is based around the Cellpose CLI
+ */
 @JIPipeDocumentation(name = "Cellpose", description = "Runs Cellpose on the input image. This node supports both segmentation in 3D and executing " +
         "Cellpose for each 2D image plane. " +
         "This node can generate a multitude of outputs, although only ROI is activated by default. " +
@@ -62,7 +62,9 @@ import java.util.stream.Collectors;
 @JIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, slotName = "Styles")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
+@Deprecated
+@JIPipeHidden
+public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private ModelParameters modelParameters = new ModelParameters();
     private PerformanceParameters performanceParameters = new PerformanceParameters();
@@ -75,7 +77,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
     private boolean cleanUpAfterwards = true;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
 
-    public CellPoseAlgorithm(JIPipeNodeInfo info) {
+    public CellposeAlgorithm(JIPipeNodeInfo info) {
         super(info);
         updateOutputSlots();
         updateInputSlots();
@@ -86,7 +88,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
         registerSubParameter(outputParameters);
     }
 
-    public CellPoseAlgorithm(CellPoseAlgorithm other) {
+    public CellposeAlgorithm(CellposeAlgorithm other) {
         super(other);
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.diameterAnnotation = new OptionalAnnotationNameParameter(other.diameterAnnotation);
@@ -142,7 +144,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     private void updateInputSlots() {
-        if (modelParameters.getModel() != CellPoseModel.Custom) {
+        if (modelParameters.getModel() != CellposeModel.Custom) {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             if (getInputSlotMap().containsKey("Pretrained model")) {
                 slotConfiguration.removeInputSlot("Pretrained model", false);
@@ -153,10 +155,10 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
         } else {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             if (!getInputSlotMap().containsKey("Pretrained model")) {
-                slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellPoseModelData.class, JIPipeSlotType.Input, null, "", null), false);
+                slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input, null, "", null), false);
             }
             if (!getInputSlotMap().containsKey("Size model")) {
-                JIPipeDataSlotInfo slotInfo = new JIPipeDataSlotInfo(CellPoseSizeModelData.class, JIPipeSlotType.Input, null, "", null);
+                JIPipeDataSlotInfo slotInfo = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Input, null, "", null);
                 slotInfo.setOptional(true);
                 slotConfiguration.addSlot("Size model", slotInfo, false);
             }
@@ -170,7 +172,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
             if (overrideEnvironment.isEnabled()) {
                 report.resolve("Override Python environment").report(overrideEnvironment.getContent());
             } else {
-                CellPoseSettings.checkPythonSettings(report.resolve("Python"));
+                CellposeSettings.checkPythonSettings(report.resolve("Python"));
             }
         }
     }
@@ -184,10 +186,10 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
         // Save models if needed
         List<Path> customModelPaths = new ArrayList<>();
         Path customSizeModelPath = null;
-        if (modelParameters.getModel() == CellPoseModel.Custom) {
-            List<CellPoseModelData> models = dataBatch.getInputData("Pretrained model", CellPoseModelData.class, progressInfo);
+        if (modelParameters.getModel() == CellposeModel.Custom) {
+            List<CellposeModelData> models = dataBatch.getInputData("Pretrained model", CellposeModelData.class, progressInfo);
             for (int i = 0; i < models.size(); i++) {
-                CellPoseModelData modelData = models.get(i);
+                CellposeModelData modelData = models.get(i);
                 Path customModelPath = workDirectory.resolve(i + "_" + modelData.getName());
                 try {
                     Files.write(customModelPath, modelData.getData());
@@ -197,7 +199,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
                 customModelPaths.add(customModelPath);
             }
 
-            List<CellPoseSizeModelData> sizeModels = dataBatch.getInputData("Size model", CellPoseSizeModelData.class, progressInfo);
+            List<CellposeSizeModelData> sizeModels = dataBatch.getInputData("Size model", CellposeSizeModelData.class, progressInfo);
             if (sizeModels.size() > 1) {
                 throw new UserFriendlyRuntimeException("Only 1 size model supported!",
                         "Only one size model is supported!",
@@ -206,7 +208,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
                         "Remove or modify inputs so that there is only one size model.");
             }
             if (!sizeModels.isEmpty()) {
-                CellPoseSizeModelData sizeModelData = sizeModels.get(0);
+                CellposeSizeModelData sizeModelData = sizeModels.get(0);
                 Path customModelPath = workDirectory.resolve("sz" + sizeModelData.getName() + ".npy");
                 try {
                     Files.write(customModelPath, sizeModelData.getData());
@@ -284,7 +286,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
 
 
         // I we provide a custom model, we need to inject custom code (Why?)
-        if (modelParameters.getModel() == CellPoseModel.Custom) {
+        if (modelParameters.getModel() == CellposeModel.Custom) {
             injectCustomCellposeClass(code);
             setupCustomCellposeModel(code, customModelPaths, customSizeModelPath);
         } else {
@@ -340,7 +342,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         // Run script
         PythonUtils.runPython(code.toString(), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                CellPoseSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), progressInfo);
+                CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), progressInfo);
 
 
         for (int i = 0; i < inputRowList.size(); i++) {
@@ -360,7 +362,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
             }
 
             // Extract outputs
-            CellPoseUtils.extractCellposeOutputs(dataBatch,
+            CellposeUtils.extractCellposeOutputs(dataBatch,
                     progressInfo,
                     outputRoiOutlinePaths.get(i),
                     outputLabelsPaths.get(i),
@@ -472,7 +474,7 @@ public class CellPoseAlgorithm extends JIPipeSingleIterationAlgorithm {
             return;
         }
         // This is code that allows to embed a custom model
-        code.append("\n\n").append(CellPoseUtils.getCellposeCustomCode()).append("\n\n");
+        code.append("\n\n").append(CellposeUtils.getCellposeCustomCode()).append("\n\n");
     }
 
     @JIPipeDocumentation(name = "Clean up data after processing", description = "If enabled, data is deleted from temporary directories after " +

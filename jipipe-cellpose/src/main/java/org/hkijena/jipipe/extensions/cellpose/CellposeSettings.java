@@ -12,7 +12,7 @@ import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonExtensionSettings;
 
-public class CellPoseSettings implements JIPipeParameterCollection {
+public class CellposeSettings implements JIPipeParameterCollection {
 
     public static String ID = "org.hkijena.jipipe:cellpose";
 
@@ -22,13 +22,13 @@ public class CellPoseSettings implements JIPipeParameterCollection {
 
     private StringList easyInstallerRepositories = new StringList();
 
-    public CellPoseSettings() {
+    public CellposeSettings() {
         overridePythonEnvironment.setEnabled(true);
         easyInstallerRepositories.add("https://github.com/applied-systems-biology/jipipe/releases/download/current/easyinstall-cellpose.json");
     }
 
-    public static CellPoseSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, CellPoseSettings.class);
+    public static CellposeSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, CellposeSettings.class);
     }
 
     /**
@@ -38,7 +38,7 @@ public class CellPoseSettings implements JIPipeParameterCollection {
      */
     public static boolean pythonSettingsAreValid() {
         if (JIPipe.getInstance() != null) {
-            CellPoseSettings instance = getInstance();
+            CellposeSettings instance = getInstance();
             JIPipeIssueReport report = new JIPipeIssueReport();
             instance.getPythonEnvironment().reportValidity(report);
             return report.isValid();

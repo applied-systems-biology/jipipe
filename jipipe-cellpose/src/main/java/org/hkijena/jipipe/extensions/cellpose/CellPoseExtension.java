@@ -15,16 +15,16 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.cellpose.algorithms.CellPoseAlgorithm;
-import org.hkijena.jipipe.extensions.cellpose.algorithms.CellPoseTrainingAlgorithm;
-import org.hkijena.jipipe.extensions.cellpose.algorithms.ImportCellPoseModelAlgorithm;
-import org.hkijena.jipipe.extensions.cellpose.algorithms.ImportCellPoseSizeModelAlgorithm;
-import org.hkijena.jipipe.extensions.cellpose.compat.CellPoseModelImageJExporter;
-import org.hkijena.jipipe.extensions.cellpose.compat.CellPoseModelImageJImporter;
-import org.hkijena.jipipe.extensions.cellpose.compat.CellPoseSizeModelImageJExporter;
-import org.hkijena.jipipe.extensions.cellpose.compat.CellPoseSizeModelImageJImporter;
-import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseModelData;
-import org.hkijena.jipipe.extensions.cellpose.datatypes.CellPoseSizeModelData;
+import org.hkijena.jipipe.extensions.cellpose.algorithms.CellposeAlgorithm;
+import org.hkijena.jipipe.extensions.cellpose.algorithms.CellposeTrainingAlgorithm;
+import org.hkijena.jipipe.extensions.cellpose.algorithms.ImportCellposeModelAlgorithm;
+import org.hkijena.jipipe.extensions.cellpose.algorithms.ImportCellposeSizeModelAlgorithm;
+import org.hkijena.jipipe.extensions.cellpose.compat.CellposeModelImageJExporter;
+import org.hkijena.jipipe.extensions.cellpose.compat.CellposeModelImageJImporter;
+import org.hkijena.jipipe.extensions.cellpose.compat.CellposeSizeModelImageJExporter;
+import org.hkijena.jipipe.extensions.cellpose.compat.CellposeSizeModelImageJImporter;
+import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeModelData;
+import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.extensions.cellpose.installers.*;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
@@ -66,10 +66,10 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     private static void easyInstallCellpose(JIPipeWorkbench workbench) {
-        CellPoseSettings settings = CellPoseSettings.getInstance();
+        CellposeSettings settings = CellposeSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
         JIPipeParameterAccess parameterAccess = tree.getParameters().get("python-environment");
-        CellPoseEasyInstaller installer = new CellPoseEasyInstaller(workbench, parameterAccess);
+        CellposeEasyInstaller installer = new CellposeEasyInstaller(workbench, parameterAccess);
         JIPipeRunExecuterUI.runInDialog(workbench.getWindow(), installer);
     }
 
@@ -150,37 +150,37 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerSettingsSheet(CellPoseSettings.ID,
+        registerSettingsSheet(CellposeSettings.ID,
                 "Cellpose",
                 UIUtils.getIconFromResources("apps/cellpose.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
-                new CellPoseSettings());
-        registerEnvironmentInstaller(PythonEnvironment.class, MinicondaCellPoseEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, MinicondaCellPoseGPUEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, PortableCellPoseEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, PortableCellPoseGPUEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
-        registerEnvironmentInstaller(PythonEnvironment.class, CellPoseEasyInstaller.class, UIUtils.getIconFromResources("emblems/vcs-normal.png"));
+                new CellposeSettings());
+        registerEnvironmentInstaller(PythonEnvironment.class, MinicondaCellposeEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, MinicondaCellposeGPUEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, PortableCellposeEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, PortableCellposeGPUEnvInstaller.class, UIUtils.getIconFromResources("apps/cellpose.png"));
+        registerEnvironmentInstaller(PythonEnvironment.class, CellposeEasyInstaller.class, UIUtils.getIconFromResources("emblems/vcs-normal.png"));
 
-        registerEnumParameterType("cellpose-model", CellPoseModel.class, "Cellpose model", "A Cellpose model");
-        registerEnumParameterType("cellpose-pretrained-model", CellPosePretrainedModel.class, "Cellpose pre-trained model", "A pretrained model for Cellpose");
+        registerEnumParameterType("cellpose-model", CellposeModel.class, "Cellpose model", "A Cellpose model");
+        registerEnumParameterType("cellpose-pretrained-model", CellposePretrainedModel.class, "Cellpose pre-trained model", "A pretrained model for Cellpose");
 
-        registerDatatype("cellpose-model", CellPoseModelData.class, UIUtils.getIconURLFromResources("data-types/cellpose-model.png"));
-        registerImageJDataImporter("cellpose-model-from-file", new CellPoseModelImageJImporter(), FileImageJDataImporterUI.class);
-        registerImageJDataExporter("cellpose-model-to-directory", new CellPoseModelImageJExporter(), FolderImageJDataExporterUI.class);
-        registerDatatype("cellpose-size-model", CellPoseSizeModelData.class, UIUtils.getIconURLFromResources("data-types/cellpose-size-model.png"));
-        registerImageJDataImporter("cellpose-size-model-from-file", new CellPoseSizeModelImageJImporter(), FileImageJDataImporterUI.class);
-        registerImageJDataExporter("cellpose-size-model-to-directory", new CellPoseSizeModelImageJExporter(), FolderImageJDataExporterUI.class);
+        registerDatatype("cellpose-model", CellposeModelData.class, UIUtils.getIconURLFromResources("data-types/cellpose-model.png"));
+        registerImageJDataImporter("cellpose-model-from-file", new CellposeModelImageJImporter(), FileImageJDataImporterUI.class);
+        registerImageJDataExporter("cellpose-model-to-directory", new CellposeModelImageJExporter(), FolderImageJDataExporterUI.class);
+        registerDatatype("cellpose-size-model", CellposeSizeModelData.class, UIUtils.getIconURLFromResources("data-types/cellpose-size-model.png"));
+        registerImageJDataImporter("cellpose-size-model-from-file", new CellposeSizeModelImageJImporter(), FileImageJDataImporterUI.class);
+        registerImageJDataExporter("cellpose-size-model-to-directory", new CellposeSizeModelImageJExporter(), FolderImageJDataExporterUI.class);
 
-        registerNodeType("cellpose", CellPoseAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
-        registerNodeType("cellpose-training", CellPoseTrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
-        registerNodeType("import-cellpose-model", ImportCellPoseModelAlgorithm.class);
-        registerNodeType("import-cellpose-size-model", ImportCellPoseSizeModelAlgorithm.class);
+        registerNodeType("cellpose", CellposeAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("cellpose-training", CellposeTrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("import-cellpose-model", ImportCellposeModelAlgorithm.class);
+        registerNodeType("import-cellpose-size-model", ImportCellposeSizeModelAlgorithm.class);
     }
 
     @Override
     public void postprocess() {
-        if (!CellPoseSettings.pythonSettingsAreValid()) {
+        if (!CellposeSettings.pythonSettingsAreValid()) {
             JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":python-not-configured");
             notification.setHeading("Cellpose is not configured");
             notification.setDescription("You need to setup a Python environment that contains Cellpose." + "Click 'Install Cellpose' to let JIPipe setup a Python distribution with Cellpose automatically. " +
