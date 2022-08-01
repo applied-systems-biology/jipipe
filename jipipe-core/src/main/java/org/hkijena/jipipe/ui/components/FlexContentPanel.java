@@ -82,6 +82,7 @@ public class FlexContentPanel extends JPanel {
         }
         JPanel toolBarPanel = null;
         if(toolBar != null) {
+            toolBar.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
             toolBarPanel = UIUtils.boxHorizontal(toolBar, pinToolBar);
         }
         JPanel topPanel = UIUtils.boxVertical(toolBarPanel, ribbon);

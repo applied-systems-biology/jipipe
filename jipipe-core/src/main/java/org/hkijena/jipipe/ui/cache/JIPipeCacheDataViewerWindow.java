@@ -246,6 +246,15 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     }
 
     /**
+     * The toolbar where the window pin controls are added.
+     * Defaults to getToolBar(). For {@link org.hkijena.jipipe.ui.components.FlexContentPanel}, return getPinToolBar();
+     * @return the pin toolbar
+     */
+    public JToolBar getPinToolBar() {
+        return getToolBar();
+    }
+
+    /**
      * Returns the toolbar that contains
      *
      * @return the toolbar
@@ -310,7 +319,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     private void addDataControls() {
         if (getToolBar() == null)
             return;
-        getToolBar().add(alwaysOnTopToggle);
+        getPinToolBar().add(alwaysOnTopToggle);
         if (algorithm != null) {
             cacheAwareToggle = new JIPipeCachedDataDisplayCacheControl((JIPipeProjectWorkbench) workbench, getToolBar(), algorithm);
             cacheAwareToggle.install();
