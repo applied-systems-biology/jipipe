@@ -1367,7 +1367,9 @@ public class UIUtils {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         for (Component component : components) {
-            panel.add(component);
+            if(component != null) {
+                panel.add(component);
+            }
         }
         return panel;
     }
@@ -1376,7 +1378,9 @@ public class UIUtils {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         for (Component component : components) {
-            panel.add(component);
+            if(component != null) {
+                panel.add(component);
+            }
         }
         return panel;
     }

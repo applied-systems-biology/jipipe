@@ -10,6 +10,10 @@ import java.awt.event.ComponentEvent;
  */
 public class AutoResizeSplitPane extends JSplitPane {
 
+    public static final int LEFT_RIGHT = JSplitPane.HORIZONTAL_SPLIT;
+
+    public static final int TOP_BOTTOM = JSplitPane.VERTICAL_SPLIT;
+
     public static final double RATIO_3_TO_1 = 0.66;
     public static final double RATIO_1_TO_3 = 0.33;
     public static final double RATIO_1_TO_1 = 0.5;
