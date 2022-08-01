@@ -85,6 +85,25 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
         this.eventBus.register(this);
     }
 
+    /**
+     * Creates a new plot editor in a new window
+     *
+     * @param workbench the workbench
+     * @param title     the title
+     * @return the table editor component
+     */
+    public static PlotEditor openWindow(JIPipeWorkbench workbench, String title) {
+        JFrame window = new JFrame(title);
+        window.getContentPane().setLayout(new BorderLayout());
+        window.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+        PlotEditor editor = new PlotEditor(workbench);
+        window.getContentPane().add(editor, BorderLayout.CENTER);
+        window.setSize(1024, 768);
+        window.setLocationRelativeTo(workbench.getWindow());
+        window.setVisible(true);
+        return editor;
+    }
+
     public JToolBar getToolBar() {
         return plotReader.getToolBar();
     }

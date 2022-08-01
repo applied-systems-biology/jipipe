@@ -29,7 +29,7 @@ public class FlexContentPanel extends JPanel {
 
     private boolean sideBarVisible = true;
 
-    private final JToggleButton sideBarToggle = new JToggleButton("actions/sidebar.png");
+    private final JToggleButton sideBarToggle = new JToggleButton(UIUtils.getIcon16FromResources("actions/sidebar.png"));
     private final JPanel contentPanel = new JPanel(new BorderLayout());
 
     public FlexContentPanel() {
@@ -60,6 +60,7 @@ public class FlexContentPanel extends JPanel {
         sideBarToggle.addActionListener(e->{
             setSideBarVisible(sideBarToggle.isSelected());
         });
+        sideBarToggle.setSelected(sideBarVisible);
     }
 
     public Ribbon getRibbon() {
@@ -71,6 +72,7 @@ public class FlexContentPanel extends JPanel {
     }
 
     public void rebuildLayout() {
+        removeAll();
         setLayout(new BorderLayout());
         if(sideBar != null) {
             ensurePinToolBar();
@@ -97,6 +99,8 @@ public class FlexContentPanel extends JPanel {
             centerPanel = contentPanel;
         }
         add(centerPanel, BorderLayout.CENTER);
+        revalidate();
+        repaint();
     }
 
     private JToolBar ensureToolBar() {
