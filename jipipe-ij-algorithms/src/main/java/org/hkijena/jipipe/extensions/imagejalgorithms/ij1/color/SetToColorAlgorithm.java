@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import java.awt.*;
 import java.util.Collections;
 
-@JIPipeDocumentation(name = "Set to color", description = "Sets all pixels of the input image to the specified color. If the image is grayscale, the provided color is converted to its equivalent grayscale value.")
+@JIPipeDocumentation(name = "Set to color (RGB)", description = "Sets all pixels of the input image to the specified color. If the image is grayscale, the provided color is converted to its equivalent grayscale value.")
 @JIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
@@ -57,20 +57,16 @@ public class SetToColorAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
                 ImageProcessor roi = getMask(dataBatch, index, progressInfo);
                 ColorProcessor colorProcessor = (ColorProcessor) ip;
                 ip.resetRoi();
-                ip.setMask(roi);
                 colorProcessor.setColor(color);
-                ip.fill();
-                ip.resetRoi();
+                ip.fill(roi);
             }, progressInfo);
         } else {
             double value = (color.getRed() + color.getGreen() + color.getBlue()) / 3.0;
             ImageJUtils.forEachIndexedZCTSlice(image, (ip, index) -> {
                 ImageProcessor roi = getMask(dataBatch, index, progressInfo);
                 ip.resetRoi();
-                ip.setMask(roi);
                 ip.setValue(value);
-                ip.fill();
-                ip.resetRoi();
+                ip.fill(roi);
             }, progressInfo);
         }
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), progressInfo);

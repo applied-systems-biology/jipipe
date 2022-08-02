@@ -5,7 +5,8 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
-public class SegmentationPerformanceSettings implements JIPipeParameterCollection {
+@Deprecated
+public class SegmentationPerformanceSettings_Old implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private int batchSize = 8;
@@ -13,10 +14,10 @@ public class SegmentationPerformanceSettings implements JIPipeParameterCollectio
     private double tileOverlap = 0.1;
     private boolean resample = false;
 
-    public SegmentationPerformanceSettings() {
+    public SegmentationPerformanceSettings_Old() {
     }
 
-    public SegmentationPerformanceSettings(SegmentationPerformanceSettings other) {
+    public SegmentationPerformanceSettings_Old(SegmentationPerformanceSettings_Old other) {
         this.batchSize = other.batchSize;
         this.tile = other.tile;
         this.tileOverlap = other.tileOverlap;

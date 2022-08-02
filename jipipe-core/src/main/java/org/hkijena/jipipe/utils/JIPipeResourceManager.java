@@ -15,7 +15,11 @@
 package org.hkijena.jipipe.utils;
 
 import javax.swing.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -225,5 +229,28 @@ public class JIPipeResourceManager {
      */
     public URL getResourceURL(String internalResourcePath) {
         return resourceClass.getResource(relativeToAbsoluteResourcePath(internalResourcePath));
+    }
+
+    /**
+     * Gets a plugin-internal resource as stream
+     *
+     * @param internalResourcePath internal path relative to the resource base path
+     * @return resource stream or null
+     */
+    public InputStream getResourceAsStream(String internalResourcePath) {
+        return resourceClass.getResourceAsStream(relativeToAbsoluteResourcePath(internalResourcePath));
+    }
+
+    /**
+     * Saves a resource as file
+     * @param internalResourcePath internal path relative to the resource base path
+     * @param outputFile the output file
+     */
+    public void exportResourceToFile(String internalResourcePath, Path outputFile) {
+        try {
+            Files.copy(getResourceAsStream(internalResourcePath), outputFile);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

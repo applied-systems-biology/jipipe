@@ -37,6 +37,7 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
@@ -48,7 +49,7 @@ import java.util.List;
 import java.util.Set;
 
 @Plugin(type = JIPipeJavaExtension.class)
-public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
+public class CellposeExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     /**
      * Dependency instance to be used for creating the set of dependencies
@@ -57,7 +58,9 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
             JIPipe.getJIPipeVersion(),
             "Cellpose integration");
 
-    public CellPoseExtension() {
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(CellposeExtension.class, "org/hkijena/jipipe/extensions/cellpose");
+
+    public CellposeExtension() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DEEP_LEARNING, PluginCategoriesEnumParameter.CATEGORY_SEGMENTATION, PluginCategoriesEnumParameter.CATEGORY_MACHINE_LEARNING);
         getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/cellpose.png")));
     }
@@ -169,8 +172,8 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerImageJDataImporter("cellpose-size-model-from-file", new CellposeSizeModelImageJImporter(), FileImageJDataImporterUI.class);
         registerImageJDataExporter("cellpose-size-model-to-directory", new CellposeSizeModelImageJExporter(), FolderImageJDataExporterUI.class);
 
-        registerNodeType("cellpose", CellposeAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
-        registerNodeType("cellpose-2", CellposeAlgorithm2.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("cellpose", CellposeAlgorithm_Old.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("cellpose-2", CellposeAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
         registerNodeType("cellpose-training", CellposeTrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
         registerNodeType("import-cellpose-model", ImportCellposeModelAlgorithm.class);
         registerNodeType("import-cellpose-size-model", ImportCellposeSizeModelAlgorithm.class);
@@ -188,11 +191,11 @@ public class CellPoseExtension extends JIPipePrepackagedDefaultJavaExtension {
             notification.getActions().add(new JIPipeNotificationAction("Install Cellpose",
                     "Installs Cellpose via the EasyInstaller",
                     UIUtils.getIconFromResources("actions/browser-download.png"),
-                    CellPoseExtension::easyInstallCellpose));
+                    CellposeExtension::easyInstallCellpose));
             notification.getActions().add(new JIPipeNotificationAction("Configure Python",
                     "Opens the applications settings page",
                     UIUtils.getIconFromResources("actions/configure.png"),
-                    CellPoseExtension::configureCellpose));
+                    CellposeExtension::configureCellpose));
             JIPipeNotificationInbox.getInstance().push(notification);
         }
     }

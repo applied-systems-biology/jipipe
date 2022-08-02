@@ -8,17 +8,21 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.cellpose.CellposeModel;
 
-public class SegmentationModelSettings implements JIPipeParameterCollection {
+@Deprecated
+public class SegmentationModelSettings_Old implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private CellposeModel model = CellposeModel.Cytoplasm;
     private double meanDiameter = 30;
 
-    public SegmentationModelSettings() {
+    private boolean enableGPU = true;
+
+    public SegmentationModelSettings_Old() {
     }
 
-    public SegmentationModelSettings(SegmentationModelSettings other) {
+    public SegmentationModelSettings_Old(SegmentationModelSettings_Old other) {
         this.model = other.model;
         this.meanDiameter = other.meanDiameter;
+        this.enableGPU = other.enableGPU;
     }
 
     @JIPipeDocumentation(name = "Model", description = "The model type that should be used.")
@@ -55,6 +59,18 @@ public class SegmentationModelSettings implements JIPipeParameterCollection {
     @JIPipeParameter("mean-diameter")
     public void setMeanDiameter(double meanDiameter) {
         this.meanDiameter = meanDiameter;
+    }
+
+    @JIPipeDocumentation(name = "With GPU", description = "Utilize a GPU if available. Please note that you need to setup Cellpose " +
+            "to allow usage of your GPU. Also ensure that enough memory is available.")
+    @JIPipeParameter("enable-gpu")
+    public boolean isEnableGPU() {
+        return enableGPU;
+    }
+
+    @JIPipeParameter("enable-gpu")
+    public void setEnableGPU(boolean enableGPU) {
+        this.enableGPU = enableGPU;
     }
 
     @Override

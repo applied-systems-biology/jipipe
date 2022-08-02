@@ -1,7 +1,5 @@
 #!/usr/bin/env/python3
 
-# Info: Cellpose 2.0 Flows array: 0 = flows (RGB), 1 = Probabilities, 2 = ???, 3 = ???, 4 = ???
-
 import numpy as np
 import argparse 
 import os

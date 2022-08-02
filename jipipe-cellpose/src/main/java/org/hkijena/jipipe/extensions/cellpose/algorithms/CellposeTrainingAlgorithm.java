@@ -28,6 +28,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.Imag
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
@@ -71,6 +72,10 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("Label");
     private boolean generateConnectedComponents = true;
 
+    private OptionalIntegerParameter segmentedChannel = new OptionalIntegerParameter(false, 0);
+
+    private OptionalIntegerParameter nuclearChannel = new OptionalIntegerParameter(false, 0);
+
 
     public CellposeTrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -101,6 +106,8 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.generateConnectedComponents = other.generateConnectedComponents;
         this.minTrainMasks = other.minTrainMasks;
         this.weightDecay = other.weightDecay;
+        this.segmentedChannel = new OptionalIntegerParameter(other.segmentedChannel);
+        this.nuclearChannel = new OptionalIntegerParameter(other.nuclearChannel);
 
         registerSubParameter(gpuSettings);
 
@@ -130,6 +137,28 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
                 slotConfiguration.addSlot("Size model", new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Output), false);
             }
         }
+    }
+
+    @JIPipeDocumentation(name = "Segmented channel", description = "Channel to segment; 0: GRAY, 1: RED, 2: GREEN, 3: BLUE. Default: 0")
+    @JIPipeParameter("segmented-channel")
+    public OptionalIntegerParameter getSegmentedChannel() {
+        return segmentedChannel;
+    }
+
+    @JIPipeParameter("segmented-channel")
+    public void setSegmentedChannel(OptionalIntegerParameter segmentedChannel) {
+        this.segmentedChannel = segmentedChannel;
+    }
+
+    @JIPipeDocumentation(name = "Nuclear channel", description = "Nuclear channel (only used by certain models); 0: NONE, 1: RED, 2: GREEN, 3: BLUE. Default: 0")
+    @JIPipeParameter("nuclear-channel")
+    public OptionalIntegerParameter getNuclearChannel() {
+        return nuclearChannel;
+    }
+
+    @JIPipeParameter("nuclear-channel")
+    public void setNuclearChannel(OptionalIntegerParameter nuclearChannel) {
+        this.nuclearChannel = nuclearChannel;
     }
 
     @JIPipeDocumentation(name = "Weight decay", description = "The weight decay")
@@ -428,9 +457,21 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         arguments.add("--mask_filter");
         arguments.add("masks");
 
-        arguments.add("--chan");
-        arguments.add("0");
+        // Channels
+        if(segmentedChannel.isEnabled()) {
+            arguments.add("--chan");
+            arguments.add(segmentedChannel.getContent() + "");
+        }
+        else {
+            arguments.add("--chan");
+            arguments.add("0");
+        }
+        if(nuclearChannel.isEnabled()) {
+            arguments.add("--chan2");
+            arguments.add(nuclearChannel.getContent() + "");
+        }
 
+        // GPU
         if (gpuSettings.isEnableGPU())
             arguments.add("--use_gpu");
         if(gpuSettings.getGpuDevice().isEnabled()) {

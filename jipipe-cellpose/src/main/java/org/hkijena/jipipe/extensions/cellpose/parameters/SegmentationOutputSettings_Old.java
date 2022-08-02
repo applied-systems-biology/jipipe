@@ -4,9 +4,10 @@ import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.cellpose.algorithms.CellposeAlgorithm_Old;
 
 /**
- * @deprecated Used by the old {@link org.hkijena.jipipe.extensions.cellpose.algorithms.CellposeAlgorithm}
+ * @deprecated Used by the old {@link CellposeAlgorithm_Old}
  */
 public class SegmentationOutputSettings_Old implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
