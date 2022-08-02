@@ -23,6 +23,7 @@ import org.hkijena.jipipe.extensions.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling3DAlgorithm;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
@@ -46,8 +47,8 @@ import java.util.stream.Collectors;
 @JIPipeDocumentation(name = "Cellpose training", description = "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
         "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. " +
         "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters.")
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Training data", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Test data", autoCreate = true, optional = true)
+@JIPipeInputSlot(value = ImagePlus3DData.class, slotName = "Training data", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlus3DData.class, slotName = "Test data", autoCreate = true, optional = true)
 @JIPipeInputSlot(value = CellposeModelData.class)
 @JIPipeOutputSlot(value = CellposeModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
@@ -391,7 +392,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         for (Integer row : dataBatch.getInputRows("Training data")) {
             JIPipeProgressInfo rowProgress = extractProgress.resolveAndLog("Row " + row);
             ImagePlus raw = getInputSlot("Training data")
-                    .getData(row, ImagePlus3DGreyscaleData.class, rowProgress).getImage();
+                    .getData(row, ImagePlus3DData.class, rowProgress).getImage();
             ImagePlus mask = labelDataAnnotation.queryFirst(getInputSlot("Training data").getDataAnnotations(row))
                     .getData(ImagePlus3DGreyscale16UData.class, progressInfo).getImage();
             mask = ImageJUtils.ensureEqualSize(mask, raw, true);
@@ -404,7 +405,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         for (Integer row : dataBatch.getInputRows("Test data")) {
             JIPipeProgressInfo rowProgress = extractProgress.resolveAndLog("Row " + row);
             ImagePlus raw = getInputSlot("Test data")
-                    .getData(row, ImagePlus3DGreyscaleData.class, rowProgress).getImage();
+                    .getData(row, ImagePlus3DData.class, rowProgress).getImage();
             ImagePlus mask = labelDataAnnotation.queryFirst(getInputSlot("Test data").getDataAnnotations(row))
                     .getData(ImagePlus3DGreyscale16UData.class, progressInfo).getImage();
             if (generateConnectedComponents)
