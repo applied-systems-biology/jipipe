@@ -53,7 +53,7 @@ public class CellposeUtils {
      * @param file the Cellpose ROI
      * @return ImageJ ROI
      */
-    public static ROIListData cellPoseROIToImageJ(Path file) {
+    public static ROIListData cellposeROIToImageJ(Path file) {
         ROIListData rois = new ROIListData();
         try {
             for (String line : Files.readAllLines(file)) {
@@ -81,7 +81,7 @@ public class CellposeUtils {
      * @param file the ROI file
      * @return ImageJ ROI
      */
-    public static ROIListData cellPoseROIJsonToImageJ(Path file) {
+    public static ROIListData cellposeROIJsonToImageJ(Path file) {
         ROIListData rois = new ROIListData();
         try {
             JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(file.toFile());
@@ -121,7 +121,7 @@ public class CellposeUtils {
 
     public static void extractCellposeOutputs(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo, Path outputRoiOutline, Path outputLabels, Path outputFlows, Path outputProbabilities, Path outputStyles, List<JIPipeTextAnnotation> annotationList, SegmentationOutputSettings_Old outputParameters) {
         if (outputParameters.isOutputROI()) {
-            ROIListData rois = cellPoseROIJsonToImageJ(outputRoiOutline);
+            ROIListData rois = cellposeROIJsonToImageJ(outputRoiOutline);
             dataBatch.addOutputData("ROI", rois, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
         if (outputParameters.isOutputLabels()) {

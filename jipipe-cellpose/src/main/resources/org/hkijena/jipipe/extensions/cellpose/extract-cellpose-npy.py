@@ -63,6 +63,15 @@ def process_roi(npy_data, npy_base_output_path):
     with open(npy_base_output_path + "_roi.json", "w") as f:
         json.dump(roi_list, f, indent=4)
 
+def process_additional_info(npy_data, npy_base_output_path):
+    print(" - Extracting info")
+    json_data = {
+        "chan_choose": npy_data.item().get("chan_choose"),
+        "est_diam": npy_data.item().get("est_diam")
+    }
+    with open(npy_base_output_path + "_info.json", "w") as f:
+        json.dump(json_data, f, indent=4)
+
 def process_npy_file(npy_file):
     npy_base_output_path = output_dir + "/" + os.path.basename(npy_file)[:-4]
 
@@ -78,6 +87,7 @@ def process_npy_file(npy_file):
     process_flows_dz_dy_dx(npy_data, npy_base_output_path)
     process_labels(npy_data, npy_base_output_path)
     process_roi(npy_data, npy_base_output_path)
+    process_additional_info(npy_data, npy_base_output_path)
 
 def main():
     if os.path.isfile(args.input_files):

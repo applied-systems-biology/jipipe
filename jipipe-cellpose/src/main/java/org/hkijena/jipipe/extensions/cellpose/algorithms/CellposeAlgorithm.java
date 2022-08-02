@@ -1,8 +1,14 @@
 package org.hkijena.jipipe.extensions.cellpose.algorithms;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.ImageStack;
+import ij.gui.Roi;
+import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -14,8 +20,11 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.cellpose.CellposeExtension;
 import org.hkijena.jipipe.extensions.cellpose.CellposeModel;
 import org.hkijena.jipipe.extensions.cellpose.CellposeSettings;
+import org.hkijena.jipipe.extensions.cellpose.CellposeUtils;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.extensions.cellpose.parameters.*;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
@@ -30,6 +39,7 @@ import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
+import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -54,9 +64,9 @@ import java.util.*;
         "Please note that you need to setup a valid Python environment with Cellpose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Cellpose.")
 @JIPipeInputSlot(value = ImagePlus3DData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels")
-@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Flows XY")
-@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Flows Z")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Flows d")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Flows XY")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Flows Z")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Flows d")
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Probabilities")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
@@ -71,11 +81,12 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     public static final JIPipeDataSlotInfo OUTPUT_PROBABILITIES = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Probabilities", "An image indicating the cell probabilities for each pixel");
     public static final JIPipeDataSlotInfo OUTPUT_ROI = new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Output, "ROI", "ROI of the segmented areas");
 
-    private final SegmentationModelSettings segmentationModelSettings;
     private final GeneralGPUSettings gpuSettings;
     private final SegmentationTweaksSettings segmentationTweaksSettings;
     private final SegmentationThresholdSettings segmentationThresholdSettings;
     private final SegmentationOutputSettings segmentationOutputSettings;
+
+    private CellposeModel model = CellposeModel.Cytoplasm;
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
     private boolean enable3DSegmentation = true;
     private OptionalAnnotationNameParameter diameterAnnotation = new OptionalAnnotationNameParameter("Diameter", true);
@@ -88,7 +99,6 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public CellposeAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.segmentationModelSettings = new SegmentationModelSettings();
         this.segmentationTweaksSettings = new SegmentationTweaksSettings();
         this.gpuSettings = new GeneralGPUSettings();
         this.segmentationThresholdSettings = new SegmentationThresholdSettings();
@@ -97,7 +107,6 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         updateOutputSlots();
         updateInputSlots();
 
-        registerSubParameter(segmentationModelSettings);
         registerSubParameter(segmentationTweaksSettings);
         registerSubParameter(segmentationThresholdSettings);
         registerSubParameter(segmentationOutputSettings);
@@ -109,9 +118,9 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.gpuSettings = new GeneralGPUSettings(other.gpuSettings);
         this.segmentationTweaksSettings = new SegmentationTweaksSettings(other.segmentationTweaksSettings);
         this.segmentationThresholdSettings = new SegmentationThresholdSettings(other.segmentationThresholdSettings);
-        this.segmentationModelSettings = new SegmentationModelSettings(other.segmentationModelSettings);
         this.segmentationOutputSettings = new SegmentationOutputSettings(other.segmentationOutputSettings);
 
+        this.model = other.model;
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.diameterAnnotation = new OptionalAnnotationNameParameter(other.diameterAnnotation);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
@@ -123,7 +132,6 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         updateOutputSlots();
         updateInputSlots();
 
-        registerSubParameter(segmentationModelSettings);
         registerSubParameter(segmentationTweaksSettings);
         registerSubParameter(segmentationThresholdSettings);
         registerSubParameter(segmentationOutputSettings);
@@ -181,13 +189,13 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         super.onParameterChanged(event);
         if (event.getSource() == segmentationOutputSettings) {
             updateOutputSlots();
-        } else if (event.getSource() == segmentationModelSettings && event.getKey().equals("model")) {
+        } else if (event.getKey().equals("model")) {
             updateInputSlots();
         }
     }
 
     private void updateInputSlots() {
-        toggleSlot(INPUT_PRETRAINED_MODEL, segmentationModelSettings.getModel() == CellposeModel.Custom);
+        toggleSlot(INPUT_PRETRAINED_MODEL, getModel() == CellposeModel.Custom);
 //        toggleSlot(INPUT_SIZE_MODEL, segmentationModelSettings.getModel() == CellposeModel.Custom);
     }
 
@@ -211,7 +219,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         // Save models if needed
         List<Path> customModelPaths = new ArrayList<>();
 //        Path customSizeModelPath = null;
-        if (segmentationModelSettings.getModel() == CellposeModel.Custom) {
+        if (getModel() == CellposeModel.Custom) {
             List<CellposeModelData> models = dataBatch.getInputData("Pretrained model", CellposeModelData.class, progressInfo);
             for (int i = 0; i < models.size(); i++) {
                 CellposeModelData modelData = models.get(i);
@@ -289,10 +297,115 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
                     CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), progressInfo.resolve("Extract Cellpose results (3D)"));
         }
 
+        // Fetch the data from the directory
+        for (CellposeImageInfo imageInfo : runWith2D) {
+            extractDataFromInfo(dataBatch, imageInfo, io2DPath, progressInfo.resolve("Importing results row " + imageInfo.sourceRow));
+        }
+        for (CellposeImageInfo imageInfo : runWith3D) {
+            extractDataFromInfo(dataBatch, imageInfo, io3DPath, progressInfo.resolve("Importing results row " + imageInfo.sourceRow));
+        }
 
         // Cleanup
         if (cleanUpAfterwards) {
             PathUtils.deleteDirectoryRecursively(workDirectory, progressInfo.resolve("Cleanup"));
+        }
+    }
+
+    private void extractDataFromInfo(JIPipeMergingDataBatch dataBatch, CellposeImageInfo imageInfo, Path ioPath, JIPipeProgressInfo progressInfo) {
+        List<JIPipeTextAnnotation> annotationList = new ArrayList<>(getInputSlot("Input").getTextAnnotations(imageInfo.sourceRow));
+        if(diameterAnnotation.isEnabled()) {
+            progressInfo.log("Reading info ...");
+            List<JIPipeTextAnnotation> diameterAnnotations = new ArrayList<>();
+            for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.sliceBaseNames.entrySet()) {
+                JsonNode node = JsonUtils.readFromFile(ioPath.resolve(entry.getValue() + "_seg_info.json"), JsonNode.class);
+                diameterAnnotation.addAnnotationIfEnabled(diameterAnnotations, node.get("est_diam").asText());
+            }
+            annotationList.addAll(JIPipeTextAnnotationMergeMode.Merge.merge(diameterAnnotations));
+        }
+        if(segmentationOutputSettings.isOutputROI()) {
+            progressInfo.log("Reading ROI ...");
+            ROIListData rois = new ROIListData();
+            for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.sliceBaseNames.entrySet()) {
+                ROIListData sliceRoi = CellposeUtils.cellposeROIJsonToImageJ(ioPath.resolve(entry.getValue() + "_seg_roi.json"));
+                if(imageInfo.sliceBaseNames.size() > 1) {
+                    for (Roi roi : sliceRoi) {
+                        roi.setPosition(0, entry.getKey().getZ() + 1,  0);
+                    }
+                }
+                rois.addAll(sliceRoi);
+            }
+            dataBatch.addOutputData("ROI", rois, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+        }
+        if(segmentationOutputSettings.isOutputFlowsD()) {
+            progressInfo.log("Reading Flows d ...");
+            ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_flows_dz_dy_dx.tif", true, progressInfo);
+            dataBatch.addOutputData(OUTPUT_FLOWS_D.getName(), new ImagePlusData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+        }
+        if(segmentationOutputSettings.isOutputFlowsXY()) {
+            progressInfo.log("Reading Flows XY ...");
+            ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_flows_rgb.tif", false, progressInfo);
+            dataBatch.addOutputData(OUTPUT_FLOWS_XY.getName(), new ImagePlusData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+        }
+        if(segmentationOutputSettings.isOutputFlowsZ()) {
+            progressInfo.log("Reading Flows Z ...");
+            ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_flows_z.tif", false, progressInfo);
+            dataBatch.addOutputData(OUTPUT_FLOWS_Z.getName(), new ImagePlusData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+        }
+        if(segmentationOutputSettings.isOutputLabels()) {
+            progressInfo.log("Reading labels ...");
+            ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_labels.tif", false, progressInfo);
+            dataBatch.addOutputData(OUTPUT_LABELS.getName(), new ImagePlusGreyscaleData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+        }
+        if(segmentationOutputSettings.isOutputProbabilities()) {
+            progressInfo.log("Reading probabilities ...");
+            ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_probabilities.tif", false, progressInfo);
+            dataBatch.addOutputData(OUTPUT_PROBABILITIES.getName(), new ImagePlusGreyscale32FData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+        }
+    }
+
+    private ImagePlus extractImageFromInfo(CellposeImageInfo imageInfo, Path ioPath, String basePathSuffix, boolean useBioFormats, JIPipeProgressInfo progressInfo) {
+        Map<ImageSliceIndex, ImagePlus> sliceMap = new HashMap<>();
+        for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.sliceBaseNames.entrySet()) {
+            Path imageFile = ioPath.resolve(entry.getValue() + basePathSuffix);
+            progressInfo.log("Reading: " + imageFile);
+            ImagePlus slice;
+            if(useBioFormats) {
+                OMEImageData omeImageData = OMEImageData.simpleOMEImport(imageFile);
+                slice = omeImageData.getImage();
+            }
+            else {
+                slice = IJ.openImage(imageFile.toString());
+            }
+            sliceMap.put(entry.getKey(), slice);
+        }
+        if(sliceMap.size() == 1) {
+            return sliceMap.values().iterator().next();
+        }
+        else {
+            int width = 0;
+            int height = 0;
+            int sizeZ = 0;
+            int sizeC = 0;
+            int sizeT = 0;
+            for (Map.Entry<ImageSliceIndex, ImagePlus> entry : sliceMap.entrySet()) {
+                width = Math.max(entry.getValue().getWidth(), width);
+                height = Math.max(entry.getValue().getHeight(), height);
+                sizeZ = Math.max(entry.getKey().getZ() + 1, sizeZ);
+                sizeC = Math.max(Math.max(entry.getKey().getC() + 1, sizeC), entry.getValue().getStackSize()); // Map slices to channels
+                sizeT = Math.max(entry.getKey().getT() + 1, sizeT);
+            }
+            ImageStack stack = new ImageStack(width, height, sizeZ * sizeT * sizeC);
+            for (Map.Entry<ImageSliceIndex, ImagePlus> entry :sliceMap.entrySet()) {
+                // Map all slices to channels
+                for (int i = 0; i < entry.getValue().getStackSize(); i++) {
+                    ImageProcessor processor = entry.getValue().getStack().getProcessor(i + 1);
+                    int targetIndex = (new ImageSliceIndex(i, entry.getKey().getZ(), entry.getKey().getT())).zeroSliceIndexToOneStackIndex(sizeC, sizeZ, sizeT);
+                    stack.setProcessor(processor, targetIndex);
+                }
+            }
+            ImagePlus img = new ImagePlus(basePathSuffix, stack);
+            img.setDimensions(sizeC, sizeZ, sizeT);
+            return img;
         }
     }
 
@@ -339,13 +452,13 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
 
         // Model
-        if(segmentationModelSettings.getModel() == CellposeModel.Custom) {
+        if(getModel() == CellposeModel.Custom) {
             arguments.add("--pretrained_model");
             arguments.add(customModelPath.toString());
         }
         else {
             arguments.add("--pretrained_model");
-            arguments.add(segmentationModelSettings.getModel().getId());
+            arguments.add(getModel().getId());
         }
 
         // Tweaks
@@ -494,12 +607,6 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.diameter = diameter;
     }
 
-    @JIPipeDocumentation(name = "Cellpose: Model", description = "The following settings are related to the model.")
-    @JIPipeParameter(value = "model-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public SegmentationModelSettings getModelParameters() {
-        return segmentationModelSettings;
-    }
-
     @JIPipeDocumentation(name = "Cellpose: Tweaks", description = "Additional options like augmentation and averaging over multiple networks")
     @JIPipeParameter(value = "enhancement-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png", collapsed = true)
     public SegmentationTweaksSettings getEnhancementParameters() {
@@ -519,18 +626,20 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
-    @JIPipeParameter(value = "output-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeParameter(value = "gpu-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
     public GeneralGPUSettings getGpuSettings() {
         return gpuSettings;
     }
 
-    @Override
-    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if (access.getSource() == segmentationModelSettings && "mean-diameter".equals(access.getKey())) {
-            // This is never needed
-            return false;
-        }
-        return super.isParameterUIVisible(tree, access);
+    @JIPipeDocumentation(name = "Model", description = "The model type that should be used.")
+    @JIPipeParameter("model")
+    public CellposeModel getModel() {
+        return model;
+    }
+
+    @JIPipeParameter("model")
+    public void setModel(CellposeModel model) {
+        this.model = model;
     }
 
     private void updateOutputSlots() {
