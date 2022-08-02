@@ -18,6 +18,7 @@ import org.hkijena.jipipe.extensions.cellpose.CellposePretrainedModel;
 import org.hkijena.jipipe.extensions.cellpose.CellposeSettings;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeSizeModelData;
+import org.hkijena.jipipe.extensions.cellpose.parameters.GeneralGPUSettings;
 import org.hkijena.jipipe.extensions.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling2DAlgorithm;
@@ -32,6 +33,7 @@ import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -50,7 +52,8 @@ import java.util.stream.Collectors;
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
-    private boolean enableGPU = true;
+
+    private final GeneralGPUSettings gpuSettings;
     private CellposePretrainedModel pretrainedModel = CellposePretrainedModel.Cytoplasm;
     private int numEpochs = 500;
     private double learningRate = 0.2;
@@ -68,14 +71,20 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("Label");
     private boolean generateConnectedComponents = true;
 
+
     public CellposeTrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.gpuSettings = new GeneralGPUSettings();
         updateSlots();
+
+        registerSubParameter(gpuSettings);
     }
 
     public CellposeTrainingAlgorithm(CellposeTrainingAlgorithm other) {
         super(other);
-        this.enableGPU = other.enableGPU;
+
+        this.gpuSettings = new GeneralGPUSettings(other.gpuSettings);
+
         this.pretrainedModel = other.pretrainedModel;
         this.numEpochs = other.numEpochs;
         this.learningRate = other.learningRate;
@@ -92,6 +101,9 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.generateConnectedComponents = other.generateConnectedComponents;
         this.minTrainMasks = other.minTrainMasks;
         this.weightDecay = other.weightDecay;
+
+        registerSubParameter(gpuSettings);
+
         updateSlots();
     }
 
@@ -288,16 +300,10 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.labelDataAnnotation = labelDataAnnotation;
     }
 
-    @JIPipeDocumentation(name = "With GPU", description = "Utilize a GPU if available. Please note that you need to setup Cellpose " +
-            "to allow usage of your GPU. Also ensure that enough memory is available.")
-    @JIPipeParameter("enable-gpu")
-    public boolean isEnableGPU() {
-        return enableGPU;
-    }
-
-    @JIPipeParameter("enable-gpu")
-    public void setEnableGPU(boolean enableGPU) {
-        this.enableGPU = enableGPU;
+    @JIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
+    @JIPipeParameter(value = "output-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    public GeneralGPUSettings getGpuSettings() {
+        return gpuSettings;
     }
 
     @JIPipeDocumentation(name = "Model", description = "The pretrained model that should be used. You can either choose one of the models " +
@@ -425,8 +431,12 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         arguments.add("--chan");
         arguments.add("0");
 
-        if (enableGPU)
+        if (gpuSettings.isEnableGPU())
             arguments.add("--use_gpu");
+        if(gpuSettings.getGpuDevice().isEnabled()) {
+            arguments.add("--gpu_device");
+            arguments.add(gpuSettings.getGpuDevice().getContent() + "");
+        }
         if (dataIs3D)
             arguments.add("--do_3D");
         if (pretrainedModel == CellposePretrainedModel.Custom || pretrainedModel == CellposePretrainedModel.None) {

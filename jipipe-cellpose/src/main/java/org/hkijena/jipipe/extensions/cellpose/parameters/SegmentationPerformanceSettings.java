@@ -5,7 +5,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
-public class PerformanceParameters implements JIPipeParameterCollection {
+public class SegmentationPerformanceSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private int batchSize = 8;
@@ -13,10 +13,10 @@ public class PerformanceParameters implements JIPipeParameterCollection {
     private double tileOverlap = 0.1;
     private boolean resample = false;
 
-    public PerformanceParameters() {
+    public SegmentationPerformanceSettings() {
     }
 
-    public PerformanceParameters(PerformanceParameters other) {
+    public SegmentationPerformanceSettings(SegmentationPerformanceSettings other) {
         this.batchSize = other.batchSize;
         this.tile = other.tile;
         this.tileOverlap = other.tileOverlap;

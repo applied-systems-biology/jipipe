@@ -42,7 +42,8 @@ import java.util.stream.Collectors;
 /**
  * @deprecated New implementation will be CellPoseAlgorithm2 that is based around the Cellpose CLI
  */
-@JIPipeDocumentation(name = "Cellpose", description = "Runs Cellpose on the input image. This node supports both segmentation in 3D and executing " +
+@JIPipeDocumentation(name = "Cellpose", description = "<strong>This node is deprecated. Please replace it with a new instance of the Cellpose segmentation node</strong><br/><br/>" +
+        "Runs Cellpose on the input image. This node supports both segmentation in 3D and executing " +
         "Cellpose for each 2D image plane. " +
         "This node can generate a multitude of outputs, although only ROI is activated by default. " +
         "Go to the 'Outputs' parameter section to enable the other outputs." +
@@ -66,11 +67,11 @@ import java.util.stream.Collectors;
 @JIPipeHidden
 public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
-    private ModelParameters modelParameters = new ModelParameters();
-    private PerformanceParameters performanceParameters = new PerformanceParameters();
-    private EnhancementParameters enhancementParameters = new EnhancementParameters();
-    private ThresholdParameters thresholdParameters = new ThresholdParameters();
-    private OutputParameters outputParameters = new OutputParameters();
+    private SegmentationModelSettings segmentationModelSettings = new SegmentationModelSettings();
+    private SegmentationPerformanceSettings segmentationPerformanceSettings = new SegmentationPerformanceSettings();
+    private SegmentationEnhancementSettings segmentationEnhancementSettings = new SegmentationEnhancementSettings();
+    private SegmentationThresholdSettings segmentationThresholdSettings = new SegmentationThresholdSettings();
+    private SegmentationOutputSettings_Old outputParameters = new SegmentationOutputSettings_Old();
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
     private boolean enable3DSegmentation = true;
     private OptionalAnnotationNameParameter diameterAnnotation = new OptionalAnnotationNameParameter("Diameter", true);
@@ -81,10 +82,10 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         super(info);
         updateOutputSlots();
         updateInputSlots();
-        registerSubParameter(modelParameters);
-        registerSubParameter(performanceParameters);
-        registerSubParameter(enhancementParameters);
-        registerSubParameter(thresholdParameters);
+        registerSubParameter(segmentationModelSettings);
+        registerSubParameter(segmentationPerformanceSettings);
+        registerSubParameter(segmentationEnhancementSettings);
+        registerSubParameter(segmentationThresholdSettings);
         registerSubParameter(outputParameters);
     }
 
@@ -92,20 +93,20 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         super(other);
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.diameterAnnotation = new OptionalAnnotationNameParameter(other.diameterAnnotation);
-        this.modelParameters = new ModelParameters(other.modelParameters);
-        this.outputParameters = new OutputParameters(other.outputParameters);
-        this.performanceParameters = new PerformanceParameters(other.performanceParameters);
-        this.enhancementParameters = new EnhancementParameters(other.enhancementParameters);
-        this.thresholdParameters = new ThresholdParameters(other.thresholdParameters);
+        this.segmentationModelSettings = new SegmentationModelSettings(other.segmentationModelSettings);
+        this.outputParameters = new SegmentationOutputSettings_Old(other.outputParameters);
+        this.segmentationPerformanceSettings = new SegmentationPerformanceSettings(other.segmentationPerformanceSettings);
+        this.segmentationEnhancementSettings = new SegmentationEnhancementSettings(other.segmentationEnhancementSettings);
+        this.segmentationThresholdSettings = new SegmentationThresholdSettings(other.segmentationThresholdSettings);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.enable3DSegmentation = other.enable3DSegmentation;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
         updateOutputSlots();
         updateInputSlots();
-        registerSubParameter(modelParameters);
-        registerSubParameter(performanceParameters);
-        registerSubParameter(enhancementParameters);
-        registerSubParameter(thresholdParameters);
+        registerSubParameter(segmentationModelSettings);
+        registerSubParameter(segmentationPerformanceSettings);
+        registerSubParameter(segmentationEnhancementSettings);
+        registerSubParameter(segmentationThresholdSettings);
         registerSubParameter(outputParameters);
     }
 
@@ -138,13 +139,13 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         super.onParameterChanged(event);
         if (event.getSource() == outputParameters) {
             updateOutputSlots();
-        } else if (event.getSource() == modelParameters && event.getKey().equals("model")) {
+        } else if (event.getSource() == segmentationModelSettings && event.getKey().equals("model")) {
             updateInputSlots();
         }
     }
 
     private void updateInputSlots() {
-        if (modelParameters.getModel() != CellposeModel.Custom) {
+        if (segmentationModelSettings.getModel() != CellposeModel.Custom) {
             JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
             if (getInputSlotMap().containsKey("Pretrained model")) {
                 slotConfiguration.removeInputSlot("Pretrained model", false);
@@ -186,7 +187,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         // Save models if needed
         List<Path> customModelPaths = new ArrayList<>();
         Path customSizeModelPath = null;
-        if (modelParameters.getModel() == CellposeModel.Custom) {
+        if (segmentationModelSettings.getModel() == CellposeModel.Custom) {
             List<CellposeModelData> models = dataBatch.getInputData("Pretrained model", CellposeModelData.class, progressInfo);
             for (int i = 0; i < models.size(); i++) {
                 CellposeModelData modelData = models.get(i);
@@ -286,7 +287,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
 
         // I we provide a custom model, we need to inject custom code (Why?)
-        if (modelParameters.getModel() == CellposeModel.Custom) {
+        if (segmentationModelSettings.getModel() == CellposeModel.Custom) {
             injectCustomCellposeClass(code);
             setupCustomCellposeModel(code, customModelPaths, customSizeModelPath);
         } else {
@@ -515,37 +516,37 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     @JIPipeDocumentation(name = "Cellpose: Model", description = "The following settings are related to the model.")
     @JIPipeParameter(value = "model-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public ModelParameters getModelParameters() {
-        return modelParameters;
+    public SegmentationModelSettings getModelParameters() {
+        return segmentationModelSettings;
     }
 
     @JIPipeDocumentation(name = "Cellpose: Performance", description = "The following settings are related to the performance of the operation (e.g., tiling).")
     @JIPipeParameter(value = "performance-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public PerformanceParameters getPerformanceParameters() {
-        return performanceParameters;
+    public SegmentationPerformanceSettings getPerformanceParameters() {
+        return segmentationPerformanceSettings;
     }
 
     @JIPipeDocumentation(name = "Cellpose: Tweaks", description = "Additional options like augmentation and averaging over multiple networks")
     @JIPipeParameter(value = "enhancement-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public EnhancementParameters getEnhancementParameters() {
-        return enhancementParameters;
+    public SegmentationEnhancementSettings getEnhancementParameters() {
+        return segmentationEnhancementSettings;
     }
 
     @JIPipeDocumentation(name = "Cellpose: Thresholds", description = "Parameters that control which objects are selected.")
     @JIPipeParameter(value = "threshold-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public ThresholdParameters getThresholdParameters() {
-        return thresholdParameters;
+    public SegmentationThresholdSettings getThresholdParameters() {
+        return segmentationThresholdSettings;
     }
 
     @JIPipeDocumentation(name = "Cellpose: Outputs", description = "The following settings allow you to select which outputs are generated.")
     @JIPipeParameter(value = "output-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public OutputParameters getOutputParameters() {
+    public SegmentationOutputSettings_Old getOutputParameters() {
         return outputParameters;
     }
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if (access.getSource() == modelParameters && "mean-diameter".equals(access.getKey())) {
+        if (access.getSource() == segmentationModelSettings && "mean-diameter".equals(access.getKey())) {
             // This is never needed
             return false;
         }

@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 
-public class EnhancementParameters implements JIPipeParameterCollection {
+public class SegmentationEnhancementSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private boolean normalize = true;
@@ -15,10 +15,10 @@ public class EnhancementParameters implements JIPipeParameterCollection {
     private boolean interpolate = true;
     private OptionalDoubleParameter anisotropy = new OptionalDoubleParameter(1.0, false);
 
-    public EnhancementParameters() {
+    public SegmentationEnhancementSettings() {
     }
 
-    public EnhancementParameters(EnhancementParameters other) {
+    public SegmentationEnhancementSettings(SegmentationEnhancementSettings other) {
         this.normalize = other.normalize;
         this.netAverage = other.netAverage;
         this.augment = other.augment;
@@ -30,6 +30,8 @@ public class EnhancementParameters implements JIPipeParameterCollection {
     public EventBus getEventBus() {
         return eventBus;
     }
+
+
 
     @JIPipeDocumentation(name = "Normalize", description = "Normalize data so 0.0=1st percentile and 1.0=99th percentile of image intensities in each channel")
     @JIPipeParameter("normalize")

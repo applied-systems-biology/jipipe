@@ -5,7 +5,10 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
-public class OutputParameters implements JIPipeParameterCollection {
+/**
+ * @deprecated Used by the old {@link org.hkijena.jipipe.extensions.cellpose.algorithms.CellposeAlgorithm}
+ */
+public class SegmentationOutputSettings_Old implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private boolean outputLabels = false;
@@ -14,10 +17,10 @@ public class OutputParameters implements JIPipeParameterCollection {
     private boolean outputStyles = false;
     private boolean outputROI = true;
 
-    public OutputParameters() {
+    public SegmentationOutputSettings_Old() {
     }
 
-    public OutputParameters(OutputParameters other) {
+    public SegmentationOutputSettings_Old(SegmentationOutputSettings_Old other) {
         this.outputLabels = other.outputLabels;
         this.outputFlows = other.outputFlows;
         this.outputProbabilities = other.outputProbabilities;

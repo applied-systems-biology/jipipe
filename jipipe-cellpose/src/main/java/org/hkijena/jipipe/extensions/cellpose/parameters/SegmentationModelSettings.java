@@ -8,17 +8,17 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.cellpose.CellposeModel;
 
-public class ModelParameters implements JIPipeParameterCollection {
+public class SegmentationModelSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private boolean enableGPU = true;
     private CellposeModel model = CellposeModel.Cytoplasm;
     private double meanDiameter = 30;
 
-    public ModelParameters() {
+    public SegmentationModelSettings() {
     }
 
-    public ModelParameters(ModelParameters other) {
+    public SegmentationModelSettings(SegmentationModelSettings other) {
         this.enableGPU = other.enableGPU;
         this.model = other.model;
         this.meanDiameter = other.meanDiameter;

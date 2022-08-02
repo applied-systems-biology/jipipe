@@ -5,7 +5,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
-public class ThresholdParameters implements JIPipeParameterCollection {
+public class SegmentationThresholdSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private double flowThreshold = 0.4;
@@ -13,10 +13,10 @@ public class ThresholdParameters implements JIPipeParameterCollection {
     private int minSize = 15;
     private double stitchThreshold = 0;
 
-    public ThresholdParameters() {
+    public SegmentationThresholdSettings() {
     }
 
-    public ThresholdParameters(ThresholdParameters other) {
+    public SegmentationThresholdSettings(SegmentationThresholdSettings other) {
         this.flowThreshold = other.flowThreshold;
         this.cellProbabilityThreshold = other.cellProbabilityThreshold;
         this.minSize = other.minSize;
