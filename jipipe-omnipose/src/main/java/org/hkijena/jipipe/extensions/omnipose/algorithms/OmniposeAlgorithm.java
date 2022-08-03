@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.cellpose.CellposeExtension;
 import org.hkijena.jipipe.extensions.cellpose.CellposeUtils;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeModelData;
+import org.hkijena.jipipe.extensions.cellpose.parameters.CellposeChannelSettings;
 import org.hkijena.jipipe.extensions.cellpose.parameters.CellposeGPUSettings;
 import org.hkijena.jipipe.extensions.cellpose.parameters.CellposeSegmentationOutputSettings;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -43,6 +44,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
@@ -86,6 +88,7 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     private final OmniposeSegmentationTweaksSettings segmentationTweaksSettings;
     private final OmniposeSegmentationThresholdSettings segmentationThresholdSettings;
     private final CellposeSegmentationOutputSettings segmentationOutputSettings;
+    private final CellposeChannelSettings channelSettings;
 
     private OmniposeModel model = OmniposeModel.BactOmni;
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
@@ -94,16 +97,13 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     private boolean cleanUpAfterwards = true;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
 
-    private OptionalIntegerParameter segmentedChannel = new OptionalIntegerParameter(false, 0);
-
-    private OptionalIntegerParameter nuclearChannel = new OptionalIntegerParameter(false, 0);
-
     public OmniposeAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.segmentationTweaksSettings = new OmniposeSegmentationTweaksSettings();
         this.gpuSettings = new CellposeGPUSettings();
         this.segmentationThresholdSettings = new OmniposeSegmentationThresholdSettings();
         this.segmentationOutputSettings = new CellposeSegmentationOutputSettings();
+        this.channelSettings = new CellposeChannelSettings();
 
         updateOutputSlots();
         updateInputSlots();
@@ -112,6 +112,7 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         registerSubParameter(segmentationThresholdSettings);
         registerSubParameter(segmentationOutputSettings);
         registerSubParameter(gpuSettings);
+        registerSubParameter(channelSettings);
     }
 
     public OmniposeAlgorithm(OmniposeAlgorithm other) {
@@ -120,13 +121,12 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.segmentationTweaksSettings = new OmniposeSegmentationTweaksSettings(other.segmentationTweaksSettings);
         this.segmentationThresholdSettings = new OmniposeSegmentationThresholdSettings(other.segmentationThresholdSettings);
         this.segmentationOutputSettings = new CellposeSegmentationOutputSettings(other.segmentationOutputSettings);
+        this.channelSettings = new CellposeChannelSettings(other.channelSettings);
 
         this.model = other.model;
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.diameterAnnotation = new OptionalAnnotationNameParameter(other.diameterAnnotation);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
-        this.segmentedChannel = new OptionalIntegerParameter(other.segmentedChannel);
-        this.nuclearChannel = new OptionalIntegerParameter(other.nuclearChannel);
         this.enable3DSegmentation = other.enable3DSegmentation;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
 
@@ -137,28 +137,7 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         registerSubParameter(segmentationThresholdSettings);
         registerSubParameter(segmentationOutputSettings);
         registerSubParameter(gpuSettings);
-    }
-
-    @JIPipeDocumentation(name = "Segmented channel", description = "Channel to segment; 0: GRAY, 1: RED, 2: GREEN, 3: BLUE. Default: 0")
-    @JIPipeParameter("segmented-channel")
-    public OptionalIntegerParameter getSegmentedChannel() {
-        return segmentedChannel;
-    }
-
-    @JIPipeParameter("segmented-channel")
-    public void setSegmentedChannel(OptionalIntegerParameter segmentedChannel) {
-        this.segmentedChannel = segmentedChannel;
-    }
-
-    @JIPipeDocumentation(name = "Nuclear channel", description = "Nuclear channel (only used by certain models); 0: NONE, 1: RED, 2: GREEN, 3: BLUE. Default: 0")
-    @JIPipeParameter("nuclear-channel")
-    public OptionalIntegerParameter getNuclearChannel() {
-        return nuclearChannel;
-    }
-
-    @JIPipeParameter("nuclear-channel")
-    public void setNuclearChannel(OptionalIntegerParameter nuclearChannel) {
-        this.nuclearChannel = nuclearChannel;
+        registerSubParameter(channelSettings);
     }
 
     @JIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will segment in 3D. Otherwise, " +
@@ -393,6 +372,8 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private void runCellpose(JIPipeProgressInfo progressInfo, Path ioPath, boolean with3D, Path customModelPath) {
         List<String> arguments = new ArrayList<>();
+        Map<String, String> envVars = new HashMap<>();
+
         arguments.add("-m");
         arguments.add("cellpose");
 
@@ -416,25 +397,31 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
 
         // GPU
-        if (gpuSettings.isEnableGPU())
+        if (gpuSettings.isEnableGPU()) {
             arguments.add("--use_gpu");
-        if(gpuSettings.getGpuDevice().isEnabled()) {
-            arguments.add("--gpu_device");
-            arguments.add(gpuSettings.getGpuDevice().getContent() + "");
+            if(gpuSettings.getGpuDevice().isEnabled()) {
+                envVars.put("CUDA_VISIBLE_DEVICES", gpuSettings.getGpuDevice().getContent().toString());
+            }
         }
 
         // Channels
-        if(segmentedChannel.isEnabled()) {
+        if(channelSettings.getSegmentedChannel().isEnabled()) {
             arguments.add("--chan");
-            arguments.add(segmentedChannel.getContent() + "");
+            arguments.add(channelSettings.getSegmentedChannel().getContent() + "");
         }
         else {
             arguments.add("--chan");
             arguments.add("0");
         }
-        if(nuclearChannel.isEnabled()) {
+        if(channelSettings.getNuclearChannel().isEnabled()) {
             arguments.add("--chan2");
-            arguments.add(nuclearChannel.getContent() + "");
+            arguments.add(channelSettings.getNuclearChannel().getContent() + "");
+        }
+        if(channelSettings.isAllChannels()) {
+            arguments.add("--all_channels");
+        }
+        if(channelSettings.isInvert()) {
+            arguments.add("--invert");
         }
 
         // Model
@@ -494,10 +481,6 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         arguments.add(ioPath.toString());
 
         // Run the module
-        Map<String, String> envVars = new HashMap<>();
-        if(gpuSettings.isEnableGPU() && gpuSettings.getGpuDevice().isEnabled()) {
-            envVars.put("CUDA_VISIBLE_DEVICES", gpuSettings.getGpuDevice().getContent().toString());
-        }
         PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
                 OmniposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), envVars, progressInfo);
     }
@@ -602,6 +585,12 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     @JIPipeParameter("diameter")
     public void setDiameter(OptionalDoubleParameter diameter) {
         this.diameter = diameter;
+    }
+
+    @JIPipeDocumentation(name = "Omnipose: Channels", description = "Determines which channels are used for the segmentation")
+    @JIPipeParameter(value = "channel-parameters", resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
+    public CellposeChannelSettings getChannelSettings() {
+        return channelSettings;
     }
 
     @JIPipeDocumentation(name = "Omnipose: Tweaks", description = "Additional options like augmentation and averaging over multiple networks")

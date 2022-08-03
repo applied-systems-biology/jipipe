@@ -16,6 +16,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.cellpose.algorithms.*;
+import org.hkijena.jipipe.extensions.cellpose.algorithms.deprecated.CellposeAlgorithm_Old;
+import org.hkijena.jipipe.extensions.cellpose.algorithms.deprecated.CellposeTrainingAlgorithm_Old;
 import org.hkijena.jipipe.extensions.cellpose.compat.CellposeModelImageJExporter;
 import org.hkijena.jipipe.extensions.cellpose.compat.CellposeModelImageJImporter;
 import org.hkijena.jipipe.extensions.cellpose.compat.CellposeSizeModelImageJExporter;
@@ -174,7 +176,8 @@ public class CellposeExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerNodeType("cellpose", CellposeAlgorithm_Old.class, UIUtils.getIconURLFromResources("emblems/vcs-conflicting.png"));
         registerNodeType("cellpose-2", CellposeAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
-        registerNodeType("cellpose-training", CellposeTrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("cellpose-training", CellposeTrainingAlgorithm_Old.class, UIUtils.getIconURLFromResources("emblems/vcs-conflicting.png"));
+        registerNodeType("cellpose-training-2", CellposeTrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
         registerNodeType("import-cellpose-model", ImportCellposeModelAlgorithm.class);
         registerNodeType("import-cellpose-size-model", ImportCellposeSizeModelAlgorithm.class);
     }

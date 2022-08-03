@@ -19,12 +19,12 @@ import org.hkijena.jipipe.extensions.cellpose.CellposeExtension;
 import org.hkijena.jipipe.extensions.cellpose.CellposeModel;
 import org.hkijena.jipipe.extensions.cellpose.CellposeSettings;
 import org.hkijena.jipipe.extensions.cellpose.CellposeUtils;
+import org.hkijena.jipipe.extensions.cellpose.algorithms.deprecated.CellposeAlgorithm_Old;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.extensions.cellpose.parameters.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
@@ -84,6 +84,8 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     private final CellposeSegmentationThresholdSettings segmentationThresholdSettings;
     private final CellposeSegmentationOutputSettings segmentationOutputSettings;
 
+    private final CellposeChannelSettings channelSettings;
+
     private CellposeModel model = CellposeModel.Cytoplasm;
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
     private boolean enable3DSegmentation = true;
@@ -91,16 +93,13 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     private boolean cleanUpAfterwards = true;
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
 
-    private OptionalIntegerParameter segmentedChannel = new OptionalIntegerParameter(false, 0);
-
-    private OptionalIntegerParameter nuclearChannel = new OptionalIntegerParameter(false, 0);
-
     public CellposeAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.segmentationTweaksSettings = new CellposeSegmentationTweaksSettings();
         this.gpuSettings = new CellposeGPUSettings();
         this.segmentationThresholdSettings = new CellposeSegmentationThresholdSettings();
         this.segmentationOutputSettings = new CellposeSegmentationOutputSettings();
+        this.channelSettings = new CellposeChannelSettings();
 
         updateOutputSlots();
         updateInputSlots();
@@ -109,6 +108,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         registerSubParameter(segmentationThresholdSettings);
         registerSubParameter(segmentationOutputSettings);
         registerSubParameter(gpuSettings);
+        registerSubParameter(channelSettings);
     }
 
     public CellposeAlgorithm(CellposeAlgorithm other) {
@@ -117,13 +117,12 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.segmentationTweaksSettings = new CellposeSegmentationTweaksSettings(other.segmentationTweaksSettings);
         this.segmentationThresholdSettings = new CellposeSegmentationThresholdSettings(other.segmentationThresholdSettings);
         this.segmentationOutputSettings = new CellposeSegmentationOutputSettings(other.segmentationOutputSettings);
+        this.channelSettings = new CellposeChannelSettings(other.channelSettings);
 
         this.model = other.model;
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.diameterAnnotation = new OptionalAnnotationNameParameter(other.diameterAnnotation);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
-        this.segmentedChannel = new OptionalIntegerParameter(other.segmentedChannel);
-        this.nuclearChannel = new OptionalIntegerParameter(other.nuclearChannel);
         this.enable3DSegmentation = other.enable3DSegmentation;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
 
@@ -134,28 +133,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         registerSubParameter(segmentationThresholdSettings);
         registerSubParameter(segmentationOutputSettings);
         registerSubParameter(gpuSettings);
-    }
-
-    @JIPipeDocumentation(name = "Segmented channel", description = "Channel to segment; 0: GRAY, 1: RED, 2: GREEN, 3: BLUE. Default: 0")
-    @JIPipeParameter("segmented-channel")
-    public OptionalIntegerParameter getSegmentedChannel() {
-        return segmentedChannel;
-    }
-
-    @JIPipeParameter("segmented-channel")
-    public void setSegmentedChannel(OptionalIntegerParameter segmentedChannel) {
-        this.segmentedChannel = segmentedChannel;
-    }
-
-    @JIPipeDocumentation(name = "Nuclear channel", description = "Nuclear channel (only used by certain models); 0: NONE, 1: RED, 2: GREEN, 3: BLUE. Default: 0")
-    @JIPipeParameter("nuclear-channel")
-    public OptionalIntegerParameter getNuclearChannel() {
-        return nuclearChannel;
-    }
-
-    @JIPipeParameter("nuclear-channel")
-    public void setNuclearChannel(OptionalIntegerParameter nuclearChannel) {
-        this.nuclearChannel = nuclearChannel;
+        registerSubParameter(channelSettings);
     }
 
     @JIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will segment in 3D. Otherwise, " +
@@ -436,17 +414,23 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
 
         // Channels
-        if(segmentedChannel.isEnabled()) {
+        if(channelSettings.getSegmentedChannel().isEnabled()) {
             arguments.add("--chan");
-            arguments.add(segmentedChannel.getContent() + "");
+            arguments.add(channelSettings.getSegmentedChannel().getContent() + "");
         }
         else {
             arguments.add("--chan");
             arguments.add("0");
         }
-        if(nuclearChannel.isEnabled()) {
+        if(channelSettings.getNuclearChannel().isEnabled()) {
             arguments.add("--chan2");
-            arguments.add(nuclearChannel.getContent() + "");
+            arguments.add(channelSettings.getNuclearChannel().getContent() + "");
+        }
+        if(channelSettings.isAllChannels()) {
+            arguments.add("--all_channels");
+        }
+        if(channelSettings.isInvert()) {
+            arguments.add("--invert");
         }
 
         // Model
@@ -605,6 +589,12 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.diameter = diameter;
     }
 
+    @JIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are used for the segmentation")
+    @JIPipeParameter(value = "channel-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    public CellposeChannelSettings getChannelSettings() {
+        return channelSettings;
+    }
+
     @JIPipeDocumentation(name = "Cellpose: Tweaks", description = "Additional options like augmentation and averaging over multiple networks")
     @JIPipeParameter(value = "enhancement-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png", collapsed = true)
     public CellposeSegmentationTweaksSettings getEnhancementParameters() {
@@ -637,7 +627,10 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     @JIPipeParameter("model")
     public void setModel(CellposeModel model) {
-        this.model = model;
+        if(this.model != model) {
+            this.model = model;
+            updateInputSlots();
+        }
     }
 
     private void updateOutputSlots() {

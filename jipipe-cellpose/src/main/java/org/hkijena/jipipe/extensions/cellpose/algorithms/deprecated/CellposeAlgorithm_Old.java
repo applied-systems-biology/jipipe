@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.cellpose.algorithms;
+package org.hkijena.jipipe.extensions.cellpose.algorithms.deprecated;
 
 import com.google.common.collect.ImmutableList;
 import ij.IJ;
@@ -62,7 +62,7 @@ import java.util.stream.Collectors;
 @JIPipeOutputSlot(value = ImagePlus3DGreyscale32FData.class, slotName = "Probabilities")
 @JIPipeOutputSlot(value = ImagePlus2DGreyscale32FData.class, slotName = "Styles")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
-@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning\nDeprecated")
 @Deprecated
 public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
 
