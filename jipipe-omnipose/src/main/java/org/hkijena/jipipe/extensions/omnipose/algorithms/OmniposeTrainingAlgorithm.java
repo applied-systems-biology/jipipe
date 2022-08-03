@@ -20,7 +20,6 @@ import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeSizeModelData;
 import org.hkijena.jipipe.extensions.cellpose.parameters.CellposeChannelSettings;
 import org.hkijena.jipipe.extensions.cellpose.parameters.CellposeGPUSettings;
-import org.hkijena.jipipe.extensions.cellpose.parameters.CellposeTrainingTweaksSettings;
 import org.hkijena.jipipe.extensions.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling2DAlgorithm;
@@ -34,6 +33,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.omnipose.OmniposeExtension;
 import org.hkijena.jipipe.extensions.omnipose.OmniposePretrainedModel;
 import org.hkijena.jipipe.extensions.omnipose.OmniposeSettings;
+import org.hkijena.jipipe.extensions.omnipose.parameters.OmniposeTrainingTweaksSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     private final CellposeGPUSettings gpuSettings;
-    private final CellposeTrainingTweaksSettings tweaksSettings;
+    private final OmniposeTrainingTweaksSettings tweaksSettings;
     private final CellposeChannelSettings channelSettings;
     private OmniposePretrainedModel pretrainedModel = OmniposePretrainedModel.BactOmni;
     private int numEpochs = 500;
@@ -73,7 +73,7 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     public OmniposeTrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.gpuSettings = new CellposeGPUSettings();
-        this.tweaksSettings = new CellposeTrainingTweaksSettings();
+        this.tweaksSettings = new OmniposeTrainingTweaksSettings();
         this.channelSettings = new CellposeChannelSettings();
         updateSlots();
 
@@ -86,7 +86,7 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         super(other);
 
         this.gpuSettings = new CellposeGPUSettings(other.gpuSettings);
-        this.tweaksSettings = new CellposeTrainingTweaksSettings(other.tweaksSettings);
+        this.tweaksSettings = new OmniposeTrainingTweaksSettings(other.tweaksSettings);
         this.channelSettings = new CellposeChannelSettings(other.channelSettings);
 
         this.pretrainedModel = other.pretrainedModel;
@@ -215,7 +215,7 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     @JIPipeDocumentation(name = "Omnipose: Tweaks", description = "Advanced settings for the training.")
     @JIPipeParameter(value = "tweaks-settings", collapsed = true, resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
-    public CellposeTrainingTweaksSettings getTweaksSettings() {
+    public OmniposeTrainingTweaksSettings getTweaksSettings() {
         return tweaksSettings;
     }
 
@@ -331,6 +331,9 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         arguments.add("-m");
         arguments.add("cellpose");
 
+        // Activate Omnipose
+        arguments.add("--omni");
+
         arguments.add("--verbose");
 
         arguments.add("--train");
@@ -381,8 +384,6 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         if (diameter.isEnabled()) {
             arguments.add("--diameter");
             arguments.add(diameter.getContent() + "");
-            arguments.add("--diam_mean");
-            arguments.add(diameter.getContent() + "");
         }
 
         switch (pretrainedModel) {
@@ -405,9 +406,6 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         arguments.add("--learning_rate");
         arguments.add(tweaksSettings.getLearningRate() + "");
-
-        arguments.add("--weight_decay");
-        arguments.add(tweaksSettings.getWeightDecay() + "");
 
         arguments.add("--n_epochs");
         arguments.add(numEpochs + "");

@@ -45,6 +45,7 @@ import org.hkijena.jipipe.extensions.utils.contextmenu.ParameterExplorerContextM
 import org.hkijena.jipipe.extensions.utils.datatypes.JIPipeOutputData;
 import org.hkijena.jipipe.extensions.utils.datatypes.PathDataToJIPipeOutputConverter;
 import org.hkijena.jipipe.extensions.utils.display.ImportJIPipeProjectDataOperation;
+import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
@@ -60,6 +61,8 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
     public static final JIPipeDependency AS_DEPENDENCY = new JIPipeMutableDependency("org.hkijena.jipipe:utils",
             JIPipe.getJIPipeVersion(),
             "Utilities");
+
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(UtilitiesExtension.class, "org/hkijena/jipipe/extensions/utils");
 
     public UtilitiesExtension() {
         getMetadata().addCategories(PluginCategoriesEnumParameter.CATEGORY_DATA_PROCESSING, PluginCategoriesEnumParameter.CATEGORY_SCRIPTING);
@@ -125,6 +128,8 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         // Parameter explorer
         registerContextMenuAction(new ParameterExplorerContextMenuAction());
+
+        registerNodeExamplesFromResources(RESOURCES, "examples");
     }
 
     @Override

@@ -383,6 +383,9 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         // Full log
         arguments.add("--verbose");
 
+        // Suppress input
+        arguments.add("--testing");
+
         // Inputs
         if(diameter.isEnabled()) {
             arguments.add("--diameter");

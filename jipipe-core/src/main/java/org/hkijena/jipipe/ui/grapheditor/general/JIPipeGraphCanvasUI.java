@@ -1195,7 +1195,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 false,
                 scale,
                 viewX,
-                viewY);
+                viewY,
+                false,
+                true);
     }
 
     @Override
@@ -1216,12 +1218,12 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges())
             paintOutsideEdges(g, false, Color.DARK_GRAY, STROKE_DEFAULT, STROKE_DEFAULT_BORDER);
-        paintEdges(g, STROKE_DEFAULT, STROKE_DEFAULT_BORDER, STROKE_COMMENT, false, false, false, 1, 0, 0);
+        paintEdges(g, STROKE_DEFAULT, STROKE_DEFAULT_BORDER, STROKE_COMMENT, false, false, false, 1, 0, 0, true, false);
 
         if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges())
             paintOutsideEdges(g, true, Color.DARK_GRAY, STROKE_HIGHLIGHT, null);
         if (!selection.isEmpty())
-            paintEdges(g, STROKE_HIGHLIGHT, null, STROKE_COMMENT_HIGHLIGHT, true, true, settings.isColorSelectedNodeEdges(), 1, 0, 0);
+            paintEdges(g, STROKE_HIGHLIGHT, null, STROKE_COMMENT_HIGHLIGHT, true, true, settings.isColorSelectedNodeEdges(), 1, 0, 0, true, false);
 
         // Draw currently dragged connection
         if (currentConnectionDragSourceDragged && currentConnectionDragSource != null) {
@@ -1269,9 +1271,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
                 // Draw arrow
                 if (currentConnectionDragSource.getSlot().isOutput())
-                    drawEdge(g, sourcePoint.center, currentConnectionDragSource.getNodeUI().getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0);
+                    drawEdge(g, sourcePoint.center, currentConnectionDragSource.getNodeUI().getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
                 else
-                    drawEdge(g, targetPoint.center, currentConnectionDragSource.getNodeUI().getBounds(), sourcePoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0);
+                    drawEdge(g, targetPoint.center, currentConnectionDragSource.getNodeUI().getBounds(), sourcePoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
             }
         }
 
@@ -1298,7 +1300,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                         PointRange.tighten(sourcePoint, targetPoint);
 
                         // Draw arrow
-                        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0);
+                        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
                     }
                 }
             } else if (currentHighlightedForDisconnect.getSlot().isOutput()) {
@@ -1320,7 +1322,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                         PointRange.tighten(sourcePoint, targetPoint);
 
                         // Draw arrow
-                        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0);
+                        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
                     }
                 }
             }
@@ -1369,7 +1371,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
     }
 
-    private void paintEdges(Graphics2D g, Stroke stroke, Stroke strokeBorder, Stroke strokeComment, boolean onlySelected, boolean withHidden, boolean multicolor, double scale, int viewX, int viewY) {
+    private void paintEdges(Graphics2D g, Stroke stroke, Stroke strokeBorder, Stroke strokeComment, boolean onlySelected, boolean withHidden, boolean multicolor, double scale, int viewX, int viewY, boolean enableArrows, boolean ignoreHiddenEdges) {
         int multiColorMax = 1;
         Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> slotEdges = graph.getSlotEdges();
         if (multicolor) {
@@ -1409,16 +1411,16 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             }
 
             // Hidden edges
-            if (!withHidden) {
+            if (!ignoreHiddenEdges && !withHidden) {
                 if (edge.isUiHidden()) {
                     paintHiddenSlotEdge(g, source, target, multicolor, multiColorIndex, multiColorMax);
                     continue;
                 }
             }
             if (source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode) {
-                paintSlotEdge(g, strokeComment, null, source, target, sourceUI, targetUI, edge.getUiShape(), multicolor, multiColorIndex, multiColorMax, scale, viewX, viewY);
+                paintSlotEdge(g, strokeComment, null, source, target, sourceUI, targetUI, edge.getUiShape(), multicolor, multiColorIndex, multiColorMax, scale, viewX, viewY, enableArrows);
             } else {
-                paintSlotEdge(g, stroke, strokeBorder, source, target, sourceUI, targetUI, edge.getUiShape(), multicolor, multiColorIndex, multiColorMax, scale, viewX, viewY);
+                paintSlotEdge(g, stroke, strokeBorder, source, target, sourceUI, targetUI, edge.getUiShape(), multicolor, multiColorIndex, multiColorMax, scale, viewX, viewY, enableArrows);
             }
 
             ++multiColorIndex;
@@ -1533,7 +1535,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                                int multiColorMax,
                                double scale,
                                int viewX,
-                               int viewY) {
+                               int viewY,
+                               boolean enableArrows) {
 
         if (sourceUI == null || targetUI == null)
             return;
@@ -1553,14 +1556,14 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if (settings.isDrawImprovedEdges() && strokeBorder != null) {
             g.setStroke(strokeBorder);
             g.setColor(getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax));
-            drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY);
+            drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
             g.setStroke(stroke);
             g.setColor(improvedStrokeBackgroundColor);
-            drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY);
+            drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
         } else {
             g.setStroke(stroke);
             g.setColor(getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax));
-            drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY);
+            drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
         }
     }
 
@@ -1675,8 +1678,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      * @param scale        the scale
      * @param viewX        the view x
      * @param viewY        the view y
+     * @param enableArrows enable arrows
      */
-    private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY) {
+    private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, boolean enableArrows) {
         switch (shape) {
             case Elbow:
                 drawElbowEdge(g, sourcePoint, sourceBounds, targetPoint, scale, viewX, viewY);
@@ -1700,7 +1704,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 }
                 break;
         }
-        if(settings.isDrawArrowHeads()) {
+        if(enableArrows && settings.isDrawArrowHeads()) {
             drawArrowHead(g, targetPoint.x, targetPoint.y);
         }
     }
