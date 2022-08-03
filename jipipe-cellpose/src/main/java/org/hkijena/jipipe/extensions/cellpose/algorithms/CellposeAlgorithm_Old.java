@@ -19,7 +19,7 @@ import org.hkijena.jipipe.extensions.cellpose.CellposeSettings;
 import org.hkijena.jipipe.extensions.cellpose.CellposeUtils;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeSizeModelData;
-import org.hkijena.jipipe.extensions.cellpose.parameters.*;
+import org.hkijena.jipipe.extensions.cellpose.parameters.deprecated.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.color.ImagePlus3DColorRGBData;
@@ -66,11 +66,11 @@ import java.util.stream.Collectors;
 @Deprecated
 public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
 
-    private SegmentationModelSettings_Old segmentationModelSettings = new SegmentationModelSettings_Old();
-    private SegmentationPerformanceSettings_Old SegmentationPerformanceSettings_Old = new SegmentationPerformanceSettings_Old();
-    private SegmentationEnhancementSettings_Old segmentationEnhancementSettings = new SegmentationEnhancementSettings_Old();
-    private SegmentationThresholdSettings_Old SegmentationThresholdSettings_Old = new SegmentationThresholdSettings_Old();
-    private SegmentationOutputSettings_Old outputParameters = new SegmentationOutputSettings_Old();
+    private CellposeSegmentationModelSettings_Old segmentationModelSettings = new CellposeSegmentationModelSettings_Old();
+    private CellposeSegmentationPerformanceSettings_Old SegmentationPerformanceSettings_Old = new CellposeSegmentationPerformanceSettings_Old();
+    private CellposeSegmentationEnhancementSettings_Old segmentationEnhancementSettings = new CellposeSegmentationEnhancementSettings_Old();
+    private CellposeSegmentationThresholdSettings_Old SegmentationThresholdSettings_Old = new CellposeSegmentationThresholdSettings_Old();
+    private CellposeSegmentationOutputSettings_Old outputParameters = new CellposeSegmentationOutputSettings_Old();
     private OptionalDoubleParameter diameter = new OptionalDoubleParameter(30.0, true);
     private boolean enable3DSegmentation = true;
     private OptionalAnnotationNameParameter diameterAnnotation = new OptionalAnnotationNameParameter("Diameter", true);
@@ -92,11 +92,11 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
         super(other);
         this.diameter = new OptionalDoubleParameter(other.diameter);
         this.diameterAnnotation = new OptionalAnnotationNameParameter(other.diameterAnnotation);
-        this.segmentationModelSettings = new SegmentationModelSettings_Old(other.segmentationModelSettings);
-        this.outputParameters = new SegmentationOutputSettings_Old(other.outputParameters);
-        this.SegmentationPerformanceSettings_Old = new SegmentationPerformanceSettings_Old(other.SegmentationPerformanceSettings_Old);
-        this.segmentationEnhancementSettings = new SegmentationEnhancementSettings_Old(other.segmentationEnhancementSettings);
-        this.SegmentationThresholdSettings_Old = new SegmentationThresholdSettings_Old(other.SegmentationThresholdSettings_Old);
+        this.segmentationModelSettings = new CellposeSegmentationModelSettings_Old(other.segmentationModelSettings);
+        this.outputParameters = new CellposeSegmentationOutputSettings_Old(other.outputParameters);
+        this.SegmentationPerformanceSettings_Old = new CellposeSegmentationPerformanceSettings_Old(other.SegmentationPerformanceSettings_Old);
+        this.segmentationEnhancementSettings = new CellposeSegmentationEnhancementSettings_Old(other.segmentationEnhancementSettings);
+        this.SegmentationThresholdSettings_Old = new CellposeSegmentationThresholdSettings_Old(other.SegmentationThresholdSettings_Old);
         this.overrideEnvironment = new OptionalPythonEnvironment(other.overrideEnvironment);
         this.enable3DSegmentation = other.enable3DSegmentation;
         this.cleanUpAfterwards = other.cleanUpAfterwards;
@@ -515,31 +515,31 @@ public class CellposeAlgorithm_Old extends JIPipeSingleIterationAlgorithm {
 
     @JIPipeDocumentation(name = "Cellpose: Model", description = "The following settings are related to the model.")
     @JIPipeParameter(value = "model-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public SegmentationModelSettings_Old getModelParameters() {
+    public CellposeSegmentationModelSettings_Old getModelParameters() {
         return segmentationModelSettings;
     }
 
     @JIPipeDocumentation(name = "Cellpose: Performance", description = "The following settings are related to the performance of the operation (e.g., tiling).")
     @JIPipeParameter(value = "performance-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public SegmentationPerformanceSettings_Old getPerformanceParameters() {
+    public CellposeSegmentationPerformanceSettings_Old getPerformanceParameters() {
         return SegmentationPerformanceSettings_Old;
     }
 
     @JIPipeDocumentation(name = "Cellpose: Tweaks", description = "Additional options like augmentation and averaging over multiple networks")
     @JIPipeParameter(value = "enhancement-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public SegmentationEnhancementSettings_Old getEnhancementParameters() {
+    public CellposeSegmentationEnhancementSettings_Old getEnhancementParameters() {
         return segmentationEnhancementSettings;
     }
 
     @JIPipeDocumentation(name = "Cellpose: Thresholds", description = "Parameters that control which objects are selected.")
     @JIPipeParameter(value = "threshold-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public SegmentationThresholdSettings_Old getThresholdParameters() {
+    public CellposeSegmentationThresholdSettings_Old getThresholdParameters() {
         return SegmentationThresholdSettings_Old;
     }
 
     @JIPipeDocumentation(name = "Cellpose: Outputs", description = "The following settings allow you to select which outputs are generated.")
     @JIPipeParameter(value = "output-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public SegmentationOutputSettings_Old getOutputParameters() {
+    public CellposeSegmentationOutputSettings_Old getOutputParameters() {
         return outputParameters;
     }
 

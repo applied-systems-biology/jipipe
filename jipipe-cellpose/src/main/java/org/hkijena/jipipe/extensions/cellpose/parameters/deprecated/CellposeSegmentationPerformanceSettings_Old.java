@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.cellpose.parameters;
+package org.hkijena.jipipe.extensions.cellpose.parameters.deprecated;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 @Deprecated
-public class SegmentationPerformanceSettings_Old implements JIPipeParameterCollection {
+public class CellposeSegmentationPerformanceSettings_Old implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private int batchSize = 8;
@@ -14,10 +14,10 @@ public class SegmentationPerformanceSettings_Old implements JIPipeParameterColle
     private double tileOverlap = 0.1;
     private boolean resample = false;
 
-    public SegmentationPerformanceSettings_Old() {
+    public CellposeSegmentationPerformanceSettings_Old() {
     }
 
-    public SegmentationPerformanceSettings_Old(SegmentationPerformanceSettings_Old other) {
+    public CellposeSegmentationPerformanceSettings_Old(CellposeSegmentationPerformanceSettings_Old other) {
         this.batchSize = other.batchSize;
         this.tile = other.tile;
         this.tileOverlap = other.tileOverlap;

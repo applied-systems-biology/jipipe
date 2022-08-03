@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.cellpose.parameters;
+package org.hkijena.jipipe.extensions.cellpose.parameters.deprecated;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -9,17 +9,17 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.cellpose.CellposeModel;
 
 @Deprecated
-public class SegmentationModelSettings_Old implements JIPipeParameterCollection {
+public class CellposeSegmentationModelSettings_Old implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private CellposeModel model = CellposeModel.Cytoplasm;
     private double meanDiameter = 30;
 
     private boolean enableGPU = true;
 
-    public SegmentationModelSettings_Old() {
+    public CellposeSegmentationModelSettings_Old() {
     }
 
-    public SegmentationModelSettings_Old(SegmentationModelSettings_Old other) {
+    public CellposeSegmentationModelSettings_Old(CellposeSegmentationModelSettings_Old other) {
         this.model = other.model;
         this.meanDiameter = other.meanDiameter;
         this.enableGPU = other.enableGPU;

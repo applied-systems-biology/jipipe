@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.cellpose.parameters;
+package org.hkijena.jipipe.extensions.omnipose.parameters;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -6,24 +6,28 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 
-public class SegmentationTweaksSettings implements JIPipeParameterCollection {
+public class OmniposeSegmentationTweaksSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
-    private boolean normalize = true;
     private boolean netAverage = true;
     private boolean interpolate = true;
     private OptionalDoubleParameter anisotropy = new OptionalDoubleParameter(1.0, false);
-
     private boolean disableResample = false;
-    public SegmentationTweaksSettings() {
+
+    private boolean fastMode = false;
+    private boolean cluster = false;
+
+
+    public OmniposeSegmentationTweaksSettings() {
     }
 
-    public SegmentationTweaksSettings(SegmentationTweaksSettings other) {
-        this.normalize = other.normalize;
+    public OmniposeSegmentationTweaksSettings(OmniposeSegmentationTweaksSettings other) {
         this.netAverage = other.netAverage;
         this.interpolate = other.interpolate;
         this.anisotropy = new OptionalDoubleParameter(other.anisotropy);
         this.disableResample = other.disableResample;
+        this.cluster = other.cluster;
+        this.fastMode = other.fastMode;
     }
 
     @Override
@@ -31,17 +35,26 @@ public class SegmentationTweaksSettings implements JIPipeParameterCollection {
         return eventBus;
     }
 
-
-
-    @JIPipeDocumentation(name = "Normalize", description = "Normalize data so 0.0=1st percentile and 1.0=99th percentile of image intensities in each channel")
-    @JIPipeParameter("normalize")
-    public boolean isNormalize() {
-        return normalize;
+    @JIPipeDocumentation(name = "Fast mode", description = "disable dynamics on full image (makes algorithm faster for images with large diameters)")
+    @JIPipeParameter("fast-mode")
+    public boolean isFastMode() {
+        return fastMode;
     }
 
-    @JIPipeParameter("normalize")
-    public void setNormalize(boolean normalize) {
-        this.normalize = normalize;
+    @JIPipeParameter("fast-mode")
+    public void setFastMode(boolean fastMode) {
+        this.fastMode = fastMode;
+    }
+
+    @JIPipeDocumentation(name = "Cluster", description = "DBSCAN clustering. Reduces oversegmentation of thin features")
+    @JIPipeParameter("cluster")
+    public boolean isCluster() {
+        return cluster;
+    }
+
+    @JIPipeParameter("cluster")
+    public void setCluster(boolean cluster) {
+        this.cluster = cluster;
     }
 
     @JIPipeDocumentation(name = "Anisotropy (3D)", description = "For 3D segmentation, optional rescaling factor " +

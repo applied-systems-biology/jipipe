@@ -18,14 +18,13 @@ import org.hkijena.jipipe.extensions.cellpose.CellposePretrainedModel;
 import org.hkijena.jipipe.extensions.cellpose.CellposeSettings;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeModelData;
 import org.hkijena.jipipe.extensions.cellpose.datatypes.CellposeSizeModelData;
-import org.hkijena.jipipe.extensions.cellpose.parameters.GeneralGPUSettings;
+import org.hkijena.jipipe.extensions.cellpose.parameters.CellposeGPUSettings;
 import org.hkijena.jipipe.extensions.expressions.DataAnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale16UData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -44,7 +43,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Cellpose training", description = "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
+@JIPipeDocumentation(name = "Cellpose training (2.x)", description = "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
         "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. " +
         "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters.")
 @JIPipeInputSlot(value = ImagePlus3DData.class, slotName = "Training data", autoCreate = true)
@@ -55,7 +54,7 @@ import java.util.stream.Collectors;
 public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
 
-    private final GeneralGPUSettings gpuSettings;
+    private final CellposeGPUSettings gpuSettings;
     private CellposePretrainedModel pretrainedModel = CellposePretrainedModel.Cytoplasm;
     private int numEpochs = 500;
     private double learningRate = 0.2;
@@ -80,7 +79,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public CellposeTrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.gpuSettings = new GeneralGPUSettings();
+        this.gpuSettings = new CellposeGPUSettings();
         updateSlots();
 
         registerSubParameter(gpuSettings);
@@ -89,7 +88,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     public CellposeTrainingAlgorithm(CellposeTrainingAlgorithm other) {
         super(other);
 
-        this.gpuSettings = new GeneralGPUSettings(other.gpuSettings);
+        this.gpuSettings = new CellposeGPUSettings(other.gpuSettings);
 
         this.pretrainedModel = other.pretrainedModel;
         this.numEpochs = other.numEpochs;
@@ -332,7 +331,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     @JIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
     @JIPipeParameter(value = "output-parameters", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
-    public GeneralGPUSettings getGpuSettings() {
+    public CellposeGPUSettings getGpuSettings() {
         return gpuSettings;
     }
 
@@ -533,7 +532,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         // Run the module
         PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), progressInfo);
+                CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), progressInfo);
 
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");

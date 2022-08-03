@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 
-public class SegmentationThresholdSettings implements JIPipeParameterCollection {
+public class CellposeSegmentationThresholdSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private double flowThreshold = 0.4;
@@ -14,10 +14,10 @@ public class SegmentationThresholdSettings implements JIPipeParameterCollection 
     private OptionalDoubleParameter stitchThreshold = new OptionalDoubleParameter(0, false);
     private boolean excludeOnEdges = false;
 
-    public SegmentationThresholdSettings() {
+    public CellposeSegmentationThresholdSettings() {
     }
 
-    public SegmentationThresholdSettings(SegmentationThresholdSettings other) {
+    public CellposeSegmentationThresholdSettings(CellposeSegmentationThresholdSettings other) {
         this.flowThreshold = other.flowThreshold;
         this.cellProbabilityThreshold = other.cellProbabilityThreshold;
         this.stitchThreshold = other.stitchThreshold;

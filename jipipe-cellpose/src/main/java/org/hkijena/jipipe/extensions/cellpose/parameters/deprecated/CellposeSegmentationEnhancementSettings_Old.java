@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.cellpose.parameters;
+package org.hkijena.jipipe.extensions.cellpose.parameters.deprecated;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -7,7 +7,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 
 @Deprecated
-public class SegmentationEnhancementSettings_Old implements JIPipeParameterCollection {
+public class CellposeSegmentationEnhancementSettings_Old implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private boolean normalize = true;
@@ -16,10 +16,10 @@ public class SegmentationEnhancementSettings_Old implements JIPipeParameterColle
     private boolean interpolate = true;
     private OptionalDoubleParameter anisotropy = new OptionalDoubleParameter(1.0, false);
 
-    public SegmentationEnhancementSettings_Old() {
+    public CellposeSegmentationEnhancementSettings_Old() {
     }
 
-    public SegmentationEnhancementSettings_Old(SegmentationEnhancementSettings_Old other) {
+    public CellposeSegmentationEnhancementSettings_Old(CellposeSegmentationEnhancementSettings_Old other) {
         this.normalize = other.normalize;
         this.netAverage = other.netAverage;
         this.augment = other.augment;

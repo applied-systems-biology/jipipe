@@ -17,6 +17,7 @@ import org.hkijena.jipipe.extensions.cellpose.CellposePretrainedModel;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
+import org.hkijena.jipipe.extensions.omnipose.algorithms.OmniposeAlgorithm;
 import org.hkijena.jipipe.extensions.omnipose.installers.OmniposeEasyInstaller;
 import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
@@ -150,6 +151,8 @@ public class OmniposeExtension extends JIPipePrepackagedDefaultJavaExtension {
                 new OmniposeSettings());
         registerEnumParameterType("omnipose-model", OmniposeModel.class, "Omnipose model", "An Omnipose model");
         registerEnumParameterType("omnipose-pretrained-model", OmniposePretrainedModel.class, "Omnipose pre-trained model", "A pretrained model for Omnipose");
+
+        registerNodeType("omnipose", OmniposeAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
     }
 
     @Override

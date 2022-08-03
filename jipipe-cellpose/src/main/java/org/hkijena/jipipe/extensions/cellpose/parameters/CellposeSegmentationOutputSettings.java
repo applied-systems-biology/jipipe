@@ -5,7 +5,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
-public class SegmentationOutputSettings implements JIPipeParameterCollection {
+public class CellposeSegmentationOutputSettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private boolean outputLabels = true;
@@ -17,10 +17,10 @@ public class SegmentationOutputSettings implements JIPipeParameterCollection {
     private boolean outputProbabilities = false;
     private boolean outputROI = true;
 
-    public SegmentationOutputSettings() {
+    public CellposeSegmentationOutputSettings() {
     }
 
-    public SegmentationOutputSettings(SegmentationOutputSettings other) {
+    public CellposeSegmentationOutputSettings(CellposeSegmentationOutputSettings other) {
         this.outputLabels = other.outputLabels;
         this.outputFlowsXY = other.outputFlowsXY;
         this.outputFlowsZ = other.outputFlowsZ;

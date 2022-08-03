@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.cellpose.parameters;
+package org.hkijena.jipipe.extensions.cellpose.parameters.deprecated;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -6,7 +6,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 
 @Deprecated
-public class SegmentationThresholdSettings_Old implements JIPipeParameterCollection {
+public class CellposeSegmentationThresholdSettings_Old implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private double flowThreshold = 0.4;
@@ -14,10 +14,10 @@ public class SegmentationThresholdSettings_Old implements JIPipeParameterCollect
     private int minSize = 15;
     private double stitchThreshold = 0;
 
-    public SegmentationThresholdSettings_Old() {
+    public CellposeSegmentationThresholdSettings_Old() {
     }
 
-    public SegmentationThresholdSettings_Old(SegmentationThresholdSettings_Old other) {
+    public CellposeSegmentationThresholdSettings_Old(CellposeSegmentationThresholdSettings_Old other) {
         this.flowThreshold = other.flowThreshold;
         this.cellProbabilityThreshold = other.cellProbabilityThreshold;
         this.minSize = other.minSize;

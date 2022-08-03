@@ -361,12 +361,13 @@ public class PythonUtils {
     /**
      * Runs Python with a set of arguments
      *
-     * @param arguments    the arguments
-     * @param environment  the environment
-     * @param libraryPaths additional library paths
-     * @param progressInfo the progress info
+     * @param arguments                      the arguments
+     * @param environment                    the environment
+     * @param libraryPaths                   additional library paths
+     * @param additionalEnvironmentVariables additional environment variables
+     * @param progressInfo                   the progress info
      */
-    public static void runPython(String[] arguments, PythonEnvironment environment, List<Path> libraryPaths, JIPipeProgressInfo progressInfo) {
+    public static void runPython(String[] arguments, PythonEnvironment environment, List<Path> libraryPaths, Map<String, String> additionalEnvironmentVariables, JIPipeProgressInfo progressInfo) {
         Path pythonExecutable = PathUtils.relativeToImageJToAbsolute(environment.getExecutablePath());
         CommandLine commandLine = new CommandLine(pythonExecutable.toFile());
 

@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.cellpose.parameters;
+package org.hkijena.jipipe.extensions.cellpose.parameters.deprecated;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -9,7 +9,7 @@ import org.hkijena.jipipe.extensions.cellpose.algorithms.CellposeAlgorithm_Old;
 /**
  * @deprecated Used by the old {@link CellposeAlgorithm_Old}
  */
-public class SegmentationOutputSettings_Old implements JIPipeParameterCollection {
+public class CellposeSegmentationOutputSettings_Old implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
 
     private boolean outputLabels = false;
@@ -18,10 +18,10 @@ public class SegmentationOutputSettings_Old implements JIPipeParameterCollection
     private boolean outputStyles = false;
     private boolean outputROI = true;
 
-    public SegmentationOutputSettings_Old() {
+    public CellposeSegmentationOutputSettings_Old() {
     }
 
-    public SegmentationOutputSettings_Old(SegmentationOutputSettings_Old other) {
+    public CellposeSegmentationOutputSettings_Old(CellposeSegmentationOutputSettings_Old other) {
         this.outputLabels = other.outputLabels;
         this.outputFlows = other.outputFlows;
         this.outputProbabilities = other.outputProbabilities;

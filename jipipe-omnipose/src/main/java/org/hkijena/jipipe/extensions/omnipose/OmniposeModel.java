@@ -4,6 +4,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 
 @JIPipeDocumentationDescription(description = "See https://github.com/kevinjohncutler/omnipose for a description of all models")
 public enum OmniposeModel {
+    BactOmni("bact_omni"),
     BactPhaseCp("bact_phase_cp"),
     BactFluorCp("bact_fluor_cp"),
     PlantCp("plant_cp"),
