@@ -20,6 +20,7 @@ import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -85,7 +86,14 @@ public class EasyInstallExternalEnvironmentInstallerDialog extends JDialog {
         JPanel panel = new JPanel(new GridBagLayout());
         panel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
         panel.add(UIUtils.createJLabel(availablePackage.getName(), UIUtils.getIcon32FromResources("module-json.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
-        JTextArea idField = UIUtils.makeReadonlyBorderlessTextArea(availablePackage.getUrl());
+        String urlText;
+        if(availablePackage.getUrlMultiPart() != null && !availablePackage.getUrlMultiPart().isEmpty()) {
+            urlText = String.join("<br/>",availablePackage.getUrlMultiPart());
+        }
+        else {
+            urlText = availablePackage.getUrl();
+        }
+        JTextArea idField = UIUtils.makeReadonlyBorderlessTextArea(urlText);
         panel.add(idField, new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
         panel.add(UIUtils.makeBorderlessReadonlyTextPane(availablePackage.getDescription(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 

@@ -3,6 +3,8 @@ package org.hkijena.jipipe.api.environments;
 import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.lang3.SystemUtils;
 
+import java.util.List;
+
 public class EasyInstallExternalEnvironmentInstallerPackage {
     private String name;
     private String installDir;
@@ -14,12 +16,32 @@ public class EasyInstallExternalEnvironmentInstallerPackage {
 
     private String url;
 
+    private List<String> urlMultiPart;
+
+    private String multiPartOutputName;
+
     public String getUrl() {
         return url;
     }
 
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public String getMultiPartOutputName() {
+        return multiPartOutputName;
+    }
+
+    public void setMultiPartOutputName(String multiPartOutputName) {
+        this.multiPartOutputName = multiPartOutputName;
+    }
+
+    public List<String> getUrlMultiPart() {
+        return urlMultiPart;
+    }
+
+    public void setUrlMultiPart(List<String> urlMultiPart) {
+        this.urlMultiPart = urlMultiPart;
     }
 
     public String getName() {

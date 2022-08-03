@@ -27,6 +27,8 @@ import org.hkijena.jipipe.utils.WebUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
@@ -139,26 +141,95 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
 
     private void executeArchiveDownload() {
         progressInfo.log("Downloading archive ...");
-        progressInfo.log("The following URL will be downloaded: " + targetPackage.getUrl());
 
+        Path outputFile;
         String extension;
-        if (targetPackage.getUrl().contains(".tar.gz")) {
-            extension = ".tar.gz";
 
-        } else if (targetPackage.getUrl().contains(".tar.xz")) {
-            extension = ".tar.xz";
-        } else {
-            String[] split = targetPackage.getUrl().split("\\.");
-            extension = "." + split[split.length - 1];
+        if(targetPackage.getUrlMultiPart() != null && !targetPackage.getUrlMultiPart().isEmpty()) {
+            progressInfo.log("The archive was split into the following parts by the developer: ");
+            for (String url : targetPackage.getUrlMultiPart()) {
+                progressInfo.log(" - " + url);
+            }
+
+            // Detect extension
+            if (targetPackage.getMultiPartOutputName().endsWith(".tar.gz")) {
+                extension = ".tar.gz";
+            } else if (targetPackage.getMultiPartOutputName().endsWith(".tar.xz")) {
+                extension = ".tar.xz";
+            } else {
+                String[] split = targetPackage.getMultiPartOutputName().split("\\.");
+                extension = "." + split[split.length - 1];
+            }
+
+            List<Path> multiPartFiles = new ArrayList<>();
+
+            List<String> urlMultiPart = targetPackage.getUrlMultiPart();
+            for (int i = 0; i < urlMultiPart.size(); i++) {
+                JIPipeProgressInfo partProgress = progressInfo.resolveAndLog("Download part", i, urlMultiPart.size());
+                String url = urlMultiPart.get(i);
+                Path multiPartTmpFile = RuntimeSettings.generateTempFile("repository", extension);
+
+                try {
+                    WebUtils.download(new URL(url), multiPartTmpFile, "Download part", partProgress);
+                } catch (MalformedURLException e) {
+                    throw new RuntimeException(e);
+                }
+
+                multiPartFiles.add(multiPartTmpFile);
+            }
+
+            // Concat the multipart files
+            outputFile = RuntimeSettings.generateTempFile("repository", extension);
+            progressInfo.log("Following files will be combined into " + outputFile);
+            for (Path multiPartFile : multiPartFiles) {
+                progressInfo.log(" - " + multiPartFile);
+            }
+            try(FileOutputStream stream = new FileOutputStream(outputFile.toFile())) {
+                for (int i = 0; i < multiPartFiles.size(); i++) {
+                    JIPipeProgressInfo partProgress = progressInfo.resolveAndLog("Merge part", i, urlMultiPart.size());
+                    Path partFile = multiPartFiles.get(i);
+                    Files.copy(partFile, stream);
+                    stream.flush();
+                }
+
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
+            // Cleanup
+            for (Path path : multiPartFiles) {
+                try {
+                    Files.delete(path);
+                } catch (IOException e) {
+                    progressInfo.log("Could not clean up temporary file " + path);
+                    progressInfo.log(e.toString());
+                }
+            }
+
         }
+        else {
+            progressInfo.log("The following URL will be downloaded: " + targetPackage.getUrl());
+
+            // Detect extension
+            if (targetPackage.getUrl().endsWith(".tar.gz")) {
+                extension = ".tar.gz";
+            } else if (targetPackage.getUrl().endsWith(".tar.xz")) {
+                extension = ".tar.xz";
+            } else {
+                String[] split = targetPackage.getUrl().split("\\.");
+                extension = "." + split[split.length - 1];
+            }
+
+            // Set output file and download directly
+            outputFile = RuntimeSettings.generateTempFile("repository", extension);
+            try {
+                WebUtils.download(new URL(targetPackage.getUrl()), outputFile, "Download package", progressInfo.resolve("Download package"));
+            } catch (MalformedURLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
         progressInfo.log("Archive extension detected as " + extension);
-
-        Path outputFile = RuntimeSettings.generateTempFile("repository", extension);
-        try {
-            WebUtils.download(new URL(targetPackage.getUrl()), outputFile, "Download package", progressInfo.resolve("Download package"));
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
 
         // Extract archive
         progressInfo.log("Extracting archive ...");
@@ -249,8 +320,26 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
                 availablePackage.setName(packageNodeEntry.get("name").textValue());
                 availablePackage.setDescription(packageNodeEntry.get("description").textValue());
                 availablePackage.setInstallDir(packageNodeEntry.get("install-dir").textValue());
-                availablePackage.setUrl(packageNodeEntry.get("url").textValue());
+
                 availablePackage.setAdditionalData(packageNodeEntry);
+
+                // Read URL
+                JsonNode urlNode = packageNodeEntry.path("url");
+                if(!urlNode.isMissingNode()) {
+                    availablePackage.setUrl(urlNode.textValue());
+                }
+
+                // Multipart URL
+                JsonNode urlMultiPartNode = packageNodeEntry.path("url-multipart");
+                if(!urlMultiPartNode.isMissingNode()) {
+                    availablePackage.setUrlMultiPart(new ArrayList<>());
+                    for (JsonNode node : ImmutableList.copyOf(urlMultiPartNode.elements())) {
+                        availablePackage.getUrlMultiPart().add(node.textValue());
+                    }
+                    availablePackage.setMultiPartOutputName(packageNodeEntry.get("multipart-output-name").textValue());
+                }
+
+                // Read operating system
                 JsonNode operatingSystemsNode = packageNodeEntry.path("operating-systems");
                 if (operatingSystemsNode.isMissingNode()) {
                     availablePackage.setSupportsLinux(true);
