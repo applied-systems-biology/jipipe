@@ -172,7 +172,7 @@ public class CellposeExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerImageJDataImporter("cellpose-size-model-from-file", new CellposeSizeModelImageJImporter(), FileImageJDataImporterUI.class);
         registerImageJDataExporter("cellpose-size-model-to-directory", new CellposeSizeModelImageJExporter(), FolderImageJDataExporterUI.class);
 
-        registerNodeType("cellpose", CellposeAlgorithm_Old.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
+        registerNodeType("cellpose", CellposeAlgorithm_Old.class, UIUtils.getIconURLFromResources("emblems/vcs-conflicting.png"));
         registerNodeType("cellpose-2", CellposeAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
         registerNodeType("cellpose-training", CellposeTrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
         registerNodeType("import-cellpose-model", ImportCellposeModelAlgorithm.class);
