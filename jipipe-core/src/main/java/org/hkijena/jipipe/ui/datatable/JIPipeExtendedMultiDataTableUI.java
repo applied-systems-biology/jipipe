@@ -182,6 +182,8 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
         });
 
         rowUIList = new FormPanel(null, ParameterPanel.WITH_SCROLLING);
+        add(rowUIList, BorderLayout.SOUTH);
+
         // Menu/Toolbar
         JPanel menuContainerPanel = new JPanel();
         menuContainerPanel.setLayout(new BoxLayout(menuContainerPanel, BoxLayout.Y_AXIS));
