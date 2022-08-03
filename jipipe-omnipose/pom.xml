@@ -7,12 +7,12 @@
         <version>1.74.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>jipipe-cellpose</artifactId>
+    <artifactId>jipipe-omnipose</artifactId>
     <version>1.74.0-SNAPSHOT</version>
 
-    <name>jipipe-cellpose</name>
-    <description>JIPipe Cellpose Integration</description>
-    <inceptionYear>2021</inceptionYear>
+    <name>jipipe-omnipose</name>
+    <description>JIPipe Omnipose Integration</description>
+    <inceptionYear>2022</inceptionYear>
     <url>https://www.jipipe.org/</url>
 
     <organization>
@@ -74,23 +74,8 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <license.licenseName>bsd_2</license.licenseName>
         <license.copyrightOwners>N/A</license.copyrightOwners>
-        <license.projectName>jipipe-cellpose</license.projectName>
+        <license.projectName>jipipe-omnipose</license.projectName>
     </properties>
-
-    <dependencyManagement>
-        <dependencies>
-            <dependency>
-                <groupId>fr.inra.ijpb</groupId>
-                <artifactId>MorphoLibJ_</artifactId>
-                <version>1.5.0</version>
-            </dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.dataformat</groupId>
-                <artifactId>jackson-dataformat-yaml</artifactId>
-                <version>2.12.5</version>
-            </dependency>
-        </dependencies>
-    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -110,8 +95,8 @@
             <artifactId>jipipe-ij-algorithms</artifactId>
         </dependency>
         <dependency>
-            <groupId>com.fasterxml.jackson.dataformat</groupId>
-            <artifactId>jackson-dataformat-yaml</artifactId>
+            <groupId>org.hkijena</groupId>
+            <artifactId>jipipe-cellpose</artifactId>
         </dependency>
     </dependencies>
 

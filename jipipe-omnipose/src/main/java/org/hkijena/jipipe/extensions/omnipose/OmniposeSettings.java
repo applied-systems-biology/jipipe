@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.cellpose;
+package org.hkijena.jipipe.extensions.omnipose;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
@@ -12,9 +12,9 @@ import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonExtensionSettings;
 
-public class CellposeSettings implements JIPipeParameterCollection {
+public class OmniposeSettings implements JIPipeParameterCollection {
 
-    public static String ID = "org.hkijena.jipipe:cellpose";
+    public static String ID = "org.hkijena.jipipe:omnipose";
 
     private final EventBus eventBus = new EventBus();
 
@@ -22,13 +22,13 @@ public class CellposeSettings implements JIPipeParameterCollection {
 
     private StringList easyInstallerRepositories = new StringList();
 
-    public CellposeSettings() {
+    public OmniposeSettings() {
         overridePythonEnvironment.setEnabled(true);
-        easyInstallerRepositories.add("https://github.com/applied-systems-biology/jipipe/releases/download/current/easyinstall-cellpose.json");
+        easyInstallerRepositories.add("https://github.com/applied-systems-biology/jipipe/releases/download/current/easyinstall-omnipose.json");
     }
 
-    public static CellposeSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, CellposeSettings.class);
+    public static OmniposeSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, OmniposeSettings.class);
     }
 
     /**
@@ -38,7 +38,7 @@ public class CellposeSettings implements JIPipeParameterCollection {
      */
     public static boolean pythonSettingsAreValid() {
         if (JIPipe.getInstance() != null) {
-            CellposeSettings instance = getInstance();
+            OmniposeSettings instance = getInstance();
             JIPipeIssueReport report = new JIPipeIssueReport();
             instance.getPythonEnvironment().reportValidity(report);
             return report.isValid();
@@ -54,12 +54,12 @@ public class CellposeSettings implements JIPipeParameterCollection {
     public static void checkPythonSettings(JIPipeIssueReport report) {
         if (!pythonSettingsAreValid()) {
             report.reportIsInvalid("Python is not configured!",
-                    "Project > Application settings > Extensions > Cellpose",
+                    "Project > Application settings > Extensions > Omnipose",
                     "This node requires an installation of Python. You have to point JIPipe to a Python installation.",
-                    "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html and install Cellpose " +
+                    "Please install Python from https://www.python.org/, or from https://www.anaconda.com/ or https://docs.conda.io/en/latest/miniconda.html and install Omnipose " +
                             "according to the documentation https://cellpose.readthedocs.io/en/latest/installation.html\n" +
-                            "Then go to Project > Application settings > Extensions > Cellpose and choose the correct environment. " +
-                            "Alternatively, the settings page will provide you with means to install Cellpose automatically.");
+                            "Then go to Project > Application settings > Extensions > Omnipose and choose the correct environment. " +
+                            "Alternatively, the settings page will provide you with means to install Omnipose automatically.");
         }
     }
 
@@ -68,11 +68,11 @@ public class CellposeSettings implements JIPipeParameterCollection {
         return eventBus;
     }
 
-    @JIPipeDocumentation(name = "Cellpose Python environment", description = "If enabled, a separate Python environment is used for Cellpose. " +
-            "Alternatively, the standard Python environment from the Python extension is used. Please ensure that Cellpose is installed. " +
-            "You can also install Cellpose via the Select/Install button (CPU and GPU supported).")
+    @JIPipeDocumentation(name = "Omnipose Python environment", description = "If enabled, a separate Python environment is used for Omnipose. " +
+            "Alternatively, the standard Python environment from the Python extension is used. Please ensure that Omnipose is installed. " +
+            "You can also install Omnipose via the Select/Install button (CPU and GPU supported).")
     @JIPipeParameter("python-environment")
-    @ExternalEnvironmentParameterSettings(showCategory = "Cellpose")
+    @ExternalEnvironmentParameterSettings(showCategory = "Omnipose")
     public OptionalPythonEnvironment getOverridePythonEnvironment() {
         return overridePythonEnvironment;
     }

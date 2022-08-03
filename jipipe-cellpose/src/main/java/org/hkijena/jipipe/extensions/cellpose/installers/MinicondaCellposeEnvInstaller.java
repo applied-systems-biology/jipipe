@@ -55,7 +55,7 @@ public class MinicondaCellposeEnvInstaller extends BasicMinicondaEnvPythonInstal
     protected void postprocessInstall() {
         super.postprocessInstall();
 
-        // We need to create the environment according to the CellPose tutorial https://github.com/MouseLand/cellpose
+        // We need to create the environment according to the Cellpose tutorial https://github.com/MouseLand/cellpose
         Path environmentDefinitionPath = downloadEnvironment();
 
         // Apply the environment

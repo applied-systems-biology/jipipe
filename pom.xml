@@ -293,6 +293,11 @@ See the LICENSE file provided with this code for the full license.
                 <artifactId>jipipe-cellpose</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.hkijena</groupId>
+                <artifactId>jipipe-omnipose</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -335,6 +340,7 @@ See the LICENSE file provided with this code for the full license.
         <module>jipipe-forms</module>
         <module>jipipe-r</module>
         <module>jipipe-cellpose</module>
+        <module>jipipe-omnipose</module>
         <module>jipipe-ij-weka</module>
         <module>jipipe-ij-trackmate</module>
         <module>jipipe-launcher</module>
