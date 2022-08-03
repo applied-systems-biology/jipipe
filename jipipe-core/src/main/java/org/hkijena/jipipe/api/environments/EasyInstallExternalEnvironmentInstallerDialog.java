@@ -93,7 +93,7 @@ public class EasyInstallExternalEnvironmentInstallerDialog extends JDialog {
         else {
             urlText = availablePackage.getUrl();
         }
-        JTextArea idField = UIUtils.makeReadonlyBorderlessTextArea(urlText);
+        JTextPane idField = UIUtils.makeBorderlessReadonlyTextPane(urlText, false);
         panel.add(idField, new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
         panel.add(UIUtils.makeBorderlessReadonlyTextPane(availablePackage.getDescription(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
