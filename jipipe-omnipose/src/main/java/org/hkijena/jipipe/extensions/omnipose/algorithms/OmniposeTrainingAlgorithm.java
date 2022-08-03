@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.cellpose.algorithms;
+package org.hkijena.jipipe.extensions.omnipose.algorithms;
 
 import ij.IJ;
 import ij.ImagePlus;
@@ -31,8 +31,10 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.Imag
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.omnipose.OmniposeExtension;
+import org.hkijena.jipipe.extensions.omnipose.OmniposePretrainedModel;
+import org.hkijena.jipipe.extensions.omnipose.OmniposeSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
@@ -47,7 +49,7 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-@JIPipeDocumentation(name = "Cellpose training (2.x)", description = "Trains a model with Cellpose. You start from an existing model or train from scratch. " +
+@JIPipeDocumentation(name = "Omnipose training", description = "Trains a model with Omnipose. You start from an existing model or train from scratch. " +
         "Incoming images are automatically converted to greyscale. Only 2D or 3D images are supported. For this node to work, you need to annotate a greyscale 16-bit or 8-bit label image column to each raw data input. " +
         "To do this, you can use the node 'Annotate with data'. By default, JIPipe will ensure that all connected components of this image are assigned a unique component. You can disable this feature via the parameters.")
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Training data", autoCreate = true)
@@ -55,11 +57,11 @@ import java.util.stream.Collectors;
 @JIPipeInputSlot(value = CellposeModelData.class)
 @JIPipeOutputSlot(value = CellposeModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
-public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
+public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     private final CellposeGPUSettings gpuSettings;
     private final CellposeTrainingTweaksSettings tweaksSettings;
     private final CellposeChannelSettings channelSettings;
-    private CellposePretrainedModel pretrainedModel = CellposePretrainedModel.Cytoplasm;
+    private OmniposePretrainedModel pretrainedModel = OmniposePretrainedModel.BactOmni;
     private int numEpochs = 500;
     private boolean enable3DSegmentation = true;
     private boolean cleanUpAfterwards = true;
@@ -68,7 +70,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     private OptionalPythonEnvironment overrideEnvironment = new OptionalPythonEnvironment();
     private DataAnnotationQueryExpression labelDataAnnotation = new DataAnnotationQueryExpression("Label");
 
-    public CellposeTrainingAlgorithm(JIPipeNodeInfo info) {
+    public OmniposeTrainingAlgorithm(JIPipeNodeInfo info) {
         super(info);
         this.gpuSettings = new CellposeGPUSettings();
         this.tweaksSettings = new CellposeTrainingTweaksSettings();
@@ -80,7 +82,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         registerSubParameter(channelSettings);
     }
 
-    public CellposeTrainingAlgorithm(CellposeTrainingAlgorithm other) {
+    public OmniposeTrainingAlgorithm(OmniposeTrainingAlgorithm other) {
         super(other);
 
         this.gpuSettings = new CellposeGPUSettings(other.gpuSettings);
@@ -104,7 +106,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     private void updateSlots() {
-        if (pretrainedModel != CellposePretrainedModel.Custom) {
+        if (pretrainedModel != OmniposePretrainedModel.Custom) {
             if (getInputSlotMap().containsKey("Pretrained model")) {
                 JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
                 slotConfiguration.removeInputSlot("Pretrained model", false);
@@ -170,7 +172,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Override Python environment", description = "If enabled, a different Python environment is used for this Node. Otherwise " +
-            "the one in the Project > Application settings > Extensions > Cellpose is used.")
+            "the one in the Project > Application settings > Extensions > Omnipose is used.")
     @JIPipeParameter("override-environment")
     public OptionalPythonEnvironment getOverrideEnvironment() {
         return overrideEnvironment;
@@ -181,7 +183,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.overrideEnvironment = overrideEnvironment;
     }
 
-    @JIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Cellpose will train in 3D. " +
+    @JIPipeDocumentation(name = "Enable 3D segmentation", description = "If enabled, Omnipose will train in 3D. " +
             "Otherwise, JIPipe will prepare the data by splitting 3D data into planes.")
     @JIPipeParameter(value = "enable-3d-segmentation", important = true)
     public boolean isEnable3DSegmentation() {
@@ -205,26 +207,26 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         this.labelDataAnnotation = labelDataAnnotation;
     }
 
-    @JIPipeDocumentation(name = "Cellpose: GPU", description = "Controls how the graphics card is utilized.")
-    @JIPipeParameter(value = "gpu-settings", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeDocumentation(name = "Omnipose: GPU", description = "Controls how the graphics card is utilized.")
+    @JIPipeParameter(value = "gpu-settings", collapsed = true, resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
     public CellposeGPUSettings getGpuSettings() {
         return gpuSettings;
     }
 
-    @JIPipeDocumentation(name = "Cellpose: Tweaks", description = "Advanced settings for the training.")
-    @JIPipeParameter(value = "tweaks-settings", collapsed = true, iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeDocumentation(name = "Omnipose: Tweaks", description = "Advanced settings for the training.")
+    @JIPipeParameter(value = "tweaks-settings", collapsed = true, resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
     public CellposeTrainingTweaksSettings getTweaksSettings() {
         return tweaksSettings;
     }
 
-    @JIPipeDocumentation(name = "Cellpose: Channels", description = "Determines which channels are used for the segmentation")
-    @JIPipeParameter(value = "channel-parameters", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/apps/cellpose.png")
+    @JIPipeDocumentation(name = "Omnipose: Channels", description = "Determines which channels are used for the segmentation")
+    @JIPipeParameter(value = "channel-parameters", resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
     public CellposeChannelSettings getChannelSettings() {
         return channelSettings;
     }
 
     @JIPipeDocumentation(name = "Model", description = "The pretrained model that should be used. You can either choose one of the models " +
-            "provided by Cellpose, a custom model, or train from scratch. The pre-trained model has influence on the diameter and how the input images should be prepared:" +
+            "provided by Omnipose, a custom model, or train from scratch. The pre-trained model has influence on the diameter and how the input images should be prepared:" +
             "<ul>" +
             "<li><b>Cytoplasm</b>: You need to rescale all your images that structures have a diameter of about 30 pixels.</li>" +
             "<li><b>Nuclei</b>: You need to rescale all your images that structures have a diameter of about 17 pixels.</li>" +
@@ -232,27 +234,27 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
             "<li><b>None</b>: This will train from scratch. You can freely set the diameter. You also can set the diameter to 0 to disable scaling.</li>" +
             "</ul>")
     @JIPipeParameter("pretrained-model")
-    public CellposePretrainedModel getPretrainedModel() {
+    public OmniposePretrainedModel getPretrainedModel() {
         return pretrainedModel;
     }
 
     @JIPipeParameter("pretrained-model")
-    public void setPretrainedModel(CellposePretrainedModel pretrainedModel) {
+    public void setPretrainedModel(OmniposePretrainedModel pretrainedModel) {
         this.pretrainedModel = pretrainedModel;
 
         // Update diameter
-        switch (pretrainedModel) {
-            case Cytoplasm:
-                if (diameter.getContent() != 30) {
-                    ParameterUtils.setParameter(this, "diameter", 30.0);
-                }
-                break;
-            case Nucleus:
-                if (diameter.getContent() != 17) {
-                    ParameterUtils.setParameter(this, "diameter", 17.0);
-                }
-                break;
-        }
+//        switch (pretrainedModel) {
+//            case Cytoplasm:
+//                if (diameter.getContent() != 30) {
+//                    ParameterUtils.setParameter(this, "diameter", 30.0);
+//                }
+//                break;
+//            case Nucleus:
+//                if (diameter.getContent() != 17) {
+//                    ParameterUtils.setParameter(this, "diameter", 17.0);
+//                }
+//                break;
+//        }
         updateSlots();
     }
 
@@ -304,7 +306,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         // Extract model if custom
         Path customModelPath = null;
-        if (pretrainedModel == CellposePretrainedModel.Custom) {
+        if (pretrainedModel == OmniposePretrainedModel.Custom) {
             Set<Integer> pretrainedModelRows = dataBatch.getInputRows("Pretrained model");
             if (pretrainedModelRows.size() != 1) {
                 throw new UserFriendlyRuntimeException("Only one pretrained model is allowed",
@@ -324,6 +326,8 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         // Setup arguments
         List<String> arguments = new ArrayList<>();
+        Map<String, String> envVars = new HashMap<>();
+
         arguments.add("-m");
         arguments.add("cellpose");
 
@@ -366,11 +370,11 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         }
 
         // GPU
-        if (gpuSettings.isEnableGPU())
+        if (gpuSettings.isEnableGPU()) {
             arguments.add("--use_gpu");
-        if(gpuSettings.getGpuDevice().isEnabled()) {
-            arguments.add("--gpu_device");
-            arguments.add(gpuSettings.getGpuDevice().getContent() + "");
+            if(gpuSettings.getGpuDevice().isEnabled()) {
+                envVars.put("CUDA_VISIBLE_DEVICES", gpuSettings.getGpuDevice().getContent().toString());
+            }
         }
         if (dataIs3D)
             arguments.add("--do_3D");
@@ -425,7 +429,7 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
 
         // Run the module
         PythonUtils.runPython(arguments.toArray(new String[0]), overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
-                CellposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), progressInfo);
+                OmniposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), envVars, progressInfo);
 
         // Extract the model
         Path modelsPath = trainingDir.resolve("models");

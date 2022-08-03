@@ -65,7 +65,7 @@ import java.util.*;
         "<li><b>ROI:</b> ROI of the segmented areas.</li>" +
         "</ul>" +
         "Please note that you need to setup a valid Python environment with Omnipose installed. You can find the setting in Project &gt; Application settings &gt; Extensions &gt; Omnipose.")
-@JIPipeInputSlot(value = ImagePlus3DData.class, slotName = "Input", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Labels")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Flows XY")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Flows Z")
@@ -489,7 +489,7 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         for (int row : dataBatch.getInputRows("Input")) {
             JIPipeProgressInfo rowProgress = progressInfo.resolve("Data row " + row);
 
-            ImagePlus img = getInputSlot("Input").getData(row, ImagePlus3DData.class, rowProgress).getImage();
+            ImagePlus img = getInputSlot("Input").getData(row, ImagePlusData.class, rowProgress).getImage();
             if(img.getNFrames() > 1) {
                 throw new UserFriendlyRuntimeException("Omnipose does not support time series!",
                         "Omnipose does not support time series!",
