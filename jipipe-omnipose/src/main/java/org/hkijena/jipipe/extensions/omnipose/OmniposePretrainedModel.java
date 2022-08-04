@@ -5,17 +5,11 @@ import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 @JIPipeDocumentationDescription(description = "See https://github.com/kevinjohncutler/omnipose for a description of all models")
 public enum OmniposePretrainedModel {
     BactOmni("bact_omni"),
-    BactPhaseCp("bact_phase_cp"),
-    BactFluorCp("bact_fluor_cp"),
-    PlantCp("plant_cp"),
-    WormCp("worm_cp"),
+    Bact("bact"),
     Cyto2Omni("cyto2_omni"),
-    BactPhaseOmni("bact_phase_omni"),
-    BactFluorOmni("bact_fluor_omni"),
-    PlantOmni("plant_omni"),
-    WormOmni("worm_omni"),
-    WormBactOmni("worm_bact_omni"),
-    WormHighResOmni("worm_high_res_omni"),
+    Cytoplasm("cyto"),
+    Cytoplasm2("cyto2"),
+    Nucleus("nuclei"),
     Custom(""),
     None("");
 
