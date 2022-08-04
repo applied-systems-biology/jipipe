@@ -72,7 +72,7 @@ public class DownloadSettings extends AbstractJIPipeParameterCollection {
                         else{
                             externalDownloaderProcess.setExecutablePathOSX(curlPath);
                         }
-                        externalDownloaderProcess.setArguments(new DefaultExpressionParameter("ARRAY(url, \"--output\", output_file)"));
+                        externalDownloaderProcess.setArguments(new DefaultExpressionParameter("ARRAY(\"-L\", \"--retry\", \"5\", url, \"--output\", output_file)"));
                     }
                 }
             }
