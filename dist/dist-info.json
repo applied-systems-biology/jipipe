@@ -48,6 +48,7 @@
     "jackson-dataformat-yaml-2.12.5.jar": "https://maven.scijava.org/service/local/repositories/central/content/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.12.5/jackson-dataformat-yaml-2.12.5.jar",
     "poi-4.1.2.jar": "https://maven.scijava.org/service/local/repositories/central/content/org/apache/poi/poi/4.1.2/poi-4.1.2.jar",
     "poi-ooxml-4.1.2.jar": "https://maven.scijava.org/service/local/repositories/central/content/org/apache/poi/poi-ooxml/4.1.2/poi-ooxml-4.1.2.jar",
+    "jsoup-1.7.2.jar": "https://maven.scijava.org/service/local/repositories/central/content/org/jsoup/jsoup/1.7.2/jsoup-1.7.2.jar",
     "LICENSE_OMERO.txt": "https://github.com/ome/omero-insight/blob/master/LICENSE.txt",
     "LICENSE_Javaluator.html": "https://opensource.org/licenses/lgpl-3.0.html",
     "LICENSE_JGraphT.txt": "https://raw.githubusercontent.com/jgrapht/jgrapht/master/license-EPL.txt",
@@ -81,6 +82,7 @@
     "jipipe-forms",
     "jipipe-r",
     "jipipe-cellpose",
+    "jipipe-omnipose",
     "jipipe-launcher"
   ],
   "jipipe-version": "1.74.0"
