@@ -199,10 +199,6 @@ if [ ! -e "./dependencies/poi-ooxml-4.1.2.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/poi-ooxml-4.1.2.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/poi/poi-ooxml/4.1.2/poi-ooxml-4.1.2.jar
 fi
-if [ ! -e "./dependencies/jsoup-1.7.2.jar" ]; then
-	mkdir -p "./dependencies"
-	wget -O ./dependencies/jsoup-1.7.2.jar https://maven.scijava.org/service/local/repositories/central/content/org/jsoup/jsoup/1.7.2/jsoup-1.7.2.jar
-fi
 if [ ! -e "./dependencies/LICENSE_OMERO.txt" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/LICENSE_OMERO.txt https://github.com/ome/omero-insight/blob/master/LICENSE.txt
