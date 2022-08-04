@@ -232,7 +232,7 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
         progressInfo.log("Archive extension detected as " + extension);
 
         // Extract archive
-        progressInfo.log("Extracting archive ...");
+        progressInfo.log("Extracting archive ... " + outputFile);
         if (extension.equals(".zip")) {
             try {
                 ArchiveUtils.decompressZipFile(outputFile, absoluteInstallationPath, progressInfo.resolve("Extract package"));

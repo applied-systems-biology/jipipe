@@ -14,6 +14,13 @@
 package org.hkijena.jipipe.api;
 
 
+import org.scijava.Validated;
+import org.scijava.ValidityProblem;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
 /**
  * An interface about a type that reports of the validity of its internal state
  */
@@ -26,4 +33,27 @@ public interface JIPipeValidatable {
      */
     void reportValidity(JIPipeIssueReport report);
 
+    /**
+     * Generates a report for this object
+     * @return the report
+     */
+    default JIPipeIssueReport generateValidityReport() {
+        JIPipeIssueReport report = new JIPipeIssueReport();
+        reportValidity(report);
+        return report;
+    }
+
+//    @Override
+//    boolean isValid();
+//
+//    @Override
+//    default List<ValidityProblem> getProblems() {
+//        JIPipeIssueReport report = new JIPipeIssueReport();
+//        reportValidity(report);
+//        List<ValidityProblem> list = new ArrayList<>();
+//        for (Map.Entry<String, JIPipeIssueReport.Issue> entry : report.getIssues().entries()) {
+//            list.add(new ValidityProblem(entry.getKey() + ": " + entry.getValue().toString()));
+//        }
+//        return list;
+//    }
 }

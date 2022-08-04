@@ -140,7 +140,7 @@ public class ArchiveUtils {
     public static void main(String[] args) throws IOException {
         JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
         progressInfo.setLogToStdOut(true);
-        Path tarFile = Paths.get("/home/rgerst/Downloads/JIPipepython2110683282828642183.tar.gz");
+        Path tarFile = Paths.get("/data/JIPipe/dist-omnipose/easy-python3.8-omnipose0.2.1-cpu-linux-ubuntu22.04.tar.gz");
         Path outputDir = Paths.get("/home/rgerst/tmp/python/");
         decompressTarGZ(tarFile, outputDir, progressInfo);
         Files.list(outputDir.resolve("python").resolve("bin")).forEach(PathUtils::makeUnixExecutable);

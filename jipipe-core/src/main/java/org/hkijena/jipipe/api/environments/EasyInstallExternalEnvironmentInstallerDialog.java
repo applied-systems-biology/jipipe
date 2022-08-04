@@ -88,14 +88,15 @@ public class EasyInstallExternalEnvironmentInstallerDialog extends JDialog {
         panel.add(UIUtils.createJLabel(availablePackage.getName(), UIUtils.getIcon32FromResources("module-json.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
         String urlText;
         if(availablePackage.getUrlMultiPart() != null && !availablePackage.getUrlMultiPart().isEmpty()) {
-            urlText = String.join("<br/>",availablePackage.getUrlMultiPart());
+            urlText = String.join("\n",availablePackage.getUrlMultiPart());
         }
         else {
             urlText = availablePackage.getUrl();
         }
-        JTextPane idField = UIUtils.makeBorderlessReadonlyTextPane(urlText, false);
-        panel.add(idField, new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
-        panel.add(UIUtils.makeBorderlessReadonlyTextPane(availablePackage.getDescription(), false), new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
+        JTextArea idField = UIUtils.makeReadonlyBorderlessTextArea(urlText);
+        idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
+        panel.add(idField, new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
+        panel.add(UIUtils.makeBorderlessReadonlyTextPane(availablePackage.getDescription(), false), new GridBagConstraints(0, 1, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
         JButton installButton = new JButton("Install now", UIUtils.getIconFromResources("emblems/vcs-normal.png"));
         installButton.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));

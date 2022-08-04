@@ -13,8 +13,12 @@
 
 package org.hkijena.jipipe.utils;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.processes.ProcessEnvironment;
+import org.hkijena.jipipe.extensions.settings.DownloadSettings;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -40,6 +44,71 @@ public class WebUtils {
     }
 
     public static void download(URL url, Path outputFile, String label, JIPipeProgressInfo progressInfo) {
+        boolean usedNative = false;
+        if (JIPipe.isInstantiated()) {
+            DownloadSettings settings = null;
+            try {
+                settings = DownloadSettings.getInstance();
+            } catch (Throwable ex) {
+                ex.printStackTrace();
+            }
+            if(settings != null) {
+                usedNative = settings.getDownloadTool() == DownloadSettings.DownloadTool.Native;
+                try {
+
+                    if(settings.getDownloadTool() == DownloadSettings.DownloadTool.Native) {
+                        downloadNative(url, outputFile, label, progressInfo);
+                    }
+                    else {
+                        ProcessEnvironment process = null;
+                        switch (settings.getDownloadTool()) {
+                            case cURL:
+                                process = settings.getCurlProcess();
+                                break;
+                            case wget:
+                                process = settings.getWgetProcess();
+                                break;
+                            case Custom:
+                                process = settings.getCustomProcess();
+                                break;
+                            default:
+                                throw new UnsupportedOperationException("Unsupported download tool: " + settings.getDownloadTool());
+                        }
+                        if(!process.generateValidityReport().isValid()) {
+                            throw new RuntimeException("Process for " + settings.getDownloadTool() + " is invalid! Please check the settings!");
+                        }
+                        ExpressionVariables variables = new ExpressionVariables();
+                        variables.set("output_file", outputFile.toAbsolutePath().toString());
+                        variables.set("url", url.toString());
+                        ProcessUtils.runProcess(process, variables, progressInfo);
+                    }
+
+                    return; // We are done here if it finishes
+                } catch (Throwable ex) {
+                    if(usedNative) {
+                        throw ex;
+                    }
+                    progressInfo.log("Error: " + ex);
+                    progressInfo.log("Falling back to native downloader");
+                }
+            }
+            else {
+                progressInfo.log("Falling back to native downloader");
+            }
+        }
+        // Fall back to native downloader
+        downloadNative(url, outputFile, label, progressInfo);
+    }
+
+    /**
+     * The native download method written in Java
+     *
+     * @param url          the URL
+     * @param outputFile   the output file
+     * @param label        the label
+     * @param progressInfo the progress info
+     */
+    public static void downloadNative(URL url, Path outputFile, String label, JIPipeProgressInfo progressInfo) {
         DecimalFormat df = new DecimalFormat("0.00");
         df.setGroupingUsed(false);
         df.setDecimalFormatSymbols(new DecimalFormatSymbols(Locale.ENGLISH));
