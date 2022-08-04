@@ -669,7 +669,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
      * @param template the template
      */
     public void registerNodeExample(JIPipeNodeTemplate template) {
-        registry.getNodeRegistry().registerExample(template);
+        registry.getNodeRegistry().scheduleRegisterExample(template);
     }
 
     /**

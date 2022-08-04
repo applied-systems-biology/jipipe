@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.registries;
 import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import ij.plugin.ZProjector;
 import org.antlr.misc.MultiMap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
@@ -47,6 +48,8 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     private final BiMap<String, JIPipeNodeTypeCategory> registeredCategories = HashBiMap.create();
     private final Map<JIPipeNodeInfo, URL> iconURLs = new HashMap<>();
     private final Map<JIPipeNodeInfo, ImageIcon> iconInstances = new HashMap<>();
+
+    private final List<JIPipeNodeTemplate> scheduledRegisterExamples = new ArrayList<>();
     private final EventBus eventBus = new EventBus();
     private final URL defaultIconURL;
     private final JIPipe jiPipe;
@@ -298,7 +301,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     public void registerExample(JIPipeNodeTemplate nodeTemplate) {
         JIPipeNodeExample example = new JIPipeNodeExample(nodeTemplate);
         if(example.getNodeId() == null) {
-            jiPipe.getProgressInfo().log("ERROR: Unable to register node template '" + nodeTemplate.getName() + "'. No unique node ID.");
+            jiPipe.getProgressInfo().log("ERROR: Unable to register node template '" + nodeTemplate.getName() + "'. No [unique] node ID.");
         }
         else {
             jiPipe.getProgressInfo().log("Registered example for " + example.getNodeId() + ": '" + nodeTemplate.getName() + "'");
@@ -374,5 +377,17 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
 
     public JIPipe getJIPipe() {
         return jiPipe;
+    }
+
+    public void scheduleRegisterExample(JIPipeNodeTemplate template) {
+        jiPipe.getProgressInfo().log("Scheduled node template '" + template.getName() + "' to be registered as example.");
+        scheduledRegisterExamples.add(template);
+    }
+
+    public void executeScheduledRegisterExamples() {
+        for (JIPipeNodeTemplate example : scheduledRegisterExamples) {
+            registerExample(example);
+        }
+        scheduledRegisterExamples.clear();
     }
 }
