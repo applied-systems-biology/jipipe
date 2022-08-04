@@ -27,6 +27,7 @@ import java.io.OutputStream;
 import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -44,7 +45,7 @@ public class WebUtils {
     }
 
     public static void download(URL url, Path outputFile, String label, JIPipeProgressInfo progressInfo) {
-        boolean usedNative = false;
+        boolean useExternalDownloader;
         if (JIPipe.isInstantiated()) {
             DownloadSettings settings = null;
             try {
@@ -53,39 +54,32 @@ public class WebUtils {
                 ex.printStackTrace();
             }
             if(settings != null) {
-                usedNative = settings.getDownloadTool() == DownloadSettings.DownloadTool.Native;
+                useExternalDownloader = settings.isPreferCustomDownloader() && settings.getExternalDownloaderProcess().generateValidityReport().isValid();
                 try {
-
-                    if(settings.getDownloadTool() == DownloadSettings.DownloadTool.Native) {
+                    if(!useExternalDownloader) {
                         downloadNative(url, outputFile, label, progressInfo);
                     }
                     else {
-                        ProcessEnvironment process = null;
-                        switch (settings.getDownloadTool()) {
-                            case cURL:
-                                process = settings.getCurlProcess();
-                                break;
-                            case wget:
-                                process = settings.getWgetProcess();
-                                break;
-                            case Custom:
-                                process = settings.getCustomProcess();
-                                break;
-                            default:
-                                throw new UnsupportedOperationException("Unsupported download tool: " + settings.getDownloadTool());
-                        }
-                        if(!process.generateValidityReport().isValid()) {
-                            throw new RuntimeException("Process for " + settings.getDownloadTool() + " is invalid! Please check the settings!");
-                        }
+                        ProcessEnvironment process = settings.getExternalDownloaderProcess();
                         ExpressionVariables variables = new ExpressionVariables();
                         variables.set("output_file", outputFile.toAbsolutePath().toString());
                         variables.set("url", url.toString());
                         ProcessUtils.runProcess(process, variables, progressInfo);
                     }
 
-                    return; // We are done here if it finishes
+                    if(Files.isRegularFile(outputFile)) {
+                        return; // We are done here if it finishes
+                    }
+                    else {
+                        if(!useExternalDownloader) {
+                            throw new RuntimeException("Output file " + outputFile + " does not exist!");
+                        }
+                        progressInfo.log("Output file " + outputFile + " does not exist!");
+                        progressInfo.log("Falling back to native downloader");
+                    }
+
                 } catch (Throwable ex) {
-                    if(usedNative) {
+                    if(!useExternalDownloader) {
                         throw ex;
                     }
                     progressInfo.log("Error: " + ex);

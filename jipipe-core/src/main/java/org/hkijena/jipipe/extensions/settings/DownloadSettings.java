@@ -36,134 +36,82 @@ import java.nio.file.Paths;
 public class DownloadSettings extends AbstractJIPipeParameterCollection {
     public static final String ID = "downloads";
 
-    private DownloadTool downloadTool = DownloadTool.Native;
+    private boolean preferCustomDownloader = true;
 
-    private DownloadEnvironment wgetProcess = new DownloadEnvironment();
-
-    private DownloadEnvironment curlProcess = new DownloadEnvironment();
-
-    private DownloadEnvironment customProcess = new DownloadEnvironment();
+    private DownloadEnvironment externalDownloaderProcess = new DownloadEnvironment();
 
     /**
      * Creates a new instance
      */
     public DownloadSettings() {
-        initEnvironmentDefaults();
         autoDetectEnvironments();
-    }
-
-    private void initEnvironmentDefaults() {
-        wgetProcess.setArguments(new DefaultExpressionParameter("ARRAY(\"-O\", output_file, url)"));
-        curlProcess.setArguments(new DefaultExpressionParameter("ARRAY(url, \"--output\", output_file)"));
     }
 
     private void autoDetectEnvironments() {
 
-        // Wget
-        if(!wgetProcess.generateValidityReport().isValid()) {
-            if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX) {
+        if(!externalDownloaderProcess.generateValidityReport().isValid()) {
+            if(SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX) {
+                // Attempt to get wget
                 Path wgetPath = PathUtils.findAnyOf(Paths.get("/bin/wget"), Paths.get("/usr/local/bin/wget"), Paths.get("/usr/bin/wget"));
                 if (wgetPath != null && Files.isRegularFile(wgetPath)) {
                     if(SystemUtils.IS_OS_LINUX) {
-                        wgetProcess.setExecutablePathLinux(wgetPath);
+                        externalDownloaderProcess.setExecutablePathLinux(wgetPath);
                     }
                     else {
-                        wgetProcess.setExecutablePathOSX(wgetPath);
+                        externalDownloaderProcess.setExecutablePathOSX(wgetPath);
+                    }
+                    externalDownloaderProcess.setArguments(new DefaultExpressionParameter("ARRAY(\"-O\", output_file, url)"));
+                }
+                // Attempt to get cURL
+                if(!externalDownloaderProcess.generateValidityReport().isValid()) {
+                    Path curlPath = PathUtils.findAnyOf(Paths.get("/bin/wget"), Paths.get("/usr/local/bin/wget"), Paths.get("/usr/bin/wget"));
+                    if (curlPath != null && Files.isRegularFile(curlPath)) {
+                        if(SystemUtils.IS_OS_LINUX) {
+                            externalDownloaderProcess.setExecutablePathLinux(curlPath);
+                        }
+                        else{
+                            externalDownloaderProcess.setExecutablePathOSX(curlPath);
+                        }
+                        externalDownloaderProcess.setArguments(new DefaultExpressionParameter("ARRAY(url, \"--output\", output_file)"));
                     }
                 }
             }
-        }
-
-        // Curl
-        if(!curlProcess.generateValidityReport().isValid()) {
-            Path curlPath;
-            if(SystemUtils.IS_OS_WINDOWS) {
-                curlPath = PathUtils.findAnyOf(Paths.get("C:\\Windows\\System32\\curl.exe"));
-            }
-            else {
-                curlPath = PathUtils.findAnyOf(Paths.get("/bin/wget"), Paths.get("/usr/local/bin/wget"), Paths.get("/usr/bin/wget"));
-            }
-            if (curlPath != null && Files.isRegularFile(curlPath)) {
-                if(SystemUtils.IS_OS_LINUX) {
-                    curlProcess.setExecutablePathLinux(curlPath);
-                }
-                else if(SystemUtils.IS_OS_MAC_OSX) {
-                    curlProcess.setExecutablePathOSX(curlPath);
-                }
-                else if(SystemUtils.IS_OS_WINDOWS) {
-                    curlProcess.setExecutablePathWindows(curlPath);
-                }
+            else if(SystemUtils.IS_OS_WINDOWS) {
+//                // Configure powershell downloading
+//                Path powerShellPath = PathUtils.findAnyOf(Paths.get("C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"));
+//                if(powerShellPath != null) {
+//                    externalDownloaderProcess.setExecutablePathWindows(powerShellPath);
+//                    externalDownloaderProcess.setArguments(new DefaultExpressionParameter("ARRAY(\"-NonInteractive\", \"-Command\", \"Invoke-WebRequest \" + url + \" -O \" + output_file)"));
+//                }
+                // Windows has no good native downloader. Then we can just use the native one.
+                preferCustomDownloader = false;
             }
         }
-
-        // Auto-select default
-        if(wgetProcess.generateValidityReport().isValid()) {
-            downloadTool = DownloadTool.wget;
-        }
-        else if(curlProcess.generateValidityReport().isValid()) {
-            downloadTool = DownloadTool.cURL;
-        }
+    }
+    @JIPipeDocumentation(name = "Prefer custom downloader", description = "If enabled, a custom downloader process is preferred.")
+    @JIPipeParameter("prefer-external-downloader")
+    public boolean isPreferCustomDownloader() {
+        return preferCustomDownloader;
     }
 
-    @JIPipeDocumentation(name = "Download tool", description = "Determines how remote files are downloaded. " +
-            "<ul>" +
-            "<li>Native: the integrated download algorithm. Does not depend on any third-party tool, but cannot handle unstable networks.</li>" +
-            "<li>Wget: use the wget command line tool. Might be only available on Linux.</li>" +
-            "<li>cURL: use the cURL command line tool. It is available on Windows, Linux, and macOS.</li>" +
-            "<li>Custom: use a custom tool</li>" +
-            "</ul>")
-    @JIPipeParameter(value = "download-tool")
-    public DownloadTool getDownloadTool() {
-        return downloadTool;
+    @JIPipeParameter("prefer-external-downloader")
+    public void setPreferCustomDownloader(boolean preferCustomDownloader) {
+        this.preferCustomDownloader = preferCustomDownloader;
     }
 
-    @JIPipeParameter("download-tool")
-    public void setDownloadTool(DownloadTool downloadTool) {
-        this.downloadTool = downloadTool;
+    @JIPipeDocumentation(name = "Custom downloader", description = "A process for downloading files. If not set, JIPipe will fall back to its native Java-based downloading tool.")
+    @JIPipeParameter("external-downloader-process")
+    public DownloadEnvironment getExternalDownloaderProcess() {
+        return externalDownloaderProcess;
     }
 
-    @JIPipeDocumentation(name = "wget process", description = "The configuration for wget")
-    @JIPipeParameter("wget-process")
-    public DownloadEnvironment getWgetProcess() {
-        return wgetProcess;
-    }
-
-    @JIPipeParameter("wget-process")
-    public void setWgetProcess(DownloadEnvironment wgetProcess) {
-        this.wgetProcess = wgetProcess;
-    }
-
-    @JIPipeDocumentation(name = "cURL process", description = "The configuration for cURL")
-    @JIPipeParameter("curl-process")
-    public DownloadEnvironment getCurlProcess() {
-        return curlProcess;
-    }
-
-    @JIPipeParameter("curl-process")
-    public void setCurlProcess(DownloadEnvironment curlProcess) {
-        this.curlProcess = curlProcess;
-    }
-
-    @JIPipeDocumentation(name = "Custom process", description = "A custom process")
-    @JIPipeParameter("custom-process")
-    public DownloadEnvironment getCustomProcess() {
-        return customProcess;
-    }
-
-    @JIPipeParameter("custom-process")
-    public void setCustomProcess(DownloadEnvironment customProcess) {
-        this.customProcess = customProcess;
+    @JIPipeParameter("external-downloader-process")
+    public void setExternalDownloaderProcess(DownloadEnvironment externalDownloaderProcess) {
+        this.externalDownloaderProcess = externalDownloaderProcess;
     }
 
     public static DownloadSettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, DownloadSettings.class);
-    }
-
-    public enum DownloadTool {
-        Native,
-        wget,
-        cURL,
-        Custom
     }
 
     public static class DownloadEnvironment extends ProcessEnvironment {

@@ -51,7 +51,6 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerEnumParameterType("jipipe:settings:downloads:download-tool", DownloadSettings.DownloadTool.class, "Download tool", "The tool to use for downloading files");
         registerParameterType("jipipe:settings:downloads:downloader-environment", DownloadSettings.DownloadEnvironment.class, "Downloader process", "A downloader process");
 
         registerSettingsSheet(DownloadSettings.ID,
