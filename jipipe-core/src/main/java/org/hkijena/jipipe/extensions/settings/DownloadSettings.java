@@ -64,7 +64,7 @@ public class DownloadSettings extends AbstractJIPipeParameterCollection {
                 }
                 // Attempt to get cURL
                 if(!externalDownloaderProcess.generateValidityReport().isValid()) {
-                    Path curlPath = PathUtils.findAnyOf(Paths.get("/bin/wget"), Paths.get("/usr/local/bin/wget"), Paths.get("/usr/bin/wget"));
+                    Path curlPath = PathUtils.findAnyOf(Paths.get("/bin/curl"), Paths.get("/usr/local/bin/curl"), Paths.get("/usr/bin/curl"));
                     if (curlPath != null && Files.isRegularFile(curlPath)) {
                         if(SystemUtils.IS_OS_LINUX) {
                             externalDownloaderProcess.setExecutablePathLinux(curlPath);
