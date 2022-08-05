@@ -41,7 +41,12 @@ public class JIPipeReflectionParameterCollectionContextAction implements JIPipeP
     @Override
     public void accept(JIPipeWorkbench workbench) {
         try {
-            function.invoke(target, workbench);
+            if(function.getParameters().length == 0) {
+                function.invoke(target);
+            }
+            else {
+                function.invoke(target, workbench);
+            }
         } catch (IllegalAccessException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

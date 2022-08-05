@@ -22,14 +22,17 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.FilesystemExtensionSettings;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FileData;
+import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -79,6 +82,7 @@ public class FileListDataSource extends JIPipeAlgorithm {
     @JIPipeParameter("file-names")
     @JIPipeDocumentation(name = "Files")
     @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.FilesOnly)
+    @ListParameterSettings(withScrollBar = true)
     public PathList getFiles() {
         return files;
     }
@@ -108,12 +112,30 @@ public class FileListDataSource extends JIPipeAlgorithm {
     public PathList getAbsoluteFileNames() {
         PathList result = new PathList();
         for (Path fileName : files) {
+            if (fileName == null) {
+                result.add(null);
+            } else if (currentWorkingDirectory != null && !fileName.isAbsolute()) {
+                result.add(currentWorkingDirectory.resolve(fileName));
+            } else {
+                result.add(fileName);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * @return Relative file names (if available)
+     */
+    public PathList getRelativeFileNames() {
+        PathList result = new PathList();
+        for (Path fileName : files) {
             if (fileName == null)
                 result.add(null);
-            else if (currentWorkingDirectory != null)
-                result.add(currentWorkingDirectory.resolve(fileName));
-            else
+            else if (currentWorkingDirectory != null && fileName.isAbsolute() && fileName.startsWith(currentWorkingDirectory)) {
+                result.add(currentWorkingDirectory.relativize(fileName));
+            } else {
                 result.add(fileName);
+            }
         }
         return result;
     }
@@ -133,6 +155,18 @@ public class FileListDataSource extends JIPipeAlgorithm {
                         this);
             }
         }
+    }
+
+    @JIPipeDocumentation(name = "Paths to absolute", description = "Converts the stored paths to absolute paths.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png")
+    public void convertPathsToAbsolute() {
+        setParameter("file-names", getAbsoluteFileNames());
+    }
+
+    @JIPipeDocumentation(name = "Paths to relative", description = "Converts the stored paths to paths relative to the project directory (if available).")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png")
+    public void convertPathsToRelative() {
+        setParameter("file-names", getRelativeFileNames());
     }
 
     @Override

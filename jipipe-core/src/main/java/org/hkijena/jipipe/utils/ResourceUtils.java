@@ -69,6 +69,22 @@ public class ResourceUtils {
     }
 
     /**
+     * Gets a plugin-internal resource as URL
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
+     *
+     * @param internalResourcePath internal path
+     * @return resource URL or null if the resource does not exist
+     */
+    public static URL getPluginResourceInverted(String internalResourcePath) {
+        if (!UIUtils.DARK_THEME) {
+            URL darkResource = ResourceUtils.class.getResource(getResourcePath("dark/" + internalResourcePath));
+            if (darkResource != null)
+                return darkResource;
+        }
+        return ResourceUtils.class.getResource(getResourcePath(internalResourcePath));
+    }
+
+    /**
      * Gets a plugin resource as string
      *
      * @param internalResourcePath internal path

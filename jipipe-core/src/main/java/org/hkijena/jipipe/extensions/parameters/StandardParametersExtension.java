@@ -52,7 +52,6 @@ import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEn
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.FilePathParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathListParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
@@ -668,7 +667,6 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
         registerParameterType("string", String.class, StringList.class, () -> "", s -> s, "String", "A text value", StringParameterEditorUI.class);
         registerParameterType("password", PasswordParameter.class, null, null, "Password", "A password", PasswordParameterEditorUI.class);
         registerParameterType("path", Path.class, PathList.class, () -> Paths.get(""), p -> p, "Filesystem path", "A path", FilePathParameterEditorUI.class);
-        registerParameterEditor(PathList.class, PathListParameterEditorUI.class);
         registerParameterType("file", File.class, () -> new File(""), f -> f, "Filesystem path", "A path", FileParameterEditorUI.class);
         registerParameterType("color", Color.class, () -> Color.WHITE, c -> c, "Color", "A color", ColorParameterEditorUI.class);
         registerParameterType("color-list", ColorListParameter.class, "Color list", "A list of colors");

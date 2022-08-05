@@ -16,6 +16,7 @@ package org.hkijena.jipipe.extensions.parameters.library.filesystem;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Collection;
 
 /**
@@ -37,5 +38,12 @@ public class PathList extends ListParameter<Path> {
     public PathList(Collection<Path> other) {
         super(Path.class);
         addAll(other);
+    }
+
+    @Override
+    public Path addNewInstance() {
+        Path path = Paths.get("");
+        add(path);
+        return path;
     }
 }

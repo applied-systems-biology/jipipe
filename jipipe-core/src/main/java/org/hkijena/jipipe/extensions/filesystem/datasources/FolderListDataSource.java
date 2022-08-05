@@ -22,14 +22,17 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.filesystem.FilesystemExtensionSettings;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.FolderData;
+import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathParameterSettings;
 import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -79,6 +82,7 @@ public class FolderListDataSource extends JIPipeAlgorithm {
     @JIPipeParameter("folder-paths")
     @JIPipeDocumentation(name = "Folder paths")
     @PathParameterSettings(ioMode = PathIOMode.Open, pathMode = PathType.DirectoriesOnly)
+    @ListParameterSettings(withScrollBar = true)
     public PathList getFolderPaths() {
         return folderPaths;
     }
@@ -108,14 +112,44 @@ public class FolderListDataSource extends JIPipeAlgorithm {
     public PathList getAbsoluteFolderPaths() {
         PathList result = new PathList();
         for (Path folderPath : folderPaths) {
-            if (folderPath == null)
+            if (folderPath == null) {
                 result.add(null);
-            else if (currentWorkingDirectory != null)
+            } else if (currentWorkingDirectory != null && !folderPath.isAbsolute()) {
                 result.add(currentWorkingDirectory.resolve(folderPath));
-            else
+            } else {
                 result.add(folderPath);
+            }
         }
         return result;
+    }
+
+    /**
+     * @return Relative paths (if available)
+     */
+    public PathList getRelativeFolderPaths() {
+        PathList result = new PathList();
+        for (Path folderPath : folderPaths) {
+            if (folderPath == null)
+                result.add(null);
+            else if (currentWorkingDirectory != null && folderPath.isAbsolute() && folderPath.startsWith(currentWorkingDirectory)) {
+                result.add(currentWorkingDirectory.relativize(folderPath));
+            } else {
+                result.add(folderPath);
+            }
+        }
+        return result;
+    }
+
+    @JIPipeDocumentation(name = "Paths to absolute", description = "Converts the stored paths to absolute paths.")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png")
+    public void convertPathsToAbsolute() {
+        setParameter("file-names", getAbsoluteFolderPaths());
+    }
+
+    @JIPipeDocumentation(name = "Paths to relative", description = "Converts the stored paths to paths relative to the project directory (if available).")
+    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png")
+    public void convertPathsToRelative() {
+        setParameter("file-names", getRelativeFolderPaths());
     }
 
     @Override

@@ -102,6 +102,8 @@ public class UIUtils {
     public static final FileNameExtensionFilter EXTENSION_FILTER_AVI = new FileNameExtensionFilter("Video file (*.avi)", "avi");
     public static final Insets UI_PADDING = new Insets(4, 4, 4, 4);
     public static final Map<String, ImageIcon> ICON_FROM_RESOURCES_CACHE = new HashMap<>();
+
+    public static final Map<String, ImageIcon> ICON_INVERTED_FROM_RESOURCES_CACHE = new HashMap<>();
     public static boolean DARK_THEME = false;
     private static Theme RSYNTAX_THEME_DEFAULT;
     private static Theme RSYNTAX_THEME_DARK;
@@ -442,6 +444,40 @@ public class UIUtils {
      */
     public static ImageIcon getIcon16FromResources(String iconName) {
         return getIconFromResources(iconName);
+    }
+
+    /**
+     * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public static ImageIcon getIconInvertedFromResources(String iconName) {
+        String path = "icons/" + iconName;
+        ImageIcon icon = ICON_INVERTED_FROM_RESOURCES_CACHE.getOrDefault(path, null);
+        if (icon == null) {
+            icon = new ImageIcon(ResourceUtils.getPluginResourceInverted(path));
+            ICON_INVERTED_FROM_RESOURCES_CACHE.put(path, icon);
+        }
+        return icon;
+    }
+
+    /**
+     * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public static ImageIcon getIconInverted32FromResources(String iconName) {
+        String path = "icons-32/" + iconName;
+        ImageIcon icon = ICON_INVERTED_FROM_RESOURCES_CACHE.getOrDefault(path, null);
+        if (icon == null) {
+            icon = new ImageIcon(ResourceUtils.getPluginResourceInverted(path));
+            ICON_INVERTED_FROM_RESOURCES_CACHE.put(path, icon);
+        }
+        return icon;
     }
 
     /**
