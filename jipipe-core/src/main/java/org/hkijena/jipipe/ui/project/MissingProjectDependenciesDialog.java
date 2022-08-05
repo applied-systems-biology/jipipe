@@ -92,7 +92,8 @@ public class MissingProjectDependenciesDialog extends JDialog {
         formPanel.setBorder(BorderFactory.createEmptyBorder(16, 16, 16, 16));
 
         formPanel.addWideToForm(UIUtils.createJLabel("Missing dependencies detected", UIUtils.getIcon32FromResources("dialog-warning.png"), 28));
-        formPanel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane("The project '" + fileName.toString() + "' might not be loadable due to missing dependencies. You can choose to activate the dependencies (requires a restart of ImageJ or JIPipe) or ignore this message.", false));
+        formPanel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane("The project '" + fileName.toString() + "' might not be loadable due to missing dependencies. If the required extensions are available, you can choose to activate them (requires a restart of ImageJ or JIPipe). " +
+                "If you want, you can also ignore this message. In this case, any node that is not available will be automatically deleted.", false));
 
         if (!dependencySet.isEmpty()) {
             formPanel.addWideToForm(Box.createVerticalStrut(32));
