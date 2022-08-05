@@ -19,12 +19,15 @@ import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPl
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.ribbon.LargeButtonAction;
+import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import java.awt.*;
 import java.util.Arrays;
 
 /**
@@ -35,11 +38,11 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
     public static final Settings SETTINGS = new Settings();
 
     private JXTable table;
-    private JToggleButton autoMeasureToggle;
-    private ImageStatisticsSetParameter statistics = new ImageStatisticsSetParameter();
+    private final JCheckBox autoMeasureToggle = new JCheckBox("Measure on changes");
 
     public MeasurementDrawerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
+        initialize();
         viewerPanel.getCanvas().getEventBus().register(this);
         setMaskGenerator(this::generateMask);
     }
@@ -74,6 +77,15 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
         }
     }
 
+    private void initialize() {
+        Ribbon.Task measureTask = getRibbon().addTask("Measure");
+        getRibbon().reorderTasks(Arrays.asList("Draw", "Measure"));
+
+        Ribbon.Band generalBand = measureTask.addBand("General");
+        generalBand.add(new LargeButtonAction("Measure", "Measures the image/mask now", UIUtils.getIcon32FromResources("actions/statistics.png"), this::measureCurrentMask));
+        generalBand.add(new Ribbon.Action(autoMeasureToggle, 1, new Insets(2,2,2,2)));
+    }
+
     private void showNoMeasurements() {
         table.setModel(new DefaultTableModel());
     }
@@ -104,7 +116,7 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
         ImagePlus dummy = new ImagePlus("Reference", getViewerPanel().getCurrentSlice().duplicate());
         dummy.setCalibration(getCurrentImage().getCalibration());
         ResultsTableData measurements = data.measure(dummy,
-                statistics, false, SETTINGS.measureInPhysicalUnits);
+                SETTINGS.statistics, false, SETTINGS.measureInPhysicalUnits);
         if (measurements.getRowCount() != 1) {
             showNoMeasurements();
             return;
