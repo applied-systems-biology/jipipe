@@ -37,18 +37,20 @@ public class MaskToROIDrawerPlugin extends MaskDrawerPlugin {
     public void createPalettePanel(FormPanel formPanel) {
         super.createPalettePanel(formPanel);
 
-        getCurrentGroupHeader().setDescription("Please note that you have to click 'Add to ROI manager' to create a ROI.");
+        // TODO
 
-        JButton clearButton = new JButton("Clear", UIUtils.getIconFromResources("actions/clear_left.png"));
-        clearButton.addActionListener(e -> clearCurrentMask());
-        getCurrentGroupHeader().addColumn(clearButton);
-
-        ROIManagerPlugin roiManager = getViewerPanel().getPlugin(ROIManagerPlugin.class);
-        if (roiManager != null) {
-            JButton addAsROIButton = new JButton("Add to ROI manager", UIUtils.getIconFromResources("actions/list-add.png"));
-            addAsROIButton.addActionListener(e -> addToROIManager());
-            getCurrentGroupHeader().addColumn(addAsROIButton);
-        }
+//        getCurrentGroupHeader().setDescription("Please note that you have to click 'Add to ROI manager' to create a ROI.");
+//
+//        JButton clearButton = new JButton("Clear", UIUtils.getIconFromResources("actions/clear_left.png"));
+//        clearButton.addActionListener(e -> clearCurrentMask());
+//        getCurrentGroupHeader().addColumn(clearButton);
+//
+//        ROIManagerPlugin roiManager = getViewerPanel().getPlugin(ROIManagerPlugin.class);
+//        if (roiManager != null) {
+//            JButton addAsROIButton = new JButton("Add to ROI manager", UIUtils.getIconFromResources("actions/list-add.png"));
+//            addAsROIButton.addActionListener(e -> addToROIManager());
+//            getCurrentGroupHeader().addColumn(addAsROIButton);
+//        }
     }
 
     private void addToROIManager() {

@@ -3,27 +3,39 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.ImagePlus;
+import ij.gui.Roi;
+import ij.measure.ResultsTable;
+import ij.plugin.filter.EDM;
+import ij.plugin.filter.ParticleAnalyzer;
+import ij.plugin.frame.RoiManager;
 import ij.process.Blitter;
+import ij.process.ByteProcessor;
+import ij.process.ImageConverter;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeMutableParameterAccess;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelCanvas;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelCanvasTool;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.ImageViewerPanelPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
 import org.hkijena.jipipe.extensions.parameters.library.ranges.*;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.components.ColorChooserButton;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.ui.components.ribbon.*;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
+import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -32,9 +44,9 @@ import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.lang.annotation.Annotation;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -44,16 +56,12 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
     public static final Stroke STROKE_GUIDE_LINE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{1}, 0);
     private final JPanel colorSelectionPanel = new JPanel();
-    private final JPanel toolSelectionPanel = new JPanel();
     private final Map<MaskColor, JToggleButton> colorSelectionButtons = new HashMap<>();
-    private final Map<MaskDrawerTool, JToggleButton> toolSelectionButtons = new HashMap<>();
     private final JCheckBox showGuidesToggle = new JCheckBox("Show guide lines", true);
-    private final ButtonGroup toolButtonGroup = new ButtonGroup();
     private ImagePlus mask;
     private ImageProcessor currentMaskSlice;
     private BufferedImage currentMaskSlicePreview;
     private MaskColor currentColor = MaskColor.Foreground;
-
     private final MouseMaskDrawerTool mouseTool = new MouseMaskDrawerTool(this);
     private MaskDrawerTool currentTool;
     private ColorChooserButton highlightColorButton;
@@ -61,7 +69,13 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     private Color highlightColor = new Color(255, 255, 0, 128);
     private Color maskColor = new Color(255, 0, 0, 128);
     private Function<ImagePlus, ImagePlus> maskGenerator;
-    private FormPanel.GroupHeaderPanel currentGroupHeader;
+
+    private final Ribbon ribbon = new Ribbon(3);
+
+    private final List<MaskDrawerTool> registeredTools = new ArrayList<>();
+
+    private final FormPanel toolSettingsPanel = new FormPanel(FormPanel.NONE);
+    private SmallButtonAction exportToRoiManagerAction;
 
     public MaskDrawerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
@@ -79,19 +93,35 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
         viewerPanel.getCanvas().getEventBus().register(this);
         viewerPanel.getCanvas().setTool(mouseTool);
+        rebuildToolSettings();
     }
 
     public void installTool(MaskDrawerTool tool) {
-        addSelectionButton(tool,
-                toolSelectionPanel,
-                toolSelectionButtons,
-                toolButtonGroup,
-                "",
-                "<html><strong>" + tool.getName() + "</strong><br/>" +
-                        tool.getDescription() + "</html>",
-                tool.getIcon(),
-                this::getCurrentTool,
-                (MaskDrawerTool t) -> getViewerPanel().getCanvas().setTool(t));
+        Ribbon.Task task = ribbon.getOrCreateTask("Draw");
+        Ribbon.Band band = task.getOrCreateBand("Tools");
+        if(tool instanceof MouseMaskDrawerTool) {
+            LargeToggleButtonAction action = new LargeToggleButtonAction(tool.getName(), tool.getDescription(), tool.getIcon());
+            action.addActionListener(e -> {
+                if(action.getState()) {
+                    getViewerPanel().getCanvas().setTool(tool);
+                }
+            });
+            tool.addToggleButton(action.getButton(), getViewerPanel().getCanvas());
+            band.add(action);
+        }
+        else {
+            SmallToggleButtonAction action = new SmallToggleButtonAction(tool.getName(), tool.getDescription(), tool.getIcon());
+            action.addActionListener(e -> {
+                if(action.getState()) {
+                    getViewerPanel().getCanvas().setTool(tool);
+                }
+            });
+            tool.addToggleButton(action.getButton(), getViewerPanel().getCanvas());
+            band.add(action);
+        }
+
+        // Register tool
+        registeredTools.add(tool);
     }
 
     private void initialize() {
@@ -140,8 +170,185 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
                 this::getCurrentColor,
                 this::setCurrentColor);
 
-        // Create tool selection
-        toolSelectionPanel.setLayout(new BoxLayout(toolSelectionPanel, BoxLayout.X_AXIS));
+        // Style tool settings
+        toolSettingsPanel.setBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 3));
+
+        // Create ribbon
+        initializeRibbon();
+    }
+
+    private void initializeRibbon() {
+        // Pre-create the ribbon band
+        ribbon.addTask("Draw").addBand("Tools");
+
+        // View menu
+        Ribbon.Task viewTask = ribbon.addTask("View");
+        Ribbon.Band viewColorsBand = viewTask.addBand("Colors");
+        Ribbon.Band viewTweaksBand = viewTask.addBand("Tweaks");
+
+        maskColorButton.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        highlightColorButton.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        viewColorsBand.add(new Ribbon.Action(Arrays.asList(new JLabel("Mask color"), maskColorButton), 1, new Insets(2,2,2,2)));
+        viewColorsBand.add(new Ribbon.Action(Arrays.asList(new JLabel("Highlight color"), highlightColorButton), 1, new Insets(2,2,2,2)));
+
+        viewTweaksBand.add(new Ribbon.Action(showGuidesToggle, 1, new Insets(2,2,2,2)));
+
+        // Modify menu
+        Ribbon.Task modifyTask = ribbon.addTask("Modify");
+        Ribbon.Band modifyMaskBand = modifyTask.addBand("Mask");
+        modifyMaskBand.add(new LargeButtonAction("Process ...", "Apply a morphological operation",  UIUtils.getIcon32FromResources("actions/configure.png"),
+                UIUtils.createMenuItem("Invert", "Inverts the mask",  UIUtils.getIconFromResources("actions/object-inverse.png"), this::applyInvert),
+                null,
+                UIUtils.createMenuItem("Watershed", "Applies a distance transform watershed",  UIUtils.getIconFromResources("actions/object-tweak-randomize.png"), this::applyWatershed),
+                null,
+                UIUtils.createMenuItem("Dilation", "Applies a 3x3 morphological dilation", UIUtils.getIconFromResources("actions/object-tweak-paint.png"), this::applyDilate),
+                UIUtils.createMenuItem("Erosion", "Applies a 3x3 morphological erosion", UIUtils.getIconFromResources("actions/object-tweak-paint.png"), this::applyErode),
+                UIUtils.createMenuItem("Opening", "Applies a 3x3 morphological opening", UIUtils.getIconFromResources("actions/object-tweak-paint.png"), this::applyOpen),
+                UIUtils.createMenuItem("Closing", "Applies a 3x3 morphological closing", UIUtils.getIconFromResources("actions/object-tweak-paint.png"), this::applyClose)));
+        modifyMaskBand.add(new SmallButtonAction("Copy to ...", "Copies the current slice to another position", UIUtils.getIconFromResources("actions/edit-duplicate.png"), this::copySlice));
+        modifyMaskBand.add(new SmallButtonAction("Clear", "Sets the whole mask to zero", UIUtils.getIconFromResources("actions/tool_color_eraser.png"), this::clearCurrentMask));
+
+        // Import/Export menu
+        Ribbon.Task importExportTask = ribbon.addTask("Import/Export");
+        Ribbon.Band fileImportExportBand = importExportTask.addBand("File");
+        Ribbon.Band convertImportExportBand = importExportTask.addBand("File");
+
+        fileImportExportBand.add(new SmallButtonAction("Import", "Imports the mask slice from a *.tif file", UIUtils.getIconFromResources("actions/document-import.png"), this::importMask));
+        fileImportExportBand.add(new SmallButtonAction("Export", "Exports the mask slice to a *.tif file", UIUtils.getIconFromResources("actions/document-export.png"), this::exportMask));
+
+        exportToRoiManagerAction = new SmallButtonAction("To ROI", "Exports the mask to the ROI manager", UIUtils.getIconFromResources("data-types/roi.png"), this::addToROIManager);
+        convertImportExportBand.add(exportToRoiManagerAction);
+    }
+
+    private void addToROIManager() {
+        RoiManager manager = new RoiManager(true);
+        ResultsTable table = new ResultsTable();
+        ParticleAnalyzer.setRoiManager(manager);
+        ParticleAnalyzer.setResultsTable(table);
+        ParticleAnalyzer analyzer = new ParticleAnalyzer(ParticleAnalyzer.INCLUDE_HOLES,
+                0,
+                table,
+                0,
+                Double.POSITIVE_INFINITY,
+                0,
+                Double.POSITIVE_INFINITY);
+        analyzer.analyze(new ImagePlus("mask", getCurrentMaskSlice()));
+        ROIListData rois = new ROIListData(Arrays.asList(manager.getRoisAsArray()));
+
+        // Set slices
+        if (getViewerPanel().getImage().getStackSize() > 1) {
+            ImageSliceIndex index = getViewerPanel().getCurrentSliceIndex();
+            for (Roi roi : rois) {
+                roi.setPosition(index.getC() + 1, index.getZ() + 1, index.getT() + 1);
+            }
+        }
+
+        ROIManagerPlugin roiManager = getViewerPanel().getPlugin(ROIManagerPlugin.class);
+        roiManager.importROIs(rois, false);
+        clearCurrentMask();
+    }
+
+    private void applyInvert() {
+        try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+            ByteProcessor processor = (ByteProcessor) getCurrentMaskSlice();
+            processor.invert();
+            recalculateMaskPreview();
+            postMaskChangedEvent();
+        }
+    }
+
+    private void applyOpen() {
+        try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+            ByteProcessor processor = (ByteProcessor) getCurrentMaskSlice();
+            // Dilate and erode are switched for some reason
+            processor.dilate(); // Erode
+            processor.erode(); // Dilate
+            recalculateMaskPreview();
+            postMaskChangedEvent();
+        }
+    }
+
+    private void applyClose() {
+        try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+            ByteProcessor processor = (ByteProcessor) getCurrentMaskSlice();
+            // Dilate and erode are switched for some reason
+            processor.erode(); // Dilate
+            processor.dilate(); // Erode
+            recalculateMaskPreview();
+            postMaskChangedEvent();
+        }
+    }
+
+    private void applyDilate() {
+        try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+            ByteProcessor processor = (ByteProcessor) getCurrentMaskSlice();
+            processor.erode(); // Dilate and erode are switched for some reason
+            recalculateMaskPreview();
+            postMaskChangedEvent();
+        }
+    }
+
+    private void applyErode() {
+        try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+            ByteProcessor processor = (ByteProcessor) getCurrentMaskSlice();
+            processor.erode(); // Dilate and erode are switched for some reason
+            recalculateMaskPreview();
+            postMaskChangedEvent();
+        }
+    }
+
+    private void applyWatershed() {
+        try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+            EDM edm = new EDM();
+            edm.toWatershed(getCurrentMaskSlice());
+            recalculateMaskPreview();
+            postMaskChangedEvent();
+        }
+    }
+
+    private void importMask() {
+        Path selectedFile = FileChooserSettings.openFile(getViewerPanel(),
+                FileChooserSettings.LastDirectoryKey.Data,
+                "Import mask",
+                UIUtils.EXTENSION_FILTER_TIFF);
+        if (selectedFile != null) {
+            try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+                ImagePlus image = IJ.openImage(selectedFile.toString());
+                ImageProcessor processor = getCurrentMaskSlice();
+                if (image.getWidth() != processor.getWidth() || image.getHeight() != processor.getHeight()) {
+                    JOptionPane.showMessageDialog(getViewerPanel(),
+                            "The imported mask must have a size of " + processor.getWidth() + "x" + processor.getHeight(),
+                            "Import mask",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                if (image.getBitDepth() != 8) {
+                    ImageConverter ic = new ImageConverter(image);
+                    ic.convertToGray8();
+                }
+                processor.setRoi((Roi) null);
+                processor.copyBits(image.getProcessor(), 0, 0, Blitter.COPY);
+                recalculateMaskPreview();
+                postMaskChangedEvent();
+            }
+        }
+    }
+
+    private void postMaskChangedEvent() {
+        getViewerPanel().getCanvas().getEventBus().post(new MaskChangedEvent(this));
+    }
+
+    private void exportMask() {
+        Path selectedFile = FileChooserSettings.saveFile(getViewerPanel(),
+                FileChooserSettings.LastDirectoryKey.Data,
+                "Export mask",
+                UIUtils.EXTENSION_FILTER_TIFF);
+        if (selectedFile != null) {
+            try (BusyCursor cursor = new BusyCursor(getViewerPanel())) {
+                ImagePlus image = new ImagePlus("Mask", getCurrentMaskSlice());
+                IJ.saveAsTiff(image, selectedFile.toString());
+            }
+        }
     }
 
     public Color getHighlightColor() {
@@ -162,6 +369,9 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
     private <T> void addSelectionButton(T value, JPanel target, Map<T, JToggleButton> targetMap, ButtonGroup targetGroup, String text, String toolTip, Icon icon, Supplier<T> getter, Consumer<T> setter) {
         JToggleButton button = new JToggleButton(text, icon, Objects.equals(getter.get(), value));
+        button.setMinimumSize(new Dimension(72,48));
+        button.setPreferredSize(new Dimension(72,48));
+        button.setMaximumSize(new Dimension(72,48));
         button.setToolTipText(toolTip);
         button.addActionListener(e -> {
             if (button.isSelected()) {
@@ -229,28 +439,17 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         if (getCurrentImage() == null) {
             return;
         }
-        FormPanel.GroupHeaderPanel groupHeader = formPanel.addGroupHeader("Draw mask", UIUtils.getIconFromResources("actions/draw-brush.png"));
-        this.currentGroupHeader = groupHeader;
-        if (mask != null && mask.getStackSize() > 1) {
-            JButton copySliceButton = new JButton("Copy slice to ...", UIUtils.getIconFromResources("actions/edit-copy.png"));
-            copySliceButton.addActionListener(e -> copySlice());
-            groupHeader.addColumn(copySliceButton);
-        }
-        formPanel.addToForm(toolSelectionPanel, new JLabel("Tool"), null);
+
+        formPanel.addWideToForm(ribbon);
+        exportToRoiManagerAction.setVisible(getViewerPanel().getPlugin(ROIManagerPlugin.class) != null);
+        ribbon.rebuildRibbon();
+
+        formPanel.addWideToForm(toolSettingsPanel);
         currentTool.createPalettePanel(formPanel);
-        formPanel.addWideToForm(showGuidesToggle, null);
-        formPanel.addToForm(colorSelectionPanel, new JLabel("Color"), null);
-        formPanel.addToForm(highlightColorButton, new JLabel("Highlight color"), null);
-        formPanel.addToForm(maskColorButton, new JLabel("Mask color"), null);
     }
 
-    /**
-     * The current group header created by  createPalettePanel. Use this for adding your own buttons into createPalettePanel
-     *
-     * @return the current group header. can be null
-     */
-    public FormPanel.GroupHeaderPanel getCurrentGroupHeader() {
-        return currentGroupHeader;
+    public Ribbon getRibbon() {
+        return ribbon;
     }
 
     private void copySlice() {
@@ -429,7 +628,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
             getCurrentMaskSlice().setColor(0);
             getCurrentMaskSlice().fillRect(0, 0, getCurrentMaskSlice().getWidth(), getCurrentMaskSlice().getHeight());
             recalculateMaskPreview();
-            getViewerPanel().getCanvas().getEventBus().post(new MaskDrawerPlugin.MaskChangedEvent(this));
+            postMaskChangedEvent();
         }
     }
 
@@ -502,12 +701,27 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         return currentTool;
     }
 
+    private void rebuildToolSettings() {
+        toolSettingsPanel.clear();
+        if(currentTool != null) {
+            toolSettingsPanel.addToForm(colorSelectionPanel, new JLabel("Current color"));
+            toolSettingsPanel.addWideToForm(new JSeparator(SwingConstants.HORIZONTAL));
+            int count = toolSettingsPanel.getComponentCount();
+            currentTool.createPalettePanel(toolSettingsPanel);
+            if(toolSettingsPanel.getComponentCount() == count) {
+                toolSettingsPanel.removeLastRow();
+            }
+        }
+        toolSettingsPanel.revalidate();
+        toolSettingsPanel.repaint();
+    }
+
     @Subscribe
     public void onToolChanged(ImageViewerPanelCanvas.ToolChangedEvent event) {
         ImageViewerPanelCanvasTool newTool = event.getNewTool();
         MaskDrawerTool localTool;
         if(newTool instanceof MaskDrawerTool) {
-            if(toolSelectionButtons.keySet().contains(newTool)) {
+            if(registeredTools.contains(newTool)) {
                 localTool = (MaskDrawerTool) newTool;
             }
             else {
@@ -518,10 +732,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
             localTool = mouseTool;
         }
         this.currentTool = localTool;
-        for (Map.Entry<MaskDrawerTool, JToggleButton> entry : toolSelectionButtons.entrySet()) {
-            entry.getValue().setSelected(entry.getKey() == localTool);
-        }
-        getViewerPanel().refreshFormPanel();
+        rebuildToolSettings();
     }
 
     public Color getMaskColor() {

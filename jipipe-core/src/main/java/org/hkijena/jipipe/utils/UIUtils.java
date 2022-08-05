@@ -1545,6 +1545,13 @@ public class UIUtils {
         component.addMouseMotionListener(listener);
     }
 
+    public static JMenuItem createMenuItem(String label, String description, Icon icon, Runnable action) {
+        JMenuItem item = new JMenuItem(label, icon);
+        item.setToolTipText(description);
+        item.addActionListener(e -> action.run());
+        return item;
+    }
+
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;
         private final Component target;

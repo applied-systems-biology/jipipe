@@ -45,9 +45,11 @@ public class Ribbon extends JPanel {
     public void rebuildRibbon() {
         tabPane.closeAllTabs(true);
         for (Task task : tasks) {
-            JPanel taskPanel = new JPanel(new GridBagLayout());
-            buildTaskPanel(taskPanel, task);
-            tabPane.addTab(task.label, null, taskPanel, DocumentTabPane.CloseMode.withoutCloseButton);
+            if(task.isVisible()) {
+                JPanel taskPanel = new JPanel(new GridBagLayout());
+                buildTaskPanel(taskPanel, task);
+                tabPane.addTab(task.label, null, taskPanel, DocumentTabPane.CloseMode.withoutCloseButton);
+            }
         }
     }
 
@@ -58,45 +60,49 @@ public class Ribbon extends JPanel {
         int col = 0;
         int row = 0;
         for (Band band : bands) {
-            // Add actions
-            final int startCol = col;
+            if(band.isVisible()) {
+                // Add actions
+                final int startCol = col;
 
-            int maxWidth = 1;
-            for (Action action : band.getActions()) {
-                int available = numRows - row;
-                int requested = Math.max(1, Math.min(numRows, action.getHeight()));
-                if (requested > available) {
-                    col += maxWidth;
-                    maxWidth = 1;
+                int maxWidth = 1;
+                for (Action action : band.getActions()) {
+                    if(action.isVisible()) {
+                        int available = numRows - row;
+                        int requested = Math.max(1, Math.min(numRows, action.getHeight()));
+                        if (requested > available) {
+                            col += maxWidth;
+                            maxWidth = 1;
+                            row = 0;
+                        }
+                        List<Component> components = action.getComponents();
+                        for (int i = 0; i < components.size(); i++) {
+                            Component component = components.get(i);
+                            taskPanel.add(component, new GridBagConstraints(col + i, row, 1, requested, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, action.insets, 0, 0));
+                        }
+                        maxWidth = Math.max(components.size(), maxWidth);
+                        row += requested;
+                    }
+                }
+                col = col + maxWidth - 1;
+                final int endCol = col;
+
+                // Add label
+                JLabel bandLabel = new JLabel(band.getLabel());
+                bandLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
+                bandLabel.setHorizontalAlignment(SwingConstants.CENTER);
+                taskPanel.add(bandLabel, new GridBagConstraints(startCol, numRows, endCol - startCol + 1, 1, 0, 0, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, bandLabelInsets, 0, 0));
+
+                // Increment col
+                ++col;
+
+                // Add separator
+                {
+                    taskPanel.add(new JSeparator(SwingConstants.VERTICAL), new GridBagConstraints(col, 0, 1, numRows + 1, 0, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, separatorInsets, 0, 0));
+
+                    // Go to next column and set row to 0
+                    ++col;
                     row = 0;
                 }
-                List<Component> components = action.getComponents();
-                for (int i = 0; i < components.size(); i++) {
-                    Component component = components.get(i);
-                    taskPanel.add(component, new GridBagConstraints(col + i, row, 1, requested, 0, 0, GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, action.insets, 0, 0));
-                }
-                maxWidth = Math.max(components.size(), maxWidth);
-                row += requested;
-            }
-            col = col + maxWidth  - 1;
-            final int endCol = col;
-
-            // Add label
-            JLabel bandLabel = new JLabel(band.getLabel());
-            bandLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 11));
-            bandLabel.setHorizontalAlignment(SwingConstants.CENTER);
-            taskPanel.add(bandLabel, new GridBagConstraints(startCol, numRows, endCol - startCol + 1, 1, 0, 0, GridBagConstraints.SOUTH, GridBagConstraints.HORIZONTAL, bandLabelInsets, 0, 0));
-
-            // Increment col
-            ++col;
-
-            // Add separator
-            {
-                taskPanel.add(new JSeparator(SwingConstants.VERTICAL), new GridBagConstraints(col, 0, 1, numRows + 1, 0, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, separatorInsets, 0, 0));
-
-                // Go to next column and set row to 0
-                ++col;
-                row = 0;
             }
         }
 
@@ -241,6 +247,8 @@ public class Ribbon extends JPanel {
         private String label;
         private List<Band> bands;
 
+        private boolean visible = true;
+
         public Task(String label, Band... bands) {
             this.id = label;
             this.label = label;
@@ -280,6 +288,14 @@ public class Ribbon extends JPanel {
 
         public void setLabel(String label) {
             this.label = label;
+        }
+
+        public boolean isVisible() {
+            return visible;
+        }
+
+        public void setVisible(boolean visible) {
+            this.visible = visible;
         }
 
         public Task add(Band band) {
@@ -332,6 +348,8 @@ public class Ribbon extends JPanel {
 
         private String id;
         private String label;
+
+        private boolean visible = true;
         private List<Action> actions;
 
         public Band(String label, Action... actions) {
@@ -356,6 +374,14 @@ public class Ribbon extends JPanel {
             this.id = id;
             this.label = label;
             this.actions = actions;
+        }
+
+        public boolean isVisible() {
+            return visible;
+        }
+
+        public void setVisible(boolean visible) {
+            this.visible = visible;
         }
 
         public List<Action> getActions() {
@@ -400,6 +426,7 @@ public class Ribbon extends JPanel {
         private List<Component> components;
         private int height;
 
+        private boolean visible = true;
         private Insets insets;
 
         public Action(Component component, int height, Insets insets) {
@@ -412,6 +439,14 @@ public class Ribbon extends JPanel {
             this.components = components;
             this.height = height;
             this.insets = insets;
+        }
+
+        public boolean isVisible() {
+            return visible;
+        }
+
+        public void setVisible(boolean visible) {
+            this.visible = visible;
         }
 
         public Component getFirstComponent() {
