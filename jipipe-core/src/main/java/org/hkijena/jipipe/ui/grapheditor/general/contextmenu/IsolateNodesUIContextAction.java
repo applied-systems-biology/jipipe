@@ -20,6 +20,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.KeyEvent;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -74,5 +75,10 @@ public class IsolateNodesUIContextAction implements NodeUIContextAction {
     @Override
     public boolean disableOnNonMatch() {
         return false;
+    }
+
+    @Override
+    public KeyStroke getKeyboardShortcut() {
+        return KeyStroke.getKeyStroke(KeyEvent.VK_I, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK);
     }
 }
