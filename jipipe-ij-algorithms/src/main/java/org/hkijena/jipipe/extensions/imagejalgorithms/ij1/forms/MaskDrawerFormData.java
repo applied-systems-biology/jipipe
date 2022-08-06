@@ -15,7 +15,6 @@ import org.hkijena.jipipe.extensions.imageviewer.plugins.CalibrationPlugin;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.LUTManagerPlugin;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.PixelInfoPlugin;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MaskDrawerPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MeasurementPlugin;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
@@ -46,8 +45,7 @@ public class MaskDrawerFormData extends FormData {
         imageViewerPanel.setPlugins(Arrays.asList(new CalibrationPlugin(imageViewerPanel),
                 new PixelInfoPlugin(imageViewerPanel),
                 new LUTManagerPlugin(imageViewerPanel),
-                maskDrawerPlugin,
-                new MeasurementPlugin(imageViewerPanel)));
+                maskDrawerPlugin));
         if (lazyLoadedImage != null) {
             imageViewerPanel.setImage(lazyLoadedImage);
             maskDrawerPlugin.setMask(lazyLoadedMask);

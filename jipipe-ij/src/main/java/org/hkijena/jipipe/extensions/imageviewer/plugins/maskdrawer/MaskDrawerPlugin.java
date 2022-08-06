@@ -210,14 +210,13 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
         // Import/Export menu
         Ribbon.Task importExportTask = ribbon.addTask("Import/Export");
-        Ribbon.Band fileImportExportBand = importExportTask.addBand("File");
-        Ribbon.Band convertImportExportBand = importExportTask.addBand("File");
+        Ribbon.Band fileImportExportBand = importExportTask.addBand("Mask");
 
-        fileImportExportBand.add(new SmallButtonAction("Import", "Imports the mask slice from a *.tif file", UIUtils.getIconFromResources("actions/document-import.png"), this::importMask));
-        fileImportExportBand.add(new SmallButtonAction("Export", "Exports the mask slice to a *.tif file", UIUtils.getIconFromResources("actions/document-export.png"), this::exportMask));
+        fileImportExportBand.add(new SmallButtonAction("Import mask", "Imports the mask slice from a *.tif file", UIUtils.getIconFromResources("actions/document-import.png"), this::importMask));
+        fileImportExportBand.add(new SmallButtonAction("Export mask", "Exports the mask slice to a *.tif file", UIUtils.getIconFromResources("actions/document-export.png"), this::exportMask));
 
         exportToRoiManagerAction = new SmallButtonAction("To ROI", "Exports the mask to the ROI manager", UIUtils.getIconFromResources("data-types/roi.png"), this::addToROIManager);
-        convertImportExportBand.add(exportToRoiManagerAction);
+        fileImportExportBand.add(exportToRoiManagerAction);
     }
 
     private void addToROIManager() {

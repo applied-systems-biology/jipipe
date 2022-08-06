@@ -16,7 +16,6 @@ import org.hkijena.jipipe.extensions.imageviewer.plugins.LUTManagerPlugin;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.PixelInfoPlugin;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MaskToROIDrawerPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MeasurementPlugin;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
@@ -51,8 +50,7 @@ public class ROIDrawerFormData extends FormData {
                 new PixelInfoPlugin(imageViewerPanel),
                 new LUTManagerPlugin(imageViewerPanel),
                 roiManagerPlugin,
-                maskDrawerPlugin,
-                new MeasurementPlugin(imageViewerPanel)));
+                maskDrawerPlugin));
         if (lazyLoadedImage != null) {
             imageViewerPanel.setImage(lazyLoadedImage);
             roiManagerPlugin.setRois(lazyLoadedROIs, false);

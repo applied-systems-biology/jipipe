@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer;
 
+import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
@@ -16,18 +17,23 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
+import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.ribbon.LargeButtonAction;
 import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
+import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
+import java.nio.file.Path;
 import java.util.Arrays;
 
 /**
@@ -37,7 +43,9 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
 
     public static final Settings SETTINGS = new Settings();
 
-    private JXTable table;
+    private JXTable table = new JXTable();
+
+    private ResultsTableData lastMeasurements;
     private final JCheckBox autoMeasureToggle = new JCheckBox("Measure on changes");
 
     public MeasurementDrawerPlugin(ImageViewerPanel viewerPanel) {
@@ -60,6 +68,9 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
     @Override
     public void createPalettePanel(FormPanel formPanel) {
         super.createPalettePanel(formPanel);
+
+        // Add the measurement table
+        formPanel.addWideToForm(table);
     }
 
     private void showSettings() {
@@ -83,7 +94,38 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
 
         Ribbon.Band generalBand = measureTask.addBand("General");
         generalBand.add(new LargeButtonAction("Measure", "Measures the image/mask now", UIUtils.getIcon32FromResources("actions/statistics.png"), this::measureCurrentMask));
+        generalBand.add(new SmallButtonAction("Settings ...", "Opens the settings for the measurement tool", UIUtils.getIconFromResources("actions/configure.png"), this::showSettings));
         generalBand.add(new Ribbon.Action(autoMeasureToggle, 1, new Insets(2,2,2,2)));
+
+        Ribbon.Task importExportTask = getRibbon().getOrCreateTask("Import/Export");
+        Ribbon.Band importExportMeasurementsBand = importExportTask.addBand("Measurements");
+        importExportMeasurementsBand.add(new SmallButtonAction("Export to file", "Exports the measurements to *.csv/*.xlsx", UIUtils.getIconFromResources("actions/save.png"), this::exportMeasurementsToFile));
+        importExportMeasurementsBand.add(new SmallButtonAction("Open in editor", "Opens the measurements in a table editor", UIUtils.getIconFromResources("actions/link.png"), this::exportMeasurementsToEditor));
+
+        autoMeasureToggle.setSelected(true);
+//        table.setBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 3));
+    }
+
+    private void exportMeasurementsToEditor() {
+        if(lastMeasurements == null) {
+            return;
+        }
+        TableEditor.openWindow(getWorkbench(), new ResultsTableData(lastMeasurements), "Measurements");
+    }
+
+    private void exportMeasurementsToFile() {
+        if(lastMeasurements == null) {
+            return;
+        }
+        Path selectedPath = FileChooserSettings.saveFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Projects, "Export table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
+        if (selectedPath != null) {
+            if(UIUtils.EXTENSION_FILTER_XLSX.accept(selectedPath.toFile())) {
+                lastMeasurements.saveAsCSV(selectedPath);
+            }
+            else {
+                lastMeasurements.saveAsXLSX(selectedPath);
+            }
+        }
     }
 
     private void showNoMeasurements() {
@@ -117,6 +159,7 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
         dummy.setCalibration(getCurrentImage().getCalibration());
         ResultsTableData measurements = data.measure(dummy,
                 SETTINGS.statistics, false, SETTINGS.measureInPhysicalUnits);
+        lastMeasurements = measurements;
         if (measurements.getRowCount() != 1) {
             showNoMeasurements();
             return;
@@ -130,6 +173,13 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
             transposed.setValueAt(measurements.getValueAt(0, col), transposed.getRowCount() - 1, 1);
         }
         table.setModel(transposed);
+    }
+
+    @Subscribe
+    public void onMaskChanged(MaskDrawerPlugin.MaskChangedEvent event) {
+        if (autoMeasureToggle.isSelected()) {
+            measureCurrentMask();
+        }
     }
 
     @Override

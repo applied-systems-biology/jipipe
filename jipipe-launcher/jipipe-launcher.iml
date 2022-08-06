@@ -9,6 +9,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module" module-name="jipipe-omnipose" scope="RUNTIME" />
     <orderEntry type="module" module-name="jipipe-core" />
     <orderEntry type="library" name="Maven: net.imagej:imagej:2.5.0" level="project" />
     <orderEntry type="library" name="Maven: net.imagej:imagej-common:0.34.2" level="project" />

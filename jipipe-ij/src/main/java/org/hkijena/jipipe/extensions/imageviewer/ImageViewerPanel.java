@@ -30,7 +30,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.*;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MeasurementDrawerPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer.MeasurementPlugin;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.ImageViewerUISettings;
@@ -134,7 +133,6 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         pluginList.add(new ROIManagerPlugin(dataDisplay));
         pluginList.add(new AnimationSpeedPlugin(dataDisplay));
         pluginList.add(new MeasurementDrawerPlugin(dataDisplay));
-        pluginList.add(new MeasurementPlugin(dataDisplay));
         dataDisplay.setPlugins(pluginList);
         dataDisplay.setImage(image);
         ImageViewerWindow window = new ImageViewerWindow(dataDisplay);
