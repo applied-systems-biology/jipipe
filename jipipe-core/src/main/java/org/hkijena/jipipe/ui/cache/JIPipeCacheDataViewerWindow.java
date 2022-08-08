@@ -351,6 +351,11 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     }
 
     private void reloadFromCurrentCache() {
+        if(!project.getGraph().containsNode(algorithm)) {
+            lastVirtualData = null;
+            showErrorUI();
+            return;
+        }
         JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(project);
         Map<String, JIPipeDataSlot> currentCache = query.getCachedData(algorithm);
         JIPipeDataSlot slot = currentCache.getOrDefault(slotName, null);

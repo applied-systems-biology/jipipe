@@ -745,7 +745,12 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return The UUID within getGraph()
      */
     public UUID getUUIDInParentGraph() {
-        return parentGraph.getUUIDOf(this);
+        if(parentGraph != null) {
+            return parentGraph.getUUIDOf(this);
+        }
+        else {
+            return null;
+        }
     }
 
     /**

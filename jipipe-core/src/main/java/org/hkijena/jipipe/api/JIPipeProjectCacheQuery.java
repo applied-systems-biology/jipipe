@@ -21,6 +21,7 @@ import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.UUID;
@@ -84,10 +85,14 @@ public class JIPipeProjectCacheQuery {
      * Returns the cache of the current algorithm state.
      *
      * @param node the node. can be a different instance if the UUID is the same.
-     * @return map of slot name to cache slot
+     * @return map of slot name to cache slot. empty map if the node is not cached or part of the project graph.
      */
     public Map<String, JIPipeDataSlot> getCachedData(JIPipeGraphNode node) {
-        return project.getCache().extract(node.getUUIDInParentGraph(), getCachedId(node.getUUIDInParentGraph()));
+        UUID uuid = node.getUUIDInParentGraph();
+        if(uuid == null) {
+            return Collections.emptyMap();
+        }
+        return project.getCache().extract(uuid, getCachedId(uuid));
     }
 
     /**
