@@ -13,27 +13,20 @@
 
 package org.hkijena.jipipe.extensions.plots.nodes;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
-import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
-import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotColumn;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotDataSeries;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotMetadata;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.plotbuilder.PlotDataClassFilter;
 import org.hkijena.jipipe.utils.ReflectionUtils;
-import org.scijava.Priority;
 
 import java.util.*;
 
@@ -162,7 +155,7 @@ public class PlotTables2Algorithm extends JIPipeMergingAlgorithm {
 
     @JIPipeDocumentation(name = "Series name", description = "Expression that is used to generate the series name")
     @JIPipeParameter("series-name")
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     public StringQueryExpression getSeriesName() {
         return seriesName;
     }

@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackFeatureVariableSource;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackSpotFeatureVariableSource;
@@ -133,7 +133,7 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Generated annotations", description = "This list contains expressions to generate annotations for each spot")
     @JIPipeParameter("generated-annotations")
     @ExpressionParameterSettingsVariable(fromClass = TrackFeatureVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(name = "Track ID", key = "track.id", description = "Numeric track ID. Please note that the ID is not necessarily consecutive.")
     @ExpressionParameterSettingsVariable(name = "Track index", key = "track.index", description = "Numeric index.")
     @ExpressionParameterSettingsVariable(name = "Number of tracks", key = "n_tracks", description = "The total number of tracks")
@@ -149,7 +149,7 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Fill color", description = "Allows to change the fill color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
     @JIPipeParameter("fill-color")
     @ExpressionParameterSettingsVariable(fromClass = TrackSpotFeatureVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(name = "Track ID", key = "track.id", description = "Numeric Track ID. Please note that the ID is not necessarily consecutive.")
     @ExpressionParameterSettingsVariable(name = "Track index", key = "track.index", description = "Numeric index.")
     @ExpressionParameterSettingsVariable(name = "Number of tracks", key = "n_tracks", description = "The total Number of tracks")
@@ -168,7 +168,7 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Line color", description = "Allows to change the line color when rendered as RGB and within ImageJ. " + ColorUtils.PARSE_COLOR_DESCRIPTION)
     @JIPipeParameter("line-color")
     @ExpressionParameterSettingsVariable(fromClass = TrackSpotFeatureVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(name = "Track ID", key = "track.id", description = "Numeric Track ID. Please note that the ID is not necessarily consecutive.")
     @ExpressionParameterSettingsVariable(name = "Track index", key = "track.index", description = "Numeric index.")
     @ExpressionParameterSettingsVariable(name = "Number of tracks", key = "n_tracks", description = "The total Number of tracks")
@@ -187,7 +187,7 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Line width", description = "Allows to change the line width when rendered as RGB and within ImageJ. The annotation value is converted to an integer.")
     @JIPipeParameter("line-width")
     @ExpressionParameterSettingsVariable(fromClass = TrackSpotFeatureVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(name = "Track ID", key = "track.id", description = "Numeric Track ID. Please note that the ID is not necessarily consecutive.")
     @ExpressionParameterSettingsVariable(name = "Track index", key = "track.index", description = "Numeric index.")
     @ExpressionParameterSettingsVariable(name = "Number of tracks", key = "n_tracks", description = "The total Number of tracks")
@@ -206,7 +206,7 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "ROI name", description = "Allows to change the ROI name")
     @JIPipeParameter("roi-name")
     @ExpressionParameterSettingsVariable(fromClass = TrackSpotFeatureVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(name = "Track ID", key = "track.id", description = "Numeric Track ID. Please note that the ID is not necessarily consecutive.")
     @ExpressionParameterSettingsVariable(name = "Track index", key = "track.index", description = "Numeric index.")
     @ExpressionParameterSettingsVariable(name = "Number of tracks", key = "n_tracks", description = "The total Number of tracks")

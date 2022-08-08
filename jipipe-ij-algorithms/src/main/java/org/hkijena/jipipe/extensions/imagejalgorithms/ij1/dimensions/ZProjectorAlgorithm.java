@@ -33,7 +33,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 /**
  * Wrapper around {@link ij.plugin.ZProjector}
  */
-@JIPipeDocumentation(name = "Z-Project", description = "Performs a Z-Projection.")
+@JIPipeDocumentation(name = "Z-Project (classic)", description = "Performs a Z-Projection. This version of the Z-project algorithm wraps around the native ImageJ function and can only handle 3D images. If you have a hyperstack (4D+), use the other Z-project algorithm.")
 @JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")

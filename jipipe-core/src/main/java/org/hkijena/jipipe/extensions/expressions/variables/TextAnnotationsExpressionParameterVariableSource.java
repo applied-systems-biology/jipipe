@@ -23,7 +23,7 @@ import java.util.Set;
 /**
  * Adds the indication that annotations are available
  */
-public class AnnotationsExpressionParameterVariableSource implements ExpressionParameterVariableSource {
+public class TextAnnotationsExpressionParameterVariableSource implements ExpressionParameterVariableSource {
     @Override
     public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
         return Collections.singleton(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);

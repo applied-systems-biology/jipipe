@@ -11,7 +11,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.NamedTextAnnotationGeneratorExpression;
-import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackFeatureVariableSource;
 
@@ -73,7 +73,7 @@ public class SplitTracksNode extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Generated annotations", description = "This list contains expressions to generate annotations for each spot")
     @JIPipeParameter("generated-annotations")
     @ExpressionParameterSettingsVariable(fromClass = TrackFeatureVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(name = "Track ID", key = "id", description = "Numeric track ID. Please note that the ID is not necessarily consecutive.")
     @ExpressionParameterSettingsVariable(name = "Track index", key = "index", description = "Numeric index.")
     @ExpressionParameterSettingsVariable(name = "Number of tracks", key = "n_tracks", description = "The total number of tracks")

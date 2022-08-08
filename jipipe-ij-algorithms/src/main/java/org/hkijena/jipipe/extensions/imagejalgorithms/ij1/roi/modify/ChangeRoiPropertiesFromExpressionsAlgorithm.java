@@ -19,15 +19,13 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.RoiStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -213,7 +211,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     @JIPipeParameter("position-x")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getPositionX() {
@@ -229,7 +227,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     @JIPipeParameter("position-y")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getPositionY() {
@@ -246,7 +244,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     @JIPipeParameter("position-z")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getPositionZ() {
@@ -264,7 +262,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     @JIPipeParameter("position-c")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getPositionC() {
@@ -281,7 +279,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     @JIPipeParameter("position-t")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getPositionT() {
@@ -297,7 +295,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     @JIPipeParameter("fill-color")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getFillColor() {
@@ -313,7 +311,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     @JIPipeParameter("line-color")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getLineColor() {
@@ -329,7 +327,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     @JIPipeParameter("line-width")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getLineWidth() {
@@ -345,7 +343,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     @JIPipeParameter("roi-name")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getRoiName() {
@@ -361,7 +359,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     @JIPipeParameter("scale-x")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getScaleX() {
@@ -377,7 +375,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     @JIPipeParameter("scale-y")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getScaleY() {
@@ -393,7 +391,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     @JIPipeParameter("center-scale")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = MeasurementExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public OptionalDefaultExpressionParameter getCenterScale() {

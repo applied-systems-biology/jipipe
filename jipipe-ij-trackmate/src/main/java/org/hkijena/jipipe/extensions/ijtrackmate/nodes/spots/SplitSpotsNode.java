@@ -27,7 +27,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.NamedTextAnnotationGeneratorExpression;
-import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotFeatureVariableSource;
 
@@ -84,7 +84,7 @@ public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeDocumentation(name = "Generated annotations", description = "This list contains expressions to generate annotations for each spot")
     @JIPipeParameter("generated-annotations")
     @ExpressionParameterSettingsVariable(fromClass = SpotFeatureVariableSource.class)
-    @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(name = "Spot ID", key = "id", description = "Numeric spot ID. Please note that the ID is not necessarily consecutive.")
     @ExpressionParameterSettingsVariable(name = "Spot index", key = "index", description = "Numeric index.")
     @ExpressionParameterSettingsVariable(name = "Number of spots", key = "n_spots", description = "The total number of spots")

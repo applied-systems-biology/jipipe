@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
-import org.hkijena.jipipe.extensions.expressions.variables.AnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.FindParticles2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.RoiStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold.ThresholdsExpressionParameterVariableSource;
@@ -389,7 +389,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
 
         @JIPipeDocumentation(name = "ROI filter", description = "This expression is applied for each ROI and determines whether the ROI fulfills the required criteria.")
         @ExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariableSource.class)
-        @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+        @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
         @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
         @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
         @JIPipeParameter(value = "roi-filter", important = true)
@@ -403,7 +403,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         }
 
         @JIPipeDocumentation(name = "Threshold criteria", description = "This expression is applied for each threshold after the ROI were filtered.")
-        @ExpressionParameterSettingsVariable(fromClass = AnnotationsExpressionParameterVariableSource.class)
+        @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
         @ExpressionParameterSettingsVariable(key = "all_roi", name = "All ROI", description = "A list of all ROI that were detected in this iteration")
         @ExpressionParameterSettingsVariable(key = "filtered_roi", name = "Filtered ROI", description = "A list of all filtered ROI that were detected in this iteration")
         @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
