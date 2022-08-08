@@ -18,15 +18,26 @@ import ij.ImageStack;
 import ij.process.ImageProcessor;
 import inra.ijpb.morphology.Morphology;
 import inra.ijpb.morphology.Strel;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.AddBorder2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.parameters.ImageQueryExpressionVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+
+import java.awt.*;
+import java.util.ArrayList;
 
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
@@ -48,6 +59,10 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private Strel.Shape element = Strel.Shape.DISK;
     private int radius = 1;
 
+    private boolean addBorder = false;
+
+    private final AddBorder2DAlgorithm addBorder2DAlgorithm;
+
     /**
      * Instantiates a new node type.
      *
@@ -59,6 +74,8 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 .allowOutputSlotInheritance(true)
                 .seal()
                 .build());
+        this.addBorder2DAlgorithm = JIPipe.createNode(AddBorder2DAlgorithm.class);
+        registerSubParameter(addBorder2DAlgorithm);
     }
 
     /**
@@ -71,6 +88,8 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         this.operation = other.operation;
         this.radius = other.radius;
         this.element = other.element;
+        this.addBorder = other.addBorder;
+        this.addBorder2DAlgorithm = new AddBorder2DAlgorithm(other.addBorder2DAlgorithm);
     }
 
     @Override
@@ -81,15 +100,44 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleMaskData.class, progressInfo);
-        ImagePlus img = inputData.getDuplicateImage();
+        ImagePlus originalImg = inputData.getImage();
+        ImagePlus img;
+        Rectangle crop = null;
+        if(!addBorder) {
+            img = inputData.getDuplicateImage();
+        }
+        else {
+            ExpressionVariables variables = new ExpressionVariables();
+            variables.putAnnotations(dataBatch.getMergedTextAnnotations());
+            ImageQueryExpressionVariableSource.buildVariablesSet(originalImg, variables);
+
+            int left = (int) (addBorder2DAlgorithm.getMarginLeft().evaluateToNumber(variables));
+            int top = (int) (addBorder2DAlgorithm.getMarginTop().evaluateToNumber(variables));
+//            int right = (int) (addBorder2DAlgorithm.getMarginRight().evaluateToNumber(variables));
+//            int bottom = (int) (addBorder2DAlgorithm.getMarginBottom().evaluateToNumber(variables));
+
+            crop = new Rectangle(left, top, originalImg.getWidth(), originalImg.getHeight());
+            addBorder2DAlgorithm.clearSlotData();
+            addBorder2DAlgorithm.getFirstInputSlot().addData(inputData, new ArrayList<>(dataBatch.getMergedTextAnnotations().values()), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+            addBorder2DAlgorithm.run(progressInfo.resolve("Add border"));
+            img = addBorder2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
+            addBorder2DAlgorithm.clearSlotData();
+        }
         Strel strel = element.fromRadius(radius);
-        ImageStack outputStack = new ImageStack(img.getWidth(), img.getHeight(), img.getProcessor().getColorModel());
+        ImageStack outputStack = new ImageStack(originalImg.getWidth(), originalImg.getHeight(), originalImg.getProcessor().getColorModel());
+        Rectangle finalCrop = crop;
         ImageJUtils.forEachSlice(img, ip -> {
             // apply morphological operation
             ImageProcessor resultProcessor = operation.apply(ip, strel);
 
             // Keep same color model
             resultProcessor.setColorModel(ip.getColorModel());
+
+            // Crop border if one is set
+            if(addBorder) {
+                resultProcessor.setRoi(finalCrop);
+                resultProcessor = resultProcessor.crop();
+            }
 
             outputStack.addSlice(resultProcessor);
         }, progressInfo);
@@ -126,7 +174,6 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("operation")
     public void setOperation(Morphology.Operation operation) {
         this.operation = operation;
-
     }
 
     @JIPipeDocumentation(name = "Radius", description = "Radius of the filter kernel in pixels.")
@@ -149,5 +196,35 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("element")
     public void setElement(Strel.Shape element) {
         this.element = element;
+    }
+
+    @JIPipeDocumentation(name = "Add border before applying operation", description = "If enabled, a custom border is created around the image and removed afterwards. Otherwise, MorphoLibJ will assume " +
+            "a default outside value determined by ImageJ.")
+    @JIPipeParameter("add-border")
+    public boolean isAddBorder() {
+        return addBorder;
+    }
+
+    @JIPipeParameter("add-border")
+    public void setAddBorder(boolean addBorder) {
+        if(this.addBorder != addBorder) {
+            this.addBorder = addBorder;
+            triggerParameterUIChange();
+        }
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
+        if(!addBorder && subParameter == addBorder2DAlgorithm) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, subParameter);
+    }
+
+    @JIPipeDocumentation(name = "Border settings", description = "The following settings control how the border is created around the image before applying the morphological operation. " +
+            "The border is automatically removed afterwards.")
+    @JIPipeParameter("border-parameters")
+    public AddBorder2DAlgorithm getAddBorder2DAlgorithm() {
+        return addBorder2DAlgorithm;
     }
 }

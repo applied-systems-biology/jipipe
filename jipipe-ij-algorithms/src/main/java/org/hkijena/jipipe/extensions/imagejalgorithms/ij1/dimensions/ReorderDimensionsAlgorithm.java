@@ -53,52 +53,6 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         ImageStack newStack = new ImageStack(image.getWidth(), image.getHeight(), image.getStackSize());
-
-        ImageJUtils.forEachIndexedZCTSlice(image, (ip, sourceIndex) -> {
-            int z, c, t;
-            switch (targetZ) {
-                case Channel:
-                    z = sourceIndex.getC();
-                    break;
-                case Depth:
-                    z = sourceIndex.getZ();
-                    break;
-                case Frame:
-                    z = sourceIndex.getT();
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
-            switch (targetC) {
-                case Channel:
-                    c = sourceIndex.getC();
-                    break;
-                case Depth:
-                    c = sourceIndex.getZ();
-                    break;
-                case Frame:
-                    c = sourceIndex.getT();
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
-            switch (targetT) {
-                case Channel:
-                    t = sourceIndex.getC();
-                    break;
-                case Depth:
-                    t = sourceIndex.getZ();
-                    break;
-                case Frame:
-                    t = sourceIndex.getT();
-                    break;
-                default:
-                    throw new UnsupportedOperationException();
-            }
-            int targetStackIndex = new ImageSliceIndex(c, z, t).zeroSliceIndexToOneStackIndex(image);
-            newStack.setProcessor(ip, targetStackIndex);
-        }, progressInfo);
-
         int depth = image.getNSlices();
         int channels = image.getNChannels();
         int frames = image.getNFrames();
@@ -145,6 +99,52 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             default:
                 throw new UnsupportedOperationException();
         }
+
+        ImageJUtils.forEachIndexedZCTSlice(image, (ip, sourceIndex) -> {
+            int z, c, t;
+            switch (targetZ) {
+                case Channel:
+                    z = sourceIndex.getC();
+                    break;
+                case Depth:
+                    z = sourceIndex.getZ();
+                    break;
+                case Frame:
+                    z = sourceIndex.getT();
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+            switch (targetC) {
+                case Channel:
+                    c = sourceIndex.getC();
+                    break;
+                case Depth:
+                    c = sourceIndex.getZ();
+                    break;
+                case Frame:
+                    c = sourceIndex.getT();
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+            switch (targetT) {
+                case Channel:
+                    t = sourceIndex.getC();
+                    break;
+                case Depth:
+                    t = sourceIndex.getZ();
+                    break;
+                case Frame:
+                    t = sourceIndex.getT();
+                    break;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+            int targetStackIndex = new ImageSliceIndex(c, z, t).zeroSliceIndexToOneStackIndex(newChannels, newDepth, newFrames);
+            newStack.setProcessor(ip, targetStackIndex);
+        }, progressInfo);
+
 
         ImagePlus reorganized = new ImagePlus(image.getTitle(), newStack);
         reorganized.setTitle(image.getTitle());

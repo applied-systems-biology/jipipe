@@ -441,7 +441,7 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
         formPanel.addWideToForm(ribbon);
         exportToRoiManagerAction.setVisible(getViewerPanel().getPlugin(ROIManagerPlugin.class) != null);
-        ribbon.rebuildRibbon();
+        SwingUtilities.invokeLater(ribbon::rebuildRibbon);
 
         formPanel.addWideToForm(toolSettingsPanel);
         currentTool.createPalettePanel(formPanel);

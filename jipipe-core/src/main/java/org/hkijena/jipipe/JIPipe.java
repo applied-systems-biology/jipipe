@@ -589,9 +589,15 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
             }
         }
 
+        registerFeaturesProgress.log("Registering remaining " + nodeRegistry.getScheduledRegistrationTasks().size() + " features ...");
         for (JIPipeNodeRegistrationTask task : nodeRegistry.getScheduledRegistrationTasks()) {
-            logService.error("Could not register: " + task.toString());
-            registerFeaturesProgress.log("Could not register: " + task);
+            try {
+                task.register();
+            }
+            catch (Throwable ex) {
+                logService.error("Could not register: " + task.toString() + " -> " + ex);
+                registerFeaturesProgress.log("Could not register: " + task + " -> " + ex);
+            }
         }
 
         // Check for errors

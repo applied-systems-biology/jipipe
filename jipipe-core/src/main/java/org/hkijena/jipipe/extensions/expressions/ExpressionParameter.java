@@ -146,13 +146,18 @@ public abstract class ExpressionParameter {
     /**
      * Runs the expression and returns a color result.
      * Can handle return value of type {@link Color}, hex string, named colors according to {@link ColorUtils}, Collection of RGB or RGBA values (0-255)
+     * Can also handle numeric results that are converted to int, generating a greyscale color (0-255)
      *
      * @param variables the variables
      * @return the result
      */
     public Color evaluateToColor(ExpressionVariables variables) {
         Object o = evaluate(variables);
-        if (o instanceof Color) {
+        if(o instanceof Number) {
+            int rgb = ((Number) o).intValue();
+            return new Color(rgb, rgb, rgb);
+        }
+        else if (o instanceof Color) {
             return (Color) o;
         } else if (o instanceof String) {
             return ColorUtils.parseColor((String) o);

@@ -308,7 +308,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-        if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:node:description", "jipipe:node:name")) {
+        if (ParameterUtils.isHiddenLocalParameter(tree, access, "jipipe:node:description", "jipipe:node:name", "jipipe:node:bookmarked")) {
             return false;
         }
         return JIPipeParameterCollection.super.isParameterUIVisible(tree, access);

@@ -289,6 +289,10 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      * @param resourcePath icon url
      */
     public void registerIcon(JIPipeNodeInfo info, URL resourcePath) {
+        if(resourcePath == null) {
+            jiPipe.getProgressInfo().log("Unable to register icon for " + info.getId() + ": URL is null.");
+            return;
+        }
         iconURLs.put(info, resourcePath);
         iconInstances.put(info, new ImageIcon(resourcePath));
     }
