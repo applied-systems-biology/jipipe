@@ -32,10 +32,10 @@ import java.text.DecimalFormat;
 public class SpotListCellRenderer extends JPanel implements ListCellRenderer<Spot> {
 
     private final SpotsManagerPlugin spotsManagerPlugin;
-    private SolidColorIcon strokeFillPreview = new SolidColorIcon(16, 16);
-    private JLabel iconLabel = new JLabel();
-    private JLabel nameLabel = new JLabel();
-    private JLabel infoLabel = new JLabel();
+    private final SolidColorIcon strokeFillPreview = new SolidColorIcon(16, 16);
+    private final JLabel iconLabel = new JLabel();
+    private final JLabel nameLabel = new JLabel();
+    private final JLabel infoLabel = new JLabel();
     private FeatureColorGenerator<Spot> strokeColorGenerator;
 
     public SpotListCellRenderer(SpotsManagerPlugin spotsManagerPlugin) {

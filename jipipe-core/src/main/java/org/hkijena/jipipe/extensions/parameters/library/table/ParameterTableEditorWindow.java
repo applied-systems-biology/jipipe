@@ -5,7 +5,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.AddDynamicParameterPanel;
+import org.hkijena.jipipe.ui.components.AddParameterDialog;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.ParameterTreeUI;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
@@ -358,7 +358,7 @@ public class ParameterTableEditorWindow extends JFrame {
         JIPipeDynamicParameterCollection collection = new JIPipeDynamicParameterCollection();
         collection.setAllowedTypes(JIPipe.getParameterTypes()
                 .getRegisteredParameters().values().stream().map(JIPipeParameterTypeInfo::getFieldClass).collect(Collectors.toSet()));
-        AddDynamicParameterPanel.showDialog(this, collection);
+        AddParameterDialog.showDialog(workbench, this, collection);
         for (Map.Entry<String, JIPipeParameterAccess> entry : collection.getParameters().entrySet()) {
             if (parameterTable.containsColumn(entry.getKey()))
                 continue;

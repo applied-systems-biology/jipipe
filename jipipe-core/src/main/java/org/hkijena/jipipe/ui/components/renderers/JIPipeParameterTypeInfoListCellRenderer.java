@@ -14,25 +14,76 @@
 package org.hkijena.jipipe.ui.components.renderers;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
+import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class JIPipeParameterTypeInfoListCellRenderer extends JLabel implements ListCellRenderer<JIPipeParameterTypeInfo> {
+public class JIPipeParameterTypeInfoListCellRenderer extends JPanel implements ListCellRenderer<JIPipeParameterTypeInfo> {
+
+    private final JLabel iconLabel = new JLabel();
+    private final JLabel nameLabel = new JLabel();
+    private final JLabel descriptionLabel = new JLabel();
+    private final JLabel infoLabel = new JLabel();
 
     public JIPipeParameterTypeInfoListCellRenderer() {
+       initialize();
+    }
+
+    private void initialize() {
         setOpaque(true);
-        setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        setIcon(UIUtils.getIconFromResources("data-types/parameters.png"));
+        setLayout(new GridBagLayout());
+        iconLabel.setIcon(UIUtils.getIconFromResources("data-types/parameters.png"));
+        descriptionLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 10));
+        infoLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 10));
+        infoLabel.setForeground(Color.GRAY);
+        add(iconLabel, new GridBagConstraints() {
+            {
+                gridx = 0;
+                gridy = 0;
+                insets = UIUtils.UI_PADDING;
+            }
+        });
+        add(nameLabel, new GridBagConstraints() {
+            {
+                gridx = 1;
+                gridy = 0;
+                weightx = 1;
+                anchor = WEST;
+                insets = UIUtils.UI_PADDING;
+            }
+        });
+        add(descriptionLabel, new GridBagConstraints() {
+            {
+                gridx = 1;
+                gridy = 1;
+                weightx = 1;
+                anchor = WEST;
+                insets = UIUtils.UI_PADDING;
+            }
+        });
+        add(infoLabel, new GridBagConstraints() {
+            {
+                gridx = 1;
+                gridy = 2;
+                weightx = 1;
+                anchor = WEST;
+                insets = UIUtils.UI_PADDING;
+            }
+        });
     }
 
     @Override
     public Component getListCellRendererComponent(JList<? extends JIPipeParameterTypeInfo> list, JIPipeParameterTypeInfo value, int index, boolean isSelected, boolean cellHasFocus) {
         if (value != null) {
-            setText(value.getName());
+            nameLabel.setText(value.getName());
+            descriptionLabel.setText(value.getDescription());
+            infoLabel.setText(value.getId());
         } else {
-            setText("<Null>");
+            nameLabel.setText("<Null>");
+            descriptionLabel.setText("");
+            infoLabel.setText("");
         }
 
         if (isSelected) {

@@ -22,7 +22,7 @@ import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.AddDynamicParameterPanel;
+import org.hkijena.jipipe.ui.components.AddParameterDialog;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
@@ -590,7 +590,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
     }
 
     private void addDynamicParameter(JIPipeDynamicParameterCollection parameterHolder) {
-        AddDynamicParameterPanel.showDialog(this, parameterHolder);
+        AddParameterDialog.showDialog(workbench, this, parameterHolder);
         reloadForm();
     }
 
