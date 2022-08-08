@@ -429,6 +429,73 @@ public class UIUtils {
         return popupMenu;
     }
 
+    /**
+     * Adds an existing popup menu to a button
+     * Adds a function that is run before the popup is shown
+     *
+     * @param target         target button
+     * @return the popup menu
+     */
+    public static JPopupMenu addRightClickPopupMenuToComponent(AbstractButton target) {
+        JPopupMenu popupMenu = new JPopupMenu();
+        target.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                super.mouseClicked(mouseEvent);
+                if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                    popupMenu.revalidate();
+                    popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
+                }
+            }
+        });
+        target.addActionListener(e -> {
+            try {
+                if (target.isDisplayable() && MouseInfo.getPointerInfo().getLocation().x < target.getLocationOnScreen().x
+                        || MouseInfo.getPointerInfo().getLocation().x > target.getLocationOnScreen().x + target.getWidth()
+                        || MouseInfo.getPointerInfo().getLocation().y < target.getLocationOnScreen().y
+                        || MouseInfo.getPointerInfo().getLocation().y > target.getLocationOnScreen().y + target.getHeight()) {
+                    popupMenu.revalidate();
+                    popupMenu.show(target, 0, target.getHeight());
+                }
+            } catch (IllegalComponentStateException e1) {
+            }
+        });
+        return popupMenu;
+    }
+
+    /**
+     * Adds an existing popup menu to a button
+     * Adds a function that is run before the popup is shown
+     *
+     * @param target         target button
+     * @return the popup menu
+     */
+    public static JPopupMenu addRightClickPopupMenuToComponent(AbstractButton target, JPopupMenu popupMenu) {
+        target.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent mouseEvent) {
+                super.mouseClicked(mouseEvent);
+                if (mouseEvent.getButton() == MouseEvent.BUTTON3) {
+                    popupMenu.revalidate();
+                    popupMenu.show(mouseEvent.getComponent(), mouseEvent.getX(), mouseEvent.getY());
+                }
+            }
+        });
+        target.addActionListener(e -> {
+            try {
+                if (target.isDisplayable() && MouseInfo.getPointerInfo().getLocation().x < target.getLocationOnScreen().x
+                        || MouseInfo.getPointerInfo().getLocation().x > target.getLocationOnScreen().x + target.getWidth()
+                        || MouseInfo.getPointerInfo().getLocation().y < target.getLocationOnScreen().y
+                        || MouseInfo.getPointerInfo().getLocation().y > target.getLocationOnScreen().y + target.getHeight()) {
+                    popupMenu.revalidate();
+                    popupMenu.show(target, 0, target.getHeight());
+                }
+            } catch (IllegalComponentStateException e1) {
+            }
+        });
+        return popupMenu;
+    }
+
     public static JSeparator createVerticalSeparator() {
         JSeparator separator = new JSeparator(SwingConstants.VERTICAL);
         separator.setMaximumSize(new Dimension(1, Integer.MAX_VALUE));

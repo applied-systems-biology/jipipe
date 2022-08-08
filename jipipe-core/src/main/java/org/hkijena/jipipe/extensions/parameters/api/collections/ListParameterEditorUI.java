@@ -238,6 +238,13 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
             });
             buttonPanel.add(handleButton, new GridBagConstraints(0,1,1,1,0,0,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0,0,0,0), 0,0));
 
+            JPopupMenu handleMenu = UIUtils.addRightClickPopupMenuToComponent(handleButton);
+            handleMenu.add(UIUtils.createMenuItem("Delete", "Removes this item", UIUtils.getIconFromResources("actions/delete.png"), () -> {
+                selectedEntryComponents.clear();
+                selectedEntryComponents.add(entryComponentsList.get(finalI));
+                removeSelectedEntries();
+            }));
+
             ListParameterItemParameterAccess<?> access = new ListParameterItemParameterAccess(getParameterAccess(),
                     parameter,
                     parameter.getContentClass(),
