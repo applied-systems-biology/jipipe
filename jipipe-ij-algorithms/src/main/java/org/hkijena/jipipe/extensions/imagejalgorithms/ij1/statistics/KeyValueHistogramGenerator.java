@@ -1,15 +1,22 @@
-package org.hkijena.jipipe.extensions.tables.nodes.transform;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics;
 
 import com.google.common.primitives.Doubles;
+import com.google.common.primitives.Floats;
 import gnu.trove.list.TDoubleList;
+import gnu.trove.list.TFloatList;
 import gnu.trove.list.array.TDoubleArrayList;
+import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.map.TDoubleDoubleMap;
 import gnu.trove.map.hash.TDoubleDoubleHashMap;
 import gnu.trove.map.hash.TDoubleObjectHashMap;
+import ij.ImagePlus;
+import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -17,24 +24,25 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVari
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
+import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.extensions.tables.TableColumnReference;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
-import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnIntegrationParameter;
+import org.hkijena.jipipe.utils.CoreImageJUtils;
 
 import java.util.Arrays;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Table to key/value histogram", description = "Given a table with two numeric columns containing a key and a value, integrate all values assigned to a key into a single value. Allows the generation of normalized and cumulative histograms.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Transform")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-public class HistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
-
-    private TableColumnSourceExpressionParameter keyColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"key\"");
-    private TableColumnSourceExpressionParameter valueColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"value\"");
-
+@JIPipeDocumentation(name = "Key/Value Histogram 5D", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. The values assigned to each key are collected and integrated, thus allowing to generate histograms. Allows the generation of normalized and cumulative histograms.")
+@JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
+@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Key", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Histogram", autoCreate = true)
+public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
     private String outputKeyColumn = "key";
 
     private String outputValueColumn = "value";
@@ -42,14 +50,12 @@ public class HistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private boolean cumulative = false;
     private boolean normalize = false;
 
-    public HistogramAlgorithm(JIPipeNodeInfo info) {
+    public KeyValueHistogramGenerator(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public HistogramAlgorithm(HistogramAlgorithm other) {
+    public KeyValueHistogramGenerator(KeyValueHistogramGenerator other) {
         super(other);
-        this.keyColumn = new TableColumnSourceExpressionParameter(other.keyColumn);
-        this.valueColumn = new TableColumnSourceExpressionParameter(other.valueColumn);
         this.integrationFunction = new DefaultExpressionParameter(other.integrationFunction);
         this.cumulative = other.cumulative;
         this.normalize = other.normalize;
@@ -59,33 +65,45 @@ public class HistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ResultsTableData inputTable = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
-        TDoubleObjectHashMap<TDoubleList> bucketedValues = new TDoubleObjectHashMap<>();
+        ImagePlus keyImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo).getImage();
+        ImagePlus valueImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo).getImage();
+        TDoubleObjectHashMap<TFloatList> bucketedValues = new TDoubleObjectHashMap<>();
 
-        // Copy the buckets
-        TableColumn keyColumn_ = keyColumn.pickOrGenerateColumn(inputTable);
-        TableColumn valueColumn_ = valueColumn.pickOrGenerateColumn(inputTable);
-
-        for (int row = 0; row < inputTable.getRowCount(); row++) {
-            double key = keyColumn_.getRowAsDouble(row);
-            double value = valueColumn_.getRowAsDouble(row);
-            TDoubleList list = bucketedValues.get(key);
-            if(list == null) {
-                list = new TDoubleArrayList();
-                bucketedValues.put(key, list);
-            }
-            list.add(value);
+        if(!ImageJUtils.imagesHaveSameSize(keyImage, valueImage)) {
+            throw new UserFriendlyRuntimeException("Input images do not have the same size!",
+                    "Input images do not have the same size!",
+                    getDisplayName(),
+                    "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channels.",
+                    "Please check the input images.");
         }
+
+        // Bucket the pixel values
+        ImageJUtils.forEachIndexedZCTSlice(keyImage, (keyIp, index) -> {
+            ImageProcessor valueIp = ImageJUtils.getSliceZero(valueImage, index);
+            float[] keyPixels = (float[]) keyIp.getPixels();
+            float[] valuePixels = (float[]) valueIp.getPixels();
+            for (int i = 0; i < keyPixels.length; i++) {
+                float key = keyPixels[i];
+                float value = valuePixels[i];
+                TFloatList list = bucketedValues.get(key);
+                if(list == null) {
+                    list = new TFloatArrayList();
+                    bucketedValues.put(key, list);
+                }
+                list.add(value);
+            }
+        }, progressInfo.resolve("Collect pixels"));
 
         // Setup values
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
 
         // Integrate buckets
+        progressInfo.log("Integrating " + bucketedValues.size() + " buckets ...");
         TDoubleDoubleMap integratedValues = new TDoubleDoubleHashMap();
         for (double key : bucketedValues.keys()) {
-            TDoubleList list = bucketedValues.get(key);
-            List<Double> asList = Doubles.asList(list.toArray());
+            TFloatList list = bucketedValues.get(key);
+            List<Float> asList = Floats.asList(list.toArray());
             variables.set("values", asList);
             double integrated = integrationFunction.evaluateToDouble(variables);
             integratedValues.put(key, integrated);
@@ -155,28 +173,6 @@ public class HistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("output-value-column")
     public void setOutputValueColumn(String outputValueColumn) {
         this.outputValueColumn = outputValueColumn;
-    }
-
-    @JIPipeDocumentation(name = "Key column", description = "The column that contains the key values")
-    @JIPipeParameter(value = "key-column", important = true, uiOrder = -100)
-    public TableColumnSourceExpressionParameter getKeyColumn() {
-        return keyColumn;
-    }
-
-    @JIPipeParameter("key-column")
-    public void setKeyColumn(TableColumnSourceExpressionParameter keyColumn) {
-        this.keyColumn = keyColumn;
-    }
-
-    @JIPipeDocumentation(name = "Value column", description = "The column that contains the values")
-    @JIPipeParameter(value = "value-column", important = true, uiOrder = -90)
-    public TableColumnSourceExpressionParameter getValueColumn() {
-        return valueColumn;
-    }
-
-    @JIPipeParameter("value-column")
-    public void setValueColumn(TableColumnSourceExpressionParameter valueColumn) {
-        this.valueColumn = valueColumn;
     }
 
     @JIPipeDocumentation(name = "Integration function", description = "The function that integrates the values assigned to the same key")

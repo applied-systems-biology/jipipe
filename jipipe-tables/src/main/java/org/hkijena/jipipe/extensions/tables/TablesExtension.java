@@ -192,7 +192,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("table-melt", MeltTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-annotate-with-properties", AnnotateByTablePropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
         registerNodeType("table-add-missing-rows-in-series", AddMissingRowsInSeriesAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort-ascending.png"));
-        registerNodeType("table-convert-to-histogram", HistogramAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
+        registerNodeType("table-convert-to-histogram-key-value", HistogramAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
     }
 
     private void registerParameters() {
