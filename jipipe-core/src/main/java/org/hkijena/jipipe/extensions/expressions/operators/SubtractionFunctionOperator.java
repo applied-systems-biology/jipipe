@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.expressions.operators;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
@@ -59,7 +60,12 @@ public class SubtractionFunctionOperator extends GenericOperator {
 
     @Override
     public Object evaluate(String left, String right) {
-        return false;
+        if(NumberUtils.isCreatable(left) && NumberUtils.isCreatable(right)) {
+            return NumberUtils.createDouble(left) - NumberUtils.createDouble(right);
+        }
+        else {
+            throw new IllegalArgumentException("Cannot subtract strings '" + left + "' and '" + right + "'!");
+        }
     }
 
     @Override

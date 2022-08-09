@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -18,6 +19,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatistic
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.*;
@@ -36,8 +38,11 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
 
     private boolean reverseSortOrder = false;
 
+    private final CustomExpressionVariablesParameter customFilterVariables;
+
     public SortRoiListByExpressionsAndMeasurementsAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.customFilterVariables = new CustomExpressionVariablesParameter(this);
     }
 
     public SortRoiListByExpressionsAndMeasurementsAlgorithm(SortRoiListByExpressionsAndMeasurementsAlgorithm other) {
@@ -47,6 +52,7 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.reverseSortOrder = other.reverseSortOrder;
+        this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
     }
 
     @Override
@@ -59,10 +65,9 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
         ROIListData tmp = new ROIListData();
 
         if (includeAnnotations) {
-            for (JIPipeTextAnnotation value : dataBatch.getMergedTextAnnotations().values()) {
-                parameters.set(value.getName(), value.getValue());
-            }
+            parameters.putAnnotations(dataBatch.getMergedTextAnnotations());
         }
+        customFilterVariables.writeToVariables(parameters, true, "custom.", true, "custom");
 
         ImagePlus referenceImage = null;
         if (inputReference != null) {
@@ -100,6 +105,8 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
     @JIPipeDocumentation(name = "Expression", description = "The expression is executed per ROI.")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @JIPipeParameter("expression")
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public StringQueryExpression getExpression() {
         return expression;
     }
@@ -152,6 +159,13 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
     @JIPipeParameter("reverse-sort-order")
     public void setReverseSortOrder(boolean reverseSortOrder) {
         this.reverseSortOrder = reverseSortOrder;
+    }
+
+    @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
+    @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
+    public CustomExpressionVariablesParameter getCustomFilterVariables() {
+        return customFilterVariables;
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {

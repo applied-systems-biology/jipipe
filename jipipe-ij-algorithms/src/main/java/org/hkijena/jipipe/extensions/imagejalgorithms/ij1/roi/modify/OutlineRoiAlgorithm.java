@@ -28,8 +28,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
  */
 @JIPipeDocumentation(name = "Outline ROI", description = "Converts the ROI into polygons, bounding rectangles, or convex hulls.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class OutlineRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private RoiOutline outline = RoiOutline.ClosedPolygon;
@@ -40,10 +40,7 @@ public class OutlineRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public OutlineRoiAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ROIListData.class)
-                .addOutputSlot("Output", "", ROIListData.class, null)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**

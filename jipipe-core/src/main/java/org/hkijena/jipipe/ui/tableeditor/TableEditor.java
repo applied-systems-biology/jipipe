@@ -106,6 +106,7 @@ public class TableEditor extends FlexContentWorkbenchPanel {
         window.setSize(1024, 768);
         window.setLocationRelativeTo(workbench.getWindow());
         window.setVisible(true);
+        SwingUtilities.invokeLater(editor::repaint);
         return editor;
     }
 
