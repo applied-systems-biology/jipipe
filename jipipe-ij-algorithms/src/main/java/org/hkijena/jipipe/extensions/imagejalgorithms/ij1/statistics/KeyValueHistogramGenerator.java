@@ -102,6 +102,8 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         progressInfo.log("Integrating " + bucketedValues.size() + " buckets ...");
         TDoubleDoubleMap integratedValues = new TDoubleDoubleHashMap();
         for (double key : bucketedValues.keys()) {
+            if(progressInfo.isCancelled())
+                return;
             TFloatList list = bucketedValues.get(key);
             List<Float> asList = Floats.asList(list.toArray());
             variables.set("values", asList);
@@ -118,6 +120,8 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
             TDoubleDoubleMap cumulativeIntegratedValues = new TDoubleDoubleHashMap();
             double cumulativeValue = 0;
             for (double key : sortedKeys) {
+                if(progressInfo.isCancelled())
+                    return;
                 double value = integratedValues.get(key);
                 double value_ = value + cumulativeValue;
                 cumulativeValue += value;
