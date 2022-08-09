@@ -65,8 +65,8 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus keyImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo).getImage();
-        ImagePlus valueImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscale32FData.class, progressInfo).getImage();
+        ImagePlus keyImage = dataBatch.getInputData("Key", ImagePlusGreyscale32FData.class, progressInfo).getImage();
+        ImagePlus valueImage = dataBatch.getInputData("Value", ImagePlusGreyscale32FData.class, progressInfo).getImage();
         TDoubleObjectHashMap<TFloatList> bucketedValues = new TDoubleObjectHashMap<>();
 
         if(!ImageJUtils.imagesHaveSameSize(keyImage, valueImage)) {
