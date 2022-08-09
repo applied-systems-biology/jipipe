@@ -1355,6 +1355,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     }
 
     private void registerMathAlgorithms() {
+        registerNodeType("ij1-math-round-32f", RoundFloatImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-math2d", ApplyMath2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-transform2d", ApplyTransform2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-math-math2d-expression", ApplyMathExpression2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
