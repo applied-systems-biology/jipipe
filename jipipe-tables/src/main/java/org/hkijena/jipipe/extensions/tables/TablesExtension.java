@@ -45,6 +45,7 @@ import org.hkijena.jipipe.extensions.tables.nodes.rows.SortTableRowsAlgorithm;
 import org.hkijena.jipipe.extensions.tables.nodes.split.SplitTableByColumnsAlgorithm;
 import org.hkijena.jipipe.extensions.tables.nodes.split.SplitTableIntoColumnsAlgorithm;
 import org.hkijena.jipipe.extensions.tables.nodes.split.SplitTableIntoRowsAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.transform.HistogramAlgorithm;
 import org.hkijena.jipipe.extensions.tables.nodes.transform.MeltTableAlgorithm;
 import org.hkijena.jipipe.extensions.tables.operations.converting.*;
 import org.hkijena.jipipe.extensions.tables.operations.integrating.*;
@@ -191,6 +192,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("table-melt", MeltTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-annotate-with-properties", AnnotateByTablePropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/tag.png"));
         registerNodeType("table-add-missing-rows-in-series", AddMissingRowsInSeriesAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort-ascending.png"));
+        registerNodeType("table-convert-to-histogram", HistogramAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
     }
 
     private void registerParameters() {
