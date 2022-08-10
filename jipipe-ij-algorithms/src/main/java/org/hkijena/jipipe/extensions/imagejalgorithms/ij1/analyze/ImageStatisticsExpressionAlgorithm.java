@@ -224,8 +224,10 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
 
     @JIPipeParameter("roi:target-area")
     public void setTargetArea(ImageROITargetArea targetArea) {
-        this.targetArea = targetArea;
-        ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
+        if(this.targetArea != targetArea) {
+            this.targetArea = targetArea;
+            ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
+        }
     }
 
     @JIPipeDocumentation(name = "Generated columns", description = "Use these expressions to generate the table columns. The expressions contain statistics, as well as incoming annotations of the current image.")
