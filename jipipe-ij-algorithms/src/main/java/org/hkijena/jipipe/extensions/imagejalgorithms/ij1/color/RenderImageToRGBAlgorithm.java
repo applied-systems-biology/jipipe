@@ -1,8 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color;
 
 import ij.ImagePlus;
-import ij.ImageStack;
-import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -37,12 +35,9 @@ public class RenderImageToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
-        ImageStack stack = new ImageStack(img.getWidth(), img.getHeight(), img.getStackSize());
-        ImageJUtils.forEachIndexedZCTSlice(img, (ip, slice) -> {
-            ColorProcessor colorProcessor = new ColorProcessor(ip.getBufferedImage());
-            stack.setProcessor(colorProcessor, slice.zeroSliceIndexToOneStackIndex(img));
-        }, progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(new ImagePlus(img.getTitle(), stack)), progressInfo);
+        ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
+        ImagePlus outputImage = ImageJUtils.renderToRGBWithLUTIfNeeded(inputImage, progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(outputImage), progressInfo);
     }
+
 }

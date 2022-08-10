@@ -21,6 +21,7 @@ import ij.ImagePlus;
 import ij.process.ColorProcessor;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
@@ -46,11 +47,16 @@ import java.util.Map;
 
 import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_COLOR_RGB_CONVERSION;
 
+/**
+ * @deprecated Use {@link BlendImagesAlgorithm} instead
+ */
 @JIPipeDocumentation(name = "Overlay images", description = "Overlays greyscale or RGB images RGB image. ")
 @JIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Merge Channels... (overlay)")
+@Deprecated
+@JIPipeHidden
 public class OverlayImagesAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final InputSlotMapParameterCollection channelColorAssignment;

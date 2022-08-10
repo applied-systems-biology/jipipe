@@ -1844,6 +1844,27 @@ public class ImageJUtils {
         }
     }
 
+    /**
+     * Renders a non-RGB image to RGB, including LUT
+     *
+     * @param inputImage   the input image
+     * @param progressInfo the progress info
+     * @return the output image
+     */
+    public static ImagePlus renderToRGBWithLUTIfNeeded(ImagePlus inputImage, JIPipeProgressInfo progressInfo) {
+        if(inputImage.getType() == ImagePlus.COLOR_RGB)
+            return inputImage;
+        ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
+        forEachIndexedZCTSlice(inputImage, (ip, slice) -> {
+            ColorProcessor colorProcessor = new ColorProcessor(ip.getBufferedImage());
+            stack.setProcessor(colorProcessor, slice.zeroSliceIndexToOneStackIndex(inputImage));
+        }, progressInfo);
+        ImagePlus outputImage = new ImagePlus(inputImage.getTitle(), stack);
+        outputImage.copyScale(inputImage);
+        outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
+        return outputImage;
+    }
+
     public static class GradientStop implements Comparable<GradientStop> {
         private Color color;
         private float position;
