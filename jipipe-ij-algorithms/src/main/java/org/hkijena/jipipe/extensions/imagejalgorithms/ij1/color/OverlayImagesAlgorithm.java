@@ -26,12 +26,10 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -39,9 +37,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusCo
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.graph.InputSlotMapParameterCollection;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -56,11 +51,11 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Merge Channels... (overlay)")
-public class OverlayChannelsAlgorithm extends JIPipeIteratingAlgorithm {
+public class OverlayImagesAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private InputSlotMapParameterCollection channelColorAssignment;
+    private final InputSlotMapParameterCollection channelColorAssignment;
 
-    public OverlayChannelsAlgorithm(JIPipeNodeInfo info) {
+    public OverlayImagesAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().restrictInputTo(ImagePlusGreyscale8UData.class, ImagePlusColorRGBData.class)
                 .addOutputSlot("Output", "", ImagePlusColorRGBData.class, "Input", TO_COLOR_RGB_CONVERSION)
                 .allowOutputSlotInheritance(true)
@@ -71,7 +66,7 @@ public class OverlayChannelsAlgorithm extends JIPipeIteratingAlgorithm {
         registerSubParameter(channelColorAssignment);
     }
 
-    public OverlayChannelsAlgorithm(OverlayChannelsAlgorithm other) {
+    public OverlayImagesAlgorithm(OverlayImagesAlgorithm other) {
         super(other);
         channelColorAssignment = new InputSlotMapParameterCollection(Channel.class, this, this::getNewChannelColor, false);
         other.channelColorAssignment.copyTo(channelColorAssignment);

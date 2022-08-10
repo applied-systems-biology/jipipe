@@ -1453,11 +1453,11 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     }
 
     private void registerColorAlgorithms() {
-        registerParameterType("ij1-color-overlay-channels:channel", OverlayChannelsAlgorithm.Channel.class, "Channel settings", "Settings for a channel");
+        registerParameterType("ij1-color-overlay-channels:channel", OverlayImagesAlgorithm.Channel.class, "Channel settings", "Settings for a channel");
 
         registerNodeType("ij1-color-invert", InvertColorsAlgorithm.class, UIUtils.getIconURLFromResources("actions/invertimage.png"));
         registerNodeType("ij1-color-merge-channels", MergeChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
-        registerNodeType("ij1-color-overlay-channels", OverlayChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("ij1-color-overlay-channels", OverlayImagesAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("ij1-color-arrange-channels", ArrangeChannelsAlgorithm.class);
         registerNodeType("ij1-color-split-channels", SplitChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-color-split-channels-2", NewSplitChannelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
