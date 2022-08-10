@@ -46,6 +46,20 @@ public class JIPipeParameterTypeInfoPicker extends PickerDialog<JIPipeParameterT
         setAvailableItems(infos);
     }
 
+    public JIPipeParameterTypeInfoPicker(Window parent, Set<Class<?>> allowedParameterTypes) {
+        super(parent);
+        setCellRenderer(new JIPipeParameterTypeInfoListCellRenderer());
+        ArrayList<JIPipeParameterTypeInfo> infos;
+        if(allowedParameterTypes == null || allowedParameterTypes.isEmpty()) {
+            infos = new ArrayList<>(JIPipe.getParameterTypes().getRegisteredParameters().values());
+            infos.sort(Comparator.comparing(JIPipeParameterTypeInfo::getName));
+        }
+        else {
+            infos = allowedParameterTypes.stream().map(klass -> JIPipe.getParameterTypes().getInfoByFieldClass(klass)).sorted(Comparator.comparing(JIPipeParameterTypeInfo::getName)).collect(Collectors.toCollection(ArrayList::new));
+        }
+        setAvailableItems(infos);
+    }
+
     @Override
     protected String getSearchString(JIPipeParameterTypeInfo item) {
         return item.getName() + item.getDescription();

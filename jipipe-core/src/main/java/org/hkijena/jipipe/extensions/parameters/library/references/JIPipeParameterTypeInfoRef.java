@@ -25,7 +25,9 @@ import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * A parameter that holds a reference to an {@link org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo}
@@ -34,6 +36,8 @@ import java.util.Objects;
 @JsonDeserialize(using = JIPipeParameterTypeInfoRef.Deserializer.class)
 public class JIPipeParameterTypeInfoRef implements JIPipeValidatable {
     private JIPipeParameterTypeInfo info;
+
+    private Set<Class<?>> uiAllowedParameterTypes = new HashSet<>();
 
     /**
      * @param fieldClass The field class of the parameter
@@ -63,6 +67,19 @@ public class JIPipeParameterTypeInfoRef implements JIPipeValidatable {
      */
     public JIPipeParameterTypeInfoRef() {
 
+    }
+
+    /**
+     * Non-serialized list of allowed parameter types.
+     * Will be passed to the parameter type picker for the UI
+     * @return allowed parameter types. null or empty = all parameter types
+     */
+    public Set<Class<?>> getUiAllowedParameterTypes() {
+        return uiAllowedParameterTypes;
+    }
+
+    public void setUiAllowedParameterTypes(Set<Class<?>> uiAllowedParameterTypes) {
+        this.uiAllowedParameterTypes = uiAllowedParameterTypes;
     }
 
     public JIPipeParameterTypeInfo getInfo() {

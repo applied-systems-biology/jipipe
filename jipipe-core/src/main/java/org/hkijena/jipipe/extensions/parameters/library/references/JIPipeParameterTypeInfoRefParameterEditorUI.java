@@ -77,8 +77,14 @@ public class JIPipeParameterTypeInfoRefParameterEditorUI extends JIPipeParameter
 
 
     private void pickNodeInfo() {
-        JIPipeParameterTypeInfoPicker picker = new JIPipeParameterTypeInfoPicker(getWorkbench().getWindow());
         JIPipeParameterTypeInfoRef infoRef = getParameter(JIPipeParameterTypeInfoRef.class);
+        JIPipeParameterTypeInfoPicker picker;
+        if(infoRef.getUiAllowedParameterTypes() == null || infoRef.getUiAllowedParameterTypes().isEmpty()) {
+            picker = new JIPipeParameterTypeInfoPicker(getWorkbench().getWindow());
+        }
+        else {
+            picker = new JIPipeParameterTypeInfoPicker(getWorkbench().getWindow(), infoRef.getUiAllowedParameterTypes());
+        }
         JIPipeParameterTypeInfo info = infoRef.getInfo();
         if(info != null) {
             picker.setSelectedItem(info);

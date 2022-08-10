@@ -398,9 +398,14 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 }
 
                 if (isModifiable) {
-                    JButton addButton = new JButton("Add parameter", UIUtils.getIconFromResources("actions/list-add.png"));
-                    addButton.addActionListener(e -> addDynamicParameter((JIPipeDynamicParameterCollection) parameterCollection));
-                    addButton.setToolTipText("Add new parameter");
+                    JButton addButton = new JButton("Edit", UIUtils.getIconFromResources("actions/edit.png"));
+                    addButton.addActionListener(e -> {
+                        DynamicParameterEditorDialog dialog = new DynamicParameterEditorDialog(SwingUtilities.getWindowAncestor(this), workbench, (JIPipeDynamicParameterCollection) parameterCollection);
+                        dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
+                        dialog.setModal(true);
+                        dialog.setVisible(true);
+                    });
+                    addButton.setToolTipText("Allows to add/remove parameters in this group");
                     UIUtils.makeFlat(addButton);
                     groupHeaderPanel.addColumn(addButton);
                 }
@@ -472,12 +477,12 @@ public class ParameterPanel extends FormPanel implements Contextual {
             }
 
             // Editor if modifiable
-            if (isModifiable) {
-                JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
-                UIUtils.makeBorderlessWithoutMargin(removeButton);
-                removeButton.addActionListener(e -> removeDynamicParameter(parameterAccess.getKey(), (JIPipeDynamicParameterCollection) parameterCollection));
-                labelPanel.add(removeButton, BorderLayout.WEST);
-            }
+//            if (isModifiable) {
+//                JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
+//                UIUtils.makeBorderlessWithoutMargin(removeButton);
+//                removeButton.addActionListener(e -> removeDynamicParameter(parameterAccess.getKey(), (JIPipeDynamicParameterCollection) parameterCollection));
+//                labelPanel.add(removeButton, BorderLayout.WEST);
+//            }
 
             // Add to form
             if (ui.isUILabelEnabled() || parameterCollection instanceof JIPipeDynamicParameterCollection) {
