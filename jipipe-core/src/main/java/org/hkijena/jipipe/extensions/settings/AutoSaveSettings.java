@@ -30,16 +30,16 @@ import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
+import javax.swing.Timer;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileTime;
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -197,7 +197,14 @@ public class AutoSaveSettings implements JIPipeParameterCollection {
 
     public List<Path> getLastBackups() {
         try {
-            return Files.list(getCurrentSavePath()).filter(path -> path.getFileName().toString().endsWith(".jip")).collect(Collectors.toList());
+            List<Path> paths = Files.list(getCurrentSavePath()).filter(path -> path.getFileName().toString().endsWith(".jip")).sorted(Comparator.comparing((Path path) -> {
+                try {
+                    return Files.getLastModifiedTime(path);
+                } catch (IOException e) {
+                    return FileTime.from(Instant.now());
+                }
+            }).reversed()).collect(Collectors.toList());
+            return paths;
         } catch (IOException e) {
             e.printStackTrace();
             return Collections.emptyList();
