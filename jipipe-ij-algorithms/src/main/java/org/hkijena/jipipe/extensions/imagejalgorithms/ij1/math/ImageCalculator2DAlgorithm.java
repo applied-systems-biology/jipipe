@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -29,6 +30,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.graph.InputSlotMapParameterCollection;
 
 import java.util.HashSet;
@@ -104,14 +106,14 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData leftOperand = null;
-        ImagePlusData rightOperand = null;
+        ImagePlus leftOperand = null;
+        ImagePlus rightOperand = null;
         for (Map.Entry<String, JIPipeParameterAccess> entry : operands.getParameters().entrySet()) {
             Operand operand = entry.getValue().get(Operand.class);
             if (operand == Operand.LeftOperand) {
-                leftOperand = dataBatch.getInputData(entry.getKey(), ImagePlusData.class, progressInfo);
+                leftOperand = dataBatch.getInputData(entry.getKey(), ImagePlusData.class, progressInfo).getImage();
             } else if (operand == Operand.RightOperand) {
-                rightOperand = dataBatch.getInputData(entry.getKey(), ImagePlusData.class, progressInfo);
+                rightOperand = dataBatch.getInputData(entry.getKey(), ImagePlusData.class, progressInfo).getImage();
             }
         }
 
@@ -122,11 +124,28 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
             throw new NullPointerException("Right operand is null!");
         }
 
+        // Ensure same size
+        if(!ImageJUtils.imagesHaveSameSize(leftOperand, rightOperand)) {
+            throw new UserFriendlyRuntimeException("Input images do not have the same size!",
+                    "Input images do not have the same size!",
+                    getDisplayName(),
+                    "All input images in the same batch should have the same width, height, number of slices, number of frames, and number of channels.",
+                    "Please check the input images.");
+        }
+
         // Make both of the inputs the same type
-        rightOperand = (ImagePlusData) JIPipe.getDataTypes().convert(rightOperand, leftOperand.getClass());
+        if(floatingPointOutput) {
+            leftOperand = ImageJUtils.convertToGrayscale32FIfNeeded(leftOperand);
+            rightOperand = ImageJUtils.convertToGrayscale32FIfNeeded(rightOperand);
+        }
+        else {
+            rightOperand = ImageJUtils.convertToBitDepthIfNeeded (rightOperand, leftOperand.getBitDepth());
+        }
 
         ImageCalculator calculator = new ImageCalculator();
-        ImagePlus img = calculator.run(operation.getId() + " stack create", leftOperand.getImage(), rightOperand.getImage());
+        ImagePlus img = calculator.run(operation.getId() + " stack create", leftOperand, rightOperand);
+        img.copyScale(leftOperand);
+        img.setDimensions(leftOperand.getNChannels(), leftOperand.getNSlices(), leftOperand.getNFrames());
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
 
@@ -167,7 +186,7 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Generate 32-bit floating point output", description = "Determines whether to keep the input data type or generate a 32-bit floating point output.")
-    @JIPipeParameter("floating-point-output")
+    @JIPipeParameter(value = "floating-point-output", important = true)
     public boolean isFloatingPointOutput() {
         return floatingPointOutput;
     }
