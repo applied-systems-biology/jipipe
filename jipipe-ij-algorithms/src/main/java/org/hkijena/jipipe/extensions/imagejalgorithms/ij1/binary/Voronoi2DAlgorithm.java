@@ -18,12 +18,13 @@ import ij.plugin.filter.EDM;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
@@ -33,31 +34,20 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeDocumentation(name = "Voronoi 2D", description = "Splits the image by lines of points having equal distance to the borders of the two nearest particles." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Binary", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nBinary", aliasName = "Voronoi")
 public class Voronoi2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    /**
-     * Instantiates a new node type.
-     *
-     * @param info the info
-     */
+    private boolean binarize = false;
+
     public Voronoi2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscaleMaskData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscaleMaskData.class, "Input")
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
     }
 
-    /**
-     * Instantiates a new node type.
-     *
-     * @param other the other
-     */
     public Voronoi2DAlgorithm(Voronoi2DAlgorithm other) {
         super(other);
+        this.binarize = other.binarize;
     }
 
     @Override
@@ -66,7 +56,23 @@ public class Voronoi2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus img = inputData.getDuplicateImage();
         EDM edm = new EDM();
         edm.setup("voronoi", img);
-        ImageJUtils.forEachSlice(img, edm::run, progressInfo);
+        ImageJUtils.forEachSlice(img, ip -> {
+            edm.run(ip);
+            if(binarize) {
+                ip.threshold(0);
+            }
+        }, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale8UData(img), progressInfo);
+    }
+
+    @JIPipeDocumentation(name = "Binarize outputs", description = "If enabled, the output is binarized.")
+    @JIPipeParameter("binarize")
+    public boolean isBinarize() {
+        return binarize;
+    }
+
+    @JIPipeParameter("binarize")
+    public void setBinarize(boolean binarize) {
+        this.binarize = binarize;
     }
 }
