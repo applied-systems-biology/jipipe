@@ -83,7 +83,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
     }
 
     public void addReference() {
-        JIPipeParameterTree tree = parametersUI.getTree();
+        JIPipeParameterTree tree = parametersUI.getParameterTree();
         List<Object> selected = ParameterTreeUI.showPickerDialog(this, tree, "Add parameter");
         List<GraphNodeParameterReference> referenceList = new ArrayList<>();
         for (Object parameter : selected) {

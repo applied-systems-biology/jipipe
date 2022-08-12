@@ -26,12 +26,17 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.pickers.PickNodeDialog;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeModel;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Stack;
 
@@ -41,22 +46,21 @@ import java.util.Stack;
 public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWorkbenchPanel {
 
     private final GraphNodeParameterReferenceGroupCollection parameters;
-    private final int formPanelFlags;
-    private FormPanel content;
-    private JIPipeParameterTree tree;
+    private final JTree groupJTree = new JTree();
+    private final FormPanel editorPanel;
+    private JIPipeParameterTree parameterTree;
     private boolean withRefresh;
 
     /**
      * @param workbench      the workbench
      * @param parameters     the parameters to edit
-     * @param formPanelFlags flags for the form panel
      * @param withRefresh    if the editor should refresh on changes
      */
-    public GraphNodeParameterReferenceGroupCollectionEditorUI(JIPipeWorkbench workbench, GraphNodeParameterReferenceGroupCollection parameters, int formPanelFlags, boolean withRefresh) {
+    public GraphNodeParameterReferenceGroupCollectionEditorUI(JIPipeWorkbench workbench, GraphNodeParameterReferenceGroupCollection parameters, MarkdownDocument documentation, boolean withRefresh) {
         super(workbench);
         this.parameters = parameters;
-        this.formPanelFlags = formPanelFlags;
         this.withRefresh = withRefresh;
+        this.editorPanel = new FormPanel(documentation != null ? documentation : MarkdownDocument.fromPluginResource("documentation/parameter-reference-editor.md", Collections.emptyMap()), FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION | FormPanel.DOCUMENTATION_BELOW);
         parameters.getEventBus().register(this);
         parameters.getGraph().getEventBus().register(this);
         initialize();
@@ -78,6 +82,23 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
     private void initialize() {
         setLayout(new BorderLayout());
 
+        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, AutoResizeSplitPane.RATIO_1_TO_3);
+        initializeLeftPanel(splitPane);
+        splitPane.setRightComponent(editorPanel);
+    }
+
+    private void initializeLeftPanel(AutoResizeSplitPane splitPane) {
+        add(splitPane, BorderLayout.CENTER);
+
+        JPanel leftPanel = new JPanel(new BorderLayout());
+        splitPane.setLeftComponent(leftPanel);
+        initializeToolbar(leftPanel);
+
+        groupJTree.setCellRenderer(new ParameterReferenceGroupCollectionTreeCellRenderer(this));
+        leftPanel.add(new JScrollPane(groupJTree), BorderLayout.CENTER);
+    }
+
+    private void initializeToolbar(JPanel leftPanel) {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
 
@@ -88,27 +109,27 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
 
         toolBar.add(Box.createHorizontalGlue());
 
-        JButton autoAddAlgorithmButton = new JButton("Auto add algorithm", UIUtils.getIconFromResources("actions/configure.png"));
-        autoAddAlgorithmButton.setToolTipText("Adds a group based on an algorithm");
-        autoAddAlgorithmButton.addActionListener(e -> autoAddAlgorithm());
-        toolBar.add(autoAddAlgorithmButton);
+        JButton addGroupButton = new JButton("Add group", UIUtils.getIconFromResources("actions/list-add.png"));
+        JPopupMenu popupMenu = UIUtils.addPopupMenuToComponent(addGroupButton);
+        popupMenu.add(UIUtils.createMenuItem("Empty group", "Adds an empty group", UIUtils.getIconFromResources("actions/list-add.png"), this::addEmptyGroup));
+        popupMenu.add(UIUtils.createMenuItem("Node as group", "Add all parameters within a node as group", UIUtils.getIconFromResources("data-types/node.png"), this::addWholeNode));
+        toolBar.add(addGroupButton);
 
-        JButton addEmptyGroupButton = new JButton("Add group", UIUtils.getIconFromResources("actions/list-add.png"));
-        addEmptyGroupButton.setToolTipText("Adds a new group");
-        addEmptyGroupButton.addActionListener(e -> addEmptyGroup());
-        toolBar.add(addEmptyGroupButton);
+        JButton removeButton = new JButton("Remove", UIUtils.getIconFromResources("actions/delete.png"));
+        removeButton.addActionListener(e -> removeSelectedItems());
+        toolBar.add(removeButton);
 
-        add(toolBar, BorderLayout.NORTH);
-
-        content = new FormPanel(null, formPanelFlags);
-        content.setBorder(null);
-        add(content, BorderLayout.CENTER);
+        leftPanel.add(toolBar, BorderLayout.NORTH);
     }
 
-    private void autoAddAlgorithm() {
+    private void removeSelectedItems() {
+
+    }
+
+    private void addWholeNode() {
         JIPipeGraphNode algorithm = PickNodeDialog.showDialog(this,
                 parameters.getGraph().getGraphNodes(),
-                null, "Add parameters of algorithm");
+                null, "Add all parameters of node");
         if (algorithm != null) {
             List<GraphNodeParameterReferenceGroup> groupList = new ArrayList<>();
             Stack<JIPipeParameterCollection> collectionStack = new Stack<>();
@@ -119,10 +140,10 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
                 group.setName(algorithm.getName());
                 group.setDescription(algorithm.getCustomDescription());
 
-                JIPipeParameterTree.Node node = tree.getSourceNode(top);
+                JIPipeParameterTree.Node node = parameterTree.getSourceNode(top);
                 for (JIPipeParameterAccess parameter : node.getParameters().values()) {
-                    if (algorithm.isParameterUIVisible(tree, parameter)) {
-                        GraphNodeParameterReference reference = new GraphNodeParameterReference(parameter, tree);
+                    if (algorithm.isParameterUIVisible(parameterTree, parameter)) {
+                        GraphNodeParameterReference reference = new GraphNodeParameterReference(parameter, parameterTree);
                         group.addContent(reference);
                     }
                 }
@@ -148,29 +169,18 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
     }
 
     public void refreshContent() {
-        tree = getParameters().getGraph().getParameterTree(false);
-        int scrollValue = 0;
-        if (content.getScrollPane() != null) {
-            scrollValue = content.getScrollPane().getVerticalScrollBar().getValue();
-        }
-        content.clear();
+        parameterTree = getParameters().getGraph().getParameterTree(false);
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
         for (GraphNodeParameterReferenceGroup referenceGroup : parameters.getParameterReferenceGroups()) {
-            GraphNodeParameterReferenceGroupUI groupUI = new GraphNodeParameterReferenceGroupUI(this, referenceGroup);
-            JButton removeButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
-            UIUtils.makeBorderlessWithoutMargin(removeButton);
-            removeButton.addActionListener(e -> {
-                parameters.removeGroup(referenceGroup);
-                if (!isWithRefresh()) {
-                    refreshContent();
-                }
-            });
-            content.addToForm(groupUI, removeButton, null);
+            DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(referenceGroup);
+            for (GraphNodeParameterReference parameterReference : referenceGroup.getContent()) {
+                   DefaultMutableTreeNode referenceNode = new DefaultMutableTreeNode(parameterReference);
+                   groupNode.add(referenceNode);
+            }
+            rootNode.add(groupNode);
         }
-        content.addVerticalGlue();
-        if (content.getScrollPane() != null) {
-            int finalScrollValue = scrollValue;
-            SwingUtilities.invokeLater(() -> content.getScrollPane().getVerticalScrollBar().setValue(finalScrollValue));
-        }
+        DefaultTreeModel model = new DefaultTreeModel(rootNode);
+        groupJTree.setModel(model);
     }
 
     /**
@@ -209,7 +219,7 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
     /**
      * @return The current parameter tree that was generated for this refresh cycle
      */
-    public JIPipeParameterTree getTree() {
-        return tree;
+    public JIPipeParameterTree getParameterTree() {
+        return parameterTree;
     }
 }

@@ -46,7 +46,7 @@ public class GraphNodeParameterReferenceUI extends JPanel {
 
     private void initialize() {
         setLayout(new BorderLayout(4, 0));
-        JIPipeParameterTree tree = referenceGroupUI.getParametersUI().getTree();
+        JIPipeParameterTree tree = referenceGroupUI.getParametersUI().getParameterTree();
 
         JLabel infoLabel = new JLabel(UIUtils.getIconFromResources("data-types/parameters.png"));
 
@@ -84,7 +84,7 @@ public class GraphNodeParameterReferenceUI extends JPanel {
     }
 
     private void changeDescription() {
-        JIPipeParameterTree tree = referenceGroupUI.getParametersUI().getTree();
+        JIPipeParameterTree tree = referenceGroupUI.getParametersUI().getParameterTree();
         String currentDescription = reference.getDescription(tree);
         String newDescription = UIUtils.getMultiLineStringByDialog(this, "Set description", "Please enter a new description:", currentDescription);
         if (newDescription != null) {

@@ -17,6 +17,7 @@ import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 
 import java.util.ArrayList;
@@ -27,8 +28,7 @@ import java.util.List;
 /**
  * A list of {@link GraphNodeParameterReference}.
  */
-public class GraphNodeParameterReferenceGroup {
-    private final EventBus eventBus = new EventBus();
+public class GraphNodeParameterReferenceGroup extends AbstractJIPipeParameterCollection {
     private List<GraphNodeParameterReference> content = new ArrayList<>();
     private String name;
     private HTMLText description = new HTMLText();
@@ -84,7 +84,7 @@ public class GraphNodeParameterReferenceGroup {
     }
 
     public void triggerChangedEvent() {
-        eventBus.post(new ParameterReferencesChangedEvent());
+        getEventBus().post(new ParameterReferencesChangedEvent());
     }
 
     /**
@@ -122,9 +122,5 @@ public class GraphNodeParameterReferenceGroup {
     public void removeContent(GraphNodeParameterReference reference) {
         this.content.remove(reference);
         triggerChangedEvent();
-    }
-
-    public EventBus getEventBus() {
-        return eventBus;
     }
 }

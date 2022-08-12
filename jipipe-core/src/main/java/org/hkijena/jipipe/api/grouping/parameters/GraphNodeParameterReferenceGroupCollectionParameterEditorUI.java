@@ -42,7 +42,7 @@ public class GraphNodeParameterReferenceGroupCollectionParameterEditorUI extends
 
     private void initialize() {
         setLayout(new BorderLayout());
-        JButton editGraphButton = new JButton("Edit parameters", UIUtils.getIconFromResources("actions/edit.png"));
+        JButton editGraphButton = new JButton("Edit parameter references", UIUtils.getIconFromResources("actions/edit.png"));
         editGraphButton.addActionListener(e -> editParameters());
         add(editGraphButton, BorderLayout.CENTER);
     }
@@ -51,8 +51,8 @@ public class GraphNodeParameterReferenceGroupCollectionParameterEditorUI extends
         GraphNodeParameterReferenceGroupCollection original = getParameter(GraphNodeParameterReferenceGroupCollection.class);
         GraphNodeParameterReferenceGroupCollection copy = new GraphNodeParameterReferenceGroupCollection(original);
         copy.setGraph(original.getGraph());
-        GraphNodeParameterReferenceGroupCollectionEditorUI parametersUI = new GraphNodeParameterReferenceGroupCollectionEditorUI(getWorkbench(), copy, FormPanel.WITH_SCROLLING, false);
-        if(OKCancelDialog.showDialog(getWorkbench().getWindow(), "Edit parameters", parametersUI, "OK", new Dimension(800,600))) {
+        GraphNodeParameterReferenceGroupCollectionEditorUI parametersUI = new GraphNodeParameterReferenceGroupCollectionEditorUI(getWorkbench(), copy, null,false);
+        if(OKCancelDialog.showDialog(getWorkbench().getWindow(), "Edit parameters", parametersUI, "OK", new Dimension(1024,768))) {
             original.setParameterReferenceGroups(copy.getParameterReferenceGroups());
             setParameter(original, true);
         }

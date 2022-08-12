@@ -226,11 +226,14 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
         }
     }
 
+    @JIPipeDocumentation(name = "Exported parameters", description = "Allows you to export parameters from the contained nodes into the custom node")
+    @JIPipeParameter("exported-parameters")
     @JsonGetter("exported-parameters")
     public GraphNodeParameterReferenceGroupCollection getExportedParameters() {
         return exportedParameters;
     }
 
+    @JIPipeParameter("exported-parameters")
     @JsonSetter("exported-parameters")
     public void setExportedParameters(GraphNodeParameterReferenceGroupCollection exportedParameters) {
         this.exportedParameters = exportedParameters;

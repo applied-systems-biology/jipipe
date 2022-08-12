@@ -95,13 +95,11 @@ public class JIPipeProjectSettingsUI extends JPanel implements JIPipeProjectWork
                     ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
             splitPane.setRightComponent(parameterPanel);
         } else if (id.equals("PARAMETERS")) {
-            FormPanel parameterUI = new FormPanel(MarkdownDocument.fromPluginResource("documentation/project-settings-parameters.md", new HashMap<>()),
-                    FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION);
-            GraphNodeParameterReferenceGroupCollectionEditorUI graphNodeParameterReferenceGroupCollectionEditorUI = new GraphNodeParameterReferenceGroupCollectionEditorUI(getWorkbench(), getPipelineParameters().getExportedParameters(), FormPanel.NONE, false);
-            graphNodeParameterReferenceGroupCollectionEditorUI.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
-            parameterUI.addWideToForm(graphNodeParameterReferenceGroupCollectionEditorUI, null);
-            parameterUI.addVerticalGlue();
-            splitPane.setRightComponent(parameterUI);
+            GraphNodeParameterReferenceGroupCollectionEditorUI graphNodeParameterReferenceGroupCollectionEditorUI = new GraphNodeParameterReferenceGroupCollectionEditorUI(getWorkbench(),
+                    getPipelineParameters().getExportedParameters(),
+                    MarkdownDocument.fromPluginResource("documentation/project-settings-parameters.md", new HashMap<>()),
+                    false);
+            splitPane.setRightComponent(graphNodeParameterReferenceGroupCollectionEditorUI);
         } else if (id.equals("MISC")) {
             ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
                     new JIPipeParameterTree(getProject().getMetadata()),
