@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 
 import java.util.ArrayList;
@@ -32,15 +33,14 @@ import java.util.List;
  * Contains a list of {@link GraphNodeParameterReferenceGroup} and {@link GraphNodeParameterCollectionReference}
  * Stores references to parameters within an {@link JIPipeGraph}
  */
-public class GraphNodeParameters implements JIPipeValidatable {
-    private final EventBus eventBus = new EventBus();
+public class GraphNodeParameterReferenceGroupCollection extends AbstractJIPipeParameterCollection implements JIPipeValidatable {
     private JIPipeGraph graph;
     private List<GraphNodeParameterReferenceGroup> parameterReferenceGroups = new ArrayList<>();
 
     /**
      * Creates a new instance
      */
-    public GraphNodeParameters() {
+    public GraphNodeParameterReferenceGroupCollection() {
     }
 
     /**
@@ -48,7 +48,7 @@ public class GraphNodeParameters implements JIPipeValidatable {
      *
      * @param other the original
      */
-    public GraphNodeParameters(GraphNodeParameters other) {
+    public GraphNodeParameterReferenceGroupCollection(GraphNodeParameterReferenceGroupCollection other) {
         for (GraphNodeParameterReferenceGroup group : other.parameterReferenceGroups) {
             GraphNodeParameterReferenceGroup copy = new GraphNodeParameterReferenceGroup(group);
             this.parameterReferenceGroups.add(copy);
@@ -71,15 +71,6 @@ public class GraphNodeParameters implements JIPipeValidatable {
     }
 
     /**
-     * Event bus that triggers {@link org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent}
-     *
-     * @return event bus
-     */
-    public EventBus getEventBus() {
-        return eventBus;
-    }
-
-    /**
      * Adds a new empty group
      *
      * @return the group
@@ -89,7 +80,7 @@ public class GraphNodeParameters implements JIPipeValidatable {
         instance.setName("New group");
         parameterReferenceGroups.add(instance);
         instance.getEventBus().register(this);
-        eventBus.post(new ParameterReferencesChangedEvent());
+        getEventBus().post(new ParameterReferencesChangedEvent());
         return instance;
     }
 
@@ -103,7 +94,7 @@ public class GraphNodeParameters implements JIPipeValidatable {
             parameterReferenceGroups.add(group);
             group.getEventBus().register(this);
         }
-        eventBus.post(new ParameterReferencesChangedEvent());
+        getEventBus().post(new ParameterReferencesChangedEvent());
     }
 
     @JsonGetter("parameter-reference-groups")
@@ -120,7 +111,7 @@ public class GraphNodeParameters implements JIPipeValidatable {
         for (GraphNodeParameterReferenceGroup group : this.parameterReferenceGroups) {
             group.getEventBus().register(this);
         }
-        eventBus.post(new ParameterReferencesChangedEvent());
+        getEventBus().post(new ParameterReferencesChangedEvent());
     }
 
     /**
@@ -130,7 +121,7 @@ public class GraphNodeParameters implements JIPipeValidatable {
      */
     @Subscribe
     public void onReferencesChanged(ParameterReferencesChangedEvent event) {
-        eventBus.post(event);
+        getEventBus().post(event);
     }
 
     /**
@@ -140,7 +131,7 @@ public class GraphNodeParameters implements JIPipeValidatable {
      */
     public void removeGroup(GraphNodeParameterReferenceGroup group) {
         parameterReferenceGroups.remove(group);
-        eventBus.post(new ParameterReferencesChangedEvent());
+        getEventBus().post(new ParameterReferencesChangedEvent());
     }
 
     @Override

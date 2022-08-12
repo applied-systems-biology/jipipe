@@ -11,8 +11,10 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.grouping.parameters;
+package org.hkijena.jipipe.ui.parameterreference;
 
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReference;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroup;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -33,7 +35,7 @@ import java.util.Objects;
  * UI for {@link GraphNodeParameterReferenceGroup}
  */
 public class GraphNodeParameterReferenceGroupUI extends JPanel {
-    private final GraphNodeParametersUI parametersUI;
+    private final GraphNodeParameterReferenceGroupCollectionEditorUI parametersUI;
     private final GraphNodeParameterReferenceGroup group;
     private FormPanel contentPanel;
 
@@ -41,7 +43,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
      * @param parametersUI the parent
      * @param group        the group
      */
-    public GraphNodeParameterReferenceGroupUI(GraphNodeParametersUI parametersUI, GraphNodeParameterReferenceGroup group) {
+    public GraphNodeParameterReferenceGroupUI(GraphNodeParameterReferenceGroupCollectionEditorUI parametersUI, GraphNodeParameterReferenceGroup group) {
         super(new BorderLayout());
         this.parametersUI = parametersUI;
         this.group = group;
@@ -97,7 +99,7 @@ public class GraphNodeParameterReferenceGroupUI extends JPanel {
         }
     }
 
-    public GraphNodeParametersUI getParametersUI() {
+    public GraphNodeParameterReferenceGroupCollectionEditorUI getParametersUI() {
         return parametersUI;
     }
 

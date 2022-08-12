@@ -16,6 +16,7 @@ package org.hkijena.jipipe.api.grouping.parameters;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
+import org.hkijena.jipipe.ui.parameterreference.GraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.OKCancelDialog;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -24,9 +25,9 @@ import javax.swing.*;
 import java.awt.*;
 
 /**
- * Editor for {@link GraphNodeParameters}
+ * Editor for {@link GraphNodeParameterReferenceGroupCollection}
  */
-public class GraphNodeParameterReferenceEditorUI extends JIPipeParameterEditorUI {
+public class GraphNodeParameterReferenceGroupCollectionParameterEditorUI extends JIPipeParameterEditorUI {
 
     /**
      * Creates new instance
@@ -34,7 +35,7 @@ public class GraphNodeParameterReferenceEditorUI extends JIPipeParameterEditorUI
      * @param workbench       the workbench
      * @param parameterAccess Parameter
      */
-    public GraphNodeParameterReferenceEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public GraphNodeParameterReferenceGroupCollectionParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         initialize();
     }
@@ -47,10 +48,10 @@ public class GraphNodeParameterReferenceEditorUI extends JIPipeParameterEditorUI
     }
 
     private void editParameters() {
-        GraphNodeParameters original = getParameter(GraphNodeParameters.class);
-        GraphNodeParameters copy = new GraphNodeParameters(original);
+        GraphNodeParameterReferenceGroupCollection original = getParameter(GraphNodeParameterReferenceGroupCollection.class);
+        GraphNodeParameterReferenceGroupCollection copy = new GraphNodeParameterReferenceGroupCollection(original);
         copy.setGraph(original.getGraph());
-        GraphNodeParametersUI parametersUI = new GraphNodeParametersUI(getWorkbench(), copy, FormPanel.WITH_SCROLLING, false);
+        GraphNodeParameterReferenceGroupCollectionEditorUI parametersUI = new GraphNodeParameterReferenceGroupCollectionEditorUI(getWorkbench(), copy, FormPanel.WITH_SCROLLING, false);
         if(OKCancelDialog.showDialog(getWorkbench().getWindow(), "Edit parameters", parametersUI, "OK", new Dimension(800,600))) {
             original.setParameterReferenceGroups(copy.getParameterReferenceGroups());
             setParameter(original, true);

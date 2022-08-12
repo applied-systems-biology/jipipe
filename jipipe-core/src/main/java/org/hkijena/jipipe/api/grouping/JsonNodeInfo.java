@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -58,7 +58,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     private IconRef customIcon = new IconRef();
     private GraphWrapperAlgorithmInput algorithmInput;
     private GraphWrapperAlgorithmOutput algorithmOutput;
-    private GraphNodeParameters exportedParameters;
+    private GraphNodeParameterReferenceGroupCollection exportedParameters;
     private DynamicCategoryEnumParameter category = new DynamicCategoryEnumParameter();
 
 
@@ -67,7 +67,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
      */
     public JsonNodeInfo() {
         category.setValue((new MiscellaneousNodeTypeCategory()).getId());
-        exportedParameters = new GraphNodeParameters();
+        exportedParameters = new GraphNodeParameterReferenceGroupCollection();
         exportedParameters.setGraph(getGraph());
         graph.getEventBus().register(this);
     }
@@ -79,7 +79,7 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
      */
     public JsonNodeInfo(NodeGroup group) {
         graph = new JIPipeGraph(group.getWrappedGraph());
-        exportedParameters = new GraphNodeParameters(group.getExportedParameters());
+        exportedParameters = new GraphNodeParameterReferenceGroupCollection(group.getExportedParameters());
         exportedParameters.setGraph(getGraph());
         graph.getEventBus().register(this);
         category.setValue((new MiscellaneousNodeTypeCategory()).getId());
@@ -227,12 +227,12 @@ public class JsonNodeInfo implements JIPipeNodeInfo, JIPipeValidatable, JIPipePa
     }
 
     @JsonGetter("exported-parameters")
-    public GraphNodeParameters getExportedParameters() {
+    public GraphNodeParameterReferenceGroupCollection getExportedParameters() {
         return exportedParameters;
     }
 
     @JsonSetter("exported-parameters")
-    public void setExportedParameters(GraphNodeParameters exportedParameters) {
+    public void setExportedParameters(GraphNodeParameterReferenceGroupCollection exportedParameters) {
         this.exportedParameters = exportedParameters;
         exportedParameters.setGraph(getGraph());
     }

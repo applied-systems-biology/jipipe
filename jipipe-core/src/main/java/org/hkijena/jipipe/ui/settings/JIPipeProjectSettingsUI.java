@@ -13,7 +13,7 @@
 
 package org.hkijena.jipipe.ui.settings;
 
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParametersUI;
+import org.hkijena.jipipe.ui.parameterreference.GraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchAccess;
@@ -97,9 +97,9 @@ public class JIPipeProjectSettingsUI extends JPanel implements JIPipeProjectWork
         } else if (id.equals("PARAMETERS")) {
             FormPanel parameterUI = new FormPanel(MarkdownDocument.fromPluginResource("documentation/project-settings-parameters.md", new HashMap<>()),
                     FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION);
-            GraphNodeParametersUI graphNodeParametersUI = new GraphNodeParametersUI(getWorkbench(), getPipelineParameters().getExportedParameters(), FormPanel.NONE, false);
-            graphNodeParametersUI.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
-            parameterUI.addWideToForm(graphNodeParametersUI, null);
+            GraphNodeParameterReferenceGroupCollectionEditorUI graphNodeParameterReferenceGroupCollectionEditorUI = new GraphNodeParameterReferenceGroupCollectionEditorUI(getWorkbench(), getPipelineParameters().getExportedParameters(), FormPanel.NONE, false);
+            graphNodeParameterReferenceGroupCollectionEditorUI.setBorder(BorderFactory.createLineBorder(Color.DARK_GRAY));
+            parameterUI.addWideToForm(graphNodeParameterReferenceGroupCollectionEditorUI, null);
             parameterUI.addVerticalGlue();
             splitPane.setRightComponent(parameterUI);
         } else if (id.equals("MISC")) {

@@ -13,8 +13,10 @@
 
 package org.hkijena.jipipe.api.grouping.events;
 
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
+
 /**
- * Triggered by {@link org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters} and related classes
+ * Triggered by {@link GraphNodeParameterReferenceGroupCollection} and related classes
  */
 public class ParameterReferencesChangedEvent {
 }

@@ -15,7 +15,7 @@ package org.hkijena.jipipe.ui.extensionbuilder;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParametersUI;
+import org.hkijena.jipipe.ui.parameterreference.GraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbench;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
@@ -96,7 +96,7 @@ public class JsonNodeInfoUI extends JIPipeJsonExtensionWorkbenchPanel {
         parameterHeader.setDescription("You can use the following settings to export parameters that then can be changed by users. Parameters are organized in groups " +
                 "with a customizable name and description. You can either manually define groups or add all available parameters of a selected algorithm. " +
                 "If you want to edit the parameter default values, you can find them in 'Edit algorithm'.");
-        GraphNodeParametersUI exportedParametersEditor = new GraphNodeParametersUI(getWorkbench(), info.getExportedParameters(), FormPanel.NONE, false);
+        GraphNodeParameterReferenceGroupCollectionEditorUI exportedParametersEditor = new GraphNodeParameterReferenceGroupCollectionEditorUI(getWorkbench(), info.getExportedParameters(), FormPanel.NONE, false);
         exportedParametersEditor.setBorder(BorderFactory.createLineBorder(Color.GRAY));
         parameterEditor.addWideToForm(exportedParametersEditor, null);
 

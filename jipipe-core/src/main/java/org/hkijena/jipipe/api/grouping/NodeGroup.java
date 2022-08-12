@@ -28,7 +28,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeMutableSlotConfiguration;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameters;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.grouping.parameters.NodeGroupContents;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -53,7 +53,7 @@ import java.util.Map;
 public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomParameterCollection {
 
     private NodeGroupContents contents;
-    private GraphNodeParameters exportedParameters = new GraphNodeParameters();
+    private GraphNodeParameterReferenceGroupCollection exportedParameters = new GraphNodeParameterReferenceGroupCollection();
     private boolean showLimitedParameters = false;
 
     /**
@@ -74,7 +74,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
      */
     public NodeGroup(NodeGroup other) {
         super(other);
-        this.exportedParameters = new GraphNodeParameters(other.exportedParameters);
+        this.exportedParameters = new GraphNodeParameterReferenceGroupCollection(other.exportedParameters);
         this.exportedParameters.getEventBus().register(this);
         this.showLimitedParameters = other.showLimitedParameters;
         initializeContents();
@@ -233,12 +233,12 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 
     @JIPipeDocumentation(name = "Exported parameters", description = "Allows you to export parameters from the group into the group node")
     @JIPipeParameter("exported-parameters")
-    public GraphNodeParameters getExportedParameters() {
+    public GraphNodeParameterReferenceGroupCollection getExportedParameters() {
         return exportedParameters;
     }
 
     @JIPipeParameter("exported-parameters")
-    public void setExportedParameters(GraphNodeParameters exportedParameters) {
+    public void setExportedParameters(GraphNodeParameterReferenceGroupCollection exportedParameters) {
         this.exportedParameters = exportedParameters;
         this.exportedParameters.setGraph(getWrappedGraph());
         this.exportedParameters.getEventBus().register(this);

@@ -37,7 +37,7 @@ public class GraphNodeParameterReferenceAccessGroupList implements JIPipeParamet
      * @param tree       tree of the referenced graph
      * @param persistent if values are persistent
      */
-    public GraphNodeParameterReferenceAccessGroupList(GraphNodeParameters parameters, JIPipeParameterTree tree, boolean persistent) {
+    public GraphNodeParameterReferenceAccessGroupList(GraphNodeParameterReferenceGroupCollection parameters, JIPipeParameterTree tree, boolean persistent) {
 
         Set<JIPipeParameterAccess> existingParameters = new HashSet<>();
         for (GraphNodeParameterReferenceGroup group : parameters.getParameterReferenceGroups()) {

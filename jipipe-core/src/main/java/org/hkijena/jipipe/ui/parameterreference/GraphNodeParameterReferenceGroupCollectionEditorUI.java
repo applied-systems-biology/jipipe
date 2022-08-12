@@ -11,10 +11,13 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.grouping.parameters;
+package org.hkijena.jipipe.ui.parameterreference;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReference;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroup;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -33,11 +36,11 @@ import java.util.List;
 import java.util.Stack;
 
 /**
- * Editor component for {@link GraphNodeParameters}
+ * Editor component for {@link GraphNodeParameterReferenceGroupCollection}
  */
-public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
+public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWorkbenchPanel {
 
-    private final GraphNodeParameters parameters;
+    private final GraphNodeParameterReferenceGroupCollection parameters;
     private final int formPanelFlags;
     private FormPanel content;
     private JIPipeParameterTree tree;
@@ -49,7 +52,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
      * @param formPanelFlags flags for the form panel
      * @param withRefresh    if the editor should refresh on changes
      */
-    public GraphNodeParametersUI(JIPipeWorkbench workbench, GraphNodeParameters parameters, int formPanelFlags, boolean withRefresh) {
+    public GraphNodeParameterReferenceGroupCollectionEditorUI(JIPipeWorkbench workbench, GraphNodeParameterReferenceGroupCollection parameters, int formPanelFlags, boolean withRefresh) {
         super(workbench);
         this.parameters = parameters;
         this.formPanelFlags = formPanelFlags;
@@ -60,7 +63,7 @@ public class GraphNodeParametersUI extends JIPipeWorkbenchPanel {
         refreshContent();
     }
 
-    public GraphNodeParameters getParameters() {
+    public GraphNodeParameterReferenceGroupCollection getParameters() {
         return parameters;
     }
 

@@ -11,9 +11,10 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.api.grouping.parameters;
+package org.hkijena.jipipe.ui.parameterreference;
 
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReference;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.ui.components.DocumentChangeListener;
