@@ -34,6 +34,7 @@ public class JIPipeParameterTypeInfoListCellRenderer extends JPanel implements L
     private void initialize() {
         setOpaque(true);
         setLayout(new GridBagLayout());
+        setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         iconLabel.setIcon(UIUtils.getIconFromResources("data-types/parameters.png"));
         descriptionLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 10));
         infoLabel.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 10));
@@ -42,7 +43,7 @@ public class JIPipeParameterTypeInfoListCellRenderer extends JPanel implements L
             {
                 gridx = 0;
                 gridy = 0;
-                insets = UIUtils.UI_PADDING;
+                insets = new Insets(0, 4, 0, 4);
             }
         });
         add(nameLabel, new GridBagConstraints() {
@@ -51,7 +52,6 @@ public class JIPipeParameterTypeInfoListCellRenderer extends JPanel implements L
                 gridy = 0;
                 weightx = 1;
                 anchor = WEST;
-                insets = UIUtils.UI_PADDING;
             }
         });
         add(descriptionLabel, new GridBagConstraints() {
@@ -60,7 +60,6 @@ public class JIPipeParameterTypeInfoListCellRenderer extends JPanel implements L
                 gridy = 1;
                 weightx = 1;
                 anchor = WEST;
-                insets = UIUtils.UI_PADDING;
             }
         });
         add(infoLabel, new GridBagConstraints() {
@@ -69,7 +68,6 @@ public class JIPipeParameterTypeInfoListCellRenderer extends JPanel implements L
                 gridy = 2;
                 weightx = 1;
                 anchor = WEST;
-                insets = UIUtils.UI_PADDING;
             }
         });
     }

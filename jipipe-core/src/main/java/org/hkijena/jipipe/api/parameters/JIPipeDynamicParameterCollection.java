@@ -147,6 +147,10 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
         return parameterAccess;
     }
 
+    public boolean supportsAllParameterTypes() {
+        return getAllowedTypes() == null || getAllowedTypes().isEmpty() || getAllowedTypes().size() == JIPipe.getParameterTypes().getRegisteredParameters().size();
+    }
+
     /**
      * Adds a new parameter
      *
