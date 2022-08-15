@@ -108,6 +108,14 @@ public class UIUtils {
     private static Theme RSYNTAX_THEME_DEFAULT;
     private static Theme RSYNTAX_THEME_DARK;
 
+    public static JLabel createInfoLabel(String text, String subtext) {
+        JLabel label = new JLabel("<html><strong>" + text + "</strong><br/>" + subtext + "</html>",
+                UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
+        label.setAlignmentX(0f);
+        label.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        return label;
+    }
+
     public static void registerHyperlinkHandler(JTextPane content) {
         content.addHyperlinkListener(e -> {
             if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
@@ -1483,6 +1491,28 @@ public class UIUtils {
         for (Component component : components) {
             if(component != null) {
                 panel.add(component);
+            }
+        }
+        return panel;
+    }
+
+    public static JPanel gridVertical(Component... components) {
+        JPanel panel = new JPanel(new GridBagLayout());
+        for (int i = 0; i < components.length; i++) {
+            Component component = components[i];
+            if (component != null) {
+                panel.add(component, new GridBagConstraints(0,i, 1,1,1,0,GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,new Insets(0,0,0,0),0,0));
+            }
+        }
+        return panel;
+    }
+
+    public static JPanel gridHorizontal(Component... components) {
+        JPanel panel = new JPanel(new GridBagLayout());
+        for (int i = 0; i < components.length; i++) {
+            Component component = components[i];
+            if (component != null) {
+                panel.add(component, new GridBagConstraints(i,0, 1,1,0,1,GridBagConstraints.WEST, GridBagConstraints.VERTICAL,new Insets(0,0,0,0),0,0));
             }
         }
         return panel;

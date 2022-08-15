@@ -33,8 +33,7 @@ import java.util.Set;
  * Generic parameter for {@link ListParameter}
  */
 public class ListParameterEditorUI extends JIPipeParameterEditorUI {
-    private final JLabel emptyLabel = new JLabel("<html><strong>This list is empty</strong><br/>Click 'Add' to add items.</html>",
-            UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
+    private final JLabel emptyLabel = UIUtils.createInfoLabel("This list is empty", "Click <i>Add</i> to add a new item.");
     private FormPanel formPanel;
 
     private final List<EntryComponents> entryComponentsList = new ArrayList<>();
@@ -112,7 +111,7 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
         formPanel = new FormPanel(null, flags);
         add(formPanel, BorderLayout.CENTER);
         add(emptyLabel, BorderLayout.SOUTH);
-        emptyLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+
     }
 
     private void initializeMoreMenu(JPopupMenu menu) {

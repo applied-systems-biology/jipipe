@@ -16,10 +16,15 @@ package org.hkijena.jipipe.api.grouping.parameters;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
+import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Objects;
@@ -28,9 +33,9 @@ import java.util.UUID;
 /**
  * References a parameter in a graph
  */
-public class GraphNodeParameterReference {
+public class GraphNodeParameterReference extends AbstractJIPipeParameterCollection {
     private String customName;
-    private String customDescription;
+    private HTMLText customDescription;
     private String path;
 
     /**
@@ -117,7 +122,7 @@ public class GraphNodeParameterReference {
                 return null;
             }
         } else {
-            return customDescription;
+            return customDescription.getBody();
         }
     }
 
@@ -160,31 +165,41 @@ public class GraphNodeParameterReference {
         }
     }
 
+    @JIPipeDocumentation(name = "Custom name", description = "A custom name for the parameter reference. If left empty, the name of the referenced parameter is utilized.")
+    @JIPipeParameter(value = "custom-name", uiOrder = -100)
     @JsonGetter("custom-name")
     public String getCustomName() {
         return customName;
     }
 
+    @JIPipeParameter("custom-name")
     @JsonSetter("custom-name")
     public void setCustomName(String customName) {
         this.customName = customName;
     }
 
+    @JIPipeDocumentation(name = "Custom description", description = "A custom description for the referenced parameter.")
+    @JIPipeParameter(value = "custom-description", uiOrder = -90)
     @JsonGetter("custom-description")
-    public String getCustomDescription() {
+    public HTMLText getCustomDescription() {
         return customDescription;
     }
 
+    @JIPipeParameter("custom-description")
     @JsonSetter("custom-description")
-    public void setCustomDescription(String customDescription) {
+    public void setCustomDescription(HTMLText customDescription) {
         this.customDescription = customDescription;
     }
 
+    @JIPipeDocumentation(name = "Path", description = "The path to the referenced parameter. <strong>If you do not know which values are valid, leave this setting alone</strong>")
+    @JIPipeParameter(value = "path", uiOrder = 100)
     @JsonGetter("path")
+    @StringParameterSettings(monospace = true)
     public String getPath() {
         return path;
     }
 
+    @JIPipeParameter("path")
     @JsonSetter("path")
     public void setPath(String path) {
         this.path = path;
