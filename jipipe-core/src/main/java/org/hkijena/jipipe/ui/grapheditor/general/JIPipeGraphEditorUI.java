@@ -149,7 +149,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
         } else if (value instanceof JIPipeNodeExample) {
             JIPipeNodeExample example = (JIPipeNodeExample) value;
-            JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(example.getNodeId());
+            JIPipeNodeInfo info = example.getNodeInfo();
             if (info.isHidden())
                 return null;
             nameHayStack = StringUtils.orElse(example.getNodeTemplate().getName() + info.getName(), "").toLowerCase();
@@ -308,7 +308,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             } else if (o instanceof JIPipeNodeUI) {
                 return ((JIPipeNodeUI) o).getNode().getName();
             } else if(o instanceof JIPipeNodeExample) {
-                return ((JIPipeNodeExample) o).getNodeTemplate().getName() + JIPipe.getNodes().getInfoById(((JIPipeNodeExample) o).getNodeId()).getName();
+                return ((JIPipeNodeExample) o).getNodeTemplate().getName() + ((JIPipeNodeExample) o).getNodeInfo().getName();
             }
             else {
                 return "" + o;
@@ -346,7 +346,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(getWorkbench()))
                 return;
             JIPipeNodeExample example = (JIPipeNodeExample) event.getValue();
-            JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(example.getNodeId());
+            JIPipeNodeInfo info = example.getNodeInfo();
             JIPipeGraphNode node = info.newInstance();
             if(node instanceof JIPipeAlgorithm) {
                 ((JIPipeAlgorithm) node).loadExample(example);
@@ -1115,7 +1115,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             }
             else if (value instanceof JIPipeNodeExample) {
                 JIPipeNodeExample example = (JIPipeNodeExample) value;
-                JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(example.getNodeId());
+                JIPipeNodeInfo info = example.getNodeInfo();
                 String menuPath = info.getCategory().getName();
                 if (!StringUtils.isNullOrEmpty(info.getMenuPath())) {
                     menuPath += " > " + String.join(" > ", info.getMenuPath().split("\n"));

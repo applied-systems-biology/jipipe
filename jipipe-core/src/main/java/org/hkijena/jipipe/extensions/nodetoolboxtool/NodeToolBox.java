@@ -3,14 +3,15 @@ package org.hkijena.jipipe.extensions.nodetoolboxtool;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeNodeInfoListCellRenderer;
+import org.hkijena.jipipe.ui.components.renderers.JIPipeNodeInfoOrExamplesListCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
@@ -22,22 +23,23 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.List;
 
-public class NodeToolBox extends JPanel {
+public class NodeToolBox extends JIPipeWorkbenchPanel {
 
     private final MarkdownReader documentationReader = new MarkdownReader(false);
     private final JToolBar toolBar = new JToolBar();
     private final boolean isDocked;
-    private JList<JIPipeNodeInfo> algorithmList;
+    private JList<Object> algorithmList;
     private SearchTextField searchField;
 
-    public NodeToolBox(boolean isDocked) {
+    public NodeToolBox(JIPipeWorkbench workbench, boolean isDocked) {
+        super(workbench);
         this.isDocked = isDocked;
         initialize();
         reloadAlgorithmList();
     }
 
-    public static void openNewToolBoxWindow(Component parent) {
-        NodeToolBox toolBox = new NodeToolBox(false);
+    public static void openNewToolBoxWindow(JIPipeWorkbench workbench, Component parent) {
+        NodeToolBox toolBox = new NodeToolBox(workbench, false);
         JFrame window = new JFrame();
         toolBox.getToolBar().add(new AlwaysOnTopToggle(window));
         window.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -110,7 +112,7 @@ public class NodeToolBox extends JPanel {
         if (isDocked) {
             JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
             openWindowButton.setToolTipText("Open in new window");
-            openWindowButton.addActionListener(e -> openNewToolBoxWindow(SwingUtilities.getWindowAncestor(this)));
+            openWindowButton.addActionListener(e -> openNewToolBoxWindow(getWorkbench(), SwingUtilities.getWindowAncestor(this)));
             toolBar.add(openWindowButton);
         }
 
@@ -118,10 +120,15 @@ public class NodeToolBox extends JPanel {
         algorithmList.setToolTipText("Drag one or multiple entries from the list into the graph to create nodes.");
         algorithmList.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
         algorithmList.setBorder(BorderFactory.createEtchedBorder());
-        algorithmList.setCellRenderer(new JIPipeNodeInfoListCellRenderer());
+        algorithmList.setCellRenderer(new JIPipeNodeInfoOrExamplesListCellRenderer());
         algorithmList.setModel(new DefaultListModel<>());
         algorithmList.addListSelectionListener(e -> {
-            selectNodeInfo(algorithmList.getSelectedValue());
+            if(algorithmList.getSelectedValue() instanceof JIPipeNodeInfo) {
+                selectNodeInfo((JIPipeNodeInfo) algorithmList.getSelectedValue());
+            }
+            else if(algorithmList.getSelectedValue() instanceof JIPipeNodeExample) {
+                selectNodeExample((JIPipeNodeExample)algorithmList.getSelectedValue());
+            }
         });
         algorithmList.setDragEnabled(true);
         algorithmList.setTransferHandler(new NodeToolBoxTransferHandler());
@@ -133,12 +140,17 @@ public class NodeToolBox extends JPanel {
 
     private void reloadAlgorithmList() {
         List<JIPipeNodeInfo> infos = getFilteredAndSortedInfos();
-        DefaultListModel<JIPipeNodeInfo> model = new DefaultListModel<>();
+        DefaultListModel<Object> model = new DefaultListModel<>();
         for (JIPipeNodeInfo info : infos) {
             if (info.isHidden() || info.getCategory() == null || info.getCategory() instanceof InternalNodeTypeCategory) {
                 continue;
             }
             model.addElement(info);
+            if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+                for (JIPipeNodeExample example : ((JIPipeProjectWorkbench) getWorkbench()).getProject().getNodeExamples(info.getId())) {
+                    model.addElement(example);
+                }
+            }
         }
         algorithmList.setModel(model);
 
@@ -146,6 +158,47 @@ public class NodeToolBox extends JPanel {
             algorithmList.setSelectedIndex(0);
         else
             selectNodeInfo(null);
+    }
+
+    private void selectNodeExample(JIPipeNodeExample example) {
+        if(example != null) {
+            JIPipeNodeInfo info = example.getNodeInfo();
+
+            StringBuilder builder = new StringBuilder();
+            builder.append("# ").append(info.getName()).append("\n\n");
+
+            if(!StringUtils.isNullOrEmpty(example.getNodeTemplate().getDescription().getBody())) {
+                builder.append(example.getNodeTemplate().getDescription().getBody()).append("<br/>");
+            }
+            if (!StringUtils.isNullOrEmpty(info.getDescription().getBody())) {
+                builder.append(info.getDescription().getBody()).append("</br>");
+            }
+
+            // Write algorithm slot info
+            builder.append("<table style=\"margin-top: 10px;\">");
+            for (JIPipeInputSlot slot : info.getInputSlots()) {
+                builder.append("<tr>");
+                builder.append("<td><p style=\"background-color:#27ae60; color:white;border:3px solid #27ae60;border-radius:5px;text-align:center;\">Input</p></td>");
+                builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
+                builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.slotName(), "-"))).append("</td>");
+                builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.value()).getName())).append(")</i></td>");
+                builder.append("</tr>");
+            }
+            for (JIPipeOutputSlot slot : info.getOutputSlots()) {
+                builder.append("<tr>");
+                builder.append("<td><p style=\"background-color:#da4453; color:white;border:3px solid #da4453;border-radius:5px;text-align:center;\">Output</p></td>");
+                builder.append("<td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(slot.value())).append("\"/></td>");
+                builder.append("<td>").append(HtmlEscapers.htmlEscaper().escape(StringUtils.orElse(slot.slotName(), "-"))).append("</td>");
+                builder.append("<td><i>(").append(HtmlEscapers.htmlEscaper().escape(JIPipeDataInfo.getInstance(slot.value()).getName())).append(")</i></td>");
+                builder.append("</tr>");
+            }
+            builder.append("</table>\n\n");
+
+            documentationReader.setDocument(new MarkdownDocument(builder.toString()));
+        }
+        else {
+            documentationReader.setDocument(new MarkdownDocument(""));
+        }
     }
 
     private void selectNodeInfo(JIPipeNodeInfo info) {
@@ -179,8 +232,9 @@ public class NodeToolBox extends JPanel {
             builder.append("</table>\n\n");
 
             documentationReader.setDocument(new MarkdownDocument(builder.toString()));
-        } else
+        } else {
             documentationReader.setDocument(new MarkdownDocument(""));
+        }
     }
 
     private List<JIPipeNodeInfo> getFilteredAndSortedInfos() {

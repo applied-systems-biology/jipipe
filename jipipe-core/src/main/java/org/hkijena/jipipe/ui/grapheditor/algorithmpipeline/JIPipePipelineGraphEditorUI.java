@@ -372,7 +372,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
         bottomPanel.addTab("Quick guide", UIUtils.getIconFromResources("actions/help.png"), markdownReader, DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Available nodes", UIUtils.getIconFromResources("actions/configuration.png"),
-                new NodeToolBox(true), DocumentTabPane.CloseMode.withoutCloseButton);
+                new NodeToolBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);
 
         bottomPanel.addTab("Node templates", UIUtils.getIconFromResources("actions/favorite.png"),
                 new NodeTemplateBox(getWorkbench(), true), DocumentTabPane.CloseMode.withoutCloseButton);

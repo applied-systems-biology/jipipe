@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.api.nodes;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -15,12 +16,22 @@ public class JIPipeNodeExample {
 
     private boolean nodeIdIdentified;
 
+    private JIPipeNodeInfo cachedNodeInfo;
+
     private String sourceInfo;
 
     public JIPipeNodeExample(JIPipeNodeTemplate nodeTemplate) {
         this.nodeTemplate = nodeTemplate;
     }
 
+    public JIPipeNodeInfo getNodeInfo() {
+        if(cachedNodeInfo != null)
+            return cachedNodeInfo;
+        if(getNodeId() != null) {
+            cachedNodeInfo = JIPipe.getNodes().getInfoById(getNodeId());
+        }
+        return cachedNodeInfo;
+    }
     public String getNodeId() {
         if(!nodeIdIdentified) {
             if(nodeTemplate.getGraph() == null) {
