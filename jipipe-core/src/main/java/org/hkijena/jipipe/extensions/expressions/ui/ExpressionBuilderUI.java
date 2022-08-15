@@ -396,7 +396,8 @@ public class ExpressionBuilderUI extends JPanel {
                 if (!inserterUI.isInserterCommitted() && inserterUI.parametersWereEdited()) {
                     int result = JOptionPane.showOptionDialog(this,
                             "You still have uncommitted values in the function builder.\n" +
-                                    "Do you want to replace the existing expression or insert the function into the expression?",
+                                    "Do you want to replace the existing expression or insert the function into the expression?\n" +
+                                    "If the current expression is as expected, close any of the editor tabs before clicking 'OK'.",
                             "Expression builder",
                             JOptionPane.YES_NO_CANCEL_OPTION,
                             JOptionPane.QUESTION_MESSAGE,

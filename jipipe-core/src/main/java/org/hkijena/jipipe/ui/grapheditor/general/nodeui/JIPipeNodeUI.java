@@ -51,14 +51,13 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
             new RunAndShowResultsNodeUIContextAction(),
             new RunAndShowIntermediateResultsNodeUIContextAction()
     };
-    private JIPipeGraphCanvasUI graphUI;
-    private JIPipeGraphNode node;
-    private JIPipeGraphViewMode viewMode;
-    private EventBus eventBus = new EventBus();
-    private Color fillColor;
-    private Color borderColor;
-    private LinearGradientPaint disabledPaint;
-    private LinearGradientPaint passThroughPaint;
+    private final JIPipeGraphCanvasUI graphUI;
+    private final JIPipeGraphNode node;
+    private final EventBus eventBus = new EventBus();
+    private final Color fillColor;
+    private final Color borderColor;
+    private final LinearGradientPaint disabledPaint;
+    private final LinearGradientPaint passThroughPaint;
 
     /**
      * Creates a new UI
@@ -72,7 +71,6 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         super(workbench);
         this.graphUI = graphUI;
         this.node = node;
-        this.viewMode = viewMode;
         this.node.getEventBus().register(this);
         this.fillColor = UIUtils.getFillColorFor(node.getInfo());
         this.borderColor = UIUtils.getBorderColorFor(node.getInfo());

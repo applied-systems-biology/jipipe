@@ -17,6 +17,7 @@ import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -127,7 +128,7 @@ public class JIPipeHorizontalNodeUI extends JIPipeNodeUI {
             }
         });
         addHorizontalGlue(row.getAndIncrement());
-        if (getGraphUI().getSettings().isShowRunNodeButton() && isNodeRunnable()) {
+        if (getGraphUI().getSettings().isShowRunNodeButton() && (isNodeRunnable() || getNode() instanceof JIPipeProjectCompartment)) {
             add(runButton, new GridBagConstraints() {
                 {
                     gridx = row.getAndIncrement();

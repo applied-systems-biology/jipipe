@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.ui.parameterreference;
 
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.grouping.events.ParameterReferencesChangedEvent;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReference;
@@ -56,11 +54,6 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
     private JIPipeParameterTree parameterTree;
     private final MarkdownDocument documentation;
     private boolean withRefresh;
-
-    private final BiMap<GraphNodeParameterReference, DefaultMutableTreeNode> referenceToNodeMap = HashBiMap.create();
-
-    private final BiMap<GraphNodeParameterReferenceGroup, DefaultMutableTreeNode> groupToNodeMap = HashBiMap.create();
-
     private final JLabel noGroupsLabel = UIUtils.createInfoLabel("No groups", "Click <i>Add &gt; Empty group</i> to begin editing parameters.");
 
     /**
@@ -272,7 +265,7 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
 
         DefaultMutableTreeNode toSelect = null;
 
-        parameterTree = getParameters().getGraph().getParameterTree(false);
+        parameterTree = getParameters().getGraph().getParameterTree(false, parameters.getUiRestrictToCompartments());
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
         for (GraphNodeParameterReferenceGroup referenceGroup : parameters.getParameterReferenceGroups()) {
             DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(referenceGroup);

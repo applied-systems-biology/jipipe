@@ -578,12 +578,18 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Extracts all parameters as tree.
      *
-     * @param useAliasIds if enabled, paths will use alias Ids instead of UUIDs
+     * @param useAliasIds            if enabled, paths will use alias Ids instead of UUIDs
+     * @param restrictToCompartments if not null or empty, restrict to specific compartments
      * @return the tree
      */
-    public JIPipeParameterTree getParameterTree(boolean useAliasIds) {
+    public JIPipeParameterTree getParameterTree(boolean useAliasIds, Set<UUID> restrictToCompartments) {
         JIPipeParameterTree tree = new JIPipeParameterTree();
         for (Map.Entry<UUID, JIPipeGraphNode> entry : nodeUUIDs.entrySet()) {
+            if(restrictToCompartments != null && !restrictToCompartments.isEmpty()) {
+                UUID compartmentUUID = entry.getValue().getCompartmentUUIDInParentGraph();
+                if(!restrictToCompartments.contains(compartmentUUID))
+                    continue;
+            }
             String id;
             if (useAliasIds)
                 id = getAliasIdOf(entry.getValue());

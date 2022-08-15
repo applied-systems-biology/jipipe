@@ -29,6 +29,8 @@ import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.actions.RunAndShowResultsAction;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.actions.UpdateCacheAction;
 import org.hkijena.jipipe.ui.grapheditor.compartments.dragdrop.JIPipeCompartmentGraphDragAndDropBehavior;
 import org.hkijena.jipipe.ui.grapheditor.compartments.properties.JIPipeMultiCompartmentSelectionPanelUI;
 import org.hkijena.jipipe.ui.grapheditor.compartments.properties.JIPipeSingleCompartmentSelectionPanelUI;
@@ -65,6 +67,8 @@ import java.util.stream.Collectors;
 public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
     private JPanel defaultPanel;
 
+    private boolean disableUpdateOnSelection = false;
+
     /**
      * @param workbenchUI The workbench UI
      */
@@ -83,6 +87,12 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
                 new GraphCompartmentCutNodeUIContextAction(),
                 new GraphCompartmentCopyNodeUIContextAction(),
                 new GraphCompartmentPasteNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new RunAndShowResultsNodeUIContextAction(),
+                new UpdateCacheNodeUIContextAction(),
+                NodeUIContextAction.SEPARATOR,
+                new RunAndShowIntermediateResultsNodeUIContextAction(),
+                new UpdateCacheShowIntermediateNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new ExportCompartmentAsJsonNodeUIContextAction(),
                 new ExportCompartmentToNodeUIContextAction(),
@@ -151,6 +161,8 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
     @Override
     protected void updateSelection() {
         super.updateSelection();
+        if (disableUpdateOnSelection)
+            return;
         if (getSelection().isEmpty()) {
             setPropertyPanel(defaultPanel);
         } else if (getSelection().size() == 1) {
@@ -268,6 +280,40 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
     public void onOpenCompartment(JIPipeGraphCanvasUI.DefaultAlgorithmUIActionRequestedEvent event) {
         if (event.getUi() != null && event.getUi().getNode() instanceof JIPipeProjectCompartment) {
             getProjectWorkbench().getOrOpenPipelineEditorTab((JIPipeProjectCompartment) event.getUi().getNode(), true);
+        }
+    }
+
+    /**
+     * Listens to events of algorithms requesting some action
+     *
+     * @param event the event
+     */
+    @Subscribe
+    public void onAlgorithmActionRequested(JIPipeGraphCanvasUI.NodeUIActionRequestedEvent event) {
+        if (event.getAction() instanceof RunAndShowResultsAction) {
+            disableUpdateOnSelection = true;
+            selectOnly(event.getUi());
+            JIPipeSingleCompartmentSelectionPanelUI panel = new JIPipeSingleCompartmentSelectionPanelUI(this,
+                    (JIPipeProjectCompartment) event.getUi().getNode());
+            setPropertyPanel(panel);
+            panel.executeQuickRun(true,
+                    false,
+                    true,
+                    ((RunAndShowResultsAction) event.getAction()).isStoreIntermediateResults(),
+                    false);
+            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
+        } else if (event.getAction() instanceof UpdateCacheAction) {
+            disableUpdateOnSelection = true;
+            selectOnly(event.getUi());
+            JIPipeSingleCompartmentSelectionPanelUI panel = new JIPipeSingleCompartmentSelectionPanelUI(this,
+                    (JIPipeProjectCompartment) event.getUi().getNode());
+            setPropertyPanel(panel);
+            panel.executeQuickRun(false,
+                    true,
+                    false,
+                    ((UpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
+                    false);
+            SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
         }
     }
 }

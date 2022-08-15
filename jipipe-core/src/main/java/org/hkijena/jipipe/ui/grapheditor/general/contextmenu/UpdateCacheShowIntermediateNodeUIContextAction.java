@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.grapheditor.general.contextmenu;
 
 import org.hkijena.jipipe.api.JIPipeGraphType;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
@@ -29,6 +30,8 @@ public class UpdateCacheShowIntermediateNodeUIContextAction implements NodeUICon
     public boolean matches(Set<JIPipeNodeUI> selection) {
         if (selection.size() == 1) {
             JIPipeGraphNode node = selection.iterator().next().getNode();
+            if(node instanceof JIPipeProjectCompartment)
+                return true;
             if (!node.getInfo().isRunnable())
                 return false;
             if (!(node instanceof JIPipeAlgorithm))

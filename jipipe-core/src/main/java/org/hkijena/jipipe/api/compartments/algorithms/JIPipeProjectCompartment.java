@@ -18,12 +18,17 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.datatypes.JIPipeCompartmentOutputData;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceAccessGroupList;
+import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReferenceGroupCollection;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.*;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -33,10 +38,14 @@ import java.util.UUID;
 @JIPipeDocumentation(name = "Graph compartment", description = "A compartment in the analysis graph")
 @JIPipeInputSlot(value = JIPipeCompartmentOutputData.class, slotName = "Input", autoCreate = true, optional = true)
 @JIPipeOutputSlot(value = JIPipeCompartmentOutputData.class, slotName = "Output", autoCreate = true)
-public class JIPipeProjectCompartment extends JIPipeGraphNode {
+public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeCustomParameterCollection {
 
     private JIPipeProject project;
     private JIPipeCompartmentOutput outputNode;
+
+    private GraphNodeParameterReferenceGroupCollection exportedParameters = new GraphNodeParameterReferenceGroupCollection();
+
+    private boolean showLimitedParameters = false;
 
     /**
      * Creates new instance
@@ -45,6 +54,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode {
      */
     public JIPipeProjectCompartment(JIPipeNodeInfo info) {
         super(info);
+        this.exportedParameters.getEventBus().register(this);
     }
 
     /**
@@ -54,6 +64,9 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode {
      */
     public JIPipeProjectCompartment(JIPipeProjectCompartment other) {
         super(other);
+        this.exportedParameters = new GraphNodeParameterReferenceGroupCollection(other.exportedParameters);
+        this.exportedParameters.getEventBus().register(this);
+        this.showLimitedParameters = other.showLimitedParameters;
     }
 
     /**
@@ -84,6 +97,31 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode {
 
     }
 
+    @Override
+    public Map<String, JIPipeParameterAccess> getParameters() {
+//        JIPipeParameterTree standardParameters = new JIPipeParameterTree(this,
+//                JIPipeParameterTree.IGNORE_CUSTOM | JIPipeParameterTree.FORCE_REFLECTION);
+//        HashMap<String, JIPipeParameterAccess> map = new HashMap<>(standardParameters.getParameters());
+//        map.values().removeIf(access -> access.getSource() != this);
+//        return map;
+        return Collections.emptyMap();
+    }
+
+    @Override
+    public boolean getIncludeReflectionParameters() {
+        return true;
+    }
+
+    @Override
+    public Map<String, JIPipeParameterCollection> getChildParameterCollections() {
+        updateExportedParameters();
+        Map<String, JIPipeParameterCollection> result = new HashMap<>();
+        if(project != null) {
+            result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, project.getGraph().getParameterTree(false, null), false));
+        }
+        return result;
+    }
+
     /**
      * @return The project
      */
@@ -98,6 +136,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode {
      */
     public void setProject(JIPipeProject project) {
         this.project = project;
+        updateExportedParameters();
     }
 
     /**
@@ -119,5 +158,54 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode {
     @Override
     public void reportValidity(JIPipeIssueReport report) {
 
+    }
+
+    @JIPipeDocumentation(name = "Exported parameters", description = "Allows you to export parameters from the group into the group node")
+    @JIPipeParameter("exported-parameters")
+    public GraphNodeParameterReferenceGroupCollection getExportedParameters() {
+        return exportedParameters;
+    }
+
+    @JIPipeParameter("exported-parameters")
+    public void setExportedParameters(GraphNodeParameterReferenceGroupCollection exportedParameters) {
+        this.exportedParameters = exportedParameters;
+        updateExportedParameters();
+        registerSubParameter(exportedParameters);
+        triggerParameterStructureChange();
+    }
+
+    private void updateExportedParameters() {
+        if(project != null) {
+            exportedParameters.setGraph(project.getGraph());
+            exportedParameters.setUiRestrictToCompartments(Collections.singleton(getProjectCompartmentUUID()));
+        }
+    }
+
+    @JIPipeDocumentation(name = "Show limited parameter set", description = "If enabled, only the exported parameters, name, and description are shown as parameters. " +
+            "The data batch generation will also be hidden. This can be useful for educational pipelines.")
+    @JIPipeParameter("show-limited-parameters")
+    public boolean isShowLimitedParameters() {
+        return showLimitedParameters;
+    }
+
+    @JIPipeParameter("show-limited-parameters")
+    public void setShowLimitedParameters(boolean showLimitedParameters) {
+        this.showLimitedParameters = showLimitedParameters;
+        triggerParameterUIChange();
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if (showLimitedParameters) {
+            if (access.getSource() == this) {
+                String key = access.getKey();
+                if ("show-limited-parameters".equals(key) || "jipipe:node:name".equals(key) || "jipipe:node:description".equals(key)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            }
+        }
+        return super.isParameterUIVisible(tree, access);
     }
 }

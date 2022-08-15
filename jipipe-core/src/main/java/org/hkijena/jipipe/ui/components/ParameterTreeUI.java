@@ -38,7 +38,6 @@ import java.util.List;
 public class ParameterTreeUI extends JPanel {
     private JTree treeComponent;
     private SearchTextField searchTextField;
-    private JScrollPane treeScrollPane;
     private JIPipeParameterTree tree;
 
     /**
@@ -79,6 +78,15 @@ public class ParameterTreeUI extends JPanel {
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
+
+        JButton collapseAllButton = new JButton("Collapse all", UIUtils.getIconFromResources("actions/tree.png"));
+        collapseAllButton.addActionListener(e-> UIUtils.setTreeExpandedState(ui.treeComponent, false));
+        buttonPanel.add(collapseAllButton);
+
+        JButton expandAllButton = new JButton("Expand all", UIUtils.getIconFromResources("actions/tree.png"));
+        expandAllButton.addActionListener(e-> UIUtils.setTreeExpandedState(ui.treeComponent, true));
+        buttonPanel.add(expandAllButton);
+
         buttonPanel.add(Box.createHorizontalGlue());
 
         JButton cancelButton = new JButton("Cancel", UIUtils.getIconFromResources("actions/cancel.png"));
@@ -95,7 +103,7 @@ public class ParameterTreeUI extends JPanel {
         contentPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         dialog.pack();
-        dialog.setSize(400, 500);
+        dialog.setSize(500, 768);
         dialog.setLocationRelativeTo(parent);
         dialog.setModal(true);
         dialog.setVisible(true);
@@ -118,7 +126,7 @@ public class ParameterTreeUI extends JPanel {
         setLayout(new BorderLayout());
         treeComponent = new JTree();
         treeComponent.setCellRenderer(new Renderer());
-        treeScrollPane = new JScrollPane(treeComponent);
+        JScrollPane treeScrollPane = new JScrollPane(treeComponent);
         add(treeScrollPane, BorderLayout.CENTER);
         searchTextField = new SearchTextField();
         searchTextField.addActionListener(e -> rebuildModel());
@@ -146,7 +154,7 @@ public class ParameterTreeUI extends JPanel {
         DefaultTreeModel model = new DefaultTreeModel(root);
         traverse(root, tree.getRoot(), false);
         treeComponent.setModel(model);
-        UIUtils.expandAllTree(treeComponent);
+//        UIUtils.expandAllTree(treeComponent);
     }
 
     private void traverse(DefaultMutableTreeNode uiNode, JIPipeParameterTree.Node node, boolean noSearch) {

@@ -13,17 +13,23 @@
 
 package org.hkijena.jipipe.ui.grapheditor.compartments.properties;
 
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.cache.JIPipeAlgorithmCacheBrowserUI;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties.QuickRunSetupUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.properties.JIPipeSlotEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
+import org.hkijena.jipipe.ui.running.JIPipeRunQueuePanelUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -40,6 +46,8 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
     private final JIPipeGraphCanvasUI canvas;
     private final JIPipeGraphEditorUI graphEditorUI;
 
+    private final DocumentTabPane tabbedPane = new DocumentTabPane();
+
     /**
      * @param graphEditorUI the graph editor
      * @param compartment   the compartment
@@ -54,7 +62,6 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
 
     private void initialize() {
         setLayout(new BorderLayout());
-        DocumentTabPane tabbedPane = new DocumentTabPane();
 
         ParameterPanel parametersUI = new ParameterPanel(getProjectWorkbench(),
                 compartment,
@@ -71,15 +78,38 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, compartment.getOutputNode());
-        tabbedPane.addTab("Output data", UIUtils.getIconFromResources("actions/database.png"),
-                slotEditorUI,
-                DocumentTabPane.CloseMode.withoutCloseButton,
-                false);
+        tabbedPane.registerSingletonTab("CACHE_BROWSER", "Cache browser", UIUtils.getIconFromResources("actions/database.png"),
+                this::createCacheBrowser,
+                DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
+
+        tabbedPane.registerSingletonTab("QUICK_RUN", "Quick run", UIUtils.getIconFromResources("actions/media-play.png"),
+                this::createQuickRunPanel,
+                DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
+
+        if (JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
+            tabbedPane.registerSingletonTab("CURRENT_RUN", "Current process", UIUtils.getIconFromResources("actions/show_log.png"),
+                    this::createCurrentRunInfo, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
+        }
 
         add(tabbedPane, BorderLayout.CENTER);
 
         initializeToolbar();
+    }
+
+    private Component createQuickRunPanel() {
+        JIPipeCompartmentOutput node = compartment.getOutputNode();
+        return new QuickRunSetupUI(getProjectWorkbench(), node);
+    }
+
+    private Component createCurrentRunInfo() {
+        return new JIPipeRunQueuePanelUI();
+    }
+
+    private Component createCacheBrowser() {
+        JIPipeCompartmentOutput node = compartment.getOutputNode();
+        return new JIPipeAlgorithmCacheBrowserUI(getProjectWorkbench(),
+                node,
+                graphEditorUI.getCanvasUI());
     }
 
     private void initializeToolbar() {
@@ -112,5 +142,32 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
      */
     public JIPipeGraphNode getCompartment() {
         return compartment;
+    }
+
+    /**
+     * Activates and runs the quick run as automatically as possible.
+     *
+     * @param showResults              show results after a successful run
+     * @param showCache                show slot cache after a successful run
+     * @param saveToDisk               if the run should save outputs
+     * @param storeIntermediateOutputs if the run should store intermediate outputs
+     * @param excludeSelected          if the current algorithm should be excluded
+     */
+    public void executeQuickRun(boolean showResults, boolean showCache, boolean saveToDisk, boolean storeIntermediateOutputs, boolean excludeSelected) {
+        // Activate the quick run
+        tabbedPane.selectSingletonTab("QUICK_RUN");
+        QuickRunSetupUI testBenchSetupUI = (QuickRunSetupUI) tabbedPane.getCurrentContent();
+        QuickRunSettings settings = new QuickRunSettings();
+        settings.setSaveToDisk(saveToDisk);
+        settings.setExcludeSelected(excludeSelected);
+        settings.setStoreIntermediateResults(storeIntermediateOutputs);
+        boolean success = testBenchSetupUI.tryAutoRun(showResults, settings, testBench -> {
+            if (showCache) {
+                SwingUtilities.invokeLater(() -> tabbedPane.selectSingletonTab("CACHE_BROWSER"));
+            }
+        });
+        if (!success) {
+            SwingUtilities.invokeLater(() -> tabbedPane.selectSingletonTab("QUICK_RUN"));
+        }
     }
 }

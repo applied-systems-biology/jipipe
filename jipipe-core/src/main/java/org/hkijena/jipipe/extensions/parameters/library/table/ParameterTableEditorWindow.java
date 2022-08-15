@@ -11,13 +11,11 @@ import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.ParameterTreeUI;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.ribbon.LargeButtonAction;
-import org.hkijena.jipipe.ui.components.ribbon.LargeToggleButtonAction;
 import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
 import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.jdesktop.swingx.JXTable;
 
@@ -315,7 +313,7 @@ public class ParameterTableEditorWindow extends JFrame {
     private void importColumnFromAlgorithm() {
         if (getWorkbench() instanceof JIPipeProjectWorkbench) {
             JIPipeGraph graph = ((JIPipeProjectWorkbench) getWorkbench()).getProject().getGraph();
-            JIPipeParameterTree globalTree = graph.getParameterTree(false);
+            JIPipeParameterTree globalTree = graph.getParameterTree(false, null);
 
             List<Object> importedParameters = ParameterTreeUI.showPickerDialog(getWorkbench().getWindow(), globalTree, "Import parameter");
             for (Object importedParameter : importedParameters) {

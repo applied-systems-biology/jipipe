@@ -45,7 +45,7 @@ public class GeneratedParameters extends JIPipeDynamicParameterCollection {
         if (parent == null)
             return;
 
-        JIPipeParameterTree globalTree = parent.getParentGraph().getParameterTree(false);
+        JIPipeParameterTree globalTree = parent.getParentGraph().getParameterTree(false, null);
 
         List<Object> importedParameters = ParameterTreeUI.showPickerDialog(workbench.getWindow(), globalTree, "Import parameter");
         for (Object importedParameter : importedParameters) {

@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.grouping.parameters;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeValidatable;
@@ -24,10 +23,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Contains a list of {@link GraphNodeParameterReferenceGroup} and {@link GraphNodeParameterCollectionReference}
@@ -36,6 +32,8 @@ import java.util.List;
 public class GraphNodeParameterReferenceGroupCollection extends AbstractJIPipeParameterCollection implements JIPipeValidatable {
     private JIPipeGraph graph;
     private List<GraphNodeParameterReferenceGroup> parameterReferenceGroups = new ArrayList<>();
+
+    private Set<UUID> uiRestrictToCompartments;
 
     /**
      * Creates a new instance
@@ -137,7 +135,7 @@ public class GraphNodeParameterReferenceGroupCollection extends AbstractJIPipePa
     @Override
     public void reportValidity(JIPipeIssueReport report) {
         if (graph != null) {
-            JIPipeParameterTree tree = graph.getParameterTree(false);
+            JIPipeParameterTree tree = graph.getParameterTree(false, null);
             for (GraphNodeParameterReferenceGroup parameterReferenceGroup : parameterReferenceGroups) {
                 JIPipeIssueReport group = report.resolve(parameterReferenceGroup.getName());
                 for (GraphNodeParameterReference reference : parameterReferenceGroup.getContent()) {
@@ -151,5 +149,13 @@ public class GraphNodeParameterReferenceGroupCollection extends AbstractJIPipePa
                 }
             }
         }
+    }
+
+    public Set<UUID> getUiRestrictToCompartments() {
+        return uiRestrictToCompartments;
+    }
+
+    public void setUiRestrictToCompartments(Set<UUID> uiRestrictToCompartments) {
+        this.uiRestrictToCompartments = uiRestrictToCompartments;
     }
 }

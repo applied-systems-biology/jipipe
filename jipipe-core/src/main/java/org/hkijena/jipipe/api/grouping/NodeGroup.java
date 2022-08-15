@@ -304,7 +304,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
         this.exportedParameters.setGraph(getWrappedGraph());
         Map<String, JIPipeParameterCollection> result = new HashMap<>();
 //        result.put("jipipe:data-batch-generation", getBatchGenerationSettings());
-        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(false), false));
+        result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, getWrappedGraph().getParameterTree(false, null), false));
         return result;
     }
 

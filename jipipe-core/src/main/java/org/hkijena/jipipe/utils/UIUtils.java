@@ -51,6 +51,8 @@ import javax.swing.border.EmptyBorder;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.html.HTMLEditorKit;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
@@ -1507,6 +1509,26 @@ public class UIUtils {
         return panel;
     }
 
+    public static void setTreeExpandedState(JTree tree, boolean expanded) {
+        DefaultMutableTreeNode node = (DefaultMutableTreeNode) tree.getModel().getRoot();
+        setNodeExpandedState(tree, node, expanded);
+    }
+
+    public static void setNodeExpandedState(JTree tree, DefaultMutableTreeNode node, boolean expanded) {
+        ArrayList<DefaultMutableTreeNode> list = Collections.list(node.children());
+        for (DefaultMutableTreeNode treeNode : list) {
+            setNodeExpandedState(tree, treeNode, expanded);
+        }
+        if (!expanded && node.isRoot()) {
+            return;
+        }
+        TreePath path = new TreePath(node.getPath());
+        if (expanded) {
+            tree.expandPath(path);
+        } else {
+            tree.collapsePath(path);
+        }
+    }
     public static JPanel gridHorizontal(Component... components) {
         JPanel panel = new JPanel(new GridBagLayout());
         for (int i = 0; i < components.length; i++) {
