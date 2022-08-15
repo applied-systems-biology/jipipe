@@ -24,6 +24,8 @@ import java.util.Map;
  */
 public class JIPipePythonAdapterLibraryEnvironment extends PythonPackageLibraryEnvironment {
 
+    public static final String ENVIRONMENT_ID = "jipipe-python-adapter-library";
+
     public JIPipePythonAdapterLibraryEnvironment() {
         this.setName("Default");
         this.setLibraryDirectory(Paths.get("jipipe").resolve("lib-jipipe-py"));

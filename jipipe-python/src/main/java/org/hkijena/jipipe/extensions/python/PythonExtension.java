@@ -120,7 +120,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerEnvironment(PythonEnvironment.class,
                 PythonEnvironment.List.class,
                 settings,
-                "python",
+                PythonEnvironment.ENVIRONMENT_ID,
                 "Python environment",
                 "A Python environment",
                 UIUtils.getIconFromResources("apps/python.png"));
@@ -136,7 +136,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerEnvironment(JIPipePythonAdapterLibraryEnvironment.class,
                 JIPipePythonAdapterLibraryEnvironment.List.class,
                 settings,
-                "jipipe-python-adapter-library",
+                JIPipePythonAdapterLibraryEnvironment.ENVIRONMENT_ID,
                 "JIPipe Python adapter library",
                 "Additional library for Python",
                 UIUtils.getIconFromResources("actions/plugins.png"));

@@ -28,6 +28,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class REnvironment extends ExternalEnvironment {
+    public static final String ENVIRONMENT_ID = "r";
     private Path RExecutablePath = Paths.get("");
     private Path RScriptExecutablePath = Paths.get("");
     private DefaultExpressionParameter arguments = new DefaultExpressionParameter("ARRAY(script_file)");

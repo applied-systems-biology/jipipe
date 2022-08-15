@@ -122,7 +122,7 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerEnvironment(REnvironment.class,
                 REnvironment.List.class,
                 extensionSettings,
-                "r",
+                REnvironment.ENVIRONMENT_ID,
                 "R environment",
                 "A R environment",
                 UIUtils.getIconFromResources("apps/rlogo_icon.png"));

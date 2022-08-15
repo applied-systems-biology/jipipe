@@ -30,6 +30,9 @@ import java.util.Set;
  * Parameter that describes a Python environment
  */
 public class PythonEnvironment extends ExternalEnvironment {
+
+    public static final String ENVIRONMENT_ID = "python";
+
     private PythonEnvironmentType type = PythonEnvironmentType.System;
     private DefaultExpressionParameter arguments = new DefaultExpressionParameter("ARRAY(script_file)");
     private Path executablePath = Paths.get("");
