@@ -17,10 +17,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -150,6 +147,20 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 menuHayStack += location.getMenuPath();
             }
             descriptionHayStack = StringUtils.orElse(info.getDescription().getBody(), "").toLowerCase();
+        } else if (value instanceof JIPipeNodeExample) {
+            JIPipeNodeExample example = (JIPipeNodeExample) value;
+            JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(example.getNodeId());
+            if (info.isHidden())
+                return null;
+            nameHayStack = StringUtils.orElse(example.getNodeTemplate().getName() + info.getName(), "").toLowerCase();
+            menuHayStack = info.getCategory().getName() + "\n" + info.getMenuPath();
+            for (JIPipeNodeMenuLocation location : info.getAliases()) {
+                if (!StringUtils.isNullOrEmpty(location.getAlternativeName())) {
+                    nameHayStack += location.getAlternativeName().toLowerCase();
+                }
+                menuHayStack += location.getMenuPath();
+            }
+            descriptionHayStack = StringUtils.orElse(example.getNodeTemplate().getDescription().getBody() + info.getDescription().getBody(), "").toLowerCase();
         } else {
             return null;
         }
@@ -296,7 +307,10 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 return ((JIPipeNodeInfo) o).getName();
             } else if (o instanceof JIPipeNodeUI) {
                 return ((JIPipeNodeUI) o).getNode().getName();
-            } else {
+            } else if(o instanceof JIPipeNodeExample) {
+                return ((JIPipeNodeExample) o).getNodeTemplate().getName() + JIPipe.getNodes().getInfoById(((JIPipeNodeExample) o).getNodeId()).getName();
+            }
+            else {
                 return "" + o;
             }
         });
@@ -320,6 +334,23 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 return;
             JIPipeNodeInfo info = (JIPipeNodeInfo) event.getValue();
             JIPipeGraphNode node = info.newInstance();
+            if (getHistoryJournal() != null) {
+                getHistoryJournal().snapshotBeforeAddNode(node, getCompartment());
+            }
+            canvasUI.getScheduledSelection().clear();
+            canvasUI.getScheduledSelection().add(node);
+            algorithmGraph.insertNode(node, getCompartment());
+            navigator.setSelectedItem(null);
+        }
+        else if(event.getValue() instanceof JIPipeNodeExample) {
+            if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(getWorkbench()))
+                return;
+            JIPipeNodeExample example = (JIPipeNodeExample) event.getValue();
+            JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(example.getNodeId());
+            JIPipeGraphNode node = info.newInstance();
+            if(node instanceof JIPipeAlgorithm) {
+                ((JIPipeAlgorithm) node).loadExample(example);
+            }
             if (getHistoryJournal() != null) {
                 getHistoryJournal().snapshotBeforeAddNode(node, getCompartment());
             }
@@ -929,6 +960,11 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             for (JIPipeNodeInfo info : addableAlgorithms.stream()
                     .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList())) {
                 model.addElement(info);
+                if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+                    for (JIPipeNodeExample example : ((JIPipeProjectWorkbench) getWorkbench()).getProject().getNodeExamples(info.getId())) {
+                        model.addElement(example);
+                    }
+                }
             }
         }
         navigator.setModel(model);
@@ -1043,6 +1079,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 algorithmLabel.setIcon(JIPipe.getNodes().getIconFor(info));
                 menuLabel.setText(menuPath);
 
+                alternativeLabel.setForeground(ModernMetalTheme.PRIMARY6);
                 if (info.getAliases().isEmpty()) {
                     alternativeLabel.setText("");
                 } else {
@@ -1075,6 +1112,26 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 algorithmLabel.setIcon(JIPipe.getNodes().getIconFor(info));
                 menuLabel.setText(menuPath);
                 alternativeLabel.setText("");
+            }
+            else if (value instanceof JIPipeNodeExample) {
+                JIPipeNodeExample example = (JIPipeNodeExample) value;
+                JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(example.getNodeId());
+                String menuPath = info.getCategory().getName();
+                if (!StringUtils.isNullOrEmpty(info.getMenuPath())) {
+                    menuPath += " > " + String.join(" > ", info.getMenuPath().split("\n"));
+                }
+
+                icon.setFillColor(Color.WHITE);
+                icon.setBorderColor(UIUtils.getFillColorFor(info));
+                actionLabel.setText("Create");
+                actionLabel.setForeground(new Color(0, 128, 0));
+                algorithmLabel.setText(info.getName() + ": " + example.getNodeTemplate().getName());
+                algorithmLabel.setIcon(JIPipe.getNodes().getIconFor(info));
+                menuLabel.setText(menuPath);
+
+                alternativeLabel.setForeground(ModernMetalTheme.PRIMARY5);
+                alternativeLabel.setText("Example");
+
             }
 
             if (isSelected) {
