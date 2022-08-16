@@ -186,10 +186,6 @@ public class ParameterPanel extends FormPanel implements Contextual {
         return clickedOK.get();
     }
 
-    private static List<String> getParameterKeysSortedByParameterName(Map<String, JIPipeParameterAccess> parameters, Collection<String> keys) {
-        return keys.stream().sorted(Comparator.comparing(k0 -> parameters.get(k0).getName())).collect(Collectors.toList());
-    }
-
     public static MarkdownDocument generateParameterDocumentation(JIPipeParameterAccess access, JIPipeParameterTree tree) {
         StringBuilder markdownString = new StringBuilder();
         markdownString.append("# ").append(access.getName()).append("\n\n");

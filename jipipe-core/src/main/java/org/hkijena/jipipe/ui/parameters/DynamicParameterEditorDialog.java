@@ -352,7 +352,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
         public JIPipeMutableParameterAccess toParameterAccess() {
             JIPipeMutableParameterAccess parameterAccess = new JIPipeMutableParameterAccess();
             parameterAccess.setKey(key);
-            parameterAccess.setName(name);
+            parameterAccess.setName(StringUtils.orElse(name, key));
             parameterAccess.setDescription(description.getBody());
             parameterAccess.setFieldClass(type.getInfo().getFieldClass());
             return parameterAccess;
