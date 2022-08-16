@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.filter;
 
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;

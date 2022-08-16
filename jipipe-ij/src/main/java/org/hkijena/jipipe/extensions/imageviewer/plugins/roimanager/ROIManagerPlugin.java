@@ -28,6 +28,7 @@ import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -176,6 +177,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         {
             Ribbon.Task viewTask = ribbon.addTask("View");
             Ribbon.Band renderingBand = viewTask.addBand("Rendering");
+            Ribbon.Band metadataBand = viewTask.addBand("Metadata");
 
             renderingBand.add(displayROIViewMenuItem);
 
@@ -238,6 +240,8 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             UIUtils.addReloadablePopupMenuToComponent(modifyEditAction.getButton(), modifyEditMenu, () -> reloadEditRoiMenu(modifyEditMenu));
             modifyBand.add(modifyEditAction);
 
+            measureBand.add(new SmallButtonAction("Show metadata", "Shows the metadata of the selected ROI as table", UIUtils.getIconFromResources("actions/tag.png"), this::showSelectedROIMetadata));
+
             SmallButtonAction measureAction = new SmallButtonAction("Measure", "Measures the ROI and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedROI);
             measureBand.add(measureAction);
             measureBand.add(new SmallButtonAction("Settings ...", "Opens the measurement settings", UIUtils.getIconFromResources("actions/configure.png"), this::openMeasurementSettings));
@@ -267,6 +271,24 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         dialog.revalidate();
         dialog.repaint();
         dialog.setVisible(true);
+    }
+
+    private void showSelectedROIMetadata() {
+        ROIListData rois = getSelectedROIOrAll("Show metadata", "Please select which ROI metadata you want displayed");
+        ResultsTableData table = new ResultsTableData();
+        table.addStringColumn("ROI Name");
+        table.addStringColumn("ROI Index");
+        for (int i = 0; i < rois.size(); i++) {
+            Roi roi = rois.get(i);
+            Map<String, String> map = ImageJUtils.getRoiProperties(roi);
+            int row = table.addRow();
+            table.setValueAt(StringUtils.orElse(roi.getName(), "Unnamed"), row, "ROI Name");
+            table.setValueAt(i, row, "ROI Index");
+            for (Map.Entry<String, String> entry : map.entrySet()) {
+                table.setValueAt(entry.getValue(), row, entry.getKey());
+            }
+        }
+        TableEditor.openWindow(getViewerPanel().getWorkbench(), table, "ROI metadata");
     }
 
     private void measureSelectedROI() {

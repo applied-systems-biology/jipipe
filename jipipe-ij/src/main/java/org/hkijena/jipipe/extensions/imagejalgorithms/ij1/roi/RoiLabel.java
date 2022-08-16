@@ -30,7 +30,8 @@ public enum RoiLabel {
     None,
     Index,
     Name,
-    Centroid;
+    Centroid,
+    Metadata;
 
     /**
      * Draws a label on an image processor
@@ -67,6 +68,9 @@ public enum RoiLabel {
         if (this == Centroid) {
             Point centroid = ROIListData.getCentroid(roi);
             label = centroid.x + ", " + centroid.y;
+        }
+        if (this == Metadata) {
+            label = roi.getProperties();
         }
         if (label == null) {
             label = "" + roiIndex;

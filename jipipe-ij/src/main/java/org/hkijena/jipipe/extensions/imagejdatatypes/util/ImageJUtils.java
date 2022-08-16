@@ -40,6 +40,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
+import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,8 +49,12 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -61,6 +67,50 @@ import java.util.stream.Collectors;
  * Utility functions for ImageJ
  */
 public class ImageJUtils {
+
+    /**
+     * Returns the properties of a {@link Roi} as map
+     * @param roi the roi
+     * @return the properties
+     */
+    public static Map<String, String> getRoiProperties(Roi roi) {
+        Properties props = new Properties();
+        String properties = roi.getProperties();
+        if(!StringUtils.isNullOrEmpty(properties)) {
+            try {
+                InputStream is = new ByteArrayInputStream(properties.getBytes(StandardCharsets.UTF_8));
+                props.load(is);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        HashMap<String, String> map = new HashMap<>();
+        for (Map.Entry<Object, Object> entry : props.entrySet()) {
+            map.put("" + entry.getKey(), "" + entry.getValue());
+        }
+        return map;
+    }
+
+    /**
+     * Sets the properties of a {@link Roi} from a map
+     * @param roi the roi
+     * @param properties the properties
+     */
+    public static void setRoiProperties(Roi roi, Map<String, String> properties) {
+        Properties props = new Properties();
+        for (Map.Entry<String, String> entry : properties.entrySet()) {
+            props.setProperty(entry.getKey(), entry.getValue());
+        }
+        try {
+            StringWriter writer = new StringWriter();
+            props.store(writer, null);
+            writer.flush();
+            roi.setProperties(writer.toString());
+        }
+        catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     /**
      * Returns the lowest ImageJ image type that can contain all images.

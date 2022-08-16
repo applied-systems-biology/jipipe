@@ -11,7 +11,7 @@
  * See the LICENSE file provided with the code for the full license.
  */
 
-package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
+package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.filter;
 
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;

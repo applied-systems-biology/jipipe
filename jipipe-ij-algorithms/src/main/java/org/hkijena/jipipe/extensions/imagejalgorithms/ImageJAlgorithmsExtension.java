@@ -63,6 +63,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.forms.DrawROIAlgorithm
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.generate.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.io.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.filter.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.*;
@@ -93,6 +94,10 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.RoiStatist
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.merge.FilterAndMergeRoiByStatisticsScriptAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.merge.MergeRoiListsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.ExtractROIMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.RemoveROIMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.SetRoiMetadataByStatisticsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.SetROIMetadataFromTableAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.sort.SortAndExtractRoiByStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.sort.SortAndExtractRoiByStatisticsAlgorithm2;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.sort.SortRoiListByExpressionsAndMeasurementsAlgorithm;
@@ -1151,6 +1156,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-roi-to-labels-expression", ROIToLabelsExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
         registerNodeType("ij1-roi-to-labels-name", ROIToLabelsByNameAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-jitter-color.png"));
         registerNodeType("ij1-roi-flood-fill", RoiFloodFillAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-fill.png"));
+        registerNodeType("ij1-roi-extract-metadata", ExtractROIMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_extractfiles.png"));
+        registerNodeType("ij1-roi-set-metadata-from-table", SetROIMetadataFromTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
+        registerNodeType("ij1-roi-set-metadata-from-statistics-expression", SetRoiMetadataByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
+        registerNodeType("ij1-roi-remove-metadata", RemoveROIMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
 
         registerEnumParameterType("ij1-roi-flood-fill:mode",
                 RoiFloodFillAlgorithm.Mode.class,

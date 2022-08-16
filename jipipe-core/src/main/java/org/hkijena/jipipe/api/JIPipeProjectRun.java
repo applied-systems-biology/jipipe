@@ -336,6 +336,9 @@ public class JIPipeProjectRun implements JIPipeRunnable {
                             group.setInternalStoragePath(Paths.get("loop" + loopNumber));
                             BiMap<JIPipeDataSlot, JIPipeDataSlot> loopGraphSlotMap = group.autoCreateSlots();
                             group.setIterationMode(loop.getLoopStartNode().getIterationMode());
+                            if(loop.getLoopStartNode().isPassThrough()) {
+                                group.setIterationMode(GraphWrapperAlgorithm.IterationMode.PassThrough);
+                            }
                             group.setThreadPool(threadPool);
 
                             // IMPORTANT! Otherwise the nested JIPipeGraphRunner will run into an infinite depth loop

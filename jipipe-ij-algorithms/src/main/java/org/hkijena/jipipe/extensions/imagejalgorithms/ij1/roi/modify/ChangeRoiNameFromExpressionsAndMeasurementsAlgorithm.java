@@ -20,6 +20,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @JIPipeDocumentation(name = "Change ROI name from measurements (expression)", description = "Utilizes an expression to generate a ROI name for each individual ROI in the supplied ROI lists." +
@@ -54,12 +55,12 @@ public class ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm extends JIPipe
         ImagePlusData inputReference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
 
         ROIListData result = new ROIListData();
-        ExpressionVariables parameters = new ExpressionVariables();
+        ExpressionVariables variables = new ExpressionVariables();
         ROIListData tmp = new ROIListData();
 
         if (includeAnnotations) {
             for (JIPipeTextAnnotation value : dataBatch.getMergedTextAnnotations().values()) {
-                parameters.set(value.getName(), value.getValue());
+                variables.set(value.getName(), value.getValue());
             }
         }
 
@@ -77,10 +78,17 @@ public class ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm extends JIPipe
 
             ResultsTableData measured = tmp.measure(referenceImage, measurements, true, measureInPhysicalUnits);
             for (int col = 0; col < measured.getColumnCount(); col++) {
-                parameters.set(measured.getColumnName(col), measured.getValueAt(0, col));
+                variables.set(measured.getColumnName(col), measured.getValueAt(0, col));
             }
 
-            String newName = StringUtils.nullToEmpty(expression.evaluate(parameters));
+            // Make metadata accessible
+            Map<String, String> roiProperties = ImageJUtils.getRoiProperties(roi);
+            variables.set("metadata", roiProperties);
+            for (Map.Entry<String, String> entry : roiProperties.entrySet()) {
+                variables.set("metadata." + entry.getKey(), entry.getValue());
+            }
+
+            String newName = StringUtils.nullToEmpty(expression.evaluate(variables));
             Roi copy = (Roi) roi.clone();
             copy.setName(newName);
             result.add(copy);
@@ -92,6 +100,8 @@ public class ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm extends JIPipe
     @JIPipeDocumentation(name = "Expression", description = "The expression is executed per ROI.")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @JIPipeParameter("expression")
+    @ExpressionParameterSettingsVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
+    @ExpressionParameterSettingsVariable(key = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")
     public StringQueryExpression getExpression() {
         return expression;
     }

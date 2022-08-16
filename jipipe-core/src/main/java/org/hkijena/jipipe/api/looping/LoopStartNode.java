@@ -49,7 +49,8 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
             "<li>Pass through: Disables looping. The node behaves as a regular IO interface.</li>" +
             "<li>The loop can be executed per data batch. Here you can choose between an iterative data batch (one item per slot) " +
             "or a merging data batch (multiple items per slot).</li>" +
-            "</ul>")
+            "</ul><br/>" +
+            "<strong>Automatically assumed to be 'Pass through', if the node is set to 'Pass through'</strong>")
     @JIPipeParameter("iteration-mode")
     public GraphWrapperAlgorithm.IterationMode getIterationMode() {
         return iterationMode;
