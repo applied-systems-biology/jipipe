@@ -136,23 +136,23 @@ public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollectio
         this.parameterAnnotationsPrefix = parameterAnnotationsPrefix;
     }
 
-    @JIPipeDocumentation(name = "Add", description = "Adds an adaptive parameter.")
-    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/list-add.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/list-add.png")
-    public void addAdaptiveParameterAssistant(JIPipeWorkbench parent) {
-        AdaptiveParameterBuilder dialog = new AdaptiveParameterBuilder(parent, getNode() != null ? getNode() : this);
-        dialog.setModal(true);
-        dialog.setSize(800, 600);
-        dialog.revalidate();
-        dialog.repaint();
-        dialog.setLocationRelativeTo(parent.getWindow());
-        dialog.setVisible(true);
-        if (!dialog.isCanceled() && dialog.getCurrentParameterAccess() != null) {
-            DefaultExpressionParameter parameter = dialog.build();
-            String uniqueKey = dialog.getParameterTree().getUniqueKey(dialog.getCurrentParameterAccess());
-            overriddenParameters.add(new StringQueryExpressionAndStringPairParameter(parameter.getExpression(), uniqueKey));
-            triggerParameterChange("overridden-parameters");
-        }
-    }
+//    @JIPipeDocumentation(name = "Add", description = "Adds an adaptive parameter.")
+//    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/list-add.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/list-add.png")
+//    public void addAdaptiveParameterAssistant(JIPipeWorkbench parent) {
+//        AdaptiveParameterBuilder dialog = new AdaptiveParameterBuilder(parent, getNode() != null ? getNode() : this);
+//        dialog.setModal(true);
+//        dialog.setSize(800, 600);
+//        dialog.revalidate();
+//        dialog.repaint();
+//        dialog.setLocationRelativeTo(parent.getWindow());
+//        dialog.setVisible(true);
+//        if (!dialog.isCanceled() && dialog.getCurrentParameterAccess() != null) {
+//            DefaultExpressionParameter parameter = dialog.build();
+//            String uniqueKey = dialog.getParameterTree().getUniqueKey(dialog.getCurrentParameterAccess());
+//            overriddenParameters.add(new StringQueryExpressionAndStringPairParameter(parameter.getExpression(), uniqueKey));
+//            triggerParameterChange("overridden-parameters");
+//        }
+//    }
 
     public JIPipeGraphNode getNode() {
         return node;
