@@ -57,14 +57,14 @@ public class AnnotationGeneratorExpression extends DefaultExpressionParameter {
      *
      * @param annotations existing annotations for the data
      * @param dataString  the data as string
+     * @param variables existing variables
      * @return the test results.
      */
-    public boolean test(Collection<JIPipeTextAnnotation> annotations, String dataString) {
-        ExpressionVariables variableSet = new ExpressionVariables();
+    public boolean test(Collection<JIPipeTextAnnotation> annotations, String dataString, ExpressionVariables variables) {
         for (JIPipeTextAnnotation annotation : annotations) {
-            variableSet.set(annotation.getName(), annotation.getValue());
+            variables.set(annotation.getName(), annotation.getValue());
         }
-        variableSet.set("data_string", dataString);
-        return (boolean) evaluate(variableSet);
+        variables.set("data_string", dataString);
+        return (boolean) evaluate(variables);
     }
 }

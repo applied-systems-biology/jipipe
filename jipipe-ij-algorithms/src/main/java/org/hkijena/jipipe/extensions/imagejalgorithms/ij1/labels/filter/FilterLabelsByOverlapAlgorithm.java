@@ -22,6 +22,8 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -55,8 +57,11 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
     private LabelFilterSettings labels1Settings = new LabelFilterSettings();
     private LabelFilterSettings labels2Settings = new LabelFilterSettings();
 
+    private final CustomExpressionVariablesParameter customVariables;
+
     public FilterLabelsByOverlapAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.customVariables = new CustomExpressionVariablesParameter(this);
         registerSubParameter(labels1Settings);
         registerSubParameter(labels2Settings);
         updateSlots();
@@ -65,6 +70,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
     public FilterLabelsByOverlapAlgorithm(FilterLabelsByOverlapAlgorithm other) {
         super(other);
+        this.customVariables = new CustomExpressionVariablesParameter(other.customVariables, this);
         this.labels1Settings = new LabelFilterSettings(other.labels1Settings);
         this.labels2Settings = new LabelFilterSettings(other.labels2Settings);
         this.overlapFilterMeasurements = new ImageStatisticsSetParameter(other.overlapFilterMeasurements);
@@ -150,6 +156,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             annotations.put(entry.getKey(), entry.getValue().getValue());
         }
         variables.set("annotations", annotations);
+        customVariables.writeToVariables(variables, true, "custom.", true, "custom");
 
         final Calibration targetLabelsCalibration = settings.measureInPhysicalUnits ? targetLabels.getCalibration() : null;
         final Calibration otherLabelsCalibration = settings.measureInPhysicalUnits ? otherLabels.getCalibration() : null;
@@ -409,6 +416,13 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
             throw new UnsupportedOperationException();
         }
 
+    }
+
+    @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
+    @JIPipeParameter(value = "custom-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
+    public CustomExpressionVariablesParameter getCustomVariables() {
+        return customVariables;
     }
 
     @JIPipeDocumentation(name = "Labels 1 filter", description = "Use following settings to determine how inputs into <b>Labels 1</b> are filtered " +
