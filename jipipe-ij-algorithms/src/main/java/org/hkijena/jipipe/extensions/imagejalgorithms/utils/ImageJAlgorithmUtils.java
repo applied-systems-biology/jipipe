@@ -142,7 +142,7 @@ public class ImageJAlgorithmUtils {
 
         int[] allLabels = LabelImages.findAllLabels(label);
 
-        ResultsTableData result = new ResultsTableData();
+        final ResultsTableData result = new ResultsTableData();
         result.addNumericColumn("label_id");
 
         JIPipePercentageProgressInfo percentageProgress = progressInfo.percentage("Measure labels");

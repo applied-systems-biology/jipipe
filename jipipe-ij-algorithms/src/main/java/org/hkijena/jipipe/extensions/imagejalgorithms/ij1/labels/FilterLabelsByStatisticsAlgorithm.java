@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels;
 
+import com.google.common.primitives.Doubles;
 import gnu.trove.set.TIntSet;
 import gnu.trove.set.hash.TIntHashSet;
 import ij.ImagePlus;
@@ -27,18 +28,22 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.AllMeasurementExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
@@ -58,6 +63,8 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
 
     private boolean measureInPhysicalUnits = true;
 
+    private final CustomExpressionVariablesParameter customFilterVariables;
+
     /**
      * Instantiates a new node type.
      *
@@ -65,6 +72,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
      */
     public FilterLabelsByStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.customFilterVariables = new CustomExpressionVariablesParameter(this);
     }
 
     /**
@@ -77,6 +85,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
         this.filters = new DefaultExpressionParameter(other.filters);
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
+        this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
     }
 
     @Override
@@ -100,7 +109,7 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
             int c = Math.min(index.getC(), labels.getNChannels() - 1);
             int t = Math.min(index.getT(), labels.getNFrames() - 1);
             ImageProcessor referenceProcessor = ImageJUtils.getSliceZero(reference, c, z, t);
-            ResultsTableData forRoi = ImageJAlgorithmUtils.measureLabels(labelProcessor, referenceProcessor, this.measurements, index, calibration, progressInfo);
+            final ResultsTableData statistics = ImageJAlgorithmUtils.measureLabels(labelProcessor, referenceProcessor, this.measurements, index, calibration, progressInfo);
 
             // Find labels to keep
             labelsToKeep.clear();
@@ -108,12 +117,25 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
             for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
                 variables.set(annotation.getName(), annotation.getValue());
             }
-            for (int row = 0; row < forRoi.getRowCount(); row++) {
-                for (int col = 0; col < forRoi.getColumnCount(); col++) {
-                    variables.set(forRoi.getColumnName(col), forRoi.getValueAt(row, col));
+            customFilterVariables.writeToVariables(variables, true, "custom.", true, "custom");
+
+            // Write statistics into variables
+            for (int col = 0; col < statistics.getColumnCount(); col++) {
+                TableColumn column = statistics.getColumnReference(col);
+                if(column.isNumeric()) {
+                    variables.set("all." + column.getLabel(), new ArrayList<>(Doubles.asList(column.getDataAsDouble(column.getRows()))));
+                }
+                else {
+                    variables.set("all." + column.getLabel(), new ArrayList<>(Arrays.asList(column.getDataAsString(column.getRows()))));
+                }
+            }
+
+            for (int row = 0; row < statistics.getRowCount(); row++) {
+                for (int col = 0; col < statistics.getColumnCount(); col++) {
+                    variables.set(statistics.getColumnName(col), statistics.getValueAt(row, col));
                 }
                 if (filters.test(variables)) {
-                    labelsToKeep.add((int) forRoi.getValueAsDouble(row, "label_id"));
+                    labelsToKeep.add((int) statistics.getValueAsDouble(row, "label_id"));
                 }
             }
 
@@ -124,12 +146,20 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(labels), progressInfo);
     }
 
+    @JIPipeDocumentation(name = "Custom filter variables", description = "Here you can add parameters that will be included into the filter as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
+    @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
+    public CustomExpressionVariablesParameter getCustomFilterVariables() {
+        return customFilterVariables;
+    }
+
     @JIPipeParameter(value = "filter", important = true)
     @JIPipeDocumentation(name = "Filter", description = "Filtering expression. This is applied per label. " +
             "Click the 'Edit' button to see all available variables you can test for (note: requires from you to enable the corresponding measurement!)." +
             "An example for an expression would be 'Area > 200 AND Mean > 10'." +
             "Annotations are available as variables.")
     @ExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AllMeasurementExpressionParameterVariableSource.class)
     public DefaultExpressionParameter getFilters() {
         return filters;
     }

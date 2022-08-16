@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.filter;
 
+import com.google.common.primitives.Doubles;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -26,10 +27,15 @@ import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpres
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.RoiStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.AllMeasurementExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.utils.ResourceUtils;
+
+import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
@@ -107,6 +113,17 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         ResultsTableData statistics = roiStatisticsAlgorithm.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
         roiStatisticsAlgorithm.clearSlotData();
 
+        // Write statistics into variables
+        for (int col = 0; col < statistics.getColumnCount(); col++) {
+            TableColumn column = statistics.getColumnReference(col);
+            if(column.isNumeric()) {
+                variableSet.set("all." + column.getLabel(), new ArrayList<>(Doubles.asList(column.getDataAsDouble(column.getRows()))));
+            }
+            else {
+                variableSet.set("all." + column.getLabel(), new ArrayList<>(Arrays.asList(column.getDataAsString(column.getRows()))));
+            }
+        }
+
         // Apply filter
         ROIListData outputData = new ROIListData();
 
@@ -130,6 +147,7 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
             "An example for an expression would be 'Area > 200 AND Mean > 10'." +
             "Annotations are available as variables.")
     @ExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = AllMeasurementExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
