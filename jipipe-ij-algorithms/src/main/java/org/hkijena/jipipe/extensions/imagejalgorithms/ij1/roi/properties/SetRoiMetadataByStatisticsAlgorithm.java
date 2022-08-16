@@ -164,7 +164,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
     }
 
     @JIPipeDocumentation(name = "Generated metadata", description = "Each entry contains an expression that is applied for each ROI. The generated value is written into the metadata key.")
-    @JIPipeParameter("metadata-generators")
+    @JIPipeParameter(value = "metadata-generators", important = true)
     public ParameterCollectionList getMetadataGenerators() {
         return metadataGenerators;
     }
