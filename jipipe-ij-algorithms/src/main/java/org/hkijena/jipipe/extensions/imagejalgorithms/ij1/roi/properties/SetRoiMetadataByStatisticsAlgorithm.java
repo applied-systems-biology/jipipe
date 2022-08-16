@@ -57,7 +57,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
 
     private ParameterCollectionList metadataGenerators = ParameterCollectionList.containingCollection(MetadataProperty.class);
-    private final CustomExpressionVariablesParameter customFilterVariables;
+    private final CustomExpressionVariablesParameter customVariables;
     private boolean measureInPhysicalUnits = true;
     private boolean clearBeforeWrite = false;
 
@@ -68,7 +68,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
      */
     public SetRoiMetadataByStatisticsAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.customFilterVariables = new CustomExpressionVariablesParameter(this);
+        this.customVariables = new CustomExpressionVariablesParameter(this);
     }
 
     /**
@@ -81,7 +81,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
         roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
         this.metadataGenerators = new ParameterCollectionList(other.metadataGenerators);
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
-        this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
+        this.customVariables = new CustomExpressionVariablesParameter(other.customVariables, this);
         this.measureInPhysicalUnits = other.measureInPhysicalUnits;
         this.clearBeforeWrite = other.clearBeforeWrite;
     }
@@ -105,7 +105,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
         // Create variables
         ExpressionVariables variableSet = new ExpressionVariables();
         variableSet.putAnnotations(dataBatch.getMergedTextAnnotations());
-        customFilterVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
+        customVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
 
         // Obtain statistics
         roiStatisticsAlgorithm.clearSlotData();
@@ -163,7 +163,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
         this.clearBeforeWrite = clearBeforeWrite;
     }
 
-    @JIPipeDocumentation(name = "Generated metadata", description = "Each entry contains an expression that is applied for each ROI. The generated value is written into the metadata key.")
+    @JIPipeDocumentation(name = "Generated metadata", description = "Each entry contains an expression that is applied for each ROI. The generated value is written into the metadata key. <strong>Please note that ImageJ ROI metadata are subject to some limitations. For example, keys cannot have space characters, equal signs, and colons.</strong>")
     @JIPipeParameter(value = "metadata-generators", important = true)
     public ParameterCollectionList getMetadataGenerators() {
         return metadataGenerators;
@@ -185,11 +185,11 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
         this.measurements = measurements;
     }
 
-    @JIPipeDocumentation(name = "Custom filter variables", description = "Here you can add parameters that will be included into the filter as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
-    @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
+    @JIPipeDocumentation(name = "Custom variables", description = "Here you can add parameters that will be included into the expressions as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
+    @JIPipeParameter(value = "custom-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
-    public CustomExpressionVariablesParameter getCustomFilterVariables() {
-        return customFilterVariables;
+    public CustomExpressionVariablesParameter getCustomVariables() {
+        return customVariables;
     }
 
     @JIPipeDocumentation(name = "Measure in physical units", description = "If true, measurements will be generated in physical units if available")

@@ -52,11 +52,13 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.PathUtils;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.*;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
@@ -87,9 +89,23 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      */
     public ROIListData(List<Roi> other) {
         for (Roi roi : other) {
+            String properties = roi.getProperties();
             Roi clone = (Roi) roi.clone();
+            if(properties != null) {
+                // We have to force the props variable to null, because Roi does not make a deep copy of it
+                try {
+                    Field field = Roi.class.getDeclaredField("props");
+                    field.setAccessible(true);
+                    field.set(clone, null);
+                } catch (IllegalAccessException | NoSuchFieldException e) {
+                    throw new RuntimeException(e);
+                }
+            }
             // Keep the image reference
             clone.setImage(roi.getImage());
+            // Roi clone does not copy properties for some reason (keeps reference)
+            if(properties != null)
+                clone.setProperties(properties);
             add(clone);
         }
     }

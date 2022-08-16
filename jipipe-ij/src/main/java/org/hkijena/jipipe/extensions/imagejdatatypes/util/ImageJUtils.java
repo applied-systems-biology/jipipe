@@ -99,7 +99,7 @@ public class ImageJUtils {
     public static void setRoiProperties(Roi roi, Map<String, String> properties) {
         Properties props = new Properties();
         for (Map.Entry<String, String> entry : properties.entrySet()) {
-            props.setProperty(entry.getKey(), entry.getValue());
+            props.setProperty(StringUtils.nullToEmpty(entry.getKey()).replace(' ', '_').replace('=', '_').replace(':', '_'), entry.getValue());
         }
         try {
             StringWriter writer = new StringWriter();

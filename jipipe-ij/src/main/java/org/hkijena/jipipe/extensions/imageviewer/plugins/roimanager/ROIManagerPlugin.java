@@ -177,7 +177,6 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         {
             Ribbon.Task viewTask = ribbon.addTask("View");
             Ribbon.Band renderingBand = viewTask.addBand("Rendering");
-            Ribbon.Band metadataBand = viewTask.addBand("Metadata");
 
             renderingBand.add(displayROIViewMenuItem);
 
@@ -240,7 +239,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             UIUtils.addReloadablePopupMenuToComponent(modifyEditAction.getButton(), modifyEditMenu, () -> reloadEditRoiMenu(modifyEditMenu));
             modifyBand.add(modifyEditAction);
 
-            measureBand.add(new SmallButtonAction("Show metadata", "Shows the metadata of the selected ROI as table", UIUtils.getIconFromResources("actions/tag.png"), this::showSelectedROIMetadata));
+            measureBand.add(new SmallButtonAction("Metadata", "Shows the metadata of the selected ROI as table", UIUtils.getIconFromResources("actions/tag.png"), this::showSelectedROIMetadata));
 
             SmallButtonAction measureAction = new SmallButtonAction("Measure", "Measures the ROI and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedROI);
             measureBand.add(measureAction);
