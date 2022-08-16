@@ -359,7 +359,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
         }
     }
 
-    public class ParameterEntryListCellRenderer extends JPanel implements ListCellRenderer<ParameterEntry> {
+    public static class ParameterEntryListCellRenderer extends JPanel implements ListCellRenderer<ParameterEntry> {
 
         private JLabel typeLabel;
         private JLabel idLabel;
