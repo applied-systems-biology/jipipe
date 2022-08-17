@@ -532,9 +532,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
             JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help-muted.png"));
             helpButton.setBorder(null);
             helpButton.addActionListener(e -> {
-                getParameterHelp().setTemporaryDocument(documentation);
-                getEventBus().post(new HoverHelpEvent(documentation));
-                updateParameterHelpDrillDown();
+               showDocumentation(documentation);
             });
             installComponentHighlighter(helpButton, Sets.newHashSet(component, description));
             propertyPanel.add(helpButton, BorderLayout.WEST);
@@ -581,20 +579,6 @@ public class ParameterPanel extends FormPanel implements Contextual {
         for (Component component : uiComponents) {
             component.setVisible(selected);
         }
-    }
-
-    private void removeDynamicParameter(String key, JIPipeDynamicParameterCollection parameterHolder) {
-        JIPipeMutableParameterAccess parameter = parameterHolder.getParameter(key);
-        if (!GraphEditorUISettings.getInstance().isAskOnDeleteParameter() || JOptionPane.showConfirmDialog(this, "Do you really want to remove the parameter '" + parameter.getName() + "'?",
-                "Remove parameter", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            parameterHolder.removeParameter(key);
-            reloadForm();
-        }
-    }
-
-    private void addDynamicParameter(JIPipeDynamicParameterCollection parameterHolder) {
-        AddParameterDialog.showDialog(workbench, this, parameterHolder);
-        reloadForm();
     }
 
     /**

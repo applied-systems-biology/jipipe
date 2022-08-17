@@ -50,6 +50,9 @@ import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.HyperlinkEvent;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.text.MutableAttributeSet;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 import javax.swing.text.html.HTMLEditorKit;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
@@ -1293,6 +1296,39 @@ public class UIUtils {
         textPane.setContentType("text/html");
         textPane.setText(text);
         return textPane;
+    }
+
+    /**
+     * Utility method for setting the font and color of a JTextPane. The
+     * result is roughly equivalent to calling setFont(...) and
+     * setForeground(...) on an AWT TextArea.
+     */
+    public static void setJTextPaneFont(JTextPane jtp, Font font, Color c) {
+        // Start with the current input attributes for the JTextPane. This
+        // should ensure that we do not wipe out any existing attributes
+        // (such as alignment or other paragraph attributes) currently
+        // set on the text area.
+        MutableAttributeSet attrs = jtp.getInputAttributes();
+
+        // Set the font family, size, and style, based on properties of
+        // the Font object. Note that JTextPane supports a number of
+        // character attributes beyond those supported by the Font class.
+        // For example, underline, strike-through, super- and sub-script.
+        StyleConstants.setFontFamily(attrs, font.getFamily());
+        StyleConstants.setFontSize(attrs, font.getSize());
+        StyleConstants.setItalic(attrs, (font.getStyle() & Font.ITALIC) != 0);
+        StyleConstants.setBold(attrs, (font.getStyle() & Font.BOLD) != 0);
+
+        // Set the font color
+        StyleConstants.setForeground(attrs, c);
+
+        // Retrieve the pane's document object
+        StyledDocument doc = jtp.getStyledDocument();
+
+        // Replace the style for the entire document. We exceed the length
+        // of the document by 1 so that text entered at the end of the
+        // document uses the attributes.
+        doc.setCharacterAttributes(0, doc.getLength() + 1, attrs, false);
     }
 
     /**

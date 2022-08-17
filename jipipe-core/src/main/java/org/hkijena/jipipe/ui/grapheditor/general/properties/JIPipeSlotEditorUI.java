@@ -249,6 +249,10 @@ public class JIPipeSlotEditorUI extends JPanel {
      */
     public void reloadList() {
 
+        if(algorithm.getParentGraph() == null || !algorithm.getParentGraph().containsNode(algorithm)) {
+            return;
+        }
+
         JIPipeDataSlot selectedSlot = getSelectedSlot();
 
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode("Data slots");

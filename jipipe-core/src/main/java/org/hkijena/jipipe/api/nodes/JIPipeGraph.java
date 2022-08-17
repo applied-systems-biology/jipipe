@@ -664,6 +664,8 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return The output slot that generates data for the input. Null if no source exists.
      */
     public Set<JIPipeDataSlot> getInputIncomingSourceSlots(JIPipeDataSlot target) {
+        if(!graph.containsVertex(target))
+            return Collections.emptySet();
         if (target.isInput()) {
             Set<JIPipeGraphEdge> edges = graph.incomingEdgesOf(target);
             Set<JIPipeDataSlot> result = new HashSet<>();
@@ -683,6 +685,8 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return All slots that receive data from the output slot
      */
     public Set<JIPipeDataSlot> getOutputOutgoingTargetSlots(JIPipeDataSlot source) {
+        if(!graph.containsVertex(source))
+            return Collections.emptySet();
         if (source.isOutput()) {
             Set<JIPipeGraphEdge> edges = graph.outgoingEdgesOf(source);
             Set<JIPipeDataSlot> result = new HashSet<>();

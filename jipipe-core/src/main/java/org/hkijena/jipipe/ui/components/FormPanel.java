@@ -54,6 +54,11 @@ public class FormPanel extends JXPanel {
     public static final int WITH_DOCUMENTATION = 1;
 
     /**
+     * Flag that indicates that documentation should be supported, but there should be no dedicated panel
+     */
+    public static final int DOCUMENTATION_NO_UI = 16;
+
+    /**
      * Flag that makes the content be wrapped in a {@link JScrollPane}
      */
     public static final int WITH_SCROLLING = 2;
@@ -75,6 +80,8 @@ public class FormPanel extends JXPanel {
     private final MarkdownReader parameterHelp;
     private final JLabel parameterHelpDrillDown = new JLabel();
     private final boolean withDocumentation;
+
+    private final boolean documentationHasUI;
     private int numRows = 0;
     private JScrollPane scrollPane;
     private boolean hasVerticalGlue;
@@ -129,11 +136,19 @@ public class FormPanel extends JXPanel {
 
         if ((flags & WITH_DOCUMENTATION) == WITH_DOCUMENTATION) {
             this.withDocumentation = true;
-            boolean documentationBelow = (flags & DOCUMENTATION_BELOW) == DOCUMENTATION_BELOW;
-            AutoResizeSplitPane splitPane = new AutoResizeSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, content, helpPanel, AutoResizeSplitPane.RATIO_3_TO_1);
-            add(splitPane, BorderLayout.CENTER);
+            if((flags & DOCUMENTATION_NO_UI) != DOCUMENTATION_NO_UI) {
+                this.documentationHasUI = true;
+                boolean documentationBelow = (flags & DOCUMENTATION_BELOW) == DOCUMENTATION_BELOW;
+                AutoResizeSplitPane splitPane = new AutoResizeSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, content, helpPanel, AutoResizeSplitPane.RATIO_3_TO_1);
+                add(splitPane, BorderLayout.CENTER);
+            }
+            else {
+                this.documentationHasUI = false;
+                add(content, BorderLayout.CENTER);
+            }
         } else {
             this.withDocumentation = false;
+            this.documentationHasUI = false;
             add(content, BorderLayout.CENTER);
         }
     }
@@ -310,7 +325,7 @@ public class FormPanel extends JXPanel {
 
     public void showDocumentation(MarkdownDocument documentation) {
         if(redirectDocumentationTarget == null) {
-            if(withDocumentation) {
+            if(withDocumentation && documentationHasUI) {
                 parameterHelp.setTemporaryDocument(documentation);
                 getEventBus().post(new HoverHelpEvent(documentation));
                 updateParameterHelpDrillDown();
@@ -322,7 +337,7 @@ public class FormPanel extends JXPanel {
                 dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
                 JPanel panel = new JPanel(new BorderLayout(8, 8));
                 panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-                panel.add(reader, BorderLayout.SOUTH);
+                panel.add(reader, BorderLayout.CENTER);
 
                 dialog.setContentPane(panel);
                 dialog.setTitle("Documentation");

@@ -30,9 +30,9 @@ import java.util.Set;
  */
 public class JIPipeDataSlotTreeCellRenderer extends JPanel implements TreeCellRenderer {
 
-    private JLabel slotLabel;
-    private JLabel slotName;
-    private JLabel slotEdges;
+    private final JLabel slotLabel;
+    private final JLabel slotName;
+    private final JLabel slotEdges;
 
     /**
      * Creates a new renderer
