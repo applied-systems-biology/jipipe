@@ -17,6 +17,7 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -31,6 +32,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hkijena.jipipe.utils.UIUtils.UI_PADDING;
 
@@ -76,6 +78,8 @@ public class FormPanel extends JXPanel {
     private int numRows = 0;
     private JScrollPane scrollPane;
     private boolean hasVerticalGlue;
+
+    private FormPanel redirectDocumentationTarget;
 
     private List<FormPanelEntry> entries = new ArrayList<>();
 
@@ -132,6 +136,14 @@ public class FormPanel extends JXPanel {
             this.withDocumentation = false;
             add(content, BorderLayout.CENTER);
         }
+    }
+
+    public FormPanel getRedirectDocumentationTarget() {
+        return redirectDocumentationTarget;
+    }
+
+    public void setRedirectDocumentationTarget(FormPanel redirectDocumentationTarget) {
+        this.redirectDocumentationTarget = redirectDocumentationTarget;
     }
 
     public boolean isWithDocumentation() {
@@ -296,14 +308,43 @@ public class FormPanel extends JXPanel {
         return component;
     }
 
+    public void showDocumentation(MarkdownDocument documentation) {
+        if(redirectDocumentationTarget == null) {
+            if(withDocumentation) {
+                parameterHelp.setTemporaryDocument(documentation);
+                getEventBus().post(new HoverHelpEvent(documentation));
+                updateParameterHelpDrillDown();
+            }
+            else {
+                // Just popup the documentation
+                MarkdownReader reader = new MarkdownReader(false, documentation);
+                JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this));
+                dialog.setIconImage(UIUtils.getIcon128FromResources("jipipe.png").getImage());
+                JPanel panel = new JPanel(new BorderLayout(8, 8));
+                panel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+                panel.add(reader, BorderLayout.SOUTH);
+
+                dialog.setContentPane(panel);
+                dialog.setTitle("Documentation");
+                dialog.setModal(true);
+                dialog.pack();
+                dialog.setSize(new Dimension(640, 480));
+                dialog.setLocationRelativeTo(SwingUtilities.getWindowAncestor(this));
+                UIUtils.addEscapeListener(dialog);
+                dialog.setVisible(true);
+            }
+        }
+        else {
+            redirectDocumentationTarget.showDocumentation(documentation);
+        }
+    }
+
     protected Component createEntryPropertiesComponent(Component component, Component description, int row, MarkdownDocument documentation) {
         if (documentation != null) {
             JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help-muted.png"));
             helpButton.setBorder(null);
             helpButton.addActionListener(e -> {
-                parameterHelp.setTemporaryDocument(documentation);
-                getEventBus().post(new HoverHelpEvent(documentation));
-                updateParameterHelpDrillDown();
+                showDocumentation(documentation);
             });
             installComponentHighlighter(helpButton, Sets.newHashSet(component, description));
             return helpButton;

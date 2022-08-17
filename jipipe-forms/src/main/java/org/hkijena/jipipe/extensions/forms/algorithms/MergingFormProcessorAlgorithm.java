@@ -194,7 +194,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
 
     @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm has one input and will iterate through groups of rows and apply the workload. " +
             "Use following settings to control which data batches are generated.")
-    @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
+    @JIPipeParameter(value = "jipipe:data-batch-generation", hidden = true)
     public JIPipeMergingAlgorithmDataBatchGenerationSettings getDataBatchGenerationSettings() {
         return dataBatchGenerationSettings;
     }

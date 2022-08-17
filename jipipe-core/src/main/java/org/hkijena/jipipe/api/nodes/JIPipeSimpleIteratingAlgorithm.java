@@ -48,7 +48,7 @@ import java.util.concurrent.Future;
  * This is a simplified version of {@link JIPipeIteratingAlgorithm} that assumes that there is only one or zero input slots.
  * An error is thrown if there are more than one input slots.
  */
-public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm {
+public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm, JIPipeAdaptiveParametersAlgorithm {
 
     private boolean parallelizationEnabled = true;
     private JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings();
@@ -322,7 +322,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm has one input and will iterate through each row of its input and apply the workload. " +
             "Use following settings to control which data batches are generated.")
     @JIPipeParameter(value = "jipipe:data-batch-generation",
-            collapsed = true,
+            hidden = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/package.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/package.png")
     public JIPipeSimpleIteratingAlgorithmDataBatchGenerationSettings getDataBatchGenerationSettings() {
@@ -351,7 +351,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
     }
 
     @JIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")
-    @JIPipeParameter(value = "jipipe:adaptive-parameters", collapsed = true,
+    @JIPipeParameter(value = "jipipe:adaptive-parameters", hidden = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-function.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-function.png")
     public JIPipeAdaptiveParameterSettings getAdaptiveParameterSettings() {

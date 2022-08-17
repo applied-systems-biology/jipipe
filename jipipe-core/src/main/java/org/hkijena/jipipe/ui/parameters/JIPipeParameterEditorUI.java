@@ -28,6 +28,10 @@ import java.util.Objects;
  * A UI for a parameter type
  */
 public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel implements Contextual {
+    public static final int CONTROL_STYLE_PANEL = 1;
+    public static final int CONTROL_STYLE_LIST = 2;
+    public static final int CONTROL_STYLE_CHECKBOX = 4;
+
     private final JIPipeParameterAccess parameterAccess;
     private Context context;
     private int preventReload = 0;
@@ -123,6 +127,17 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
      */
     public boolean isUIImportantLabelEnabled() {
         return true;
+    }
+
+    /**
+     * Returns the "style" of the control.
+     * This is only utilized for the automated ordering within {@link ParameterPanel}
+     * Controls with the same style are grouped together to ensure a consistent visual style (reduce clutter)
+     * Please note that the grouping enforced by isUILabelEnabled() has precedence
+     * @return the UI control style for {@link ParameterPanel} (sorting only)
+     */
+    public int getUIControlStyleType() {
+        return CONTROL_STYLE_PANEL;
     }
 
     /**

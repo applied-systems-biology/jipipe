@@ -41,7 +41,7 @@ import java.util.*;
  */
 @JIPipeDocumentationDescription(description = "This algorithm merges all annotations and data annotations. " +
         "Use the data batch settings to determine how annotations and data annotations are merged")
-public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm {
+public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm, JIPipeAdaptiveParametersAlgorithm {
 
     private boolean parallelizationEnabled = true;
     private JIPipeSingleIterationAlgorithmDataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeSingleIterationAlgorithmDataBatchGenerationSettings();
@@ -291,7 +291,7 @@ public abstract class JIPipeSingleIterationAlgorithm extends JIPipeParameterSlot
     }
 
     @JIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")
-    @JIPipeParameter(value = "jipipe:adaptive-parameters", collapsed = true,
+    @JIPipeParameter(value = "jipipe:adaptive-parameters", hidden = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-function.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-function.png")
     public JIPipeAdaptiveParameterSettings getAdaptiveParameterSettings() {

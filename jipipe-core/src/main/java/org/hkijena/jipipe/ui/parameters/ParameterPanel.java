@@ -428,11 +428,13 @@ public class ParameterPanel extends FormPanel implements Contextual {
         if (withoutLabelSeparation) {
             comparator = Comparator.comparing((JIPipeParameterEditorUI u) -> !u.getParameterAccess().isPinned())
                     .thenComparing((JIPipeParameterEditorUI u) -> u.getParameterAccess().getUIOrder())
+                    .thenComparing(JIPipeParameterEditorUI::getUIControlStyleType)
                     .thenComparing(u -> u.getParameterAccess().getName());
         } else {
             comparator = Comparator.comparing((JIPipeParameterEditorUI u) -> !u.getParameterAccess().isPinned())
                     .thenComparing((JIPipeParameterEditorUI u) -> !u.isUILabelEnabled())
                     .thenComparing(u -> u.getParameterAccess().getUIOrder())
+                    .thenComparing(JIPipeParameterEditorUI::getUIControlStyleType)
                     .thenComparing(u -> u.getParameterAccess().getName());
         }
 

@@ -15,10 +15,7 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
@@ -36,8 +33,7 @@ import java.util.Set;
 /**
  * Settings class that allows users to generate expressions with adaptive parameters
  */
-public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollection {
-    private final EventBus eventBus = new EventBus();
+public class JIPipeAdaptiveParameterSettings extends AbstractJIPipeParameterCollection {
     private boolean enabled = true;
     private StringQueryExpressionAndStringPairParameter.List overriddenParameters = new StringQueryExpressionAndStringPairParameter.List();
     private boolean attachParameterAnnotations = true;
@@ -57,11 +53,6 @@ public class JIPipeAdaptiveParameterSettings implements JIPipeParameterCollectio
         this.parameterAnnotationsUseInternalNames = other.parameterAnnotationsUseInternalNames;
         this.parameterAnnotationsPrefix = other.parameterAnnotationsPrefix;
         this.node = other.node;
-    }
-
-    @Override
-    public EventBus getEventBus() {
-        return eventBus;
     }
 
     @JIPipeDocumentation(name = "Enable adaptive parameters", description = "If enabled, you can use custom expressions to generate parameters. Please note that this will disable parallelization.")

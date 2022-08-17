@@ -50,7 +50,7 @@ import java.util.concurrent.Future;
  */
 @JIPipeDocumentationDescription(description = "This algorithm groups the incoming data based on the annotations. " +
         "Those groups can consist of one data item per slot.")
-public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm {
+public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgorithm implements JIPipeParallelizedAlgorithm, JIPipeDataBatchAlgorithm, JIPipeAdaptiveParametersAlgorithm {
 
     private JIPipeIteratingAlgorithmDataBatchGenerationSettings dataBatchGenerationSettings = new JIPipeIteratingAlgorithmDataBatchGenerationSettings();
     private JIPipeAdaptiveParameterSettings adaptiveParameterSettings = new JIPipeAdaptiveParameterSettings();
@@ -348,7 +348,7 @@ public abstract class JIPipeIteratingAlgorithm extends JIPipeParameterSlotAlgori
     }
 
     @JIPipeDocumentation(name = "Adaptive parameters", description = "You can use the following settings to generate parameter values for each data batch based on annotations.")
-    @JIPipeParameter(value = "jipipe:adaptive-parameters", collapsed = true,
+    @JIPipeParameter(value = "jipipe:adaptive-parameters", hidden = true,
             iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-function.png",
             iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-function.png")
     public JIPipeAdaptiveParameterSettings getAdaptiveParameterSettings() {

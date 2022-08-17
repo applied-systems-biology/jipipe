@@ -277,7 +277,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
 
     @JIPipeDocumentation(name = "Data batch generation", description = "This algorithm will iterate through multiple inputs at once and apply the workload. " +
             "Use following settings to control which data batches are generated.")
-    @JIPipeParameter(value = "jipipe:data-batch-generation", collapsed = true)
+    @JIPipeParameter(value = "jipipe:data-batch-generation", hidden = true)
     public JIPipeMergingAlgorithmDataBatchGenerationSettings getDataBatchGenerationSettings() {
         return dataBatchGenerationSettings;
     }

@@ -148,6 +148,11 @@ public class ListParameterEditorUI extends JIPipeParameterEditorUI {
         updateSelectionVisualizations();
     }
 
+    @Override
+    public int getUIControlStyleType() {
+        return CONTROL_STYLE_LIST;
+    }
+
     private void selectNone() {
         selectedEntryComponents.clear();
         lastClickedIndex = -1;

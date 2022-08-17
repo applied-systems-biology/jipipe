@@ -644,7 +644,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
      * A node
      */
     public static class Node {
-        private Node parent;
+        private final Node parent;
         private JIPipeParameterCollection collection;
         private String key;
         private boolean hidden;
@@ -655,7 +655,6 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
         private BiMap<String, JIPipeParameterAccess> parameters = HashBiMap.create();
         private BiMap<String, Node> children = HashBiMap.create();
         private List<JIPipeParameterCollectionContextAction> actions = new ArrayList<>();
-        private Set<String> uiExcludedSubParameters = new HashSet<>();
         private JIPipeParameterPersistence persistence = JIPipeParameterPersistence.Collection;
         private boolean collapsed;
         private String iconURL;
