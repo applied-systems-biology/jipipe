@@ -24,6 +24,8 @@ import org.hkijena.jipipe.utils.search.RankedData;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -42,6 +44,8 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
     private final boolean isDocked;
     private JList<JIPipeNodeTemplate> templateList;
     private SearchTextField searchField;
+
+    private final JPopupMenu manageMenu = new JPopupMenu();
 
     public NodeTemplateBox(JIPipeWorkbench workbench, boolean isDocked) {
         super(workbench);
@@ -131,6 +135,18 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         templateList.addListSelectionListener(e -> {
             selectNodeTemplate(templateList.getSelectedValue());
         });
+        templateList.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if(SwingUtilities.isRightMouseButton(e)) {
+                    int i = templateList.locationToIndex(e.getPoint());
+                    if(i >= 0) {
+                        templateList.addSelectionInterval(i,i);
+                    }
+                    manageMenu.show(templateList, e.getX(), e.getY());
+                }
+            }
+        });
         templateList.setDragEnabled(true);
         templateList.setTransferHandler(new NodeTemplateBoxTransferHandler());
         JScrollPane scrollPane = new JScrollPane(templateList);
@@ -141,8 +157,19 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         JButton manageButton = new JButton("Manage", UIUtils.getIconFromResources("actions/wrench.png"));
         toolBar.add(manageButton);
 
-        JPopupMenu manageMenu = UIUtils.addPopupMenuToComponent(manageButton);
+        UIUtils.addPopupMenuToComponent(manageButton, manageMenu);
 
+        initializeManageMenu();
+
+        if (isDocked) {
+            JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
+            openWindowButton.setToolTipText("Open in new window");
+            openWindowButton.addActionListener(e -> openNewToolBoxWindow(getWorkbench()));
+            toolBar.add(openWindowButton);
+        }
+    }
+
+    private void initializeManageMenu() {
         JMenuItem refreshItem = new JMenuItem("Reload list", UIUtils.getIconFromResources("actions/view-refresh.png"));
         refreshItem.addActionListener(e -> reloadTemplateList());
         manageMenu.add(refreshItem);
@@ -186,13 +213,6 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         JMenuItem deleteItem = new JMenuItem("Delete selection", UIUtils.getIconFromResources("actions/edit-delete.png"));
         deleteItem.addActionListener(e -> deleteSelection());
         manageMenu.add(deleteItem);
-
-        if (isDocked) {
-            JButton openWindowButton = new JButton(UIUtils.getIconFromResources("actions/open-in-new-window.png"));
-            openWindowButton.setToolTipText("Open in new window");
-            openWindowButton.addActionListener(e -> openNewToolBoxWindow(getWorkbench()));
-            toolBar.add(openWindowButton);
-        }
     }
 
     private void editSelected() {
