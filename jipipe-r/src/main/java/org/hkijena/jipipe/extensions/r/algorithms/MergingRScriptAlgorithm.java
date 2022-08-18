@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.r.algorithms;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
@@ -11,11 +12,13 @@ import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeDynamicParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
 import org.hkijena.jipipe.extensions.r.OptionalREnvironment;
+import org.hkijena.jipipe.extensions.r.RExtension;
 import org.hkijena.jipipe.extensions.r.RExtensionSettings;
 import org.hkijena.jipipe.extensions.r.RUtils;
 import org.hkijena.jipipe.extensions.r.parameters.RScriptParameter;
@@ -118,6 +121,12 @@ public class MergingRScriptAlgorithm extends JIPipeMergingAlgorithm {
     @JIPipeParameter("override-environment")
     public void setOverrideEnvironment(OptionalREnvironment overrideEnvironment) {
         this.overrideEnvironment = overrideEnvironment;
+    }
+
+    @Override
+    protected void onDeserialized(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
+        super.onDeserialized(node, issues, notifications);
+        RExtension.createMissingRNotificationIfNeeded(notifications);
     }
 
     @Override

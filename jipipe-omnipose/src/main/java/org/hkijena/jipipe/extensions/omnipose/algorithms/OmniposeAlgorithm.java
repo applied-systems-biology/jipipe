@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.cellpose.CellposeExtension;
 import org.hkijena.jipipe.extensions.cellpose.CellposeUtils;
@@ -629,6 +630,12 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     @JIPipeParameter("model")
     public void setModel(OmniposeModel model) {
         this.model = model;
+    }
+
+    @Override
+    protected void onDeserialized(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
+        super.onDeserialized(node, issues, notifications);
+        OmniposeExtension.createMissingPythonNotificationIfNeeded(notifications);
     }
 
     private void updateOutputSlots() {

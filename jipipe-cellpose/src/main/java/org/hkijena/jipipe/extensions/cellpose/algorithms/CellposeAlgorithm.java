@@ -14,6 +14,7 @@ import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.cellpose.CellposeExtension;
 import org.hkijena.jipipe.extensions.cellpose.CellposeModel;
@@ -640,6 +641,12 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         toggleSlot(OUTPUT_LABELS, segmentationOutputSettings.isOutputLabels());
         toggleSlot(OUTPUT_FLOWS_Z, segmentationOutputSettings.isOutputFlowsZ());
         toggleSlot(OUTPUT_ROI, segmentationOutputSettings.isOutputROI());
+    }
+
+    @Override
+    protected void onDeserialized(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
+        super.onDeserialized(node, issues, notifications);
+        CellposeExtension.createMissingPythonNotificationIfNeeded(notifications);
     }
 
     private static class CellposeImageInfo {
