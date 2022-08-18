@@ -14,6 +14,7 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.columns;
 
+import com.google.common.primitives.Doubles;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -42,7 +43,7 @@ import java.util.*;
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-public class ProcessColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ExpressionTableColumnProcessorParameterList processorParameters = new ExpressionTableColumnProcessorParameterList();
     private boolean append = false;
@@ -52,7 +53,7 @@ public class ProcessColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param info algorithm info
      */
-    public ProcessColumnsAlgorithm(JIPipeNodeInfo info) {
+    public ApplyExpressionToColumnsAlgorithm(JIPipeNodeInfo info) {
         super(info);
         processorParameters.addNewInstance();
     }
@@ -62,7 +63,7 @@ public class ProcessColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      *
      * @param other the original
      */
-    public ProcessColumnsAlgorithm(ProcessColumnsAlgorithm other) {
+    public ApplyExpressionToColumnsAlgorithm(ApplyExpressionToColumnsAlgorithm other) {
         super(other);
         this.processorParameters = new ExpressionTableColumnProcessorParameterList(other.processorParameters);
         this.append = other.append;
@@ -78,6 +79,15 @@ public class ProcessColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (append) {
             for (String columnName : input.getColumnNames()) {
                 resultColumns.add(input.getColumnReference(input.getColumnIndex(columnName)));
+            }
+        }
+        for (int col = 0; col < input.getColumnCount(); col++) {
+            TableColumn column = input.getColumnReference(col);
+            if(column.isNumeric()) {
+                expressionVariables.set(column.getLabel(), Doubles.asList(column.getDataAsDouble(column.getRows())));
+            }
+            else {
+                expressionVariables.set(column.getLabel(), Arrays.asList(column.getDataAsString(column.getRows())));
             }
         }
         for (ExpressionTableColumnProcessorParameter processor : processorParameters) {
