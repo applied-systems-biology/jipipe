@@ -14,6 +14,8 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.rows;
 
+import com.google.common.primitives.Doubles;
+import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -29,6 +31,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSour
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
 
@@ -59,6 +62,15 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
         Map<String, String> annotationsMap = JIPipeTextAnnotation.annotationListToMap(dataBatch.getMergedTextAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
         variableSet.set("annotations", annotationsMap);
         variableSet.set("num_rows", data.getRowCount());
+        for (int col = 0; col < data.getColumnCount(); col++) {
+            TableColumn column = data.getColumnReference(col);
+            if(column.isNumeric()) {
+                variableSet.set("all." + column.getLabel(), Doubles.asList(column.getDataAsDouble(column.getRows())));
+            }
+            else {
+                variableSet.set("all." + column.getLabel(), Arrays.asList(column.getDataAsString(column.getRows())));
+            }
+        }
         for (ExpressionTableColumnGeneratorProcessor expression : expressionList) {
             List<Object> generatedValues = new ArrayList<>();
             variableSet.set("num_cols", data.getColumnCount());
@@ -99,7 +111,8 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
 
         static {
             VARIABLES = new HashSet<>();
-            VARIABLES.add(new ExpressionParameterVariable("<Other column values>", "The values of the other columns are available as variables", ""));
+            VARIABLES.add(new ExpressionParameterVariable("<Column>", "Value of the column in the current row", ""));
+            VARIABLES.add(new ExpressionParameterVariable("all.<Column>", "Values of all columns", ""));
             VARIABLES.add(new ExpressionParameterVariable("Table column index", "The column index", "column"));
             VARIABLES.add(new ExpressionParameterVariable("Table column name", "The column name", "column_name"));
             VARIABLES.add(new ExpressionParameterVariable("Number of rows", "The number of rows within the table", "num_rows"));
