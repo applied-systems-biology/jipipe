@@ -1,5 +1,5 @@
 [ {
-  "name" : "Morphological dilation 2D",
+  "name" : "Dilation",
   "description" : "<html>\n  <head>\n    \n  </head>\n  <body>\n    <p>\n      Applies a dilation (2D)\n    </p>\n  </body>\n</html>\n",
   "menu-path" : [ ],
   "icon" : "actions/morphology.png",
@@ -7,7 +7,7 @@
   "fill-color" : "#CFE3E6",
   "border-color" : "#737E80"
 }, {
-  "name" : "Morphological erosion 2D",
+  "name" : "Erosion",
   "description" : "<html>\n  <head>\n    \n  </head>\n  <body>\n    <p>\n      Applies a erosion (2D)\n    </p>\n  </body>\n</html>\n",
   "menu-path" : [ ],
   "icon" : "actions/morphology.png",
@@ -15,7 +15,7 @@
   "fill-color" : "#CFE3E6",
   "border-color" : "#737E80"
 }, {
-  "name" : "Morphological external gradient 2D",
+  "name" : "External gradient",
   "description" : "<html>\n  <head>\n    \n  </head>\n  <body>\n    <p>\n      Applies an external gradient operation (2D)\n    </p>\n  </body>\n</html>\n",
   "menu-path" : [ ],
   "icon" : "actions/morphology.png",
@@ -23,7 +23,7 @@
   "fill-color" : "#CFE3E6",
   "border-color" : "#737E80"
 }, {
-  "name" : "Morphological gradient 2D",
+  "name" : "Gradient",
   "description" : "<html>\n  <head>\n    \n  </head>\n  <body>\n    <p>\n      Applies a gradient operation (2D)\n    </p>\n  </body>\n</html>\n",
   "menu-path" : [ ],
   "icon" : "actions/morphology.png",
@@ -31,7 +31,7 @@
   "fill-color" : "#CFE3E6",
   "border-color" : "#737E80"
 }, {
-  "name" : "Morphological internal gradient 2D",
+  "name" : "Internal gradient",
   "description" : "<html>\n  <head>\n    \n  </head>\n  <body>\n    <p>\n      Applies an internal gradient operation (2D)\n    </p>\n  </body>\n</html>\n",
   "menu-path" : [ ],
   "icon" : "actions/morphology.png",
@@ -39,7 +39,7 @@
   "fill-color" : "#CFE3E6",
   "border-color" : "#737E80"
 }, {
-  "name" : "Morphological white top hat 2D",
+  "name" : "White top hat",
   "description" : "<html>\n  <head>\n    \n  </head>\n  <body>\n    <p>\n      Applies a white top hat (2D)\n    </p>\n  </body>\n</html>\n",
   "menu-path" : [ ],
   "icon" : "actions/morphology.png",
@@ -47,7 +47,7 @@
   "fill-color" : "#CFE3E6",
   "border-color" : "#737E80"
 }, {
-  "name" : "Morphological black top hat 2D",
+  "name" : "Black top hat",
   "description" : "<html>\n  <head>\n    \n  </head>\n  <body>\n    <p>\n      Applies a black top hat / black hat operation (2D)\n    </p>\n  </body>\n</html>\n",
   "menu-path" : [ ],
   "icon" : "actions/morphology.png",
@@ -55,7 +55,7 @@
   "fill-color" : "#CFE3E6",
   "border-color" : "#737E80"
 }, {
-  "name" : "Morphological closing 2D",
+  "name" : "Closing",
   "description" : "<html>\n  <head>\n    \n  </head>\n  <body>\n    <p>\n      Applies a morphological closing (2D)\n    </p>\n  </body>\n</html>\n",
   "menu-path" : [ ],
   "icon" : "actions/morphology.png",
@@ -63,7 +63,7 @@
   "fill-color" : "#CFE3E6",
   "border-color" : "#737E80"
 }, {
-  "name" : "Morphological opening 2D",
+  "name" : "Opening",
   "description" : "<html>\n  <head>\n    \n  </head>\n  <body>\n    <p>\n      Applies a morphological opening (2D)\n    </p>\n  </body>\n</html>\n",
   "menu-path" : [ ],
   "icon" : "actions/morphology.png",
