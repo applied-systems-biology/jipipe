@@ -18,6 +18,7 @@ public class TransformArrayFunction extends ExpressionFunction {
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
         ExpressionVariables localVariables = new ExpressionVariables(variables);
         List<?> items = ImmutableList.copyOf((Collection<?>) parameters.get(0));
+        localVariables.set("values", items);
         String function =  DefaultExpressionEvaluator.unescapeString("\"" + parameters.get(1) + "\"");
         List<Object> results = new ArrayList<>();
         for (Object item : items) {
@@ -32,7 +33,7 @@ public class TransformArrayFunction extends ExpressionFunction {
         if (index == 0) {
             return new ParameterInfo("Sequence", "The array.", Collection.class);
         } else {
-            return new ParameterInfo("Operator", "An expression that accumulates an array <code>value</code>. Tip: use ${ [your expression] } to provide the expression.", String.class);
+            return new ParameterInfo("Expression", "An expression that is applied to each item in the array. The value is written into a variable <code>value</code>, while all values can be access via <code>values</code>. Tip: use ${ [your expression] } to provide the expression.", String.class);
         }
     }
 }
