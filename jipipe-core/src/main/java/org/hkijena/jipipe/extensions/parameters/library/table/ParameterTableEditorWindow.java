@@ -126,11 +126,8 @@ public class ParameterTableEditorWindow extends JFrame {
             LargeButtonAction action = new LargeButtonAction("Generate", "Generates new rows", UIUtils.getIcon32FromResources("actions/insert-math-expression.png"));
             JPopupMenu menu = new JPopupMenu();
             UIUtils.addReloadablePopupMenuToComponent(action.getButton(), menu, () -> {
-                menu.removeAll();
                 int[] selectedColumns = getSelectedColumns(true);
-                if(selectedColumns.length > 0) {
-                    createGenerateMenuFor(selectedColumns[0], menu);
-                }
+                createGenerateMenuFor(selectedColumns, menu);
             });
             rowBand.add(action);
         }
@@ -210,14 +207,28 @@ public class ParameterTableEditorWindow extends JFrame {
         palettePanel.addVerticalGlue();
     }
 
-    private void createGenerateMenuFor(int selectedColumn, JPopupMenu generateMenu) {
-        for (JIPipeParameterGenerator generator : JIPipe.getParameterTypes()
-                .getGeneratorsFor(parameterTable.getColumn(selectedColumn).getFieldClass())) {
-            JMenuItem generateRowItem = new JMenuItem(generator.getName());
-            generateRowItem.setToolTipText(generator.getDescription());
-            generateRowItem.setIcon(UIUtils.getIconFromResources("actions/list-add.png"));
-            generateRowItem.addActionListener(e -> generateNewRows(selectedColumn, generator));
-            generateMenu.add(generateRowItem);
+    private void createGenerateMenuFor(int[] selectedColumns, JPopupMenu generateMenu) {
+        generateMenu.removeAll();
+        if(parameterTable.getColumnCount() == 0) {
+            return;
+        }
+        if(selectedColumns == null || selectedColumns.length == 0) {
+            selectedColumns = new int[parameterTable.getColumnCount()];
+            for (int i = 0; i < parameterTable.getColumnCount(); i++) {
+                selectedColumns[i] = i;
+            }
+        }
+        for (int selectedColumn : selectedColumns) {
+            JMenu columnMenu = new JMenu(getParameterTable().getColumnName(selectedColumn));
+            for (JIPipeParameterGenerator generator : JIPipe.getParameterTypes()
+                    .getGeneratorsFor(parameterTable.getColumn(selectedColumn).getFieldClass())) {
+                JMenuItem generateRowItem = new JMenuItem(generator.getName());
+                generateRowItem.setToolTipText(generator.getDescription());
+                generateRowItem.setIcon(UIUtils.getIconFromResources("actions/list-add.png"));
+                generateRowItem.addActionListener(e -> generateNewRows(selectedColumn, generator));
+                columnMenu.add(generateRowItem);
+            }
+            generateMenu.add(columnMenu);
         }
     }
 

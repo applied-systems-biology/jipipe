@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReference;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.*;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -146,7 +147,7 @@ public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel {
                         expression = (String) o;
                     }
                     else {
-                        expression = JsonUtils.toJsonString(o);
+                        expression = "\"" + DefaultExpressionEvaluator.escapeString(JsonUtils.toJsonString(o)) + "\"";
                     }
                     target.add(new StringQueryExpressionAndStringPairParameter(expression, uniqueKey));
                 }
