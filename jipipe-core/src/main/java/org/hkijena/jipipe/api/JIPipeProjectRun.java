@@ -29,6 +29,7 @@ import org.hkijena.jipipe.api.looping.LoopStartNode;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
@@ -71,13 +72,14 @@ public class JIPipeProjectRun implements JIPipeRunnable {
     /**
      * Loads a JIPipeProjectRun from a folder
      *
-     * @param folder Folder containing the run
+     * @param folder        Folder containing the run
+     * @param notifications notifications for the user
      * @return The loaded run
      * @throws IOException Triggered by {@link com.fasterxml.jackson.databind.ObjectMapper}
      */
-    public static JIPipeProjectRun loadFromFolder(Path folder, JIPipeIssueReport report) throws IOException {
+    public static JIPipeProjectRun loadFromFolder(Path folder, JIPipeIssueReport report, JIPipeNotificationInbox notifications) throws IOException {
         Path parameterFile = folder.resolve("project.jip");
-        JIPipeProject project = JIPipeProject.loadProject(parameterFile, report);
+        JIPipeProject project = JIPipeProject.loadProject(parameterFile, report, notifications);
         JIPipeRunSettings configuration = new JIPipeRunSettings();
         configuration.setOutputPath(folder);
         JIPipeProjectRun run = new JIPipeProjectRun(project, configuration);

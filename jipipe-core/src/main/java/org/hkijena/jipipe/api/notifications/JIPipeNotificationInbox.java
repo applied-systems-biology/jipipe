@@ -60,6 +60,10 @@ public class JIPipeNotificationInbox {
         return eventBus;
     }
 
+    public boolean isEmpty() {
+        return notifications.isEmpty();
+    }
+
     /**
      * Event triggered when an inbox is updated
      */

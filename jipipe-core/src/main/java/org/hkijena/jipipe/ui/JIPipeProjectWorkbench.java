@@ -741,7 +741,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         JIPipeIssueReport report = new JIPipeIssueReport();
         report.report(getProject().getGraph());
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report, false);
+            UIUtils.openValidityReportDialog(this, report, "Error while exporting", "There seem to be various issues with the project. Please resolve these and try to export the project again.", false);
             return;
         }
         NodeGroup nodeGroup = new NodeGroup(new JIPipeGraph(getProject().getGraph()), true, false, true);

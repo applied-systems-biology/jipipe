@@ -18,6 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunSettings;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.extensions.settings.ExtensionSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -76,13 +77,13 @@ public class JIPipeRunCommand implements Command {
                 if (GraphicsEnvironment.isHeadless()) {
                     report.print();
                 } else {
-                    UIUtils.openValidityReportDialog(null, report, false);
+                    UIUtils.openValidityReportDialog(null, report, "Errors while initializing JIPipe", "There were some issues while initializing JIPipe. Please run the JIPipe GUI for more information.", false);
                 }
             }
         }
         JIPipeProject project;
         try {
-            project = JIPipeProject.loadProject(projectFile.toPath(), new JIPipeIssueReport());
+            project = JIPipeProject.loadProject(projectFile.toPath(), new JIPipeIssueReport(), new JIPipeNotificationInbox());
             project.setWorkDirectory(projectFile.toPath().getParent());
 
         } catch (IOException e) {

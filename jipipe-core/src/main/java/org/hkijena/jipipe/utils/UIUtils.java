@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
@@ -36,6 +37,7 @@ import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
+import org.hkijena.jipipe.ui.notifications.GenericNotificationInboxUI;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
@@ -911,19 +913,53 @@ public class UIUtils {
         dialog.setVisible(true);
     }
 
+    public static void openNotificationsDialog(JIPipeWorkbench workbench, Component parent, JIPipeNotificationInbox notifications, String title, String infoText) {
+        JPanel contentPanel = new JPanel(new BorderLayout(8,8));
+
+        GenericNotificationInboxUI inboxUI = new GenericNotificationInboxUI(workbench, notifications);
+        contentPanel.add(inboxUI, BorderLayout.CENTER);
+
+        JLabel label = new JLabel(infoText,
+                UIUtils.getIcon32FromResources("dialog-warning.png"), JLabel.LEFT);
+        label.setAlignmentX(0f);
+        label.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        contentPanel.add(label, BorderLayout.NORTH);
+
+        JDialog dialog = new JDialog();
+        dialog.setTitle(title);
+        dialog.setContentPane(contentPanel);
+        dialog.setModal(false);
+        dialog.pack();
+        dialog.setSize(new Dimension(800, 600));
+        dialog.setLocationRelativeTo(parent);
+        dialog.setVisible(true);
+    }
+
     /**
      * Opens a dialog showing a validity report
      *
-     * @param parent the parent component
-     * @param report the report
-     * @param modal  make the dialog modal
+     * @param parent   the parent component
+     * @param report   the report
+     * @param title the title
+     * @param infoText the info text
+     * @param modal    make the dialog modal
      */
-    public static void openValidityReportDialog(Component parent, JIPipeIssueReport report, boolean modal) {
+    public static void openValidityReportDialog(Component parent, JIPipeIssueReport report, String title, String infoText, boolean modal) {
+        JPanel contentPanel = new JPanel(new BorderLayout(8,8));
+
         JIPipeValidityReportUI ui = new JIPipeValidityReportUI(false);
         ui.setReport(report);
+        contentPanel.add(ui, BorderLayout.CENTER);
+
+        JLabel label = new JLabel(infoText,
+                UIUtils.getIcon32FromResources("dialog-error.png"), JLabel.LEFT);
+        label.setAlignmentX(0f);
+        label.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        contentPanel.add(label, BorderLayout.NORTH);
+
         JDialog dialog = new JDialog();
-        dialog.setTitle("Error");
-        dialog.setContentPane(ui);
+        dialog.setTitle(title);
+        dialog.setContentPane(contentPanel);
         dialog.setModal(modal);
         dialog.pack();
         dialog.setSize(new Dimension(800, 600));
@@ -1706,6 +1742,8 @@ public class UIUtils {
         item.addActionListener(e -> action.run());
         return item;
     }
+
+
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;

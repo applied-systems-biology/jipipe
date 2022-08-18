@@ -43,7 +43,7 @@ public class ExportNodeUIContextAction implements NodeUIContextAction {
             algorithm.reportValidity(report.resolve(algorithm.getName()));
         }
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(canvasUI, report, false);
+            UIUtils.openValidityReportDialog(canvasUI, report, "Issues detected", "There are issues with the configuration of the selected node. Try again after resolving them.", false);
             return;
         }
 

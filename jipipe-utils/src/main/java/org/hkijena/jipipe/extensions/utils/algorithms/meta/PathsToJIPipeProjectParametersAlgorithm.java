@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.multiparameters.datatypes.ParametersData;
@@ -93,7 +94,7 @@ public class PathsToJIPipeProjectParametersAlgorithm extends JIPipeIteratingAlgo
         Path projectFile = FileChooserSettings.openFile(workbench.getWindow(), FileChooserSettings.LastDirectoryKey.Projects, "Import JIPipe project", UIUtils.EXTENSION_FILTER_JIP);
         if (projectFile != null) {
             try {
-                JIPipeProject project = JIPipeProject.loadProject(projectFile, new JIPipeIssueReport());
+                JIPipeProject project = JIPipeProject.loadProject(projectFile, new JIPipeIssueReport(), new JIPipeNotificationInbox());
                 JIPipeProjectInfoParameters infoParameters = project.getPipelineParameters();
                 JIPipeParameterTree tree = new JIPipeParameterTree(infoParameters);
                 for (Map.Entry<String, JIPipeParameterAccess> entry : ImmutableList.copyOf(tree.getParameters().entrySet())) {

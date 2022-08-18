@@ -98,7 +98,7 @@ public abstract class JIPipeRunCustomAlgorithmCommand extends DynamicCommand imp
                 if (GraphicsEnvironment.isHeadless()) {
                     report.print();
                 } else {
-                    UIUtils.openValidityReportDialog(null, report, false);
+                    UIUtils.openValidityReportDialog(null, report, "Errors while initializing JIPipe", "There were some issues while initializing JIPipe. Please run the JIPipe GUI for more information.", false);
                 }
             }
         }

@@ -282,19 +282,44 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
     public static JIPipeProject loadProject(Path fileName) throws IOException {
-        return loadProject(fileName, new JIPipeIssueReport());
+        return loadProject(fileName, new JIPipeIssueReport(), new JIPipeNotificationInbox());
     }
 
     /**
      * Loads a project
      *
-     * @param fileName Project file
-     * @param report   Report whether the project is valid
+     * @param fileName      Project file
+     * @param notifications notifications for the user
+     * @return the project
+     * @throws IOException thrown if the file could not be read or the file is corrupt
+     */
+    public static JIPipeProject loadProject(Path fileName, JIPipeNotificationInbox notifications) throws IOException {
+        return loadProject(fileName, new JIPipeIssueReport(), notifications);
+    }
+
+    /**
+     * Loads a project
+     *
+     * @param fileName      Project file
+     * @param report        Report whether the project is valid
+     * @param notifications notifications for the user
+     * @return the project
+     * @throws IOException thrown if the file could not be read or the file is corrupt
+     */
+    public static JIPipeProject loadProject(Path fileName, JIPipeIssueReport report, JIPipeNotificationInbox notifications) throws IOException {
+        return JIPipeProject.loadProject(fileName, report, notifications);
+    }
+
+    /**
+     * Loads a project
+     *
+     * @param fileName      Project file
+     * @param report        Report whether the project is valid
      * @return the project
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
     public static JIPipeProject loadProject(Path fileName, JIPipeIssueReport report) throws IOException {
-        return JIPipeProject.loadProject(fileName, report);
+        return JIPipeProject.loadProject(fileName, report, new JIPipeNotificationInbox());
     }
 
     /**

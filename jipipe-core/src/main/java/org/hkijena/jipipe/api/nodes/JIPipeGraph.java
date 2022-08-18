@@ -38,6 +38,7 @@ import org.hkijena.jipipe.api.grouping.GraphWrapperAlgorithm;
 import org.hkijena.jipipe.api.looping.LoopEndNode;
 import org.hkijena.jipipe.api.looping.LoopGroup;
 import org.hkijena.jipipe.api.looping.LoopStartNode;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
@@ -896,15 +897,16 @@ public class JIPipeGraph implements JIPipeValidatable {
     /**
      * Loads this graph from JSON
      *
-     * @param jsonNode JSON data
-     * @param issues   issues reported during deserializing
+     * @param jsonNode      JSON data
+     * @param issues        issues reported during deserializing
+     * @param notifications notifications for the user
      */
-    public void fromJson(JsonNode jsonNode, JIPipeIssueReport issues) {
+    public void fromJson(JsonNode jsonNode, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
         if (!jsonNode.has("nodes"))
             return;
 
         // Load nodes
-        nodesFromJson(jsonNode, issues);
+        nodesFromJson(jsonNode, issues, notifications);
 
         // Load edges
         edgesFromJson(jsonNode, issues);
@@ -1004,7 +1006,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         }
     }
 
-    public void nodesFromJson(JsonNode jsonNode, JIPipeIssueReport issues) {
+    public void nodesFromJson(JsonNode jsonNode, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
         for (Map.Entry<String, JsonNode> entry : ImmutableList.copyOf(jsonNode.get("nodes").fields())) {
             JsonNode currentNodeJson = entry.getValue();
 
@@ -1047,7 +1049,7 @@ public class JIPipeGraph implements JIPipeValidatable {
 
                 JIPipeNodeInfo info = JIPipe.getNodes().getInfoById(id);
                 JIPipeGraphNode node = info.newInstance();
-                node.fromJson(currentNodeJson, issues.resolve("Nodes").resolve(id));
+                node.fromJson(currentNodeJson, issues.resolve("Nodes").resolve(id), notifications);
                 insertNode(nodeUUID, node, compartmentUUID);
 //                System.out.println("Insert: " + algorithm + " alias " + aliasId + " in compartment " + compartmentUUID);
                 if (aliasId != null) {
@@ -1890,7 +1892,7 @@ public class JIPipeGraph implements JIPipeValidatable {
         @Override
         public JIPipeGraph deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JIPipeGraph graph = new JIPipeGraph();
-            graph.fromJson(jsonParser.readValueAsTree(), new JIPipeIssueReport());
+            graph.fromJson(jsonParser.readValueAsTree(), new JIPipeIssueReport(), new JIPipeNotificationInbox());
             return graph;
         }
     }

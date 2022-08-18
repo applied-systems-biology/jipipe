@@ -49,7 +49,7 @@ public class ExportCompartmentToNodeUIContextAction implements NodeUIContextActi
             }
         }
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(canvasUI, report, false);
+            UIUtils.openValidityReportDialog(canvasUI, report, "Issues with nodes", "The following issues were found with the contained nodes. Retry after resolving the problems.", false);
             return;
         }
 

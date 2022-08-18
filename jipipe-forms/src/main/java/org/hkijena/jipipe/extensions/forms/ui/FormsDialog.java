@@ -577,7 +577,7 @@ public class FormsDialog extends JFrame {
                     "they are marked immutable.", "Copy settings", JOptionPane.WARNING_MESSAGE);
         }
         if (!report.isValid()) {
-            UIUtils.openValidityReportDialog(this, report, true);
+            UIUtils.openValidityReportDialog(this, report, "Errors while copying settings", "The following issues were detected while copying the data:", true);
         }
     }
 

@@ -38,6 +38,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
@@ -101,15 +102,16 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Loads a project from a file
      *
-     * @param fileName JSON file
-     * @param report   issue report
+     * @param fileName      JSON file
+     * @param report        issue report
+     * @param notifications notifications for the user
      * @return Loaded project
      * @throws IOException Triggered by {@link ObjectMapper}
      */
-    public static JIPipeProject loadProject(Path fileName, JIPipeIssueReport report) throws IOException {
+    public static JIPipeProject loadProject(Path fileName, JIPipeIssueReport report, JIPipeNotificationInbox notifications) throws IOException {
         JsonNode jsonData = JsonUtils.getObjectMapper().readValue(fileName.toFile(), JsonNode.class);
         JIPipeProject project = new JIPipeProject();
-        project.fromJson(jsonData, report);
+        project.fromJson(jsonData, report, notifications);
         project.setWorkDirectory(fileName.getParent());
         return project;
     }
@@ -500,9 +502,10 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Loads the project from JSON
      *
-     * @param jsonNode the node
+     * @param jsonNode      the node
+     * @param notifications notifications for the user
      */
-    public void fromJson(JsonNode jsonNode, JIPipeIssueReport report) throws IOException {
+    public void fromJson(JsonNode jsonNode, JIPipeIssueReport report, JIPipeNotificationInbox notifications) throws IOException {
         try {
             isLoading = true;
 
@@ -531,10 +534,10 @@ public class JIPipeProject implements JIPipeValidatable {
             }
 
             // We must first load the graph, as we can infer compartments later
-            graph.fromJson(jsonNode.get("graph"), new JIPipeIssueReport());
+            graph.fromJson(jsonNode.get("graph"), new JIPipeIssueReport(), notifications);
 
             // read compartments
-            compartmentGraph.fromJson(jsonNode.get("compartments").get("compartment-graph"), new JIPipeIssueReport());
+            compartmentGraph.fromJson(jsonNode.get("compartments").get("compartment-graph"), new JIPipeIssueReport(), notifications);
 
             // Fix legacy nodes
             for (Map.Entry<UUID, String> entry : graph.getNodeLegacyCompartmentIDs().entrySet()) {
@@ -769,7 +772,7 @@ public class JIPipeProject implements JIPipeValidatable {
         public JIPipeProject deserialize(JsonParser jsonParser, DeserializationContext deserializationContext) throws IOException, JsonProcessingException {
             JIPipeProject project = new JIPipeProject();
             JsonNode node = jsonParser.getCodec().readTree(jsonParser);
-            project.fromJson(node, new JIPipeIssueReport());
+            project.fromJson(node, new JIPipeIssueReport(), new JIPipeNotificationInbox());
             return project;
         }
     }

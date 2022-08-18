@@ -7,10 +7,7 @@ import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -18,23 +15,19 @@ import java.awt.*;
 import java.util.List;
 import java.util.*;
 
-public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
+public class GenericNotificationInboxUI extends JIPipeWorkbenchPanel {
 
     private final FormPanel notificationsPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
     private final FormPanel dismissedNotificationsPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
     private final FormPanel hiddenNotificationsPanel = new FormPanel(null, FormPanel.WITH_SCROLLING);
     private final List<JIPipeNotification> dismissedNotifications = new ArrayList<>();
+    private final JIPipeNotificationInbox inbox;
 
-    /**
-     * @param workbench the workbench
-     */
-    public WorkbenchNotificationInboxUI(JIPipeWorkbench workbench) {
+    public GenericNotificationInboxUI(JIPipeWorkbench workbench, JIPipeNotificationInbox inbox) {
         super(workbench);
+        this.inbox = inbox;
         initialize();
         updateNotifications();
-
-        JIPipeNotificationInbox.getInstance().getEventBus().register(this);
-        getWorkbench().getNotificationInbox().getEventBus().register(this);
     }
 
     public void updateNotifications() {
@@ -44,8 +37,7 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
 
         Set<JIPipeNotification> notificationSet = new TreeSet<>();
         if (NotificationUISettings.getInstance().isEnableNotifications()) {
-            notificationSet.addAll(JIPipeNotificationInbox.getInstance().getNotifications());
-            notificationSet.addAll(getWorkbench().getNotificationInbox().getNotifications());
+            notificationSet.addAll(inbox.getNotifications());
         }
 
         Set<String> blockedIds = new HashSet<>(NotificationUISettings.getInstance().getBlockedNotifications());
@@ -53,13 +45,13 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
         boolean hasNotifications = false;
         for (JIPipeNotification notification : notificationSet) {
             if (blockedIds.contains(notification.getId())) {
-                hiddenNotificationsPanel.addWideToForm(new WorkbenchNotificationUI(this,
+                hiddenNotificationsPanel.addWideToForm(new GenericNotificationUI(this,
                                 notification,
                                 true,
                                 false),
                         null);
             } else {
-                notificationsPanel.addWideToForm(new WorkbenchNotificationUI(this,
+                notificationsPanel.addWideToForm(new GenericNotificationUI(this,
                                 notification,
                                 false,
                                 false),
@@ -68,7 +60,7 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
             }
         }
         for (JIPipeNotification notification : dismissedNotifications) {
-            dismissedNotificationsPanel.addWideToForm(new WorkbenchNotificationUI(this,
+            dismissedNotificationsPanel.addWideToForm(new GenericNotificationUI(this,
                             notification,
                             false,
                             true),
@@ -118,9 +110,7 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        JSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, documentTabPane,
-                new MarkdownReader(false, MarkdownDocument.fromPluginResource("documentation/notifications.md", Collections.emptyMap())), AutoResizeSplitPane.RATIO_3_TO_1);
-        add(splitPane, BorderLayout.CENTER);
+        add(documentTabPane, BorderLayout.CENTER);
     }
 
     @Subscribe

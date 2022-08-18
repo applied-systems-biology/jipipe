@@ -21,6 +21,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.registries.JIPipeExtensionRegistry;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
@@ -253,6 +254,7 @@ public class JIPipeProjectWindow extends JFrame {
     public void openProject(Path path) {
         if (Files.isRegularFile(path)) {
             JIPipeIssueReport report = new JIPipeIssueReport();
+            JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
             try {
                 JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
                 Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
@@ -280,7 +282,7 @@ public class JIPipeProjectWindow extends JFrame {
                 }
 
                 JIPipeProject project = new JIPipeProject();
-                project.fromJson(jsonData, report);
+                project.fromJson(jsonData, report, notifications);
                 project.setWorkDirectory(path.getParent());
                 JIPipeProjectWindow window = openProjectInThisOrNewWindow("Open project", project, false, false);
                 if (window == null)
@@ -289,14 +291,19 @@ public class JIPipeProjectWindow extends JFrame {
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
                 window.updateTitle();
                 ProjectsSettings.getInstance().addRecentProject(path);
+                if(!notifications.isEmpty()) {
+                    UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.");
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             if (!report.isValid()) {
-                UIUtils.openValidityReportDialog(this, report, false);
+                UIUtils.openValidityReportDialog(this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
+                        "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
             }
         } else if (Files.isDirectory(path)) {
             JIPipeIssueReport report = new JIPipeIssueReport();
+            JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
             try {
                 Path parameterFilePath = path.resolve("project.jip");
                 JsonNode jsonData = JsonUtils.getObjectMapper().readValue(parameterFilePath.toFile(), JsonNode.class);
@@ -307,7 +314,7 @@ public class JIPipeProjectWindow extends JFrame {
                         return;
                 }
 
-                JIPipeProjectRun run = JIPipeProjectRun.loadFromFolder(path, report);
+                JIPipeProjectRun run = JIPipeProjectRun.loadFromFolder(path, report, notifications);
                 run.getProject().setWorkDirectory(path);
                 JIPipeProjectWindow window = openProjectInThisOrNewWindow("Open JIPipe output", run.getProject(), false, false);
                 if (window == null)
@@ -341,13 +348,17 @@ public class JIPipeProjectWindow extends JFrame {
                     // Load into cache with a run
                     JIPipeRunExecuterUI.runInDialog(this, new LoadResultIntoCacheRun(projectUI, project, path));
                 }
-
+                if(!notifications.isEmpty()) {
+                    UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.");
+                }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
             if (!report.isValid()) {
-                UIUtils.openValidityReportDialog(this, report, false);
+                UIUtils.openValidityReportDialog(this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
+                        "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
             }
+
         }
     }
 
@@ -393,7 +404,7 @@ public class JIPipeProjectWindow extends JFrame {
             getProject().saveProject(tempFile);
 
             // Check if the saved project can be loaded
-            JIPipeProject.loadProject(tempFile, new JIPipeIssueReport());
+            JIPipeProject.loadProject(tempFile, new JIPipeIssueReport(), new JIPipeNotificationInbox());
 
             // Overwrite the target file
             if (Files.exists(savePath))

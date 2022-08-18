@@ -21,6 +21,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
+import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -28,7 +30,6 @@ import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToOutputExporterRun;
 import org.hkijena.jipipe.ui.cache.importers.JIPipeImportCachedSlotOutputRun;
 import org.hkijena.jipipe.ui.cache.renderers.CacheStateListCellRenderer;
 import org.hkijena.jipipe.ui.cache.renderers.CachedOutputDataSlotListCellRenderer;
-import org.hkijena.jipipe.ui.components.renderers.JIPipeProjectCacheStateListCellRenderer;
 import org.hkijena.jipipe.ui.components.ribbon.LargeButtonAction;
 import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
 import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
@@ -37,14 +38,12 @@ import org.hkijena.jipipe.ui.datatable.JIPipeExtendedMultiDataTableUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.actions.UpdateCacheAction;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
-import org.hkijena.jipipe.ui.grapheditor.general.properties.JIPipeDataSlotListCellRenderer;
 import org.hkijena.jipipe.ui.quickrun.QuickRun;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
-import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -269,9 +268,11 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
             try {
                 JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(nodeStateFile.toFile());
                 JIPipeIssueReport report = new JIPipeIssueReport();
-                JIPipeGraphNode stateNode = JIPipeGraphNode.fromJsonNode(node, report);
+                JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
+                JIPipeGraphNode stateNode = JIPipeGraphNode.fromJsonNode(node, report, notifications);
                 if (!report.isValid()) {
-                    UIUtils.openValidityReportDialog(this, report, true);
+                    UIUtils.openValidityReportDialog(this, report, "Error while loading node", new HTMLText("Information about the cached node could not be loaded.<br/>" +
+                            "Although the data will be loaded, this could indicate a problem with the cached data.").getHtml(), true);
                 }
                 if (stateNode.getInfo() != graphNode.getInfo()) {
                     if (JOptionPane.showConfirmDialog(this,

@@ -27,6 +27,7 @@ import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.awt.Point;
@@ -204,7 +205,7 @@ public class JIPipeExportedCompartment {
             JIPipeExportedCompartment exportedCompartment = new JIPipeExportedCompartment();
 
             JsonNode node = jsonParser.readValueAsTree();
-            exportedCompartment.graph.fromJson(node.get("graph"), new JIPipeIssueReport());
+            exportedCompartment.graph.fromJson(node.get("graph"), new JIPipeIssueReport(), new JIPipeNotificationInbox());
             if (node.has("metadata"))
                 exportedCompartment.metadata = JsonUtils.getObjectMapper().readerFor(JIPipeMetadata.class).readValue(node.get("metadata"));
 

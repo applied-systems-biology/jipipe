@@ -2,7 +2,6 @@ package org.hkijena.jipipe.ui.notifications;
 
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationAction;
-import org.hkijena.jipipe.extensions.settings.NotificationUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -10,25 +9,26 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 
-public class NotificationUI extends JIPipeWorkbenchPanel {
+public class GenericNotificationUI extends JIPipeWorkbenchPanel {
 
-    private final WorkbenchNotificationInboxUI inboxUI;
+    private final GenericNotificationInboxUI inboxUI;
     private final JIPipeNotification notification;
-    private final boolean blocked;
     private final boolean dismissed;
+
+    private final boolean blocked;
 
     /**
      * @param inboxUI      the workbench
      * @param notification the notification instance
-     * @param blocked      if blocked
      * @param dismissed    if dismissed
+     * @param blocked if blocked
      */
-    public NotificationUI(WorkbenchNotificationInboxUI inboxUI, JIPipeNotification notification, boolean blocked, boolean dismissed) {
+    public GenericNotificationUI(GenericNotificationInboxUI inboxUI, JIPipeNotification notification, boolean dismissed, boolean blocked) {
         super(inboxUI.getWorkbench());
         this.inboxUI = inboxUI;
         this.notification = notification;
-        this.blocked = blocked;
         this.dismissed = dismissed;
+        this.blocked = blocked;
         initialize();
     }
 
@@ -47,26 +47,12 @@ public class NotificationUI extends JIPipeWorkbenchPanel {
         headerPanel.add(Box.createHorizontalGlue());
         add(headerPanel, BorderLayout.NORTH);
 
-        if (this.blocked) {
-            JButton unblockButton = new JButton("Unblock", UIUtils.getIconFromResources("actions/eye.png"));
-            UIUtils.makeBorderlessWithoutMargin(unblockButton);
-            unblockButton.setToolTipText("Unblocks this type of notification");
-            unblockButton.addActionListener(e -> unblock());
-            headerPanel.add(unblockButton);
-        } else {
-            JButton blockButton = new JButton(UIUtils.getIconFromResources("actions/eye-slash.png"));
-            UIUtils.makeFlat25x25(blockButton);
-            blockButton.setToolTipText("Blocks this type of notification");
-            blockButton.addActionListener(e -> block());
-            headerPanel.add(blockButton);
-
-            if (!dismissed) {
-                JButton dismissButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
-                UIUtils.makeFlat25x25(dismissButton);
-                dismissButton.setToolTipText("Dismisses this notification");
-                dismissButton.addActionListener(e -> dismiss());
-                headerPanel.add(dismissButton);
-            }
+        if (!dismissed && !blocked) {
+            JButton dismissButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
+            UIUtils.makeFlat25x25(dismissButton);
+            dismissButton.setToolTipText("Dismisses this notification");
+            dismissButton.addActionListener(e -> dismiss());
+            headerPanel.add(dismissButton);
         }
 
         // Add content
@@ -95,22 +81,8 @@ public class NotificationUI extends JIPipeWorkbenchPanel {
         add(actionPanel, BorderLayout.SOUTH);
     }
 
-    private void block() {
-        if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(), "Do you really want to block all future notifications of " +
-                "the type '" + notification.getHeading() + "'?", "Block notification", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            NotificationUISettings.getInstance().getBlockedNotifications().add(notification.getId());
-            NotificationUISettings.getInstance().triggerParameterChange("blocked-action-notifications");
-            dismiss();
-        }
-    }
-
     private void dismiss() {
         inboxUI.getDismissedNotifications().add(notification);
         notification.dismiss();
-    }
-
-    private void unblock() {
-        NotificationUISettings.getInstance().getBlockedNotifications().remove(notification.getId());
-        NotificationUISettings.getInstance().triggerParameterChange("blocked-action-notifications");
     }
 }
