@@ -161,10 +161,9 @@ public class OmniposeExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerEnvironmentInstaller(PythonEnvironment.class, OmniposeEasyInstaller.class, UIUtils.getIconFromResources("emblems/vcs-normal.png"));
     }
 
-    @Override
-    public void postprocess() {
+    public static void createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox inbox) {
         if (!OmniposeSettings.pythonSettingsAreValid()) {
-            JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":python-not-configured");
+            JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":python-not-configured");
             notification.setHeading("Omnipose is not configured");
             notification.setDescription("You need to setup a Python environment that contains Omnipose." + "Click 'Install Omnipose' to let JIPipe setup a Python distribution with Omnipose automatically. " +
                     "You can choose between the standard CPU and GPU-accelerated installation (choose CPU if you are unsure). " +
@@ -178,7 +177,12 @@ public class OmniposeExtension extends JIPipePrepackagedDefaultJavaExtension {
                     "Opens the applications settings page",
                     UIUtils.getIconFromResources("actions/configure.png"),
                     OmniposeExtension::configureOmnipose));
-            JIPipeNotificationInbox.getInstance().push(notification);
+            inbox.push(notification);
         }
+    }
+
+    @Override
+    public void postprocess() {
+        createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
     }
 }

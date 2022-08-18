@@ -182,10 +182,9 @@ public class CellposeExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("import-cellpose-size-model", ImportCellposeSizeModelAlgorithm.class);
     }
 
-    @Override
-    public void postprocess() {
+    public static void createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox inbox) {
         if (!CellposeSettings.pythonSettingsAreValid()) {
-            JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":python-not-configured");
+            JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":python-not-configured");
             notification.setHeading("Cellpose is not configured");
             notification.setDescription("You need to setup a Python environment that contains Cellpose." + "Click 'Install Cellpose' to let JIPipe setup a Python distribution with Cellpose automatically. " +
                     "You can choose between the standard CPU and GPU-accelerated installation (choose CPU if you are unsure). " +
@@ -199,7 +198,12 @@ public class CellposeExtension extends JIPipePrepackagedDefaultJavaExtension {
                     "Opens the applications settings page",
                     UIUtils.getIconFromResources("actions/configure.png"),
                     CellposeExtension::configureCellpose));
-            JIPipeNotificationInbox.getInstance().push(notification);
+            inbox.push(notification);
         }
+    }
+
+    @Override
+    public void postprocess() {
+        createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
     }
 }

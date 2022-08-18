@@ -161,10 +161,9 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeExamplesFromResources(RESOURCES, "examples");
     }
 
-    @Override
-    public void postprocess() {
+    public static void createMissingRNotificationIfNeeded(JIPipeNotificationInbox inbox) {
         if (!RExtensionSettings.RSettingsAreValid()) {
-            JIPipeNotification notification = new JIPipeNotification(getDependencyId() + ":r-not-configured");
+            JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":r-not-configured");
             notification.setHeading("R is not configured");
             notification.setDescription("To make use of R within JIPipe, you need to either provide JIPipe with an " +
                     "existing R installation or let JIPipe install a R distribution for you. Please note that we cannot provide you with an R " +
@@ -180,7 +179,12 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
                     "Opens the applications settings page",
                     UIUtils.getIconFromResources("actions/configure.png"),
                     RExtension::configureR));
-            JIPipeNotificationInbox.getInstance().push(notification);
+            inbox.push(notification);
         }
+    }
+
+    @Override
+    public void postprocess() {
+      createMissingRNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
     }
 }
