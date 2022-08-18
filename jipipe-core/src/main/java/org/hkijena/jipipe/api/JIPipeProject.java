@@ -104,6 +104,18 @@ public class JIPipeProject implements JIPipeValidatable {
      *
      * @param fileName      JSON file
      * @param report        issue report
+     * @return Loaded project
+     * @throws IOException Triggered by {@link ObjectMapper}
+     */
+    public static JIPipeProject loadProject(Path fileName, JIPipeIssueReport report) throws IOException {
+        return loadProject(fileName, report, new JIPipeNotificationInbox());
+    }
+
+    /**
+     * Loads a project from a file
+     *
+     * @param fileName      JSON file
+     * @param report        issue report
      * @param notifications notifications for the user
      * @return Loaded project
      * @throws IOException Triggered by {@link ObjectMapper}
