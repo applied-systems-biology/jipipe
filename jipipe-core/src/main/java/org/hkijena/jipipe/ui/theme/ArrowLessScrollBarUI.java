@@ -34,7 +34,6 @@ public class ArrowLessScrollBarUI extends BasicScrollBarUI {
             else
                 return super.createDecreaseButton(orientation);
         } catch (NullPointerException e) {
-            e.printStackTrace();
             return super.createDecreaseButton(orientation);
         }
     }
