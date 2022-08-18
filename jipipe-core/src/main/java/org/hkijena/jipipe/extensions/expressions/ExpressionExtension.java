@@ -11,6 +11,8 @@ import org.hkijena.jipipe.extensions.expressions.functions.control.*;
 import org.hkijena.jipipe.extensions.expressions.functions.convert.*;
 import org.hkijena.jipipe.extensions.expressions.functions.datetime.*;
 import org.hkijena.jipipe.extensions.expressions.functions.filesystem.*;
+import org.hkijena.jipipe.extensions.expressions.functions.functions.DefineUserFunction;
+import org.hkijena.jipipe.extensions.expressions.functions.functions.EvaluateUserFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.math.ClampFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.math.PercentageFunction;
 import org.hkijena.jipipe.extensions.expressions.functions.math.RandomFunction;
@@ -261,6 +263,10 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new RandomFunction());
         registerExpressionFunction(new SliceFunction());
         registerExpressionFunction(new ExpressionSequenceFunction());
+        registerExpressionFunction(new IfElseExprFunction());
+        registerExpressionFunction(new SetVariablesFunction());
+        registerExpressionFunction(new DefineUserFunction());
+        registerExpressionFunction(new EvaluateUserFunction());
     }
 
     @Override

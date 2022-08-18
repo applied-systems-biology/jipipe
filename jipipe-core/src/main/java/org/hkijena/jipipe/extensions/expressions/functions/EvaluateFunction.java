@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions;
 
+import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
@@ -8,6 +9,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 import org.hkijena.jipipe.utils.StringUtils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -39,8 +41,9 @@ public class EvaluateFunction extends ExpressionFunction {
         if (index == 0) {
             return new ParameterInfo("Expression", "String that contains the evaluated expression", String.class);
         } else {
-            return new ParameterInfo("Variable " + index, "String that has following format: [Variable name]=[Expression]." +
-                    " The result of [Expression] is assigned to [Variable name] for the evaluated expression", String.class);
+            return new ParameterInfo("Variable " + index, "Supports either a string or an array.\nArray: should have two items (key and value). Use ARRAY(key, value), PAIR(key, value), or key: value. The key must be a string." +
+                    "\nString: Must following format: [Variable name]=[Expression]." +
+                    " The result of [Expression] is assigned to [Variable name] for the evaluated expression", String.class, List.class);
         }
     }
 
@@ -56,8 +59,14 @@ public class EvaluateFunction extends ExpressionFunction {
 
             // Add other variables
             for (int i = 1; i < parameters.size(); i++) {
-                String parameter = (String) parameters.get(i);
-                parseVariableAssignment(variables, localVariables, parameter);
+                if(parameters.get(i) instanceof Collection)  {
+                    List<?> items = ImmutableList.copyOf((Collection<?>) parameters.get(i));
+                    localVariables.set("" + items.get(0), items.get(1));
+                }
+                else {
+                    String parameter = (String) parameters.get(i);
+                    parseVariableAssignment(variables, localVariables, parameter);
+                }
             }
         } else {
             localVariables = variables;

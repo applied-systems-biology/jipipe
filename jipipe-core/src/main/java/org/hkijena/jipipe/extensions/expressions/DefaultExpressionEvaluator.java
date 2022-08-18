@@ -68,6 +68,8 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final ExpressionOperator OPERATOR_ELEMENT_ACCESS_SYMBOL = new ElementAccessOperator("@");
     public static final ExpressionOperator OPERATOR_STATEMENT = new StatementOperator();
 
+    public static final ExpressionOperator OPERATOR_PAIR = new PairOperator();
+
     private final Set<String> knownOperatorTokens = new HashSet<>();
     private final List<String> knownNonAlphanumericOperatorTokens = new ArrayList<>();
 
@@ -86,7 +88,9 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         Parameters parameters = new Parameters();
         parameters.addFunctionBracket(BracketPair.PARENTHESES);
         parameters.addExpressionBracket(BracketPair.PARENTHESES);
+
         parameters.add(OPERATOR_STATEMENT);
+        parameters.add(OPERATOR_PAIR);
 
         parameters.add(CONSTANT_NULL);
         parameters.add(CONSTANT_TRUE);
@@ -221,15 +225,46 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
         }
     }
 
+    public static String unescapeString(String escapedString) {
+        return org.hkijena.jipipe.utils.StringUtils.nullToEmpty(DefaultExpressionParameter.getEvaluatorInstance().evaluate(escapedString, new ExpressionVariables()));
+    }
+
     public List<String> tokenize(String expression, boolean includeQuotesAsToken, boolean includeQuotesIntoToken) {
         StringBuilder buffer = new StringBuilder();
         boolean isQuoted = false;
         boolean escape = false;
+        int expressionEscape = 0;
         AtomicBoolean resolveVariable = new AtomicBoolean(false);
         List<String> tokens = new ArrayList<>();
 
         for (int i = 0; i < expression.length(); i++) {
             char c = expression.charAt(i);
+
+            // Expression escape behavior
+            if(!isQuoted && !escape && c == '$' && i < expression.length() - 1 && expression.charAt(i + 1) == '{') {
+                ++expressionEscape;
+                i += 1; // Yes, this is ugly - we need to skip two steps
+                if(expressionEscape == 1) {
+                    buffer.setLength(0);
+                }
+                continue;
+            }
+            if(expressionEscape > 0 && c == '}') {
+                --expressionEscape;
+                if(expressionEscape <= 0) {
+                    // Convert to string and flush
+                    String escaped = "\"" + escapeString(buffer.toString()) + "\"";
+                    tokens.add(escaped);
+                    buffer.setLength(0);
+                }
+                continue;
+            }
+            if(expressionEscape > 0) {
+                buffer.append(c);
+                continue;
+            }
+
+            // Standard behavior
             if (c == '"' && !escape) {
                 if (!isQuoted) {
                     // Process buffer up until now

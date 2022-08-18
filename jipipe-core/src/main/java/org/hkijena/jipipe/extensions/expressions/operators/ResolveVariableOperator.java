@@ -20,7 +20,8 @@ import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
 
 import java.util.Iterator;
 
-@JIPipeDocumentation(name = "Resolve variable", description = "Resolves the right operand as variable.")
+@JIPipeDocumentation(name = "Resolve variable/Escape expression", description = "If followed by a string $\"variable name\", the value of the variable with the name 'variable name' is returned. " +
+        "If used in conjunction with braces ${ }, all parts within the braces are turned into a string as-is.")
 public class ResolveVariableOperator extends ExpressionOperator {
     public ResolveVariableOperator() {
         super("$", 1, Associativity.RIGHT, 10);

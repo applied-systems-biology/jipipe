@@ -34,6 +34,8 @@ public class ExpressionBuilderParameterUI extends JPanel {
     private final JComboBox<Mode> modeJComboBox = new JComboBox<>();
     private final DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
     private RSyntaxTextArea expressionEditor;
+
+    private RSyntaxTextArea rawExpressionEditor;
     private JCheckBox booleanEditor;
     private JSpinner numberEditor;
     private JTextField variableEditor;
@@ -85,12 +87,18 @@ public class ExpressionBuilderParameterUI extends JPanel {
                 return Collections.singleton("text/expression");
             }
         };
-        RSyntaxDocument document = new RSyntaxDocument(tokenMakerFactory, "text/expression");
-        expressionEditor = new RSyntaxTextArea(document);
+
+        expressionEditor = new RSyntaxTextArea(new RSyntaxDocument(tokenMakerFactory, "text/expression"));
         UIUtils.applyThemeToCodeEditor(expressionEditor);
         expressionEditor.setBackground(UIManager.getColor("TextArea.background"));
         expressionEditor.setLineWrap(true);
         expressionEditor.setHighlightCurrentLine(false);
+
+        rawExpressionEditor = new RSyntaxTextArea(new RSyntaxDocument(tokenMakerFactory, "text/expression"));
+        UIUtils.applyThemeToCodeEditor(rawExpressionEditor);
+        rawExpressionEditor.setBackground(UIManager.getColor("TextArea.background"));
+        rawExpressionEditor.setLineWrap(true);
+        rawExpressionEditor.setHighlightCurrentLine(false);
 
         // Panel that contains the editors
         editorPanel = new JPanel(new CardLayout());
@@ -105,6 +113,14 @@ public class ExpressionBuilderParameterUI extends JPanel {
             expressionEditorPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
                     BorderFactory.createEmptyBorder(5, 4, 0, 4)));
             editorPanel.add(expressionEditorPanel, Mode.Expression.name());
+        }
+        {
+            JPanel expressionEditorPanel = new JPanel(new BorderLayout());
+            expressionEditorPanel.setBackground(UIManager.getColor("TextArea.background"));
+            expressionEditorPanel.add(rawExpressionEditor, BorderLayout.CENTER);
+            expressionEditorPanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEtchedBorder(),
+                    BorderFactory.createEmptyBorder(5, 4, 0, 4)));
+            editorPanel.add(expressionEditorPanel, Mode.RawExpression.name());
         }
         add(editorPanel, BorderLayout.CENTER);
     }
@@ -123,6 +139,8 @@ public class ExpressionBuilderParameterUI extends JPanel {
                 return DefaultExpressionEvaluator.escapeVariable(variableEditor.getText());
             case Expression:
                 return expressionEditor.getText();
+            case RawExpression:
+                return "${" + rawExpressionEditor.getText() + "}";
             case String:
                 return "\"" + DefaultExpressionEvaluator.escapeString(stringEditor.getText()) + "\"";
             default:
@@ -140,6 +158,16 @@ public class ExpressionBuilderParameterUI extends JPanel {
         Variable,
         Boolean,
         Number,
-        String
+        String,
+        RawExpression;
+
+
+        @Override
+        public java.lang.String toString() {
+            if(this == RawExpression) {
+                return "Raw expression";
+            }
+            return super.toString();
+        }
     }
 }
