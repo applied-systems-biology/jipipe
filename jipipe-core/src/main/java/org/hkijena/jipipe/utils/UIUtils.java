@@ -919,11 +919,13 @@ public class UIUtils {
         GenericNotificationInboxUI inboxUI = new GenericNotificationInboxUI(workbench, notifications);
         contentPanel.add(inboxUI, BorderLayout.CENTER);
 
-        JLabel label = new JLabel(infoText,
-                UIUtils.getIcon32FromResources("dialog-warning.png"), JLabel.LEFT);
-        label.setAlignmentX(0f);
-        label.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        contentPanel.add(label, BorderLayout.NORTH);
+        JPanel messagePanel = new JPanel(new GridBagLayout());
+        messagePanel.setBorder(BorderFactory.createEmptyBorder(16,8,16,8));
+        messagePanel.add(new JLabel(UIUtils.getIcon32FromResources("dialog-warning.png")),
+                new GridBagConstraints(0,0,1,1,0,0,GridBagConstraints.NORTHWEST,GridBagConstraints.NONE, new Insets(4,4,4,4), 0,0));
+        messagePanel.add(makeReadonlyBorderlessTextArea(infoText),
+                new GridBagConstraints(1,0,1,1,1,1,GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(4,4,4,4), 0,0));
+        contentPanel.add(messagePanel, BorderLayout.NORTH);
 
         JDialog dialog = new JDialog();
         dialog.setTitle(title);
@@ -951,11 +953,13 @@ public class UIUtils {
         ui.setReport(report);
         contentPanel.add(ui, BorderLayout.CENTER);
 
-        JLabel label = new JLabel(infoText,
-                UIUtils.getIcon32FromResources("dialog-error.png"), JLabel.LEFT);
-        label.setAlignmentX(0f);
-        label.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
-        contentPanel.add(label, BorderLayout.NORTH);
+        JPanel messagePanel = new JPanel(new GridBagLayout());
+        messagePanel.setBorder(BorderFactory.createEmptyBorder(16,8,16,8));
+        messagePanel.add(new JLabel(UIUtils.getIcon32FromResources("dialog-error.png")),
+                new GridBagConstraints(0,0,1,1,0,0,GridBagConstraints.NORTHWEST,GridBagConstraints.NONE, new Insets(4,4,4,4), 0,0));
+        messagePanel.add(makeReadonlyBorderlessTextArea(infoText),
+                new GridBagConstraints(1,0,1,1,1,1,GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(4,4,4,4), 0,0));
+        contentPanel.add(messagePanel, BorderLayout.NORTH);
 
         JDialog dialog = new JDialog();
         dialog.setTitle(title);
