@@ -562,8 +562,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
                 // Validate ID
                 if (!isValidExtensionId(extension.getDependencyId())) {
-                    System.err.println("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension.");
-                    progressInfo.log("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension.");
+                    System.err.println("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension);
+                    progressInfo.log("Invalid extension ID: " + extension.getDependencyId() + ". Please contact the developer of the extension " + extension);
                 }
 
                 // Check if the extension should be loaded
