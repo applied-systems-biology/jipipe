@@ -17,7 +17,7 @@ import static org.hkijena.jipipe.extensions.expressions.functions.EvaluateFuncti
 @JIPipeDocumentation(name = "Foreach loop", description = "Repeats an expression for all items of the second parameter. The expression values are assigned to a variable.")
 public class ForEachFunction extends ExpressionFunction {
     public ForEachFunction() {
-        super("FOREACH", 2, Integer.MAX_VALUE);
+        super("FOREACH", 2);
     }
 
     @Override
@@ -25,12 +25,6 @@ public class ForEachFunction extends ExpressionFunction {
         ExpressionVariables localVariables = new ExpressionVariables();
         for (Map.Entry<String, Object> entry : variables.entrySet()) {
             localVariables.put(entry.getKey(), entry.getValue());
-        }
-
-        // Evaluate other parameters
-        for (int i = 2; i < parameters.size(); i++) {
-            String parameter = (String) parameters.get(i);
-            parseVariableAssignment(variables, localVariables, parameter);
         }
 
         // Evaluate iterated
@@ -71,7 +65,7 @@ public class ForEachFunction extends ExpressionFunction {
     @Override
     public ParameterInfo getParameterInfo(int index) {
         if (index == 0) {
-            return new ParameterInfo("Expression", "String that contains the evaluated expression", String.class);
+            return new ParameterInfo("Expression", "String that contains the evaluated expression. Tip: use the escape expression operator ${ [your expression here] }", String.class);
         } else if (index == 1) {
             return new ParameterInfo("Sequence", "The sequence to be looped. Can be a string or array. " +
                     "If it is an array, the current item is assigned to a variable 'item'." +
