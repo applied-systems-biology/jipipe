@@ -118,14 +118,13 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         // Cumulative if enabled
         if(cumulative) {
             TDoubleDoubleMap cumulativeIntegratedValues = new TDoubleDoubleHashMap();
-            double cumulativeValue = 0;
+            double previousValue = 0;
             for (double key : sortedKeys) {
                 if(progressInfo.isCancelled())
                     return;
-                double value = integratedValues.get(key);
-                double value_ = value + cumulativeValue;
-                cumulativeValue += value;
-                cumulativeIntegratedValues.put(key, value_);
+                double value = integratedValues.get(key) + previousValue;
+                previousValue = value;
+                cumulativeIntegratedValues.put(key, value);
             }
             integratedValues = cumulativeIntegratedValues;
         }
