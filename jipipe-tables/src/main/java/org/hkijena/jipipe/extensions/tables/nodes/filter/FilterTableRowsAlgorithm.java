@@ -14,6 +14,7 @@
 
 package org.hkijena.jipipe.extensions.tables.nodes.filter;
 
+import com.google.common.primitives.Doubles;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -26,8 +27,10 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVari
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -68,7 +71,18 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
+        for (int col = 0; col < input.getColumnCount(); col++) {
+            TableColumn column = input.getColumnReference(col);
+            if(column.isNumeric()) {
+                variableSet.set("all." + column.getLabel(), Doubles.asList(column.getDataAsDouble(column.getRows())));
+            }
+            else {
+                variableSet.set("all." + column.getLabel(), Arrays.asList(column.getDataAsString(column.getRows())));
+            }
+        }
         for (int row = 0; row < input.getRowCount(); row++) {
+            if(progressInfo.isCancelled())
+                return;
             for (int col = 0; col < input.getColumnCount(); col++) {
                 variableSet.set(input.getColumnName(col), input.getValueAt(row, col));
             }
@@ -88,7 +102,8 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             "Annotations are available as variables.")
     @JIPipeParameter("filters")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    @ExpressionParameterSettingsVariable(name = "<Columns>", description = "The column values are available as variables")
+    @ExpressionParameterSettingsVariable(name = "<Columns>", description = "The column value of the current row")
+    @ExpressionParameterSettingsVariable(name = "all.<Column>", description = "List of all values of the column")
     @ExpressionParameterSettingsVariable(name = "Row index", description = "The index of the table row. The first row is indexed with zero.", key = "index")
     public DefaultExpressionParameter getFilters() {
         return filters;
