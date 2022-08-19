@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Transform array", description = "Applies an expression for each item in the array and returns the result.")
+@JIPipeDocumentation(name = "Transform array", description = "Applies an expression for each item in the array and returns the result. Equivalent to FOREACH.")
 public class TransformArrayFunction extends ExpressionFunction {
     public TransformArrayFunction() {
         super("TRANSFORM_ARRAY", 2);
