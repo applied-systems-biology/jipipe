@@ -74,7 +74,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private final DocumentTabPane tabPane = new DocumentTabPane();
     private final Map<String, FormPanel> formPanels = new HashMap<>();
     private final JIPipeWorkbench workbench;
-    private JCheckBoxMenuItem exportDisplayedScaleToggle = new JCheckBoxMenuItem("Export as displayed", true);
+    private final JCheckBoxMenuItem exportDisplayedScaleToggle = new JCheckBoxMenuItem("Export as displayed", true);
     private ImagePlus image;
 
     private ImageCanvas zoomedDummyCanvas;
@@ -82,7 +82,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private ImageCanvas exportDummyCanvas;
     private ImageProcessor currentSlice;
     private ImageViewerPanelCanvas canvas;
-    private Map<ImageSliceIndex, ImageStatistics> statisticsMap = new HashMap<>();
+    private final Map<ImageSliceIndex, ImageStatistics> statisticsMap = new HashMap<>();
     private FormPanel bottomPanel;
     private long lastTimeZoomed;
     private JScrollPane scrollPane;

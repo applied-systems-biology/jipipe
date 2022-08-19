@@ -638,18 +638,22 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                  */
                 if(currentConnectionDragSource.getSlot().isInput()) {
                    if(nodeUI.getNode().getOutputSlots().size() == 1) {
-                       // Auto snap to output
-                       JIPipeDataSlotUI slotUI = nodeUI.getOutputSlotUIs().values().iterator().next();
-                       setCurrentConnectionDragTarget(slotUI);
-                       snapped = true;
+                       if(!nodeUI.getOutputSlotUIs().values().isEmpty()) {
+                           // Auto snap to output
+                           JIPipeDataSlotUI slotUI = nodeUI.getOutputSlotUIs().values().iterator().next();
+                           setCurrentConnectionDragTarget(slotUI);
+                           snapped = true;
+                       }
                    }
                 }
                 else {
                     if(nodeUI.getNode().getInputSlots().size() == 1) {
                         // Auto snap to input
-                        JIPipeDataSlotUI slotUI = nodeUI.getInputSlotUIs().values().iterator().next();
-                        setCurrentConnectionDragTarget(slotUI);
-                        snapped = true;
+                        if(!nodeUI.getInputSlotUIs().values().isEmpty()) {
+                            JIPipeDataSlotUI slotUI = nodeUI.getInputSlotUIs().values().iterator().next();
+                            setCurrentConnectionDragTarget(slotUI);
+                            snapped = true;
+                        }
                     }
                 }
 

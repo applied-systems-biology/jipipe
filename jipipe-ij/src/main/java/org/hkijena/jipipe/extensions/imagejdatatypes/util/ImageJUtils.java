@@ -753,6 +753,9 @@ public class ImageJUtils {
      * @param background color for zero pixels
      */
     public static void maskToBufferedImage(ImageProcessor mask, BufferedImage target, Color foreground, Color background) {
+        if(mask.getWidth() != target.getWidth() || mask.getHeight() != target.getHeight()) {
+            mask = mask.resize(target.getWidth(), target.getHeight(), false);
+        }
         byte[] sourcePixels = (byte[]) mask.getPixels();
         byte[] targetPixels = ((DataBufferByte) target.getRaster().getDataBuffer()).getData();
 

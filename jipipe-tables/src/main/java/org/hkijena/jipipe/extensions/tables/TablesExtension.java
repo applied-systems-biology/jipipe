@@ -51,8 +51,10 @@ import org.hkijena.jipipe.extensions.tables.operations.converting.*;
 import org.hkijena.jipipe.extensions.tables.operations.integrating.*;
 import org.hkijena.jipipe.extensions.tables.parameters.ResultsTableDataParameterEditorUI;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.*;
+import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnConversionParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnGeneratorParameterEditorUI;
+import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnIntegrationParameter;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.*;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
 import org.hkijena.jipipe.utils.ResourceUtils;
@@ -215,6 +217,10 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "Results table",
                 "A table",
                 ResultsTableDataParameterEditorUI.class);
+
+        // Operators
+        registerParameterType("integrating-table-column-operator", TableColumnIntegrationParameter.class, "Column integration operation", "Operation that integrates columns");
+        registerParameterType("converting-table-column-operator", TableColumnConversionParameter.class, "Column converting operation", "Operation that converts columns");
 
         // Processors
         registerParameterType("integrating-table-column-processor",

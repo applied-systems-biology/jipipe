@@ -17,13 +17,18 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
 
 /**
  * An {@link ExpressionParameter} that utilizes the {@link DefaultExpressionEvaluator} to generate results
  */
 public class DefaultExpressionParameter extends ExpressionParameter {
     private static DefaultExpressionEvaluator EVALUATOR;
+
+    private java.util.Set<ExpressionParameterVariable> additionalUIVariables = new HashSet<>();
 
     public DefaultExpressionParameter() {
     }
@@ -55,6 +60,14 @@ public class DefaultExpressionParameter extends ExpressionParameter {
     @Override
     public ExpressionEvaluator getEvaluator() {
         return getEvaluatorInstance();
+    }
+
+    public java.util.Set<ExpressionParameterVariable> getAdditionalUIVariables() {
+        return additionalUIVariables;
+    }
+
+    public void setAdditionalUIVariables(java.util.Set<ExpressionParameterVariable> additionalUIVariables) {
+        this.additionalUIVariables = additionalUIVariables;
     }
 
     public static class List extends ListParameter<DefaultExpressionParameter> {

@@ -38,8 +38,8 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
 
     private final JPanel expressionEditorPanel = new JPanel(new BorderLayout());
     private RSyntaxTextArea expressionEditor;
-    private DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
-    private Set<ExpressionParameterVariable> variables = new HashSet<>();
+    private final DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
+    private final Set<ExpressionParameterVariable> variables = new HashSet<>();
 
     /**
      * Creates new instance
@@ -175,5 +175,8 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
                 }
             }
         }
+        // Read from parameter
+        variables.addAll(getParameter(DefaultExpressionParameter.class).getAdditionalUIVariables());
+
     }
 }

@@ -50,8 +50,8 @@ public class TableColumnConversionParameter extends DynamicEnumParameter<Object>
      *
      * @param value the original
      */
-    public TableColumnConversionParameter(TableColumnConversionParameter value) {
-        super(value);
+    public TableColumnConversionParameter(TableColumnConversionParameter other) {
+        super(other.getValue());
     }
 
     @Override
