@@ -78,7 +78,7 @@ See the LICENSE file provided with this code for the full license.
     <parent>
         <groupId>org.scijava</groupId>
         <artifactId>pom-scijava</artifactId>
-        <version>32.0.0-beta-4</version>
+        <version>32.0.0</version>
         <relativePath/>
     </parent>
 
