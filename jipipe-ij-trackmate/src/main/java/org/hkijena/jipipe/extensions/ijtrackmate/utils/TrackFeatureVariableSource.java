@@ -24,6 +24,7 @@ public class TrackFeatureVariableSource implements ExpressionParameterVariableSo
                 String name = entry.getValue();
                 String variableName = key.toLowerCase();
                 VARIABLES.add(new ExpressionParameterVariable(name, "The TrackMate " + key + " track feature", variableName));
+                VARIABLES.add(new ExpressionParameterVariable("All " + name, "All values of TrackMate " + key + " track feature", "all." + variableName));
                 KEY_TO_VARIABLE_MAP.put(key, variableName);
             }
         }

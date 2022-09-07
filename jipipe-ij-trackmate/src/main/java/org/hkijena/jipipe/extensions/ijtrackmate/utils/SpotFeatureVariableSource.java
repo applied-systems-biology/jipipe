@@ -14,7 +14,7 @@ import java.util.Set;
 public class SpotFeatureVariableSource implements ExpressionParameterVariableSource {
 
     private static Set<ExpressionParameterVariable> VARIABLES;
-    private static BiMap<String, String> KEY_TO_VARIABLE_MAP = HashBiMap.create();
+    private static final BiMap<String, String> KEY_TO_VARIABLE_MAP = HashBiMap.create();
 
     public static void initializeVariablesIfNeeded() {
         if (VARIABLES == null) {
@@ -24,6 +24,7 @@ public class SpotFeatureVariableSource implements ExpressionParameterVariableSou
                 String name = entry.getValue();
                 String variableName = key.toLowerCase();
                 VARIABLES.add(new ExpressionParameterVariable(name, "The TrackMate " + key + " spot feature", variableName));
+                VARIABLES.add(new ExpressionParameterVariable("All " + name, "All values of TrackMate " + key + " spot feature", "all." + variableName));
                 KEY_TO_VARIABLE_MAP.put(key, variableName);
             }
         }
