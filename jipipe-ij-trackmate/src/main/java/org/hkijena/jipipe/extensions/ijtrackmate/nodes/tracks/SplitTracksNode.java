@@ -63,7 +63,7 @@ public class SplitTracksNode extends JIPipeSimpleIteratingAlgorithm {
             ++index;
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
             for (NamedTextAnnotationGeneratorExpression expression : annotationGenerator) {
-                expression.generateTextAnnotation(annotations, variables);
+                annotations.add(expression.generateTextAnnotation(annotations, variables));
             }
             dataBatch.addOutputData(getFirstOutputSlot(), newTrackCollectionData, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
         }

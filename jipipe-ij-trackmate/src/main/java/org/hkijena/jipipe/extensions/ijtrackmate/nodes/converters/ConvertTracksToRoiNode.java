@@ -37,12 +37,12 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
 
     public ConvertTracksToRoiNode(JIPipeNodeInfo info) {
         super(info);
-        annotationGenerator.add(new NamedTextAnnotationGeneratorExpression(new AnnotationGeneratorExpression("track.id"), "Track ID"));
+        this.annotationGenerator.add(new NamedTextAnnotationGeneratorExpression(new AnnotationGeneratorExpression("track.id"), "Track ID"));
     }
 
     public ConvertTracksToRoiNode(ConvertTracksToRoiNode other) {
         super(other);
-        annotationGenerator = new NamedTextAnnotationGeneratorExpression.List(other.annotationGenerator);
+        this.annotationGenerator = new NamedTextAnnotationGeneratorExpression.List(other.annotationGenerator);
     }
 
     @Override
@@ -123,7 +123,7 @@ public class ConvertTracksToRoiNode extends JIPipeSimpleIteratingAlgorithm {
 
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();
             for (NamedTextAnnotationGeneratorExpression expression : annotationGenerator) {
-                expression.generateTextAnnotation(annotations, variables);
+                annotations.add(expression.generateTextAnnotation(annotations, variables));
             }
             dataBatch.addOutputData(getFirstOutputSlot(), rois, annotations, JIPipeTextAnnotationMergeMode.Merge, progressInfo);
             ++index;

@@ -70,7 +70,7 @@ public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
                 variables.set(variableName, entry.getValue());
             }
             for (NamedTextAnnotationGeneratorExpression expression : annotationGenerator) {
-                expression.generateTextAnnotation(annotations, variables);
+                annotations.add(expression.generateTextAnnotation(annotations, variables));
             }
             SpotsCollectionData newSpotsCollectionData = new SpotsCollectionData(spotsCollectionData);
             SpotCollection newCollection = new SpotCollection();
