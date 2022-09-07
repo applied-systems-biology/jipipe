@@ -1,4 +1,5 @@
 .*
+dependencies.txt
 !.gitignore
 target
 /jipipe.properties.json

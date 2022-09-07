@@ -191,13 +191,17 @@ if [ ! -e "./dependencies/jackson-dataformat-yaml-2.12.5.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/jackson-dataformat-yaml-2.12.5.jar https://maven.scijava.org/service/local/repositories/central/content/com/fasterxml/jackson/dataformat/jackson-dataformat-yaml/2.12.5/jackson-dataformat-yaml-2.12.5.jar
 fi
-if [ ! -e "./dependencies/poi-4.1.2.jar" ]; then
+if [ ! -e "./dependencies/poi-5.2.0.jar" ]; then
 	mkdir -p "./dependencies"
-	wget -O ./dependencies/poi-4.1.2.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/poi/poi/4.1.2/poi-4.1.2.jar
+	wget -O ./dependencies/poi-5.2.0.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/poi/poi/5.2.0/poi-5.2.0.jar
 fi
-if [ ! -e "./dependencies/poi-ooxml-4.1.2.jar" ]; then
+if [ ! -e "./dependencies/poi-ooxml-5.2.0.jar" ]; then
 	mkdir -p "./dependencies"
-	wget -O ./dependencies/poi-ooxml-4.1.2.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/poi/poi-ooxml/4.1.2/poi-ooxml-4.1.2.jar
+	wget -O ./dependencies/poi-ooxml-5.2.0.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/poi/poi-ooxml/5.2.0/poi-ooxml-5.2.0.jar
+fi
+if [ ! -e "./dependencies/xmlbeans-5.0.3.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/xmlbeans-5.0.3.jar https://maven.scijava.org/service/local/repositories/sonatype/content/org/apache/xmlbeans/xmlbeans/5.0.3/xmlbeans-5.0.3.jar
 fi
 if [ ! -e "./dependencies/LICENSE_OMERO.txt" ]; then
 	mkdir -p "./dependencies"
