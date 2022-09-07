@@ -120,10 +120,10 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
         Path selectedPath = FileChooserSettings.saveFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Projects, "Export table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (selectedPath != null) {
             if(UIUtils.EXTENSION_FILTER_XLSX.accept(selectedPath.toFile())) {
-                lastMeasurements.saveAsCSV(selectedPath);
+                lastMeasurements.saveAsXLSX(selectedPath);
             }
             else {
-                lastMeasurements.saveAsXLSX(selectedPath);
+                lastMeasurements.saveAsCSV(selectedPath);
             }
         }
     }

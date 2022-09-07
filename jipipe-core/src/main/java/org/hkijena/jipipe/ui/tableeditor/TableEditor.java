@@ -569,10 +569,10 @@ public class TableEditor extends FlexContentWorkbenchPanel {
         Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (selectedPath != null) {
             if(UIUtils.EXTENSION_FILTER_XLSX.accept(selectedPath.toFile())) {
-                tableModel.saveAsCSV(selectedPath);
+                tableModel.saveAsXLSX(selectedPath);
             }
             else {
-                tableModel.saveAsXLSX(selectedPath);
+                tableModel.saveAsCSV(selectedPath);
             }
         }
     }
