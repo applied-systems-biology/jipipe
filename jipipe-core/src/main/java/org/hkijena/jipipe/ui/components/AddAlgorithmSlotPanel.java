@@ -61,6 +61,8 @@ public class AddAlgorithmSlotPanel extends JPanel {
     private Map<JIPipeDataInfo, JIPipeDataInfo> inheritanceConversions = new HashMap<>();
     private JCheckBox optionalInputEditor = new JCheckBox();
 
+    private JScrollPane listScrollPane;
+
     /**
      * @param algorithm      the target algorithm
      * @param slotType       the slot type to be created
@@ -138,8 +140,8 @@ public class AddAlgorithmSlotPanel extends JPanel {
                 setSelectedInfo(datatypeList.getSelectedValue());
             }
         });
-        JScrollPane scrollPane = new JScrollPane(datatypeList);
-        listPanel.add(scrollPane, BorderLayout.CENTER);
+        listScrollPane = new JScrollPane(datatypeList);
+        listPanel.add(listScrollPane, BorderLayout.CENTER);
         add(listPanel, BorderLayout.WEST);
 
         // Create form located at the bottom
@@ -350,6 +352,7 @@ public class AddAlgorithmSlotPanel extends JPanel {
         if (!listModel.isEmpty()) {
             datatypeList.setSelectedIndex(0);
         }
+        UIUtils.invokeScrollToTop(listScrollPane);
     }
 
     public JIPipeDataInfo getSelectedInfo() {

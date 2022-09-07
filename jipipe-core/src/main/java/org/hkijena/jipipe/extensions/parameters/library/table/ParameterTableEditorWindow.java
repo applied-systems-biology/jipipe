@@ -62,14 +62,18 @@ public class ParameterTableEditorWindow extends JFrame {
         ParameterTableEditorWindow window = OPEN_WINDOWS.getOrDefault(parameterTable, null);
         if (window == null) {
             window = new ParameterTableEditorWindow(workbench, parameterAccess, parameterTable);
+            window.pack();
             window.setSize(1024, 768);
             window.setLocationRelativeTo(parent);
             window.setTitle(parameterAccess.getName());
             window.setVisible(true);
+            window.revalidate();
+            window.repaint();
             OPEN_WINDOWS.put(parameterTable, window);
             return window;
         } else {
             window.toFront();
+            window.revalidate();
             window.repaint();
         }
         return window;
