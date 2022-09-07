@@ -199,9 +199,17 @@ if [ ! -e "./dependencies/poi-ooxml-5.2.0.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/poi-ooxml-5.2.0.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/poi/poi-ooxml/5.2.0/poi-ooxml-5.2.0.jar
 fi
+if [ ! -e "./dependencies/poi-ooxml-lite-5.2.0.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/poi-ooxml-lite-5.2.0.jar https://repo1.maven.org/maven2/org/apache/poi/poi-ooxml-lite/5.2.0/poi-ooxml-lite-5.2.0.jar
+fi
 if [ ! -e "./dependencies/xmlbeans-5.0.3.jar" ]; then
 	mkdir -p "./dependencies"
 	wget -O ./dependencies/xmlbeans-5.0.3.jar https://maven.scijava.org/service/local/repositories/sonatype/content/org/apache/xmlbeans/xmlbeans/5.0.3/xmlbeans-5.0.3.jar
+fi
+if [ ! -e "./dependencies/log4j-api-2.17.1.jar" ]; then
+	mkdir -p "./dependencies"
+	wget -O ./dependencies/log4j-api-2.17.1.jar https://maven.scijava.org/service/local/repositories/central/content/org/apache/logging/log4j/log4j-api/2.17.1/log4j-api-2.17.1.jar
 fi
 if [ ! -e "./dependencies/LICENSE_OMERO.txt" ]; then
 	mkdir -p "./dependencies"
