@@ -1144,6 +1144,7 @@ public class ImageJUtils {
         if (image.getType() == ImagePlus.COLOR_RGB || image.getType() == ImagePlus.COLOR_256)
             return image;
         if (image.getNChannels() == 3) {
+            image = duplicate(image);
             if (image.getType() != ImagePlus.GRAY8) {
                 ImageConverter ic = new ImageConverter(image);
                 ic.convertToGray8();
