@@ -116,7 +116,7 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
             for (Map.Entry<String, JIPipeParameterAccess> entry : channelColorAssignment.getParameters().entrySet()) {
                 ChannelColor entryColor = entry.getValue().get(ChannelColor.class);
                 if (entryColor == color) {
-                    images[i] = new ImagePlusGreyscale8UData(dataBatch.getInputData(entry.getKey(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage()).getImage();
+                    images[i] = new ImagePlusGreyscaleData(dataBatch.getInputData(entry.getKey(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage()).getImage();
                     if (firstImage == null)
                         firstImage = images[i];
                 }
