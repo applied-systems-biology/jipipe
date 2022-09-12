@@ -749,7 +749,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                 Files.createDirectories(examplesDir);
             Files.walk(examplesDir).forEach(path -> {
                 if(Files.isRegularFile(path)) {
-                    if (UIUtils.EXTENSION_FILTER_JIP.accept(path.toFile())) {
+                    if (UIUtils.EXTENSION_FILTER_JIP.accept(path.toFile()) || UIUtils.EXTENSION_FILTER_ZIP.accept(path.toFile())) {
                         try {
                             progressInfo.log("[Project templates] Importing template from " + path);
                             projectTemplateRegistry.register(path);

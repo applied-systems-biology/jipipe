@@ -757,7 +757,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
                         String id = "" + resourceClass.getResource(resource);
                         JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(stream);
                         JIPipeProjectMetadata templateMetadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node.get("metadata"));
-                        JIPipeProjectTemplate template = new JIPipeProjectTemplate(id, node, templateMetadata);
+                        JIPipeProjectTemplate template = new JIPipeProjectTemplate(id, node, templateMetadata, null);
                         registry.getProjectTemplateRegistry().register(template);
                     }
                 }

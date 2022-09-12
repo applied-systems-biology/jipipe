@@ -13,24 +13,13 @@
 
 package org.hkijena.jipipe.api;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import com.fasterxml.jackson.databind.JsonNode;
-import ij.IJ;
-import ij.Prefs;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.Objects;
 
 /**
  * A reference to a template project
@@ -43,10 +32,13 @@ public class JIPipeProjectTemplate {
 
     private final JIPipeProjectMetadata metadata;
 
-    public JIPipeProjectTemplate(String id, JsonNode node, JIPipeProjectMetadata metadata) {
+    private final Path zipFile;
+
+    public JIPipeProjectTemplate(String id, JsonNode node, JIPipeProjectMetadata metadata, Path zipFile) {
         this.id = id;
         this.node = node;
         this.metadata = metadata;
+        this.zipFile = zipFile;
     }
 
     public static String getFallbackTemplateId() {
@@ -78,5 +70,9 @@ public class JIPipeProjectTemplate {
 
     public JIPipeProjectMetadata getMetadata() {
         return metadata;
+    }
+
+    public Path getZipFile() {
+        return zipFile;
     }
 }

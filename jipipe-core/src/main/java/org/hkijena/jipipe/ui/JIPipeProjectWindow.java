@@ -15,7 +15,9 @@ package org.hkijena.jipipe.ui;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 import net.imagej.updater.UpdateSite;
+import org.apache.commons.math3.util.Precision;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.JIPipeImageJUpdateSiteDependency;
@@ -33,6 +35,9 @@ import org.hkijena.jipipe.ui.events.WindowOpenedEvent;
 import org.hkijena.jipipe.ui.project.*;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
+import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -225,16 +230,66 @@ public class JIPipeProjectWindow extends JFrame {
      * Creates a new project from template
      */
     public void newProjectFromTemplate(JIPipeProjectTemplate template) {
-        try {
-            JIPipeProject project = template.loadAsProject();
-            JIPipeProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
-            if (window == null)
-                return;
-            window.projectSavePath = null;
-            window.updateTitle();
-            window.getProjectUI().sendStatusBarText("Created new project");
-        } catch (IOException e) {
-            e.printStackTrace();
+        Path loadZipTarget = null;
+        if(template.getZipFile() != null && Files.isRegularFile(template.getZipFile())) {
+            try {
+                double sizeMB = Files.size(template.getZipFile()) / 1024.0 /1024.0;
+                int result = JOptionPane.showOptionDialog(this,
+                        "The template contains " + Precision.round(sizeMB, 2) + " MB of data.\nYou can choose to either load only the " +
+                                "pipeline or extract the template project and related data into a directory.",
+                        "Load template",
+                        JOptionPane.YES_NO_CANCEL_OPTION,
+                        JOptionPane.QUESTION_MESSAGE,
+                        null,
+                        new Object[]{"Load with data", "Load only pipeline", "Cancel"},
+                        "Load with data");
+                switch (result) {
+                    case JOptionPane.CANCEL_OPTION:
+                        return;
+                    case JOptionPane.NO_OPTION:
+                        break;
+                    case JOptionPane.YES_OPTION:
+                        loadZipTarget = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Projects, "Load template: Choose an empty directory");
+                        break;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if(loadZipTarget != null) {
+            ExtractTemplateZipFileRun run = new ExtractTemplateZipFileRun(template, loadZipTarget);
+            Path finalLoadZipTarget = loadZipTarget;
+            JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
+                @Subscribe
+                public void onRunFinished(RunWorkerFinishedEvent event) {
+                    if(event.getRun() == run) {
+                        SwingUtilities.invokeLater(() -> {
+                            Path projectFile = PathUtils.findFileByExtensionIn(finalLoadZipTarget, ".jip");
+                            if(projectFile == null) {
+                                JOptionPane.showMessageDialog(JIPipeProjectWindow.this,
+                                        "No project file in " + finalLoadZipTarget,
+                                        "Load template",
+                                        JOptionPane.ERROR_MESSAGE);
+                            }
+                            openProject(projectFile);
+                        });
+                    }
+                }
+            });
+            JIPipeRunExecuterUI.runInDialog(this, run);
+        }
+        else {
+            try {
+                JIPipeProject project = template.loadAsProject();
+                JIPipeProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
+                if (window == null)
+                    return;
+                window.projectSavePath = null;
+                window.updateTitle();
+                window.getProjectUI().sendStatusBarText("Created new project");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
