@@ -174,8 +174,12 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
         // Init search
         templateSearch.addActionListener(e -> refreshTemplateProjects());
 
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        toolBar.add(templateSearch);
+
         panel.add(templateListScrollPane, BorderLayout.CENTER);
-        panel.add(templateSearch, BorderLayout.NORTH);
+        panel.add(toolBar, BorderLayout.NORTH);
 
         tabPane.addTab("Example projects & templates",
                 UIUtils.getIconFromResources("actions/graduation-cap.png"),

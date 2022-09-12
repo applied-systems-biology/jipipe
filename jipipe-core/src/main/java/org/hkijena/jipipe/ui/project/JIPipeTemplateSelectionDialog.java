@@ -13,9 +13,12 @@
 
 package org.hkijena.jipipe.ui.project;
 
+import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
+import org.hkijena.jipipe.api.registries.JIPipeProjectTemplateRegistry;
 import org.hkijena.jipipe.ui.components.renderers.TemplateProjectListCellRenderer;
+import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -31,11 +34,16 @@ import java.util.Comparator;
 public class JIPipeTemplateSelectionDialog extends JDialog {
 
     private JList<JIPipeProjectTemplate> templateJList;
+
+    private final SearchTextField templateSearch = new SearchTextField();
     private boolean isConfirmed = false;
 
     public JIPipeTemplateSelectionDialog(Window owner) {
         super(owner);
         initialize();
+        refreshTemplateProjects();
+        templateJList.setSelectedIndex(0);
+        JIPipe.getInstance().getEventBus().register(this);
     }
 
     private void initialize() {
@@ -44,11 +52,8 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
         UIUtils.addEscapeListener(this);
 
         getContentPane().setLayout(new BorderLayout());
-        JIPipeProjectTemplate[] array = JIPipe.getInstance().getProjectTemplateRegistry().getSortedRegisteredTemplates().toArray(new JIPipeProjectTemplate[0]);
-        Arrays.sort(array, Comparator.comparing(t -> t.getMetadata().getName()));
-        templateJList = new JList<>(array);
+        templateJList = new JList<>();
         templateJList.setCellRenderer(new TemplateProjectListCellRenderer());
-        templateJList.setSelectedIndex(0);
         templateJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -63,7 +68,18 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
                 }
             }
         });
-        getContentPane().add(new JScrollPane(templateJList), BorderLayout.CENTER);
+        JScrollPane templateListScrollPane = new JScrollPane(templateJList);
+        getContentPane().add(templateListScrollPane, BorderLayout.CENTER);
+        // Init search
+        templateSearch.addActionListener(e -> refreshTemplateProjects());
+
+        getContentPane().add(templateListScrollPane, BorderLayout.CENTER);
+
+        JToolBar toolBar = new JToolBar();
+        toolBar.setFloatable(false);
+        toolBar.add(templateSearch);
+
+        getContentPane().add(toolBar, BorderLayout.NORTH);
 
         JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
@@ -88,6 +104,24 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
         setSize(800, 600);
         revalidate();
         repaint();
+    }
+
+    @Subscribe
+    public void onTemplatesUpdated(JIPipeProjectTemplateRegistry.TemplatesUpdatedEvent event) {
+        refreshTemplateProjects();
+    }
+
+    private void refreshTemplateProjects() {
+        DefaultListModel<JIPipeProjectTemplate> model = new DefaultListModel<>();
+        for (JIPipeProjectTemplate template : JIPipe.getInstance().getProjectTemplateRegistry().getSortedRegisteredTemplates()) {
+            if (templateSearch.test(template.getMetadata().getName() + " " + template.getMetadata().getTemplateDescription())) {
+                model.addElement(template);
+            }
+        }
+        if (model.getSize() == 0 && templateSearch.getSearchStrings().length == 0) {
+            model.addElement(null);
+        }
+        templateJList.setModel(model);
     }
 
     public JIPipeProjectTemplate getSelectedTemplate() {
