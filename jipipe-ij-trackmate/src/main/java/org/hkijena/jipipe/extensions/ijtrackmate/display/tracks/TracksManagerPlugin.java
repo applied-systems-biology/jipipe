@@ -18,14 +18,13 @@ import com.google.common.primitives.Ints;
 import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
-import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
+import org.hkijena.jipipe.extensions.ijtrackmate.display.trackscheme.TrackSchemeDataDisplayOperation;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureEdgesNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.tracks.MeasureTracksNode;
 import org.hkijena.jipipe.extensions.ijtrackmate.parameters.EdgeFeature;
@@ -33,14 +32,16 @@ import org.hkijena.jipipe.extensions.ijtrackmate.parameters.TrackFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUITracksDisplaySettings;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.ImageViewerPanelPlugin;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.ribbon.LargeButtonAction;
+import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
+import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
+import org.hkijena.jipipe.ui.components.ribbon.SmallToggleButtonAction;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
@@ -59,19 +60,23 @@ import java.util.stream.Collectors;
 
 public class TracksManagerPlugin extends ImageViewerPanelPlugin {
     private final JList<Integer> tracksListControl = new JList<>();
-    private final JCheckBoxMenuItem displayTracksViewMenuItem = new JCheckBoxMenuItem("Display tracks", UIUtils.getIconFromResources("actions/eye.png"));
+    private final SmallToggleButtonAction displayTracksViewMenuItem = new SmallToggleButtonAction("Display tracks", "Determines whether tracks are displayed", UIUtils.getIconFromResources("actions/eye.png"));
     private TrackCollectionData tracksCollection;
-    private List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
-    private JPanel selectionContentPanelUI = new JPanel();
+    private JIPipeDataTableDataSource dataSource;
+    private final List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
+    private final JPanel selectionContentPanelUI = new JPanel();
     private TrackDrawer trackDrawer = new TrackDrawer();
     private TrackListCellRenderer tracksListCellRenderer;
+
+    private final Ribbon ribbon = new Ribbon(3);
+
+    private JPanel mainPanel;
 
     public TracksManagerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
         initializeDefaults();
         initialize();
         addSelectionContextPanel(new SelectionInfoContextPanel(this));
-        addSelectionContextPanel(new MeasureContextPanel(this));
     }
 
     private void initializeDefaults() {
@@ -82,58 +87,116 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
 
     @Override
     public void createPalettePanel(FormPanel formPanel) {
-        if (getCurrentImage() == null)
-            return;
-
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setMinimumSize(new Dimension(100, 300));
-        panel.setBorder(BorderFactory.createEtchedBorder());
-
-        JMenuBar listMenuBar = new JMenuBar();
-        panel.add(listMenuBar, BorderLayout.NORTH);
-
-        createViewMenu(listMenuBar);
-//        createSelectionMenu(listMenuBar);
-        createImportExportMenu(listMenuBar);
-
-        listMenuBar.add(Box.createHorizontalGlue());
-        createButtons(listMenuBar);
-
-        JScrollPane scrollPane = new JScrollPane(tracksListControl);
-        panel.add(scrollPane, BorderLayout.CENTER);
-
-        // Info (bottom toolbar)
-        selectionContentPanelUI.setLayout(new BoxLayout(selectionContentPanelUI, BoxLayout.Y_AXIS));
-        panel.add(selectionContentPanelUI, BorderLayout.SOUTH);
-
-        formPanel.addVerticalGlue(panel, null);
+        super.createPalettePanel(formPanel);
+        formPanel.addVerticalGlue(mainPanel, null);
     }
 
-    private void createImportExportMenu(JMenuBar menuBar) {
-        JMenu ioMenu = new JMenu("Import/Export");
-        menuBar.add(ioMenu);
-        // Import items
+    private void initializeRibbon() {
         {
-            JMenuItem item = new JMenuItem("Import from file", UIUtils.getIconFromResources("actions/fileopen.png"));
-            item.addActionListener(e -> importTracksFromFile());
-            ioMenu.add(item);
+            displayTracksViewMenuItem.addActionListener(this::uploadSliceToCanvas);
+
+            Ribbon.Task viewTask = ribbon.getOrCreateTask("View");
+            Ribbon.Band generalBand = viewTask.addBand("General");
+            Ribbon.Band visualizationBand = viewTask.addBand("Visualization");
+
+            generalBand.add(displayTracksViewMenuItem);
+
+            SmallButtonAction colorButton = new SmallButtonAction("Color by ...", "Allows to change how tracks are colored", UIUtils.getIconFromResources("actions/colors-rgb.png"));
+            visualizationBand.add(colorButton);
+            {
+                JPopupMenu colorByMenu = UIUtils.addPopupMenuToComponent(colorButton.getButton());
+                EdgeFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
+                    String name = EdgeFeature.VALUE_LABELS.get(key);
+                    JMenuItem colorByMenuEntry = new JMenuItem("Edge: " + name);
+                    colorByMenuEntry.setToolTipText("Colors the track edges by their " + name.toLowerCase());
+                    colorByMenuEntry.addActionListener(e -> {
+                        trackDrawer.setStrokeColorMode(TrackDrawer.StrokeColorMode.PerEdge);
+                        trackDrawer.setStrokeColorEdgeFeature(new EdgeFeature(key));
+                        tracksListCellRenderer.updateColorMaps();
+                        uploadSliceToCanvas();
+                    });
+                    colorByMenu.add(colorByMenuEntry);
+                });
+                colorByMenu.addSeparator();
+                TrackFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
+                    String name = TrackFeature.VALUE_LABELS.get(key);
+                    JMenuItem colorByMenuEntry = new JMenuItem("Track: " + name);
+                    colorByMenuEntry.setToolTipText("Colors the tracks by their " + name.toLowerCase());
+                    colorByMenuEntry.addActionListener(e -> {
+                        trackDrawer.setStrokeColorMode(TrackDrawer.StrokeColorMode.PerTrack);
+                        trackDrawer.setStrokeColorTrackFeature(new TrackFeature(key));
+                        tracksListCellRenderer.updateColorMaps();
+                        uploadSliceToCanvas();
+                    });
+                    colorByMenu.add(colorByMenuEntry);
+                });
+            }
+
+            SmallButtonAction displayModeButton = new SmallButtonAction("Display mode", "Sets the display mode", UIUtils.getIconFromResources("actions/distribute-graph-directed.png"));
+            visualizationBand.add(displayModeButton);
+            {
+                JPopupMenu displayMenu = UIUtils.addPopupMenuToComponent(displayModeButton.getButton());
+                for (DisplaySettings.TrackDisplayMode displayMode : DisplaySettings.TrackDisplayMode.values()) {
+                    JMenuItem item = new JMenuItem(displayMode.toString());
+                    item.addActionListener(e -> {
+                        trackDrawer.setTrackDisplayMode(displayMode);
+                        uploadSliceToCanvas();
+                    });
+                    displayMenu.add(item);
+                }
+            }
+            visualizationBand.add(new Ribbon.Action(new JPanel(), 1, new Insets(2,2,2,2)));
+
+            visualizationBand.add(new SmallButtonAction("More settings ...", "Opens a dialog where all available visualization settings can be changed", UIUtils.getIconFromResources("actions/configure.png"), this::openDrawingSettings));
+            visualizationBand.add(new SmallButtonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/save.png"), this::saveDefaults));
         }
-        // Separator
-        ioMenu.addSeparator();
-        // Export items
         {
-            JMenuItem item = new JMenuItem("Export to file", UIUtils.getIconFromResources("actions/save.png"));
-            item.addActionListener(e -> {
-                if (tracksCollection.getSpots().getNSpots(true) <= 0) {
-                    JOptionPane.showMessageDialog(getViewerPanel(), "No spots to export.", "Export spots", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                SpotsCollectionData result = getSelectedTracksOrAll("Export spots", "Do you want to export all ROI or only the selected ones?");
-                if (result != null) {
-                    exportTracksToFile(result);
-                }
-            });
-            ioMenu.add(item);
+            Ribbon.Task selectionTask = ribbon.addTask("Selection");
+            Ribbon.Band generalBand = selectionTask.addBand("General");
+            Ribbon.Band modifyBand = selectionTask.addBand("Modify");
+            Ribbon.Band measureBand = selectionTask.addBand("Measure");
+
+//            ROIPickerTool pickerTool = new ROIPickerTool(this);
+//            LargeToggleButtonAction pickerToggle = new LargeToggleButtonAction("Pick", "Allows to select ROI via the mouse", UIUtils.getIcon32FromResources("actions/followmouse.png"));
+//            pickerTool.addToggleButton(pickerToggle.getButton(), getViewerPanel().getCanvas());
+//            generalBand.add(pickerToggle);
+
+            generalBand.add(new SmallButtonAction("Select all", "Selects all tracks", UIUtils.getIconFromResources("actions/edit-select-all.png"), this::selectAll));
+            generalBand.add(new SmallButtonAction("Clear selection", "Deselects all tracks", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::selectNone));
+            generalBand.add(new SmallButtonAction("Invert selection", "Inverts the current selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::invertSelection));
+
+            modifyBand.add(new SmallButtonAction("Delete", "Deletes the selected tracks", UIUtils.getIconFromResources("actions/delete.png"), () -> removeSelectedTracks(false)));
+
+            measureBand.add(new SmallButtonAction("Measure edges", "Measures the tracks and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedEdges));
+            measureBand.add(new SmallButtonAction("Measure tracks", "Measures the tracks and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedTracks));
+        }
+        {
+            Ribbon.Task importExportTask = ribbon.addTask("Import/Export");
+            Ribbon.Band fileBand = importExportTask.addBand("File");
+
+            fileBand.add(new SmallButtonAction("Import from file", "Imports tracks from a file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importTracksFromFile));
+            fileBand.add(new SmallButtonAction("Export to file", "Exports ROI to a file", UIUtils.getIconFromResources("actions/save.png"), this::exportTracksToFile));
+        }
+        {
+            Ribbon.Task toolsTask = ribbon.addTask("Tools");
+            Ribbon.Band generalBand = toolsTask.addBand("General");
+            generalBand.add(new LargeButtonAction("Track scheme", "Displays the track scheme", TrackMateExtension.RESOURCES.getIcon32FromResources("trackscheme.png"), this::openTrackScheme));
+        }
+    }
+
+    private void openTrackScheme() {
+        TrackSchemeDataDisplayOperation operation = new TrackSchemeDataDisplayOperation();
+        operation.display(tracksCollection, "Track scheme", getWorkbench(), dataSource);
+    }
+
+    private void exportTracksToFile() {
+        if (tracksCollection.getNTracks() <= 0) {
+            JOptionPane.showMessageDialog(getViewerPanel(), "No tracks to export.", "Export tracks", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        TrackCollectionData result = getSelectedTracksOrAll("Export tracks", "Do you want to export all ROI or only the selected ones?");
+        if (result != null) {
+            exportTracksToFile(result);
         }
     }
 
@@ -176,95 +239,35 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
         selectionContentPanelUI.repaint();
     }
 
+    private void selectAll() {
+        tracksListControl.setSelectionInterval(0, tracksListControl.getModel().getSize() - 1);
+    }
+
+    private void selectNone() {
+        tracksListControl.clearSelection();
+    }
+
+    private void invertSelection() {
+        Set<Integer> selectedIndices = Arrays.stream(tracksListControl.getSelectedIndices()).boxed().collect(Collectors.toSet());
+        tracksListControl.clearSelection();
+        Set<Integer> newSelectedIndices = new HashSet<>();
+        for (int i = 0; i < tracksListControl.getModel().getSize(); i++) {
+            if (!selectedIndices.contains(i))
+                newSelectedIndices.add(i);
+        }
+        tracksListControl.setSelectedIndices(Ints.toArray(newSelectedIndices));
+    }
+
     public TrackDrawer getTrackDrawer() {
         return trackDrawer;
     }
-
-    private void createButtons(JMenuBar menuBar) {
-        {
-            JButton removeButton = new JButton("Delete", UIUtils.getIconFromResources("actions/delete.png"));
-            removeButton.setToolTipText("Remove selected spots");
-            removeButton.addActionListener(e -> {
-                if (tracksListControl.getSelectedValuesList().isEmpty())
-                    return;
-                if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + tracksListControl.getSelectedValuesList().size() + "spots?", "Delete spots", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                    removeSelectedTracks(false);
-                }
-            });
-            menuBar.add(removeButton);
-        }
-    }
-
-
-    private void createViewMenu(JMenuBar menuBar) {
-        JMenu viewMenu = new JMenu("View");
-        menuBar.add(viewMenu);
-        {
-            JCheckBoxMenuItem toggle = displayTracksViewMenuItem;
-            toggle.addActionListener(e -> uploadSliceToCanvas());
-            viewMenu.add(toggle);
-        }
-        {
-            JMenu colorByMenu = new JMenu("Color by ...");
-            EdgeFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
-                String name = EdgeFeature.VALUE_LABELS.get(key);
-                JMenuItem colorByMenuEntry = new JMenuItem("Edge: " + name);
-                colorByMenuEntry.setToolTipText("Colors the track edges by their " + name.toLowerCase());
-                colorByMenuEntry.addActionListener(e -> {
-                    trackDrawer.setStrokeColorMode(TrackDrawer.StrokeColorMode.PerEdge);
-                    trackDrawer.setStrokeColorEdgeFeature(new EdgeFeature(key));
-                    tracksListCellRenderer.updateColorMaps();
-                    uploadSliceToCanvas();
-                });
-                colorByMenu.add(colorByMenuEntry);
-            });
-            colorByMenu.addSeparator();
-            TrackFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
-                String name = TrackFeature.VALUE_LABELS.get(key);
-                JMenuItem colorByMenuEntry = new JMenuItem("Track: " + name);
-                colorByMenuEntry.setToolTipText("Colors the tracks by their " + name.toLowerCase());
-                colorByMenuEntry.addActionListener(e -> {
-                    trackDrawer.setStrokeColorMode(TrackDrawer.StrokeColorMode.PerTrack);
-                    trackDrawer.setStrokeColorTrackFeature(new TrackFeature(key));
-                    tracksListCellRenderer.updateColorMaps();
-                    uploadSliceToCanvas();
-                });
-                colorByMenu.add(colorByMenuEntry);
-            });
-            viewMenu.add(colorByMenu);
-        }
-        {
-            JMenu displayMenu = new JMenu("Display mode");
-            for (DisplaySettings.TrackDisplayMode displayMode : DisplaySettings.TrackDisplayMode.values()) {
-                JMenuItem item = new JMenuItem(displayMode.toString());
-                item.addActionListener(e -> {
-                    trackDrawer.setTrackDisplayMode(displayMode);
-                    uploadSliceToCanvas();
-                });
-                displayMenu.add(item);
-            }
-            viewMenu.add(displayMenu);
-        }
-        viewMenu.addSeparator();
-        {
-            JMenuItem item = new JMenuItem("More settings ...", UIUtils.getIconFromResources("actions/configure.png"));
-            item.addActionListener(e -> openDrawingSettings());
-            viewMenu.add(item);
-        }
-        {
-            JMenuItem item = new JMenuItem("Save settings as default", UIUtils.getIconFromResources("actions/save.png"));
-            item.addActionListener(e -> saveDefaults());
-            viewMenu.add(item);
-        }
-    }
-
     private void importTracksFromFile() {
         Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import tracks", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null && displayTracksViewMenuItem.getState()) {
             JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
             try (JIPipeZIPReadDataStorage storage = new JIPipeZIPReadDataStorage(progressInfo, path)) {
                 TrackCollectionData trackCollectionData = TrackCollectionData.importData(storage, progressInfo);
-                setTrackCollection(trackCollectionData, false);
+                setTrackCollection(trackCollectionData, null, false);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -288,7 +291,7 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
         uploadSliceToCanvas();
     }
 
-    private void exportTracksToFile(SpotsCollectionData rois) {
+    private void exportTracksToFile(TrackCollectionData rois) {
         FileNameExtensionFilter[] fileNameExtensionFilters = new FileNameExtensionFilter[]{UIUtils.EXTENSION_FILTER_ZIP};
         Path path = FileChooserSettings.saveFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Export tracks", fileNameExtensionFilters);
         if (path != null) {
@@ -354,20 +357,43 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
             updateContextPanels();
             uploadSliceToCanvas();
         });
+
+        // Setup ribbon
+        initializeRibbon();
+        ribbon.rebuildRibbon();
+
+        // Setup panel
+        mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setMinimumSize(new Dimension(100, 300));
+        mainPanel.setBorder(BorderFactory.createEtchedBorder());
+
+        mainPanel.add(ribbon, BorderLayout.NORTH);
+
+        JScrollPane scrollPane = new JScrollPane(tracksListControl);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Info (bottom toolbar)
+        selectionContentPanelUI.setLayout(new BoxLayout(selectionContentPanelUI, BoxLayout.Y_AXIS));
+        mainPanel.add(selectionContentPanelUI, BorderLayout.SOUTH);
     }
 
-    public void setTrackCollection(TrackCollectionData tracksCollection, boolean deferUploadSlice) {
+    public void setTrackCollection(TrackCollectionData tracksCollection, JIPipeDataTableDataSource dataSource, boolean deferUploadSlice) {
         this.tracksCollection = new TrackCollectionData(tracksCollection);
+        this.dataSource = dataSource;
         tracksListCellRenderer.updateColorMaps();
         updateTrackJList(deferUploadSlice);
         uploadSliceToCanvas();
     }
 
     public void removeSelectedTracks(boolean deferUploadSlice) {
-        for (Integer trackId : tracksListControl.getSelectedValuesList()) {
-            tracksCollection.getModel().setTrackVisibility(trackId, false);
+        if (tracksListControl.getSelectedValuesList().isEmpty())
+            return;
+        if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + tracksListControl.getSelectedValuesList().size() + "tracks?", "Delete tracks", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            for (Integer trackId : tracksListControl.getSelectedValuesList()) {
+                tracksCollection.getModel().setTrackVisibility(trackId, false);
+            }
+            updateTrackJList(deferUploadSlice);
         }
-        updateTrackJList(deferUploadSlice);
     }
 
     public TrackCollectionData getTracksCollection() {
@@ -392,6 +418,26 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
         for (SelectionContextPanel selectionContextPanel : selectionContextPanels) {
             selectionContextPanel.selectionUpdated(tracksCollection, selectedValuesList);
         }
+    }
+
+    private void measureSelectedEdges() {
+        MeasureEdgesNode node = JIPipe.createNode(MeasureEdgesNode.class);
+        TrackCollectionData selected = getSelectedTracksOrAll("Measure", "Please select which tracks should be measured");
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+        node.getFirstInputSlot().addData(selected, progressInfo);
+        node.run(progressInfo);
+        ResultsTableData measurements = node.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
+        TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Edge measurements");
+    }
+
+    private void measureSelectedTracks() {
+        MeasureTracksNode node = JIPipe.createNode(MeasureTracksNode.class);
+        TrackCollectionData selected = getSelectedTracksOrAll("Measure", "Please select which tracks should be measured");
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+        node.getFirstInputSlot().addData(selected, progressInfo);
+        node.run(progressInfo);
+        ResultsTableData measurements = node.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
+        TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Track measurements");
     }
 
     public JList<Integer> getTracksListControl() {
@@ -430,41 +476,6 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
             roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             add(roiInfoLabel);
             add(Box.createHorizontalGlue());
-            JList<Integer> roiJList = getTracksManagerPlugin().getTracksListControl();
-            {
-                JButton selectAllButton = new JButton("Select all", UIUtils.getIconFromResources("actions/edit-select-all.png"));
-//                UIUtils.makeFlat25x25(selectAllButton);
-                selectAllButton.setToolTipText("Select all");
-                selectAllButton.addActionListener(e -> {
-                    roiJList.setSelectionInterval(0, roiJList.getModel().getSize() - 1);
-                });
-                add(selectAllButton);
-            }
-            {
-                JButton deselectAllButton = new JButton("Clear selection", UIUtils.getIconFromResources("actions/edit-select-none.png"));
-//                UIUtils.makeFlat25x25(deselectAllButton);
-                deselectAllButton.setToolTipText("Clear selection");
-                deselectAllButton.addActionListener(e -> {
-                    roiJList.clearSelection();
-                });
-                add(deselectAllButton);
-            }
-            {
-                JButton invertSelectionButton = new JButton(UIUtils.getIconFromResources("actions/object-inverse.png"));
-                UIUtils.makeFlat25x25(invertSelectionButton);
-                invertSelectionButton.setToolTipText("Invert selection");
-                invertSelectionButton.addActionListener(e -> {
-                    Set<Integer> selectedIndices = Arrays.stream(roiJList.getSelectedIndices()).boxed().collect(Collectors.toSet());
-                    roiJList.clearSelection();
-                    Set<Integer> newSelectedIndices = new HashSet<>();
-                    for (int i = 0; i < roiJList.getModel().getSize(); i++) {
-                        if (!selectedIndices.contains(i))
-                            newSelectedIndices.add(i);
-                    }
-                    roiJList.setSelectedIndices(Ints.toArray(newSelectedIndices));
-                });
-                add(invertSelectionButton);
-            }
         }
 
         @Override
@@ -476,85 +487,4 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
         }
     }
 
-    public static class MeasureContextPanel extends SelectionContextPanel {
-
-        private ImageStatisticsSetParameter statistics = new ImageStatisticsSetParameter();
-
-        protected MeasureContextPanel(TracksManagerPlugin roiManagerPlugin) {
-            super(roiManagerPlugin);
-            statistics.setCollapsed(false);
-            statistics.getValues().add(Measurement.PixelValueMean);
-
-            setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-            setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
-//            this.roiInfoLabel = new JLabel("");
-//            roiInfoLabel.setIcon(UIUtils.getIconFromResources("data-types/results-table.png"));
-//            roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-//            add(roiInfoLabel);
-            add(Box.createHorizontalGlue());
-
-            JButton measureTracksButton = new JButton("Measure tracks", UIUtils.getIconFromResources("actions/statistics.png"));
-            measureTracksButton.addActionListener(e -> measureTracks());
-            add(measureTracksButton);
-
-            JButton measureEdgesButton = new JButton("Measure edges", UIUtils.getIconFromResources("actions/statistics.png"));
-            measureEdgesButton.addActionListener(e -> measureEdges());
-            add(measureEdgesButton);
-
-//            JButton settingsButton = new JButton( UIUtils.getIconFromResources("actions/configure.png"));
-//            settingsButton.setToolTipText("Configure measurements");
-//            UIUtils.makeFlat25x25(settingsButton);
-//            settingsButton.addActionListener(e -> showSettings());
-//            add(settingsButton);
-
-
-        }
-
-        private void measureEdges() {
-            MeasureEdgesNode node = JIPipe.createNode(MeasureEdgesNode.class);
-            TrackCollectionData selected = getTracksManagerPlugin().getSelectedTracksOrAll("Measure", "Please select which tracks should be measured");
-            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            node.getFirstInputSlot().addData(selected, progressInfo);
-            node.run(progressInfo);
-            ResultsTableData measurements = node.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
-            TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Edge measurements");
-        }
-
-        private void measureTracks() {
-            MeasureTracksNode node = JIPipe.createNode(MeasureTracksNode.class);
-            TrackCollectionData selected = getTracksManagerPlugin().getSelectedTracksOrAll("Measure", "Please select which tracks should be measured");
-            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            node.getFirstInputSlot().addData(selected, progressInfo);
-            node.run(progressInfo);
-            ResultsTableData measurements = node.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
-            TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Track measurements");
-        }
-
-        @Override
-        public void selectionUpdated(TrackCollectionData trackCollectionData, List<Integer> selectedTrackIds) {
-        }
-
-//        private void showSettings() {
-//            JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(getViewerPanel()));
-//            dialog.setTitle("Measurement settings");
-//            dialog.setContentPane(new ParameterPanel(new JIPipeDummyWorkbench(), this, null, FormPanel.WITH_SCROLLING));
-//            UIUtils.addEscapeListener(dialog);
-//            dialog.setSize(640, 480);
-//            dialog.setLocationRelativeTo(getViewerPanel());
-//            dialog.revalidate();
-//            dialog.repaint();
-//            dialog.setVisible(true);
-//        }
-
-        @JIPipeDocumentation(name = "Statistics", description = "The statistics to measure")
-        @JIPipeParameter("statistics")
-        public ImageStatisticsSetParameter getStatistics() {
-            return statistics;
-        }
-
-        @JIPipeParameter("statistics")
-        public void setStatistics(ImageStatisticsSetParameter statistics) {
-            this.statistics = statistics;
-        }
-    }
 }

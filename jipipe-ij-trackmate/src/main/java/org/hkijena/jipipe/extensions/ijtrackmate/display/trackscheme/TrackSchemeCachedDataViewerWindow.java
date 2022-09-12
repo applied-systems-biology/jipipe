@@ -24,6 +24,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataViewerAnnotationInfoPanel;
+import org.hkijena.jipipe.ui.components.FlexContentPanel;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -32,45 +33,32 @@ import javax.swing.*;
 import java.awt.*;
 
 public class TrackSchemeCachedDataViewerWindow extends JIPipeCacheDataViewerWindow {
+    private final JIPipeCachedDataViewerAnnotationInfoPanel annotationInfoPanel;
+    private final DisplaySettings displaySettings = new DisplaySettings();
 
-    private JToolBar toolBar;
-    private AutoResizeSplitPane splitPane;
-    private JIPipeCachedDataViewerAnnotationInfoPanel annotationInfoPanel;
-
-    private DisplaySettings displaySettings = new DisplaySettings();
+    private final FlexContentPanel flexContentPanel = new FlexContentPanel();
 
     public TrackSchemeCachedDataViewerWindow(JIPipeWorkbench workbench, JIPipeDataTableDataSource dataSource, String displayName) {
         super(workbench, dataSource, displayName);
+        this.annotationInfoPanel = new JIPipeCachedDataViewerAnnotationInfoPanel(workbench);
         initialize();
         reloadDisplayedData();
     }
 
     private void initialize() {
-        toolBar = new JToolBar();
-        toolBar.setFloatable(false);
-        toolBar.add(getStandardErrorLabel());
-
         getContentPane().setLayout(new BorderLayout());
-        getContentPane().add(toolBar, BorderLayout.NORTH);
+        getContentPane().add(flexContentPanel, BorderLayout.CENTER);
 
-        DocumentTabPane tabPane = new DocumentTabPane();
-
-        splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, AutoResizeSplitPane.RATIO_3_TO_1);
-
-        // Add annotation info
-        annotationInfoPanel = new JIPipeCachedDataViewerAnnotationInfoPanel(getWorkbench());
-        tabPane.addTab("Annotations",
+        flexContentPanel.getToolBar().add(getStandardErrorLabel());
+        flexContentPanel.getSideBar().addTab("Annotations",
                 UIUtils.getIconFromResources("data-types/annotation.png"),
                 annotationInfoPanel,
                 DocumentTabPane.CloseMode.withoutCloseButton);
-
-        splitPane.setRightComponent(tabPane);
-        getContentPane().add(splitPane, BorderLayout.CENTER);
     }
 
     @Override
     public JToolBar getToolBar() {
-        return toolBar;
+        return flexContentPanel.getToolBar();
     }
 
     @Override
@@ -90,6 +78,9 @@ public class TrackSchemeCachedDataViewerWindow extends JIPipeCacheDataViewerWind
         TrackScheme trackScheme = new TrackScheme(trackCollectionData.getModel(), new SelectionModel(trackCollectionData.getModel()), displaySettings);
         trackScheme.render();
         trackScheme.getGUI().setVisible(false);
-        splitPane.setLeftComponent(trackScheme.getGUI().getContentPane());
+        flexContentPanel.getContentPanel().removeAll();
+        flexContentPanel.getContentPanel().add(trackScheme.getGUI().getContentPane());
+        flexContentPanel.getContentPanel().revalidate();
+        flexContentPanel.getContentPanel().repaint();
     }
 }

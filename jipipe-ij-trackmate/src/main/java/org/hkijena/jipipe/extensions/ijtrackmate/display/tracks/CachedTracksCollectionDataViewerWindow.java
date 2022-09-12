@@ -104,7 +104,7 @@ public class CachedTracksCollectionDataViewerWindow extends JIPipeCacheDataViewe
         TrackCollectionData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), TrackCollectionData.class);
         boolean fitImage = imageViewerPanel.getImage() == null;
         spotsManagerPlugin.setSpotCollection(data, true);
-        tracksManagerPlugin.setTrackCollection(data, true);
+        tracksManagerPlugin.setTrackCollection(data, getDataSource(), true);
         imageViewerPanel.getCanvas().setError(null);
         imageViewerPanel.setImage(data.getImage());
         if (fitImage)

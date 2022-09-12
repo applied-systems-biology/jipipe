@@ -23,6 +23,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
@@ -35,10 +36,14 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatistic
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.ImageViewerPanelPlugin;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.MeasurementSettings;
+import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIPickerTool;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.ribbon.*;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
@@ -56,20 +61,21 @@ import java.util.stream.Collectors;
 
 public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
     private final JList<Spot> spotsListControl = new JList<>();
-    private final JCheckBoxMenuItem displaySpotsViewMenuItem = new JCheckBoxMenuItem("Display spots", UIUtils.getIconFromResources("actions/eye.png"));
-    private final JCheckBoxMenuItem displayLabelsViewMenuItem = new JCheckBoxMenuItem("Display labels", UIUtils.getIconFromResources("actions/tag.png"));
+    private final SmallToggleButtonAction displaySpotsViewMenuItem = new SmallToggleButtonAction("Display spots", "Determines whether spots are displayed", UIUtils.getIconFromResources("actions/eye.png"));
+    private final SmallToggleButtonAction displayLabelsViewMenuItem = new SmallToggleButtonAction("Display labels", "Determines whether spot labels are displayed", UIUtils.getIconFromResources("actions/tag.png"));
     private SpotsCollectionData spotsCollection;
-    private List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
-    private JPanel selectionContentPanelUI = new JPanel();
+    private final List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
+    private final JPanel selectionContentPanelUI = new JPanel();
     private SpotDrawer spotDrawer = new SpotDrawer();
     private SpotListCellRenderer spotsListCellRenderer;
+    private final Ribbon ribbon = new Ribbon(3);
+    private JPanel mainPanel;
 
     public SpotsManagerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
         initializeDefaults();
         initialize();
         addSelectionContextPanel(new SelectionInfoContextPanel(this));
-        addSelectionContextPanel(new MeasureContextPanel(this));
     }
 
     private void initializeDefaults() {
@@ -79,74 +85,132 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
         displayLabelsViewMenuItem.setState(spotDrawer.getLabelSettings().isDrawLabels());
     }
 
-    @Override
-    public void createPalettePanel(FormPanel formPanel) {
-        if (getCurrentImage() == null)
-            return;
+    private void initializeRibbon() {
+        {
+            displayLabelsViewMenuItem.addActionListener(this::uploadSliceToCanvas);
+            displaySpotsViewMenuItem.addActionListener(this::uploadSliceToCanvas);
 
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setMinimumSize(new Dimension(100, 300));
-        panel.setBorder(BorderFactory.createEtchedBorder());
+            Ribbon.Task viewTask = ribbon.getOrCreateTask("View");
+            Ribbon.Band generalBand = viewTask.addBand("General");
+            Ribbon.Band visualizationBand = viewTask.addBand("Visualization");
 
-        JMenuBar listMenuBar = new JMenuBar();
-        panel.add(listMenuBar, BorderLayout.NORTH);
+            generalBand.add(displaySpotsViewMenuItem);
+            generalBand.add(displayLabelsViewMenuItem);
 
-        createViewMenu(listMenuBar);
-//        createSelectionMenu(listMenuBar);
-        createImportExportMenu(listMenuBar);
+            SmallButtonAction colorButton = new SmallButtonAction("Color by ...", "Allows to change how spots are colored", UIUtils.getIconFromResources("actions/colors-rgb.png"));
+            visualizationBand.add(colorButton);
+            {
+                JPopupMenu colorByMenu = UIUtils.addPopupMenuToComponent(colorButton.getButton());
+                SpotFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
+                    String name = SpotFeature.VALUE_LABELS.get(key);
+                    JMenuItem colorByMenuEntry = new JMenuItem(name);
+                    colorByMenuEntry.setToolTipText("Colors the spots by their " + name.toLowerCase());
+                    colorByMenuEntry.addActionListener(e -> {
+                        spotDrawer.setStrokeColorFeature(new SpotFeature(key));
+                        spotDrawer.setUniformStrokeColor(false);
+                        spotsListCellRenderer.updateColorMaps();
+                        uploadSliceToCanvas();
+                    });
+                    colorByMenu.add(colorByMenuEntry);
+                });
+            }
 
-        listMenuBar.add(Box.createHorizontalGlue());
-        createButtons(listMenuBar);
+            SmallButtonAction labelButton = new SmallButtonAction("Set label to ...", "Allows to change how spots are labeled", UIUtils.getIconFromResources("actions/colors-rgb.png"));
+            visualizationBand.add(labelButton);
+            {
+                JPopupMenu setLabelMenu = UIUtils.addPopupMenuToComponent(labelButton.getButton());
+                {
+                    JMenuItem nameItem = new JMenuItem("Name");
+                    nameItem.addActionListener(e -> {
+                        spotDrawer.getLabelSettings().setDrawName(true);
+                        uploadSliceToCanvas();
+                    });
+                    setLabelMenu.add(nameItem);
+                }
+                SpotFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
+                    String name = SpotFeature.VALUE_LABELS.get(key);
+                    JMenuItem setLabelMenuEntry = new JMenuItem(name);
+                    setLabelMenuEntry.setToolTipText("Set the displayed label to " + name.toLowerCase());
+                    setLabelMenuEntry.addActionListener(e -> {
+                        spotDrawer.getLabelSettings().setDrawName(false);
+                        spotDrawer.getLabelSettings().setDrawnFeature(new SpotFeature(key));
+                        uploadSliceToCanvas();
+                    });
+                    setLabelMenu.add(setLabelMenuEntry);
+                });
+            }
+            visualizationBand.add(new Ribbon.Action(new JPanel(), 1, new Insets(2,2,2,2)));
 
-        JScrollPane scrollPane = new JScrollPane(spotsListControl);
-        panel.add(scrollPane, BorderLayout.CENTER);
+            visualizationBand.add(new SmallButtonAction("More settings ...", "Opens a dialog where all available visualization settings can be changed", UIUtils.getIconFromResources("actions/configure.png"), this::openDrawingSettings));
+            visualizationBand.add(new SmallButtonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/save.png"), this::saveDefaults));
+        }
+        {
+            Ribbon.Task selectionTask = ribbon.addTask("Selection");
+            Ribbon.Band generalBand = selectionTask.addBand("General");
+            Ribbon.Band modifyBand = selectionTask.addBand("Modify");
+            Ribbon.Band measureBand = selectionTask.addBand("Measure");
 
-        // Info (bottom toolbar)
-        selectionContentPanelUI.setLayout(new BoxLayout(selectionContentPanelUI, BoxLayout.Y_AXIS));
-        panel.add(selectionContentPanelUI, BorderLayout.SOUTH);
+//            ROIPickerTool pickerTool = new ROIPickerTool(this);
+//            LargeToggleButtonAction pickerToggle = new LargeToggleButtonAction("Pick", "Allows to select ROI via the mouse", UIUtils.getIcon32FromResources("actions/followmouse.png"));
+//            pickerTool.addToggleButton(pickerToggle.getButton(), getViewerPanel().getCanvas());
+//            generalBand.add(pickerToggle);
 
-        formPanel.addVerticalGlue(panel, null);
+            generalBand.add(new SmallButtonAction("Select all", "Selects all spots", UIUtils.getIconFromResources("actions/edit-select-all.png"), this::selectAll));
+            generalBand.add(new SmallButtonAction("Clear selection", "Deselects all spots", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::selectNone));
+            generalBand.add(new SmallButtonAction("Invert selection", "Inverts the current selection", UIUtils.getIconFromResources("actions/edit-select-none.png"), this::invertSelection));
+
+            modifyBand.add(new SmallButtonAction("Delete", "Deletes the selected spots", UIUtils.getIconFromResources("actions/delete.png"), () -> removeSelectedSpots(false)));
+
+            SmallButtonAction measureAction = new SmallButtonAction("Measure", "Measures the spots and displays the results as table", UIUtils.getIconFromResources("actions/statistics.png"), this::measureSelectedSpots);
+            measureBand.add(measureAction);
+        }
+        {
+            Ribbon.Task importExportTask = ribbon.addTask("Import/Export");
+            Ribbon.Band fileBand = importExportTask.addBand("File");
+
+            fileBand.add(new SmallButtonAction("Import from file", "Imports spots from a file", UIUtils.getIconFromResources("actions/fileopen.png"), this::importSpotsFromFile));
+            fileBand.add(new SmallButtonAction("Export to file", "Exports ROI to a file", UIUtils.getIconFromResources("actions/save.png"), this::exportSpotsToFile));
+        }
     }
 
-    private void createImportExportMenu(JMenuBar menuBar) {
-        JMenu ioMenu = new JMenu("Import/Export");
-        menuBar.add(ioMenu);
-        // Import items
-        {
-            JMenuItem item = new JMenuItem("Import from file", UIUtils.getIconFromResources("actions/fileopen.png"));
-            item.addActionListener(e -> importSpotsFromFile());
-            ioMenu.add(item);
+    private void measureSelectedSpots() {
+        MeasureSpotsNode node = JIPipe.createNode(MeasureSpotsNode.class);
+
+        SpotsCollectionData selected = getSelectedSpotsOrAll("Measure spots", "Please select which spots should be measured");
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+        node.getFirstInputSlot().addData(selected, progressInfo);
+        node.run(progressInfo);
+        ResultsTableData measurements = node.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
+        TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Measurements");
+    }
+
+    private void selectAll() {
+        spotsListControl.setSelectionInterval(0, spotsListControl.getModel().getSize() - 1);
+    }
+
+    private void selectNone() {
+        spotsListControl.clearSelection();
+    }
+
+    private void invertSelection() {
+        Set<Integer> selectedIndices = Arrays.stream(spotsListControl.getSelectedIndices()).boxed().collect(Collectors.toSet());
+        spotsListControl.clearSelection();
+        Set<Integer> newSelectedIndices = new HashSet<>();
+        for (int i = 0; i < spotsListControl.getModel().getSize(); i++) {
+            if (!selectedIndices.contains(i))
+                newSelectedIndices.add(i);
         }
-        // Separator
-        ioMenu.addSeparator();
-        // Export items
-//        {
-//            JMenuItem item = new JMenuItem("Export to ImageJ ROI Manager", UIUtils.getIconFromResources("apps/imagej.png"));
-//            item.addActionListener(e -> {
-//                if (spots.isEmpty()) {
-//                    JOptionPane.showMessageDialog(getViewerPanel(), "No ROI to export.", "Export ROI", JOptionPane.ERROR_MESSAGE);
-//                    return;
-//                }
-//                ROIListData result = getSelectedROIOrAll("Export ROI", "Do you want to export all ROI or only the selected ones?");
-//                if (result != null) {
-//                    exportROIsToManager(result);
-//                }
-//            });
-//            ioMenu.add(item);
-//        }
-        {
-            JMenuItem item = new JMenuItem("Export to file", UIUtils.getIconFromResources("actions/save.png"));
-            item.addActionListener(e -> {
-                if (spotsCollection.getSpots().getNSpots(true) <= 0) {
-                    JOptionPane.showMessageDialog(getViewerPanel(), "No spots to export.", "Export spots", JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-                SpotsCollectionData result = getSelectedSpotsOrAll("Export spots", "Do you want to export all ROI or only the selected ones?");
-                if (result != null) {
-                    exportSpotsToFile(result);
-                }
-            });
-            ioMenu.add(item);
+        spotsListControl.setSelectedIndices(Ints.toArray(newSelectedIndices));
+    }
+
+    private void exportSpotsToFile() {
+        if (spotsCollection.getSpots().getNSpots(true) <= 0) {
+            JOptionPane.showMessageDialog(getViewerPanel(), "No spots to export.", "Export spots", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        SpotsCollectionData result = getSelectedSpotsOrAll("Export spots", "Do you want to export all spots or only the selected ones?");
+        if (result != null) {
+            exportSpotsToFile(result);
         }
     }
 
@@ -199,85 +263,6 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
         return spotDrawer;
     }
 
-    private void createButtons(JMenuBar menuBar) {
-        {
-            JButton removeButton = new JButton("Delete", UIUtils.getIconFromResources("actions/delete.png"));
-            removeButton.setToolTipText("Remove selected spots");
-            removeButton.addActionListener(e -> {
-                if (spotsListControl.getSelectedValuesList().isEmpty())
-                    return;
-                if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + spotsListControl.getSelectedValuesList().size() + "spots?", "Delete spots", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                    removeSelectedSpots(false);
-                }
-            });
-            menuBar.add(removeButton);
-        }
-    }
-
-
-    private void createViewMenu(JMenuBar menuBar) {
-        JMenu viewMenu = new JMenu("View");
-        menuBar.add(viewMenu);
-        {
-            JCheckBoxMenuItem toggle = displaySpotsViewMenuItem;
-            toggle.addActionListener(e -> uploadSliceToCanvas());
-            viewMenu.add(toggle);
-        }
-        {
-            displayLabelsViewMenuItem.addActionListener(e -> uploadSliceToCanvas());
-            viewMenu.add(displayLabelsViewMenuItem);
-        }
-        {
-            JMenu colorByMenu = new JMenu("Color by ...");
-            SpotFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
-                String name = SpotFeature.VALUE_LABELS.get(key);
-                JMenuItem colorByMenuEntry = new JMenuItem(name);
-                colorByMenuEntry.setToolTipText("Colors the spots by their " + name.toLowerCase());
-                colorByMenuEntry.addActionListener(e -> {
-                    spotDrawer.setStrokeColorFeature(new SpotFeature(key));
-                    spotDrawer.setUniformStrokeColor(false);
-                    spotsListCellRenderer.updateColorMaps();
-                    uploadSliceToCanvas();
-                });
-                colorByMenu.add(colorByMenuEntry);
-            });
-            viewMenu.add(colorByMenu);
-        }
-        {
-            JMenu setLabelMenu = new JMenu("Set label to ...");
-            {
-                JMenuItem nameItem = new JMenuItem("Name");
-                nameItem.addActionListener(e -> {
-                    spotDrawer.getLabelSettings().setDrawName(true);
-                    uploadSliceToCanvas();
-                });
-                setLabelMenu.add(nameItem);
-            }
-            SpotFeature.VALUE_LABELS.keySet().stream().sorted(NaturalOrderComparator.INSTANCE).forEach(key -> {
-                String name = SpotFeature.VALUE_LABELS.get(key);
-                JMenuItem setLabelMenuEntry = new JMenuItem(name);
-                setLabelMenuEntry.setToolTipText("Set the displayed label to " + name.toLowerCase());
-                setLabelMenuEntry.addActionListener(e -> {
-                    spotDrawer.getLabelSettings().setDrawName(false);
-                    spotDrawer.getLabelSettings().setDrawnFeature(new SpotFeature(key));
-                    uploadSliceToCanvas();
-                });
-                setLabelMenu.add(setLabelMenuEntry);
-            });
-            viewMenu.add(setLabelMenu);
-        }
-        viewMenu.addSeparator();
-        {
-            JMenuItem item = new JMenuItem("More settings ...", UIUtils.getIconFromResources("actions/configure.png"));
-            item.addActionListener(e -> openDrawingSettings());
-            viewMenu.add(item);
-        }
-        {
-            JMenuItem item = new JMenuItem("Save settings as default", UIUtils.getIconFromResources("actions/save.png"));
-            item.addActionListener(e -> saveDefaults());
-            viewMenu.add(item);
-        }
-    }
 
     private void saveDefaults() {
         if (JOptionPane.showConfirmDialog(getViewerPanel(),
@@ -365,6 +350,30 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
             updateContextPanels();
             uploadSliceToCanvas();
         });
+
+        // Setup ribbon
+        initializeRibbon();
+        ribbon.rebuildRibbon();
+
+        // Setup panel
+        mainPanel = new JPanel(new BorderLayout());
+        mainPanel.setMinimumSize(new Dimension(100, 300));
+        mainPanel.setBorder(BorderFactory.createEtchedBorder());
+
+        mainPanel.add(ribbon, BorderLayout.NORTH);
+
+        JScrollPane scrollPane = new JScrollPane(spotsListControl);
+        mainPanel.add(scrollPane, BorderLayout.CENTER);
+
+        // Info (bottom toolbar)
+        selectionContentPanelUI.setLayout(new BoxLayout(selectionContentPanelUI, BoxLayout.Y_AXIS));
+        mainPanel.add(selectionContentPanelUI, BorderLayout.SOUTH);
+    }
+
+    @Override
+    public void createPalettePanel(FormPanel formPanel) {
+        super.createPalettePanel(formPanel);
+        formPanel.addVerticalGlue(mainPanel, null);
     }
 
     public void setSpotCollection(SpotsCollectionData spots, boolean deferUploadSlice) {
@@ -375,10 +384,14 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
     }
 
     public void removeSelectedSpots(boolean deferUploadSlice) {
-        for (Spot spot : spotsListControl.getSelectedValuesList()) {
-            spotsCollection.getSpots().remove(spot, spot.getFeature(Spot.FRAME).intValue());
+        if (spotsListControl.getSelectedValuesList().isEmpty())
+            return;
+        if (JOptionPane.showConfirmDialog(getViewerPanel(), "Do you really want to remove " + spotsListControl.getSelectedValuesList().size() + "spots?", "Delete spots", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+            for (Spot spot : spotsListControl.getSelectedValuesList()) {
+                spotsCollection.getSpots().remove(spot, spot.getFeature(Spot.FRAME).intValue());
+            }
+            updateSpotJList(deferUploadSlice);
         }
-        updateSpotJList(deferUploadSlice);
     }
 
     public SpotsCollectionData getSpotsCollection() {
@@ -441,41 +454,6 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
             roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             add(roiInfoLabel);
             add(Box.createHorizontalGlue());
-            JList<Spot> roiJList = getSpotsManagerPlugin().getSpotsListControl();
-            {
-                JButton selectAllButton = new JButton("Select all", UIUtils.getIconFromResources("actions/edit-select-all.png"));
-//                UIUtils.makeFlat25x25(selectAllButton);
-                selectAllButton.setToolTipText("Select all");
-                selectAllButton.addActionListener(e -> {
-                    roiJList.setSelectionInterval(0, roiJList.getModel().getSize() - 1);
-                });
-                add(selectAllButton);
-            }
-            {
-                JButton deselectAllButton = new JButton("Clear selection", UIUtils.getIconFromResources("actions/edit-select-none.png"));
-//                UIUtils.makeFlat25x25(deselectAllButton);
-                deselectAllButton.setToolTipText("Clear selection");
-                deselectAllButton.addActionListener(e -> {
-                    roiJList.clearSelection();
-                });
-                add(deselectAllButton);
-            }
-            {
-                JButton invertSelectionButton = new JButton(UIUtils.getIconFromResources("actions/object-inverse.png"));
-                UIUtils.makeFlat25x25(invertSelectionButton);
-                invertSelectionButton.setToolTipText("Invert selection");
-                invertSelectionButton.addActionListener(e -> {
-                    Set<Integer> selectedIndices = Arrays.stream(roiJList.getSelectedIndices()).boxed().collect(Collectors.toSet());
-                    roiJList.clearSelection();
-                    Set<Integer> newSelectedIndices = new HashSet<>();
-                    for (int i = 0; i < roiJList.getModel().getSize(); i++) {
-                        if (!selectedIndices.contains(i))
-                            newSelectedIndices.add(i);
-                    }
-                    roiJList.setSelectedIndices(Ints.toArray(newSelectedIndices));
-                });
-                add(invertSelectionButton);
-            }
         }
 
         @Override
@@ -487,71 +465,4 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
         }
     }
 
-    public static class MeasureContextPanel extends SelectionContextPanel {
-
-        private ImageStatisticsSetParameter statistics = new ImageStatisticsSetParameter();
-
-        protected MeasureContextPanel(SpotsManagerPlugin roiManagerPlugin) {
-            super(roiManagerPlugin);
-            statistics.setCollapsed(false);
-            statistics.getValues().add(Measurement.PixelValueMean);
-
-            setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
-            setBorder(BorderFactory.createEmptyBorder(4, 2, 4, 2));
-//            this.roiInfoLabel = new JLabel("");
-//            roiInfoLabel.setIcon(UIUtils.getIconFromResources("data-types/results-table.png"));
-//            roiInfoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-//            add(roiInfoLabel);
-            add(Box.createHorizontalGlue());
-
-            JButton measureButton = new JButton("Measure", UIUtils.getIconFromResources("actions/statistics.png"));
-            measureButton.addActionListener(e -> measure());
-            add(measureButton);
-
-//            JButton settingsButton = new JButton( UIUtils.getIconFromResources("actions/configure.png"));
-//            settingsButton.setToolTipText("Configure measurements");
-//            UIUtils.makeFlat25x25(settingsButton);
-//            settingsButton.addActionListener(e -> showSettings());
-//            add(settingsButton);
-
-
-        }
-
-        private void measure() {
-            MeasureSpotsNode node = JIPipe.createNode(MeasureSpotsNode.class);
-            SpotsCollectionData selected = getSpotsManagerPlugin().getSelectedSpotsOrAll("Measure", "Please select which spots should be measured");
-            JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
-            node.getFirstInputSlot().addData(selected, progressInfo);
-            node.run(progressInfo);
-            ResultsTableData measurements = node.getFirstOutputSlot().getData(0, ResultsTableData.class, progressInfo);
-            TableEditor.openWindow(getViewerPanel().getWorkbench(), measurements, "Measurements");
-        }
-
-        @Override
-        public void selectionUpdated(SpotsCollectionData spotsCollectionData, List<Spot> selectedSpots) {
-        }
-
-//        private void showSettings() {
-//            JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(getViewerPanel()));
-//            dialog.setTitle("Measurement settings");
-//            dialog.setContentPane(new ParameterPanel(new JIPipeDummyWorkbench(), this, null, FormPanel.WITH_SCROLLING));
-//            UIUtils.addEscapeListener(dialog);
-//            dialog.setSize(640, 480);
-//            dialog.setLocationRelativeTo(getViewerPanel());
-//            dialog.revalidate();
-//            dialog.repaint();
-//            dialog.setVisible(true);
-//        }
-
-        @JIPipeDocumentation(name = "Statistics", description = "The statistics to measure")
-        @JIPipeParameter("statistics")
-        public ImageStatisticsSetParameter getStatistics() {
-            return statistics;
-        }
-
-        @JIPipeParameter("statistics")
-        public void setStatistics(ImageStatisticsSetParameter statistics) {
-            this.statistics = statistics;
-        }
-    }
 }
