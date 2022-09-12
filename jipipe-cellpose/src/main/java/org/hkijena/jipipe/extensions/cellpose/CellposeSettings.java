@@ -24,7 +24,7 @@ public class CellposeSettings implements JIPipeParameterCollection {
 
     public CellposeSettings() {
         overridePythonEnvironment.setEnabled(true);
-        easyInstallerRepositories.add("https://github.com/applied-systems-biology/jipipe/releases/download/current/easyinstall-cellpose.json");
+        easyInstallerRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/EasyInstall/easyinstall-cellpose.json");
     }
 
     public static CellposeSettings getInstance() {

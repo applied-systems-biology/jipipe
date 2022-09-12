@@ -38,7 +38,7 @@ public class PythonExtensionSettings implements ExternalEnvironmentSettings {
     private StringList easyInstallerRepositories = new StringList();
 
     public PythonExtensionSettings() {
-        easyInstallerRepositories.add("https://github.com/applied-systems-biology/jipipe/releases/download/current/easyinstall-python.json");
+        easyInstallerRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/EasyInstall/easyinstall-python.json");
     }
 
     public static PythonExtensionSettings getInstance() {
