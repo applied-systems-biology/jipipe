@@ -661,6 +661,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         createDefaultImporterSettings();
         createDefaultCacheDisplaySettings();
         registerNodeExamplesFromFileSystem();
+        registerProjectTemplatesFromFileSystem();
 
         // Reload settings
         progressInfo.setProgress(4);
@@ -739,6 +740,31 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                 LocalDateTime.now(),
                 progressInfo.getLog().toString(),
                 true));
+    }
+
+    private void registerProjectTemplatesFromFileSystem() {
+        Path examplesDir = PathUtils.getImageJDir().resolve("jipipe").resolve("templates");
+        try {
+            if(!Files.isDirectory(examplesDir))
+                Files.createDirectories(examplesDir);
+            Files.walk(examplesDir).forEach(path -> {
+                if(Files.isRegularFile(path)) {
+                    if (UIUtils.EXTENSION_FILTER_JIP.accept(path.toFile())) {
+                        try {
+                            progressInfo.log("[Project templates] Importing template from " + path);
+                            projectTemplateRegistry.register(path);
+                        } catch (Throwable e) {
+                            e.printStackTrace();
+                            progressInfo.log("Error while loading project template from " + path + ": " + e);
+                        }
+                    }
+                }
+            });
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            progressInfo.log("Error while loading project templates from " + examplesDir + ": " + e);
+        }
     }
 
     private void registerNodeExamplesFromFileSystem() {

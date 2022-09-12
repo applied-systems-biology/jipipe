@@ -13,9 +13,11 @@
 
 package org.hkijena.jipipe.ui.documentation;
 
+import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
+import org.hkijena.jipipe.api.registries.JIPipeProjectTemplateRegistry;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -56,6 +58,12 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
     public WelcomePanel(JIPipeProjectWorkbench workbenchUI) {
         super(workbenchUI);
         initialize();
+        refreshTemplateProjects();
+        JIPipe.getInstance().getEventBus().register(this);
+    }
+
+    @Subscribe
+    public void onTemplatesUpdated(JIPipeProjectTemplateRegistry.TemplatesUpdatedEvent event) {
         refreshTemplateProjects();
     }
 
