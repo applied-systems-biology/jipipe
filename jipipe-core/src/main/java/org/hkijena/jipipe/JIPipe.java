@@ -93,6 +93,11 @@ import java.util.zip.GZIPInputStream;
  */
 @Plugin(type = JIPipeRegistry.class)
 public class JIPipe extends AbstractService implements JIPipeRegistry {
+
+    /**
+     * Resource manager for core JIPipe
+     */
+    public static final JIPipeResourceManager RESOURCES = new JIPipeResourceManager(JIPipe.class, "org/hkijena/jipipe");
     private static JIPipe instance;
     private static boolean IS_RESTARTING = false;
     private final JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
@@ -110,6 +115,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     private final JIPipeUtilityRegistry utilityRegistry;
     private final JIPipeExternalEnvironmentRegistry externalEnvironmentRegistry;
     private final JIPipeExtensionRegistry extensionRegistry;
+
+    private final JIPipeProjectTemplateRegistry projectTemplateRegistry;
     private FilesCollection imageJPlugins = null;
     private boolean initializing = false;
     @Parameter
@@ -129,6 +136,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         utilityRegistry = new JIPipeUtilityRegistry(this);
         externalEnvironmentRegistry = new JIPipeExternalEnvironmentRegistry(this);
         extensionRegistry = new JIPipeExtensionRegistry(this);
+        projectTemplateRegistry = new JIPipeProjectTemplateRegistry(this);
     }
 
     /**
@@ -186,6 +194,11 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
     public static JIPipeDatatypeRegistry getDataTypes() {
         return instance.datatypeRegistry;
+    }
+
+    @Override
+    public JIPipeProjectTemplateRegistry getProjectTemplateRegistry() {
+        return projectTemplateRegistry;
     }
 
     /**

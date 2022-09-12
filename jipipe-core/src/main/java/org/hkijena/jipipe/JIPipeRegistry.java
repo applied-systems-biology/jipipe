@@ -51,6 +51,8 @@ public interface JIPipeRegistry extends Service, JIPipeValidatable {
 
     JIPipeExtensionRegistry getExtensionRegistry();
 
+    JIPipeProjectTemplateRegistry getProjectTemplateRegistry();
+
     Set<String> getRegisteredExtensionIds();
 
     JIPipeDependency findExtensionById(String dependencyId);
