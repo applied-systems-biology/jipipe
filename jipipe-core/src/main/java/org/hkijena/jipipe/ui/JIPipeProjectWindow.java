@@ -33,6 +33,7 @@ import org.hkijena.jipipe.ui.events.WindowOpenedEvent;
 import org.hkijena.jipipe.ui.project.*;
 import org.hkijena.jipipe.ui.resultanalysis.JIPipeResultUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
@@ -97,7 +98,14 @@ public class JIPipeProjectWindow extends JFrame {
         JIPipeProject project = null;
         if (ProjectsSettings.getInstance().getProjectTemplate().getValue() != null) {
             try {
-                project = ProjectsSettings.getInstance().getProjectTemplate().getValue().load();
+                String id = ProjectsSettings.getInstance().getProjectTemplate().getValue();
+                if(StringUtils.isNullOrEmpty(id) || !JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().containsKey(id)) {
+                    id = JIPipeProjectTemplate.getFallbackTemplateId();
+                    ProjectsSettings.getInstance().getProjectTemplate().setValue(id);
+                    JIPipe.getInstance().getSettingsRegistry().save();
+                }
+                JIPipeProjectTemplate template = JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().get(id);
+                project = template.loadAsProject();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -200,7 +208,7 @@ public class JIPipeProjectWindow extends JFrame {
         dialog.setVisible(true);
         if (dialog.getSelectedTemplate() != null) {
             try {
-                JIPipeProject project = dialog.getSelectedTemplate().load();
+                JIPipeProject project = dialog.getSelectedTemplate().loadAsProject();
                 JIPipeProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
                 if (window == null)
                     return;
@@ -218,7 +226,7 @@ public class JIPipeProjectWindow extends JFrame {
      */
     public void newProjectFromTemplate(JIPipeProjectTemplate template) {
         try {
-            JIPipeProject project = template.load();
+            JIPipeProject project = template.loadAsProject();
             JIPipeProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
             if (window == null)
                 return;

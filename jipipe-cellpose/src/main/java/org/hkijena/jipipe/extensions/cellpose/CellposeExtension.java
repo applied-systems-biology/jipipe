@@ -180,6 +180,8 @@ public class CellposeExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("cellpose-training-2", CellposeTrainingAlgorithm.class, UIUtils.getIconURLFromResources("apps/cellpose.png"));
         registerNodeType("import-cellpose-model", ImportCellposeModelAlgorithm.class);
         registerNodeType("import-cellpose-size-model", ImportCellposeSizeModelAlgorithm.class);
+
+        registerProjectTemplatesFromResources(RESOURCES, "templates");
     }
 
     public static void createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox inbox) {

@@ -61,7 +61,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
 
     private void refreshTemplateProjects() {
         DefaultListModel<JIPipeProjectTemplate> model = new DefaultListModel<>();
-        for (JIPipeProjectTemplate template : JIPipeProjectTemplate.listTemplates()) {
+        for (JIPipeProjectTemplate template : JIPipe.getInstance().getProjectTemplateRegistry().getSortedRegisteredTemplates()) {
             if (templateSearch.test(template.getMetadata().getName() + " " + template.getMetadata().getTemplateDescription())) {
                 model.addElement(template);
             }

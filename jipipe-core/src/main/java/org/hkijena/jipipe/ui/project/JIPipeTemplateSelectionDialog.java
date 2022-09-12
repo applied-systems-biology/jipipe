@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.ui.project;
 
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
 import org.hkijena.jipipe.ui.components.renderers.TemplateProjectListCellRenderer;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -43,7 +44,7 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
         UIUtils.addEscapeListener(this);
 
         getContentPane().setLayout(new BorderLayout());
-        JIPipeProjectTemplate[] array = JIPipeProjectTemplate.listTemplates().toArray(new JIPipeProjectTemplate[0]);
+        JIPipeProjectTemplate[] array = JIPipe.getInstance().getProjectTemplateRegistry().getSortedRegisteredTemplates().toArray(new JIPipeProjectTemplate[0]);
         Arrays.sort(array, Comparator.comparing(t -> t.getMetadata().getName()));
         templateJList = new JList<>(array);
         templateJList.setCellRenderer(new TemplateProjectListCellRenderer());

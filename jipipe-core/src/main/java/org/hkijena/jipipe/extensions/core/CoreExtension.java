@@ -107,6 +107,8 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
                 JIPipeUITheme.class,
                 "Theme",
                 "A theme for the JIPipe GUI");
+
+        registerProjectTemplatesFromResources(JIPipe.RESOURCES, "templates");
     }
 
     @Override

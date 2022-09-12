@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.compat.ImageJDataExporter;
@@ -710,6 +711,54 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
                         for (JIPipeNodeTemplate template : templates) {
                             registerNodeExample(template);
                         }
+                    }
+                }
+                catch (Throwable throwable) {
+                    JIPipe.getInstance().getProgressInfo().log("Error: " + throwable + " @ " + resource);
+                }
+            }
+        }
+    }
+
+    /**
+     * Registers project templates from plugin resources via a {@link JIPipeResourceManager}.
+     * Will detect *.jip files and attempt to load them (fails silently)
+     * @param resourceManager the resource manager
+     * @param subDirectory the directory within the resource manager's base path
+     */
+    public void registerProjectTemplatesFromResources(JIPipeResourceManager resourceManager, String subDirectory) {
+        registerProjectTemplatesFromResources(resourceManager.getResourceClass(), JIPipeResourceManager.formatBasePath(resourceManager.getBasePath() + "/" + subDirectory));
+    }
+
+    /**
+     * Registers project templates from plugin resources
+     * Will detect *.jip files and attempt to load them (fails silently)
+     * @param resourceClass the resource class
+     * @param directory the directory within the resources
+     */
+    public void registerProjectTemplatesFromResources(Class<?> resourceClass, String directory) {
+        JIPipe.getInstance().getProgressInfo().log("Scanning for project templates within " + resourceClass + " -> " + directory);
+        Reflections reflections = new Reflections(new ConfigurationBuilder()
+                .setUrls(ClasspathHelper.forClass(resourceClass))
+                .setScanners(new ResourcesScanner()));
+
+        Set<String> jsonResources = reflections.getResources(Pattern.compile(".*\\.jip"));
+        jsonResources = jsonResources.stream().map(s -> {
+            if (!s.startsWith("/"))
+                return "/" + s;
+            else
+                return s;
+        }).collect(Collectors.toSet());
+        for (String resource : jsonResources) {
+            if(resource.startsWith(directory)) {
+                JIPipe.getInstance().getProgressInfo().log("Loading project template " + resource);
+                try {
+                    try (InputStream stream = resourceClass.getResourceAsStream(resource)) {
+                        String id = "" + resourceClass.getResource(resource);
+                        JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(stream);
+                        JIPipeProjectMetadata templateMetadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node.get("metadata"));
+                        JIPipeProjectTemplate template = new JIPipeProjectTemplate(id, node, templateMetadata);
+                        registry.getProjectTemplateRegistry().register(template);
                     }
                 }
                 catch (Throwable throwable) {

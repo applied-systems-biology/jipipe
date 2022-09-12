@@ -930,6 +930,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
 
         //// Register examples
         registerNodeExamplesFromResources(RESOURCES, "examples");
+        registerProjectTemplatesFromResources(RESOURCES, "templates");
     }
 
     private void registerColocalizationAlgorithms() {
