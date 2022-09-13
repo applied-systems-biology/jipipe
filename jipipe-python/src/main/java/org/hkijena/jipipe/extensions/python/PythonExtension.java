@@ -150,6 +150,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
                 "A Python environment type");
         registerSettingsSheet(PythonExtensionSettings.ID,
                 "Python integration",
+                "Connect existing Python installations to JIPipe or automatically install a new Python environment if none is available",
                 UIUtils.getIconFromResources("apps/python.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),

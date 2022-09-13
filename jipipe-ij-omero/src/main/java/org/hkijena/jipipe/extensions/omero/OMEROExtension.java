@@ -127,7 +127,13 @@ public class OMEROExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerSettingsSheet(OMEROSettings.ID, "OMERO", UIUtils.getIconFromResources("apps/omero.png"), "Extensions", null, new OMEROSettings());
+        registerSettingsSheet(OMEROSettings.ID,
+                "OMERO",
+                "Settings for the OMERO integration (e.g., default credentials)",
+                UIUtils.getIconFromResources("apps/omero.png"),
+                "Extensions",
+                null,
+                new OMEROSettings());
         registerDatatype("omero-group-id", OMEROGroupReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
         registerDatatype("omero-project-id", OMEROProjectReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));
         registerDatatype("omero-dataset-id", OMERODatasetReferenceData.class, UIUtils.getIconURLFromResources("apps/omero.png"));

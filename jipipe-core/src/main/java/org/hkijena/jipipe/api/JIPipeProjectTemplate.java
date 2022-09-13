@@ -42,7 +42,7 @@ public class JIPipeProjectTemplate {
     }
 
     public static String getFallbackTemplateId() {
-        return ResourceUtils.getPluginResource("templates/Empty (1 compartment).jip") + "";
+        return "resource:/org.hkijena.jipipe:core//org/hkijena/jipipe/templates/Empty (1 compartment).jip";
     }
 
     /**

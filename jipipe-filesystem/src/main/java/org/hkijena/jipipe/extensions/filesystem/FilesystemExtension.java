@@ -107,6 +107,7 @@ public class FilesystemExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerSettingsSheet(FilesystemExtensionSettings.ID,
                 "Filesystem",
+                "Settings for the filesystem nodes",
                 UIUtils.getIconFromResources("actions/document-open-folder.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),

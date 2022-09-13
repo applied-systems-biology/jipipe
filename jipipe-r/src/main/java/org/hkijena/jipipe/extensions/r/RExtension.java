@@ -148,6 +148,7 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
                 null);
         registerSettingsSheet(RExtensionSettings.ID,
                 "R integration",
+                "Connect existing R installations to JIPipe or automatically install a new R environment if none is available",
                 UIUtils.getIconFromResources("apps/rlogo_icon.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),

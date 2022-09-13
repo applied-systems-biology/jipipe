@@ -653,6 +653,21 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     }
 
     /**
+     * Registers a new settings sheet
+     *
+     * @param id                  unique ID
+     * @param name                sheet name
+     * @param description         sheet description
+     * @param icon                sheet icon
+     * @param category            sheet category (if null defaults to "General")
+     * @param categoryIcon        category icon (if null defaults to a predefined icon)
+     * @param parameterCollection the settings
+     */
+    public void registerSettingsSheet(String id, String name, String description, Icon icon, String category, Icon categoryIcon, JIPipeParameterCollection parameterCollection) {
+        registry.getSettingsRegistry().register(id, name, description, icon, category, categoryIcon, parameterCollection);
+    }
+
+    /**
      * Registers an arbitrary utility associated to a category class.
      * There can be multiple utilities per category
      * The exact type of utility class depends on the utility implementation
@@ -754,7 +769,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
                 JIPipe.getInstance().getProgressInfo().log("Loading project template " + resource);
                 try {
                     try (InputStream stream = resourceClass.getResourceAsStream(resource)) {
-                        String id = "resource:/" + getDependencyId() + ":" + resource;
+                        String id = "resource:/" + getDependencyId() + "/" + resource;
                         JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(stream);
                         JIPipeProjectMetadata templateMetadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node.get("metadata"));
                         JIPipeProjectTemplate template = new JIPipeProjectTemplate(id, node, templateMetadata, null);

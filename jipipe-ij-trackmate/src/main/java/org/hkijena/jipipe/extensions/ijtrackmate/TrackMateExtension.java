@@ -200,12 +200,14 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
     private void registerSettings() {
         registerSettingsSheet(ImageViewerUISpotsDisplaySettings.ID,
                 "Image viewer: Spots display",
+                "Settings for the spots manager component of the JIPipe image viewer",
                 RESOURCES.getIconFromResources("trackmate-spots.png"),
                 "UI",
                 null,
                 new ImageViewerUISpotsDisplaySettings());
         registerSettingsSheet(ImageViewerUITracksDisplaySettings.ID,
                 "Image viewer: Tracks display",
+                "Settings for the track manager component of the JIPipe image viewer",
                 RESOURCES.getIconFromResources("trackmate-tracker.png"),
                 "UI",
                 null,

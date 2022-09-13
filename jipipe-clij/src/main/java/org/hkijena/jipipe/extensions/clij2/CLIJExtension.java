@@ -224,6 +224,7 @@ public class CLIJExtension extends JIPipePrepackagedDefaultJavaExtension {
 
         registerSettingsSheet(CLIJSettings.ID,
                 "CLIJ2",
+                "Configure the GPU devices and how data is interchanged between ImageJ and CLIJ",
                 UIUtils.getIconFromResources("apps/clij.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),

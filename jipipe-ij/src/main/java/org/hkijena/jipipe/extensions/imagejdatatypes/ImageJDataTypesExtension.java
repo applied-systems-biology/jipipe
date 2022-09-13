@@ -373,6 +373,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerSettingsSheet(ImageJDataTypesSettings.ID,
                 "ImageJ data types",
+                "Settings on how ImageJ data types are imported/exported",
                 UIUtils.getIconFromResources("apps/imagej.png"),
                 "Extensions",
                 UIUtils.getIconFromResources("actions/plugins.png"),
@@ -526,6 +527,7 @@ public class ImageJDataTypesExtension extends JIPipePrepackagedDefaultJavaExtens
 
         registerSettingsSheet(ImageViewerUIRoiDisplaySettings.ID,
                 "Image viewer: ROI display",
+                "Settings for the ROI manager component of the JIPipe image viewer",
                 UIUtils.getIconFromResources("actions/roi.png"),
                 "UI",
                 null,
