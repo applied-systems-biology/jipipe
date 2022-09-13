@@ -182,6 +182,21 @@ public class PathUtils {
      * @param extensions Should contain the dot
      * @return null if no file was found
      */
+    public static Path findFileByExtensionRecursivelyIn(Path folder, String... extensions) {
+        try {
+            return Files.walk(folder).filter(p -> Files.isRegularFile(p) && Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e))).findFirst().orElse(null);
+        } catch (IOException e) {
+            return null;
+        }
+    }
+
+    /**
+     * Finds a file in the specified folder with given extension
+     *
+     * @param folder     the path
+     * @param extensions Should contain the dot
+     * @return null if no file was found
+     */
     public static List<Path> findFilesByExtensionIn(Path folder, String... extensions) {
         try {
             return Files.list(folder).filter(p -> Files.isRegularFile(p) && (extensions.length == 0 || Arrays.stream(extensions).anyMatch(e -> p.toString().endsWith(e)))).collect(Collectors.toList());

@@ -409,7 +409,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
 
         JMenuItem newProjectFromTemplateButton = new JMenuItem("New from template", UIUtils.getIconFromResources("actions/dialog-templates.png"));
         newProjectFromTemplateButton.setToolTipText("Creates a new project from a template");
-        newProjectFromTemplateButton.addActionListener(e -> window.newProjectFromTemplate());
+        newProjectFromTemplateButton.addActionListener(e -> window.newProjectFromTemplate(this));
         projectMenu.add(newProjectFromTemplateButton);
 
         UIUtils.installMenuExtension(this, projectMenu, JIPipeMenuExtensionTarget.ProjectMainMenu, true);

@@ -17,29 +17,32 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectTemplate;
 import org.hkijena.jipipe.api.registries.JIPipeProjectTemplateRegistry;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.renderers.TemplateProjectListCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
+import org.hkijena.jipipe.ui.project.templatedownloader.ProjectTemplateDownloaderRun;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.Arrays;
-import java.util.Comparator;
 
 /**
  * Dialog for selecting templates
  */
 public class JIPipeTemplateSelectionDialog extends JDialog {
 
+    private final JIPipeWorkbench workbench;
     private JList<JIPipeProjectTemplate> templateJList;
 
     private final SearchTextField templateSearch = new SearchTextField();
     private boolean isConfirmed = false;
 
-    public JIPipeTemplateSelectionDialog(Window owner) {
+    public JIPipeTemplateSelectionDialog(JIPipeWorkbench workbench, Window owner) {
         super(owner);
+        this.workbench = workbench;
         initialize();
         refreshTemplateProjects();
         templateJList.setSelectedIndex(0);
@@ -78,6 +81,9 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
         toolBar.add(templateSearch);
+        JButton downloadTemplatesButton = new JButton("Get more templates", UIUtils.getIconFromResources("actions/browser-download.png"));
+        downloadTemplatesButton.addActionListener(e -> downloadTemplates());
+        toolBar.add(downloadTemplatesButton);
 
         getContentPane().add(toolBar, BorderLayout.NORTH);
 
@@ -104,6 +110,10 @@ public class JIPipeTemplateSelectionDialog extends JDialog {
         setSize(800, 600);
         revalidate();
         repaint();
+    }
+
+    private void downloadTemplates() {
+        JIPipeRunExecuterUI.runInDialog(this, new ProjectTemplateDownloaderRun(workbench));
     }
 
     @Subscribe

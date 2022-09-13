@@ -38,7 +38,7 @@ public class RExtensionSettings implements ExternalEnvironmentSettings {
     private StringList easyInstallerRepositories = new StringList();
 
     public RExtensionSettings() {
-        easyInstallerRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/EasyInstall/easyinstall-r.json");
+        easyInstallerRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/easyinstall/easyinstall-r.json");
     }
 
     public static RExtensionSettings getInstance() {

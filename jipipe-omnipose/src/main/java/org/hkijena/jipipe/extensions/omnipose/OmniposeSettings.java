@@ -24,7 +24,7 @@ public class OmniposeSettings implements JIPipeParameterCollection {
 
     public OmniposeSettings() {
         overridePythonEnvironment.setEnabled(true);
-        easyInstallerRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/EasyInstall/easyinstall-omnipose.json");
+        easyInstallerRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/easyinstall/easyinstall-omnipose.json");
     }
 
     public static OmniposeSettings getInstance() {

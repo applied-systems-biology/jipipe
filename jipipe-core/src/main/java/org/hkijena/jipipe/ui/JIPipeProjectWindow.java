@@ -207,8 +207,8 @@ public class JIPipeProjectWindow extends JFrame {
     /**
      * Creates a new project from template
      */
-    public void newProjectFromTemplate() {
-        JIPipeTemplateSelectionDialog dialog = new JIPipeTemplateSelectionDialog(this);
+    public void newProjectFromTemplate(JIPipeProjectWorkbench workbench) {
+        JIPipeTemplateSelectionDialog dialog = new JIPipeTemplateSelectionDialog(workbench, this);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
         if (dialog.getSelectedTemplate() != null) {
@@ -264,7 +264,7 @@ public class JIPipeProjectWindow extends JFrame {
                 public void onRunFinished(RunWorkerFinishedEvent event) {
                     if(event.getRun() == run) {
                         SwingUtilities.invokeLater(() -> {
-                            Path projectFile = PathUtils.findFileByExtensionIn(finalLoadZipTarget, ".jip");
+                            Path projectFile = PathUtils.findFileByExtensionRecursivelyIn(finalLoadZipTarget, ".jip");
                             if(projectFile == null) {
                                 JOptionPane.showMessageDialog(JIPipeProjectWindow.this,
                                         "No project file in " + finalLoadZipTarget,

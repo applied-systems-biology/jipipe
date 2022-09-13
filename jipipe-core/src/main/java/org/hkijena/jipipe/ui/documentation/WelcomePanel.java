@@ -29,6 +29,8 @@ import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.renderers.TemplateProjectListCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
+import org.hkijena.jipipe.ui.project.templatedownloader.ProjectTemplateDownloaderRun;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -177,6 +179,9 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
         toolBar.add(templateSearch);
+        JButton downloadTemplatesButton = new JButton("Get more templates", UIUtils.getIconFromResources("actions/browser-download.png"));
+        downloadTemplatesButton.addActionListener(e -> downloadTemplates());
+        toolBar.add(downloadTemplatesButton);
 
         panel.add(templateListScrollPane, BorderLayout.CENTER);
         panel.add(toolBar, BorderLayout.NORTH);
@@ -185,6 +190,10 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
                 UIUtils.getIconFromResources("actions/graduation-cap.png"),
                 panel,
                 DocumentTabPane.CloseMode.withoutCloseButton);
+    }
+
+    private void downloadTemplates() {
+        JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), new ProjectTemplateDownloaderRun(getWorkbench()));
     }
 
     private void initRecentProjects(DocumentTabPane tabPane) {

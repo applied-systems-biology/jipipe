@@ -14,9 +14,9 @@
 package org.hkijena.jipipe.api;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
-import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -32,12 +32,14 @@ public class JIPipeProjectTemplate {
 
     private final JIPipeProjectMetadata metadata;
 
+    private final Path templateFile;
     private final Path zipFile;
 
-    public JIPipeProjectTemplate(String id, JsonNode node, JIPipeProjectMetadata metadata, Path zipFile) {
+    public JIPipeProjectTemplate(String id, JsonNode node, JIPipeProjectMetadata metadata, Path templateFile, Path zipFile) {
         this.id = id;
         this.node = node;
         this.metadata = metadata;
+        this.templateFile = templateFile;
         this.zipFile = zipFile;
     }
 
@@ -60,6 +62,22 @@ public class JIPipeProjectTemplate {
         return project;
     }
 
+    /**
+     * Returns the metadata name if the template is resource-based or registered via the Java API.
+     * Returns the metadata name if the metadata name is not used by any other Java-registered template; otherwise returns the file name of the template
+     * @return the metadata name if appropriate, otherwise the filename
+     */
+    public String getFixedName() {
+        if(templateFile == null)
+            return metadata.getName();
+        if(JIPipe.getInstance().getProjectTemplateRegistry().getBlockedTemplateNames().contains(metadata.getName())) {
+            return templateFile.getFileName().toString();
+        }
+        else {
+            return metadata.getName();
+        }
+    }
+
     public String getId() {
         return id;
     }
@@ -74,5 +92,9 @@ public class JIPipeProjectTemplate {
 
     public Path getZipFile() {
         return zipFile;
+    }
+
+    public Path getTemplateFile() {
+        return templateFile;
     }
 }

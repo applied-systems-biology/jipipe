@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -39,10 +40,13 @@ public class ProjectsSettings implements JIPipeParameterCollection {
     private PathList recentProjects = new PathList();
     private PathList recentJsonExtensionProjects = new PathList();
     private ProjectTemplateEnum projectTemplate = new ProjectTemplateEnum();
+
+    private StringList projectTemplateDownloadRepositories = new StringList();
     private boolean restoreTabs = true;
 
     public ProjectsSettings() {
         projectTemplate.setValue(JIPipeProjectTemplate.getFallbackTemplateId());
+        projectTemplateDownloadRepositories.add("https://github.com/applied-systems-biology/JIPipe-Repositories/raw/main/project-templates/project-templates.json");
     }
 
     public static ProjectsSettings getInstance() {
@@ -132,6 +136,17 @@ public class ProjectsSettings implements JIPipeParameterCollection {
     @JIPipeParameter("restore-tabs")
     public void setRestoreTabs(boolean restoreTabs) {
         this.restoreTabs = restoreTabs;
+    }
+
+    @JIPipeDocumentation(name = "Template downloader repositories", description = "List of repositories for the 'Get more templates' feature")
+    @JIPipeParameter("template-download-repositories")
+    public StringList getProjectTemplateDownloadRepositories() {
+        return projectTemplateDownloadRepositories;
+    }
+
+    @JIPipeParameter("template-download-repositories")
+    public void setProjectTemplateDownloadRepositories(StringList projectTemplateDownloadRepositories) {
+        this.projectTemplateDownloadRepositories = projectTemplateDownloadRepositories;
     }
 
     /**

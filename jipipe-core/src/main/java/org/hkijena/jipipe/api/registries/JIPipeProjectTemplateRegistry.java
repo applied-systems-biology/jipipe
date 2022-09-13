@@ -20,6 +20,8 @@ public class JIPipeProjectTemplateRegistry {
 
     private final Map<String, JIPipeProjectTemplate> registeredTemplates = new HashMap<>();
 
+    private final Set<String> blockedTemplateNames = new HashSet<>();
+
     public JIPipeProjectTemplateRegistry(JIPipe jiPipe) {
         this.jiPipe = jiPipe;
     }
@@ -33,6 +35,8 @@ public class JIPipeProjectTemplateRegistry {
         jiPipe.getEventBus().post(new TemplatesUpdatedEvent(this));
         jiPipe.getProgressInfo().log("Registered project template " + template.getId() +
                 (template.getZipFile() != null ? " [has ZIP data stored in " + template.getZipFile() + "]" : ""));
+        blockedTemplateNames.add(template.getMetadata().getName());
+        jiPipe.getProgressInfo().log(" -> Template name '" + template.getMetadata().getName() + "' is marked as blocked for file-based templates (this has only an effect to the GUI)");
     }
 
     public void register(Path file) throws IOException {
@@ -42,7 +46,7 @@ public class JIPipeProjectTemplateRegistry {
                 JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(storage.open(projectFile));
                 String id = PathUtils.absoluteToImageJRelative(file) + "";
                 JIPipeProjectMetadata templateMetadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node.get("metadata"));
-                JIPipeProjectTemplate template = new JIPipeProjectTemplate(id, node, templateMetadata, file);
+                JIPipeProjectTemplate template = new JIPipeProjectTemplate(id, node, templateMetadata, file, file);
                 register(template);
                 jiPipe.getEventBus().post(new TemplatesUpdatedEvent(this));
             }
@@ -51,13 +55,17 @@ public class JIPipeProjectTemplateRegistry {
             JsonNode node = JsonUtils.readFromFile(file, JsonNode.class);
             String id = PathUtils.absoluteToImageJRelative(file) + "";
             JIPipeProjectMetadata templateMetadata = JsonUtils.getObjectMapper().readerFor(JIPipeProjectMetadata.class).readValue(node.get("metadata"));
-            JIPipeProjectTemplate template = new JIPipeProjectTemplate(id, node, templateMetadata, null);
+            JIPipeProjectTemplate template = new JIPipeProjectTemplate(id, node, templateMetadata, file, null);
             register(template);
             jiPipe.getEventBus().post(new TemplatesUpdatedEvent(this));
         }
     }
     public List<JIPipeProjectTemplate> getSortedRegisteredTemplates() {
         return registeredTemplates.values().stream().sorted(Comparator.comparing((JIPipeProjectTemplate template) -> template.getMetadata().getName())).collect(Collectors.toList());
+    }
+
+    public Set<String> getBlockedTemplateNames() {
+        return Collections.unmodifiableSet(blockedTemplateNames);
     }
 
     public static class TemplatesUpdatedEvent {
