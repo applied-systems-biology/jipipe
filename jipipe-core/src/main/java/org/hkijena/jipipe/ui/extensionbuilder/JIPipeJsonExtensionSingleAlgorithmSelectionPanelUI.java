@@ -51,7 +51,7 @@ public class JIPipeJsonExtensionSingleAlgorithmSelectionPanelUI extends JIPipeJs
 
     private void initialize() {
         setLayout(new BorderLayout());
-        DocumentTabPane tabbedPane = new DocumentTabPane();
+        DocumentTabPane tabbedPane = new DocumentTabPane(true);
 
         ParameterPanel parametersUI = new ParameterPanel(getExtensionWorkbenchUI(),
                 algorithm,

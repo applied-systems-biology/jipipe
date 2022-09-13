@@ -57,7 +57,7 @@ public class ExpressionBuilderUI extends JPanel {
     private List<ExpressionOperatorEntry> operatorEntryList;
     private List<ExpressionConstantEntry> constantEntryList;
     private RSyntaxTextArea expressionEditor;
-    private DocumentTabPane tabPane = new DocumentTabPane();
+    private DocumentTabPane tabPane = new DocumentTabPane(true);
     private ExpressionBuilderInserterUI lastVariableInserter;
 
     public ExpressionBuilderUI(String expression, Set<ExpressionParameterVariable> variables) {

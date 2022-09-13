@@ -35,7 +35,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Collections;
 import java.util.HashMap;
 
@@ -47,7 +46,7 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
     private final JIPipeGraphCanvasUI canvas;
     private final JIPipeGraphEditorUI graphEditorUI;
 
-    private final DocumentTabPane tabbedPane = new DocumentTabPane();
+    private final DocumentTabPane tabbedPane = new DocumentTabPane(false);
 
     /**
      * @param graphEditorUI the graph editor

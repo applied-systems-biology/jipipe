@@ -72,7 +72,7 @@ public class PlotEditor extends JIPipeWorkbenchPanel implements JIPipeParameterC
     private List<JIPipePlotSeriesBuilder> seriesBuilders = new ArrayList<>();
     private boolean isRebuilding = false;
     private PlotReader plotReader;
-    private DocumentTabPane sideBar = new DocumentTabPane();
+    private DocumentTabPane sideBar = new DocumentTabPane(false);
 
     /**
      * @param workbench the workbench

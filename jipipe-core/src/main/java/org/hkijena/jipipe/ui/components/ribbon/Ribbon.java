@@ -19,7 +19,7 @@ public class Ribbon extends JPanel {
     public static final Border DEFAULT_BORDER = BorderFactory.createEmptyBorder(2, 2, 2, 2);
 
     private int numRows;
-    private final DocumentTabPane tabPane = new DocumentTabPane();
+    private final DocumentTabPane tabPane = new DocumentTabPane(true);
 
     private List<Task> tasks;
 

@@ -100,7 +100,7 @@ public class AdaptiveParameterBuilder extends JDialog {
 
         listContainer.add(listToolbar, BorderLayout.NORTH);
 
-        DocumentTabPane documentTabPane = new DocumentTabPane();
+        DocumentTabPane documentTabPane = new DocumentTabPane(false);
         documentTabPane.addTab("Conditions", UIUtils.getIconFromResources("actions/dialog-xml-editor.png"), listContainer, DocumentTabPane.CloseMode.withoutCloseButton);
         documentTabPane.addTab("Info", UIUtils.getIconFromResources("actions/help-info.png"), infoPanel, DocumentTabPane.CloseMode.withoutCloseButton);
         contentPanel.add(documentTabPane, BorderLayout.CENTER);

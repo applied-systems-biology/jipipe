@@ -157,7 +157,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
         descriptionReaderScrollPane.setBorder(null);
         parameterPanel.getScrollPane().setBorder(null);
 
-        DocumentTabPane tabPane = new DocumentTabPane();
+        DocumentTabPane tabPane = new DocumentTabPane(true);
         tabPane.addTab("Bookmarks",
                 UIUtils.getIconFromResources("actions/bookmark.png"),
                 new BookmarkListPanel(getWorkbench(), getProject().getGraph(), null),

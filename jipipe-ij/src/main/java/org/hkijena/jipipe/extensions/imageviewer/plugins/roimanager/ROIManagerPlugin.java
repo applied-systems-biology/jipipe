@@ -150,7 +150,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
                 return;
             }
         }
-        DocumentTabPane documentTabPane = new DocumentTabPane();
+        DocumentTabPane documentTabPane = new DocumentTabPane(true);
         List<ROIEditor> editors = new ArrayList<>();
         for (Roi roi : selected) {
             ROIEditor editor = new ROIEditor(roi);

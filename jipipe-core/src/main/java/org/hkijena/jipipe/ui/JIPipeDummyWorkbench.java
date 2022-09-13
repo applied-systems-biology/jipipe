@@ -15,7 +15,7 @@ import java.awt.*;
 public class JIPipeDummyWorkbench implements JIPipeWorkbench {
 
     private final JFrame frame = new JFrame();
-    private final DocumentTabPane tabPane = new DocumentTabPane();
+    private final DocumentTabPane tabPane = new DocumentTabPane(true);
     private JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
 
     @Override

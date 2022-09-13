@@ -124,7 +124,7 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
         JIPipeGraphEditorMinimap minimap = new JIPipeGraphEditorMinimap(this);
         splitPane.setTopComponent(minimap);
 
-        DocumentTabPane bottomPanel = new DocumentTabPane();
+        DocumentTabPane bottomPanel = new DocumentTabPane(false);
 
         MarkdownReader markdownReader = new MarkdownReader(false);
         markdownReader.setDocument(MarkdownDocument.fromPluginResource("documentation/compartment-graph.md", new HashMap<>()));

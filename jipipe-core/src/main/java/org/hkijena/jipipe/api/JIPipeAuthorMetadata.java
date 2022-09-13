@@ -100,7 +100,7 @@ public class JIPipeAuthorMetadata implements JIPipeParameterCollection {
      * @return the window
      */
     public static JFrame openAuthorInfoWindow(Component parent, Collection<JIPipeAuthorMetadata> authors, JIPipeAuthorMetadata targetAuthor) {
-        DocumentTabPane tabPane = new DocumentTabPane();
+        DocumentTabPane tabPane = new DocumentTabPane(true);
         for (JIPipeAuthorMetadata author : authors) {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("<h1>").append(HtmlEscapers.htmlEscaper().escape(author.toString())).append("</h1>");

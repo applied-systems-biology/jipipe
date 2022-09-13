@@ -71,7 +71,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private final JSpinner animationSpeedControl = new JSpinner(new SpinnerNumberModel(75, 5, 10000, 1));
     private final JToolBar toolBar = new JToolBar();
     private final JToggleButton enableSideBarButton = new JToggleButton();
-    private final DocumentTabPane tabPane = new DocumentTabPane();
+    private final DocumentTabPane tabPane = new DocumentTabPane(false);
     private final Map<String, FormPanel> formPanels = new HashMap<>();
     private final JIPipeWorkbench workbench;
     private final JCheckBoxMenuItem exportDisplayedScaleToggle = new JCheckBoxMenuItem("Export as displayed", true);

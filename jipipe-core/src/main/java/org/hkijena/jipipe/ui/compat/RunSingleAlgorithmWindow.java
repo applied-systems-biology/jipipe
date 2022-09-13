@@ -100,7 +100,7 @@ public class RunSingleAlgorithmWindow extends JFrame implements JIPipeWorkbench 
         this.settingsPanel = new JPanel(new BorderLayout());
         settingsContainer.add(settingsPanel, BorderLayout.CENTER);
 
-        tabPane = new DocumentTabPane();
+        tabPane = new DocumentTabPane(true);
         setContentPane(tabPane);
 
         AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, listPanel, settingsContainer, AutoResizeSplitPane.RATIO_1_TO_3);

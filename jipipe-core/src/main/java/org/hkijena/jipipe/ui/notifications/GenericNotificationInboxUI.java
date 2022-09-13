@@ -92,7 +92,7 @@ public class GenericNotificationInboxUI extends JIPipeWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        DocumentTabPane documentTabPane = new DocumentTabPane();
+        DocumentTabPane documentTabPane = new DocumentTabPane(true);
         documentTabPane.getTabbedPane().setTabPlacement(SwingConstants.BOTTOM);
 
         documentTabPane.addTab("Current notifications",

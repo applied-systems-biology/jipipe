@@ -37,7 +37,7 @@ public class FormsDialog extends JFrame {
     private final JIPipeDataSlot originalForms;
     private boolean cancelled = false;
     private JIPipeSimpleDataBatchTableUI dataBatchTableUI;
-    private DocumentTabPane tabPane = new DocumentTabPane();
+    private DocumentTabPane tabPane = new DocumentTabPane(true);
     private String lastTab = "";
     private List<DataBatchStatus> dataBatchStatuses = new ArrayList<>();
     private JLabel unvisitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorUnvisited()));

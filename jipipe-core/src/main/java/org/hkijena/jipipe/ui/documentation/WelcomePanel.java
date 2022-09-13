@@ -133,7 +133,7 @@ public class WelcomePanel extends JIPipeProjectWorkbenchPanel {
     }
 
     private void initRecentProjectsAndTemplates() {
-        DocumentTabPane tabPane = new DocumentTabPane();
+        DocumentTabPane tabPane = new DocumentTabPane(true);
 
         // Recent projects list
         initRecentProjects(tabPane);

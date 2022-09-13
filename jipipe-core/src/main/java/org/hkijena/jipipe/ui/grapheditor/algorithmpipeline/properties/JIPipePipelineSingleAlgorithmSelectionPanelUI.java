@@ -42,9 +42,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * UI for a single {@link JIPipeGraphNode}
@@ -77,7 +75,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
 
     private void initialize() {
         setLayout(new BorderLayout());
-        tabbedPane = new DocumentTabPane();
+        tabbedPane = new DocumentTabPane(false);
 
         ParameterPanel parametersUI = new ParameterPanel(getProjectWorkbench(),
                 node,
