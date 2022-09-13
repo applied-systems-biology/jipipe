@@ -212,6 +212,13 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             }
             finalCode.append("return \"\";\n");
             finalCode.append("}\n\n");
+            // Inject annotations
+            finalCode.append("function getJIPipeTextAnnotation(key) {\n");
+            for (Map.Entry<String, JIPipeTextAnnotation> entry : dataBatch.getMergedTextAnnotations().entrySet()) {
+                finalCode.append("if (key == \"").append(MacroUtils.escapeString(entry.getKey())).append("\") { return \"").append(MacroUtils.escapeString(entry.getValue().getValue())).append("\"; }\n");
+            }
+            finalCode.append("return \"\";\n");
+            finalCode.append("}\n\n");
 
             // Inject parameters
             for (Map.Entry<String, JIPipeParameterAccess> entry : macroParameters.getParameters().entrySet()) {
@@ -418,7 +425,7 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
             "the select() function or comparable functions. You have have one results table input which " +
             "can be addressed via the global functions. Input ROI are merged into one ROI manager.\n\n" +
             "You can define variables that are passed from JIPipe to ImageJ. Variables are also created for incoming path-like data, named according to the slot name. " +
-            "Annotations can also be accessed via a function getJIPipeAnnotation(key), which returns the string value of the annotation or an empty string if no value was set.")
+            "Annotations can also be accessed via a function getJIPipeAnnotation(key) or getJIPipeTextAnnotation(key), which returns the string value of the annotation or an empty string if no value was set.")
     @JIPipeParameter("code")
     public ImageJMacro getCode() {
         return code;
