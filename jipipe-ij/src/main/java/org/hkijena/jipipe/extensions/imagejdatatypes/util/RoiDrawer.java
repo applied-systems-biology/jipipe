@@ -28,6 +28,7 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.RoiLabel;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.FontFamilyParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.NumberParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.utils.ColorUtils;
@@ -52,6 +53,8 @@ public class RoiDrawer implements JIPipeParameterCollection {
     private OptionalDoubleParameter overrideLineWidth = new OptionalDoubleParameter(1, false);
     private boolean drawOver = true;
     private Color labelForeground = Color.WHITE;
+
+    private FontFamilyParameter labelFontFamily = new FontFamilyParameter();
     private OptionalColorParameter labelBackground = new OptionalColorParameter(Color.BLACK, false);
     private int labelSize = 9;
     private double opacity = 1.0;
@@ -99,12 +102,13 @@ public class RoiDrawer implements JIPipeParameterCollection {
         this.drawOutlineMode = other.drawOutlineMode;
         this.drawFilledOutlineMode = other.drawFilledOutlineMode;
         this.drawnLabel = other.drawnLabel;
+        this.labelFontFamily = new FontFamilyParameter(other.labelFontFamily);
         this.overrideFillColor = new OptionalColorParameter(other.overrideFillColor);
         this.overrideLineColor = new OptionalColorParameter(other.overrideLineColor);
         this.overrideLineWidth = new OptionalDoubleParameter(other.overrideLineWidth);
         this.drawOver = other.drawOver;
         this.labelForeground = other.labelForeground;
-        this.labelBackground = other.labelBackground;
+        this.labelBackground = new OptionalColorParameter(other.labelBackground);
         this.labelSize = other.labelSize;
         this.opacity = other.opacity;
         this.ignoreC = other.ignoreC;
@@ -152,6 +156,17 @@ public class RoiDrawer implements JIPipeParameterCollection {
     @JIPipeParameter("fill-outline-mode")
     public void setDrawFilledOutlineMode(ROIElementDrawingMode drawFilledOutlineMode) {
         this.drawFilledOutlineMode = drawFilledOutlineMode;
+    }
+
+    @JIPipeDocumentation(name = "Label font family", description = "The font family of the label")
+    @JIPipeParameter("label-font-family")
+    public FontFamilyParameter getLabelFontFamily() {
+        return labelFontFamily;
+    }
+
+    @JIPipeParameter("label-font-family")
+    public void setLabelFontFamily(FontFamilyParameter labelFontFamily) {
+        this.labelFontFamily = labelFontFamily;
     }
 
     @JIPipeDocumentation(name = "Draw labels", description = "Allows to draw labels on top of ROI.")
@@ -309,7 +324,7 @@ public class RoiDrawer implements JIPipeParameterCollection {
             result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);
         }
 
-        Font labelFont = new Font(Font.DIALOG, Font.PLAIN, labelSize);
+        Font labelFont = labelFontFamily.toFont(Font.PLAIN, labelSize);
 
         // Draw ROI
         for (int z = 0; z < sz; z++) {
@@ -418,7 +433,7 @@ public class RoiDrawer implements JIPipeParameterCollection {
         final int z = index.getZ();
         final int c = index.getC();
         final int t = index.getT();
-        final Font labelFont = new Font(Font.DIALOG, Font.PLAIN, labelSize);
+        final Font labelFont = labelFontFamily.toFont(Font.PLAIN, labelSize);
 
         // Draw the ROIs
         if (withHighlight) {
@@ -539,7 +554,7 @@ public class RoiDrawer implements JIPipeParameterCollection {
         final int z = index.getZ();
         final int c = index.getC();
         final int t = index.getT();
-        final Font labelFont = new Font(Font.DIALOG, Font.PLAIN, labelSize);
+        final Font labelFont = labelFontFamily.toFont(Font.PLAIN, labelSize);
 
         // Draw the ROIs
         if (withHighlight) {

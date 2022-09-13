@@ -35,6 +35,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiDrawer;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.FontFamilyParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.NumberParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
 import org.hkijena.jipipe.utils.BufferedImageUtils;
@@ -64,6 +65,8 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
     private Color labelForeground = Color.WHITE;
     private OptionalColorParameter labelBackground = new OptionalColorParameter(Color.BLACK, false);
     private int labelSize = 9;
+
+    private FontFamilyParameter labelFontFamily = new FontFamilyParameter();
     private double opacity = 1.0;
     private boolean ignoreZ = false;
     private boolean ignoreC = false;
@@ -104,7 +107,8 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         this.overrideLineWidth = new OptionalDoubleParameter(other.overrideLineWidth);
         this.drawOver = other.drawOver;
         this.labelForeground = other.labelForeground;
-        this.labelBackground = other.labelBackground;
+        this.labelBackground = new OptionalColorParameter(other.labelBackground);
+        this.labelFontFamily = new FontFamilyParameter(other.labelFontFamily);
         this.labelSize = other.labelSize;
         this.opacity = other.opacity;
         this.ignoreC = other.ignoreC;
@@ -139,6 +143,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
         drawer.setDrawOver(drawOver);
         drawer.setLabelForeground(labelForeground);
         drawer.setLabelBackground(labelBackground);
+        drawer.setLabelFontFamily(labelFontFamily);
         drawer.setLabelSize(labelSize);
         drawer.setOpacity(opacity);
         drawer.setIgnoreC(ignoreC);
@@ -199,6 +204,17 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
             return false;
         this.opacity = opacity;
         return true;
+    }
+
+    @JIPipeDocumentation(name = "Label font family", description = "The font family of the label")
+    @JIPipeParameter("label-font-family")
+    public FontFamilyParameter getLabelFontFamily() {
+        return labelFontFamily;
+    }
+
+    @JIPipeParameter("label-font-family")
+    public void setLabelFontFamily(FontFamilyParameter labelFontFamily) {
+        this.labelFontFamily = labelFontFamily;
     }
 
     @JIPipeDocumentation(name = "Draw outline", description = "If enabled, draw a white outline of the ROI")
