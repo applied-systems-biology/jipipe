@@ -144,15 +144,23 @@ public class DocumentTabPane extends JPanel {
             }
             sumWidth += width;
         }
+        boolean changed = false;
         if(sumWidth > getWidth() - 64) {
             for (DocumentTab tab : tabs) {
+                if(!tab.getTabComponent().isCompactMode())
+                    changed = true;
                 tab.getTabComponent().setCompactMode(true);
             }
         }
         else {
             for (DocumentTab tab : tabs) {
+                if(tab.getTabComponent().isCompactMode())
+                    changed = true;
                 tab.getTabComponent().setCompactMode(false);
             }
+        }
+        if(changed) {
+            revalidate();
         }
     }
 
@@ -587,7 +595,7 @@ public class DocumentTabPane extends JPanel {
     }
 
     private void addTab(DocumentTab tab) {
-        tabbedPane.addTab(tab.getTitle(), tab.getIcon(), tab.getContent());
+        tabbedPane.addTab(tab.getTitle(), tab.getIcon(), tab.getContent(), tab.getTitle());
         tabbedPane.setTabComponentAt(getTabCount() - 1, tab.getTabComponent());
         tabs.add(tab);
         tabHistory.add(tab);
@@ -762,11 +770,11 @@ public class DocumentTabPane extends JPanel {
         public void updateContents() {
             if(compactMode) {
                 titleLabel.setText("");
-                titleLabel.setToolTipText(documentTab.getTitle());
+//                setToolTipText(documentTab.getTitle());
             }
             else if(documentTab != null) {
                 titleLabel.setText(documentTab.title);
-                titleLabel.setToolTipText(null);
+//                setToolTipText(null);
             }
         }
 
@@ -822,6 +830,10 @@ public class DocumentTabPane extends JPanel {
         public void setTitle(String title) {
             this.title = title;
             eventBus.post(new TabRenamedEvent(documentTabPane, this));
+        }
+
+        public DocumentTabPane getDocumentTabPane() {
+            return documentTabPane;
         }
 
         public Icon getIcon() {
