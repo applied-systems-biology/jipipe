@@ -110,7 +110,9 @@ public class JIPipeProjectWindow extends JFrame {
                     JIPipe.getInstance().getSettingsRegistry().save();
                 }
                 JIPipeProjectTemplate template = JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().get(id);
-                project = template.loadAsProject();
+                JIPipeIssueReport report = new JIPipeIssueReport();
+                JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
+                project = template.loadAsProject(report, notifications);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -207,22 +209,12 @@ public class JIPipeProjectWindow extends JFrame {
     /**
      * Creates a new project from template
      */
-    public void newProjectFromTemplate(JIPipeProjectWorkbench workbench) {
-        JIPipeTemplateSelectionDialog dialog = new JIPipeTemplateSelectionDialog(workbench, this);
+    public void newProjectFromTemplate() {
+        JIPipeTemplateSelectionDialog dialog = new JIPipeTemplateSelectionDialog(projectUI, this);
         dialog.setLocationRelativeTo(this);
         dialog.setVisible(true);
         if (dialog.getSelectedTemplate() != null) {
-            try {
-                JIPipeProject project = dialog.getSelectedTemplate().loadAsProject();
-                JIPipeProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
-                if (window == null)
-                    return;
-                window.projectSavePath = null;
-                window.updateTitle();
-                window.getProjectUI().sendStatusBarText("Created new project");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            newProjectFromTemplate(dialog.getSelectedTemplate());
         }
     }
 
@@ -280,13 +272,22 @@ public class JIPipeProjectWindow extends JFrame {
         }
         else {
             try {
-                JIPipeProject project = template.loadAsProject();
+                JIPipeIssueReport report = new JIPipeIssueReport();
+                JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
+                JIPipeProject project = template.loadAsProject(report, notifications);
                 JIPipeProjectWindow window = openProjectInThisOrNewWindow("New project", project, true, true);
                 if (window == null)
                     return;
                 window.projectSavePath = null;
                 window.updateTitle();
                 window.getProjectUI().sendStatusBarText("Created new project");
+                if(!notifications.isEmpty()) {
+                    UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
+                }
+                if (!report.isValid()) {
+                    UIUtils.openValidityReportDialog(this, report, "Errors while loading the project", "It seems that not all parameters/nodes/connections could be restored from the project file. The cause might be that you are using a version of JIPipe that changed the affected features. " +
+                            "Please review the entries and apply the necessary changes (e.g., reconnecting nodes).", false);
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }

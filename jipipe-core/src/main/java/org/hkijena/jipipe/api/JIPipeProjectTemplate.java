@@ -53,9 +53,9 @@ public class JIPipeProjectTemplate {
      * @return the project
      * @throws IOException thrown by project loading
      */
-    public JIPipeProject loadAsProject() throws IOException {
+    public JIPipeProject loadAsProject(JIPipeIssueReport issueReport, JIPipeNotificationInbox inbox) throws IOException {
         JIPipeProject project = new JIPipeProject();
-        project.fromJson(node, new JIPipeIssueReport(), new JIPipeNotificationInbox());
+        project.fromJson(node, issueReport, inbox);
         // Apply selected default style
         project.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", GraphEditorUISettings.getInstance().getDefaultViewMode());
         project.getCompartmentGraph().attachAdditionalMetadata("jipipe:graph:view-mode", GraphEditorUISettings.getInstance().getDefaultViewMode());
