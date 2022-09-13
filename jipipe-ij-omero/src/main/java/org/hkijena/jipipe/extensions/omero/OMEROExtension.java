@@ -32,7 +32,7 @@ import org.hkijena.jipipe.extensions.omero.datatypes.OMERODatasetReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROGroupReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROImageReferenceData;
 import org.hkijena.jipipe.extensions.omero.datatypes.OMEROProjectReferenceData;
-import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;

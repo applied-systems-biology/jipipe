@@ -22,7 +22,7 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.annotation.algorithms.*;
 import org.hkijena.jipipe.extensions.annotation.datasources.AnnotationTableFromFile;
 import org.hkijena.jipipe.extensions.core.data.OpenInNativeApplicationDataImportOperation;
-import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;

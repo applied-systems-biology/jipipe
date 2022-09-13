@@ -82,7 +82,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.BitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.OptionalBitDepth;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIElementDrawingMode;
-import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;

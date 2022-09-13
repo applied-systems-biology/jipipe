@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.ui.components;
 
+import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumItemInfo;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterEditorUI;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
@@ -32,9 +34,9 @@ import java.util.stream.Collectors;
 /**
  * UI that adds slots to an algorithm
  */
-public class PickEnumValueDialog extends JDialog {
+public class PickDynamicEnumValueDialog extends JDialog {
+    private final DynamicEnumParameter<Object> dynamicEnumParameter;
     private List<Object> availableItems;
-    private EnumItemInfo itemInfo;
     private SearchTextField searchField;
     private JList<Object> itemJList;
     private Object selectedItem;
@@ -43,10 +45,10 @@ public class PickEnumValueDialog extends JDialog {
     private JScrollPane scrollPane;
     private boolean canceled = true;
 
-    public PickEnumValueDialog(Window parent, List<Object> availableItems, EnumItemInfo itemInfo, Object preSelected) {
+    public PickDynamicEnumValueDialog(Window parent, DynamicEnumParameter<Object> dynamicEnumParameter, Object preSelected) {
         super(parent);
-        this.availableItems = availableItems;
-        this.itemInfo = itemInfo;
+        this.dynamicEnumParameter = dynamicEnumParameter;
+        this.availableItems = dynamicEnumParameter.getAllowedValues();
         initialize();
         reloadItemList();
         if (preSelected == null) {
@@ -56,8 +58,8 @@ public class PickEnumValueDialog extends JDialog {
         itemJList.setSelectedValue(preSelected, true);
     }
 
-    public static Object showDialog(Component parent, List<Object> availableItems, EnumItemInfo itemInfo, Object preSelected, String title) {
-        PickEnumValueDialog dialog = new PickEnumValueDialog(SwingUtilities.getWindowAncestor(parent), availableItems, itemInfo, preSelected);
+    public static Object showDialog(Component parent, DynamicEnumParameter<Object> dynamicEnumParameter, Object preSelected, String title) {
+        PickDynamicEnumValueDialog dialog = new PickDynamicEnumValueDialog(SwingUtilities.getWindowAncestor(parent), dynamicEnumParameter, preSelected);
         dialog.setTitle(title);
         dialog.setModal(true);
         dialog.pack();
@@ -76,7 +78,7 @@ public class PickEnumValueDialog extends JDialog {
         initializeToolBar();
 
         itemJList = new JList<>();
-        itemJList.setCellRenderer(new EnumParameterEditorUI.Renderer(itemInfo));
+        itemJList.setCellRenderer(new DynamicEnumParameterEditorUI.Renderer(dynamicEnumParameter));
         itemJList.addListSelectionListener(e -> {
             if (itemJList.getSelectedValue() != null) {
                 setSelectedItem(itemJList.getSelectedValue());
@@ -90,6 +92,7 @@ public class PickEnumValueDialog extends JDialog {
                 }
             }
         });
+
         scrollPane = new JScrollPane(itemJList);
         add(scrollPane, BorderLayout.CENTER);
         initializeButtonPanel();
@@ -145,8 +148,8 @@ public class PickEnumValueDialog extends JDialog {
     }
 
     private List<Object> getFilteredAndSortedInfos() {
-        Predicate<Object> filterFunction = info -> searchField.test(itemInfo.getLabel(info) + info.toString());
-        return availableItems.stream().filter(filterFunction).sorted(Comparator.comparing(info -> itemInfo.getLabel(info))).collect(Collectors.toList());
+        Predicate<Object> filterFunction = info -> searchField.test(dynamicEnumParameter.getSearchString(info));
+        return availableItems.stream().filter(filterFunction).sorted(Comparator.comparing(dynamicEnumParameter::renderLabel)).collect(Collectors.toList());
     }
 
     private void reloadItemList() {

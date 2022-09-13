@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.generate;
 
 import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -36,6 +37,8 @@ import java.awt.*;
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
+@Deprecated
+@JIPipeHidden
 public class AppendRectangularRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Margin.List rectangles = new Margin.List();

@@ -20,7 +20,7 @@ import org.hkijena.jipipe.JIPipeMutableDependency;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.multiparameters.nodes.*;
-import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.UIUtils;

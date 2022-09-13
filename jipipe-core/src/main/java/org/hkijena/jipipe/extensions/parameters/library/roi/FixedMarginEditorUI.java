@@ -28,9 +28,9 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Editor for {@link Margin}
+ * Editor for {@link FixedMargin}
  */
-public class MarginParameterEditorUI extends JIPipeParameterEditorUI {
+public class FixedMarginEditorUI extends JIPipeParameterEditorUI {
 
     private boolean skipNextReload = false;
     private final Map<Anchor, JToggleButton> anchorSelectionMap = new HashMap<>();
@@ -40,7 +40,7 @@ public class MarginParameterEditorUI extends JIPipeParameterEditorUI {
      * @param workbench       workbench
      * @param parameterAccess the parameter
      */
-    public MarginParameterEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
+    public FixedMarginEditorUI(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess) {
         super(workbench, parameterAccess);
         initialize();
         reload();
@@ -132,7 +132,7 @@ public class MarginParameterEditorUI extends JIPipeParameterEditorUI {
         for (Map.Entry<Anchor, JToggleButton> entry : anchorSelectionMap.entrySet()) {
             entry.getValue().addActionListener(e -> {
                 if (entry.getValue().isSelected()) {
-                    Margin roi = getParameter(Margin.class);
+                    FixedMargin roi = getParameter(FixedMargin.class);
                     roi.setAnchor(entry.getKey());
                     setParameter(roi, true);
                 }
@@ -151,7 +151,7 @@ public class MarginParameterEditorUI extends JIPipeParameterEditorUI {
             skipNextReload = false;
             return;
         }
-        Margin roi = getParameter(Margin.class);
+        FixedMargin roi = getParameter(FixedMargin.class);
         anchorSelectionMap.get(roi.getAnchor()).setSelected(true);
 
         // Update the parameter panel

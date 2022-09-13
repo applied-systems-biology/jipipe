@@ -12,7 +12,7 @@
  *
  */
 
-package org.hkijena.jipipe.extensions.parameters.library.enums;
+package org.hkijena.jipipe.extensions.parameters.library.jipipe;
 
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.DynamicStringEnumParameter;

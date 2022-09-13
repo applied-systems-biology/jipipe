@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
-import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;

@@ -28,10 +28,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * Parameter that allows users to define a rectangle ROI.
- * Users can define a rectangle the classical way (x, y, width, height), but also other ways.
+ * Related to {@link Margin}, but with fixed-size objects
  */
-public class Margin implements JIPipeParameterCollection {
+public class FixedMargin implements JIPipeParameterCollection {
     public static final int PARAM_LEFT = 1;
     public static final int PARAM_TOP = 2;
     public static final int PARAM_RIGHT = 4;
@@ -43,21 +42,17 @@ public class Margin implements JIPipeParameterCollection {
     private NumericFunctionExpression top = new NumericFunctionExpression();
     private NumericFunctionExpression right = new NumericFunctionExpression();
     private NumericFunctionExpression bottom = new NumericFunctionExpression();
-    private NumericFunctionExpression width = new NumericFunctionExpression();
-    private NumericFunctionExpression height = new NumericFunctionExpression();
     private Anchor anchor = Anchor.TopLeft;
 
     /**
      * Creates a new instance
      */
-    public Margin() {
+    public FixedMargin() {
         this.left.ensureExactValue(true);
         this.top.ensureExactValue(true);
         this.right.ensureExactValue(true);
         this.bottom.ensureExactValue(true);
-        this.anchor = Anchor.CenterCenter;
-        this.width.ensureExactValue(false);
-        this.height.ensureExactValue(false);
+        this.anchor = Anchor.TopLeft;
     }
 
     /**
@@ -65,18 +60,14 @@ public class Margin implements JIPipeParameterCollection {
      *
      * @param rectangle the rectangle
      */
-    public Margin(Rectangle rectangle) {
+    public FixedMargin(Rectangle rectangle) {
         this.left.ensureExactValue(true);
         this.top.ensureExactValue(true);
         this.right.ensureExactValue(false);
         this.bottom.ensureExactValue(false);
         this.anchor = Anchor.TopLeft;
-        this.width.ensureExactValue(true);
-        this.height.ensureExactValue(true);
         this.left.setExactValue(rectangle.x);
         this.top.setExactValue(rectangle.y);
-        this.width.setExactValue(rectangle.width);
-        this.height.setExactValue(rectangle.height);
     }
 
     /**
@@ -84,55 +75,29 @@ public class Margin implements JIPipeParameterCollection {
      *
      * @param other the original
      */
-    public Margin(Margin other) {
+    public FixedMargin(FixedMargin other) {
         this.left = new NumericFunctionExpression(other.left);
         this.top = new NumericFunctionExpression(other.top);
         this.right = new NumericFunctionExpression(other.right);
         this.bottom = new NumericFunctionExpression(other.bottom);
-        this.width = new NumericFunctionExpression(other.width);
-        this.height = new NumericFunctionExpression(other.height);
         this.anchor = other.anchor;
     }
 
-    public Margin(Anchor anchor) {
+    public FixedMargin(Anchor anchor) {
         this.anchor = anchor;
     }
 
     @Override
     public String toString() {
-        return "Margin{" +
+        return "FixedSizePlacement{" +
                 "left=" + left +
                 ", top=" + top +
                 ", right=" + right +
                 ", bottom=" + bottom +
-                ", width=" + width +
-                ", height=" + height +
                 ", anchor=" + anchor +
                 '}';
     }
 
-    /**
-     * Finds the parameter keys that are relevant according to the current anchor setting
-     * The anchor key 'anchor' is not part of the result.
-     *
-     * @return the keys
-     */
-    public Set<String> getRelevantParameterKeys() {
-        Set<String> result = new HashSet<>();
-        if ((getAnchor().getRelevantParameters() & PARAM_LEFT) == PARAM_LEFT)
-            result.add("left");
-        if ((getAnchor().getRelevantParameters() & PARAM_RIGHT) == PARAM_RIGHT)
-            result.add("right");
-        if ((getAnchor().getRelevantParameters() & PARAM_TOP) == PARAM_TOP)
-            result.add("top");
-        if ((getAnchor().getRelevantParameters() & PARAM_BOTTOM) == PARAM_BOTTOM)
-            result.add("bottom");
-        if ((getAnchor().getRelevantParameters() & PARAM_WIDTH) == PARAM_WIDTH)
-            result.add("width");
-        if ((getAnchor().getRelevantParameters() & PARAM_HEIGHT) == PARAM_HEIGHT)
-            result.add("height");
-        return result;
-    }
 
     @JIPipeDocumentation(name = "Left")
     @JIPipeParameter(value = "left", uiOrder = 0)
@@ -186,32 +151,6 @@ public class Margin implements JIPipeParameterCollection {
         this.bottom = bottom;
     }
 
-    @JIPipeDocumentation(name = "Width")
-    @JIPipeParameter(value = "width", uiOrder = 4)
-    @JsonGetter("width")
-    public NumericFunctionExpression getWidth() {
-        return width;
-    }
-
-    @JIPipeParameter("width")
-    @JsonSetter("width")
-    public void setWidth(NumericFunctionExpression width) {
-        this.width = width;
-    }
-
-    @JIPipeDocumentation(name = "Height")
-    @JIPipeParameter(value = "height", uiOrder = 5)
-    @JsonGetter("height")
-    public NumericFunctionExpression getHeight() {
-        return height;
-    }
-
-    @JIPipeParameter("height")
-    @JsonSetter("height")
-    public void setHeight(NumericFunctionExpression height) {
-        this.height = height;
-    }
-
     @JIPipeDocumentation(name = "Anchor")
     @JIPipeParameter("anchor")
     @JsonGetter("anchor")
@@ -229,98 +168,127 @@ public class Margin implements JIPipeParameterCollection {
      * Generates the rectangle defined by the definition.
      * If the rectangle is invalid, null is returned
      *
+     * @param object the object to be placed
      * @param availableArea rectangle describing the available area.
      * @param parameters    additional expression variables
      * @return Rectangle within the area
      */
-    public Rectangle getInsideArea(Rectangle availableArea, ExpressionVariables parameters) {
+    public Rectangle place(Rectangle object, Rectangle availableArea, ExpressionVariables parameters) {
         final int left_ = (int) left.apply(availableArea.width, parameters);
         final int top_ = (int) top.apply(availableArea.height, parameters);
         final int right_ = (int) right.apply(availableArea.width, parameters);
         final int bottom_ = (int) bottom.apply(availableArea.height, parameters);
-        final int width_ = (int) width.apply(availableArea.width, parameters);
-        final int height_ = (int) height.apply(availableArea.height, parameters);
+        final int width_ = object.width;
+        final int height_ = object.height;
         final int aw = availableArea.width;
         final int ah = availableArea.height;
 
         int ox;
         int oy;
-        int ow;
-        int oh;
 
         switch (anchor) {
             case TopLeft: {
                 ox = left_;
                 oy = top_;
-                ow = width_;
-                oh = height_;
             }
             break;
             case TopRight: {
                 ox = aw - right_ - width_;
                 oy = top_;
-                ow = width_;
-                oh = height_;
             }
             break;
             case TopCenter: {
-                ox = left_;
+                ox = aw / 2 - width_ / 2;
                 oy = top_;
-                ow = aw - left_ - right_;
-                oh = height_;
             }
             break;
             case BottomLeft: {
                 ox = left_;
                 oy = ah - bottom_ - height_;
-                ow = width_;
-                oh = height_;
             }
             break;
             case BottomRight: {
                 ox = aw - right_ - width_;
                 oy = ah - bottom_ - height_;
-                ow = width_;
-                oh = height_;
             }
             break;
             case BottomCenter: {
-                ox = left_;
+                ox = aw / 2 - width_ / 2;
                 oy = ah - bottom_ - height_;
-                ow = aw - left_ - right_;
-                oh = height_;
             }
             break;
             case CenterLeft: {
                 ox = left_;
-                oy = top_;
-                ow = width_;
-                oh = ah - top_ - bottom_;
+                oy = ah / 2 - height_ / 2;
             }
             break;
             case CenterRight: {
                 ox = aw - width_ - right_;
-                oy = ah - top_ - bottom_;
-                ow = width_;
-                oh = ah - top_ - bottom_;
+                oy = ah / 2 - height_ / 2;
             }
             break;
             case CenterCenter: {
-                ox = left_;
-                oy = top_;
-                ow = aw - left_ - right_;
-                oh = ah - top_ - bottom_;
+                ox = aw / 2 - width_ / 2;
+                oy = ah / 2 - height_ / 2;
             }
             break;
             default:
                 throw new UnsupportedOperationException("Unsupported: " + anchor);
         }
 
-//        if (ox < 0 || oy < 0 || ow < 0 || oh < 0) {
-//            return null;
-//        }
+        return new Rectangle(ox + availableArea.x, oy + availableArea.y, width_, height_);
+    }
 
-        return new Rectangle(ox + availableArea.x, oy + availableArea.y, ow, oh);
+    /**
+     * Finds the parameter keys that are relevant according to the current anchor setting
+     * The anchor key 'anchor' is not part of the result.
+     *
+     * @return the keys
+     */
+    public Set<String> getRelevantParameterKeys() {
+        Set<String> result = new HashSet<>();
+        switch (anchor) {
+            case TopLeft: {
+                result.add("left");
+                result.add("top");
+            }
+            break;
+            case TopRight: {
+                result.add("top");
+                result.add("right");
+            }
+            break;
+            case TopCenter: {
+                result.add("top");
+            }
+            break;
+            case BottomLeft: {
+                result.add("left");
+                result.add("bottom");
+            }
+            break;
+            case BottomRight: {
+                result.add("right");
+                result.add("bottom");
+            }
+            break;
+            case BottomCenter: {
+                result.add("bottom");
+            }
+            break;
+            case CenterLeft: {
+                result.add("left");
+            }
+            break;
+            case CenterRight: {
+                result.add("right");
+            }
+            break;
+            case CenterCenter: {
+            }
+            break;
+        }
+        return result;
     }
 
     @Override
@@ -329,14 +297,14 @@ public class Margin implements JIPipeParameterCollection {
     }
 
     /**
-     * List parameter of {@link Margin}
+     * List parameter of {@link FixedMargin}
      */
-    public static class List extends ListParameter<Margin> {
+    public static class List extends ListParameter<FixedMargin> {
         /**
          * Creates a new instance
          */
         public List() {
-            super(Margin.class);
+            super(FixedMargin.class);
         }
 
         /**
@@ -345,9 +313,9 @@ public class Margin implements JIPipeParameterCollection {
          * @param other the original
          */
         public List(List other) {
-            super(Margin.class);
-            for (Margin rectangle : other) {
-                add(new Margin(rectangle));
+            super(FixedMargin.class);
+            for (FixedMargin rectangle : other) {
+                add(new FixedMargin(rectangle));
             }
         }
     }

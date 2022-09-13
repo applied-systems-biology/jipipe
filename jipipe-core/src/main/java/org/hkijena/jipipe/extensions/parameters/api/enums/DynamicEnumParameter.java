@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.parameters.api.enums;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
 import java.util.ArrayList;
@@ -98,6 +99,14 @@ public abstract class DynamicEnumParameter<T> {
      */
     public Icon renderIcon(T value) {
         return null;
+    }
+
+    /**
+     * The search string used for the searchable mode
+     * @return the search string
+     */
+    public String getSearchString(T value) {
+        return StringUtils.nullToEmpty(value);
     }
 
     /**

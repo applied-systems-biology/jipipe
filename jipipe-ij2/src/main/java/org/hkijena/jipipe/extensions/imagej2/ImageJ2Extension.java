@@ -35,7 +35,7 @@ import org.hkijena.jipipe.extensions.imagej2.datatypes.outofbounds.constant.*;
 import org.hkijena.jipipe.extensions.imagej2.datatypes.shapes.*;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.compat.ImagePlusWindowImageJImporterUI;
-import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;

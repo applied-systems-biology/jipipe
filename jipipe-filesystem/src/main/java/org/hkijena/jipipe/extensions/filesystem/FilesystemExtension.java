@@ -31,7 +31,7 @@ import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.CopyPathDataOperation;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.FilesystemDataSlotPreview;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOperation;
-import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;

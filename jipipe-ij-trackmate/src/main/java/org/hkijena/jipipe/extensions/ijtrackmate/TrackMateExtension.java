@@ -38,7 +38,7 @@ import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackDrawer;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.TrackMateUtils;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
-import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;

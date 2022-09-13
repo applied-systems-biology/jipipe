@@ -87,6 +87,9 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.annotations.RoiPro
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.assemble.AssembleExtractedROIAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.assemble.ExtractFromROIAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.convert.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw.DrawOvalRoiAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw.DrawRectangleRoiAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw.DrawTextRoiAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.filter.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.generate.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.CountROIAlgorithm;
@@ -148,7 +151,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatistic
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementColumn;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementColumnSortOrder;
-import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
@@ -1160,6 +1163,10 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-roi-set-metadata-from-table", SetROIMetadataFromTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
         registerNodeType("ij1-roi-set-metadata-from-statistics-expression", SetRoiMetadataByStatisticsAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
         registerNodeType("ij1-roi-remove-metadata", RemoveROIMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+
+        registerNodeType("ij1-roi-draw-rectangle", DrawRectangleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
+        registerNodeType("ij1-roi-draw-oval", DrawOvalRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-ellipse.png"));
+        registerNodeType("ij1-roi-draw-text", DrawTextRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-text.png"));
 
         registerEnumParameterType("ij1-roi-flood-fill:mode",
                 RoiFloodFillAlgorithm.Mode.class,

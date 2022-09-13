@@ -48,7 +48,7 @@ import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameterEd
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.parameters.library.colors.*;
 import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.FilePathParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
@@ -303,6 +303,14 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Margin",
                 "Defines a rectangular area within a region",
                 MarginParameterEditorUI.class);
+        registerParameterType("fixed-margin",
+                FixedMargin.class,
+                FixedMargin.List.class,
+                null,
+                null,
+                "Margin (fixed size)",
+                "Places fixed-size objects into an area",
+                FixedMarginEditorUI.class);
         registerParameterType("anchor",
                 Anchor.class,
                 null,
@@ -451,6 +459,13 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 DynamicStringSetParameter.class,
                 "String set selection",
                 "A set of strings from which a subset can be selected");
+        registerParameterType("font-family-enum",
+                FontFamilyParameter.class,
+                FontFamilyParameter::new,
+                p -> new FontFamilyParameter((FontFamilyParameter) p),
+                "Font family",
+                "Available font families",
+                null);
 
         // Enums
         registerEnumParameterType("color-map",

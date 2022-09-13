@@ -19,7 +19,7 @@ import com.google.common.eventbus.EventBus;
 import org.apache.commons.lang.WordUtils;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;

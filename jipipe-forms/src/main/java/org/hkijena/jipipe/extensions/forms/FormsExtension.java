@@ -20,7 +20,7 @@ import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.forms.algorithms.*;
 import org.hkijena.jipipe.extensions.forms.datatypes.*;
-import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.strings.StringsExtension;

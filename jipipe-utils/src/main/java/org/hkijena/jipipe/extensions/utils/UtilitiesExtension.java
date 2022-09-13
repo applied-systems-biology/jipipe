@@ -29,7 +29,7 @@ import org.hkijena.jipipe.extensions.filesystem.FilesystemExtension;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.CopyPathDataOperation;
 import org.hkijena.jipipe.extensions.filesystem.resultanalysis.OpenPathDataOperation;
 import org.hkijena.jipipe.extensions.multiparameters.MultiParameterAlgorithmsExtension;
-import org.hkijena.jipipe.extensions.parameters.library.enums.PluginCategoriesEnumParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.utils.algorithms.*;
