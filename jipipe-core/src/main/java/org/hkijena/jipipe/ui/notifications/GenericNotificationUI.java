@@ -51,7 +51,7 @@ public class GenericNotificationUI extends JIPipeWorkbenchPanel {
             JButton dismissButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
             UIUtils.makeFlat25x25(dismissButton);
             dismissButton.setToolTipText("Dismisses this notification");
-            dismissButton.addActionListener(e -> dismiss());
+            dismissButton.addActionListener(e -> notification.dismiss());
             headerPanel.add(dismissButton);
         }
 
@@ -73,16 +73,11 @@ public class GenericNotificationUI extends JIPipeWorkbenchPanel {
             actionButton.addActionListener(e -> {
                 action.getAction().accept(getWorkbench());
                 if (action.isDismiss())
-                    dismiss();
+                    notification.dismiss();
             });
             actionPanel.add(actionButton);
         }
 
         add(actionPanel, BorderLayout.SOUTH);
-    }
-
-    private void dismiss() {
-        inboxUI.getDismissedNotifications().add(notification);
-        notification.dismiss();
     }
 }

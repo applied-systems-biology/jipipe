@@ -64,7 +64,7 @@ public class WorkbenchNotificationUI extends JIPipeWorkbenchPanel {
                 JButton dismissButton = new JButton(UIUtils.getIconFromResources("actions/close-tab.png"));
                 UIUtils.makeFlat25x25(dismissButton);
                 dismissButton.setToolTipText("Dismisses this notification");
-                dismissButton.addActionListener(e -> dismiss());
+                dismissButton.addActionListener(e -> notification.dismiss());
                 headerPanel.add(dismissButton);
             }
         }
@@ -87,7 +87,7 @@ public class WorkbenchNotificationUI extends JIPipeWorkbenchPanel {
             actionButton.addActionListener(e -> {
                 action.getAction().accept(getWorkbench());
                 if (action.isDismiss())
-                    dismiss();
+                    notification.dismiss();
             });
             actionPanel.add(actionButton);
         }
@@ -100,13 +100,8 @@ public class WorkbenchNotificationUI extends JIPipeWorkbenchPanel {
                 "the type '" + notification.getHeading() + "'?", "Block notification", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             NotificationUISettings.getInstance().getBlockedNotifications().add(notification.getId());
             NotificationUISettings.getInstance().triggerParameterChange("blocked-action-notifications");
-            dismiss();
+            notification.dismiss();
         }
-    }
-
-    private void dismiss() {
-        inboxUI.getDismissedNotifications().add(notification);
-        notification.dismiss();
     }
 
     private void unblock() {

@@ -28,6 +28,7 @@ public class GenericNotificationInboxUI extends JIPipeWorkbenchPanel {
         this.inbox = inbox;
         initialize();
         updateNotifications();
+        inbox.getEventBus().register(this);
     }
 
     public void updateNotifications() {
@@ -77,7 +78,7 @@ public class GenericNotificationInboxUI extends JIPipeWorkbenchPanel {
             label.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             noNotificationPanel.add(label, BorderLayout.CENTER);
 
-            JLabel infoLabel = new JLabel("There are no notifications. You can close this tab.");
+            JLabel infoLabel = new JLabel("There are no notifications.");
             infoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
             noNotificationPanel.add(infoLabel, BorderLayout.SOUTH);
 
@@ -114,11 +115,13 @@ public class GenericNotificationInboxUI extends JIPipeWorkbenchPanel {
     }
 
     @Subscribe
-    public void onNotificationsChanged(JIPipeNotificationInbox.UpdatedEvent event) {
+    public void onNotificationPushed(JIPipeNotificationInbox.PushedEvent event) {
         updateNotifications();
     }
 
-    public List<JIPipeNotification> getDismissedNotifications() {
-        return dismissedNotifications;
+    @Subscribe
+    public void onNotificationDismissed(JIPipeNotificationInbox.DismissedEvent event) {
+        dismissedNotifications.add(event.getNotification());
+        updateNotifications();
     }
 }

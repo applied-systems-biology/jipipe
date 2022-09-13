@@ -318,6 +318,7 @@ public class JIPipeProjectWindow extends JFrame {
         if (Files.isRegularFile(path)) {
             JIPipeIssueReport report = new JIPipeIssueReport();
             JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
+            notifications.connectDismissTo(JIPipeNotificationInbox.getInstance());
             try {
                 JsonNode jsonData = JsonUtils.getObjectMapper().readValue(path.toFile(), JsonNode.class);
                 Set<JIPipeDependency> dependencySet = JIPipeProject.loadDependenciesFromJson(jsonData);
@@ -355,7 +356,7 @@ public class JIPipeProjectWindow extends JFrame {
                 window.updateTitle();
                 ProjectsSettings.getInstance().addRecentProject(path);
                 if(!notifications.isEmpty()) {
-                    UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.");
+                    UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -367,6 +368,7 @@ public class JIPipeProjectWindow extends JFrame {
         } else if (Files.isDirectory(path)) {
             JIPipeIssueReport report = new JIPipeIssueReport();
             JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
+            notifications.connectDismissTo(JIPipeNotificationInbox.getInstance());
             try {
                 Path parameterFilePath = path.resolve("project.jip");
                 JsonNode jsonData = JsonUtils.getObjectMapper().readValue(parameterFilePath.toFile(), JsonNode.class);
@@ -412,7 +414,7 @@ public class JIPipeProjectWindow extends JFrame {
                     JIPipeRunExecuterUI.runInDialog(this, new LoadResultIntoCacheRun(projectUI, project, path));
                 }
                 if(!notifications.isEmpty()) {
-                    UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.");
+                    UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

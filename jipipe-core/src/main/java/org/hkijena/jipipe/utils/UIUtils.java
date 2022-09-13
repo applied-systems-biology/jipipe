@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.utils;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.eventbus.Subscribe;
 import com.google.common.primitives.Ints;
 import ij.IJ;
 import org.apache.commons.lang3.SystemUtils;
@@ -913,7 +914,12 @@ public class UIUtils {
         dialog.setVisible(true);
     }
 
-    public static void openNotificationsDialog(JIPipeWorkbench workbench, Component parent, JIPipeNotificationInbox notifications, String title, String infoText) {
+    public static void openNotificationsDialog(JIPipeWorkbench workbench, Component parent, JIPipeNotificationInbox notifications, String title, String infoText, boolean autoClose) {
+
+        if(autoClose && notifications.isEmpty()) {
+            return;
+        }
+
         JPanel contentPanel = new JPanel(new BorderLayout(8,8));
 
         GenericNotificationInboxUI inboxUI = new GenericNotificationInboxUI(workbench, notifications);
@@ -935,6 +941,17 @@ public class UIUtils {
         dialog.setSize(new Dimension(800, 600));
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
+
+        if(autoClose) {
+            notifications.getEventBus().register(new Object() {
+                @Subscribe
+                public void onUpdated(JIPipeNotificationInbox.UpdatedEvent event) {
+                    if(notifications.isEmpty()) {
+                        dialog.setVisible(false);
+                    }
+                }
+            });
+        }
     }
 
     /**

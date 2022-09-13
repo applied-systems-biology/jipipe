@@ -124,11 +124,13 @@ public class WorkbenchNotificationInboxUI extends JIPipeWorkbenchPanel {
     }
 
     @Subscribe
-    public void onNotificationsChanged(JIPipeNotificationInbox.UpdatedEvent event) {
+    public void onNotificationPushed(JIPipeNotificationInbox.PushedEvent event) {
         updateNotifications();
     }
 
-    public List<JIPipeNotification> getDismissedNotifications() {
-        return dismissedNotifications;
+    @Subscribe
+    public void onNotificationDismissed(JIPipeNotificationInbox.DismissedEvent event) {
+        dismissedNotifications.add(event.getNotification());
+        updateNotifications();
     }
 }

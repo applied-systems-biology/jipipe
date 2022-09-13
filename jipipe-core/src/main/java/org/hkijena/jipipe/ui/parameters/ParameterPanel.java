@@ -18,6 +18,7 @@ import com.google.common.eventbus.Subscribe;
 import com.google.common.html.HtmlEscapers;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
@@ -26,10 +27,7 @@ import org.hkijena.jipipe.ui.components.AddParameterDialog;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
-import org.hkijena.jipipe.utils.DocumentationUtils;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.scijava.Context;
 import org.scijava.Contextual;
@@ -566,6 +564,30 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 }
             });
             optionsMenu.add(pasteItem);
+
+            // Set to default function
+            if(displayedParameters instanceof JIPipeGraphNode) {
+                JMenuItem restoreDefaultItem = new JMenuItem("Restore to default value", UIUtils.getIconFromResources("actions/edit-undo.png"));
+                restoreDefaultItem.addActionListener(e -> {
+                    JIPipeParameterCollection defaultCollection = ((JIPipeGraphNode) displayedParameters).getInfo().newInstance();
+                    JIPipeParameterTree defaultTree = new JIPipeParameterTree(defaultCollection);
+                    JIPipeParameterAccess otherAccess = defaultTree.getParameters().getOrDefault(editorUI.getParameterAccess().getKey(), null);
+                    editorUI.getParameterAccess().set(otherAccess.get(Object.class));
+                });
+                optionsMenu.addSeparator();
+                optionsMenu.add(restoreDefaultItem);
+            }
+            else if(ReflectionUtils.hasDefaultConstructor(displayedParameters.getClass())) {
+                JMenuItem restoreDefaultItem = new JMenuItem("Restore to default value", UIUtils.getIconFromResources("actions/edit-undo.png"));
+                restoreDefaultItem.addActionListener(e -> {
+                    JIPipeParameterCollection defaultCollection = (JIPipeParameterCollection) ReflectionUtils.newInstance(displayedParameters.getClass());
+                    JIPipeParameterTree defaultTree = new JIPipeParameterTree(defaultCollection);
+                    JIPipeParameterAccess otherAccess = defaultTree.getParameters().getOrDefault(editorUI.getParameterAccess().getKey(), null);
+                    editorUI.getParameterAccess().set(otherAccess.get(Object.class));
+                });
+                optionsMenu.addSeparator();
+                optionsMenu.add(restoreDefaultItem);
+            }
 
             propertyPanel.add(optionsButton, BorderLayout.EAST);
             installComponentHighlighter(optionsButton, Sets.newHashSet(component, description));
