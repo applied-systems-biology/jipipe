@@ -65,7 +65,7 @@ public class JIPipeNotificationInbox {
     }
 
     public void dismiss(String id) {
-        notifications.stream().filter(notification -> notification.getId().equals(id)).forEach(this::dismiss);
+        ImmutableList.copyOf(notifications).stream().filter(notification -> notification.getId().equals(id)).forEach(this::dismiss);
     }
 
     public EventBus getEventBus() {
