@@ -13,8 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
-import com.fasterxml.jackson.annotation.JsonGetter;
-import com.fasterxml.jackson.annotation.JsonSetter;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TByteArrayList;
 import gnu.trove.list.array.TFloatArrayList;
@@ -39,8 +37,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import javax.swing.*;
@@ -1179,7 +1177,7 @@ public class ImageJUtils {
         return image;
     }
 
-    public static LUT createLUTFromGradient(List<GradientStop> stops) {
+    public static LUT createLUTFromGradient(List<ColorUtils.GradientStop> stops) {
 //        MultipleGradientPaint paint = new LinearGradientPaint(0, 0, 128, 1, fractions, colors);
 //        BufferedImage img = new BufferedImage(256,1, BufferedImage.TYPE_INT_RGB);
 //        Graphics2D graphics = (Graphics2D) img.getGraphics();
@@ -1191,23 +1189,23 @@ public class ImageJUtils {
 //            e.printStackTrace();
 //        }
         stops.sort(Comparator.naturalOrder());
-        if (stops.get(0).position > 0)
-            stops.add(0, new GradientStop(0, stops.get(0).getColor()));
-        if (stops.get(stops.size() - 1).position < 1)
-            stops.add(new GradientStop(1, stops.get(stops.size() - 1).getColor()));
+        if (stops.get(0).getPosition() > 0)
+            stops.add(0, new ColorUtils.GradientStop(0, stops.get(0).getColor()));
+        if (stops.get(stops.size() - 1).getPosition() < 1)
+            stops.add(new ColorUtils.GradientStop(1, stops.get(stops.size() - 1).getColor()));
         byte[] reds = new byte[256];
         byte[] greens = new byte[256];
         byte[] blues = new byte[256];
         int currentFirstStop = 0;
         int currentLastStop = 1;
         int startIndex = 0;
-        int endIndex = (int) (255 * stops.get(currentLastStop).position);
+        int endIndex = (int) (255 * stops.get(currentLastStop).getPosition());
         for (int i = 0; i < 256; i++) {
             if (i != 255 && i >= endIndex) {
                 startIndex = i;
                 ++currentFirstStop;
                 ++currentLastStop;
-                endIndex = (int) (255 * stops.get(currentLastStop).position);
+                endIndex = (int) (255 * stops.get(currentLastStop).getPosition());
             }
             Color currentStart = stops.get(currentFirstStop).getColor();
             Color currentEnd = stops.get(currentLastStop).getColor();
@@ -1919,47 +1917,5 @@ public class ImageJUtils {
         return outputImage;
     }
 
-    public static class GradientStop implements Comparable<GradientStop> {
-        private Color color;
-        private float position;
-
-        public GradientStop() {
-        }
-
-        public GradientStop(float position, Color color) {
-            this.position = position;
-            this.color = color;
-        }
-
-        public GradientStop(GradientStop other) {
-            this.position = other.position;
-            this.color = other.color;
-        }
-
-        @JsonGetter("position")
-        public float getPosition() {
-            return position;
-        }
-
-        @JsonSetter("position")
-        public void setPosition(float position) {
-            this.position = position;
-        }
-
-        @JsonGetter("color")
-        public Color getColor() {
-            return color;
-        }
-
-        @JsonSetter("color")
-        public void setColor(Color color) {
-            this.color = color;
-        }
-
-        @Override
-        public int compareTo(GradientStop o) {
-            return Float.compare(position, o.position);
-        }
-    }
 }
 

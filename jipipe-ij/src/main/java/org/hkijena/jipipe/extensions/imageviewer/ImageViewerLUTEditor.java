@@ -23,6 +23,7 @@ import org.hkijena.jipipe.extensions.parameters.library.colors.ColorMapEnumItemI
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.components.PickEnumValueDialog;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.jdesktop.swingx.JXMultiThumbSlider;
@@ -95,9 +96,9 @@ public class ImageViewerLUTEditor extends JPanel implements ThumbListener {
 
     private LUT generateLUT() {
         List<Thumb<Color>> stops = this.slider.getModel().getSortedThumbs();
-        List<ImageJUtils.GradientStop> gradientStops = new ArrayList<>();
+        List<ColorUtils.GradientStop> gradientStops = new ArrayList<>();
         for (Thumb<Color> thumb : stops) {
-            gradientStops.add(new ImageJUtils.GradientStop(thumb.getPosition(), thumb.getObject()));
+            gradientStops.add(new ColorUtils.GradientStop(thumb.getPosition(), thumb.getObject()));
         }
         return ImageJUtils.createLUTFromGradient(gradientStops);
     }

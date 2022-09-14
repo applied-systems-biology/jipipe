@@ -16,6 +16,7 @@ import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
@@ -32,15 +33,15 @@ import java.util.TreeSet;
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/lut-data.schema.json")
 public class LUTData implements JIPipeData {
 
-    private List<ImageJUtils.GradientStop> gradientStops = new ArrayList<>();
+    private List<ColorUtils.GradientStop> gradientStops = new ArrayList<>();
 
     public LUTData() {
 
     }
 
     public LUTData(LUTData other) {
-        for (ImageJUtils.GradientStop stop : other.gradientStops) {
-            gradientStops.add(new ImageJUtils.GradientStop(stop));
+        for (ColorUtils.GradientStop stop : other.gradientStops) {
+            gradientStops.add(new ColorUtils.GradientStop(stop));
         }
     }
 
@@ -164,12 +165,12 @@ public class LUTData implements JIPipeData {
     }
 
     @JsonGetter("gradient-stops")
-    public List<ImageJUtils.GradientStop> getGradientStops() {
+    public List<ColorUtils.GradientStop> getGradientStops() {
         return gradientStops;
     }
 
     @JsonSetter("gradient-stops")
-    public void setGradientStops(List<ImageJUtils.GradientStop> gradientStops) {
+    public void setGradientStops(List<ColorUtils.GradientStop> gradientStops) {
         this.gradientStops = gradientStops;
     }
 
@@ -224,11 +225,11 @@ public class LUTData implements JIPipeData {
         return gradientStops.size();
     }
 
-    public ImageJUtils.GradientStop get(int index) {
+    public ColorUtils.GradientStop get(int index) {
         return gradientStops.get(index);
     }
 
     public void addStop(float position, Color color) {
-        gradientStops.add(new ImageJUtils.GradientStop(position, color));
+        gradientStops.add(new ColorUtils.GradientStop(position, color));
     }
 }

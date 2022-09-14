@@ -24,29 +24,14 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.geom.AffineTransform;
 
-public class JIPipeRunThrobberIcon implements Icon {
-
-    public static final int ANIMATION_DELAY = 80;
-    public static final int ANIMATION_STEP = 24;
-
-    private final Timer timer;
-    private Component parent;
-    private ImageIcon wrappedIcon;
-    private double rotation = 0;
-    private double rotationStep;
+public class JIPipeRunThrobberIcon extends NewThrobberIcon {
 
     public JIPipeRunThrobberIcon(Component parent) {
-        this.parent = parent;
-        this.wrappedIcon = UIUtils.getIconFromResources("status/throbber.png");
-        this.timer = new Timer(ANIMATION_DELAY, e -> updateIcon());
-        this.timer.setRepeats(true);
-        this.timer.setCoalesce(false);
-        this.timer.stop();
-        this.rotationStep = ANIMATION_STEP;
+        super(parent);
 
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
         if (!JIPipeRunnerQueue.getInstance().isEmpty()) {
-            timer.start();
+            start();
         }
     }
 
@@ -59,7 +44,7 @@ public class JIPipeRunThrobberIcon implements Icon {
 
     @Subscribe
     public void onWorkerStart(RunWorkerStartedEvent event) {
-        timer.start();
+        start();
     }
 
     @Subscribe
@@ -67,80 +52,5 @@ public class JIPipeRunThrobberIcon implements Icon {
         if (JIPipeRunnerQueue.getInstance().isEmpty()) {
             stop();
         }
-    }
-
-    public double getRotation() {
-        return rotation;
-    }
-
-    public void setRotation(double rotation) {
-        this.rotation = rotation;
-    }
-
-    public Component getParent() {
-        return parent;
-    }
-
-    public void setParent(Component parent) {
-        this.parent = parent;
-    }
-
-    public ImageIcon getWrappedIcon() {
-        return wrappedIcon;
-    }
-
-    public void setWrappedIcon(ImageIcon wrappedIcon) {
-        this.wrappedIcon = wrappedIcon;
-        updateIcon();
-    }
-
-    public Timer getTimer() {
-        return timer;
-    }
-
-    public double getRotationStep() {
-        return rotationStep;
-    }
-
-    public void setRotationStep(double rotationStep) {
-        this.rotationStep = rotationStep;
-        updateIcon();
-    }
-
-    private void updateIcon() {
-        rotation += rotationStep;
-        while (rotation > 360) {
-            rotation -= 360;
-        }
-        if (parent != null && parent.isDisplayable()) {
-            parent.repaint();
-            parent.getToolkit().sync();
-        } else {
-            timer.stop();
-        }
-    }
-
-    public void stop() {
-        timer.stop();
-    }
-
-    @Override
-    public void paintIcon(Component c, Graphics g, int x, int y) {
-        AffineTransform affineTransform = new AffineTransform();
-        affineTransform.rotate(Math.PI * 2 * (rotation / 360), getIconWidth() / 2.0, getIconHeight() / 2.0);
-        affineTransform.translate(x, y);
-        Graphics2D graphics2D = (Graphics2D) g;
-        graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-        graphics2D.drawImage(wrappedIcon.getImage(), affineTransform, null);
-    }
-
-    @Override
-    public int getIconWidth() {
-        return wrappedIcon.getIconWidth();
-    }
-
-    @Override
-    public int getIconHeight() {
-        return wrappedIcon.getIconHeight();
     }
 }
