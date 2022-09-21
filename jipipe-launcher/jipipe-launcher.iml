@@ -381,7 +381,7 @@
     <orderEntry type="module" module-name="jipipe-cellpose" scope="RUNTIME" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.12.5" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.yaml:snakeyaml:1.29" level="project" />
-    <orderEntry type="module" module-name="jipipe-omnipose" scope="RUNTIME" />
+    <orderEntry type="library" scope="RUNTIME" name="Maven: org.hkijena:jipipe-omnipose:1.74.0-SNAPSHOT" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.haesleinhuepf:clij2_:2.3.0.6" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.haesleinhuepf:clij_:1.9.0.1" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: net.haesleinhuepf:clij-coremem:2.3.0.4" level="project" />
