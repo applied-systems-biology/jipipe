@@ -65,6 +65,11 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
         getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/python.png")));
     }
 
+    @Override
+    public boolean isBeta() {
+        return true;
+    }
+
     private static void installPythonAdapterLibrary(JIPipeWorkbench workbench) {
         PythonExtensionSettings settings = PythonExtensionSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);

@@ -59,4 +59,12 @@ public interface JIPipeExtension extends JIPipeDependency {
         return false;
     }
 
+    /**
+     * Returns whether this extension is in beta testing.
+     * If true, users should expect significant changes in how the extension and its nodes work.
+     * @return if the extension is in beta
+     */
+    default boolean isBeta() {
+        return false;
+    }
 }

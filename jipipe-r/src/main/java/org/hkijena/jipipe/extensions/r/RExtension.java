@@ -61,6 +61,11 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
         getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/r.png")));
     }
 
+    @Override
+    public boolean isBeta() {
+        return true;
+    }
+
     private static void installR(JIPipeWorkbench workbench) {
         RExtensionSettings settings = RExtensionSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);

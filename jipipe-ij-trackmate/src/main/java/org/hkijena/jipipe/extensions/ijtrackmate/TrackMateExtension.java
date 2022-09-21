@@ -124,6 +124,11 @@ public class TrackMateExtension extends JIPipePrepackagedDefaultJavaExtension {
     }
 
     @Override
+    public boolean isBeta() {
+        return true;
+    }
+
+    @Override
     public String getName() {
         return "IJ TrackMate integration";
     }

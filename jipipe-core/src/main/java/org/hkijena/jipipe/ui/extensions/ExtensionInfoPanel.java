@@ -181,6 +181,9 @@ public class ExtensionInfoPanel extends JPanel {
         if (!Objects.equals(extension.getMetadata().getSummary().getHtml(), extension.getMetadata().getDescription().getHtml())) {
             panel.addWideToForm(UIUtils.makeBorderlessReadonlyTextPane(extension.getMetadata().getDescription().getHtml(), false), null);
         }
+        if(extension.isBeta()) {
+            panel.addWideToForm(new JLabel("Beta-test: this extension is currently being tested. Its functions might change extensively in future updates.", UIUtils.getIconFromResources("emblems/vcs-locally-modified-unstaged.png"), JLabel.LEFT));
+        }
         panel.addWideToForm(Box.createVerticalStrut(32), null);
 
         // Authors
