@@ -89,6 +89,13 @@ public class DarkModernMetalTheme extends DefaultMetalTheme {
         Object[] defaults = new Object[]{
                 // Since new Fiji version
                 "Button.font", defaultFont,
+                "ToggleButton.font", defaultFont,
+                "CheckBox.font", defaultFont,
+                "Label.font", defaultFont,
+                "List.font", defaultFont,
+                "Panel.font", defaultFont,
+                "ScrollPane.font", defaultFont,
+                "TabbedPane.font", defaultFont,
 
                 "Button.background", new Color(0x30353a),
                 "Button.rollover", Boolean.TRUE,

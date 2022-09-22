@@ -93,6 +93,13 @@ public class ModernMetalTheme extends DefaultMetalTheme {
         Object[] defaults = new Object[]{
                 // Since new Fiji version
                 "Button.font", defaultFont,
+                "ToggleButton.font", defaultFont,
+                "CheckBox.font", defaultFont,
+                "Label.font", defaultFont,
+                "List.font", defaultFont,
+                "Panel.font", defaultFont,
+                "ScrollPane.font", defaultFont,
+                "TabbedPane.font", defaultFont,
 
                 "Button.background", LIGHT_GRAY,
                 "Button.rollover", Boolean.TRUE,
