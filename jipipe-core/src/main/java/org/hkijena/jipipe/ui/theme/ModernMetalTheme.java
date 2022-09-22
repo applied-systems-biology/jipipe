@@ -88,7 +88,12 @@ public class ModernMetalTheme extends DefaultMetalTheme {
                 .3f, .2f,
                 PRIMARY4, getWhite(), new ColorUIResource(SECONDARY2)});
 
+        final Font defaultFont = new Font(Font.DIALOG, Font.PLAIN, 12);
+
         Object[] defaults = new Object[]{
+                // Since new Fiji version
+                "Button.font", defaultFont,
+
                 "Button.background", LIGHT_GRAY,
                 "Button.rollover", Boolean.TRUE,
                 "Button.toolBarBorderBackground", INACTIVE_CONTROL_TEXT_COLOR,
