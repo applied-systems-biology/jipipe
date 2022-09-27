@@ -88,6 +88,12 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
     }
 
     public void setMode(Mode mode) {
+        if(mode == Mode.HTML) {
+            wysiwygEditorPane.setText(htmlEditorPane.getText());
+        }
+        else {
+            htmlEditorPane.setText(wysiwygEditorPane.getText());
+        }
         this.mode = mode;
         modeButton.setText(mode.toString());
         reloadToolbar();
