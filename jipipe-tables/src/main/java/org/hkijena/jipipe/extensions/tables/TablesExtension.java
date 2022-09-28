@@ -31,6 +31,7 @@ import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInImageJData
 import org.hkijena.jipipe.extensions.tables.display.OpenResultsTableInJIPipeTabDataOperation;
 import org.hkijena.jipipe.extensions.tables.nodes.annotations.AddAnnotationColumnsAlgorithm;
 import org.hkijena.jipipe.extensions.tables.nodes.annotations.AnnotateByTablePropertiesAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.annotations.AnnotateDataWithTableValues;
 import org.hkijena.jipipe.extensions.tables.nodes.annotations.ConvertAnnotationTableToAnnotatedTables;
 import org.hkijena.jipipe.extensions.tables.nodes.columns.*;
 import org.hkijena.jipipe.extensions.tables.nodes.filter.FilterTableRowsAlgorithm;
@@ -188,6 +189,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("table-rename-columns-expression", ModifyTableColumnNamesAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
         registerNodeType("table-merge-columns", MergeTableColumnsSimpleAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("table-annotate-by-merged-columns", ColumnsToAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("data-types/results-table.png"));
+        registerNodeType("annotate-data-with-table-values", AnnotateDataWithTableValues.class, UIUtils.getIconURLFromResources("data-types/results-table.png"));
         registerNodeType("table-column-to-string", ColumnToStringAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-column-to-numeric", ColumnToNumericAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("table-process-columns", ApplyExpressionToColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));

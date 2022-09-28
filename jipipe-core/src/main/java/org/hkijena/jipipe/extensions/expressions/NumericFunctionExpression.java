@@ -24,7 +24,7 @@ import java.util.Set;
 @ExpressionParameterSettings(variableSource = NumericFunctionExpression.VariableSource.class)
 public class NumericFunctionExpression extends DefaultExpressionParameter {
     public NumericFunctionExpression() {
-        super("x");
+        super("default");
     }
 
     public NumericFunctionExpression(String expression) {
@@ -37,7 +37,8 @@ public class NumericFunctionExpression extends DefaultExpressionParameter {
 
     public double apply(double x, ExpressionVariables parameters) {
         parameters.set("x", x);
-        return ((Number) evaluate(parameters)).doubleValue();
+        parameters.set("default", x);
+        return evaluateToDouble(parameters);
     }
 
     /**
@@ -67,7 +68,8 @@ public class NumericFunctionExpression extends DefaultExpressionParameter {
 
         static {
             VARIABLES.add(ExpressionParameterVariable.ANNOTATIONS_VARIABLE);
-            VARIABLES.add(new ExpressionParameterVariable("x", "The input value", "x"));
+            VARIABLES.add(new ExpressionParameterVariable("x", "The current input value [DEPRECATED]", "x"));
+            VARIABLES.add(new ExpressionParameterVariable("default", "The current input value", "default"));
         }
 
         @Override
