@@ -1362,6 +1362,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-morph-reconstruct-2d", MorphologicalReconstruction2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-morph-reconstruct-3d", MorphologicalReconstruction3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-morph-find-holes-3d", FindHoles2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/object-tweak-randomize.png"));
+        registerNodeType("ij1-morph-grayscale-attribute-filtering-2d", GrayscaleAttributeFiltering2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-morph-grayscale-attribute-filtering-3d", GrayscaleAttributeFiltering3DAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
 
         registerEnumParameterType("ij1-morph-binary-operation2d:operation", MorphologyBinary2DAlgorithm.Operation.class,
                 "Operation", "Available operations");
@@ -1371,6 +1373,14 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
                 "Structure element", "Available shapes");
         registerEnumParameterType("ij1-morph:strel-3d", Strel3D.Shape.class,
                 "Structure element (3D)", "Available shapes");
+        registerEnumParameterType("ij1-morph-grayscale-attribute-filtering-2d:operation", GrayscaleAttributeFiltering2DAlgorithm.Operation.class,
+                "Operation", "Available operations");
+        registerEnumParameterType("ij1-morph-grayscale-attribute-filtering-3d:operation", GrayscaleAttributeFiltering3DAlgorithm.Operation.class,
+                "Operation", "Available operations");
+        registerEnumParameterType("ij1-morph-grayscale-attribute-filtering-2d:attribute", GrayscaleAttributeFiltering2DAlgorithm.Attribute.class,
+                "Attributes", "Available filter attributes");
+        registerEnumParameterType("ij1-morph-grayscale-attribute-filtering-3d:attribute", GrayscaleAttributeFiltering3DAlgorithm.Attribute.class,
+                "Attributes", "Available filter attributes");
     }
 
     private void registerMathAlgorithms() {
