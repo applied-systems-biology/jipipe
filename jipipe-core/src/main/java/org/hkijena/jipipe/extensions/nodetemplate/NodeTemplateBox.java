@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.extensions.nodetemplate.templatedownloader.NodeTemplateDownloaderRun;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -15,6 +16,7 @@ import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
+import org.hkijena.jipipe.ui.running.JIPipeRunExecuterUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -169,6 +171,10 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         }
     }
 
+    private void downloadTemplates() {
+        JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), new NodeTemplateDownloaderRun(getWorkbench()));
+    }
+
     private void initializeManageMenu() {
         JMenuItem refreshItem = new JMenuItem("Reload list", UIUtils.getIconFromResources("actions/view-refresh.png"));
         refreshItem.addActionListener(e -> reloadTemplateList());
@@ -204,6 +210,12 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         importItem.addActionListener(e -> importTemplates());
         manageMenu.add(importItem);
 
+        JMenuItem downloadTemplatesItem = new JMenuItem("Download more templates", UIUtils.getIconFromResources("actions/browser-download.png"));
+        downloadTemplatesItem.addActionListener(e -> downloadTemplates());
+        manageMenu.add(downloadTemplatesItem);
+
+        manageMenu.addSeparator();
+
         JMenuItem exportItem = new JMenuItem("Export selection to file", UIUtils.getIconFromResources("actions/document-export.png"));
         exportItem.addActionListener(e -> exportTemplates());
         manageMenu.add(exportItem);
@@ -225,6 +237,7 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         if (ParameterPanel.showDialog(getWorkbench(), copy, new MarkdownDocument("# Node templates\n\nUse this user interface to modify node templates."), "Edit template",
                 ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_SEARCH_BAR | ParameterPanel.WITH_DOCUMENTATION)) {
             template.copyFrom(copy);
+            template.setSource(JIPipeNodeTemplate.SOURCE_USER);
             if (project != null) {
                 project.getMetadata().triggerParameterChange("node-templates");
             }

@@ -27,6 +27,7 @@ import java.util.*;
  * An intermediate between copying a node and a proper plugin.
  */
 public class JIPipeNodeTemplate implements JIPipeParameterCollection {
+    public static final String SOURCE_USER = "User";
     private final EventBus eventBus = new EventBus();
     private String name = "Unnamed template";
     private HTMLText description = new HTMLText();
@@ -36,6 +37,8 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
     private JIPipeGraph graph;
     private Color fillColor = MiscellaneousNodeTypeCategory.FILL_COLOR;
     private Color borderColor = MiscellaneousNodeTypeCategory.BORDER_COLOR;
+
+    private String source = SOURCE_USER;
 
     public JIPipeNodeTemplate() {
     }
@@ -72,6 +75,7 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
         this.menuPath = new StringList(other.menuPath);
         this.fillColor = other.fillColor;
         this.borderColor = other.borderColor;
+        this.source = other.source;
     }
 
     @JIPipeDocumentation(name = "Name", description = "Name of the template")
@@ -167,7 +171,19 @@ public class JIPipeNodeTemplate implements JIPipeParameterCollection {
         this.data = data;
     }
 
-//    @JIPipeDocumentation(name = "Paste from clipboard", description = "Sets the node data from clipboard.")
+    @JIPipeDocumentation(name = "Source", description = "Used for assigning the node templates to a source (e.g., remote repository). You can leave this parameter alone.")
+    @JIPipeParameter(value = "source")
+    @StringParameterSettings(monospace = true)
+    public String getSource() {
+        return source;
+    }
+
+    @JIPipeParameter("source")
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    //    @JIPipeDocumentation(name = "Paste from clipboard", description = "Sets the node data from clipboard.")
 //    @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/edit-paste.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/edit-paste.png")
 //    public void pasteDataFromClipboard(JIPipeWorkbench workbench) {
 //        String json = UIUtils.getStringFromClipboard();
