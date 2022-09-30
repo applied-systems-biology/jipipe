@@ -30,8 +30,8 @@ import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 @JIPipeDocumentation(name = "Merge inputs", description = "Structural node that indicates that all inputs are merged into a single output. Please note that JIPipe nodes accept multiple inputs. " +
         "This node is not needed outside structuring the pipeline.")
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class)
-@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input")
-@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output")
+@JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true)
 public class MergeDataSlots extends JIPipeAlgorithm {
 
     /**
