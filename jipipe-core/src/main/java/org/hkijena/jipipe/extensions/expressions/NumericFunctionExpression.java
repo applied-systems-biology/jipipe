@@ -35,9 +35,9 @@ public class NumericFunctionExpression extends DefaultExpressionParameter {
         super(other.getExpression());
     }
 
-    public double apply(double x, ExpressionVariables parameters) {
-        parameters.set("x", x);
-        parameters.set("default", x);
+    public double apply(double defaultValue, ExpressionVariables parameters) {
+        parameters.set("x", defaultValue);
+        parameters.set("default", defaultValue);
         return evaluateToDouble(parameters);
     }
 
@@ -48,7 +48,7 @@ public class NumericFunctionExpression extends DefaultExpressionParameter {
      */
     public void ensureExactValue(boolean exactValue) {
         if (exactValue) {
-            if (getExpression().contains("x"))
+            if (getExpression().contains("x") || getExpression().contains("default"))
                 setExpression("0");
         }
     }

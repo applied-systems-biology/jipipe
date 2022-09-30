@@ -234,10 +234,10 @@ public class Margin implements JIPipeParameterCollection {
      * @return Rectangle within the area
      */
     public Rectangle getInsideArea(Rectangle availableArea, ExpressionVariables parameters) {
-        final int left_ = (int) left.apply(availableArea.width, parameters);
-        final int top_ = (int) top.apply(availableArea.height, parameters);
-        final int right_ = (int) right.apply(availableArea.width, parameters);
-        final int bottom_ = (int) bottom.apply(availableArea.height, parameters);
+        final int left_ = (int) left.apply(0, parameters);
+        final int top_ = (int) top.apply(0, parameters);
+        final int right_ = (int) right.apply(0, parameters);
+        final int bottom_ = (int) bottom.apply(0, parameters);
         final int width_ = (int) width.apply(availableArea.width, parameters);
         final int height_ = (int) height.apply(availableArea.height, parameters);
         final int aw = availableArea.width;

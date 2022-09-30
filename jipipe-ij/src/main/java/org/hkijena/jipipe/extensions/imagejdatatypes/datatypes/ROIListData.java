@@ -47,6 +47,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
+import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -491,7 +492,8 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             ROIListData copy = new ROIListData(this);
             copy.flatten();
             copy.crop(true, false, false, false);
-            mask = copy.toRGBImage(new Margin(), ROIElementDrawingMode.Always, ROIElementDrawingMode.IfAvailable, 1, Color.RED, Color.RED);
+            Margin margin = new Margin();
+            mask = copy.toRGBImage(margin, ROIElementDrawingMode.Always, ROIElementDrawingMode.IfAvailable, 1, Color.RED, Color.RED);
 //            mask.setLut(LUT.createLutFromColor(Color.RED));
         }
         if(mask.getWidth() * mask.getHeight() == 0)
