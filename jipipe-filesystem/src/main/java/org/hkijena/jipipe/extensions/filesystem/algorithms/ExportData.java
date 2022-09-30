@@ -40,6 +40,7 @@ import java.nio.file.Path;
 public class ExportData extends JIPipeIteratingAlgorithm {
 
     private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter();
+    private boolean splitBySlotName;
 
     public ExportData(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
@@ -54,6 +55,7 @@ public class ExportData extends JIPipeIteratingAlgorithm {
     public ExportData(ExportData other) {
         super(other);
         this.exporter = new JIPipeDataByMetadataExporter(other.exporter);
+        this.splitBySlotName = other.splitBySlotName;
         registerSubParameter(exporter);
     }
 
@@ -79,6 +81,17 @@ public class ExportData extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("exporter")
     public JIPipeDataByMetadataExporter getExporter() {
         return exporter;
+    }
+
+    @JIPipeDocumentation(name = "Split by output name", description = "If enabled, the exporter will attempt to split data by their output name. Has no effect if the exported data table is not an output of a node.")
+    @JIPipeParameter("split-by-slot-name")
+    public boolean isSplitBySlotName() {
+        return splitBySlotName;
+    }
+
+    @JIPipeParameter("split-by-slot-name")
+    public void setSplitBySlotName(boolean splitBySlotName) {
+        this.splitBySlotName = splitBySlotName;
     }
 }
 

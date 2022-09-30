@@ -43,7 +43,7 @@ import java.util.Set;
  */
 public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
-    private StringQueryExpression fileNameGenerator = new StringQueryExpression("SUMMARIZE_ANNOTATIONS_MAP(annotations, \"#\")");
+    private DefaultExpressionParameter fileNameGenerator = new StringQueryExpression("SUMMARIZE_ANNOTATIONS_MAP(annotations, \"#\")");
     private boolean forceName = true;
 
     private boolean makeFilesystemCompatible = true;
@@ -62,12 +62,12 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             "You can use the following function to automatically generate the name from annotations: <code>SUMMARIZE_ANNOTATIONS_MAP(annotations, \"#\")</code>")
     @JIPipeParameter(value = "file-name", important = true)
     @ExpressionParameterSettings(variableSource = VariableSource.class)
-    public StringQueryExpression getFileNameGenerator() {
+    public DefaultExpressionParameter getFileNameGenerator() {
         return fileNameGenerator;
     }
 
     @JIPipeParameter("file-name")
-    public void setFileNameGenerator(StringQueryExpression fileNameGenerator) {
+    public void setFileNameGenerator(DefaultExpressionParameter fileNameGenerator) {
         this.fileNameGenerator = fileNameGenerator;
     }
 
@@ -101,8 +101,8 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataTableList list of data tables the will be exported
-     * @param outputPath    the path where the files will be put
+     * @param dataTableList     list of data tables the will be exported
+     * @param outputPath        the path where the files will be put
      */
     public void writeToFolder(List<? extends JIPipeDataTable> dataTableList, Path outputPath, JIPipeProgressInfo progressInfo) {
         if (!Files.isDirectory(outputPath)) {
@@ -123,8 +123,8 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataTable  the data slot
-     * @param outputPath the path where the files will be put
+     * @param dataTable         the data slot
+     * @param outputPath        the path where the files will be put
      */
     public void writeToFolder(JIPipeDataTable dataTable, Path outputPath, JIPipeProgressInfo progressInfo) {
         writeToFolder(dataTable, outputPath, progressInfo, new HashSet<>());
@@ -133,9 +133,9 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataTable        the data slot
-     * @param outputPath       the path where the files will be put
-     * @param existingMetadata list of existing entries. used to avoid duplicates.
+     * @param dataTable         the data slot
+     * @param outputPath        the path where the files will be put
+     * @param existingMetadata  list of existing entries. used to avoid duplicates.
      */
     public void writeToFolder(JIPipeDataTable dataTable, Path outputPath, JIPipeProgressInfo progressInfo, Set<String> existingMetadata) {
         for (int row = 0; row < dataTable.getRowCount(); row++) {
@@ -148,9 +148,9 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataTable  the data slot
-     * @param row        the data row
-     * @param outputPath the path where the files will be put
+     * @param dataTable         the data slot
+     * @param row               the data row
+     * @param outputPath        the path where the files will be put
      */
     public void writeToFolder(JIPipeDataTable dataTable, int row, Path outputPath, JIPipeProgressInfo progressInfo) {
         writeToFolder(dataTable, row, outputPath, progressInfo, new HashSet<>());
@@ -159,10 +159,10 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataTable        the data slot
-     * @param row              the data row
-     * @param outputPath       the path where the files will be put
-     * @param existingMetadata list of existing entries. used to avoid duplicates
+     * @param dataTable         the data slot
+     * @param row               the data row
+     * @param outputPath        the path where the files will be put
+     * @param existingMetadata  list of existing entries. used to avoid duplicates
      */
     public void writeToFolder(JIPipeDataTable dataTable, int row, Path outputPath, JIPipeProgressInfo progressInfo, Set<String> existingMetadata) {
         Path metadataPath = generatePath(dataTable, row, existingMetadata);
@@ -199,7 +199,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         parameters.set("annotations", JIPipeTextAnnotation.annotationListToMap(dataTable.getTextAnnotations(row),
                 JIPipeTextAnnotationMergeMode.OverwriteExisting));
 
-        String metadataString = StringUtils.nullToEmpty(fileNameGenerator.generate(parameters));
+        String metadataString = StringUtils.nullToEmpty(fileNameGenerator.evaluateToString(parameters));
         if (StringUtils.isNullOrEmpty(metadataString)) {
             metadataString = "unnamed";
         }
@@ -218,7 +218,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             parameters.put(annotation.getName(), annotation.getValue());
         }
 
-        String metadataString = StringUtils.nullToEmpty(fileNameGenerator.generate(parameters));
+        String metadataString = StringUtils.nullToEmpty(fileNameGenerator.evaluateToString(parameters));
         if (StringUtils.isNullOrEmpty(metadataString)) {
             metadataString = "unnamed";
         }
@@ -254,7 +254,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
         parameters.set("annotations", JIPipeTextAnnotation.annotationListToMap(dataTable.getTextAnnotations(row),
                 JIPipeTextAnnotationMergeMode.OverwriteExisting));
 
-        String metadataString = StringUtils.nullToEmpty(fileNameGenerator.generate(parameters));
+        String metadataString = StringUtils.nullToEmpty(fileNameGenerator.evaluateToString(parameters));
         if (StringUtils.isNullOrEmpty(metadataString)) {
             metadataString = "unnamed";
         }
@@ -280,7 +280,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             parameters.put(annotation.getName(), annotation.getValue());
         }
 
-        String metadataString = StringUtils.nullToEmpty(fileNameGenerator.generate(parameters));
+        String metadataString = StringUtils.nullToEmpty(fileNameGenerator.evaluateToString(parameters));
         if (StringUtils.isNullOrEmpty(metadataString)) {
             metadataString = "unnamed";
         }

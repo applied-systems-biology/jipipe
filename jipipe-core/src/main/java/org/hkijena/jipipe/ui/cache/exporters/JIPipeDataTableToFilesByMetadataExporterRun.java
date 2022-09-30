@@ -16,11 +16,14 @@ package org.hkijena.jipipe.ui.cache.exporters;
 import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.api.annotation.JIPipeDataByMetadataExporter;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.settings.DataExporterSettings;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -44,8 +47,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
 
     private final List<? extends JIPipeDataTable> dataTables;
-    private final boolean splitBySlot;
-    private final JIPipeDataByMetadataExporter exporter;
+    private final Settings settings;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private Path outputPath;
 
@@ -57,8 +59,8 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
     public JIPipeDataTableToFilesByMetadataExporterRun(JIPipeWorkbench workbench, List<? extends JIPipeDataTable> dataTables, boolean splitBySlot) {
         super(workbench);
         this.dataTables = dataTables;
-        this.splitBySlot = splitBySlot;
-        this.exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
+        this.settings = new Settings();
+        settings.splitBySlotName = splitBySlot;
         JIPipeRunnerQueue.getInstance().getEventBus().register(this);
     }
 
@@ -74,7 +76,7 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
 
         JDialog editorDialog = new JDialog();
         JPanel mainPanel = new JPanel(new BorderLayout());
-        ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(), exporter, null, ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION);
+        ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(), settings, null, ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION);
         mainPanel.add(parameterPanel, BorderLayout.CENTER);
         AtomicBoolean confirmation = new AtomicBoolean(false);
 
@@ -106,9 +108,9 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
         editorDialog.setLocationRelativeTo(null);
         editorDialog.setVisible(true);
 
-        if (confirmation.get()) {
+        if (confirmation.get() && settings.rememberSettings) {
             try {
-                DataExporterSettings.getInstance().copyFrom(exporter);
+                DataExporterSettings.getInstance().copyFrom(settings.exporter);
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -126,13 +128,13 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
             JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Slot", i, dataTables.size());
             JIPipeDataTable slot = dataTables.get(i);
             Path targetPath = outputPath;
-            if (splitBySlot) {
+            if (settings.splitBySlotName) {
                 targetPath = outputPath.resolve(StringUtils.makeUniqueString(slot.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, ""), " ", existing));
             }
             try {
                 if (!Files.isDirectory(targetPath))
                     Files.createDirectories(targetPath);
-                exporter.writeToFolder(slot, targetPath, subProgress.resolve("Slot " + slot.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "")));
+                settings.exporter.writeToFolder(slot, targetPath, subProgress.resolve("Slot " + slot.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "")));
             } catch (Exception e) {
                 IJ.handleException(e);
                 progressInfo.log(ExceptionUtils.getStackTrace(e));
@@ -178,5 +180,47 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
     @Override
     public String getTaskLabel() {
         return "Export cached data to files";
+    }
+
+    public static class Settings extends AbstractJIPipeParameterCollection {
+        private JIPipeDataByMetadataExporter exporter = new JIPipeDataByMetadataExporter(DataExporterSettings.getInstance());
+        private boolean splitBySlotName = false;
+
+        private boolean rememberSettings = false;
+
+        public Settings() {
+        }
+
+        @JIPipeDocumentation(name = "File name generation", description = "Here you can determine how file names are generated.")
+        @JIPipeParameter("exporter")
+        public JIPipeDataByMetadataExporter getExporter() {
+            return exporter;
+        }
+
+        public void setExporter(JIPipeDataByMetadataExporter exporter) {
+            this.exporter = exporter;
+        }
+
+        @JIPipeDocumentation(name = "Split by output name", description = "If enabled, the exporter will attempt to split data by their output name. Has no effect if the exported data table is not an output of a node.")
+        @JIPipeParameter("split-by-slot-name")
+        public boolean isSplitBySlotName() {
+            return splitBySlotName;
+        }
+
+        @JIPipeParameter("split-by-slot-name")
+        public void setSplitBySlotName(boolean splitBySlotName) {
+            this.splitBySlotName = splitBySlotName;
+        }
+
+        @JIPipeDocumentation(name = "Remember settings", description = "If enabled, remember the file exporter settings for later")
+        @JIPipeParameter("remember-settings")
+        public boolean isRememberSettings() {
+            return rememberSettings;
+        }
+
+        @JIPipeParameter("remember-settings")
+        public void setRememberSettings(boolean rememberSettings) {
+            this.rememberSettings = rememberSettings;
+        }
     }
 }

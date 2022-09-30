@@ -308,7 +308,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void exportByMetadataExporter() {
-        JIPipeDataTableToFilesByMetadataExporterRun run = new JIPipeDataTableToFilesByMetadataExporterRun(getWorkbench(), dataTables, true);
+        JIPipeDataTableToFilesByMetadataExporterRun run = new JIPipeDataTableToFilesByMetadataExporterRun(getWorkbench(), dataTables, false);
         if (run.setup()) {
             JIPipeRunnerQueue.getInstance().enqueue(run);
         }
