@@ -50,6 +50,7 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.resultanalysis.renderers.JIPipeAnnotationTableCellRenderer;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
+import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -331,6 +332,7 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
     private void exportAsJIPipeSlotZIP() {
         Path outputZipFile = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", UIUtils.EXTENSION_FILTER_ZIP);
         if (outputZipFile != null) {
+            outputZipFile = PathUtils.ensureExtension(outputZipFile, ".zip");
             if (Files.isRegularFile(outputZipFile)) {
                 if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
                         "The file '" + outputZipFile + "' already exists. Do you want to overwrite the file?",

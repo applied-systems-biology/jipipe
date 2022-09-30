@@ -16,6 +16,7 @@ package org.hkijena.jipipe.ui.datatable;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
@@ -70,6 +71,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -324,9 +326,16 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
             } catch (Exception e) {
                 e.printStackTrace();
             }
+
+            // Merge the data tables
+            JIPipeDataTable mergedTable = new JIPipeDataTable(JIPipeData.class);
+            for (JIPipeDataTable dataTable : dataTables) {
+                mergedTable.addFromTable(dataTable, new JIPipeProgressInfo());
+            }
+
             JIPipeDataTableToOutputExporterRun run = new JIPipeDataTableToOutputExporterRun(getWorkbench(),
                     directory,
-                    dataTables,
+                    Collections.singletonList(mergedTable),
                     true,
                     true);
             JIPipeRunnerQueue.getInstance().enqueue(run);
@@ -334,22 +343,26 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void exportAsJIPipeSlotZIP() {
+        // Merge the data tables
+        JIPipeDataTable mergedTable = new JIPipeDataTable(JIPipeData.class);
         for (JIPipeDataTable dataTable : dataTables) {
-            Path outputZipFile = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", UIUtils.EXTENSION_FILTER_ZIP);
-            if (outputZipFile != null) {
-                if (Files.isRegularFile(outputZipFile)) {
-                    if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
-                            "The file '" + outputZipFile + "' already exists. Do you want to overwrite the file?",
-                            "Export *.zip",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION)
-                        return;
-                }
-                JIPipeDataTableToZIPExporterRun run = new JIPipeDataTableToZIPExporterRun(getWorkbench(),
-                        outputZipFile,
-                        dataTable);
-                JIPipeRunnerQueue.getInstance().enqueue(run);
+            mergedTable.addFromTable(dataTable, new JIPipeProgressInfo());
+        }
+
+        Path outputZipFile = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", UIUtils.EXTENSION_FILTER_ZIP);
+        if (outputZipFile != null) {
+            if (Files.isRegularFile(outputZipFile)) {
+                if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
+                        "The file '" + outputZipFile + "' already exists. Do you want to overwrite the file?",
+                        "Export *.zip",
+                        JOptionPane.YES_NO_OPTION,
+                        JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION)
+                    return;
             }
+            JIPipeDataTableToZIPExporterRun run = new JIPipeDataTableToZIPExporterRun(getWorkbench(),
+                    outputZipFile,
+                    mergedTable);
+            JIPipeRunnerQueue.getInstance().enqueue(run);
         }
     }
 
