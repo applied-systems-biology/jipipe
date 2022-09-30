@@ -142,13 +142,13 @@ public class PathListDataSource extends JIPipeAlgorithm {
     @JIPipeDocumentation(name = "Paths to absolute", description = "Converts the stored paths to absolute paths.")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png")
     public void convertPathsToAbsolute() {
-        setParameter("file-names", getAbsolutePaths());
+        setParameter("paths", getAbsolutePaths());
     }
 
     @JIPipeDocumentation(name = "Paths to relative", description = "Converts the stored paths to paths relative to the project directory (if available).")
     @JIPipeContextAction(iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png", iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/data-types/path.png")
     public void convertPathsToRelative() {
-        setParameter("file-names", getRelativePaths());
+        setParameter("paths", getRelativePaths());
     }
 
     @Override
