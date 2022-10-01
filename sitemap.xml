@@ -8,19 +8,587 @@
   </url><url>
     <loc>https://www.jipipe.org/documentation/run-pipelines/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/download/changelog/1.74.0/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/download/changelog/1.73.0/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/download/changelog/1.72.x/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/advanced/loops/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/advanced/python/step1/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/faq/general/</loc>
   </url><url>
     <loc>https://www.jipipe.org/_header/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/installation/dependencies/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/teaching/introduction/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-load-projects/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/installation/third-party/cellpose/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-browse-results/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/advanced/imagej-macros/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotating-data-with-measurements/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-2/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-1/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-2/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/comment-nodes/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-1/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-2/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-1/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-2/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-1/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-3/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-physical-dimensions/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-1/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/node-parameters/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/quantification-plotting/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/table-processing/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/change-temp-directory/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/image-viewer-1/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/node-examples/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-backups/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-new-single-compartment/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-new-three-compartments/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-open/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-import-node-templates/step1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step1.5/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/faq/issues/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-import-node-templates/json1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-load-projects/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/installation/third-party/omnipose/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/installation/third-party/python/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-browse-results/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/advanced/imagej-macros/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotating-data-with-measurements/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-2/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-1/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-2/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/comment-nodes/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-1/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-2/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-1/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-2/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-1/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-3/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-physical-dimensions/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-1/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/node-parameters/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/quantification-plotting/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/table-processing/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/change-temp-directory/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/image-viewer-1/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/node-examples/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-backups/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-new-single-compartment/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-new-three-compartments/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-open/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/installation/third-party/</loc>
   </url><url>
     <loc>https://www.jipipe.org/faq/user-interface/</loc>
   </url><url>
     <loc>https://www.jipipe.org/faq/data-processing/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-import-node-templates/json2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/installation/extensions/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-load-projects/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/installation/third-party/r/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-browse-results/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/advanced/imagej-macros/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotating-data-with-measurements/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-2/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-1/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-2/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/comment-nodes/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-1/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-2/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-1/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-2/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-1/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-3/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-physical-dimensions/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-1/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/node-parameters/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/quantification-plotting/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/table-processing/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/image-viewer-1/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/node-examples/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-backups/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-new-single-compartment/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-new-three-compartments/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-open/step3/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/faq/imagej-integration/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-import-node-templates/json3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-load-projects/running1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-browse-results/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/advanced/imagej-macros/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-2/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-1/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-2/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-1/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-2/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-1/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-2/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-1/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-3/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-physical-dimensions/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-1/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/node-parameters/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/quantification-plotting/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/table-processing/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/image-viewer-1/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/node-examples/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-backups/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-new-single-compartment/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-new-three-compartments/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-import-node-templates/download1/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/faq/result-analysis/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-load-projects/running2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-load-projects/running3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-browse-results/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/advanced/imagej-macros/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-2/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-1/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-2/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-1/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-2/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-1/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-2/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-1/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-3/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-physical-dimensions/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-1/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/node-parameters/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/quantification-plotting/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/table-processing/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/image-viewer-1/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-new-single-compartment/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-new-three-compartments/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-import-node-templates/download2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-load-projects/running4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step5/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/advanced/imagej-macros/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-2/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-1/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-2/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-1/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-2/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-1/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-2/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-1/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-3/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-3/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-physical-dimensions/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-1/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/node-parameters/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/quantification-plotting/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/table-processing/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/image-viewer-1/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-new-single-compartment/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-new-three-compartments/step6/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-import-node-templates/download3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-load-projects/caching1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/advanced/imagej-macros/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-2/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-1/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-2/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-1/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-2/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-2/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-1/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-physical-dimensions/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-1/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/node-parameters/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/quantification-plotting/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/table-processing/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/image-viewer-1/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-new-three-compartments/step7/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-import-node-templates/download4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-load-projects/caching2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-1/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-2/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-1/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-2/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-2/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-1/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-physical-dimensions/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-1/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/quantification-plotting/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/table-processing/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step8/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step9/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step9/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-2/step9/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-1/step9/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-2/step9/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-2/step9/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-physical-dimensions/step9/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/step9/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-1/step9/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step9/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/quantification-plotting/step9/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/table-processing/step9/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step9/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step9/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step9/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/download/changelog/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-data-api/data-table/</loc>
   </url><url>
@@ -28,13 +596,19 @@
   </url><url>
     <loc>https://www.jipipe.org/download/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/teaching/compartments1/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/documentation-json-api/graph-node/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-java-api/algorithm/iterating-algorithms/</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/analysis/</loc>
+    <loc>https://www.jipipe.org/examples/how-to-load-projects/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/old/analysis/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-java-api/javadocs/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/teaching/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation/create-pipelines/pipeline-editor/</loc>
   </url><url>
@@ -42,31 +616,121 @@
   </url><url>
     <loc>https://www.jipipe.org/documentation/run-pipelines/run/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-new-single-compartment/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step10/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step10/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-2/step10/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-2/step10/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-physical-dimensions/step10/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/step10/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-1/step10/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/quantification-plotting/step10/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/table-processing/step10/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step10/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step10/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/documentation/basic-concepts/visual-programming/</loc>
   </url><url>
     <loc>https://www.jipipe.org/installation/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step11/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-2/step11/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-2/step11/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/step11/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-1/step11/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/quantification-plotting/step11/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/table-processing/step11/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step11/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step12/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-2/step12/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-2/step12/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/step12/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-1/step12/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/quantification-plotting/step12/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/table-processing/step12/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step12/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step13/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/step13/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/table-processing/step13/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step13/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step14/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/step14/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/table-processing/step14/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step14/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/videos/analysis_video/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/examples/</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/analysis_video/</loc>
-  </url><url>
     <loc>https://www.jipipe.org/documentation-java-api/algorithm/merging-algorithms/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/documentation/create-pipelines/parameters/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step15/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/step15/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step15/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step16/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-json-api/algorithm/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation/basic-concepts/batch-processing/</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/extension/</loc>
+    <loc>https://www.jipipe.org/tutorials/old/extension/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-java-api/create-extension/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-java-api/algorithm/slot-configuration/</loc>
   </url><url>
-    <loc>https://www.jipipe.org/documentation/create-pipelines/expressions/</loc>
+    <loc>https://www.jipipe.org/tutorials/features/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/teaching/compartments2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-browse-results/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation/standard-library/imagej-integration/</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/jipipe-for-imagej-users/</loc>
+    <loc>https://www.jipipe.org/tutorials/intermediate/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/videos/jipipe-for-imagej-users/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/documentation/create-pipelines/expressions/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-java-api/data-type/result-preview/</loc>
   </url><url>
@@ -74,19 +738,23 @@
   </url><url>
     <loc>https://www.jipipe.org/documentation-data-api/row-folder/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-new-three-compartments/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/tutorials/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation/standard-library/macro-node/</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/guide-user-interface/</loc>
+    <loc>https://www.jipipe.org/tutorials/videos/guide-user-interface/</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/guide-data-caches/</loc>
+    <loc>https://www.jipipe.org/tutorials/videos/guide-data-caches/</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/guide-graph-editor/</loc>
+    <loc>https://www.jipipe.org/tutorials/videos/guide-graph-editor/</loc>
   </url><url>
-    <loc>https://www.jipipe.org/tutorials/guide-batch-processing/</loc>
+    <loc>https://www.jipipe.org/tutorials/videos/guide-batch-processing/</loc>
   </url><url>
     <loc>https://www.jipipe.org/faq/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/advanced/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-java-api/algorithm/</loc>
   </url><url>
@@ -100,7 +768,13 @@
   </url><url>
     <loc>https://www.jipipe.org/documentation/create-pipelines/compartments/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/teaching/compartments3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/examples/how-to-import-node-templates/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/documentation/standard-library/multi-parameter/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-open/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-java-api/algorithm/parameters/</loc>
   </url><url>
@@ -108,11 +782,17 @@
   </url><url>
     <loc>https://www.jipipe.org/documentation-java-api/algorithm/parallelization/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/documentation-java-api/algorithm/custom-info/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-json-api/graph-edge/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-java-api/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/teaching/projectoverview1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/project-backups/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-java-api/algorithm/context-actions/</loc>
   </url><url>
@@ -122,13 +802,25 @@
   </url><url>
     <loc>https://www.jipipe.org/documentation-json-api/graph/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-1/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/documentation-json-api/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-data-api/pipeline-output/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/teaching/projectoverview2/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/documentation/run-pipelines/quick-run/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-3/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/documentation/run-pipelines/cache/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/node-parameters/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-java-api/parameter-type/</loc>
   </url><url>
@@ -140,15 +832,27 @@
   </url><url>
     <loc>https://www.jipipe.org/documentation/plugins/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/documentation-java-api/algorithm/node-examples/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/documentation/standard-library/plots-tables/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/teaching/projectoverview3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/teaching/comments1/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/documentation/standard-library/jython/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/node-examples/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-json-api/metadata/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-java-api/usage-in-java/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation/standard-library/python/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/teaching/comments2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/image-viewer-1/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-json-api/point/</loc>
   </url><url>
@@ -158,7 +862,11 @@
   </url><url>
     <loc>https://www.jipipe.org/documentation/standard-library/cellpose/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/teaching/comments3/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/documentation/create-json-extensions/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-1/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-json-api/project/</loc>
   </url><url>
@@ -170,17 +878,79 @@
   </url><url>
     <loc>https://www.jipipe.org/documentation/create-pipelines/groups/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/teaching/templates1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/documentation-json-api/slot-definition/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/videos/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/documentation-json-api/data-table/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/teaching/templates2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation/create-pipelines/loops/</loc>
   </url><url>
     <loc>https://www.jipipe.org/supplementary-information/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/comment-nodes/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/documentation-json-api/data-table-row/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/teaching/templates3/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/documentation-json-api/annotation/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/teaching/templates4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/teaching/permissions1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotations-2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/compartments-2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/quantification-plotting/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/cache-2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/ui/change-temp-directory/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-physical-dimensions/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/old/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/table-processing/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/annotating-data-with-measurements/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-1/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/basic/exporting-data-2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/advanced/imagej-macros/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/advanced/loops/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/advanced/python/</loc>
   </url><url>
     <loc>https://www.jipipe.org/_footer/</loc>
     <priority>0</priority>

@@ -36,8 +36,8 @@ The exact structure of a row folder depends on the data type. The current docume
       <guid>https://www.jipipe.org/documentation-data-api/data-types/</guid>
       <description>2D FFT Image Trivial conversions A trivial conversion involves no potentially expensive conversion operation. The data will directly match to input slots of the converted type. The edge has a dark-gray color.
 This type can be trivially converted into following types:
-Data FFT Image Image  This type can be trivially converted from following types:
-3D FFT Image 4D FFT Image 5D FFT Image  Non-trivial conversions A non-trivial conversion is defined by the developer and might involve some more complex conversion operations.</description>
+DataFFT ImageImageThis type can be trivially converted from following types:
+3D FFT Image4D FFT Image5D FFT ImageNon-trivial conversions A non-trivial conversion is defined by the developer and might involve some more complex conversion operations.</description>
     </item>
     
     <item>
@@ -48,7 +48,7 @@ Data FFT Image Image  This type can be trivially converted from following types:
       <guid>https://www.jipipe.org/documentation-data-api/pipeline-output/</guid>
       <description>A pipeline output folder is generated on running a pipeline using the Run function or via other means of running the pipeline and saving the results to the hard drive.
 The generated folder follows a hierarchical structure that is based on the location of data within graph compartments, nodes, and slots. It also contains a copy of the project that generated the data in a file project.jip.
-mermaid.initialize({startOnLoad:true}); graph LR; Root[&#34;</description>
+mermaid.initialize({startOnLoad:true});graph LR;Root[&#34;</description>
     </item>
     
   </channel>

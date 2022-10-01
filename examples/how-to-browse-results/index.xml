@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>How to browse results on JIPipe for ImageJ</title>
+    <link>https://www.jipipe.org/examples/how-to-browse-results/</link>
+    <description>Recent content in How to browse results on JIPipe for ImageJ</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.jipipe.org/examples/how-to-browse-results/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Step 1</title>
+      <link>https://www.jipipe.org/examples/how-to-browse-results/step1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/examples/how-to-browse-results/step1/</guid>
+      <description> If you downloaded a *.zip file, please extract it first Open JIPipe Navigate to Project &amp;gt; Open analysis output  </description>
+    </item>
+    
+    <item>
+      <title>Step 2</title>
+      <link>https://www.jipipe.org/examples/how-to-browse-results/step2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/examples/how-to-browse-results/step2/</guid>
+      <description> Select the results directory Click Open  Result directories contain a file project.jip and a log file log.txt. In our examples, the are usually folders ProjectAndCache.
+</description>
+    </item>
+    
+    <item>
+      <title>Step 3</title>
+      <link>https://www.jipipe.org/examples/how-to-browse-results/step3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/examples/how-to-browse-results/step3/</guid>
+      <description>You will have two options:
+ This window will open the project in the current window New window will create a new JIPipe window for the project  Choose the option that is most convenient for you.
+Afterwards, the project will be opened in the JIPipe editor.</description>
+    </item>
+    
+    <item>
+      <title>Step 4</title>
+      <link>https://www.jipipe.org/examples/how-to-browse-results/step4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/examples/how-to-browse-results/step4/</guid>
+      <description>You will have two options:
+ Load in new tab will open the results in a memory-efficient result browser Load into cache will load all results into the memory cache (Please be careful with this option if your data is very large)  Choose Load in new tab.</description>
+    </item>
+    
+    <item>
+      <title>Step 5</title>
+      <link>https://www.jipipe.org/examples/how-to-browse-results/step5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/examples/how-to-browse-results/step5/</guid>
+      <description>You now can browse through the results.
+Double-click items to open them in JIPipe or ImageJ (depending on the data type).
+If you want more information about the result browser, please visit the result browser documentation.</description>
+    </item>
+    
+  </channel>
+</rss>

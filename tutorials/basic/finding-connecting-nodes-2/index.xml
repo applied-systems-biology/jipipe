@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Importing an image II on JIPipe for ImageJ</title>
+    <link>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/</link>
+    <description>Recent content in Importing an image II on JIPipe for ImageJ</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Step 1</title>
+      <link>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step1/</guid>
+      <description>Search for nodes by name. Use the search bar for this purpose. To import the image file as ImageJ image, search for a node called Import image.</description>
+    </item>
+    
+    <item>
+      <title>Step 2</title>
+      <link>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step2/</guid>
+      <description>Scroll down the list of matching node names till the proper node is found.</description>
+    </item>
+    
+    <item>
+      <title>Step 3</title>
+      <link>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step3/</guid>
+      <description>This will add the new node to the GUI, but it will not be connected yet (red arrow 1).
+The node will appear the the ⌖ icon. The location of the symbol is changed by clicking on the pipeline area.
+</description>
+    </item>
+    
+    <item>
+      <title>Step 4</title>
+      <link>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step4/</guid>
+      <description>To connect the Import image node to the File node, simply draw a line with the mouse, left button pushed, to connect the bottom white zone of the File node (red arrow 1) to the top white zone of the Import image node (red arrow 2).
+The node Import image consumes a JIPipe-managed File data and passes it into ImageJ for importing. The resulting ImageJ image is packaged into a JIPipe-managed image type.</description>
+    </item>
+    
+    <item>
+      <title>Step 5</title>
+      <link>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step5/</guid>
+      <description>The resulting connection is symbolized by a color line connecting the two nodes (red arrow 1). This shows the dataflow between the nodes, the direction is indicated by the arrowhead at the bottom of the connecting line.</description>
+    </item>
+    
+    <item>
+      <title>Step 6</title>
+      <link>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step6/</guid>
+      <description>Run the new node as described earlier: click on the green arrow of the bottom node (red arrow 1) and choose one of the running modes (red arrow 2)</description>
+    </item>
+    
+    <item>
+      <title>Step 7</title>
+      <link>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step7/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step7/</guid>
+      <description>The Cache browser on the right (red arrow 1) will now show the image after having been read into the project</description>
+    </item>
+    
+    <item>
+      <title>Step 8</title>
+      <link>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step8/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step8/</guid>
+      <description>As described before, double-clicking on the cache element (red arrow 1) will open it in a viewer (red arrow 2)
+Basic information about the image (resolution, bit depth, etc.) can be found in the toolbar of the image viewer and within the &amp;ldquo;String representation&amp;rdquo; column in the cache browser.
+The operations for File and Import image are different nodes, so you have the possibility to apply additional file manipulation operations (e.</description>
+    </item>
+    
+  </channel>
+</rss>

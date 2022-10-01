@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Changelog on JIPipe for ImageJ</title>
+    <link>https://www.jipipe.org/download/changelog/</link>
+    <description>Recent content in Changelog on JIPipe for ImageJ</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.jipipe.org/download/changelog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Version 1.74.0 (preliminary)</title>
+      <link>https://www.jipipe.org/download/changelog/1.74.0/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/download/changelog/1.74.0/</guid>
+      <description>This changelog is preliminary, as JIPipe version 1.74.0 is not released, yet.
+Table Of Contents Plugin manager Environment EasyInstaller TrackMate integration (Beta) Cellpose integration Omnipose integration (Beta) Image processing  ROI processing Coloc2 integration   Table processing Plotting General data processing Parameters Expressions Node examples User interface  Project management Parameters Graph editor Compartment editor Cache browser / Results viewer ImageJ alias menu Image viewer  ROI manager Measurement tool / mask drawer / ROI drawer   Plot editor Table editor Dependency management Node templates   Data management Data API Bugfixes and small improvements Known issues   Plugin manager In older JIPipe versions, all extensions are automatically loaded during the JIPipe startup.</description>
+    </item>
+    
+    <item>
+      <title>Version 1.73.0 (current version)</title>
+      <link>https://www.jipipe.org/download/changelog/1.73.0/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/download/changelog/1.73.0/</guid>
+      <description>Table Of Contents Trainable Weka Segmentation nodes  Example   Skeletons  Example   ROIs and labels   Trainable Weka Segmentation nodes JIPipe nodes and data types encapsulating the Trainable Weka Segmentation were added, making it possible to utilize these without the Macro node.
+ new Data type “Weka model” (saves classifier, data, and metadata of the segmenter) new Node “Import Weka model” (allows to import existing models) new Node “Train Weka model from ROI (2D)” new Node “Train Weka model from ROI (3D)” new Node “Train Weka model from mask (2D)” new Node “Train Weka model from labels (2D)” new Node “Weka classifier 2D” new Node “Weka classifier 3D”  Example  Using the Weka segmentation nodessmall sizewekasimpletutorialA small example showcasing how to utilize the Trainable Weka Segmentation nodes.</description>
+    </item>
+    
+    <item>
+      <title>Version 1.72.x</title>
+      <link>https://www.jipipe.org/download/changelog/1.72.x/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/download/changelog/1.72.x/</guid>
+      <description>Version 1.72.0  This is the first public release of JIPipe  Version 1.72.x  Mostly changes to make JIPipe compatible to SciJava Maven and cleanup new Node “Reduce &amp;amp; split hyperstack” (allows the slicing of Hyperstacks by indices; a more simple alternative to “Reduce &amp;amp; split hyperstack (Expression)”) new Node “Draw/modify ROIs” (interactive editing of ROI; it works but is currently incomplete and subject to change)  </description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Image viewer I on JIPipe for ImageJ</title>
+    <link>https://www.jipipe.org/tutorials/ui/image-viewer-1/</link>
+    <description>Recent content in Image viewer I on JIPipe for ImageJ</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.jipipe.org/tutorials/ui/image-viewer-1/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Step 1</title>
+      <link>https://www.jipipe.org/tutorials/ui/image-viewer-1/step1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/ui/image-viewer-1/step1/</guid>
+      <description>Open an image in a pipeline (red arrow 1), double-click on the output in the Cache (red arrow 2) and examine the pop-up Image Viewer (red arrow 3).</description>
+    </item>
+    
+    <item>
+      <title>Step 2</title>
+      <link>https://www.jipipe.org/tutorials/ui/image-viewer-1/step2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/ui/image-viewer-1/step2/</guid>
+      <description>To draw ROIs, click on the ROI tab (red arrow 1), select to have ROIs as overlays (default!; red arrow 2), and click on More settings for further options (red arrow 3). Here the options to change the fill and line colors (red arrows 4 and 5, resp.), and to project the Z, the channel or the time dimension(s) are available (red arrows 6, 7, 8, resp.).</description>
+    </item>
+    
+    <item>
+      <title>Step 3</title>
+      <link>https://www.jipipe.org/tutorials/ui/image-viewer-1/step3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/ui/image-viewer-1/step3/</guid>
+      <description>Activate the Drawing tools (red arrow 1), and use the Ellipse, Polygon, Rectangle, and Pencil tools (red arrows 2, 3, 4, 5, resp.) to draw the corresponding shapes on the image (red labels 2, 3, 4, 5, resp.).</description>
+    </item>
+    
+    <item>
+      <title>Step 4</title>
+      <link>https://www.jipipe.org/tutorials/ui/image-viewer-1/step4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/ui/image-viewer-1/step4/</guid>
+      <description>In the Draw menu (red arrow 1) activate the Import/Export tab (red arrow 2) and click on To ROI (red arrow 3) to convert the drawings to ROIs. Observe that the region outlines are now yellow, indicating that they are converted to ROIs.</description>
+    </item>
+    
+    <item>
+      <title>Step 5</title>
+      <link>https://www.jipipe.org/tutorials/ui/image-viewer-1/step5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/ui/image-viewer-1/step5/</guid>
+      <description>In the ROI menu (red arrow 1) click on Selection (red arrow 2) and observe the list of the four new ROIs (line 3). Click on Measure (red arrow 4) to create the per-ROI analysis in a separate window (red arrow 5). The measurements are according to the ImageJ list of available parameters (red line 6).</description>
+    </item>
+    
+    <item>
+      <title>Step 6</title>
+      <link>https://www.jipipe.org/tutorials/ui/image-viewer-1/step6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/ui/image-viewer-1/step6/</guid>
+      <description>The created ROIs can be exported directly to ImageJ (red arrow 1), imported from ImageJ’s ROI Manager (red arrow 2), and the results can be plotted (red arrow 3))</description>
+    </item>
+    
+    <item>
+      <title>Step 7</title>
+      <link>https://www.jipipe.org/tutorials/ui/image-viewer-1/step7/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/ui/image-viewer-1/step7/</guid>
+      <description>Exporting the content of the image viewer is possible by clicking on the photo button (red arrow 1), and selecting the saving of the displayed image in a TIFF format (red arrow 3), or as-displayed (red arrow 2) in a PNG/JPEG/BMP format (red arrow 4), or by placing it in the system memory for copy-pasting into an image editor (red arrow 5).</description>
+    </item>
+    
+  </channel>
+</rss>

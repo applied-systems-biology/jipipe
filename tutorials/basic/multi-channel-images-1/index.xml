@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Handling multi-channel images I on JIPipe for ImageJ</title>
+    <link>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/</link>
+    <description>Recent content in Handling multi-channel images I on JIPipe for ImageJ</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.jipipe.org/tutorials/basic/multi-channel-images-1/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Step 1</title>
+      <link>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step1/</guid>
+      <description>Open the project file and run the bottom node Import image (red arrow 1). Chose the Cache intermediate results option to see the outcome from all nodes.
+Observe the cache (red arrow 2) and notice that the image has multiple channels (red arrow 3). In order to split the channels, search for a suitable node (red arrow 4) with the keyword split (red arrow 5). Choose the Split channels node (red arrow 6) and add it to the pipeline (red arrow 7).</description>
+    </item>
+    
+    <item>
+      <title>Step 2</title>
+      <link>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step2/</guid>
+      <description>The number of channels can be easily figured out from the image viewer. Double click on the image in the cache of the Import image node (red arrow 1) and note the three listed channels (red arrows 2, 3, 4).
+In the image viewer, the channels can be selected via a slider (red arrow 5).</description>
+    </item>
+    
+    <item>
+      <title>Step 3</title>
+      <link>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step3/</guid>
+      <description>The image contrast can be selected from a list (red arrow 1), using Auto (red arrow 2) is the default setting. The multichannel image can be converted into an RGB image (red arrow 3), whereas the zoom factor can be set via a +/- button set (red arrow 4). The resulting image can be exported or copied into the system cache as described before (red arrow 5).
+Basic information about the image (resolution, bit depth, etc.</description>
+    </item>
+    
+    <item>
+      <title>Step 4</title>
+      <link>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step4/</guid>
+      <description>The image will be split into three channels, as revealed by the image viewer.
+To set up the Split channels node, we need to add three output channels, corresponding to the red, green, and blue channels of the raw image:
+click on the ➕ sign to add a new slot to the Split channels node (red arrow 1). This will open the Add slot window (red arrow 2), where we search for image as data type (red arrow 3).</description>
+    </item>
+    
+    <item>
+      <title>Step 5</title>
+      <link>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step5/</guid>
+      <description>The Split channels node can be set up from the Parameters menu.
+By repeating the red channel addition for green and blue, we end up with the necessary three-channel output (red arrows 1, 2, 3). The output channels are assigned to those of the incoming image, starting the channel counting at zero (red arrows 4, 5, 6). The new channel indices and names are added to the annotation system (red arrows 7, 8).</description>
+    </item>
+    
+    <item>
+      <title>Step 6</title>
+      <link>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/multi-channel-images-1/step6/</guid>
+      <description>Run the Split channels node (red arrow 1) and observe the cache (red arrow 2).
+The slot name (red arrow 3), data type (red arrow 4) and channel index (red arrow 5) are now shown as annotations, in addition to the three images on grey scale (red arrow 6).</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,1937 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>JIPipe for ImageJ</title>
+    
+      <meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="revised" content="2022-10-01T19:04:24 CEST">
+<title>Version 1.74.0 (preliminary) :: JIPipe for ImageJ</title>
+<link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
+<link href="../../../css/font-awesome.min.css" rel="stylesheet">
+<link href="../../../css/nucleus.css" rel="stylesheet">
+<link href="../../../theme-flex/style.css" rel="stylesheet">
+
+<link rel="stylesheet" href="../../../css/bootstrap.min.css">
+<script src="../../../js/jquery-2.x.min.js"></script>
+<script type="text/javascript">
+      var baseurl = "https:\/\/www.jipipe.org\/";
+</script>
+<link rel="stylesheet" type="text/css" href="../../../css/custom.css">
+<link rel="stylesheet" type="text/css" href="../../../css/slick.css">
+<link rel="stylesheet" type="text/css" href="../../../css/slick-theme.css">
+
+
+    
+  </head>
+  <body data-url="../../../download/changelog/1.74.0/">
+    
+      <header>
+  <div class="logo">
+    
+	
+  
+    <p><a href="../../../" target="_self"><img src="../../../img/logo.svg" /></a></p>
+
+  
+
+
+  </div>
+  <div class="burger"><a href="javascript:void(0);" style="font-size:15px;">&#9776;</a></div>
+    <nav class="shortcuts">
+            <li class="" role="">
+                <a href="../../../download"  rel="noopener">
+                  <i class='fa fa-cloud-download'></i> <label>Download</label>
+                </a>
+            </li>
+            <li class="" role="">
+                <a href="https://forum.image.sc/"  rel="noopener">
+                  <i class='fa fa-comments'></i> <label>Community</label>
+                </a>
+            </li>
+            <li class="" role="">
+                <a href="../../../citation"  rel="noopener">
+                  <i class='fa fa-book'></i> <label>Citation</label>
+                </a>
+            </li>
+    </nav>
+</header>
+<article>
+  <aside>
+    <ul class="menu">
+          <li data-nav-id="/" class="dd-item">
+          <a href="../../../">
+            <i class="fa fa-fw fa-home"></i>
+          </a>
+          </li>
+    <li data-nav-id="https://www.jipipe.org/download/" class="dd-item parent haschildren
+        ">
+      <div>
+      <a href="../../../download/">Download</a>
+            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+    <li data-nav-id="https://www.jipipe.org/download/changelog/" class="dd-item parent haschildren
+        ">
+      <div>
+      <a href="../../../download/changelog/">Changelog</a>
+            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.74.0/" class="dd-item active">
+        <div>
+          <a href="../../../download/changelog/1.74.0/">
+            Version 1.74.0 (preliminary)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.73.0/" class="dd-item">
+        <div>
+          <a href="../../../download/changelog/1.73.0/">
+            Version 1.73.0 (current version)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.72.x/" class="dd-item">
+        <div>
+          <a href="../../../download/changelog/1.72.x/">
+            Version 1.72.x
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/installation/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../installation/">Installation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/installation/dependencies/" class="dd-item">
+        <div>
+          <a href="../../../installation/dependencies/">
+            ImageJ Dependencies
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/installation/third-party/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../installation/third-party/">Third party software</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/installation/third-party/cellpose/" class="dd-item">
+        <div>
+          <a href="../../../installation/third-party/cellpose/">
+            Setup Cellpose integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/installation/third-party/omnipose/" class="dd-item">
+        <div>
+          <a href="../../../installation/third-party/omnipose/">
+            Setup Omnipose integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/installation/third-party/python/" class="dd-item">
+        <div>
+          <a href="../../../installation/third-party/python/">
+            Setup Python integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/installation/third-party/r/" class="dd-item">
+        <div>
+          <a href="../../../installation/third-party/r/">
+            Setup R integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/installation/extensions/" class="dd-item">
+        <div>
+          <a href="../../../installation/extensions/">
+            JIPipe extensions
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/examples/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../examples/">Examples</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+    <li data-nav-id="https://www.jipipe.org/examples/how-to-load-projects/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../examples/how-to-load-projects/">How to load and run projects</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/examples/how-to-browse-results/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../examples/how-to-browse-results/">How to browse results</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/examples/how-to-import-node-templates/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../examples/how-to-import-node-templates/">How to import node templates</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/">Tutorials</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/">Basic</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/adding-nodes-saving/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/adding-nodes-saving/">Adding and running nodes</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-1/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/finding-connecting-nodes-1/">Importing an image I</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/finding-connecting-nodes-2/">Importing an image II</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-3/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/finding-connecting-nodes-3/">Importing an image III</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/node-parameters/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/node-parameters/">Changing node parameters</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/importing-multiple-images-1/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/importing-multiple-images-1/">Importing a directory of images I</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/importing-multiple-images-2/">Importing a directory of images II</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/multi-channel-images-1/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/multi-channel-images-1/">Handling multi-channel images I</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/comment-nodes/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/comment-nodes/">Comment nodes</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/annotations-1/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/annotations-1/">Annotations I: Filtering</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/annotations-2/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/annotations-2/">Annotations II: Branching</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/compartments-1/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/compartments-1/">Compartments I: Creating and connecting</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/compartments-2/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/compartments-2/">Compartments II: Basic image segmentation</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/quantification-plotting/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/quantification-plotting/">Quantification and plotting</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/cache-1/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/cache-1/">Cache I: Generating and viewing</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/cache-2/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/cache-2/">Cache II: Managing and exporting</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/image-physical-dimensions/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/image-physical-dimensions/">Image properties and LUT</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/image-roi-processing/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/image-roi-processing/">ROI processing</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/table-processing/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/table-processing/">Table processing</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/annotating-data-with-measurements/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/annotating-data-with-measurements/">Annotating data with measurements</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/exporting-data-1/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/exporting-data-1/">Exporting data I: Machine-readable</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/exporting-data-2/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/exporting-data-2/">Exporting data II: Human-readable</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/features/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/features/">Features</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+    <li data-nav-id="https://www.jipipe.org/tutorials/features/teaching/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/features/teaching/">JIPipe for teaching</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/intermediate/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/intermediate/">Intermediate</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+    <li data-nav-id="https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/intermediate/create-node-groups-1/">Creating node groups I</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/intermediate/create-node-groups-2/">Creating node groups II</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/intermediate/create-node-templates-1/">Creating node templates</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/intermediate/multi-parameters/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/intermediate/multi-parameters/">Multiple parameter sets</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/advanced/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/advanced/">Advanced</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+    <li data-nav-id="https://www.jipipe.org/tutorials/advanced/imagej-macros/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/advanced/imagej-macros/">Integrating ImageJ macros</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/advanced/loops/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/advanced/loops/">Loops</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/advanced/python/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/advanced/python/">Python</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/ui/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/ui/">UI</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+    <li data-nav-id="https://www.jipipe.org/tutorials/ui/project-new-single-compartment/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/ui/project-new-single-compartment/">Starting a new project I</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/ui/project-new-three-compartments/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/ui/project-new-three-compartments/">Starting a new project II</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/ui/project-open/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/ui/project-open/">Opening a saved project</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/ui/project-backups/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/ui/project-backups/">Project backups</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/ui/node-examples/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/ui/node-examples/">Loading node examples</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/ui/image-viewer-1/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/ui/image-viewer-1/">Image viewer I</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/ui/change-temp-directory/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/ui/change-temp-directory/">Changing the temporary directory</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/videos/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/videos/">Videos</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/tutorials/videos/analysis_video/" class="dd-item">
+        <div>
+          <a href="../../../tutorials/videos/analysis_video/">
+            Basic image analysis pipeline
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/tutorials/videos/jipipe-for-imagej-users/" class="dd-item">
+        <div>
+          <a href="../../../tutorials/videos/jipipe-for-imagej-users/">
+            JIPipe for ImageJ users
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/tutorials/videos/guide-user-interface/" class="dd-item">
+        <div>
+          <a href="../../../tutorials/videos/guide-user-interface/">
+            User interface
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/tutorials/videos/guide-data-caches/" class="dd-item">
+        <div>
+          <a href="../../../tutorials/videos/guide-data-caches/">
+            Data caches
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/tutorials/videos/guide-graph-editor/" class="dd-item">
+        <div>
+          <a href="../../../tutorials/videos/guide-graph-editor/">
+            Graph editor user interface
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/tutorials/videos/guide-batch-processing/" class="dd-item">
+        <div>
+          <a href="../../../tutorials/videos/guide-batch-processing/">
+            How to do batch processing
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/old/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/old/">Old tutorials</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/tutorials/old/analysis/" class="dd-item">
+        <div>
+          <a href="../../../tutorials/old/analysis/">
+            Image analysis pipeline
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/tutorials/old/extension/" class="dd-item">
+        <div>
+          <a href="../../../tutorials/old/extension/">
+            Creating an extension
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/faq/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../faq/">Frequently asked questions</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/faq/general/" class="dd-item">
+        <div>
+          <a href="../../../faq/general/">
+            General questions
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/issues/" class="dd-item">
+        <div>
+          <a href="../../../faq/issues/">
+            Common issues
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/user-interface/" class="dd-item">
+        <div>
+          <a href="../../../faq/user-interface/">
+            User interface
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/data-processing/" class="dd-item">
+        <div>
+          <a href="../../../faq/data-processing/">
+            Data processing
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/imagej-integration/" class="dd-item">
+        <div>
+          <a href="../../../faq/imagej-integration/">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/faq/result-analysis/" class="dd-item">
+        <div>
+          <a href="../../../faq/result-analysis/">
+            Result analysis
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation/">Documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+    <li data-nav-id="https://www.jipipe.org/documentation/basic-concepts/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation/basic-concepts/">Basic concepts</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation/basic-concepts/visual-programming/" class="dd-item">
+        <div>
+          <a href="../../../documentation/basic-concepts/visual-programming/">
+            Visual programming
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/basic-concepts/batch-processing/" class="dd-item">
+        <div>
+          <a href="../../../documentation/basic-concepts/batch-processing/">
+            Batch processing
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation/create-pipelines/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation/create-pipelines/">Creating pipelines</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation/create-pipelines/pipeline-editor/" class="dd-item">
+        <div>
+          <a href="../../../documentation/create-pipelines/pipeline-editor/">
+            Pipeline editor
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/create-pipelines/parameters/" class="dd-item">
+        <div>
+          <a href="../../../documentation/create-pipelines/parameters/">
+            Parameters
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/create-pipelines/expressions/" class="dd-item">
+        <div>
+          <a href="../../../documentation/create-pipelines/expressions/">
+            Mathematical expressions
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/create-pipelines/compartments/" class="dd-item">
+        <div>
+          <a href="../../../documentation/create-pipelines/compartments/">
+            Graph compartments
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/create-pipelines/groups/" class="dd-item">
+        <div>
+          <a href="../../../documentation/create-pipelines/groups/">
+            Group nodes
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/create-pipelines/loops/" class="dd-item">
+        <div>
+          <a href="../../../documentation/create-pipelines/loops/">
+            Loop nodes
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation/run-pipelines/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation/run-pipelines/">Running pipelines</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation/run-pipelines/run/" class="dd-item">
+        <div>
+          <a href="../../../documentation/run-pipelines/run/">
+            Running the whole pipeline
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/run-pipelines/result-analysis/" class="dd-item">
+        <div>
+          <a href="../../../documentation/run-pipelines/result-analysis/">
+            Review results
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/run-pipelines/connect-external-software/" class="dd-item">
+        <div>
+          <a href="../../../documentation/run-pipelines/connect-external-software/">
+            Use results in external software
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/run-pipelines/quick-run/" class="dd-item">
+        <div>
+          <a href="../../../documentation/run-pipelines/quick-run/">
+            Running a single node
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/run-pipelines/cache/" class="dd-item">
+        <div>
+          <a href="../../../documentation/run-pipelines/cache/">
+            Data caching
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/imagej-integration/" class="dd-item">
+        <div>
+          <a href="../../../documentation/imagej-integration/">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/plugins/" class="dd-item">
+        <div>
+          <a href="../../../documentation/plugins/">
+            Managing plugins
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation/standard-library/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation/standard-library/">Standard library</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/imagej-integration/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/imagej-integration/">
+            ImageJ integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/macro-node/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/macro-node/">
+            Macro node
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/filesystem/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/filesystem/">
+            Filesystem algorithms
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/annotations/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/annotations/">
+            Data annotation algorithms
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/plots-tables/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/plots-tables/">
+            Plots and tables
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/jython/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/jython/">
+            Jython integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation/standard-library/python/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation/standard-library/python/">Python integration</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/python/api/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/python/api/">
+            Python API
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/r-integration/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/r-integration/">
+            R integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/cellpose/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/cellpose/">
+            Cellpose integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/standard-library/deep-learning/" class="dd-item">
+        <div>
+          <a href="../../../documentation/standard-library/deep-learning/">
+            Deep Learning
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation/create-json-extensions/" class="dd-item
+        ">
+      <div>
+      <a href="../../../documentation/create-json-extensions/">Extension builder</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation/cli/" class="dd-item">
+        <div>
+          <a href="../../../documentation/cli/">
+            Command Line Interface
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation-java-api/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation-java-api/">Java API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation-java-api/javadocs/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/javadocs/">
+            JavaDocs
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-java-api/create-extension/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/create-extension/">
+            Creating an extension project
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation-java-api/algorithm/">Creating an algorithm</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/iterating-algorithms/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/algorithm/iterating-algorithms/">
+            Handling multiple inputs
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/merging-algorithms/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/algorithm/merging-algorithms/">
+            Merging input data
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/slot-configuration/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/algorithm/slot-configuration/">
+            Customizing slots
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/parameters/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/algorithm/parameters/">
+            Parameters
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/parallelization/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/algorithm/parallelization/">
+            Parallelization
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/custom-info/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/algorithm/custom-info/">
+            Custom algorithm info
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/context-actions/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/algorithm/context-actions/">
+            Context actions
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/node-examples/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/algorithm/node-examples/">
+            Node examples
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation-java-api/data-type/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation-java-api/data-type/">Creating a data type</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation-java-api/data-type/result-ui/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/data-type/result-ui/">
+            Displaying data
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-java-api/data-type/result-preview/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/data-type/result-preview/">
+            Preview from results folder
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation-java-api/parameter-type/" class="dd-item
+        ">
+      <div>
+      <a href="../../../documentation-java-api/parameter-type/">Creating a parameter type</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-java-api/usage-in-java/" class="dd-item">
+        <div>
+          <a href="../../../documentation-java-api/usage-in-java/">
+            Usage in Java
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation-json-api/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation-json-api/">JSON API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph-node/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/graph-node/">
+            Graph node
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/algorithm/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/algorithm/">
+            Algorithm type
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/dependency/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/dependency/">
+            Dependency
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph-edge/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/graph-edge/">
+            Graph Edge
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/graph/">
+            Graph
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/json-extension/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/json-extension/">
+            Extension
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/metadata/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/metadata/">
+            Metadata
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/point/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/point/">
+            Point
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/project/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/project/">
+            Project
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/slot-definition/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/slot-definition/">
+            Slot definition
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table-row/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/data-table-row/">
+            Data table row
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-json-api/annotation/" class="dd-item">
+        <div>
+          <a href="../../../documentation-json-api/annotation/">
+            Annotation
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/documentation-data-api/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../documentation-data-api/">Data API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-table/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/data-table/">
+            Data table
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/row-folder/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/row-folder/">
+            Row folder
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-types/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/data-types/">
+            Data types
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/pipeline-output/" class="dd-item">
+        <div>
+          <a href="../../../documentation-data-api/pipeline-output/">
+            Pipeline output
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/citation/" class="dd-item
+        ">
+      <div>
+      <a href="../../../citation/">Citation</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/supplementary-information/" class="dd-item
+        ">
+      <div>
+      <a href="../../../supplementary-information/">Supplementary information</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+    </li>
+
+
+
+
+    </ul>
+    <section>
+    </section>
+  </aside>
+  <section class="page">
+    
+    <div class="nav-select">
+      <center>Navigation : 
+        <select onchange="javascript:location.href = this.value;">
+          
+    <option value="/download/" >
+   Download</option> 
+    <option value="/download/changelog/" >
+  - 
+   Changelog</option> 
+      <option value="/download/changelog/1.74.0/"  selected>-- Version 1.74.0 (preliminary)</option>
+      <option value="/download/changelog/1.73.0/" >-- Version 1.73.0 (current version)</option>
+      <option value="/download/changelog/1.72.x/" >-- Version 1.72.x</option>
+  
+  
+    <option value="/installation/" >
+   Installation</option>
+    <option value="/examples/" >
+   Examples</option>
+    <option value="/tutorials/" >
+   Tutorials</option>
+    <option value="/faq/" >
+   Frequently asked questions</option>
+    <option value="/documentation/" >
+   Documentation</option>
+    <option value="/documentation-java-api/" >
+   Java API documentation</option>
+    <option value="/documentation-json-api/" >
+   JSON API documentation</option>
+    <option value="/documentation-data-api/" >
+   Data API documentation</option>
+    <option value="/citation/" >
+   Citation</option>
+    <option value="/supplementary-information/" >
+   Supplementary information</option>
+
+
+
+        </select>
+      </center>
+    </div>
+      <div>
+        <div class="searchbox">
+          <input data-search-input id="search-by" type="text" placeholder="Search...">
+        </div>
+        <script type="text/javascript" src="../../../js/lunr.min.js"></script>
+        <script type="text/javascript" src="../../../js/auto-complete.js"></script>
+        <link href="../../../css/auto-complete.css" rel="stylesheet">
+        <script type="text/javascript">
+          
+              var baseurl = "https:\/\/www.jipipe.org\/";
+          
+        </script>
+        <script type="text/javascript" src="../../../js/search.js"></script>
+      </div>
+    
+
+    <h1>Version 1.74.0 (preliminary)</h1>
+
+    
+    
+    
+    
+<div class="notices info" ><p>This changelog is preliminary, as JIPipe version 1.74.0 is not released, yet.</p></div>
+
+<div class="toc">
+    <h2>Table Of Contents</h2>
+    <nav id="TableOfContents">
+  <ul>
+    <li><a href="#plugin-manager">Plugin manager</a></li>
+    <li><a href="#environment-easyinstaller">Environment EasyInstaller</a></li>
+    <li><a href="#trackmate-integration-beta">TrackMate integration (Beta)</a></li>
+    <li><a href="#cellpose-integration">Cellpose integration</a></li>
+    <li><a href="#omnipose-integration-beta">Omnipose integration (Beta)</a></li>
+    <li><a href="#image-processing">Image processing</a>
+      <ul>
+        <li><a href="#roi-processing">ROI processing</a></li>
+        <li><a href="#coloc2-integration">Coloc2 integration</a></li>
+      </ul>
+    </li>
+    <li><a href="#table-processing">Table processing</a></li>
+    <li><a href="#plotting">Plotting</a></li>
+    <li><a href="#general-data-processing">General data processing</a></li>
+    <li><a href="#parameters">Parameters</a></li>
+    <li><a href="#expressions">Expressions</a></li>
+    <li><a href="#node-examples">Node examples</a></li>
+    <li><a href="#user-interface">User interface</a>
+      <ul>
+        <li><a href="#project-management">Project management</a></li>
+        <li><a href="#parameters-1">Parameters</a></li>
+        <li><a href="#graph-editor">Graph editor</a></li>
+        <li><a href="#compartment-editor">Compartment editor</a></li>
+        <li><a href="#cache-browser--results-viewer">Cache browser / Results viewer</a></li>
+        <li><a href="#imagej-alias-menu">ImageJ alias menu</a></li>
+        <li><a href="#image-viewer">Image viewer</a>
+          <ul>
+            <li><a href="#roi-manager">ROI manager</a></li>
+            <li><a href="#measurement-tool--mask-drawer--roi-drawer">Measurement tool / mask drawer / ROI drawer</a></li>
+          </ul>
+        </li>
+        <li><a href="#plot-editor">Plot editor</a></li>
+        <li><a href="#table-editor">Table editor</a></li>
+        <li><a href="#dependency-management">Dependency management</a></li>
+        <li><a href="#node-templates">Node templates</a></li>
+      </ul>
+    </li>
+    <li><a href="#data-management">Data management</a></li>
+    <li><a href="#data-api">Data API</a></li>
+    <li><a href="#bugfixes-and-small-improvements">Bugfixes and small improvements</a></li>
+    <li><a href="#known-issues">Known issues</a></li>
+  </ul>
+</nav>
+</div>
+<h1 id="plugin-manager">Plugin manager</h1>
+<p>In older JIPipe versions, all extensions are automatically loaded during the JIPipe startup. This was changed to reduce the number of dependencies by letting the users decide which extensions should be loaded (excluding core extensions that are mandatory).</p>
+<ul>
+<li><strong>New installations will come with the following extensions enabled:</strong> Annotations, Filesystem, Forms, ImageJ algorithms, ImageJ integration, Plots, Python, R, Strings, Table operations, Tools, Utils, ImageJ2 integration, Multi-parameter algorithms</li>
+<li><strong>Existing installations will enable the following extensions:</strong> Annotations, Filesystem, Forms, ImageJ algorithms, ImageJ integration, Plots, Python, R, Strings, Table operations, Tools, Utils, ImageJ2 integration, Multi-parameter algorithms, Cellpose, CLIJ2 integration, Multi-Template matching, Weka, OMERO</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/extension-manager.png" alt="JIPipe plugin manager"></p>
+<h1 id="environment-easyinstaller">Environment EasyInstaller</h1>
+<p>In older JIPipe versions, external environments (Python, Cellpose, R, &hellip;) can be installed via prepackaged installation scripts that replicate the installation procedure that would be applied by a user. We were made aware of issues that are caused by updated to the software or differences in the system configuration.
+To simplify the installation of various environments, JIPipe now provides ready-to-used installation packages that can be simply downloaded and extracted via a user-friendly interface termed &ldquo;EasyInstaller&rdquo;.</p>
+<p>Following EasyInstaller packages are available:</p>
+<ul>
+<li>Cellpose 2.x (Windows, Linux, macOS) CPU/GPU</li>
+<li>Omnipose (Windows, Linux, macOS) CPU/GPU</li>
+<li>Python with skimage, pandas, &hellip; (Windows, Linux, macOS)</li>
+<li>R (Windows)</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/easyinstaller.png" alt="Cellpose EasyInstaller"></p>
+<h1 id="trackmate-integration-beta">TrackMate integration (Beta)</h1>
+<div class="extension-info">
+  <div class="extension-info-content">
+    <div class="extension-info-logo">
+      <img alt="Extension logo" src="../../../img/icons/plugin.svg"/>
+      <div class="extension-info-short-text">Requires manual activation</div>
+    </div>
+    <div class="extension-info-text">The TrackMate integration needs to be activated via the extensions manager. Go to &#39;Plugins &gt; Manage JIPipe plugins&#39; and activate the TrackMate extension.</div>
+  </div>
+</div>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> The feature set of TrackMate was integrated into JIPipe</li>
+<li><span class="text-icon text-icon-info">info</span> The functions are split across multiple nodes to ensure maximum flexibility</li>
+<li><span class="text-icon text-icon-info">info</span> TrackMate plugins (e.g., Cellpose spot detector) are automatically incorporated</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/trackmate-nodes.png" alt="TrackMate nodes"></p>
+<div class="examples">
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <div class="example-item-thumbnail" style="background-image: url('/changelog/1.74.0/trackmate-example.png');">
+        </div>        
+        <div class="example-item-content">
+            <h2>Using the TrackMate nodes</h2>
+            <div class="example-item-tags">
+                
+                <div class="example-item-tag">small size</div>
+                
+                <div class="example-item-tag">tracking</div>
+                
+                <div class="example-item-tag">simple</div>
+                
+                <div class="example-item-tag">tutorial</div>
+                
+            </div>
+            <div class="example-item-description">A small example showcasing how to utilize the TrackMate nodes.</div>
+            <div class="example-item-buttons">
+                
+                <a href="../../../changelog/1.74.0/trackmate-example.zip" target="_self" class="btn btn-lg btn-success">Project &#43; Data</a>
+                
+                <a href="https://imagej.net/plugins/trackmate/getting-started" target="_blank" class="btn btn-lg btn-info">Dataset</a>
+                
+            </div>
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</div>
+<h1 id="cellpose-integration">Cellpose integration</h1>
+<p>The Cellpose integration was rewritten to make use of the improved Cellpose CLI.</p>
+<ul>
+<li><span class="text-icon text-icon-improved">improved</span> New nodes designed for Cellpose 2.x</li>
+<li><span class="text-icon text-icon-deprecated">deprecated</span> Old Cellpose nodes will still work but are deprecated</li>
+<li><span class="text-icon text-icon-new">new</span> Cellpose EasyInstaller that provides prepacked versions of Cellpose</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/new-cellpose-nodes.png" alt="New Cellpose nodes"></p>
+<h1 id="omnipose-integration-beta">Omnipose integration (Beta)</h1>
+<div class="extension-info">
+  <div class="extension-info-content">
+    <div class="extension-info-logo">
+      <img alt="Extension logo" src="../../../img/icons/plugin.svg"/>
+      <div class="extension-info-short-text">Requires manual activation</div>
+    </div>
+    <div class="extension-info-text">The Omnipose integration needs to be activated via the extensions manager. Go to &#39;Plugins &gt; Manage JIPipe plugins&#39; and activate the Omnipose extension.</div>
+  </div>
+</div>
+<p>Based on the improved Cellpose integration, Omnipose was integrated using dedicated nodes. Please note that Omnipose is based on Cellpose 1.x and requires a dedicated environment.</p>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> Omnipose segmentation and training nodes</li>
+<li><span class="text-icon text-icon-new">new</span> Cellpose EasyInstaller that provides prepacked versions of Cellpose</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/omnipose-nodes.png" alt="Omnipose nodes"></p>
+<div class="examples">
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+        <div class="example-item-thumbnail" style="background-image: url('/changelog/1.74.0/omnipose-example.png');">
+        </div>        
+        <div class="example-item-content">
+            <h2>Using the Omnipose segmentation nodes</h2>
+            <div class="example-item-tags">
+                
+                <div class="example-item-tag">small size</div>
+                
+                <div class="example-item-tag">segmentation</div>
+                
+                <div class="example-item-tag">deep learning</div>
+                
+                <div class="example-item-tag">simple</div>
+                
+                <div class="example-item-tag">tutorial</div>
+                
+            </div>
+            <div class="example-item-description">A small example showcasing how to utilize the Omnipose nodes.</div>
+            <div class="example-item-buttons">
+                
+                <a href="../../../changelog/1.74.0/omnipose-example.zip" target="_self" class="btn btn-lg btn-success">Project &#43; Data</a>
+                
+                <a href="http://www.cellpose.org/dataset_omnipose" target="_blank" class="btn btn-lg btn-info">Dataset</a>
+                
+            </div>
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</div>
+<h1 id="image-processing">Image processing</h1>
+<ul>
+<li><span class="text-icon text-icon-improved">improved</span> &ldquo;Set physical dimensions&rdquo;/&ldquo;Set physical dimensions from expressions&rdquo;  now can set the time and value units</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Set physical dimensions from annotations&rdquo;</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Render overlay&rdquo; (Renders the overlay ROI of an image)</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Slice ROI list&rdquo;</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Sort and extract ROI by statistics&rdquo;</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Sort ROI list (expression)&rdquo;</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Object-based iterative thresholding 2D&rdquo; (finds an optimal threshold based on the properties of the detected object; criteria are defined via expressions)</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Flood fill&rdquo; (flood fill starting at ROI locations)</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Convert to centroid&rdquo; (converts ROI to point ROI that contain its centroid)</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Detect lines 2D (Hough)&rdquo;</li>
+<li><span class="text-icon text-icon-improved">improved</span> New node for splitting channels (&ldquo;Split channels&rdquo;) that fully replicates the behavior of ImageJ&rsquo;s channel splitter</li>
+<li><span class="text-icon text-icon-deprecated">deprecated</span> The old &ldquo;Split channels&rdquo; node was deprecated</li>
+<li><span class="text-icon text-icon-improved">improved</span> &ldquo;Morphological operation 2D&rdquo;: option to add border around the image before processing (border is then removed; to avoid artifacts)</li>
+<li><span class="text-icon text-icon-improved">improved</span> New node &ldquo;Z-Project&rdquo; that can properly handle 5D images and can also apply C-Project and T-Project</li>
+<li><span class="text-icon text-icon-deprecated">deprecated</span> The old &ldquo;Z-Project&rdquo; node was deprecated</li>
+<li><span class="text-icon text-icon-new">new</span> &ldquo;Outline ROI&rdquo; now can generate minimum bounding rectangle</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Key/Value Histogram 5D&rdquo;</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Round float image&rdquo;</li>
+<li><span class="text-icon text-icon-improved">improved</span> &ldquo;Voronoi 2D&rdquo; can now binarize the output</li>
+<li><span class="text-icon text-icon-improved">improved</span> &ldquo;Image calculator 2D&rdquo; is now properly creating Float32 output if requested</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Blend images&rdquo; (Blends multiple images as in an image editor)</li>
+<li><span class="text-icon text-icon-deprecated">deprecated</span> The &ldquo;Overlay images&rdquo; node was deprecated (replaced by &ldquo;Blend images&rdquo;)</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Threshold/Value statistics 5D (fast, average)&rdquo;</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Threshold/Value statistics 5D (fast)&rdquo;</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Threshold/Value statistics 5D&rdquo;</li>
+</ul>
+<h2 id="roi-processing">ROI processing</h2>
+<p>There were various ROI-generating nodes with different feature sets. A new set of nodes was developed that make use of modern JIPipe API features. 
+All nodes consume two optional inputs:</p>
+<ol>
+<li><strong>ROI</strong>: Connect an existing ROI list to append to it. If left unconnected, a new ROI list is generated</li>
+<li><strong>Reference</strong>: Connect an image to position ROI according to the image dimensions. If nothing is connected, the boundaries of the ROI provided by <strong>ROI</strong> is used, otherwise the width and height is assumed to be zero.</li>
+</ol>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Draw oval ROI&rdquo;</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Draw rectangular ROI&rdquo;</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Draw text ROI&rdquo;</li>
+<li><span class="text-icon text-icon-deprecated">deprecated</span> Append rectangular ROI, Define rectangular ROI, Append rectangular ROI (referenced), Define rectangular ROI (referenced)</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/draw-roi.png" alt="ROI drawing nodes"></p>
+<h2 id="coloc2-integration">Coloc2 integration</h2>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> The functionality of <a href="https://imagej.net/plugins/coloc-2">Coloc2</a> was integrated into a node &ldquo;Coloc2&rdquo;.</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/coloc2.png" alt="Coloc2 node"></p>
+<div class="examples">
+    
+    
+        <div class="example-item-thumbnail" style="background-image: url('/changelog/1.74.0/coloc2-example.png');">
+        </div>        
+        <div class="example-item-content">
+            <h2>Using the Coloc2 nodes</h2>
+            <div class="example-item-tags">
+                
+                <div class="example-item-tag">small size</div>
+                
+                <div class="example-item-tag">colocalization</div>
+                
+                <div class="example-item-tag">simple</div>
+                
+                <div class="example-item-tag">tutorial</div>
+                
+            </div>
+            <div class="example-item-description">A small example showcasing how to utilize the Coloc2 nodes.</div>
+            <div class="example-item-buttons">
+                
+                <a href="../../../changelog/1.74.0/coloc2-example.zip" target="_self" class="btn btn-lg btn-success">Project &#43; Data</a>
+                
+                <a href="#ZgotmplZ" target="_blank" class="btn btn-lg btn-info">Dataset</a>
+                
+            </div>
+        </div>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</div>
+<h1 id="table-processing">Table processing</h1>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Add missing rows (series)&rdquo;</li>
+<li><span class="text-icon text-icon-new">new</span> Node for importing tables from XLSX</li>
+<li><span class="text-icon text-icon-improved">improved</span> Export tables now allows export to XLSX</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Table to histogram&rdquo;</li>
+<li><span class="text-icon text-icon-improved">improved</span> &ldquo;Apply expression per row&rdquo; now has access to other column values</li>
+<li><span class="text-icon text-icon-improved">improved</span> &ldquo;Apply expression to columns&rdquo; now has access to other column values</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Annotate data with table values&rdquo;</li>
+</ul>
+<h1 id="plotting">Plotting</h1>
+<ul>
+<li><span class="text-icon text-icon-improved">improved</span> New plotting nodes that are generated for each plotting type</li>
+<li><span class="text-icon text-icon-deprecated">deprecated</span> Node &ldquo;Plot tables&rdquo; was deprecated</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/new-plot-nodes.png" alt="New plot nodes"></p>
+<h1 id="general-data-processing">General data processing</h1>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Sort data rows (Expression)&rdquo;</li>
+<li><span class="text-icon text-icon-improved">improved</span> &ldquo;Loop start&rdquo;: if set to &ldquo;Pass through&rdquo;, the loop mode is set to &ldquo;Pass through&rdquo;</li>
+</ul>
+<h1 id="parameters">Parameters</h1>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Generate parameters from expression&rdquo;</li>
+<li><span class="text-icon text-icon-improved">improved</span> The parameter table editor (&ldquo;Define multiple parameters&rdquo;) was redesigned and simplified</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/parameter-table-editor.png" alt="New parameter table editor"></p>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> Adaptive parameters and multi-parameter settings were moved into a dedicated panel &ldquo;Advanced parameters&rdquo;</li>
+<li><span class="text-icon text-icon-info">info</span> The &ldquo;Advanced parameters&rdquo; panel comes with documentation that explains how the features work</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/advanced-parameters.png" alt="Advanced parameters panel"></p>
+<h1 id="expressions">Expressions</h1>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> Escape operator to simplify the creation of functions. Example <code>${x + &quot;y&quot;}</code> will evaluate to <code>&quot;x + \&quot;y\&quot;&quot;</code></li>
+<li><span class="text-icon text-icon-new">new</span> Pair operator <code>x: y</code> which evaluates to <code>PAIR(x, y)</code></li>
+<li><span class="text-icon text-icon-new">new</span> Custom expression variables: various nodes allow users to define custom variables based on annotations or other properties of the processed data</li>
+<li><span class="text-icon text-icon-new">new</span> Function <code>IF_ELSE_EXPR</code> (lazy <code>IF_ELSE</code>)</li>
+<li><span class="text-icon text-icon-new">new</span> Function <code>FUNCTION</code> to define new user functions</li>
+<li><span class="text-icon text-icon-new">new</span> Function <code>RUN_FUNCTION</code> to run a user function</li>
+<li><span class="text-icon text-icon-improved">improved</span> Existing <code>RUN_FUNCTION</code> was renamed to <code>APPLY_FUNCTION_TO_ARRAY</code></li>
+<li><span class="text-icon text-icon-new">new</span> Function <code>SET_VARIABLES</code></li>
+<li><span class="text-icon text-icon-new">new</span> Function <code>STRING_TRUNCATE</code></li>
+<li><span class="text-icon text-icon-new">new</span> Function <code>SUMMARIZE_ANNOTATIONS_MAP</code></li>
+<li><span class="text-icon text-icon-new">new</span> Function <code>ROUNDD</code> (Round to specific number of decimals)</li>
+<li><span class="text-icon text-icon-new">new</span> Quantity conversion functions support new units: inch, foot, yard, mile, Dalton, ounce, pound</li>
+<li><span class="text-icon text-icon-new">new</span> Function <code>SLICE</code> for slicing arrays/lists</li>
+<li><span class="text-icon text-icon-new">new</span> Function <code>MAKE_SEQUENCE_EXPR</code></li>
+<li><span class="text-icon text-icon-improved">improved</span> <code>GET_ITEM</code> can handle negative indices (accessing the -nth last item)</li>
+<li><span class="text-icon text-icon-new">new</span> Function <code>TRANSFORM_ARRAY_CUMULATIVE</code></li>
+<li><span class="text-icon text-icon-new">new</span> Function <code>TRANSFORM_ARRAY</code></li>
+</ul>
+<h1 id="node-examples">Node examples</h1>
+<p>In previous JIPipe versions, various nodes included a &ldquo;Load example&rdquo; button that allowed users to learn about how to utilize the node. An issue with this functionality is that it cannot be easily discovered by users, e.g., via the search box. Additionally, examples cannot be created and distributed by users due to the reliance on Java code. The new version of JIPipe introduces a standardized node example system that can dynamically load examples from files, JAR resources, and node templates.</p>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> Node examples that can be accessed via the &ldquo;Examples&rdquo; tab on selecting a node</li>
+<li><span class="text-icon text-icon-improved">improved</span> Search box / available nodes were improved to include node examples</li>
+<li><span class="text-icon text-icon-new">new</span> Examples for various existing nodes</li>
+<li><span class="text-icon text-icon-removed">removed</span> Old examples (&ldquo;Load example&rdquo;) were migrated to new example API</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/examples.png" alt="Node examples"></p>
+<h1 id="user-interface">User interface</h1>
+<h2 id="project-management">Project management</h2>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> An online-repository system was implemented that allows to download template projects from the web (if you want to add your own project as downloadable example, file a pull request to <a href="https://github.com/applied-systems-biology/JIPipe-Repositories/blob/main/project-templates/project-templates.json">https://github.com/applied-systems-biology/JIPipe-Repositories/blob/main/project-templates/project-templates.json</a>)</li>
+</ul>
+
+<div class="notices info" ><p>By default, JIPipe uses the repository <a href="https://raw.githubusercontent.com/applied-systems-biology/JIPipe-Repositories/main/project-templates/project-templates.json">https://raw.githubusercontent.com/applied-systems-biology/JIPipe-Repositories/main/project-templates/project-templates.json</a>. Feel free to configure the repository list within Project &gt; Application settings &gt; General &gt; Projects &gt; Template downloader repositories</p></div>
+
+<p><img src="../../../changelog/1.74.0/project-templates.png" alt="New project template downloader"></p>
+<h2 id="parameters-1">Parameters</h2>
+<p>In older JIPipe versions, the help of a parameter was displayed upon hovering the item via the mouse. This lead to issues with usability, as well as a slowdown of the interface due to the involvement of performance-intensive Java functions.
+Since this version, the parameter documentation can be opened by clicking the <code>?</code> icon next to the entry.</p>
+<ul>
+<li><span class="text-icon text-icon-improved">improved</span> Parameter help now is displayed by clicking the <code>?</code> button</li>
+<li><span class="text-icon text-icon-improved">improved</span> General node parameters are now separated from node-specific settings</li>
+<li><span class="text-icon text-icon-improved">improved</span> All list parameter editors were improved</li>
+<li><span class="text-icon text-icon-improved">improved</span> The &ldquo;Add parameter&rdquo; dialog was redesigned</li>
+<li><span class="text-icon text-icon-improved">improved</span> Custom/dynamic parameters now are added via a dedicated parameter editor dialog</li>
+<li><span class="text-icon text-icon-improved">improved</span> The parameter reference editor was redesigned</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/parameters-editor.png" alt="New parameters editor"></p>
+<h2 id="graph-editor">Graph editor</h2>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> Double-click compartment inputs to navigate to the associated compartment</li>
+<li><span class="text-icon text-icon-fixed">fixed</span> Overlapping nodes could not always be dragged</li>
+<li><span class="text-icon text-icon-improved">improved</span> Creating edges is now smarter: if there is only one input/output, it is sufficient to drag a line to the node (before: needed to drag a line to the slot). Dragged edges now &ldquo;snap&rdquo; to the last output.</li>
+<li><span class="text-icon text-icon-fixed">fixed</span> Resolved slow redraw on Linux</li>
+<li><span class="text-icon text-icon-improved">improved</span> Slots can be right-clicked to open the slot menu</li>
+<li><span class="text-icon text-icon-improved">improved</span> Edges are now displayed with arrow heads</li>
+<li><span class="text-icon text-icon-new">new</span> &ldquo;Isolate&rdquo; now has a hotkey</li>
+</ul>
+<p><video src="../../../changelog/1.74.0/graph-editor-snapping.webm" autoplay loop controls ></video></p>
+<h2 id="compartment-editor">Compartment editor</h2>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> Compartments now can be &ldquo;executed&rdquo; by clicking the play button. This will update the cache / execute a quick-run for the compartment output</li>
+<li><span class="text-icon text-icon-fixed">fixed</span> Pasting compartments did not preserve the locations of the contained nodes</li>
+<li><span class="text-icon text-icon-improved">improved</span> Compartments now can reference parameters from their nodes</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/compartment-editor.png" alt="Improved compartment editor"></p>
+<h2 id="cache-browser--results-viewer">Cache browser / Results viewer</h2>
+<ul>
+<li><span class="text-icon text-icon-improved">improved</span> The UI was redesigned with a Ribbon and greatly simplified</li>
+<li><span class="text-icon text-icon-new">new</span> Annotations of selected data rows can be opened as table</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/cache-browser.png" alt="New cache browser UI"></p>
+<h2 id="imagej-alias-menu">ImageJ alias menu</h2>
+<p>To facility the transition from ImageJ, a function was introduced to organize JIPipe functionality into different menu locations (alias).
+Various existing JIPipe nodes were organized into a menu &ldquo;IJ&rdquo; that follows the structure of the ImageJ menu. For example, <code>Images &gt; Threshold &gt; Auto Threshold 2D</code> is also organized into <code>IJ &gt; Image &gt; Adjust &gt; Auto threshold ...</code>.</p>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> Node menu <code>IJ</code> that follows the structure of ImageJ</li>
+<li><span class="text-icon text-icon-improved">improved</span> Aliases are displayed and searchable via the search box / available nodes search</li>
+<li><span class="text-icon text-icon-improved">improved</span> Aliases are displayed in the algorithm compendium</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/ij-alias-menu.png" alt="IJ alias menu"></p>
+<h2 id="image-viewer">Image viewer</h2>
+<ul>
+<li><span class="text-icon text-icon-improved">improved</span> Increased animation speed for channel/frame/depth slider</li>
+<li><span class="text-icon text-icon-improved">improved</span> Enhanced ROI rendering via a standardized component based on the &ldquo;Convert ROI to RGB&rdquo; node., Users have full control over many aspects of ROI rendering.</li>
+<li><span class="text-icon text-icon-improved">improved</span> ROI rendering as overlay (as done in ImageJ). This means that ROI renders will not pixelate on zooming into images</li>
+<li><span class="text-icon text-icon-improved">improved</span> Improved zooming behavior (new formula)</li>
+</ul>
+<h3 id="roi-manager">ROI manager</h3>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> The UI was redesigned by implementing a Ribbon interface</li>
+<li><span class="text-icon text-icon-new">new</span> The ROI manager now can measure the selected ROI</li>
+<li><span class="text-icon text-icon-new">new</span> ROI can now be selected via a mouse selection tool (&ldquo;Pick&rdquo;)</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/image-viewer-roi-manager.png" alt="New ROI manager"></p>
+<h3 id="measurement-tool--mask-drawer--roi-drawer">Measurement tool / mask drawer / ROI drawer</h3>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> The UI was redesigned by implementing a Ribbon interface</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/image-viewer-mask-drawer.png" alt="New measurement tool"></p>
+<h2 id="plot-editor">Plot editor</h2>
+<ul>
+<li><span class="text-icon text-icon-improved">improved</span> The plot editor now saves ZIP files instead of directories (easier to handle)</li>
+</ul>
+<h2 id="table-editor">Table editor</h2>
+<ul>
+<li><span class="text-icon text-icon-improved">improved</span> The table editor was redesigned with a Ribbon UI</li>
+</ul>
+<p><img src="../../../changelog/1.74.0/table-editor.png" alt="New table editor"></p>
+<h2 id="dependency-management">Dependency management</h2>
+<p>On loading pipelines with missing dependencies, users are prompted with dialogs to indicate that extensions are missing.</p>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> Redesigned &ldquo;Missing dependencies&rdquo; dialog that allows to enable the missing extensions directly within the dialog</li>
+<li><span class="text-icon text-icon-new">new</span> Users are now informed about missing environments (Cellpose, &hellip;) on loading a project</li>
+</ul>
+<h2 id="node-templates">Node templates</h2>
+<ul>
+<li><span class="text-icon text-icon-improved">improved</span> You can now right-click entries in the node template editor</li>
+</ul>
+<h1 id="data-management">Data management</h1>
+
+<div class="notices info" ><p>Due to the improved data exporter interface, some parameters were deleted. Please evaluate the parameters of &ldquo;Export data&rdquo;/&ldquo;Export images&rdquo;/&ldquo;Export table&rdquo;</p></div>
+
+<ul>
+<li><span class="text-icon text-icon-improved">improved</span> Greatly simplified data exporter interface (for example used in &ldquo;Export data&rdquo; node): functions for automated name generation were removed and merged into expressions</li>
+<li><span class="text-icon text-icon-new">new</span> Exporting data tables to *.zip</li>
+<li><span class="text-icon text-icon-new">new</span> Importing data tables from *.zip</li>
+<li><span class="text-icon text-icon-new">new</span> Tables can now exported to XLSX (table editor/cache browser/&hellip;)</li>
+<li><span class="text-icon text-icon-new">new</span> ImageJ images now save ROI overlays</li>
+</ul>
+<h1 id="data-api">Data API</h1>
+<ul>
+<li><span class="text-icon text-icon-new">new</span> The standardized output format now saves thumbnails, thus avoiding the loading of data in the result preview window</li>
+<li><span class="text-icon text-icon-new">new</span> New API to simplify the handling of streamed storage (ZIP etc.)</li>
+</ul>
+<h1 id="bugfixes-and-small-improvements">Bugfixes and small improvements</h1>
+
+<div class="notices info" ><p>Please refer to the commits in the JIPipe GitHub repository to find a list of all bugfixes and improvements.</p></div>
+
+<ul>
+<li><span class="text-icon text-icon-improved">improved</span> Default to 1 compartment projects (requested by users)</li>
+<li><span class="text-icon text-icon-improved">improved</span> Measurements: default to generate all available measurements</li>
+<li><span class="text-icon text-icon-improved">improved</span> Better detection of R</li>
+<li><span class="text-icon text-icon-improved">improved</span> Added various color maps from ImageJ</li>
+<li><span class="text-icon text-icon-improved">improved</span> The application settings UI was improved</li>
+<li><span class="text-icon text-icon-fixed">fixed</span> Various measurement nodes (&ldquo;Extract ROI statistics&rdquo;, &ldquo;Find particles 2D&rdquo;, &ldquo;Extract image statistics&rdquo;, &hellip;) did not support the measurement with physical units. A toggle was added (defaults to enabled) that instructs ImageJ to measure with physical sizes.</li>
+<li><span class="text-icon text-icon-fixed">fixed</span> Local threshold were no applied to stacks</li>
+<li><span class="text-icon text-icon-fixed">fixed</span> &ldquo;Reorder dimensions&rdquo; and &ldquo;Set Hyperstack dimensions&rdquo; now behave as expected</li>
+<li><span class="text-icon text-icon-fixed">fixed</span> OMERO data could not be imported due to missing default constructor</li>
+<li><span class="text-icon text-icon-deprecated">deprecated</span> Cellpose Miniconda installer is now deprecated due to unintended side effects that are introduced by the Miniconda installer</li>
+<li><span class="text-icon text-icon-fixed">fixed</span> Backups are now sorted properly in the &ldquo;Restore backup&rdquo; dialog</li>
+<li><span class="text-icon text-icon-fixed">fixed</span> &ldquo;IO interface&rdquo;: Pass through works as expected</li>
+</ul>
+<h1 id="known-issues">Known issues</h1>
+<ul>
+<li><span class="text-icon text-icon-issue">issue</span> Links within the HTML editor are currently not clickable</li>
+<li><span class="text-icon text-icon-issue">issue</span> Omnipose: we were so far not able to train an Omnipose model</li>
+</ul>
+
+
+    
+    
+        <div class="chevrons">
+    <div id="navigation">
+<a class="nav nav-prev" href="../../../download/changelog/" title="Changelog"> <i class="fa fa-chevron-left"></i><label>Changelog</label></a>
+    <a class="nav nav-next" href="../../../download/changelog/1.73.0/" title="Version 1.73.0 (current version)" style="margin-right: 0px;"><label>Version 1.73.0 (current version)</label><i class="fa fa-chevron-right"></i></a></div>
+  </div>
+
+  </section>
+</article>
+
+<footer>
+
+<div class="footline">
+    
+
+    
+    <div class="author">
+        <i class='fa fa-user'></i> <a href="mailto:ruman.gerst@leibniz-hki.de">Ruman Gerst</a>
+    </div>
+    
+
+    
+
+    
+  </div>
+
+
+	<div>
+
+
+  
+    <p>By <a href="https://www.leibniz-hki.de/en/applied-systems-biology.html">Applied Systems Biology, Leibniz Institute for Natural Product Research and Infection Biology – Hans Knöll Institute (HKI), Jena, Germany</a></p>
+
+  
+
+
+
+	</div>
+</footer>
+
+<script src="../../../js/clipboard.min.js"></script>
+
+<link href="../../../css/featherlight.min.css" rel="stylesheet">
+<script src="../../../js/featherlight.min.js"></script>
+
+
+
+<script src="../../../theme-flex/script.js"></script>
+
+
+    
+
+    
+    
+
+    <script type="text/javascript" src="../../../js/slick.min.js"></script>
+<script type="text/javascript" src="../../../js/custom.js"></script>
+
+  </body>
+</html>

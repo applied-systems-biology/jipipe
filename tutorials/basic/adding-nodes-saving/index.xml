@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Adding and running nodes on JIPipe for ImageJ</title>
+    <link>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/</link>
+    <description>Recent content in Adding and running nodes on JIPipe for ImageJ</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.jipipe.org/tutorials/basic/adding-nodes-saving/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Step 1</title>
+      <link>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step1/</guid>
+      <description>From the main GUI. Type a keyword into the search bar (red arrow 1), e.g., looking for way to add a file to the pipeline at the beginning. Then choose the desired node, in this case we go for adding a file (red arrow 2).</description>
+    </item>
+    
+    <item>
+      <title>Step 2</title>
+      <link>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step2/</guid>
+      <description>Now the new File node will appear on the work area.
+The File nodes contains information where JIPipe should look for files. It is related to Folder (a directory) and Path (a file or directory).
+If you want to reference multiple files/directories/paths, you can also use File list/Folder list/Path list.
+</description>
+    </item>
+    
+    <item>
+      <title>Step 3</title>
+      <link>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step3/</guid>
+      <description>When the new node is clicked on and activated, it will be surrounded by a dashed rectangle(red arrow 1). Make sure that the Parameters tab is active on the right side(red arrow 2).</description>
+    </item>
+    
+    <item>
+      <title>Step 4</title>
+      <link>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step4/</guid>
+      <description>To choose a concrete file, click on the navigation tab (red arrow 1), navigate to the folder where the image file is (red arrow 2), and choose the image to be loaded (red arrow 3).</description>
+    </item>
+    
+    <item>
+      <title>Step 5</title>
+      <link>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step5/</guid>
+      <description>Run the node by clicking on the green arrowhead inside the node (red arrow), &amp;hellip;</description>
+    </item>
+    
+    <item>
+      <title>Step 6</title>
+      <link>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step6/</guid>
+      <description>&amp;hellip; and then selecting one of the top two options Update cache or Cache intermediate results.</description>
+    </item>
+    
+    <item>
+      <title>Step 7</title>
+      <link>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step7/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step7/</guid>
+      <description>The result will be shown on the right side, under the Cache browser tab (red arrow 1), where the newly loaded file name and full path will be listed (red arrow 2)
+The cache stores the results of a pipeline/node in memory. Please note that to work with large images, you require a computer with sufficient RAM space.
+</description>
+    </item>
+    
+    <item>
+      <title>Step 8</title>
+      <link>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step8/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step8/</guid>
+      <description>By double-clicking on the cache entry row (red arrow 1), the newly loaded image will be opened in a dedicated viewer (red arrow 2)
+The File node packages the file path into a JIPipe-managed object called File. If you double-click a File/Folder/Path, it will be opened using your system&amp;rsquo;s standard behavior.
+</description>
+    </item>
+    
+    <item>
+      <title>Step 9</title>
+      <link>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step9/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step9/</guid>
+      <description>To save the project, go to the Project tab (red arrow 1) and select the saving mode, e.g. Save As (red arrow 2)</description>
+    </item>
+    
+    <item>
+      <title>Step 10</title>
+      <link>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step10/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step10/</guid>
+      <description>The navigate to the target folder (red arrow 1) and select or choose a file name (red arrow 2). The JIPipe project filenames end with the “.jip” extension.</description>
+    </item>
+    
+  </channel>
+</rss>

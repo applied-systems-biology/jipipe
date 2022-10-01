@@ -6,77 +6,5 @@
     <description>Recent content in Tutorials on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language><atom:link href="https://www.jipipe.org/tutorials/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Image analysis pipeline</title>
-      <link>https://www.jipipe.org/tutorials/analysis/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/tutorials/analysis/</guid>
-      <description>This tutorial is also available as video.1. First startOn starting JIPipe, you will see such a screen: It contains a short introduction, the graph compartment editor,an three pre-defined graph compartments Preprocessing, Analysis, and Postprocessing. As described in the graph compartment documentation, youcan ignore graph graph compartments. But in this tutorial we will make use of its capabilities to clearly separate the pipeline into the mentioned tree steps.</description>
-    </item>
-    
-    <item>
-      <title>Image analysis pipeline (Video)</title>
-      <link>https://www.jipipe.org/tutorials/analysis_video/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/tutorials/analysis_video/</guid>
-      <description>This tutorial is also available as text tutorial.</description>
-    </item>
-    
-    <item>
-      <title>Creating an extension</title>
-      <link>https://www.jipipe.org/tutorials/extension/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/tutorials/extension/</guid>
-      <description>1. Existing pipelineIn this tutorial, we will create a custom algorithm extension based on parts of the pipeline created in the other tutorial.Please open the project file for the pipeline and navigate to the Preprocessing tab.2. Selecting the algorithmsPlease select the following algorithms (you can either do this by holding the Shift keyboard button and clicking the nodes or dragging a selection around the nodes):Folder listPath to annotationList filesImport imageAfter selecting the algorithms, right-click a selected node and click Export.</description>
-    </item>
-    
-    <item>
-      <title>JIPipe for ImageJ users (Video)</title>
-      <link>https://www.jipipe.org/tutorials/jipipe-for-imagej-users/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/tutorials/jipipe-for-imagej-users/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>User interface (Video)</title>
-      <link>https://www.jipipe.org/tutorials/guide-user-interface/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/tutorials/guide-user-interface/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Data caches (Video)</title>
-      <link>https://www.jipipe.org/tutorials/guide-data-caches/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/tutorials/guide-data-caches/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Graph editor user interface (Video)</title>
-      <link>https://www.jipipe.org/tutorials/guide-graph-editor/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/tutorials/guide-graph-editor/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>How to do batch processing (Video)</title>
-      <link>https://www.jipipe.org/tutorials/guide-batch-processing/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/tutorials/guide-batch-processing/</guid>
-      <description></description>
-    </item>
-    
   </channel>
 </rss>

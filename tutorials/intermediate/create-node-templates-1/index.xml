@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Creating node templates on JIPipe for ImageJ</title>
+    <link>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/</link>
+    <description>Recent content in Creating node templates on JIPipe for ImageJ</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Step 1</title>
+      <link>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step1/</guid>
+      <description>Nodes with a specific set of parameters, or nodes that are formed into a Group (see previous tutorial) can be saved as Templates, in order to make them available for easy reuse. The template nodes can be made accessible either globally (i.e., by other projects as well), or locally, where only the current project can have access to them.</description>
+    </item>
+    
+    <item>
+      <title>Step 2</title>
+      <link>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step2/</guid>
+      <description>Choose between having a global (red arrow 1) or local (red arrow 2) template. The former will make the new template available from any project, whereas the latter will restrict its availability to the current project.</description>
+    </item>
+    
+    <item>
+      <title>Step 3</title>
+      <link>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step3/</guid>
+      <description>Use the newly opened Create template window (red arrow 1) to set the name of the template (red arrow 2), and to provide a description (red arrow 3). When done, click OK to save the new template (red arrow 4).</description>
+    </item>
+    
+    <item>
+      <title>Step 4</title>
+      <link>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step4/</guid>
+      <description>To observe the newly created template node, click anywhere within the white area of the GUI (red arrow 1), select the Node templates tab on the right side (red arrow 2), and scroll down to find the newly added template (red arrow 3).
+Note that the title of the node template (red arrow 4) and the detailed description (red arrow 5) also appear in the summary, together with the slots layout of the node (red line 6).</description>
+    </item>
+    
+    <item>
+      <title>Step 5</title>
+      <link>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step5/</guid>
+      <description>To add the template node into the pipeline, grab it with the mouse (red arrow 1) with the left button down, and drag it onto the GUI (red arrow 2).
+It is also possible to select and add multiple nodes from the template list and drag them to the project area; use SHIFT+Left-click or Ctrl+Left-click to select multiple nodes from the template list.</description>
+    </item>
+    
+    <item>
+      <title>Step 6</title>
+      <link>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step6/</guid>
+      <description>The newly added template (red arrow 1) will now appear in the pipeline area (red arrow 2).
+Now it can be connected to other nodes, as any regular node.</description>
+    </item>
+    
+    <item>
+      <title>Step 7</title>
+      <link>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step7/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step7/</guid>
+      <description>If the template node needs to be modified, the updated node must to be saved again as a template.
+When using the same name for saving, it is best to delete the outdated node from the list first. This can be done by selecting the outdated node from the list (red arrow 1), right-click on the node and select the Delete option (red arrow 2).</description>
+    </item>
+    
+    <item>
+      <title>Step 8</title>
+      <link>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step8/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step8/</guid>
+      <description>The template node(s) can be exported and imported between projects, or between various JIPipe instances; this way the nodes can be shared easy, e.g. during teaching sessions.
+As an example, select two nodes from the list (red arrow 1 and 2), click on the Manage button (red arrow 3) and select Export selection to file (red arrow 4).</description>
+    </item>
+    
+    <item>
+      <title>Step 9</title>
+      <link>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step9/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step9/</guid>
+      <description>In the Export templates dialog (red arrow 1) navigate to the target folder (red arrow 2) and choose a name for the exported file (red arrow 3). The saved file is in JSON format (red arrow 4).
+In this case, the saved templates will be found in the tutorial’s folder that can be explored after download.</description>
+    </item>
+    
+    <item>
+      <title>Step 10</title>
+      <link>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step10/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step10/</guid>
+      <description>Importing a template JSON file is done similarly: in the Manage menu, choose Import from file (red arrow 1).</description>
+    </item>
+    
+  </channel>
+</rss>

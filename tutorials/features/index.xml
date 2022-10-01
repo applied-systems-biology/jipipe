@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Features on JIPipe for ImageJ</title>
+    <link>https://www.jipipe.org/tutorials/features/</link>
+    <description>Recent content in Features on JIPipe for ImageJ</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.jipipe.org/tutorials/features/index.xml" rel="self" type="application/rss+xml" />
+  </channel>
+</rss>

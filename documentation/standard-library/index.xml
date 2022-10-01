@@ -45,9 +45,7 @@ The filesystem library has two basic data types:
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation/standard-library/multi-parameter/</guid>
-      <description>Most algorithms allow handling of multiple parameters via an additional slot that can be optionally enabled. You can find the setting in an algorithm&amp;rsquo;s settings as Multiple parameters. On selecting the item, a new slot will appear that consumes parameter data.
-To define parameters, use the algorithms found in Add data &amp;gt; Parameters. There are currently two data source algorithms available:
- Define parameter defines a single set of parameters Define multiple parameters lets you define a table of parameters  Use Process &amp;gt; Merge &amp;gt; Merge slots to merge multiple parameter sets.</description>
+      <description>This page was moved here</description>
     </item>
     
     <item>
@@ -78,8 +76,8 @@ Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot 
       
       <guid>https://www.jipipe.org/documentation/standard-library/jython/</guid>
       <description>The standard library contains nodes that allow to run Python scripts using the Jython library. Python scripts have access to all JIPipe and ImageJ APIs that are available at runtime.
- Due to restrictions in the Jython library, Python libraries that are built on a native backend (such as Numpy) will not work.
- As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on how to expand Jython with additional libraries.</description>
+Due to restrictions in the Jython library, Python libraries that are built on a native backend (such as Numpy) will not work.
+As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on how to expand Jython with additional libraries.</description>
     </item>
     
     <item>
@@ -90,7 +88,7 @@ Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot 
       <guid>https://www.jipipe.org/documentation/standard-library/r-integration/</guid>
       <description>The standard library contains nodes that allow to run R scripts. This means that you will need to install a distribution of R.
 You will need to install R (https://www.r-project.org/) and setup JIPipe to find this installation.
- Setting up R You have the option to either select an existing R environment, or let JIPipe install a new R environment into a folder (only available on Windows).
+Setting up R You have the option to either select an existing R environment, or let JIPipe install a new R environment into a folder (only available on Windows).
 To setup Python, navigate to Project &amp;gt; Application settings &amp;gt; Extensions &amp;gt; R integration.</description>
     </item>
     

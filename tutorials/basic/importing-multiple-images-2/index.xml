@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Importing a directory of images II on JIPipe for ImageJ</title>
+    <link>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/</link>
+    <description>Recent content in Importing a directory of images II on JIPipe for ImageJ</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Step 1</title>
+      <link>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step1/</guid>
+      <description>Open the project file from the tutorial Importing a directory of images I and navigate to the Analysis compartment (red arrow 1). Run the last node (red arrow 2) with the Cache intermediate results option (red arrow 3).</description>
+    </item>
+    
+    <item>
+      <title>Step 2</title>
+      <link>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step2/</guid>
+      <description>Now we need to get a list of the image files in all the (sub)folders. Use the node finder (red arrow 1) and check for list nodes (red arrow 2). Choose the List files node (red arrow 3), making sure that node will be created (red arrow 4). Add the new node (red arrow 5).
+The node List files consumes JIPipe-managed Folder data and produces the corresponding list of contained files/directories as output.</description>
+    </item>
+    
+    <item>
+      <title>Step 3</title>
+      <link>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step3/</guid>
+      <description>Go to Parameters of the new node (red arrow 1)and check Recursive (red arrow 2). Run the node (red arrow 3) with Update cache.
+By default, the node will only list the direct children of the current path. Recursive ensures that also the N-th children are detected.
+</description>
+    </item>
+    
+    <item>
+      <title>Step 4</title>
+      <link>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step4/</guid>
+      <description>Go to Cache (red arrow 1) and check that all file names are listed (red line 2); compare with the list of files on the hard drive.</description>
+    </item>
+    
+    <item>
+      <title>Step 5</title>
+      <link>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step5/</guid>
+      <description>The file names also need to be annotated. Here we will use a simpler approach via the Add path to annotations node (red arrow 1); add this node via any of the ways we have seen before.
+Rename the Generated annotations field to #Filename, to make it more specific (the default name of Dataset, which is very general). The # before the name indicates that this annotation is of primary importance, e.</description>
+    </item>
+    
+    <item>
+      <title>Step 6</title>
+      <link>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step6/</guid>
+      <description>Run the node (red arrow 1) and check the Cache (red arrow 2). Now the #Filename annotation (red arrow 3) is part of the image database.</description>
+    </item>
+    
+    <item>
+      <title>Step 7</title>
+      <link>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step7/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step7/</guid>
+      <description>We can now read in the images. Look for compatible nodes to continue the pipeline (red arrow 1) and notice that the second hit is already what we need, even without searching with a keyword (red arrow 2).</description>
+    </item>
+    
+    <item>
+      <title>Step 8</title>
+      <link>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step8/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step8/</guid>
+      <description>Add the node (red arrow 1) and run it (red arrow 2). In the cache (red arrow 3) we can now observe all the images (red line 4).</description>
+    </item>
+    
+    <item>
+      <title>Step 9</title>
+      <link>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step9/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step9/</guid>
+      <description>Double click on one of the images (red arrow 1) to observe it in a separate viewer window (red arrow 2)</description>
+    </item>
+    
+  </channel>
+</rss>

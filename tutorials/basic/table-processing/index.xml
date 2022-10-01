@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Table processing on JIPipe for ImageJ</title>
+    <link>https://www.jipipe.org/tutorials/basic/table-processing/</link>
+    <description>Recent content in Table processing on JIPipe for ImageJ</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.jipipe.org/tutorials/basic/table-processing/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Step 1</title>
+      <link>https://www.jipipe.org/tutorials/basic/table-processing/step1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/table-processing/step1/</guid>
+      <description>Create a new JIPipe project (red arrow 1) using a template (red arrow 2).</description>
+    </item>
+    
+    <item>
+      <title>Step 2</title>
+      <link>https://www.jipipe.org/tutorials/basic/table-processing/step2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/table-processing/step2/</guid>
+      <description>Create a new JIPipe project (red arrow 1) using a template (red arrow 2).</description>
+    </item>
+    
+    <item>
+      <title>Step 3</title>
+      <link>https://www.jipipe.org/tutorials/basic/table-processing/step3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/table-processing/step3/</guid>
+      <description>Locate the data folder that belongs to this tutorial (red arrow 1) and drop it on the UI (red arrow 2).
+Click somewhere on the white area of the UI (red arrow 3) and chose the Node templates tab (red arrow 4).
+👉 This tutorial requires that you have installed node template Import images.
+If you do not have the template, you can download it via Manage &amp;gt; Download more templates or by importing the Templates.</description>
+    </item>
+    
+    <item>
+      <title>Step 4</title>
+      <link>https://www.jipipe.org/tutorials/basic/table-processing/step4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/table-processing/step4/</guid>
+      <description>The Cache browser (red arrow 1) will now show the fluorescence image (red arrow 2).</description>
+    </item>
+    
+    <item>
+      <title>Step 5</title>
+      <link>https://www.jipipe.org/tutorials/basic/table-processing/step5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/table-processing/step5/</guid>
+      <description>Add the Basic blob finder template to the UI (red arrow 1) and observe the Parameters tab (red arrow 2).
+The exposed parameter of the group node are indicated here (red rectangle 3), including the particle size and circularity ranges, the thresholding method and the gaussian smoothing factor.</description>
+    </item>
+    
+    <item>
+      <title>Step 6</title>
+      <link>https://www.jipipe.org/tutorials/basic/table-processing/step6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/table-processing/step6/</guid>
+      <description>In order to observe the quality of the segmentation, add a Convert ROI to RGB node (red arrow 1), connect it to the ROI and Image outputs of the Import images and Basic blob finder nodes (red arrows 2 and 3), and run it (red arrow 4).
+In the Cache browser (red arrow 5), observe the entry (red arrow 6) and the full image (red arrow 7).</description>
+    </item>
+    
+    <item>
+      <title>Step 7</title>
+      <link>https://www.jipipe.org/tutorials/basic/table-processing/step7/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/table-processing/step7/</guid>
+      <description>Look for Table processing nodes in the Tables menu (red arrow 1) and select the node Apply expression per row (red arrow 2).
+Connect the node to the Measurements output of the Simple blob finder.
+The Apply expression per row node applies a custom mathematical expression for each row of the input table. The result of the expression is written into a new or existing column of the same row.</description>
+    </item>
+    
+    <item>
+      <title>Step 8</title>
+      <link>https://www.jipipe.org/tutorials/basic/table-processing/step8/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/table-processing/step8/</guid>
+      <description>Before editing the table, find out the names of the measured parameters:
+open the Measurements cache results of the Basic blob finder (red arrow 1), double-click on the cache entry (rectangle 2) and review the column names in the table viewer (rectangle 3).</description>
+    </item>
+    
+    <item>
+      <title>Step 9</title>
+      <link>https://www.jipipe.org/tutorials/basic/table-processing/step9/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/table-processing/step9/</guid>
+      <description>Let us calculate the ratio between the mean value and the area.
+Select the Apply expression per row node (red arrow 1), open the Parameters tab and apply the following changes:
+In parameter Expressions set the value of Expression to Mean / Area.
+Mean and Area reference the mean and area column values of the currently processed row. Always keep in mind that the Expression is applied per row.
+In parameter Expressions set the value of Column name to Density.</description>
+    </item>
+    
+    <item>
+      <title>Step 10</title>
+      <link>https://www.jipipe.org/tutorials/basic/table-processing/step10/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/table-processing/step10/</guid>
+      <description>Run the node (red arrow 1) and observe the Cache browser (red arrow 2).
+The cache entry (red arrow 3) now contains a new Density column (red arrow 4).</description>
+    </item>
+    
+    <item>
+      <title>Step 11</title>
+      <link>https://www.jipipe.org/tutorials/basic/table-processing/step11/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/table-processing/step11/</guid>
+      <description>We will proceed to generate an integrated table.
+From the Tables menu (red arrow 1), add the node Integrate table columns (red arrow 2).
+Integrate table columns allows to apply pre-defined integration methods (sum, min, max, mean, first or last row, &amp;hellip;) to a customizable set of table columns. The result will be a table with one row.
+If you want to write a custom integration function, use Apply expression to columns that utilizes mathematical expressions.</description>
+    </item>
+    
+    <item>
+      <title>Step 12</title>
+      <link>https://www.jipipe.org/tutorials/basic/table-processing/step12/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/table-processing/step12/</guid>
+      <description>Select the Integrate table columns (red arrow 1) and edit the Processors parameters in the Parameters tab (red arrow 2):
+Set the Input column to the following value:
+&amp;quot;Density&amp;quot;If you reference existing columns, always put the name in quotation marks. The function for selecting columns can be heavily customized, as it is expression-based an can under certain circumstances yield unexpected results if the name is typed in as is.</description>
+    </item>
+    
+    <item>
+      <title>Step 13</title>
+      <link>https://www.jipipe.org/tutorials/basic/table-processing/step13/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/table-processing/step13/</guid>
+      <description>Run the node (red arrow 1) and observe the Cache (red arrow 2).
+The new cache entry (red arrow 3) now contains the new column AVG density (red arrow 4, red rectangle 5).
+If you want to annotate data (an image, table, etc.) by the AVG density, use the node Annotate data with table values.
+Its Generated annotation parameter allows to generate an annotation from value(s) obtained from a table and attach it to the input of the Data slot.</description>
+    </item>
+    
+    <item>
+      <title>Step 14</title>
+      <link>https://www.jipipe.org/tutorials/basic/table-processing/step14/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/table-processing/step14/</guid>
+      <description>Finally, add three input nodes to the compartment’s output node and connect them accordingly. (red arrows 1-3).</description>
+    </item>
+    
+  </channel>
+</rss>

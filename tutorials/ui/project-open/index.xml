@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Opening a saved project on JIPipe for ImageJ</title>
+    <link>https://www.jipipe.org/tutorials/ui/project-open/</link>
+    <description>Recent content in Opening a saved project on JIPipe for ImageJ</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.jipipe.org/tutorials/ui/project-open/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Step 1</title>
+      <link>https://www.jipipe.org/tutorials/ui/project-open/step1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/ui/project-open/step1/</guid>
+      <description>From the Project menu, select Recent projects, and choose one of the preexisting JIPipe file (red arrow 1 and red arrow 2). If you have no recent projects, you can also navigate to Project &amp;gt; Open and select the *.jip file.</description>
+    </item>
+    
+    <item>
+      <title>Step 2</title>
+      <link>https://www.jipipe.org/tutorials/ui/project-open/step2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/ui/project-open/step2/</guid>
+      <description>Choose to open the existing project either in the current window, or in a new window.</description>
+    </item>
+    
+    <item>
+      <title>Step 3</title>
+      <link>https://www.jipipe.org/tutorials/ui/project-open/step3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/ui/project-open/step3/</guid>
+      <description>Now the saved project will reopen, showing the compartment structure(s).
+JIPipe will always attempt to restore the UI configuration (tabs etc.) that was present during the saving of the project.
+</description>
+    </item>
+    
+  </channel>
+</rss>

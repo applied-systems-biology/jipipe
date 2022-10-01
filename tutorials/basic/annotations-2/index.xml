@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Annotations II: Branching on JIPipe for ImageJ</title>
+    <link>https://www.jipipe.org/tutorials/basic/annotations-2/</link>
+    <description>Recent content in Annotations II: Branching on JIPipe for ImageJ</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.jipipe.org/tutorials/basic/annotations-2/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Step 1</title>
+      <link>https://www.jipipe.org/tutorials/basic/annotations-2/step1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/annotations-2/step1/</guid>
+      <description>Load the pipeline of the tutorial, select the Split &amp;amp; filter by annotations node (red arrow 1) and observe the ➕ (Add slot) button (red arrow 2) and the Slots tab in the right (red arrow 3).</description>
+    </item>
+    
+    <item>
+      <title>Step 2</title>
+      <link>https://www.jipipe.org/tutorials/basic/annotations-2/step2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/annotations-2/step2/</guid>
+      <description>To add a new slot, click the ➕ button (red arrow 1) and use the Add slot window (red arrow 2) to add an Image slot (red arrow 3). Name the new slot accordingly (red arrow 4) and add it to the node (red arrow 5).
+The Split &amp;amp; filter by annotations node has a configurable number of outputs. The ➕ allows the addition of new slots with a specified name and data type.</description>
+    </item>
+    
+    <item>
+      <title>Step 3</title>
+      <link>https://www.jipipe.org/tutorials/basic/annotations-2/step3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/annotations-2/step3/</guid>
+      <description>In the Slots tab (red arrow 1) we can also change the properties of the already present first output slot.
+To do this, select the slot to be edited (red arrow 2). Here the data type can be changed if necessary (red arrow 3) and a new name can be entered (red arrow 4). When done editing, accept the changes (red arrow 5).
+You can also modify/delete/re-arrange slots by either clicking the ▼ located on the node or by right-clicking the slot within the graph editor.</description>
+    </item>
+    
+    <item>
+      <title>Step 4</title>
+      <link>https://www.jipipe.org/tutorials/basic/annotations-2/step4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/annotations-2/step4/</guid>
+      <description>To activate the filtering function, select the Edit option for expressions (red arrow 1).
+In the expression editor window (red arrow 2) look for a number conversion function (red arrow 3) and select the TO_NUMBER function (red arrow 4). Choose the Variable value type (red arrow 5) and paste in the name of the variable based on which the filtering will be done (here: Image composite channel count as seen in the previous tutorial, red arrow 6).</description>
+    </item>
+    
+    <item>
+      <title>Step 5</title>
+      <link>https://www.jipipe.org/tutorials/basic/annotations-2/step5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/annotations-2/step5/</guid>
+      <description>Enter the same filtering formula for the 1-channel slot (red arrow 1).
+Easiest is to copy-paste the content of the Three-channel slot expression (red arrow 2) and change the channel number to 1 (red arrow 3).
+The formulas now should be:
+ Three channels: TO_NUMBER($&amp;quot;Image composite channel count&amp;quot;) == 3 1-channel: TO_NUMBER($&amp;quot;Image composite channel count&amp;quot;) == 1  </description>
+    </item>
+    
+    <item>
+      <title>Step 6</title>
+      <link>https://www.jipipe.org/tutorials/basic/annotations-2/step6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/annotations-2/step6/</guid>
+      <description>Run the Split &amp;amp; filter by annotations node and observe the Cache browser (red arrow 1).
+From the Data slot selector (red arrow 2) choose All outputs (red arrow 3) to see both the Three-channel (red arrow 4) and 1-channel (red arrow 5) outputs.</description>
+    </item>
+    
+    <item>
+      <title>Step 7</title>
+      <link>https://www.jipipe.org/tutorials/basic/annotations-2/step7/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/basic/annotations-2/step7/</guid>
+      <description>If we choose the 1-channel output slot, e.g. (red arrow 1), we will only see the content of this output slot (red arrow 2), which comes from the blobs image (red arrow 3).
+👉 Via such Split &amp;amp; filter by annotation nodes we can separate the analysis of various image types without having to write a full pipeline for each type of image. Moreover, we can add all the folders that need to be analyzed into the workflow, and do the separation of the various images later, based on annotations.</description>
+    </item>
+    
+  </channel>
+</rss>

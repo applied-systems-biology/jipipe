@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>How to import node templates on JIPipe for ImageJ</title>
+    <link>https://www.jipipe.org/examples/how-to-import-node-templates/</link>
+    <description>Recent content in How to import node templates on JIPipe for ImageJ</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language><atom:link href="https://www.jipipe.org/examples/how-to-import-node-templates/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Where are the node templates?</title>
+      <link>https://www.jipipe.org/examples/how-to-import-node-templates/step1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/examples/how-to-import-node-templates/step1/</guid>
+      <description>Begin by starting JIPipe and navigating into a compartment (by default tab Analysis).
+Click an empty area to deselect all nodes.
+You should see a tab Node templates that reveals a list of all existing node templates.
+In the figure, we already have two templates that are stored application-wide (meaning that they are accessible from all projects). There is also the option to only store specific templates into the current project.</description>
+    </item>
+    
+    <item>
+      <title>Importing from JSON: Step 1</title>
+      <link>https://www.jipipe.org/examples/how-to-import-node-templates/json1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/examples/how-to-import-node-templates/json1/</guid>
+      <description>Navigate to Mange &amp;gt; Import from file and select the template JSON file (usually Templates.json).</description>
+    </item>
+    
+    <item>
+      <title>Importing from JSON: Step 2</title>
+      <link>https://www.jipipe.org/examples/how-to-import-node-templates/json2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/examples/how-to-import-node-templates/json2/</guid>
+      <description>You will now have two options that determine where the loaded templates will be stored:
+ Globally: the newly imported templates will be available in whole JIPipe (all projects) Inside project: the templates will be directly stored inside the project and thus only available within the project itself  Choose the option that is most convenient for you.
+You can also move templates from/to global store into/from project storage via the Manage menu.</description>
+    </item>
+    
+    <item>
+      <title>Importing from JSON: Step 3</title>
+      <link>https://www.jipipe.org/examples/how-to-import-node-templates/json3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/examples/how-to-import-node-templates/json3/</guid>
+      <description>In this example, the option Inside project was chosen.
+You can now see the newly added templates and use them by dragging them into the pipeline.</description>
+    </item>
+    
+    <item>
+      <title>Downloading: Step 1</title>
+      <link>https://www.jipipe.org/examples/how-to-import-node-templates/download1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/examples/how-to-import-node-templates/download1/</guid>
+      <description>Navigate to Mange &amp;gt; Download more templates, which will contact our online template repository for newly available items.</description>
+    </item>
+    
+    <item>
+      <title>Downloading: Step 2</title>
+      <link>https://www.jipipe.org/examples/how-to-import-node-templates/download2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/examples/how-to-import-node-templates/download2/</guid>
+      <description>Please select the templates that will be downloaded.
+Proceed by clicking Download selected templates.
+We currently made only a small selection of templates available that are related to our tutorials. The list will be expanded in the future.
+</description>
+    </item>
+    
+    <item>
+      <title>Downloading: Step 3</title>
+      <link>https://www.jipipe.org/examples/how-to-import-node-templates/download3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/examples/how-to-import-node-templates/download3/</guid>
+      <description>You will now have two options that determine where the loaded templates will be stored:
+ Global storage: the newly imported templates will be available in whole JIPipe (all projects) Project storage: the templates will be directly stored inside the project and thus only available within the project itself  Choose the option that is most convenient for you.
+You can also move templates from/to global store into/from project storage via the Manage menu.</description>
+    </item>
+    
+    <item>
+      <title>Downloading: Step 4</title>
+      <link>https://www.jipipe.org/examples/how-to-import-node-templates/download4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/examples/how-to-import-node-templates/download4/</guid>
+      <description>In this example, the option Project storage was chosen.
+You can now see the newly added templates and use them by dragging them into the pipeline.</description>
+    </item>
+    
+  </channel>
+</rss>

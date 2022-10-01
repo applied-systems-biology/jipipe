@@ -6,5 +6,27 @@
     <description>Recent content in Installation on JIPipe for ImageJ</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language><atom:link href="https://www.jipipe.org/installation/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ImageJ Dependencies</title>
+      <link>https://www.jipipe.org/installation/dependencies/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/installation/dependencies/</guid>
+      <description>JIPipe has various dependencies in form of ImageJ update sites that are not always provided via the Fiji update site or the ZIP package. During the startup of the software, JIPipe will automatically check for the appropriate ImageJ update sites and will guide you through the installation of all necessary libraries.
+The dependency installation was revised in JIPipe version 1.74.0. Please follow the appropriate procedures in the tutorial below.
+JIPipe 1.</description>
+    </item>
+    
+    <item>
+      <title>JIPipe extensions</title>
+      <link>https://www.jipipe.org/installation/extensions/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/installation/extensions/</guid>
+      <description>Table Of Contents Installing new extensions Activating extensions   Installing new extensions JIPipe extensions are ImageJ plugins and thus can be installed just as any plugin.
+Available options are:
+ Installation via the Fiji updater Manual installation by copying the files into the plugins or jars directory  Older JIPipe versions (1.73.x or older) will automatically load all extensions during the startup. This behavior was changed in JIPipe 1.</description>
+    </item>
+    
   </channel>
 </rss>

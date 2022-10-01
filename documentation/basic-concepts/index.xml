@@ -24,7 +24,7 @@ This allows to easily develop image analysis protocols that can be manually adju
       <guid>https://www.jipipe.org/documentation/basic-concepts/batch-processing/</guid>
       <description>JIPipe was designed to always process data in batches, meaning that algorithms always work on multiple data sets at once. This greatly reduces the required work to upscale a processing pipeline from one or few to a large amount of data sets.
 We will use this pipeline as example:
-mermaid.initialize({startOnLoad:true}); graph LR; A[File] -- B[Load image] B -- C[Apply gaussian]  In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
+mermaid.initialize({startOnLoad:true});graph LR;A[File] -- B[Load image]B -- C[Apply gaussian] In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
     </item>
     
   </channel>
