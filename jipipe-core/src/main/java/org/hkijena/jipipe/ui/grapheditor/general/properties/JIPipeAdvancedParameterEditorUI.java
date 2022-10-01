@@ -43,6 +43,7 @@ public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel {
         this.settings = new Settings(node);
         initialize();
         if(node instanceof JIPipeParameterSlotAlgorithm) {
+            enableMultiParametersToggle.setSelected(((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().isHasParameterSlot());
             ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().getEventBus().register(this);
         }
         if(node instanceof JIPipeAdaptiveParametersAlgorithm) {
