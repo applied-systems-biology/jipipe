@@ -345,7 +345,13 @@ public class AddAlgorithmSlotPanel extends JPanel {
         setSelectedInfo(null);
         List<JIPipeDataInfo> availableTypes = getFilteredAndSortedInfos();
         DefaultListModel<JIPipeDataInfo> listModel = new DefaultListModel<>();
+        if(lastSelectedType != null && availableTypes.contains(lastSelectedType)) {
+            listModel.addElement(lastSelectedType);
+        }
         for (JIPipeDataInfo type : availableTypes) {
+            if(lastSelectedType != null && availableTypes.contains(lastSelectedType) && type == lastSelectedType) {
+                continue;
+            }
             listModel.addElement(type);
         }
         datatypeList.setModel(listModel);

@@ -209,7 +209,7 @@ public class RUtils {
     public static void installOutputGeneratorCode(StringBuilder code) {
         code.append("JIPipe.AddOutputDataFrame <- function(data, slot, annotations=list()) { " +
                 "folder <- JIPipe.AddOutputFolder(slot, annotations=annotations);" +
-                "write.csv(data, file=file.path(folder, \"data.csv\"));" +
+                "write.csv(data, row.names = FALSE, file=file.path(folder, \"data.csv\"));" +
                 "}\n");
         code.append("JIPipe.AddOutputPNGImagePath <- function(data, slot, annotations=list()) { " +
                 "folder <- JIPipe.AddOutputFolder(slot, annotations=annotations);" +

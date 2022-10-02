@@ -204,8 +204,7 @@ public class PythonExtension extends JIPipePrepackagedDefaultJavaExtension {
             JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":old-python-adapter");
             notification.setHeading("Old library version");
             notification.setDescription("JIPipe has detected that the installed version of the JIPipe Python adapter library is outdated. " +
-                    "Please click the button below to install the newest version.\n\n" +
-                    "For more information, please visit https://www.jipipe.org/installation/third-party/python/");
+                    "Please click the button below to install the newest version.");
             notification.getActions().add(new JIPipeNotificationAction("Install newest version",
                     "Installs the newest version of the Python library",
                     UIUtils.getIconFromResources("actions/run-install.png"),
