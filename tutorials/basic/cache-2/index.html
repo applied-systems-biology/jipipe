@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-04T15:56:35 CEST">
+<meta name="revised" content="2022-10-04T18:01:31 CEST">
 <title>Cache II: Managing and exporting :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -120,6 +120,34 @@
       <a href="../../../installation/third-party/">Third party software</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
+      <li data-nav-id="https://www.jipipe.org/installation/third-party/cellpose/" class="dd-item">
+        <div>
+          <a href="../../../installation/third-party/cellpose/">
+            Setup Cellpose integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/installation/third-party/omnipose/" class="dd-item">
+        <div>
+          <a href="../../../installation/third-party/omnipose/">
+            Setup Omnipose integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/installation/third-party/python/" class="dd-item">
+        <div>
+          <a href="../../../installation/third-party/python/">
+            Setup Python integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/installation/third-party/r/" class="dd-item">
+        <div>
+          <a href="../../../installation/third-party/r/">
+            Setup R integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
         </ul>
     </li>
       <li data-nav-id="https://www.jipipe.org/installation/extensions/" class="dd-item">
@@ -261,6 +289,14 @@
         ">
       <div>
       <a href="../../../tutorials/basic/annotations-2/">Annotations II: Branching</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/annotations-3/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/annotations-3/">Annotations III: Modifying and merging</a><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
         </ul>
@@ -1157,95 +1193,6 @@
    Examples</option>
     <option value="/tutorials/" >
    Tutorials</option> 
-    <option value="/tutorials/basic/" >
-  - 
-   Basic</option> 
-    <option value="/tutorials/basic/adding-nodes-saving/" >
-  -- 
-   Adding and running nodes</option>
-    <option value="/tutorials/basic/finding-connecting-nodes-1/" >
-  -- 
-   Importing an image I</option>
-    <option value="/tutorials/basic/finding-connecting-nodes-2/" >
-  -- 
-   Importing an image II</option>
-    <option value="/tutorials/basic/finding-connecting-nodes-3/" >
-  -- 
-   Importing an image III</option>
-    <option value="/tutorials/basic/node-parameters/" >
-  -- 
-   Changing node parameters</option>
-    <option value="/tutorials/basic/importing-multiple-images-1/" >
-  -- 
-   Importing a directory of images I</option>
-    <option value="/tutorials/basic/importing-multiple-images-2/" >
-  -- 
-   Importing a directory of images II</option>
-    <option value="/tutorials/basic/multi-channel-images-1/" >
-  -- 
-   Handling multi-channel images I</option>
-    <option value="/tutorials/basic/comment-nodes/" >
-  -- 
-   Comment nodes</option>
-    <option value="/tutorials/basic/annotations-1/" >
-  -- 
-   Annotations I: Filtering</option>
-    <option value="/tutorials/basic/annotations-2/" >
-  -- 
-   Annotations II: Branching</option>
-    <option value="/tutorials/basic/compartments-1/" >
-  -- 
-   Compartments I: Creating and connecting</option>
-    <option value="/tutorials/basic/compartments-2/" >
-  -- 
-   Compartments II: Basic image segmentation</option>
-    <option value="/tutorials/basic/quantification-plotting/" >
-  -- 
-   Quantification and plotting</option>
-    <option value="/tutorials/basic/cache-1/" >
-  -- 
-   Cache I: Generating and viewing</option>
-    <option value="/tutorials/basic/cache-2/"  selected>
-  -- 
-   Cache II: Managing and exporting</option> 
-  
-    <option value="/tutorials/basic/image-physical-dimensions/" >
-  -- 
-   Image properties and LUT</option>
-    <option value="/tutorials/basic/image-roi-processing/" >
-  -- 
-   ROI processing</option>
-    <option value="/tutorials/basic/table-processing/" >
-  -- 
-   Table processing</option>
-    <option value="/tutorials/basic/annotating-data-with-measurements/" >
-  -- 
-   Annotating data with measurements</option>
-    <option value="/tutorials/basic/exporting-data-1/" >
-  -- 
-   Exporting data I: Machine-readable</option>
-    <option value="/tutorials/basic/exporting-data-2/" >
-  -- 
-   Exporting data II: Human-readable</option>
-  
-    <option value="/tutorials/features/" >
-  - 
-   Features</option>
-    <option value="/tutorials/intermediate/" >
-  - 
-   Intermediate</option>
-    <option value="/tutorials/advanced/" >
-  - 
-   Advanced</option>
-    <option value="/tutorials/ui/" >
-  - 
-   UI</option>
-    <option value="/tutorials/videos/" >
-  - 
-   Videos</option>
-    <option value="/tutorials/old/" >
-  - 
-   Old tutorials</option>
   
     <option value="/faq/" >
    Frequently asked questions</option>
@@ -1301,6 +1248,8 @@
 
 </div>
 <div class="examples">
+    
+    
     
     
     
@@ -1405,25 +1354,6 @@
 </div>
 
     <div style="margin-bottom:2rem"></div>
-    <div class="toc">
-        <h2>Table Of Contents</h2>
-        <nav id="TableOfContents">
-            <ul>
-                <li><a href="#step-1" class="highlight" >Step 1</a></li>
-                <li><a href="#step-2" class="highlight" >Step 2</a></li>
-                <li><a href="#step-3" class="highlight" >Step 3</a></li>
-                <li><a href="#step-4" class="highlight" >Step 4</a></li>
-                <li><a href="#step-5" class="highlight" >Step 5</a></li>
-                <li><a href="#step-6" class="highlight" >Step 6</a></li>
-                <li><a href="#step-7" class="highlight" >Step 7</a></li>
-                <li><a href="#step-8" class="highlight" >Step 8</a></li>
-                <li><a href="#step-9" class="highlight" >Step 9</a></li>
-                <li><a href="#step-10" class="highlight" >Step 10</a></li>
-                <li><a href="#step-11" class="highlight" >Step 11</a></li>
-                <li><a href="#step-12" class="highlight" >Step 12</a></li>
-            </ul>
-        </nav>
-    </div>    
     <div class=tutorial-list>
           <div class="tutorial-item">
             <div class="tutorial-item-img"><img src="../../../tutorials/b18-2/step1.png" alt="Illustration of the tutorial step" /></div>

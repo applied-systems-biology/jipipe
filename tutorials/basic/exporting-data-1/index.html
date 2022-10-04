@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-04T15:56:35 CEST">
+<meta name="revised" content="2022-10-04T18:01:31 CEST">
 <title>Exporting data I: Machine-readable :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -187,97 +187,6 @@
       <a href="../../../examples/how-to-import-node-templates/">How to import node templates</a><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph-node/" class="dd-item">
-        <div>
-          <a href="../../../documentation-json-api/graph-node/">
-            Graph node
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/algorithm/" class="dd-item">
-        <div>
-          <a href="../../../documentation-json-api/algorithm/">
-            Algorithm type
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/dependency/" class="dd-item">
-        <div>
-          <a href="../../../documentation-json-api/dependency/">
-            Dependency
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph-edge/" class="dd-item">
-        <div>
-          <a href="../../../documentation-json-api/graph-edge/">
-            Graph Edge
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/graph/" class="dd-item">
-        <div>
-          <a href="../../../documentation-json-api/graph/">
-            Graph
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/json-extension/" class="dd-item">
-        <div>
-          <a href="../../../documentation-json-api/json-extension/">
-            Extension
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/metadata/" class="dd-item">
-        <div>
-          <a href="../../../documentation-json-api/metadata/">
-            Metadata
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/point/" class="dd-item">
-        <div>
-          <a href="../../../documentation-json-api/point/">
-            Point
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/project/" class="dd-item">
-        <div>
-          <a href="../../../documentation-json-api/project/">
-            Project
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/slot-definition/" class="dd-item">
-        <div>
-          <a href="../../../documentation-json-api/slot-definition/">
-            Slot definition
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table/" class="dd-item">
-        <div>
-          <a href="../../../documentation-json-api/data-table/">
-            Data table
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/data-table-row/" class="dd-item">
-        <div>
-          <a href="../../../documentation-json-api/data-table-row/">
-            Data table row
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation-json-api/annotation/" class="dd-item">
-        <div>
-          <a href="../../../documentation-json-api/annotation/">
-            Annotation
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
         </ul>
     </li>
         </ul>
@@ -380,6 +289,14 @@
         ">
       <div>
       <a href="../../../tutorials/basic/annotations-2/">Annotations II: Branching</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/annotations-3/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/basic/annotations-3/">Annotations III: Modifying and merging</a><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
         </ul>
@@ -1312,6 +1229,9 @@
     <option value="/tutorials/basic/annotations-2/" >
   -- 
    Annotations II: Branching</option>
+    <option value="/tutorials/basic/annotations-3/" >
+  -- 
+   Annotations III: Modifying and merging</option>
     <option value="/tutorials/basic/compartments-1/" >
   -- 
    Compartments I: Creating and connecting</option>
@@ -1472,6 +1392,8 @@
     
     
     
+    
+    
         <div class="example-item-thumbnail" style="background-image: url('/tutorials/b22-1/step5.png');">
         </div>        
         <div class="example-item-content">
@@ -1524,19 +1446,6 @@
 </div>
 
     <div style="margin-bottom:2rem"></div>
-    <div class="toc">
-        <h2>Table Of Contents</h2>
-        <nav id="TableOfContents">
-            <ul>
-                <li><a href="#step-1" class="highlight" >Step 1</a></li>
-                <li><a href="#step-2" class="highlight" >Step 2</a></li>
-                <li><a href="#step-3" class="highlight" >Step 3</a></li>
-                <li><a href="#step-4" class="highlight" >Step 4</a></li>
-                <li><a href="#step-5" class="highlight" >Step 5</a></li>
-                <li><a href="#step-6" class="highlight" >Step 6</a></li>
-            </ul>
-        </nav>
-    </div>    
     <div class=tutorial-list>
           <div class="tutorial-item">
             <div class="tutorial-item-img"><img src="../../../tutorials/b22-1/step1.png" alt="Illustration of the tutorial step" /></div>
