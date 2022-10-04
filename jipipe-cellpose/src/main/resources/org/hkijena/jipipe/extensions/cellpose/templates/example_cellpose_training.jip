@@ -16,7 +16,7 @@
     },
     "categories" : [ ],
     "update-site-dependencies" : [ ],
-    "template-description" : "Example: Cellpose training",
+    "template-description" : "Showcases how to train Cellpose",
     "permissions" : {
       "prevent-adding-deleting-nodes" : false,
       "prevent-modifying-slots" : false

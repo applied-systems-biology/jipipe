@@ -16,7 +16,7 @@
     },
     "categories" : [ ],
     "update-site-dependencies" : [ ],
-    "template-description" : "Example: Cellpose segmentation",
+    "template-description" : "Showcases how to segment images with Cellpose",
     "permissions" : {
       "prevent-adding-deleting-nodes" : false,
       "prevent-modifying-slots" : false

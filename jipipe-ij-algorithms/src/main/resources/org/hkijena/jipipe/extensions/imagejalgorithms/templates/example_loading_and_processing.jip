@@ -9,7 +9,7 @@
     "license" : "",
     "citation" : "",
     "update-site-dependencies" : [ ],
-    "template-description" : "Example: Loading and processing an image",
+    "template-description" : "Shows how to load and process an image",
     "permissions" : {
       "prevent-adding-deleting-nodes" : false,
       "prevent-modifying-slots" : false
