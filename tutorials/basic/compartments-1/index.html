@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-01T19:04:25 CEST">
+<meta name="revised" content="2022-10-04T15:56:35 CEST">
 <title>Compartments I: Creating and connecting :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -120,6 +120,34 @@
       <a href="../../../installation/third-party/">Third party software</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
+      <li data-nav-id="https://www.jipipe.org/installation/third-party/cellpose/" class="dd-item">
+        <div>
+          <a href="../../../installation/third-party/cellpose/">
+            Setup Cellpose integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/installation/third-party/omnipose/" class="dd-item">
+        <div>
+          <a href="../../../installation/third-party/omnipose/">
+            Setup Omnipose integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/installation/third-party/python/" class="dd-item">
+        <div>
+          <a href="../../../installation/third-party/python/">
+            Setup Python integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/installation/third-party/r/" class="dd-item">
+        <div>
+          <a href="../../../installation/third-party/r/">
+            Setup R integration
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
         </ul>
     </li>
       <li data-nav-id="https://www.jipipe.org/installation/extensions/" class="dd-item">
@@ -417,6 +445,30 @@
       <a href="../../../tutorials/advanced/">Advanced</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
+    <li data-nav-id="https://www.jipipe.org/tutorials/advanced/imagej-macros/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/advanced/imagej-macros/">Integrating ImageJ macros</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/advanced/loops/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/advanced/loops/">Loops</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
+    <li data-nav-id="https://www.jipipe.org/tutorials/advanced/python/" class="dd-item haschildren
+        ">
+      <div>
+      <a href="../../../tutorials/advanced/python/">Python</a><i class="fa fa-circle-thin read-icon"></i>
+      </div>
+        <ul>
+        </ul>
+    </li>
         </ul>
     </li>
     <li data-nav-id="https://www.jipipe.org/tutorials/ui/" class="dd-item haschildren
@@ -1447,7 +1499,7 @@
 <p>Move the node close to the rest of the nodes, click on the ➕ button to add a new input slot (red arrow 2). The input type should be an image, so use <code>image</code> as a search word (red arrow 3). The <code>Image</code> type will now be selected (red arrow 4) and the new slot will be given a name (red arrow 5).</p>
 <p>Click <code>Add</code> when the editing is done (red arrow 6).</p>
 
-<div class="notices info" ><p>Each compartment contains a <code>xyz output</code> node that acts as interface to transfer data to other compartments. 
+<div class="notices info" ><p>Each compartment contains a <code>xyz output</code> node that acts as interface to transfer data to other compartments.
 {{ /notice }}</p></div>
 
 

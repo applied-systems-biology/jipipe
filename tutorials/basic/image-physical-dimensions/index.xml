@@ -85,7 +85,7 @@ In the Select value window (red arrow 4), chose the desired look-up table, e.g. 
       <guid>https://www.jipipe.org/tutorials/basic/image-physical-dimensions/step8/</guid>
       <description>To change the pixel size and other physical dimensions of an image, search for nodes with the keyword physical (red arrow 1). Select the Set physical dimensions node (red arrow 2).
 The Set physical dimensions allows to set the physical dimensions of the image pixels via parameters. Alternative nodes can set these values from annotations or via expressions.
-</description>
+ </description>
     </item>
     
     <item>

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-01T19:04:23 CEST">
+<meta name="revised" content="2022-10-04T15:56:34 CEST">
 <title>Usage in Java :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -1243,7 +1243,7 @@ without the need for a GUI or through ImageJ1 or ImageJ2 scripts.</p>
 <h1 id="prerequisites">Prerequisites</h1>
 <p>To use the JIPipe API JIPipe must be initialized first. This requires an ImageJ instance
 or any other way to load SciJava plugins. The following example shows how to initialize JIPipe manually from a main function.</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
   <span style="color:#75715e">// Just call this function before all others. It will create a new ImageJ instance and passes the context to JIPipe
 </span><span style="color:#75715e"></span>  <span style="color:#75715e">// If JIPipe is already initialized, the function has no effect
 </span><span style="color:#75715e"></span>  <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">ensureInstance</span><span style="color:#f92672">();</span>
@@ -1256,7 +1256,7 @@ or any other way to load SciJava plugins. The following example shows how to ini
 <p>You can load a <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeProject.html">project</a> via a static method.
 Running the project either involves enqueuing a <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeRun.html">run</a> into the <a href="../../apidocs/org/hkijena/jipipe/ui/running/JIPipeRunnerQueue.html">global queue</a> or running it on the current thread.
 The run has a multitude of <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeRunSettings.html">settings</a> that control how/if output is written or how many threads are used.</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
   <span style="color:#75715e">// First initialize JIPipe before this line!
 </span><span style="color:#75715e"></span>
   <span style="color:#75715e">// Load the project
@@ -1284,7 +1284,7 @@ The run itself contains a <a href="../../apidocs/org/hkijena/jipipe/api/nodes/JI
 of the data storage location. The storage location contains a <code>data-table.json</code> file that can be imported into an <a href="../../apidocs/org/hkijena/jipipe/api/data/JIPipeExportedDataTable.html">exported data table</a>.
 This table contains all metadata and the relative storage location of each row.</p>
 <p>Row data is always stored in folders that correspond to the row index. For example, the first row&rsquo;s data is stored in a folder <code>0</code>.</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     <span style="color:#75715e">// First initialize JIPipe before this line!
 </span><span style="color:#75715e"></span>
     <span style="color:#75715e">// Load the run
@@ -1305,7 +1305,7 @@ This table contains all metadata and the relative storage location of each row.<
 </code></pre></div><h1 id="building-and-running-a-graph">Building and running a graph</h1>
 <p>JIPipe allows to create and run <a href="../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeGraph.html">graphs</a> without involving a project.
 A simple <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeGraphRunner.html">graph runner</a> is available to execute a graph.</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     <span style="color:#75715e">// First initialize JIPipe before this line!
 </span><span style="color:#75715e"></span>
     <span style="color:#111">JIPipeGraph</span> <span style="color:#111">graph</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeGraph</span><span style="color:#f92672">();</span>
@@ -1338,7 +1338,7 @@ A simple <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeGraphRunner.html">g
   <span style="color:#f92672">}</span>
 </code></pre></div><h1 id="running-a-single-node">Running a single node</h1>
 <p>You can run single algorithm nodes without involving a project or a graph:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
   <span style="color:#75715e">// First initialize JIPipe before this line!
 </span><span style="color:#75715e"></span>
   <span style="color:#111">JIPipeSimpleIteratingAlgorithm</span> <span style="color:#111">node</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">createNode</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;import-imagej-imgplus-from-file&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeSimpleIteratingAlgorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>

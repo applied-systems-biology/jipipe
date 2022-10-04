@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-01T19:04:24 CEST">
+<meta name="revised" content="2022-10-04T15:56:34 CEST">
 <title>Visual programming :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -1248,9 +1248,9 @@
     
     
     
-    <p>If you are familiar with ImageJ, you already know how processing is applied in this software: 
-All operations are directly applied after selecting them in the graphical user interface (GUI). 
-For example, a simple analysis protocol would consist of opening the image via <code>File &gt; Open</code>, 
+    <p>If you are familiar with ImageJ, you already know how processing is applied in this software:
+All operations are directly applied after selecting them in the graphical user interface (GUI).
+For example, a simple analysis protocol would consist of opening the image via <code>File &gt; Open</code>,
 applying a Gaussian Blur filter, and then thresholding the image via Otsu&rsquo;s method.</p>
 <p><img src="../../../img/documentation/imagej-example.png" alt="Processing in ImageJ"></p>
 <p>This allows to easily develop image analysis protocols that can be manually adjusted if needed.
@@ -1259,15 +1259,15 @@ There are two main disadvantages:</p>
 <li>The exact parameters and the order of functions need to be written down separately</li>
 <li>The protocol must be executed manually, which is time-consuming if hundreds or thousands of images need to be processed (batch processing)</li>
 </ol>
-<p>ImageJ already provides a method to write down any steps applied in the GUI - the macro recorder. These macro scripts also can be 
+<p>ImageJ already provides a method to write down any steps applied in the GUI - the macro recorder. These macro scripts also can be
 executed by ImageJ to repeat the recorded steps.
-To adapt macros into an automated analysis, or change steps inside the macro (for example, to choose a different filter) requires <em>programming knowledge</em> - a skill that is 
+To adapt macros into an automated analysis, or change steps inside the macro (for example, to choose a different filter) requires <em>programming knowledge</em> - a skill that is
 hard to acquire. And programmers still need to adapt the script and introduce code to manage data, metadata, and parameters.</p>
 <p>An alternative concept to text programming languages are <em>visual programming languages</em>. These are based on the idea that data processing pipelines (such as an image analysis workflow)
-can be represented as easy-to-understand flow chart. Therefore, the need for programming can be circumvented by just letting users design the flow chart and derive 
+can be represented as easy-to-understand flow chart. Therefore, the need for programming can be circumvented by just letting users design the flow chart and derive
 all technical details from it.</p>
 <p><img src="../../../img/documentation/imagej-visual-programming.png" alt="Visual programming in ImageJ"></p>
-<p>JIPipe provides such a language for ImageJ that not only allows to write down the processing steps, but also 
+<p>JIPipe provides such a language for ImageJ that not only allows to write down the processing steps, but also
 handles data, metadata, and batch processing. For example the pipeline shown above can be adapted to JIPipe:</p>
 <p><img src="../../../img/documentation/imagej-visual-programming-jipipe.png" alt="Visual programming in JIPipe"></p>
 

@@ -44,7 +44,7 @@ Then choose the directory and click Open.</description>
       <guid>https://www.jipipe.org/tutorials/basic/exporting-data-2/step4/</guid>
       <description>Now JIPipe will give you options that determine how the file names should be generated. This is required, as JIPipe does not know anymore the name of the original input file unless it is stored in the annotations.
 The most important setting is the File name expression that defaults to
-SUMMARIZE_ANNOTATIONS_MAP(annotations, &amp;quot;#&amp;quot;)The expression is applied for each exported data item and returns the file name that should be used. The default method will take all known annotations that are marked with a # and form a filename based on the following pattern:</description>
+SUMMARIZE_ANNOTATIONS_MAP(annotations, &amp;quot;#&amp;quot;) The expression is applied for each exported data item and returns the file name that should be used. The default method will take all known annotations that are marked with a # and form a filename based on the following pattern:</description>
     </item>
     
     <item>
@@ -101,7 +101,7 @@ Now navigate to the ExampleExports/ViaNodes directory that should have appeared 
       <description>Select the Export image node and navigate to its parameters. Unlike the generic data exporter Export data, it allows you to change the output type of the generated file from TIFF to PNG or other formats.
 Again, set the Output directory to ExampleExports/ViaNodes with Output relative to project directory enabled.
 The filename expression set to
-&amp;quot;overlay_&amp;quot; + #FilenameThis would yield a file that is for example named overlay_blobs.png.</description>
+&amp;quot;overlay_&amp;quot; + #Filename This would yield a file that is for example named overlay_blobs.png.</description>
     </item>
     
     <item>
@@ -113,7 +113,7 @@ The filename expression set to
       <description>Move on to the Export table as XLSX node. While Export data will always export CSV files, this node will instead Excel files. It can even be configured to export multiple tables into one XLSX file.
 Again, set the Output directory to ExampleExports/ViaNodes with Output relative to project directory enabled.
 The filename expression set to
-&amp;quot;measurements_&amp;quot; + #FilenameThis would yield a file that is for example named measurements_blobs.xlsx.</description>
+&amp;quot;measurements_&amp;quot; + #Filename This would yield a file that is for example named measurements_blobs.xlsx.</description>
     </item>
     
     <item>
@@ -125,7 +125,7 @@ The filename expression set to
       <description>Finally, edit the parameters of Export ROI node. Export data will export a *.roi file if only one ROI is present and otherwise compress all ROIs into a *.zip file. This node can optionally turn off this export behavior and export all ROIs into an individual *.roi file.
 Again, set the Output directory to ExampleExports/ViaNodes with Output relative to project directory enabled.
 The filename expression set to
-&amp;quot;rois_&amp;quot; + #FilenameThis would yield a file that is for example named rois_blobs.</description>
+&amp;quot;rois_&amp;quot; + #Filename This would yield a file that is for example named rois_blobs.</description>
     </item>
     
     <item>

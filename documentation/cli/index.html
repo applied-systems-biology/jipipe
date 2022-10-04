@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-01T19:04:23 CEST">
+<meta name="revised" content="2022-10-04T15:56:34 CEST">
 <title>Command Line Interface :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -1246,9 +1246,9 @@
     
     <p>You can run JIPipe pipelines without a graphical interface via the command line.</p>
 <p>Just run following command:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./ImageJ --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLI run --project &lt;project file&gt; --output-folder &lt;output folder&gt;
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./ImageJ --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLI run --project &lt;project file&gt; --output-folder &lt;output folder&gt;
 </code></pre></div><h1 id="command-line-options">Command line options</h1>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./ImageJ --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLI run &lt;options&gt;
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./ImageJ --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLI run &lt;options&gt;
 </code></pre></div><ul>
 <li><code>--project &lt;Project file&gt;</code> provides the project file to be executed</li>
 <li><code>--output-folder &lt;folder&gt;</code> defines where outputs will be written. Outputs are in standard JIPipe format.</li>
@@ -1257,18 +1257,18 @@
 <li>Optional: <code>--P&lt;Node ID&gt;/&lt;Parameter ID&gt; &lt;Parameter value JSON&gt;</code> overwrites a specific parameter with the specified value</li>
 </ul>
 <h1 id="overwriting-parameters">Overwriting parameters</h1>
-<p>The JIPipe project file contains all parameters of a project. Still, it may be useful to overwrite specific parameters without 
+<p>The JIPipe project file contains all parameters of a project. Still, it may be useful to overwrite specific parameters without
 the need for editing the file. A use case for this is automated parallel execution of a pipeline within a script (e.g., using GNU Parallel).</p>
-<p>You can overwrite parameters by providing a JSON file <em>and</em> by setting CLI options. The CLI options are parsed in the 
-provided order, meaning that a <code>--P</code> override will replace values set in a previously provided <code>--overwrite-parameters</code> 
+<p>You can overwrite parameters by providing a JSON file <em>and</em> by setting CLI options. The CLI options are parsed in the
+provided order, meaning that a <code>--P</code> override will replace values set in a previously provided <code>--overwrite-parameters</code>
 and vice versa. It is also possible to provide multiple <code>--overwrite-parameters</code> if desired.</p>
 <h2 id="parameter-overwrite-file-format">Parameter overwrite file format</h2>
 <p>The <code>--overwrite-parameters</code> file must have following JSON format:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#111">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#111">{</span>
   <span style="color:#f92672">&#34;&lt;Node ID&gt;/&lt;Parameter ID&gt;&#34;</span><span style="color:#111">:</span> <span style="color:#d88200">&#34;&lt;appropriate value&gt;&#34;</span>
 <span style="color:#111">}</span>
 </code></pre></div><p>for example:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#111">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#111">{</span>
   <span style="color:#f92672">&#34;gaussian-blur/sigma-x&#34;</span><span style="color:#111">:</span> <span style="color:#ae81ff">5</span><span style="color:#111">,</span>
   <span style="color:#f92672">&#34;gaussian-blur/sigma-y&#34;</span><span style="color:#111">:</span> <span style="color:#ae81ff">1</span>
 <span style="color:#111">}</span>
@@ -1277,13 +1277,13 @@ and vice versa. It is also possible to provide multiple <code>--overwrite-parame
 If you want to be sure, then use the UUID, as it will never change, while the alias ID will be updated if the node is renamed by the user.</p>
 <p>You can find both the node UUID and alias ID inside the JIPipe GUI by selecting a node and reviewing the node description/documentation.</p>
 <h3 id="parameter-id">Parameter ID</h3>
-<p>The parameter ID can be found by selecting a node and moving the mouse over a parameter. 
+<p>The parameter ID can be found by selecting a node and moving the mouse over a parameter.
 Its ID then will be displayed in the documentation below.</p>
 <p>Alternatively, you can open the parameter explorer by right-clicking a node and selecting <code>Parameter explorer</code>.
 This tool displays the more technical info about each parameter.</p>
 <h3 id="appropriate-parameter-values">Appropriate parameter values</h3>
 <p>If you do not provide a valid JSON value for the parameter, the CLI tool will crash.
-To find out which value is appropriate, use the <code>Parameter explorer</code> (see above), which will display the 
+To find out which value is appropriate, use the <code>Parameter explorer</code> (see above), which will display the
 raw JSON values for you. The tool also allows you to &ldquo;test&rdquo; parameter values in a editor and copy its JSON representation.</p>
 
 

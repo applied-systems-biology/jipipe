@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-01T19:04:23 CEST">
+<meta name="revised" content="2022-10-04T15:56:34 CEST">
 <title>ImageJ integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -1259,13 +1259,13 @@ There are two ways JIPipe integrates back into ImageJ:</p>
 <p>You can run an JIPipe pipeline via the command <code>Plugins &gt; JIPipe &gt; Run JIPipe project</code>. It will ask you
 the project file and the output directory.</p>
 <p>To run the command via a macro, run:</p>
-<pre><code>run(&quot;Run JIPipe project&quot;, &quot;projectFile=&lt;Project&gt;, outputDirectory=&lt;Directory&gt;, threads=&lt;Threads&gt;&quot;)
+<pre tabindex="0"><code>run(&quot;Run JIPipe project&quot;, &quot;projectFile=&lt;Project&gt;, outputDirectory=&lt;Directory&gt;, threads=&lt;Threads&gt;&quot;)
 </code></pre>
 <div class="notices info" ><p>There can be issues using the macro recorder depending on which ImageJ algorithms are used.
 This issue is especially prevalent in ImageJ macro algorithm nodes.</p></div>
 
 <p>You can also run JIPipe in headless-mode just like any ImageJ2 algorithm:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./ImageJ-linux64 --headless --ij2 --run <span style="color:#d88200">&#34;Run JIPipe project&#34;</span> <span style="color:#d88200">&#39;projectFile=&#34;&lt;Project&gt;&#34;, outputDirectory=&#34;&lt;Directory&gt;&#34;, threads=&lt;Threads&gt;&#39;</span>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-bash" data-lang="bash">./ImageJ-linux64 --headless --ij2 --run <span style="color:#d88200">&#34;Run JIPipe project&#34;</span> <span style="color:#d88200">&#39;projectFile=&#34;&lt;Project&gt;&#34;, outputDirectory=&#34;&lt;Directory&gt;&#34;, threads=&lt;Threads&gt;&#39;</span>
 </code></pre></div>
 <div class="notices info" ><p>While JIPipe works in Headless-mode, some ImageJ algorithms don&rsquo;t. You will get an error message if an algorithm requires a graphical environment.</p></div>
 
@@ -1298,7 +1298,7 @@ To edit or delete a slot, click the arrow button next to the slot and select the
 <p><img src="../../img/documentation/run-single-algorithm-edit-nodes.png" alt="Single algorithm setup dialog"></p>
 <h2 id="imagej-macro-support">ImageJ macro support</h2>
 <p>To run the command via a macro, run:</p>
-<pre><code>run(&quot;Run JIPipe algorithm&quot;, &quot;nodeId=&lt;Algorithm&gt;, parameters=&lt;Parameters&gt;, inputs=&lt;Inputs&gt;, outputs=&lt;Outputs&gt;&quot;)
+<pre tabindex="0"><code>run(&quot;Run JIPipe algorithm&quot;, &quot;nodeId=&lt;Algorithm&gt;, parameters=&lt;Parameters&gt;, inputs=&lt;Inputs&gt;, outputs=&lt;Outputs&gt;&quot;)
 </code></pre><p>The algorithm ID can be looked up via the plugin manager.
 are provided as string in <a href="https://json.org/">JSON</a> format.
 The JSON data should have following structure:</p>

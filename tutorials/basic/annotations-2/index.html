@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-01T19:04:25 CEST">
+<meta name="revised" content="2022-10-04T15:56:35 CEST">
 <title>Annotations II: Branching :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -1487,9 +1487,9 @@
 <p>In the expression editor window (red arrow 2) look for a number conversion function (red arrow 3) and select the <code>TO_NUMBER</code> function (red arrow 4). Choose the <code>Variable</code> value type (red arrow 5) and paste in the name of the variable based on which the filtering will be done (here: <code>Image composite channel count</code> as seen in the previous tutorial, red arrow 6).</p>
 <p>Insert the new expression (red arrow 7)
 The editor field will now read:</p>
-<pre><code>TO_NUMBER($&quot;Image composite channel count&quot;)
+<pre tabindex="0"><code>TO_NUMBER($&quot;Image composite channel count&quot;)
 </code></pre><p>Adapt the expression further to test for <code>3</code> channels via the comparison operator (red arrow 8):</p>
-<pre><code>TO_NUMBER($&quot;Image composite channel count&quot;) == 3
+<pre tabindex="0"><code>TO_NUMBER($&quot;Image composite channel count&quot;) == 3
 </code></pre><p>Accept the changes (red arrow 9).</p>
 
             </div>

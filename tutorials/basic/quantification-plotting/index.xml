@@ -54,7 +54,7 @@ The identified regions of interest are measured (red arrow 4) and the ROIs are a
       
       <guid>https://www.jipipe.org/tutorials/basic/quantification-plotting/step5/</guid>
       <description>Similarly, the Measurement table (red arrow 1) can be opened in a new window (red arrow 2) by double-clicking. The measured parameters are the same as provided in ImageJ (red rectangle 3), and we can also observe the annotations (red rectangle 4).
-Many interfaces that can be opened by double-clicking entries in the cache browser allow to update the cache directly within the interface via the Update cache button. By this way, you can track a specific result of interest while testing different parameters.</description>
+ Many interfaces that can be opened by double-clicking entries in the cache browser allow to update the cache directly within the interface via the Update cache button. By this way, you can track a specific result of interest while testing different parameters.</description>
     </item>
     
     <item>

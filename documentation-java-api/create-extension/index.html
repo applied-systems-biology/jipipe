@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-01T19:04:23 CEST">
+<meta name="revised" content="2022-10-04T15:56:34 CEST">
 <title>Creating an extension project :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -1258,7 +1258,7 @@
 </ul>
 <h1 id="creating-the-project">Creating the project</h1>
 <p>The project should have following structure:</p>
-<pre><code>Project root
+<pre tabindex="0"><code>Project root
 └── pom.xml
 └── src
     └── main
@@ -1280,7 +1280,7 @@ you can create as many extensions as you want.</p>
 <p>Java extension inherit from <a href="../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a> and require a <a href="https://javadoc.scijava.org/SciJava/org/scijava/plugin/Plugin.html">@Plugin</a> annotation.</p>
 <p>We recommend to inherit from <a href="../../apidocs/org/hkijena/jipipe/JIPipeDefaultJavaExtension.html">JIPipeDefaultJavaExtension</a> that comes with some convenience-functions.</p>
 <p>A minimal extension can be found here:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
 <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
 
     <span style="color:#75715e">// We recommend to create a static AS_DEPENDENCY variable that contains the dependency ID, name, and version of the extension
@@ -1362,7 +1362,7 @@ you can create as many extensions as you want.</p>
 </span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
 </code></pre></div><h1 id="testing-your-extension">Testing your extension</h1>
 <p>Use following code to create an ImageJ2 instance that immediately loads JIPipe:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#00a8c8">final</span> <span style="color:#111">String</span><span style="color:#f92672">...</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#00a8c8">final</span> <span style="color:#111">String</span><span style="color:#f92672">...</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
     <span style="color:#00a8c8">final</span> <span style="color:#111">ImageJ</span> <span style="color:#111">ij</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">ImageJ</span><span style="color:#f92672">();</span>
     <span style="color:#111">ij</span><span style="color:#f92672">.</span><span style="color:#75af00">ui</span><span style="color:#f92672">().</span><span style="color:#75af00">showUI</span><span style="color:#f92672">();</span> <span style="color:#75715e">// If your ImageJ freezes, you can leave this out. JIPipe will show anyways.
 </span><span style="color:#75715e"></span>    <span style="color:#111">ij</span><span style="color:#f92672">.</span><span style="color:#75af00">command</span><span style="color:#f92672">().</span><span style="color:#75af00">run</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeGUICommand</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">);</span>

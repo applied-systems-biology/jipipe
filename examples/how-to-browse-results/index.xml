@@ -22,7 +22,7 @@
       
       <guid>https://www.jipipe.org/examples/how-to-browse-results/step2/</guid>
       <description> Select the results directory Click Open  Result directories contain a file project.jip and a log file log.txt. In our examples, the are usually folders ProjectAndCache.
-</description>
+ </description>
     </item>
     
     <item>

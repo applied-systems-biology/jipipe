@@ -22,7 +22,7 @@
       
       <guid>https://www.jipipe.org/examples/how-to-load-projects/step2/</guid>
       <description> Select a file that ends with *.jip Click Open  *.jip files are typically located either directly in the root directory of the package, or within a subdirectory ProtocolAndData.
-</description>
+ </description>
     </item>
     
     <item>

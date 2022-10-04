@@ -82,7 +82,7 @@ Do a search in the upper search bar (red arrow 2) for filters and annotations. T
       <guid>https://www.jipipe.org/tutorials/basic/annotations-1/step8/</guid>
       <description>Go to the Parameters tab and examine the filter expression in the category Filters (red arrow 1).
 The figure shows an expression (by default the expression is empty)
-TO_NUMBER($&amp;quot;Image composite channel count&amp;quot;) == 3This text is called an expression and determines the filter conditions that determine wether an input data item is pass through the output.
+TO_NUMBER($&amp;quot;Image composite channel count&amp;quot;) == 3 This text is called an expression and determines the filter conditions that determine wether an input data item is pass through the output.
 In the following steps, we will briefly explain the functionality behind the expression.</description>
     </item>
     

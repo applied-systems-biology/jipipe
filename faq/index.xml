@@ -24,7 +24,7 @@ Does JIPipe have a backup function? Yes. By default, JIPipe creates a backup eve
       
       <guid>https://www.jipipe.org/faq/issues/</guid>
       <description>JIPipe does not load. There can be multiple causes for issues:
-ErrorCauseSolutionSplash screen says &#34;Module threw error&#34;. Various ImageJ errors.A dependency might be missing. Please check if all JIPipe dependencies are installed. Please do not hesitate to contact us. Provide us a screenshot, and ideally the full set of error messages.Splash screen says &#34;</description>
+  Error Cause Solution    Splash screen says &#34;Module threw error&#34;. Various ImageJ errors.   A dependency might be missing.   Please check if all JIPipe dependencies are installed. Please do not hesitate to contact us. Provide us a screenshot, and ideally the full set of error messages.     Splash screen says &#34;</description>
     </item>
     
     <item>

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-01T19:04:24 CEST">
+<meta name="revised" content="2022-10-04T15:56:34 CEST">
 <title>Step 10 :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../../css/font-awesome.min.css" rel="stylesheet">
@@ -1320,11 +1320,11 @@
 <p>The figure now shows the default configuration of the <code>Split &amp; filter by annotations</code> node that can be opened by selecting the node (red arrow 1) and going to the <code>Parameters</code> tab.</p>
 <p>Please observe the examples that are provided in the description field (red arrow 2) and in the expression field (red arrow 3):</p>
 <blockquote>
-<p>One filter is created for each output slot of this node. The filter is an expression that should return a boolean value that indicates whether a data item should be put into the corresponding output.Annotation values are available as variables. 
+<p>One filter is created for each output slot of this node. The filter is an expression that should return a boolean value that indicates whether a data item should be put into the corresponding output.Annotation values are available as variables.
 If an annotation has spaces special characters, use $ to access its value.</p>
 <p>Examples:</p>
-<pre><code>#Dataset CONTAINS &quot;Raw&quot; AND condition EQUALS &quot;mock&quot;
-</code></pre><pre><code>TO_NUMBER($&quot;my column&quot;)  10
+<pre tabindex="0"><code>#Dataset CONTAINS &quot;Raw&quot; AND condition EQUALS &quot;mock&quot;
+</code></pre><pre tabindex="0"><code>TO_NUMBER($&quot;my column&quot;)  10
 </code></pre></blockquote>
 
 
