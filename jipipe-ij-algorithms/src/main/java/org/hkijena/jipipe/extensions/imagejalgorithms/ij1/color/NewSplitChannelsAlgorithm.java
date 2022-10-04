@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color;
 
+import ij.CompositeImage;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.measure.Calibration;
@@ -95,6 +96,9 @@ public class NewSplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ImagePlus[] split;
+        if(!imp.isComposite() && imp.getType() != ImagePlus.COLOR_RGB) {
+            imp = new CompositeImage(imp);
+        }
         if (imp.isComposite()) {
             split = ChannelSplitter.split(imp);
         }
