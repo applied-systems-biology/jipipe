@@ -368,6 +368,17 @@ The Find particles 2D node is the JIPipe equivalent of the ImageJ command Analyz
     
     <item>
       <title>Step 1</title>
+      <link>https://www.jipipe.org/tutorials/features/cellpose-1/step1/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/features/cellpose-1/step1/</guid>
+      <description>Load a 1-compartment template into JIPipe and add the data folder of the tutorial to the UI (red arrow 1).
+👉 This tutorial requires that you have installed node template Import images.
+If you do not have the template, you can download it via Manage &amp;gt; Download more templates or by importing the Templates.json file that is provided in the data package. If you do not know how to download or import node templates, please check out our tutorial.</description>
+    </item>
+    
+    <item>
+      <title>Step 1</title>
       <link>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step1/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -773,6 +784,17 @@ In addition to the name parameter (red arrow 3), the minimum and maximum values 
       
       <guid>https://www.jipipe.org/tutorials/basic/table-processing/step2/</guid>
       <description>Create a new JIPipe project (red arrow 1) using a template (red arrow 2).</description>
+    </item>
+    
+    <item>
+      <title>Step 2</title>
+      <link>https://www.jipipe.org/tutorials/features/cellpose-1/step2/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/features/cellpose-1/step2/</guid>
+      <description>Add a Cellpose (2.x) node to the UI (red arrow 1) and connect it to the Import images node (red arrow 2).
+In the Parameters tab (red arrow 3) observe the default annotation Diameter (which is the size guidance for the objects to be found; red arrow 4) and set the Average object diameter parameter to Enabled and its value to 120 (red arrow 5).
+Set the segmentation model to Cytoplasm (red arrow 6), which is one of the pre-trained models of Cellpose, and it should work well with the general circular shape of the droplets.</description>
     </item>
     
     <item>
@@ -1212,6 +1234,16 @@ If you do not have the template, you can download it via Manage &amp;gt; Downloa
     
     <item>
       <title>Step 3</title>
+      <link>https://www.jipipe.org/tutorials/features/cellpose-1/step3/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/features/cellpose-1/step3/</guid>
+      <description>Still in Parameters (red arrow 1), select the outputs of your choice.
+In this example, we will chose the segmented areas as ROIs (red arrow 2), the flows (red arrow 3), and the probability map (red arrow 4).</description>
+    </item>
+    
+    <item>
+      <title>Step 3</title>
       <link>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step3/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -1565,6 +1597,16 @@ click on the ➕ sign to add a new slot to the Split channels node (red arrow 1)
       
       <guid>https://www.jipipe.org/tutorials/basic/table-processing/step4/</guid>
       <description>The Cache browser (red arrow 1) will now show the fluorescence image (red arrow 2).</description>
+    </item>
+    
+    <item>
+      <title>Step 4</title>
+      <link>https://www.jipipe.org/tutorials/features/cellpose-1/step4/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/features/cellpose-1/step4/</guid>
+      <description>The flow and probability maps are thresholded before the segmented ROIs are generated.
+These threshold values can be set in the corresponding menu (red arrow 1), where the probability threshold (red arrow 2) and the flow threshold (red arrow 3) can be set.</description>
     </item>
     
     <item>
@@ -1924,6 +1966,16 @@ The exposed parameter of the group node are indicated here (red rectangle 3), in
     
     <item>
       <title>Step 5</title>
+      <link>https://www.jipipe.org/tutorials/features/cellpose-1/step5/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/features/cellpose-1/step5/</guid>
+      <description>Guidance for these levels can be gained from examining the probability map and identifying the typical levels at the image features of interest.
+In the Cache browser (red arrow 1) choose the Probabilities data slot (red arrow 2) and examine the outcome (red rectangle 3). Open an item of interest by double-clicking it and use the mouse pointer to observe the values.</description>
+    </item>
+    
+    <item>
+      <title>Step 5</title>
       <link>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step5/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -2242,6 +2294,15 @@ In the Cache browser (red arrow 5), observe the entry (red arrow 6) and the full
     
     <item>
       <title>Step 6</title>
+      <link>https://www.jipipe.org/tutorials/features/cellpose-1/step6/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/features/cellpose-1/step6/</guid>
+      <description>By examining the ROI output, it is evident that the results need to be filtered in order to select the round main object.</description>
+    </item>
+    
+    <item>
+      <title>Step 6</title>
       <link>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step6/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -2513,6 +2574,16 @@ The Apply expression per row node applies a custom mathematical expression for e
     
     <item>
       <title>Step 7</title>
+      <link>https://www.jipipe.org/tutorials/features/cellpose-1/step7/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/features/cellpose-1/step7/</guid>
+      <description>This task will be carried out by adding a Filter ROI by statistics node (red arrow 1), connecting it to the ROI output of the Cellpose (2.x) node (red arrow 2), and setting the roundness threshold to 0.7 (red arrow 3):
+Round &amp;gt; 0.7 </description>
+    </item>
+    
+    <item>
+      <title>Step 7</title>
       <link>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step7/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -2762,6 +2833,15 @@ open the Measurements cache results of the Basic blob finder (red arrow 1), doub
     
     <item>
       <title>Step 8</title>
+      <link>https://www.jipipe.org/tutorials/features/cellpose-1/step8/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/features/cellpose-1/step8/</guid>
+      <description>We will now shape the identified droplet ROI by converting the ROIs to a mask (red arrow 1) by applying a Morphological operation 2D (red arrow 2) to open the object (red arrow 3) with a Radius of 10 px (red arrow 4), using a Disk-shaped kernel (red arrow 5).</description>
+    </item>
+    
+    <item>
+      <title>Step 8</title>
       <link>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step8/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -2923,6 +3003,15 @@ Select the Apply expression per row node (red arrow 1), open the Parameters tab 
 In parameter Expressions set the value of Expression to Mean / Area.
 Mean and Area reference the mean and area column values of the currently processed row. Always keep in mind that the Expression is applied per row.
  In parameter Expressions set the value of Column name to Density.</description>
+    </item>
+    
+    <item>
+      <title>Step 9</title>
+      <link>https://www.jipipe.org/tutorials/features/cellpose-1/step9/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/features/cellpose-1/step9/</guid>
+      <description>The next Morphological operation 2D (red arrow 1) will implement an erosion (red arrow 2) with a 1-pixel (red arrow 3) disk kernel (red arrow 4).</description>
     </item>
     
     <item>
@@ -3154,6 +3243,17 @@ The cache entry (red arrow 3) now contains a new Density column (red arrow 4).</
     
     <item>
       <title>Step 10</title>
+      <link>https://www.jipipe.org/tutorials/features/cellpose-1/step10/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/features/cellpose-1/step10/</guid>
+      <description>The last three nodes will convert the mask back to ROIs (red arrow 1), split them in case more than one full droplet is found (red arrow 2), and show the quality of the segmentation by overlaying the ROIs with the image (red arrow 3).
+ Mask to ROI is basically the ImageJ particle finder without the measurements output and filtering settings.
+ Split multi-component ROI splits ImageJ ROI that consist of multiple components into their individual basic shapes.</description>
+    </item>
+    
+    <item>
+      <title>Step 10</title>
       <link>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step10/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -3257,6 +3357,15 @@ Name the new slot (red arrow 4) and add it to the node (red arrow 5).</descripti
 From the Tables menu (red arrow 1), add the node Integrate table columns (red arrow 2).
 Integrate table columns allows to apply pre-defined integration methods (sum, min, max, mean, first or last row, &amp;hellip;) to a customizable set of table columns. The result will be a table with one row.
 If you want to write a custom integration function, use Apply expression to columns that utilizes mathematical expressions.</description>
+    </item>
+    
+    <item>
+      <title>Step 11</title>
+      <link>https://www.jipipe.org/tutorials/features/cellpose-1/step11/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/tutorials/features/cellpose-1/step11/</guid>
+      <description>Here the Image input slot (red arrow 2) of the Convert ROI to RGB node (red arrow 1) is connected to the Image output of the Import images node (red arrow 3).</description>
     </item>
     
     <item>
