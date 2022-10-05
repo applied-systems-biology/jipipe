@@ -89,6 +89,7 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
                 SimplifyAnnotationsAlgorithm.AnnotationRemovalMode.class,
                 "Combined annotation action",
                 "Determines how combined annotations are processed.");
+        registerParameterType("annotate-split-by-annotation:filter", SplitByAnnotation.Filter.class, "Annotation filter", "A filter expression");
 
         registerNodeType("merge-slots", MergeDataSlots.class);
         registerNodeType("annotation-table-from-file", AnnotationTableFromFile.class);
