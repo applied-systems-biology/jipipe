@@ -69,7 +69,7 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
      * @param slot the slot
      * @return the annotations
      */
-    public List<JIPipeTextAnnotation> getOriginalAnnotations(JIPipeDataSlot slot) {
+    public List<JIPipeTextAnnotation> getOriginalTextAnnotations(JIPipeDataSlot slot) {
         return slot.getTextAnnotations(inputSlotRows.get(slot));
     }
 
@@ -79,8 +79,8 @@ public class JIPipeDataBatch implements Comparable<JIPipeDataBatch> {
      * @param slotName the slot
      * @return the annotations
      */
-    public List<JIPipeTextAnnotation> getOriginalAnnotations(String slotName) {
-        return getOriginalAnnotations(node.getInputSlot(slotName));
+    public List<JIPipeTextAnnotation> getOriginalTextAnnotations(String slotName) {
+        return getOriginalTextAnnotations(node.getInputSlot(slotName));
     }
 
     /**

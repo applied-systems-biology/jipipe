@@ -116,6 +116,7 @@ public class AnnotationsExtension extends JIPipePrepackagedDefaultJavaExtension 
         registerNodeType("rename-data-annotation", RenameDataAnnotation.class, UIUtils.getIconURLFromResources("actions/edit-find-replace.png"));
         registerNodeType("annotate-with-source-slot", AnnotateWithSourceSlot.class, UIUtils.getIconURLFromResources("actions/distribute-graph-directed.png"));
         registerNodeType("simplify-annotations", SimplifyAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
+        registerNodeType("overwrite-annotations", OverwriteAnnotations.class, UIUtils.getIconURLFromResources("actions/editcopy.png"));
 
         registerNodeExamplesFromResources(RESOURCES, "examples");
     }
