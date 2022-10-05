@@ -2,6 +2,8 @@ package org.hkijena.jipipe.extensions.expressions.functions.statistics;
 
 import ij.process.AutoThresholder;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 
 @JIPipeDocumentation(name = "Histogram threshold (Min Error)", description = "Calculates a threshold from a " +
         "histogram using the Min Error algorithm.")
@@ -12,6 +14,8 @@ public class HistogramThresholdMinError extends HistogramThresholdFunction {
 
     @Override
     protected int calculateThreshold(int[] histogram) {
-        return AUTO_THRESHOLDER.getThreshold(AutoThresholder.Method.MinError, histogram);
+        try (IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(new JIPipeProgressInfo())) {
+            return AUTO_THRESHOLDER.getThreshold(AutoThresholder.Method.MinError, histogram);
+        }
     }
 }
