@@ -167,7 +167,7 @@ public class ImageJAlgorithmUtils {
                 } else if (label instanceof ByteProcessor) {
                     byte[] labelBytes = (byte[]) label.getPixels();
                     for (int j = 0; j < maskBytes.length; j++) {
-                        maskBytes[j] = labelBytes[j] == id ? Byte.MAX_VALUE : 0;
+                        maskBytes[j] = Byte.toUnsignedInt(labelBytes[j]) == id ? Byte.MAX_VALUE : 0;
                     }
                 } else {
                     throw new UnsupportedOperationException("Unknown label type!");
