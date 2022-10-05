@@ -197,7 +197,7 @@ public class CellposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         List<Path> customModelPaths = new ArrayList<>();
 //        Path customSizeModelPath = null;
         if (getModel() == CellposeModel.Custom) {
-            List<CellposeModelData> models = dataBatch.getInputData("Pretrained model", CellposeModelData.class, progressInfo);
+            List<CellposeModelData> models = dataBatch.getInputData(INPUT_PRETRAINED_MODEL.getName(), CellposeModelData.class, progressInfo);
             for (int i = 0; i < models.size(); i++) {
                 CellposeModelData modelData = models.get(i);
                 Path customModelPath = workDirectory.resolve(i + "_" + modelData.getName());

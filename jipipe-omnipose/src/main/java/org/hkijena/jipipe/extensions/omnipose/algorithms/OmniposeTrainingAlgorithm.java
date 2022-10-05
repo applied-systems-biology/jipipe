@@ -61,6 +61,10 @@ import java.util.stream.Collectors;
 @JIPipeOutputSlot(value = CellposeModelData.class, slotName = "Model", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Deep learning")
 public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
+
+    public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
+
+    public static final JIPipeDataSlotInfo OUTPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Output, "Size Model", "Generated size model", null, true);
     private final CellposeGPUSettings gpuSettings;
     private final OmniposeTrainingTweaksSettings tweaksSettings;
     private final CellposeChannelSettings channelSettings;
@@ -109,28 +113,8 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     private void updateSlots() {
-        if (pretrainedModel != OmniposePretrainedModel.Custom) {
-            if (getInputSlotMap().containsKey("Pretrained model")) {
-                JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.removeInputSlot("Pretrained model", false);
-            }
-        } else {
-            if (!getInputSlotMap().containsKey("Pretrained model")) {
-                JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.addSlot("Pretrained model", new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input), false);
-            }
-        }
-        if (!trainSizeModel) {
-            if (getOutputSlotMap().containsKey("Size model")) {
-                JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.removeOutputSlot("Size model", false);
-            }
-        } else {
-            if (!getOutputSlotMap().containsKey("Size model")) {
-                JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) getSlotConfiguration();
-                slotConfiguration.addSlot("Size model", new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Output), false);
-            }
-        }
+        toggleSlot(INPUT_PRETRAINED_MODEL, pretrainedModel == OmniposePretrainedModel.Custom);
+        toggleSlot(OUTPUT_SIZE_MODEL, trainSizeModel);
     }
 
     @JIPipeDocumentation(name = "Train size model", description = "If enabled, also train a size model")
@@ -310,7 +294,7 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         // Extract model if custom
         Path customModelPath = null;
         if (pretrainedModel == OmniposePretrainedModel.Custom) {
-            Set<Integer> pretrainedModelRows = dataBatch.getInputRows("Pretrained model");
+            Set<Integer> pretrainedModelRows = dataBatch.getInputRows(INPUT_PRETRAINED_MODEL.getName());
             if (pretrainedModelRows.size() != 1) {
                 throw new UserFriendlyRuntimeException("Only one pretrained model is allowed",
                         "Only one pretrained model is allowed",
@@ -318,7 +302,7 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
                         "You can only provide one pretrained model per data batch for training.",
                         "Ensure that only one pretrained model is in a data batch.");
             }
-            CellposeModelData modelData = dataBatch.getInputData("Pretrained model", CellposeModelData.class, progressInfo).get(0);
+            CellposeModelData modelData = dataBatch.getInputData(INPUT_PRETRAINED_MODEL.getName(), CellposeModelData.class, progressInfo).get(0);
             customModelPath = workDirectory.resolve(modelData.getName());
             try {
                 Files.write(customModelPath, modelData.getData());
@@ -442,7 +426,7 @@ public class OmniposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         if (trainSizeModel) {
             Path generatedSizeModelFile = findSizeModelFile(modelsPath);
             CellposeSizeModelData sizeModelData = new CellposeSizeModelData(generatedSizeModelFile);
-            dataBatch.addOutputData("Size model", sizeModelData, progressInfo);
+            dataBatch.addOutputData(OUTPUT_SIZE_MODEL.getName(), sizeModelData, progressInfo);
         }
 
         if (cleanUpAfterwards) {
