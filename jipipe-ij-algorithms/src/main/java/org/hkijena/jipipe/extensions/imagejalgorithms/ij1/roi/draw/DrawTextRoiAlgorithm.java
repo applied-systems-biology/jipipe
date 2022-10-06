@@ -12,6 +12,7 @@ import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.FontFamilyParameter;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.FontStyleParameter;
 import org.hkijena.jipipe.extensions.parameters.library.roi.FixedMargin;
 
 import java.awt.*;
@@ -30,6 +31,8 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
     private FixedMargin location = new FixedMargin();
     private boolean center = false;
     private FontFamilyParameter fontFamily = new FontFamilyParameter();
+
+    private FontStyleParameter fontStyle = FontStyleParameter.Plain;
     private int fontSize = 12;
     private double angle = 0;
 
@@ -46,6 +49,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.roiProperties = new ROIProperties(other.roiProperties);
         this.fontFamily = new FontFamilyParameter(other.fontFamily);
         this.fontSize = other.fontSize;
+        this.fontStyle = other.fontStyle;
         this.location = new FixedMargin(other.location);
         this.center = other.center;
         this.angle = other.angle;
@@ -77,7 +81,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         String finalText = text.generate(variables);
-        Font font = fontFamily.toFont(Font.PLAIN, fontSize);
+        Font font = fontStyle.toFont(fontFamily, fontSize);
 
         // Calculate font metrics
         Canvas canvas = new Canvas();
@@ -140,6 +144,17 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("font-size")
     public void setFontSize(int fontSize) {
         this.fontSize = fontSize;
+    }
+
+    @JIPipeDocumentation(name = "Font style", description = "The style of the text")
+    @JIPipeParameter("font-style")
+    public FontStyleParameter getFontStyle() {
+        return fontStyle;
+    }
+
+    @JIPipeParameter("font-style")
+    public void setFontStyle(FontStyleParameter fontStyle) {
+        this.fontStyle = fontStyle;
     }
 
     @JIPipeDocumentation(name = "Location", description = "Determines the location of the text relative to the reference image/bounds of existing ROI")
