@@ -19,8 +19,6 @@ import java.awt.*;
 public class ScaleBarGenerator {
     private final ScaleBarConfiguration config = new ScaleBarConfiguration();
 
-    final static String SCALE_BAR = "|SB|";
-
     private final ImagePlus imp;
     private int hBarWidthInPixels;
     private int vBarHeightInPixels;
@@ -124,37 +122,37 @@ public class ScaleBarGenerator {
             if (config.showHorizontal) {
                 Roi hBackgroundRoi = new Roi(hBackground.x, hBackground.y, hBackground.width, hBackground.height);
                 hBackgroundRoi.setFillColor(backgroundColor);
-                overlay.add(hBackgroundRoi, SCALE_BAR);
+                overlay.add(hBackgroundRoi, "Scale bar background");
             }
             if (config.showVertical) {
                 Roi vBackgroundRoi = new Roi(vBackground.x, vBackground.y, vBackground.width, vBackground.height);
                 vBackgroundRoi.setFillColor(backgroundColor);
-                overlay.add(vBackgroundRoi, SCALE_BAR);
+                overlay.add(vBackgroundRoi, "Scale bar background");
             }
         }
 
         if (config.showHorizontal) {
             Roi hBarRoi = new Roi(hBar.x, hBar.y, hBar.width, hBar.height);
             hBarRoi.setFillColor(barColor);
-            overlay.add(hBarRoi, SCALE_BAR);
+            overlay.add(hBarRoi, "Scale bar");
         }
         if (config.showVertical) {
             Roi vBarRoi = new Roi(vBar.x, vBar.y, vBar.width, vBar.height);
             vBarRoi.setFillColor(barColor);
-            overlay.add(vBarRoi, SCALE_BAR);
+            overlay.add(vBarRoi, "Scale bar");
         }
 
         if (!config.hideText) {
             if (config.showHorizontal) {
                 TextRoi hTextRoi = new TextRoi(hText.x, hText.y, getHLabel(), font);
                 hTextRoi.setStrokeColor(textColor);
-                overlay.add(hTextRoi, SCALE_BAR);
+                overlay.add(hTextRoi, "Scale bar label (" + getHLabel() + ")");
             }
             if (config.showVertical) {
                 TextRoi vTextRoi = new TextRoi(vText.x, vText.y + vText.height, getVLabel(), font);
                 vTextRoi.setStrokeColor(textColor);
                 vTextRoi.setAngle(90.0);
-                overlay.add(vTextRoi, SCALE_BAR);
+                overlay.add(vTextRoi, "Scale bar label (" + getVLabel() + ")");
             }
         }
 
