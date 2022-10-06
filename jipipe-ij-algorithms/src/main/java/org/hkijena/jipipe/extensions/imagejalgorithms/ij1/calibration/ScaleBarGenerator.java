@@ -101,7 +101,7 @@ public class ScaleBarGenerator {
     }
 
     /**
-     * Create & draw the scalebar using an Overlay.
+     * Create and draw the scalebar using an Overlay.
      */
     public Overlay createScaleBarOverlay() {
         Overlay overlay = new Overlay();
