@@ -2,9 +2,6 @@ package org.hkijena.jipipe.extensions.nodetemplate.templatedownloader;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import org.hkijena.jipipe.utils.PathUtils;
-
-import java.nio.file.Path;
 
 public class NodeTemplateDownloaderPackage {
     private String name;

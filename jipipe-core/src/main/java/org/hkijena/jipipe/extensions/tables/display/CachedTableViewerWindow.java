@@ -62,7 +62,7 @@ public class CachedTableViewerWindow extends JIPipeCacheDataViewerWindow {
 
     @Override
     public JToolBar getPinToolBar() {
-        if(tableEditor == null)
+        if (tableEditor == null)
             return null;
         return tableEditor.getPinToolBar();
     }

@@ -4,11 +4,11 @@ import ij.process.ImageProcessor;
 
 import java.awt.geom.Line2D;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Vector;
 
 /**
  * Adapted from https://github.com/davidchatting/hough_lines/blob/master/HoughTransform.java
+ *
  * @author David Chatting - 4th March 2013
  */
 public class HoughLines {
@@ -91,13 +91,12 @@ public class HoughLines {
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
                 float value = image.getf(x, y);
-                if(threshold) {
-                    if(value > minThreshold) {
-                        addPoint(x,y,1);
+                if (threshold) {
+                    if (value > minThreshold) {
+                        addPoint(x, y, 1);
                     }
-                }
-                else {
-                   addPoint(x,y,value);
+                } else {
+                    addPoint(x, y, value);
                 }
             }
         }
@@ -128,7 +127,7 @@ public class HoughLines {
     }
 
     public Vector<HoughLine> getLines(int n) {
-        return(getLines(n, 0));
+        return (getLines(n, 0));
     }
 
     public float[][] getHoughArray() {
@@ -182,7 +181,7 @@ public class HoughLines {
             }
         }
         lines.sort(Collections.reverseOrder());
-        if(n >= 0 && lines.size() > n) {
+        if (n >= 0 && lines.size() > n) {
             lines.setSize(n);
         }
 
@@ -207,7 +206,7 @@ public class HoughLines {
         public HoughLine(double theta, double r, int width, int height, float score) {
             this.theta = theta;
             this.r = r;
-            this.score=score;
+            this.score = score;
 
             // During processing h_h is doubled so that -ve r values
             int houghHeight = (int) (Math.sqrt(2) * Math.max(height, width)) / 2;
@@ -221,20 +220,19 @@ public class HoughLines {
             double tcos = Math.cos(theta);
 
             if (theta < Math.PI * 0.25 || theta > Math.PI * 0.75) {
-                int x1=0, y1=0;
-                int x2=0, y2=height-1;
+                int x1 = 0, y1 = 0;
+                int x2 = 0, y2 = height - 1;
 
-                x1=(int) ((((r - houghHeight) - ((y1 - centerY) * tsin)) / tcos) + centerX);
-                x2=(int) ((((r - houghHeight) - ((y2 - centerY) * tsin)) / tcos) + centerX);
+                x1 = (int) ((((r - houghHeight) - ((y1 - centerY) * tsin)) / tcos) + centerX);
+                x2 = (int) ((((r - houghHeight) - ((y2 - centerY) * tsin)) / tcos) + centerX);
 
                 setLine(x1, y1, x2, y2);
-            }
-            else {
-                int x1=0, y1=0;
-                int x2=width-1, y2=0;
+            } else {
+                int x1 = 0, y1 = 0;
+                int x2 = width - 1, y2 = 0;
 
-                y1=(int) ((((r - houghHeight) - ((x1 - centerX) * tcos)) / tsin) + centerY);
-                y2=(int) ((((r - houghHeight) - ((x2 - centerX) * tcos)) / tsin) + centerY);
+                y1 = (int) ((((r - houghHeight) - ((x1 - centerX) * tcos)) / tsin) + centerY);
+                y2 = (int) ((((r - houghHeight) - ((x2 - centerX) * tcos)) / tsin) + centerY);
 
                 setLine(x1, y1, x2, y2);
             }
@@ -254,7 +252,7 @@ public class HoughLines {
 
 
         public int compareTo(HoughLine o) {
-            return  java.lang.Double.compare(this.score, o.score);
+            return java.lang.Double.compare(this.score, o.score);
         }
     }
 }

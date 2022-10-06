@@ -30,7 +30,7 @@ public class CachedOutputDataSlotListCellRenderer extends JLabel implements List
      */
     public CachedOutputDataSlotListCellRenderer() {
         setOpaque(true);
-        setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+        setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
     }
 
     @Override

@@ -59,11 +59,10 @@ public class EvaluateFunction extends ExpressionFunction {
 
             // Add other variables
             for (int i = 1; i < parameters.size(); i++) {
-                if(parameters.get(i) instanceof Collection)  {
+                if (parameters.get(i) instanceof Collection) {
                     List<?> items = ImmutableList.copyOf((Collection<?>) parameters.get(i));
                     localVariables.set("" + items.get(0), items.get(1));
-                }
-                else {
+                } else {
                     String parameter = (String) parameters.get(i);
                     parseVariableAssignment(variables, localVariables, parameter);
                 }

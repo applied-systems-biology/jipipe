@@ -68,13 +68,14 @@ public class ImageJUtils {
 
     /**
      * Returns the properties of a {@link Roi} as map
+     *
      * @param roi the roi
      * @return the properties
      */
     public static Map<String, String> getRoiProperties(Roi roi) {
         Properties props = new Properties();
         String properties = roi.getProperties();
-        if(!StringUtils.isNullOrEmpty(properties)) {
+        if (!StringUtils.isNullOrEmpty(properties)) {
             try {
                 InputStream is = new ByteArrayInputStream(properties.getBytes(StandardCharsets.UTF_8));
                 props.load(is);
@@ -91,7 +92,8 @@ public class ImageJUtils {
 
     /**
      * Sets the properties of a {@link Roi} from a map
-     * @param roi the roi
+     *
+     * @param roi        the roi
      * @param properties the properties
      */
     public static void setRoiProperties(Roi roi, Map<String, String> properties) {
@@ -104,8 +106,7 @@ public class ImageJUtils {
             props.store(writer, null);
             writer.flush();
             roi.setProperties(writer.toString());
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -113,17 +114,17 @@ public class ImageJUtils {
     /**
      * Returns the lowest ImageJ image type that can contain all images.
      * If any of the images is RGB, 24 bit will be returned
+     *
      * @param images the images
      * @return the consensus bit depth. 0 if images is empty
      */
     public static int getConsensusBitDepth(Collection<ImagePlus> images) {
         int type = 0;
         for (ImagePlus image : images) {
-            if(image.getBitDepth() == 24) {
+            if (image.getBitDepth() == 24) {
                 type = 24;
                 break;
-            }
-            else {
+            } else {
                 type = Math.max(type, image.getBitDepth());
             }
         }
@@ -142,7 +143,7 @@ public class ImageJUtils {
     public static ImagePlus convertToBitDepthIfNeeded(ImagePlus imagePlus, int bitDepth) {
         switch (bitDepth) {
             case 8:
-              return convertToGreyscale8UIfNeeded(imagePlus);
+                return convertToGreyscale8UIfNeeded(imagePlus);
             case 16:
                 return convertToGrayscale16UIfNeeded(imagePlus);
             case 32:
@@ -157,6 +158,7 @@ public class ImageJUtils {
 
     /**
      * Returns the general {@link ImagePlusData} class for a bit depth
+     *
      * @param bitDepth the bit depth
      * @return the class. if bit depth is invalid, {@link ImagePlusData} is returned
      */
@@ -751,7 +753,7 @@ public class ImageJUtils {
      * @param background color for zero pixels
      */
     public static void maskToBufferedImage(ImageProcessor mask, BufferedImage target, Color foreground, Color background) {
-        if(mask.getWidth() != target.getWidth() || mask.getHeight() != target.getHeight()) {
+        if (mask.getWidth() != target.getWidth() || mask.getHeight() != target.getHeight()) {
             mask = mask.resize(target.getWidth(), target.getHeight(), false);
         }
         byte[] sourcePixels = (byte[]) mask.getPixels();
@@ -1904,7 +1906,7 @@ public class ImageJUtils {
      * @return the output image
      */
     public static ImagePlus renderToRGBWithLUTIfNeeded(ImagePlus inputImage, JIPipeProgressInfo progressInfo) {
-        if(inputImage.getType() == ImagePlus.COLOR_RGB)
+        if (inputImage.getType() == ImagePlus.COLOR_RGB)
             return inputImage;
         ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
         forEachIndexedZCTSlice(inputImage, (ip, slice) -> {

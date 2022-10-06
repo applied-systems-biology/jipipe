@@ -15,8 +15,6 @@ package org.hkijena.jipipe.ui.components;
 
 import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.api.enums.EnumItemInfo;
-import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterEditorUI;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.utils.UIUtils;
 

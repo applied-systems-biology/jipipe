@@ -45,8 +45,8 @@ import java.awt.image.BufferedImage;
 import java.awt.image.BufferedImageOp;
 import java.lang.annotation.Annotation;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -58,23 +58,20 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     private final JPanel colorSelectionPanel = new JPanel();
     private final Map<MaskColor, JToggleButton> colorSelectionButtons = new HashMap<>();
     private final JCheckBox showGuidesToggle = new JCheckBox("Show guide lines", true);
+    private final MouseMaskDrawerTool mouseTool = new MouseMaskDrawerTool(this);
+    private final Ribbon ribbon = new Ribbon(3);
+    private final List<MaskDrawerTool> registeredTools = new ArrayList<>();
+    private final FormPanel toolSettingsPanel = new FormPanel(FormPanel.NONE);
     private ImagePlus mask;
     private ImageProcessor currentMaskSlice;
     private BufferedImage currentMaskSlicePreview;
     private MaskColor currentColor = MaskColor.Foreground;
-    private final MouseMaskDrawerTool mouseTool = new MouseMaskDrawerTool(this);
     private MaskDrawerTool currentTool;
     private ColorChooserButton highlightColorButton;
     private ColorChooserButton maskColorButton;
     private Color highlightColor = new Color(255, 255, 0, 128);
     private Color maskColor = new Color(255, 0, 0, 128);
     private Function<ImagePlus, ImagePlus> maskGenerator;
-
-    private final Ribbon ribbon = new Ribbon(3);
-
-    private final List<MaskDrawerTool> registeredTools = new ArrayList<>();
-
-    private final FormPanel toolSettingsPanel = new FormPanel(FormPanel.NONE);
     private SmallButtonAction exportToRoiManagerAction;
 
     public MaskDrawerPlugin(ImageViewerPanel viewerPanel) {
@@ -99,20 +96,19 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     public void installTool(MaskDrawerTool tool) {
         Ribbon.Task task = ribbon.getOrCreateTask("Draw");
         Ribbon.Band band = task.getOrCreateBand("Tools");
-        if(tool instanceof MouseMaskDrawerTool) {
+        if (tool instanceof MouseMaskDrawerTool) {
             LargeToggleButtonAction action = new LargeToggleButtonAction(tool.getName(), tool.getDescription(), tool.getIcon());
             action.addActionListener(e -> {
-                if(action.getState()) {
+                if (action.getState()) {
                     getViewerPanel().getCanvas().setTool(tool);
                 }
             });
             tool.addToggleButton(action.getButton(), getViewerPanel().getCanvas());
             band.add(action);
-        }
-        else {
+        } else {
             SmallToggleButtonAction action = new SmallToggleButtonAction(tool.getName(), tool.getDescription(), tool.getIcon());
             action.addActionListener(e -> {
-                if(action.getState()) {
+                if (action.getState()) {
                     getViewerPanel().getCanvas().setTool(tool);
                 }
             });
@@ -186,20 +182,20 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
         Ribbon.Band viewColorsBand = viewTask.addBand("Colors");
         Ribbon.Band viewTweaksBand = viewTask.addBand("Tweaks");
 
-        maskColorButton.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
-        highlightColorButton.setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
-        viewColorsBand.add(new Ribbon.Action(Arrays.asList(new JLabel("Mask color"), maskColorButton), 1, new Insets(2,2,2,2)));
-        viewColorsBand.add(new Ribbon.Action(Arrays.asList(new JLabel("Highlight color"), highlightColorButton), 1, new Insets(2,2,2,2)));
+        maskColorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        highlightColorButton.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        viewColorsBand.add(new Ribbon.Action(Arrays.asList(new JLabel("Mask color"), maskColorButton), 1, new Insets(2, 2, 2, 2)));
+        viewColorsBand.add(new Ribbon.Action(Arrays.asList(new JLabel("Highlight color"), highlightColorButton), 1, new Insets(2, 2, 2, 2)));
 
-        viewTweaksBand.add(new Ribbon.Action(showGuidesToggle, 1, new Insets(2,2,2,2)));
+        viewTweaksBand.add(new Ribbon.Action(showGuidesToggle, 1, new Insets(2, 2, 2, 2)));
 
         // Modify menu
         Ribbon.Task modifyTask = ribbon.addTask("Modify");
         Ribbon.Band modifyMaskBand = modifyTask.addBand("Mask");
-        modifyMaskBand.add(new LargeButtonAction("Process ...", "Apply a morphological operation",  UIUtils.getIcon32FromResources("actions/configure.png"),
-                UIUtils.createMenuItem("Invert", "Inverts the mask",  UIUtils.getIconFromResources("actions/object-inverse.png"), this::applyInvert),
+        modifyMaskBand.add(new LargeButtonAction("Process ...", "Apply a morphological operation", UIUtils.getIcon32FromResources("actions/configure.png"),
+                UIUtils.createMenuItem("Invert", "Inverts the mask", UIUtils.getIconFromResources("actions/object-inverse.png"), this::applyInvert),
                 null,
-                UIUtils.createMenuItem("Watershed", "Applies a distance transform watershed",  UIUtils.getIconFromResources("actions/object-tweak-randomize.png"), this::applyWatershed),
+                UIUtils.createMenuItem("Watershed", "Applies a distance transform watershed", UIUtils.getIconFromResources("actions/object-tweak-randomize.png"), this::applyWatershed),
                 null,
                 UIUtils.createMenuItem("Dilation", "Applies a 3x3 morphological dilation", UIUtils.getIconFromResources("actions/object-tweak-paint.png"), this::applyDilate),
                 UIUtils.createMenuItem("Erosion", "Applies a 3x3 morphological erosion", UIUtils.getIconFromResources("actions/object-tweak-paint.png"), this::applyErode),
@@ -368,9 +364,9 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
     private <T> void addSelectionButton(T value, JPanel target, Map<T, JToggleButton> targetMap, ButtonGroup targetGroup, String text, String toolTip, Icon icon, Supplier<T> getter, Consumer<T> setter) {
         JToggleButton button = new JToggleButton(text, icon, Objects.equals(getter.get(), value));
-        button.setMinimumSize(new Dimension(72,48));
-        button.setPreferredSize(new Dimension(72,48));
-        button.setMaximumSize(new Dimension(72,48));
+        button.setMinimumSize(new Dimension(72, 48));
+        button.setPreferredSize(new Dimension(72, 48));
+        button.setMaximumSize(new Dimension(72, 48));
         button.setToolTipText(toolTip);
         button.addActionListener(e -> {
             if (button.isSelected()) {
@@ -702,12 +698,12 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
 
     private void rebuildToolSettings() {
         toolSettingsPanel.clear();
-        if(currentTool != null) {
+        if (currentTool != null) {
             toolSettingsPanel.addToForm(colorSelectionPanel, new JLabel("Current color"));
             toolSettingsPanel.addWideToForm(new JSeparator(SwingConstants.HORIZONTAL));
             int count = toolSettingsPanel.getComponentCount();
             currentTool.createPalettePanel(toolSettingsPanel);
-            if(toolSettingsPanel.getComponentCount() == count) {
+            if (toolSettingsPanel.getComponentCount() == count) {
                 toolSettingsPanel.removeLastRow();
             }
         }
@@ -719,15 +715,13 @@ public class MaskDrawerPlugin extends ImageViewerPanelPlugin {
     public void onToolChanged(ImageViewerPanelCanvas.ToolChangedEvent event) {
         ImageViewerPanelCanvasTool newTool = event.getNewTool();
         MaskDrawerTool localTool;
-        if(newTool instanceof MaskDrawerTool) {
-            if(registeredTools.contains(newTool)) {
+        if (newTool instanceof MaskDrawerTool) {
+            if (registeredTools.contains(newTool)) {
                 localTool = (MaskDrawerTool) newTool;
-            }
-            else {
+            } else {
                 localTool = mouseTool;
             }
-        }
-        else {
+        } else {
             localTool = mouseTool;
         }
         this.currentTool = localTool;

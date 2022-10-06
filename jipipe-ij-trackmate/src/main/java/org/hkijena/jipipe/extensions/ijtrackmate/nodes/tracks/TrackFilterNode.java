@@ -27,9 +27,8 @@ import java.util.Map;
 @JIPipeOutputSlot(value = TrackCollectionData.class, slotName = "Output", autoCreate = true)
 public class TrackFilterNode extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter filter = new DefaultExpressionParameter("track_displacement > 10");
-
     private final CustomExpressionVariablesParameter customVariables;
+    private DefaultExpressionParameter filter = new DefaultExpressionParameter("track_displacement > 10");
 
     public TrackFilterNode(JIPipeNodeInfo info) {
         super(info);

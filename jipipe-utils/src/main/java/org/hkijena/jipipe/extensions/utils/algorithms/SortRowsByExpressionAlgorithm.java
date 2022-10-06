@@ -24,7 +24,9 @@ import org.hkijena.jipipe.extensions.parameters.library.util.SortOrder;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @JIPipeDocumentation(name = "Sort data rows (Expression)", description = "Sorts the data rows by one or multiple values that are extracted via expressions.")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
@@ -32,8 +34,8 @@ import java.util.*;
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Sort")
 public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm {
 
-    private ParameterCollectionList entries = ParameterCollectionList.containingCollection(SortEntry.class);
     private final CustomExpressionVariablesParameter customExpressionVariables;
+    private ParameterCollectionList entries = ParameterCollectionList.containingCollection(SortEntry.class);
 
     public SortRowsByExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -69,22 +71,20 @@ public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm 
 
         // Comparator between two row indices
         Comparator<Integer> comparator = null;
-        if(!entries.isEmpty()) {
+        if (!entries.isEmpty()) {
             SortEntry entry = sortEntries.get(0);
-            if(entry.getSortOrder() == SortOrder.Ascending) {
+            if (entry.getSortOrder() == SortOrder.Ascending) {
                 comparator = Comparator.comparing((Integer row) -> generatedValues.get(row).get(0), NaturalOrderComparator.INSTANCE);
-            }
-            else {
+            } else {
                 comparator = Comparator.comparing((Integer row) -> generatedValues.get(row).get(0), NaturalOrderComparator.INSTANCE.reversed());
             }
         }
         for (int entryIndex = 1; entryIndex < sortEntries.size(); entryIndex++) {
             SortEntry entry = sortEntries.get(entryIndex);
-            if(entry.getSortOrder() == SortOrder.Ascending) {
+            if (entry.getSortOrder() == SortOrder.Ascending) {
                 int finalEntryIndex = entryIndex;
                 comparator = comparator.thenComparing((Integer row) -> generatedValues.get(row).get(finalEntryIndex), NaturalOrderComparator.INSTANCE);
-            }
-            else {
+            } else {
                 int finalEntryIndex = entryIndex;
                 comparator = comparator.thenComparing((Integer row) -> generatedValues.get(row).get(finalEntryIndex), NaturalOrderComparator.INSTANCE.reversed());
             }

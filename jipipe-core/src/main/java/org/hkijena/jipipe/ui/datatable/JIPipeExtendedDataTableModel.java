@@ -166,7 +166,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
         } else if (columnIndex == 1) {
             try {
                 return JIPipeDataInfo.getInstance(dataTable.getDataClass(rowIndex));
-            }catch (IndexOutOfBoundsException e) {
+            } catch (IndexOutOfBoundsException e) {
                 return null;
             }
         } else if (columnIndex == 2) {
@@ -185,8 +185,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
         } else if (columnIndex == 3)
             try {
                 return "" + dataTable.getVirtualData(rowIndex).getStringRepresentation();
-            }
-            catch (IndexOutOfBoundsException e) {
+            } catch (IndexOutOfBoundsException e) {
                 return "<Invalid>";
             }
         else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
@@ -207,8 +206,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
         } else {
             try {
                 return dataTable.getTextAnnotation(rowIndex, toAnnotationColumnIndex(columnIndex));
-            }
-            catch (IndexOutOfBoundsException e) {
+            } catch (IndexOutOfBoundsException e) {
                 return null;
             }
         }

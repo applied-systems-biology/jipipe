@@ -13,9 +13,7 @@
 
 package org.hkijena.jipipe.extensions.nodeexamples;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeMenuLocation;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -23,7 +21,6 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.List;
 
 /**
  * Renderer for {@link JIPipeNodeExample}

@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
  * Annotate a method with this annotation to make it accessible to the UI.
  * Use {@link org.hkijena.jipipe.api.JIPipeDocumentation} to add additional information.
  * The method should take a {@link org.hkijena.jipipe.ui.JIPipeWorkbench} instance as parameter
- *
+ * <p>
  * JIPipe 1.74.0: Info - If you intend to create examples for your nodes, create a node template, export it into the plugin resources, and register the resource folder as example directory. We do not recommend anymore to utilize context actions as way to distribute examples.
  */
 @Target(ElementType.METHOD)

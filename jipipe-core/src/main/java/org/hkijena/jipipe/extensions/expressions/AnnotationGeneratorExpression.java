@@ -57,7 +57,7 @@ public class AnnotationGeneratorExpression extends DefaultExpressionParameter {
      *
      * @param annotations existing annotations for the data
      * @param dataString  the data as string
-     * @param variables existing variables
+     * @param variables   existing variables
      * @return the test results.
      */
     public boolean test(Collection<JIPipeTextAnnotation> annotations, String dataString, ExpressionVariables variables) {

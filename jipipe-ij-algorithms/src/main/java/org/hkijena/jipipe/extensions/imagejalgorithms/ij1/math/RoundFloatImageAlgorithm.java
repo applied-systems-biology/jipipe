@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math;
 
 import ij.ImagePlus;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.math3.util.Precision;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -36,10 +35,9 @@ public class RoundFloatImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             float[] pixels = (float[]) ip.getPixels();
             for (int i = 0; i < pixels.length; i++) {
                 float v = pixels[i];
-                if(decimals >= 0) {
+                if (decimals >= 0) {
                     v = Precision.round(v, decimals);
-                }
-                else {
+                } else {
                     v = Math.round(v / -decimals) * -decimals;
                 }
                 pixels[i] = v;
@@ -48,7 +46,7 @@ public class RoundFloatImageAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscale32FData(img), progressInfo);
     }
 
-    @JIPipeDocumentation(name = "Number of decimals",description = "The number of decimals. Set to zero to round to integer numbers. Negative numbers will round to the closest integer.")
+    @JIPipeDocumentation(name = "Number of decimals", description = "The number of decimals. Set to zero to round to integer numbers. Negative numbers will round to the closest integer.")
     @JIPipeParameter("decimals")
     public int getDecimals() {
         return decimals;

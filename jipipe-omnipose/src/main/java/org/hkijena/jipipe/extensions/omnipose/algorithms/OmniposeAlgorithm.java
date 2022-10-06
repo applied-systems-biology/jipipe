@@ -28,8 +28,6 @@ import org.hkijena.jipipe.extensions.cellpose.parameters.CellposeSegmentationOut
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorRGBData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
@@ -41,11 +39,9 @@ import org.hkijena.jipipe.extensions.omnipose.parameters.OmniposeSegmentationThr
 import org.hkijena.jipipe.extensions.omnipose.parameters.OmniposeSegmentationTweaksSettings;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
@@ -77,7 +73,7 @@ import java.util.*;
 public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     public static final JIPipeDataSlotInfo INPUT_PRETRAINED_MODEL = new JIPipeDataSlotInfo(CellposeModelData.class, JIPipeSlotType.Input, "Pretrained Model", "A custom pretrained model");
-//    public static final JIPipeDataSlotInfo INPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Input, "Size Model", "A custom size model", null, true);
+    //    public static final JIPipeDataSlotInfo INPUT_SIZE_MODEL = new JIPipeDataSlotInfo(CellposeSizeModelData.class, JIPipeSlotType.Input, "Size Model", "A custom size model", null, true);
     public static final JIPipeDataSlotInfo OUTPUT_LABELS = new JIPipeDataSlotInfo(ImagePlusGreyscaleData.class, JIPipeSlotType.Output, "Labels", "A grayscale image where each connected component is assigned a unique value");
     public static final JIPipeDataSlotInfo OUTPUT_FLOWS_XY = new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Output, "Flows XY", "An RGB image that indicates the x and y flow of each pixel");
     public static final JIPipeDataSlotInfo OUTPUT_FLOWS_Z = new JIPipeDataSlotInfo(ImagePlusData.class, JIPipeSlotType.Output, "Flows Z", "Flows in Z direction (black for non-3D images)");
@@ -225,23 +221,21 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         saveInputImages(dataBatch, progressInfo.resolve("Export input images"), io2DPath, io3DPath, runWith2D, runWith3D);
 
         // Run Cellpose
-        if(!runWith2D.isEmpty()) {
-            if(!customModelPaths.isEmpty()) {
+        if (!runWith2D.isEmpty()) {
+            if (!customModelPaths.isEmpty()) {
                 for (Path customModelPath : customModelPaths) {
                     runCellpose(progressInfo.resolve("Omnipose"), io2DPath, false, customModelPath);
                 }
-            }
-            else {
+            } else {
                 runCellpose(progressInfo.resolve("Omnipose"), io2DPath, false, null);
             }
         }
-        if(!runWith3D.isEmpty()) {
-            if(!customModelPaths.isEmpty()) {
+        if (!runWith3D.isEmpty()) {
+            if (!customModelPaths.isEmpty()) {
                 for (Path customModelPath : customModelPaths) {
                     runCellpose(progressInfo.resolve("Omnipose"), io3DPath, true, customModelPath);
                 }
-            }
-            else {
+            } else {
                 runCellpose(progressInfo.resolve("Omnipose"), io3DPath, true, null);
             }
         }
@@ -250,11 +244,11 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         progressInfo.log("Deploying script to extract Omnipose *.npy results ...");
         Path npyExtractorScript = workDirectory.resolve("extract-cellpose-npy.py");
         CellposeExtension.RESOURCES.exportResourceToFile("extract-cellpose-npy.py", npyExtractorScript);
-        if(!runWith2D.isEmpty()) {
+        if (!runWith2D.isEmpty()) {
             PythonUtils.runPython(new String[]{npyExtractorScript.toString(), io2DPath.toString(), io2DPath.toString()}, overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
                     OmniposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), progressInfo.resolve("Extract Omnipose results (2D)"));
         }
-        if(!runWith3D.isEmpty()) {
+        if (!runWith3D.isEmpty()) {
             PythonUtils.runPython(new String[]{npyExtractorScript.toString(), io3DPath.toString(), io3DPath.toString()}, overrideEnvironment.isEnabled() ? overrideEnvironment.getContent() :
                     OmniposeSettings.getInstance().getPythonEnvironment(), Collections.emptyList(), Collections.emptyMap(), progressInfo.resolve("Extract Omnipose results (3D)"));
         }
@@ -275,7 +269,7 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
     private void extractDataFromInfo(JIPipeMergingDataBatch dataBatch, CellposeImageInfo imageInfo, Path ioPath, JIPipeProgressInfo progressInfo) {
         List<JIPipeTextAnnotation> annotationList = new ArrayList<>(getInputSlot("Input").getTextAnnotations(imageInfo.sourceRow));
-        if(diameterAnnotation.isEnabled()) {
+        if (diameterAnnotation.isEnabled()) {
             progressInfo.log("Reading info ...");
             List<JIPipeTextAnnotation> diameterAnnotations = new ArrayList<>();
             for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.sliceBaseNames.entrySet()) {
@@ -284,41 +278,41 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
             }
             annotationList.addAll(JIPipeTextAnnotationMergeMode.Merge.merge(diameterAnnotations));
         }
-        if(segmentationOutputSettings.isOutputROI()) {
+        if (segmentationOutputSettings.isOutputROI()) {
             progressInfo.log("Reading ROI ...");
             ROIListData rois = new ROIListData();
             for (Map.Entry<ImageSliceIndex, String> entry : imageInfo.sliceBaseNames.entrySet()) {
                 ROIListData sliceRoi = CellposeUtils.cellposeROIJsonToImageJ(ioPath.resolve(entry.getValue() + "_seg_roi.json"));
-                if(imageInfo.sliceBaseNames.size() > 1) {
+                if (imageInfo.sliceBaseNames.size() > 1) {
                     for (Roi roi : sliceRoi) {
-                        roi.setPosition(0, entry.getKey().getZ() + 1,  0);
+                        roi.setPosition(0, entry.getKey().getZ() + 1, 0);
                     }
                 }
                 rois.addAll(sliceRoi);
             }
             dataBatch.addOutputData("ROI", rois, annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
-        if(segmentationOutputSettings.isOutputFlowsD()) {
+        if (segmentationOutputSettings.isOutputFlowsD()) {
             progressInfo.log("Reading Flows d ...");
             ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_flows_dz_dy_dx.tif", true, progressInfo);
             dataBatch.addOutputData(OUTPUT_FLOWS_D.getName(), new ImagePlusData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
-        if(segmentationOutputSettings.isOutputFlowsXY()) {
+        if (segmentationOutputSettings.isOutputFlowsXY()) {
             progressInfo.log("Reading Flows XY ...");
             ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_flows_rgb.tif", false, progressInfo);
             dataBatch.addOutputData(OUTPUT_FLOWS_XY.getName(), new ImagePlusData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
-        if(segmentationOutputSettings.isOutputFlowsZ()) {
+        if (segmentationOutputSettings.isOutputFlowsZ()) {
             progressInfo.log("Reading Flows Z ...");
             ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_flows_z.tif", false, progressInfo);
             dataBatch.addOutputData(OUTPUT_FLOWS_Z.getName(), new ImagePlusData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
-        if(segmentationOutputSettings.isOutputLabels()) {
+        if (segmentationOutputSettings.isOutputLabels()) {
             progressInfo.log("Reading labels ...");
             ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_labels.tif", false, progressInfo);
             dataBatch.addOutputData(OUTPUT_LABELS.getName(), new ImagePlusGreyscaleData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
         }
-        if(segmentationOutputSettings.isOutputProbabilities()) {
+        if (segmentationOutputSettings.isOutputProbabilities()) {
             progressInfo.log("Reading probabilities ...");
             ImagePlus img = extractImageFromInfo(imageInfo, ioPath, "_seg_probabilities.tif", false, progressInfo);
             dataBatch.addOutputData(OUTPUT_PROBABILITIES.getName(), new ImagePlusGreyscale32FData(img), annotationList, JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
@@ -331,19 +325,17 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
             Path imageFile = ioPath.resolve(entry.getValue() + basePathSuffix);
             progressInfo.log("Reading: " + imageFile);
             ImagePlus slice;
-            if(useBioFormats) {
+            if (useBioFormats) {
                 OMEImageData omeImageData = OMEImageData.simpleOMEImport(imageFile);
                 slice = omeImageData.getImage();
-            }
-            else {
+            } else {
                 slice = IJ.openImage(imageFile.toString());
             }
             sliceMap.put(entry.getKey(), slice);
         }
-        if(sliceMap.size() == 1) {
+        if (sliceMap.size() == 1) {
             return sliceMap.values().iterator().next();
-        }
-        else {
+        } else {
             int width = 0;
             int height = 0;
             int sizeZ = 0;
@@ -357,7 +349,7 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
                 sizeT = Math.max(entry.getKey().getT() + 1, sizeT);
             }
             ImageStack stack = new ImageStack(width, height, sizeZ * sizeT * sizeC);
-            for (Map.Entry<ImageSliceIndex, ImagePlus> entry :sliceMap.entrySet()) {
+            for (Map.Entry<ImageSliceIndex, ImagePlus> entry : sliceMap.entrySet()) {
                 // Map all slices to channels
                 for (int i = 0; i < entry.getValue().getStackSize(); i++) {
                     ImageProcessor processor = entry.getValue().getStack().getProcessor(i + 1);
@@ -388,82 +380,79 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
         arguments.add("--testing");
 
         // Inputs
-        if(diameter.isEnabled()) {
+        if (diameter.isEnabled()) {
             arguments.add("--diameter");
             arguments.add(diameter.getContent() + "");
-        }
-        else {
+        } else {
             arguments.add("--diameter");
             arguments.add("0");
         }
-        if(with3D) {
+        if (with3D) {
             arguments.add("--do_3D");
         }
 
         // GPU
         if (gpuSettings.isEnableGPU()) {
             arguments.add("--use_gpu");
-            if(gpuSettings.getGpuDevice().isEnabled()) {
+            if (gpuSettings.getGpuDevice().isEnabled()) {
                 envVars.put("CUDA_VISIBLE_DEVICES", gpuSettings.getGpuDevice().getContent().toString());
             }
         }
 
         // Channels
-        if(channelSettings.getSegmentedChannel().isEnabled()) {
+        if (channelSettings.getSegmentedChannel().isEnabled()) {
             arguments.add("--chan");
             arguments.add(channelSettings.getSegmentedChannel().getContent() + "");
-        }
-        else {
+        } else {
             arguments.add("--chan");
             arguments.add("0");
         }
-        if(channelSettings.getNuclearChannel().isEnabled()) {
+        if (channelSettings.getNuclearChannel().isEnabled()) {
             arguments.add("--chan2");
             arguments.add(channelSettings.getNuclearChannel().getContent() + "");
         }
-        if(channelSettings.isAllChannels()) {
+        if (channelSettings.isAllChannels()) {
             arguments.add("--all_channels");
         }
-        if(channelSettings.isInvert()) {
+        if (channelSettings.isInvert()) {
             arguments.add("--invert");
         }
 
         // Model
-        if(getModel() == OmniposeModel.Custom) {
+        if (getModel() == OmniposeModel.Custom) {
             arguments.add("--pretrained_model");
             arguments.add(customModelPath.toString());
-        }
-        else {
+        } else {
             arguments.add("--pretrained_model");
             arguments.add(getModel().getId());
         }
 
         // Tweaks
-        if(segmentationTweaksSettings.isCluster()) {
+        if (segmentationTweaksSettings.isCluster()) {
             arguments.add("--cluster");
         }
-        if(segmentationTweaksSettings.isFastMode()) {
+        if (segmentationTweaksSettings.isFastMode()) {
             arguments.add("--fast_mode");
         }
-        if(!segmentationTweaksSettings.isNetAverage()) {
+        if (!segmentationTweaksSettings.isNetAverage()) {
             arguments.add("--no_net_avg");
         }
-        if(!segmentationTweaksSettings.isInterpolate()) {
+        if (!segmentationTweaksSettings.isInterpolate()) {
             arguments.add("--no_interp");
         }
-        if(segmentationTweaksSettings.getAnisotropy().isEnabled()) {
+        if (segmentationTweaksSettings.getAnisotropy().isEnabled()) {
             arguments.add("--anisotropy");
             arguments.add(segmentationTweaksSettings.getAnisotropy().getContent() + "");
         }
-        if(segmentationTweaksSettings.isDisableResample()) {
+        if (segmentationTweaksSettings.isDisableResample()) {
             arguments.add("--no_resample");
         }
 
         // Segmentation
-        if(segmentationThresholdSettings.isExcludeOnEdges()) {
+        if (segmentationThresholdSettings.isExcludeOnEdges()) {
             arguments.add("--exclude_on_edges");
         }
-        if(segmentationThresholdSettings.getStitchThreshold().isEnabled()) {
+        if (segmentationThresholdSettings.getStitchThreshold().isEnabled()) {
             arguments.add("--stitch_threshold");
             arguments.add("" + segmentationThresholdSettings.getStitchThreshold().getContent());
         }
@@ -494,14 +483,14 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
             JIPipeProgressInfo rowProgress = progressInfo.resolve("Data row " + row);
 
             ImagePlus img = getInputSlot("Input").getData(row, ImagePlusData.class, rowProgress).getImage();
-            if(img.getNFrames() > 1) {
+            if (img.getNFrames() > 1) {
                 throw new UserFriendlyRuntimeException("Omnipose does not support time series!",
                         "Omnipose does not support time series!",
                         getDisplayName(),
                         "Please ensure that the image dimensions are correctly assigned.",
                         "Remove the frames or reorder the dimensions before applying Cellpose");
             }
-            if(img.getNSlices() == 1) {
+            if (img.getNSlices() == 1) {
                 // Output the image as-is
                 String baseName = row + "_";
                 Path outputPath = io2DPath.resolve(baseName + ".tif");
@@ -509,13 +498,12 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
                 // Create info
                 CellposeImageInfo info = new CellposeImageInfo(row);
-                info.sliceBaseNames.put(new ImageSliceIndex(-1,-1,-1), baseName);
+                info.sliceBaseNames.put(new ImageSliceIndex(-1, -1, -1), baseName);
                 runWith2D.add(info);
-            }
-            else {
-                if(enable3DSegmentation) {
+            } else {
+                if (enable3DSegmentation) {
                     // Cannot have channels AND RGB
-                    if(img.getNChannels() > 1 && img.getType() == ImagePlus.COLOR_RGB) {
+                    if (img.getNChannels() > 1 && img.getType() == ImagePlus.COLOR_RGB) {
                         throw new UserFriendlyRuntimeException("Omnipose does not support 3D multichannel images with RGB!",
                                 "Omnipose does not support 3D multichannel images with RGB!",
                                 getDisplayName(),
@@ -530,10 +518,9 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
 
                     // Create info
                     CellposeImageInfo info = new CellposeImageInfo(row);
-                    info.sliceBaseNames.put(new ImageSliceIndex(-1,-1,-1), baseName);
+                    info.sliceBaseNames.put(new ImageSliceIndex(-1, -1, -1), baseName);
                     runWith3D.add(info);
-                }
-                else {
+                } else {
                     rowProgress.log("3D mode not active, but 3D image detected -> Image will be split into 2D slices.");
 
                     CellposeImageInfo info = new CellposeImageInfo(row);
@@ -604,19 +591,19 @@ public class OmniposeAlgorithm extends JIPipeSingleIterationAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Omnipose: Thresholds", description = "Parameters that control which objects are selected.")
-    @JIPipeParameter(value = "threshold-parameters",  resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png", collapsed = true)
+    @JIPipeParameter(value = "threshold-parameters", resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png", collapsed = true)
     public OmniposeSegmentationThresholdSettings getThresholdParameters() {
         return segmentationThresholdSettings;
     }
 
     @JIPipeDocumentation(name = "Omnipose: Outputs", description = "The following settings allow you to select which outputs are generated.")
-    @JIPipeParameter(value = "output-parameters", collapsed = true,  resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
+    @JIPipeParameter(value = "output-parameters", collapsed = true, resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
     public CellposeSegmentationOutputSettings getSegmentationOutputSettings() {
         return segmentationOutputSettings;
     }
 
     @JIPipeDocumentation(name = "Omnipose: GPU", description = "Controls how the graphics card is utilized.")
-    @JIPipeParameter(value = "gpu-parameters", collapsed = true,  resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
+    @JIPipeParameter(value = "gpu-parameters", collapsed = true, resourceClass = OmniposeExtension.class, iconURL = "/org/hkijena/jipipe/extensions/omnipose/icons/omnipose.png")
     public CellposeGPUSettings getGpuSettings() {
         return gpuSettings;
     }

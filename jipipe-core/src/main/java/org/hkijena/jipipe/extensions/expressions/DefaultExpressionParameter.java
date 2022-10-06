@@ -17,10 +17,8 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 
 /**
  * An {@link ExpressionParameter} that utilizes the {@link DefaultExpressionEvaluator} to generate results

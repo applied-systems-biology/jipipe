@@ -26,7 +26,6 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.parameters.JIPipeContextAction;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -39,9 +38,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageStatistics5DExpre
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -224,7 +220,7 @@ public class ImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm
 
     @JIPipeParameter("roi:target-area")
     public void setTargetArea(ImageROITargetArea targetArea) {
-        if(this.targetArea != targetArea) {
+        if (this.targetArea != targetArea) {
             this.targetArea = targetArea;
             ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());
         }

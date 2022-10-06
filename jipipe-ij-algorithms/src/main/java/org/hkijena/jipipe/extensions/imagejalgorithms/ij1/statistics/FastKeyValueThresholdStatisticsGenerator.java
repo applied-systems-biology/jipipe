@@ -10,9 +10,6 @@ import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeData;
-import org.hkijena.jipipe.api.data.JIPipeDataSource;
-import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -27,11 +24,8 @@ import org.hkijena.jipipe.extensions.tables.datatypes.FloatArrayTableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnIntegrationParameter;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Threshold/Value statistics 5D (fast)", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. The values assigned to each key are collected and then integrated for each threshold in the key image. This variant uses table column integration functions " +
         "that are faster than expression-based operations.")

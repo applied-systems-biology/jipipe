@@ -37,7 +37,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.graph.InputSlotMapParameterCollection;
 
 import java.util.*;
-import java.util.List;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Blend images", description = "Overlays greyscale or RGB images.")
@@ -98,11 +97,10 @@ public class BlendImagesAlgorithm extends JIPipeIteratingAlgorithm {
         for (JIPipeDataSlot inputSlot : getDataInputSlots()) {
             ImagePlus image = dataBatch.getInputData(inputSlot, ImagePlusData.class, progressInfo).getImage();
 
-            if(image.getType() != ImagePlus.COLOR_RGB) {
-                if(renderGreyscaleImages) {
+            if (image.getType() != ImagePlus.COLOR_RGB) {
+                if (renderGreyscaleImages) {
                     image = ImageJUtils.renderToRGBWithLUTIfNeeded(image, progressInfo.resolve("Render to RGB"));
-                }
-                else {
+                } else {
                     image = ImageJUtils.convertToColorRGBIfNeeded(image);
                 }
             }
@@ -138,7 +136,7 @@ public class BlendImagesAlgorithm extends JIPipeIteratingAlgorithm {
                 ImageProcessor inputIp = ImageJUtils.getSliceZero(inputImage, index);
                 double opacity = Math.max(0, Math.min(1, layer.opacity));
 
-                int[] inputPixels =  (int[]) inputIp.getPixels();
+                int[] inputPixels = (int[]) inputIp.getPixels();
                 int[] outputPixels = (int[]) resultIp.getPixels();
 
                 for (int i = 0; i < outputPixels.length; i++) {
@@ -197,18 +195,18 @@ public class BlendImagesAlgorithm extends JIPipeIteratingAlgorithm {
                 }
                 break;
                 case Overlay: {
-                   if(ar < 127)
-                       or = Math.min(255, 2 * ar * br);
-                   else
-                       or = (int)Math.min(255, (255.0 * (1.0 - 2.0 * (1.0 - (ar / 255.0)) * (1.0 - (br / 255.0)))));
-                    if(ag < 127)
+                    if (ar < 127)
+                        or = Math.min(255, 2 * ar * br);
+                    else
+                        or = (int) Math.min(255, (255.0 * (1.0 - 2.0 * (1.0 - (ar / 255.0)) * (1.0 - (br / 255.0)))));
+                    if (ag < 127)
                         og = Math.min(255, 2 * ag * bg);
                     else
-                        og = (int)Math.min(255, (255.0 * (1.0 - 2.0 * (1.0 - (ag / 255.0)) * (1.0 - (bg / 255.0)))));
-                    if(ab < 127)
+                        og = (int) Math.min(255, (255.0 * (1.0 - 2.0 * (1.0 - (ag / 255.0)) * (1.0 - (bg / 255.0)))));
+                    if (ab < 127)
                         ob = Math.min(255, 2 * ab * bb);
                     else
-                        ob = (int)Math.min(255, (255.0 * (1.0 - 2.0 * (1.0 - (ab / 255.0)) * (1.0 - (bb / 255.0)))));
+                        ob = (int) Math.min(255, (255.0 * (1.0 - 2.0 * (1.0 - (ab / 255.0)) * (1.0 - (bb / 255.0)))));
                 }
                 break;
                 case Screen: {
@@ -224,15 +222,15 @@ public class BlendImagesAlgorithm extends JIPipeIteratingAlgorithm {
                 }
                 break;
                 case Minimum: {
-                    or = Math.min(br,ar);
-                    og = Math.min(bg,ag);
-                    ob = Math.min(bb,ab);
+                    or = Math.min(br, ar);
+                    og = Math.min(bg, ag);
+                    ob = Math.min(bb, ab);
                 }
                 break;
                 case Maximum: {
-                    or = Math.max(br,ar);
-                    og = Math.max(bg,ag);
-                    ob = Math.max(bb,ab);
+                    or = Math.max(br, ar);
+                    og = Math.max(bg, ag);
+                    ob = Math.max(bb, ab);
                 }
                 break;
                 case Multiply: {
@@ -260,30 +258,30 @@ public class BlendImagesAlgorithm extends JIPipeIteratingAlgorithm {
                 }
                 break;
                 case DivideBA: {
-                    if(ar > 0)
+                    if (ar > 0)
                         or = (int) (((br / 255.0) / (ar / 255.0)) * 255);
                     else
                         or = 255;
-                    if(ag > 0)
+                    if (ag > 0)
                         og = (int) (((bg / 255.0) / (ag / 255.0)) * 255);
                     else
                         og = 255;
-                    if(ab > 0)
+                    if (ab > 0)
                         ob = (int) (((bb / 255.0) / (ab / 255.0)) * 255);
                     else
                         ob = 255;
                 }
                 break;
                 case DivideAB: {
-                    if(br > 0)
+                    if (br > 0)
                         or = (int) (((ar / 255.0) / (br / 255.0)) * 255);
                     else
                         or = 255;
-                    if(bg > 0)
+                    if (bg > 0)
                         og = (int) (((ag / 255.0) / (bg / 255.0)) * 255);
                     else
                         og = 255;
-                    if(bb > 0)
+                    if (bb > 0)
                         ob = (int) (((ab / 255.0) / (bb / 255.0)) * 255);
                     else
                         ob = 255;

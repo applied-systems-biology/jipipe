@@ -44,10 +44,9 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
     private final MarkdownReader documentationReader = new MarkdownReader(false);
     private final JToolBar toolBar = new JToolBar();
     private final boolean isDocked;
+    private final JPopupMenu manageMenu = new JPopupMenu();
     private JList<JIPipeNodeTemplate> templateList;
     private SearchTextField searchField;
-
-    private final JPopupMenu manageMenu = new JPopupMenu();
 
     public NodeTemplateBox(JIPipeWorkbench workbench, boolean isDocked) {
         super(workbench);
@@ -140,10 +139,10 @@ public class NodeTemplateBox extends JIPipeWorkbenchPanel {
         templateList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if(SwingUtilities.isRightMouseButton(e)) {
+                if (SwingUtilities.isRightMouseButton(e)) {
                     int i = templateList.locationToIndex(e.getPoint());
-                    if(i >= 0) {
-                        templateList.addSelectionInterval(i,i);
+                    if (i >= 0) {
+                        templateList.addSelectionInterval(i, i);
                     }
                     manageMenu.show(templateList, e.getX(), e.getY());
                 }

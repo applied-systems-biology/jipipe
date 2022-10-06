@@ -12,8 +12,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
-import static org.hkijena.jipipe.extensions.expressions.functions.EvaluateFunction.parseVariableAssignment;
-
 @JIPipeDocumentation(name = "Foreach loop", description = "Repeats an expression for all items of the second parameter. The resulting values are returned as list. Equivalent to TRANSFORM_ARRAY.")
 public class ForEachFunction extends ExpressionFunction {
     public ForEachFunction() {

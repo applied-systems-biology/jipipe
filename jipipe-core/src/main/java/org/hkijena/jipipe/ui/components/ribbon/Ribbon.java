@@ -8,8 +8,8 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * A simple Ribbon-style panel
@@ -17,10 +17,8 @@ import java.util.List;
 public class Ribbon extends JPanel {
 
     public static final Border DEFAULT_BORDER = BorderFactory.createEmptyBorder(2, 2, 2, 2);
-
-    private int numRows;
     private final DocumentTabPane tabPane = new DocumentTabPane(true);
-
+    private int numRows;
     private List<Task> tasks;
 
     public Ribbon(Task... tasks) {
@@ -34,9 +32,45 @@ public class Ribbon extends JPanel {
         rebuildRibbon();
     }
 
+    public static void main(String[] args) {
+
+        JIPipeUITheme.ModernLight.install();
+
+        JFrame frame = new JFrame();
+        frame.setContentPane(new JPanel(new BorderLayout()));
+
+        Ribbon panel = new Ribbon(new Task("Task 1",
+                new Band("Band 1",
+                        new LargeButtonAction("Action", "", UIUtils.getIcon32FromResources("module-imagej.png"), () -> {
+                        }),
+                        new SmallButtonAction("Button 1", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {
+                        }),
+                        new SmallButtonAction("Button 2", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {
+                        }),
+                        new SmallButtonAction("Button 3", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {
+                        })),
+                new Band("Band 2",
+                        new SmallButtonAction("Button 1", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {
+                        }),
+                        new SmallButtonAction("Button 2", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {
+                        }),
+                        new SmallButtonAction("Button 3", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {
+                        }))),
+                new Task("Task 2",
+                        new Band("Band 3"),
+                        new Band("Band 4"),
+                        new Band("Band 5")));
+        panel.tabPane.getTabbedPane().setUI(new CustomTabbedPaneUI());
+
+        frame.getContentPane().add(panel, BorderLayout.NORTH);
+        frame.pack();
+        frame.setSize(1024, 768);
+        frame.setVisible(true);
+    }
+
     private void initialize() {
         setLayout(new BorderLayout());
-        tabPane.setTabPanelBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+        tabPane.setTabPanelBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 //        tabPane.getTabbedPane().setTabPlacement(SwingConstants.TOP);
         tabPane.setEnableTabContextMenu(false);
         add(tabPane, BorderLayout.CENTER);
@@ -45,7 +79,7 @@ public class Ribbon extends JPanel {
     public void rebuildRibbon() {
         tabPane.closeAllTabs(true);
         for (Task task : tasks) {
-            if(task.isVisible()) {
+            if (task.isVisible()) {
                 JPanel taskPanel = new JPanel(new GridBagLayout());
                 buildTaskPanel(taskPanel, task);
                 tabPane.addTab(task.label, null, taskPanel, DocumentTabPane.CloseMode.withoutCloseButton);
@@ -56,17 +90,17 @@ public class Ribbon extends JPanel {
     private void buildTaskPanel(JPanel taskPanel, Task task) {
         List<Band> bands = task.bands;
         final Insets separatorInsets = new Insets(2, 4, 2, 4);
-        final Insets bandLabelInsets = new Insets(12,4,4,4);
+        final Insets bandLabelInsets = new Insets(12, 4, 4, 4);
         int col = 0;
         int row = 0;
         for (Band band : bands) {
-            if(band.isVisible()) {
+            if (band.isVisible()) {
                 // Add actions
                 final int startCol = col;
 
                 int maxWidth = 1;
                 for (Action action : band.getActions()) {
-                    if(action.isVisible()) {
+                    if (action.isVisible()) {
                         int available = numRows - row;
                         int requested = Math.max(1, Math.min(numRows, action.getHeight()));
                         if (requested > available) {
@@ -107,36 +141,7 @@ public class Ribbon extends JPanel {
         }
 
         // Add horizontal glue
-        taskPanel.add(new JPanel(), new GridBagConstraints(col, 0, 1,1,1,1,GridBagConstraints.NORTHWEST,GridBagConstraints.HORIZONTAL, new Insets(0,0,0,0), 0,0));
-    }
-
-    public static void main(String[] args) {
-
-        JIPipeUITheme.ModernLight.install();
-
-        JFrame frame = new JFrame();
-        frame.setContentPane(new JPanel(new BorderLayout()));
-
-        Ribbon panel = new Ribbon(new Task("Task 1",
-                    new Band("Band 1",
-                            new LargeButtonAction("Action", "", UIUtils.getIcon32FromResources("module-imagej.png"), () -> {}),
-                            new SmallButtonAction("Button 1", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {}),
-                            new SmallButtonAction("Button 2", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {}),
-                            new SmallButtonAction("Button 3", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {})),
-                    new Band("Band 2",
-                            new SmallButtonAction("Button 1", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {}),
-                            new SmallButtonAction("Button 2", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {}),
-                            new SmallButtonAction("Button 3", "", UIUtils.getIconFromResources("actions/configure.png"), () -> {}))),
-                new Task("Task 2",
-                        new Band("Band 3"),
-                        new Band("Band 4"),
-                        new Band("Band 5")));
-        panel.tabPane.getTabbedPane().setUI(new CustomTabbedPaneUI());
-
-        frame.getContentPane().add(panel, BorderLayout.NORTH);
-        frame.pack();
-        frame.setSize(1024,768);
-        frame.setVisible(true);
+        taskPanel.add(new JPanel(), new GridBagConstraints(col, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
     }
 
     public List<Task> getTasks() {
@@ -155,6 +160,7 @@ public class Ribbon extends JPanel {
     /**
      * Sets the number of rows
      * Will not rebuild the ribbon!
+     *
      * @param numRows the number of rows
      */
     public void setNumRows(int numRows) {
@@ -172,6 +178,7 @@ public class Ribbon extends JPanel {
     /**
      * Adds a new task.
      * Will not rebuild the ribbon.
+     *
      * @param label the label
      * @return the task
      */
@@ -184,7 +191,8 @@ public class Ribbon extends JPanel {
     /**
      * Adds a new task.
      * Will not rebuild the ribbon.
-     * @param id the ID
+     *
+     * @param id    the ID
      * @param label the label
      * @return the task
      */
@@ -207,7 +215,7 @@ public class Ribbon extends JPanel {
     public void selectTask(String id) {
         for (int i = 0; i < tasks.size(); i++) {
             Task task = tasks.get(i);
-            if(Objects.equals(task.getId(), id)) {
+            if (Objects.equals(task.getId(), id)) {
                 tabPane.getTabbedPane().setSelectedIndex(i);
                 return;
             }
@@ -218,18 +226,19 @@ public class Ribbon extends JPanel {
      * Reorders the tasks according to the list of IDs.
      * If there are tasks outside the ID list, their order will be preserved
      * Will not rebuild the ribbon.
+     *
      * @param ids the IDs
      */
     public void reorderTasks(List<String> ids) {
         List<Task> newList = new ArrayList<>();
         for (String id : ids) {
             Optional<Task> optional = tasks.stream().filter(t -> Objects.equals(t.id, id)).findFirst();
-            if(optional.isPresent()) {
+            if (optional.isPresent()) {
                 newList.add(optional.get());
             }
         }
         for (Task task : tasks) {
-            if(!newList.contains(task)) {
+            if (!newList.contains(task)) {
                 newList.add(task);
             }
         }

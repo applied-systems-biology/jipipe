@@ -57,9 +57,9 @@ public class ColumnOperationAdapterFunction extends ExpressionFunction {
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        if(parameters.size() == 1) {
+        if (parameters.size() == 1) {
             Object o = parameters.get(0);
-            if(o instanceof List) {
+            if (o instanceof List) {
                 parameters = (List<Object>) o;
             }
         }

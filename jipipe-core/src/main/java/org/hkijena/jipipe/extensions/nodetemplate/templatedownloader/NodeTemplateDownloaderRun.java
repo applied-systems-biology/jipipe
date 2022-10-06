@@ -40,9 +40,8 @@ import java.util.*;
 public class NodeTemplateDownloaderRun implements JIPipeRunnable {
 
     private final JIPipeWorkbench workbench;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private final List<NodeTemplateDownloaderPackage> availablePackages = new ArrayList<>();
-
+    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private Set<NodeTemplateDownloaderPackage> targetPackages = new HashSet<>();
 
     private boolean toProject = false;
@@ -112,11 +111,10 @@ public class NodeTemplateDownloaderRun implements JIPipeRunnable {
                     template.setSource(targetPackage.getUrl());
                     templates.add(template);
                 }
-                if(workbench instanceof JIPipeProjectWorkbench && toProject) {
+                if (workbench instanceof JIPipeProjectWorkbench && toProject) {
                     ((JIPipeProjectWorkbench) workbench).getProject().getMetadata().getNodeTemplates().addAll(templates);
                     ((JIPipeProjectWorkbench) workbench).getProject().getMetadata().triggerParameterChange("node-templates");
-                }
-                else {
+                } else {
                     // Store globally
                     NodeTemplateSettings.getInstance().getNodeTemplates().addAll(templates);
                     NodeTemplateSettings.getInstance().triggerParameterChange("node-templates");

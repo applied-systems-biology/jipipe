@@ -15,7 +15,6 @@ package org.hkijena.jipipe.utils;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import ij.process.LUT;
 
 import java.awt.*;
 import java.util.Comparator;
@@ -273,9 +272,9 @@ public class ColorUtils {
             int r = (int) (r0 + (r1 - r0) * (1.0 * (i - startIndex) / (endIndex - startIndex)));
             int g = (int) (g0 + (g1 - g0) * (1.0 * (i - startIndex) / (endIndex - startIndex)));
             int b = (int) (b0 + (b1 - b0) * (1.0 * (i - startIndex) / (endIndex - startIndex)));
-            reds[i] =  r;
-            greens[i] =  g;
-            blues[i] =  b;
+            reds[i] = r;
+            greens[i] = g;
+            blues[i] = b;
         }
         Color[] result = new Color[numColors];
         for (int i = 0; i < numColors; i++) {

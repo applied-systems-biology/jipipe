@@ -10,7 +10,6 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
@@ -30,13 +29,11 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.Neighborhood2D;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.ConnectedComponentsLabeling3DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.greyscale.ImagePlus3DGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale16UData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalDoubleParameter;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.python.OptionalPythonEnvironment;
 import org.hkijena.jipipe.extensions.python.PythonUtils;
@@ -334,29 +331,28 @@ public class CellposeTrainingAlgorithm extends JIPipeSingleIterationAlgorithm {
         arguments.add("masks");
 
         // Channels
-        if(channelSettings.getSegmentedChannel().isEnabled()) {
+        if (channelSettings.getSegmentedChannel().isEnabled()) {
             arguments.add("--chan");
             arguments.add(channelSettings.getSegmentedChannel().getContent() + "");
-        }
-        else {
+        } else {
             arguments.add("--chan");
             arguments.add("0");
         }
-        if(channelSettings.getNuclearChannel().isEnabled()) {
+        if (channelSettings.getNuclearChannel().isEnabled()) {
             arguments.add("--chan2");
             arguments.add(channelSettings.getNuclearChannel().getContent() + "");
         }
-        if(channelSettings.isAllChannels()) {
+        if (channelSettings.isAllChannels()) {
             arguments.add("--all_channels");
         }
-        if(channelSettings.isInvert()) {
+        if (channelSettings.isInvert()) {
             arguments.add("--invert");
         }
 
         // GPU
         if (gpuSettings.isEnableGPU())
             arguments.add("--use_gpu");
-        if(gpuSettings.getGpuDevice().isEnabled()) {
+        if (gpuSettings.getGpuDevice().isEnabled()) {
             arguments.add("--gpu_device");
             arguments.add(gpuSettings.getGpuDevice().getContent() + "");
         }

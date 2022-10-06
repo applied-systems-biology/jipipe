@@ -41,7 +41,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     public DrawTextRoiAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.roiProperties= new ROIProperties();
+        this.roiProperties = new ROIProperties();
     }
 
     public DrawTextRoiAlgorithm(DrawTextRoiAlgorithm other) {
@@ -65,18 +65,16 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Collect target and reference
         ROIListData target = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-        if(target == null) {
+        if (target == null) {
             target = new ROIListData();
-        }
-        else {
+        } else {
             target = new ROIListData(target);
         }
         Rectangle reference;
         ImagePlusData referenceImage = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
-        if(referenceImage != null) {
-            reference = new Rectangle(0,0,referenceImage.getWidth(), referenceImage.getHeight());
-        }
-        else {
+        if (referenceImage != null) {
+            reference = new Rectangle(0, 0, referenceImage.getWidth(), referenceImage.getHeight());
+        } else {
             reference = target.getBounds();
         }
 
@@ -90,7 +88,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Generate location
         Rectangle finalLocation = location.place(stringBounds.getBounds(), reference, variables);
-        if(center) {
+        if (center) {
             finalLocation.x -= finalLocation.width / 2;
             finalLocation.y -= finalLocation.height / 2;
         }

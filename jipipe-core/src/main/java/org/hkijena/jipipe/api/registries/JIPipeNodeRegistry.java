@@ -16,8 +16,6 @@ package org.hkijena.jipipe.api.registries;
 import com.google.common.collect.*;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
-import ij.plugin.ZProjector;
-import org.antlr.misc.MultiMap;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
@@ -289,7 +287,7 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
      * @param resourcePath icon url
      */
     public void registerIcon(JIPipeNodeInfo info, URL resourcePath) {
-        if(resourcePath == null) {
+        if (resourcePath == null) {
             jiPipe.getProgressInfo().log("Unable to register icon for " + info.getId() + ": URL is null.");
             return;
         }
@@ -300,14 +298,14 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
     /**
      * Registers a node template as example
      * Will reject
+     *
      * @param nodeTemplate the node template that contains the node example
      */
     public void registerExample(JIPipeNodeTemplate nodeTemplate) {
         JIPipeNodeExample example = new JIPipeNodeExample(nodeTemplate);
-        if(example.getNodeId() == null) {
+        if (example.getNodeId() == null) {
             jiPipe.getProgressInfo().log("ERROR: Unable to register node template '" + nodeTemplate.getName() + "'. No [unique] node ID.");
-        }
-        else {
+        } else {
             jiPipe.getProgressInfo().log("Registered example for " + example.getNodeId() + ": '" + nodeTemplate.getName() + "'");
             registeredExamples.put(example.getNodeId(), example);
         }

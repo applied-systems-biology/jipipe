@@ -19,7 +19,7 @@ public class TransformArrayFunction extends ExpressionFunction {
         ExpressionVariables localVariables = new ExpressionVariables(variables);
         List<?> items = ImmutableList.copyOf((Collection<?>) parameters.get(0));
         localVariables.set("values", items);
-        String function =  DefaultExpressionEvaluator.unescapeString("\"" + parameters.get(1) + "\"");
+        String function = DefaultExpressionEvaluator.unescapeString("\"" + parameters.get(1) + "\"");
         List<Object> results = new ArrayList<>();
         for (Object item : items) {
             localVariables.set("value", item);

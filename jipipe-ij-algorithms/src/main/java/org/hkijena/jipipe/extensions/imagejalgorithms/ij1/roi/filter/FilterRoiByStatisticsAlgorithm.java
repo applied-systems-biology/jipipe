@@ -52,10 +52,9 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
             JIPipe.createNode(RoiStatisticsAlgorithm.class);
+    private final CustomExpressionVariablesParameter customFilterVariables;
     private DefaultExpressionParameter filters = new DefaultExpressionParameter();
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
-
-    private final CustomExpressionVariablesParameter customFilterVariables;
     private boolean outputEmptyLists = true;
 
     private boolean measureInPhysicalUnits = true;
@@ -119,10 +118,9 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
         // Write statistics into variables
         for (int col = 0; col < statistics.getColumnCount(); col++) {
             TableColumn column = statistics.getColumnReference(col);
-            if(column.isNumeric()) {
+            if (column.isNumeric()) {
                 variableSet.set("all." + column.getLabel(), new ArrayList<>(Doubles.asList(column.getDataAsDouble(column.getRows()))));
-            }
-            else {
+            } else {
                 variableSet.set("all." + column.getLabel(), new ArrayList<>(Arrays.asList(column.getDataAsString(column.getRows()))));
             }
         }

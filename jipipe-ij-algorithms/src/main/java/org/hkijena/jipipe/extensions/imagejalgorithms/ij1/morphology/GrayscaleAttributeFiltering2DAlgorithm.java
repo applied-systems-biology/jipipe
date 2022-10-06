@@ -36,7 +36,7 @@ public class GrayscaleAttributeFiltering2DAlgorithm extends JIPipeIteratingAlgor
     private Operation operation = Operation.Opening;
     private Attribute attribute = Attribute.Area;
 
-    private  int minimumValue = 100;
+    private int minimumValue = 100;
     private Neighborhood2D connectivity = Neighborhood2D.FourConnected;
 
     public GrayscaleAttributeFiltering2DAlgorithm(JIPipeNodeInfo info) {
@@ -171,7 +171,7 @@ public class GrayscaleAttributeFiltering2DAlgorithm extends JIPipeIteratingAlgor
 
         @Override
         public String toString() {
-            if(this == BoxDiagonal) {
+            if (this == BoxDiagonal) {
                 return "Box diagonal";
             }
             return super.toString();

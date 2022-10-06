@@ -243,8 +243,9 @@ public class JIPipeResourceManager {
 
     /**
      * Saves a resource as file
+     *
      * @param internalResourcePath internal path relative to the resource base path
-     * @param outputFile the output file
+     * @param outputFile           the output file
      */
     public void exportResourceToFile(String internalResourcePath, Path outputFile) {
         try {

@@ -499,11 +499,12 @@ public class RoiDrawer implements JIPipeParameterCollection {
 
     /**
      * Uses the current settings to filter ROI based on visibility within the current image index
-     * @param rois the ROI
+     *
+     * @param rois  the ROI
      * @param index the current image index
      * @return the filtered ROI
      */
-    public ROIListData filterVisibleROI(ROIListData  rois, ImageSliceIndex index) {
+    public ROIListData filterVisibleROI(ROIListData rois, ImageSliceIndex index) {
         final int z = index.getZ();
         final int c = index.getC();
         final int t = index.getT();

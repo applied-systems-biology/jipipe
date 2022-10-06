@@ -65,15 +65,15 @@ public class JIPipeProjectTemplate {
     /**
      * Returns the metadata name if the template is resource-based or registered via the Java API.
      * Returns the metadata name if the metadata name is not used by any other Java-registered template; otherwise returns the file name of the template
+     *
      * @return the metadata name if appropriate, otherwise the filename
      */
     public String getFixedName() {
-        if(templateFile == null)
+        if (templateFile == null)
             return metadata.getName();
-        if(JIPipe.getInstance().getProjectTemplateRegistry().getBlockedTemplateNames().contains(metadata.getName())) {
+        if (JIPipe.getInstance().getProjectTemplateRegistry().getBlockedTemplateNames().contains(metadata.getName())) {
             return templateFile.getFileName().toString();
-        }
-        else {
+        } else {
             return metadata.getName();
         }
     }

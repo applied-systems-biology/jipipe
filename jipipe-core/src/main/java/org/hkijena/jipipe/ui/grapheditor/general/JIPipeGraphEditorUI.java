@@ -307,10 +307,9 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 return ((JIPipeNodeInfo) o).getName();
             } else if (o instanceof JIPipeNodeUI) {
                 return ((JIPipeNodeUI) o).getNode().getName();
-            } else if(o instanceof JIPipeNodeExample) {
+            } else if (o instanceof JIPipeNodeExample) {
                 return ((JIPipeNodeExample) o).getNodeTemplate().getName() + ((JIPipeNodeExample) o).getNodeInfo().getName();
-            }
-            else {
+            } else {
                 return "" + o;
             }
         });
@@ -341,14 +340,13 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             canvasUI.getScheduledSelection().add(node);
             algorithmGraph.insertNode(node, getCompartment());
             navigator.setSelectedItem(null);
-        }
-        else if(event.getValue() instanceof JIPipeNodeExample) {
+        } else if (event.getValue() instanceof JIPipeNodeExample) {
             if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(getWorkbench()))
                 return;
             JIPipeNodeExample example = (JIPipeNodeExample) event.getValue();
             JIPipeNodeInfo info = example.getNodeInfo();
             JIPipeGraphNode node = info.newInstance();
-            if(node instanceof JIPipeAlgorithm) {
+            if (node instanceof JIPipeAlgorithm) {
                 ((JIPipeAlgorithm) node).loadExample(example);
             }
             if (getHistoryJournal() != null) {
@@ -960,7 +958,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
             for (JIPipeNodeInfo info : addableAlgorithms.stream()
                     .sorted(Comparator.comparing(JIPipeNodeInfo::getName)).collect(Collectors.toList())) {
                 model.addElement(info);
-                if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+                if (getWorkbench() instanceof JIPipeProjectWorkbench) {
                     for (JIPipeNodeExample example : ((JIPipeProjectWorkbench) getWorkbench()).getProject().getNodeExamples(info.getId())) {
                         model.addElement(example);
                     }
@@ -1112,8 +1110,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
                 algorithmLabel.setIcon(JIPipe.getNodes().getIconFor(info));
                 menuLabel.setText(menuPath);
                 alternativeLabel.setText("");
-            }
-            else if (value instanceof JIPipeNodeExample) {
+            } else if (value instanceof JIPipeNodeExample) {
                 JIPipeNodeExample example = (JIPipeNodeExample) value;
                 JIPipeNodeInfo info = example.getNodeInfo();
                 String menuPath = info.getCategory().getName();

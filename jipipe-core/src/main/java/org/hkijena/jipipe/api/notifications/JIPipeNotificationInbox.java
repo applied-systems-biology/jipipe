@@ -78,10 +78,11 @@ public class JIPipeNotificationInbox {
 
     /**
      * Connects all dismisses in this notification inbox to another notification inbox
+     *
      * @param inbox the target
      */
     public void connectDismissTo(JIPipeNotificationInbox inbox) {
-        if(inbox == this)
+        if (inbox == this)
             return;
         eventBus.register(new Object() {
             @Subscribe

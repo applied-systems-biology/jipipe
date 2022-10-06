@@ -13,9 +13,6 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
-import org.apache.commons.lang.WordUtils;
-import org.apache.commons.lang3.StringUtils;
-
 /**
  * Available ways to address the shape of a {@link ij.gui.Roi}
  */

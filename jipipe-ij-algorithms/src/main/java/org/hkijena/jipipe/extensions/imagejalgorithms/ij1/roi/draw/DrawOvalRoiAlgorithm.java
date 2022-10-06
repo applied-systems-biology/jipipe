@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw;
 
 import ij.gui.OvalRoi;
-import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -11,7 +10,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
 
@@ -32,7 +30,7 @@ public class DrawOvalRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     public DrawOvalRoiAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.roiProperties= new ROIProperties();
+        this.roiProperties = new ROIProperties();
         rectangles.setCustomInstanceGenerator(this::createNewDefinition);
         rectangles.addNewInstance();
     }
@@ -62,25 +60,23 @@ public class DrawOvalRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Collect target and reference
         ROIListData target = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-        if(target == null) {
+        if (target == null) {
             target = new ROIListData();
-        }
-        else {
+        } else {
             target = new ROIListData(target);
         }
         Rectangle reference;
         ImagePlusData referenceImage = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
-        if(referenceImage != null) {
-            reference = new Rectangle(0,0,referenceImage.getWidth(), referenceImage.getHeight());
-        }
-        else {
+        if (referenceImage != null) {
+            reference = new Rectangle(0, 0, referenceImage.getWidth(), referenceImage.getHeight());
+        } else {
             reference = target.getBounds();
         }
 
         // Generate items
         for (Margin rectangle : rectangles) {
             Rectangle area = rectangle.getInsideArea(reference, variables);
-            if(center) {
+            if (center) {
                 area.x -= area.width / 2;
                 area.y -= area.height / 2;
             }

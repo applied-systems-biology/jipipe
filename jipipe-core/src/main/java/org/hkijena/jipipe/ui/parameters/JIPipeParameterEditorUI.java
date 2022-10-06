@@ -134,6 +134,7 @@ public abstract class JIPipeParameterEditorUI extends JIPipeWorkbenchPanel imple
      * This is only utilized for the automated ordering within {@link ParameterPanel}
      * Controls with the same style are grouped together to ensure a consistent visual style (reduce clutter)
      * Please note that the grouping enforced by isUILabelEnabled() has precedence
+     *
      * @return the UI control style for {@link ParameterPanel} (sorting only)
      */
     public int getUIControlStyleType() {

@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math;
 
 import ij.ImagePlus;
 import ij.plugin.ImageCalculator;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -125,7 +124,7 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Ensure same size
-        if(!ImageJUtils.imagesHaveSameSize(leftOperand, rightOperand)) {
+        if (!ImageJUtils.imagesHaveSameSize(leftOperand, rightOperand)) {
             throw new UserFriendlyRuntimeException("Input images do not have the same size!",
                     "Input images do not have the same size!",
                     getDisplayName(),
@@ -134,12 +133,11 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
         }
 
         // Make both of the inputs the same type
-        if(floatingPointOutput) {
+        if (floatingPointOutput) {
             leftOperand = ImageJUtils.convertToGrayscale32FIfNeeded(leftOperand);
             rightOperand = ImageJUtils.convertToGrayscale32FIfNeeded(rightOperand);
-        }
-        else {
-            rightOperand = ImageJUtils.convertToBitDepthIfNeeded (rightOperand, leftOperand.getBitDepth());
+        } else {
+            rightOperand = ImageJUtils.convertToBitDepthIfNeeded(rightOperand, leftOperand.getBitDepth());
         }
 
         ImageCalculator calculator = new ImageCalculator();

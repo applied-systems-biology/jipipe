@@ -29,9 +29,8 @@ import java.util.Map;
 @JIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output", autoCreate = true)
 public class SpotFilterNode extends JIPipeSimpleIteratingAlgorithm {
 
-    private DefaultExpressionParameter filter = new DefaultExpressionParameter("quality > 30");
-
     private final CustomExpressionVariablesParameter customVariables;
+    private DefaultExpressionParameter filter = new DefaultExpressionParameter("quality > 30");
 
     public SpotFilterNode(JIPipeNodeInfo info) {
         super(info);

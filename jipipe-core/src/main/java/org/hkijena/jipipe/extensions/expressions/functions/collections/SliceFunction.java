@@ -49,31 +49,29 @@ public class SliceFunction extends ExpressionFunction {
             throw new UnsupportedOperationException("Element slicing does not support " + list_);
         }
 
-        int i1 = ((Number)parameters.get(1)).intValue();
-        int i2 = ((Number)parameters.get(2)).intValue();
-        while(!src.isEmpty() && i1 < 0) {
+        int i1 = ((Number) parameters.get(1)).intValue();
+        int i2 = ((Number) parameters.get(2)).intValue();
+        while (!src.isEmpty() && i1 < 0) {
             i1 += src.size();
         }
-        while(!src.isEmpty() && i2 < 0) {
+        while (!src.isEmpty() && i2 < 0) {
             i2 += src.size();
         }
 
         List<Object> result = new ArrayList<>();
-        if(i1 <= i2) {
+        if (i1 <= i2) {
             for (int i = i1; i < i2; i++) {
                 result.add(src.get(i));
             }
-        }
-        else {
+        } else {
             for (int i = i2; i < i1; i--) {
                 result.add(src.get(i));
             }
         }
 
-        if(list_ instanceof  String) {
+        if (list_ instanceof String) {
             return result.stream().map(Object::toString).collect(Collectors.joining(""));
-        }
-        else {
+        } else {
             return result;
         }
     }

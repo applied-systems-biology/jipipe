@@ -21,9 +21,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
-import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.AddParameterDialog;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
@@ -441,14 +439,13 @@ public class ParameterPanel extends FormPanel implements Contextual {
         for (JIPipeParameterEditorUI ui : uiList.stream().sorted(comparator).collect(Collectors.toList())) {
             JIPipeParameterAccess parameterAccess = ui.getParameterAccess();
 
-            if(parameterAccess.isPinned()) {
+            if (parameterAccess.isPinned()) {
                 pinModeStarted = true;
-            }
-            else if(pinModeStarted) {
+            } else if (pinModeStarted) {
                 // Add some spacing
                 JPanel strut = new JPanel(new BorderLayout());
                 strut.add(new JSeparator(SwingConstants.HORIZONTAL));
-                strut.setBorder(BorderFactory.createEmptyBorder(12,32,12,0));
+                strut.setBorder(BorderFactory.createEmptyBorder(12, 32, 12, 0));
                 addWideToForm(strut);
                 uiComponents.add(strut);
                 pinModeStarted = false;
@@ -526,11 +523,11 @@ public class ParameterPanel extends FormPanel implements Contextual {
         JPanel propertyPanel = new JPanel(new BorderLayout());
 
         // Help
-        if(documentation != null || component instanceof JIPipeParameterEditorUI) {
+        if (documentation != null || component instanceof JIPipeParameterEditorUI) {
             JButton helpButton = new JButton(UIUtils.getIconFromResources("actions/help-muted.png"));
             helpButton.setBorder(null);
             helpButton.addActionListener(e -> {
-               showDocumentation(documentation);
+                showDocumentation(documentation);
             });
             installComponentHighlighter(helpButton, Sets.newHashSet(component, description));
             propertyPanel.add(helpButton, BorderLayout.WEST);
@@ -566,7 +563,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
             optionsMenu.add(pasteItem);
 
             // Set to default function
-            if(displayedParameters instanceof JIPipeGraphNode) {
+            if (displayedParameters instanceof JIPipeGraphNode) {
                 JMenuItem restoreDefaultItem = new JMenuItem("Restore to default value", UIUtils.getIconFromResources("actions/edit-undo.png"));
                 restoreDefaultItem.addActionListener(e -> {
                     JIPipeParameterCollection defaultCollection = ((JIPipeGraphNode) displayedParameters).getInfo().newInstance();
@@ -576,8 +573,7 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 });
                 optionsMenu.addSeparator();
                 optionsMenu.add(restoreDefaultItem);
-            }
-            else if(ReflectionUtils.hasDefaultConstructor(displayedParameters.getClass())) {
+            } else if (ReflectionUtils.hasDefaultConstructor(displayedParameters.getClass())) {
                 JMenuItem restoreDefaultItem = new JMenuItem("Restore to default value", UIUtils.getIconFromResources("actions/edit-undo.png"));
                 restoreDefaultItem.addActionListener(e -> {
                     JIPipeParameterCollection defaultCollection = (JIPipeParameterCollection) ReflectionUtils.newInstance(displayedParameters.getClass());

@@ -19,8 +19,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.omnipose.algorithms.OmniposeAlgorithm;
 import org.hkijena.jipipe.extensions.omnipose.algorithms.OmniposeTrainingAlgorithm;
 import org.hkijena.jipipe.extensions.omnipose.installers.OmniposeEasyInstaller;
-import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.python.PythonEnvironment;
@@ -69,6 +69,26 @@ public class OmniposeExtension extends JIPipePrepackagedDefaultJavaExtension {
         DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
         JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
         applicationSettingsUI.selectNode("/Extensions/Omnipose");
+    }
+
+    public static void createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox inbox) {
+        if (!OmniposeSettings.pythonSettingsAreValid()) {
+            JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":python-not-configured");
+            notification.setHeading("Omnipose is not configured");
+            notification.setDescription("You need to setup a Python environment that contains Omnipose." + "Click 'Install Omnipose' to let JIPipe setup a Python distribution with Omnipose automatically. " +
+                    "You can choose between the standard CPU and GPU-accelerated installation (choose CPU if you are unsure). " +
+                    "Alternatively, click 'Configure' to visit the settings page with more options, including the selection of an existing Python environment.\n\n" +
+                    "For more information, please visit https://www.jipipe.org/installation/third-party/omnipose/");
+            notification.getActions().add(new JIPipeNotificationAction("Install Omnipose",
+                    "Installs Omnipose via the EasyInstaller",
+                    UIUtils.getIconFromResources("actions/browser-download.png"),
+                    OmniposeExtension::easyInstallOmnipose));
+            notification.getActions().add(new JIPipeNotificationAction("Configure Python",
+                    "Opens the applications settings page",
+                    UIUtils.getIconFromResources("actions/configure.png"),
+                    OmniposeExtension::configureOmnipose));
+            inbox.push(notification);
+        }
     }
 
     @Override
@@ -146,7 +166,6 @@ public class OmniposeExtension extends JIPipePrepackagedDefaultJavaExtension {
         return Arrays.asList(RESOURCES.getIcon32FromResources("omnipose.png"));
     }
 
-
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerSettingsSheet(OmniposeSettings.ID,
@@ -163,26 +182,6 @@ public class OmniposeExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("omnipose-training", OmniposeTrainingAlgorithm.class, RESOURCES.getIcon16URLFromResources("omnipose.png"));
 
         registerEnvironmentInstaller(PythonEnvironment.class, OmniposeEasyInstaller.class, UIUtils.getIconFromResources("emblems/vcs-normal.png"));
-    }
-
-    public static void createMissingPythonNotificationIfNeeded(JIPipeNotificationInbox inbox) {
-        if (!OmniposeSettings.pythonSettingsAreValid()) {
-            JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":python-not-configured");
-            notification.setHeading("Omnipose is not configured");
-            notification.setDescription("You need to setup a Python environment that contains Omnipose." + "Click 'Install Omnipose' to let JIPipe setup a Python distribution with Omnipose automatically. " +
-                    "You can choose between the standard CPU and GPU-accelerated installation (choose CPU if you are unsure). " +
-                    "Alternatively, click 'Configure' to visit the settings page with more options, including the selection of an existing Python environment.\n\n" +
-                    "For more information, please visit https://www.jipipe.org/installation/third-party/omnipose/");
-            notification.getActions().add(new JIPipeNotificationAction("Install Omnipose",
-                    "Installs Omnipose via the EasyInstaller",
-                    UIUtils.getIconFromResources("actions/browser-download.png"),
-                    OmniposeExtension::easyInstallOmnipose));
-            notification.getActions().add(new JIPipeNotificationAction("Configure Python",
-                    "Opens the applications settings page",
-                    UIUtils.getIconFromResources("actions/configure.png"),
-                    OmniposeExtension::configureOmnipose));
-            inbox.push(notification);
-        }
     }
 
     @Override

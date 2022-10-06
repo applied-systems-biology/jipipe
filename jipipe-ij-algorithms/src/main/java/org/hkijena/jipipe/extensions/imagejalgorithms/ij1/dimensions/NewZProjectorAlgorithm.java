@@ -118,10 +118,9 @@ public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         // Generate the source slice indices
         List<Integer> sourceIndices;
-        if(restrictToIndices.isEnabled()) {
+        if (restrictToIndices.isEnabled()) {
             sourceIndices = restrictToIndices.getContent().getIntegers(0, img.getNFrames() - 1, variables);
-        }
-        else {
+        } else {
             sourceIndices = new ArrayList<>();
             for (int i = 0; i < img.getNFrames(); i++) {
                 sourceIndices.add(i);
@@ -130,13 +129,13 @@ public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         for (int z = 0; z < newDepth; z++) {
             for (int c = 0; c < newChannels; c++) {
-                ImageSliceIndex firstSliceIndex = new ImageSliceIndex(c,z,0);
+                ImageSliceIndex firstSliceIndex = new ImageSliceIndex(c, z, 0);
                 progressInfo.log(firstSliceIndex.toString());
 
                 // Extract the T slices into the stack
                 ImageStack extracted = new ImageStack(img.getWidth(), img.getHeight());
                 for (int t : sourceIndices) {
-                    ImageProcessor processor = ImageJUtils.getSliceZero(img, c,z,t);
+                    ImageProcessor processor = ImageJUtils.getSliceZero(img, c, z, t);
                     extracted.addSlice(processor);
                 }
 
@@ -144,7 +143,7 @@ public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 ImagePlus extractedImp = new ImagePlus("stack", extracted);
                 ImagePlus projected = ZProjector.run(extractedImp, method.toString());
 
-                resultStack.setProcessor(projected.getProcessor(), ImageJUtils.zeroSliceIndexToOneStackIndex(c,z,0, newChannels, newDepth, newFrames));
+                resultStack.setProcessor(projected.getProcessor(), ImageJUtils.zeroSliceIndexToOneStackIndex(c, z, 0, newChannels, newDepth, newFrames));
             }
         }
 
@@ -162,10 +161,9 @@ public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         // Generate the source slice indices
         List<Integer> sourceIndices;
-        if(restrictToIndices.isEnabled()) {
+        if (restrictToIndices.isEnabled()) {
             sourceIndices = restrictToIndices.getContent().getIntegers(0, img.getNSlices() - 1, variables);
-        }
-        else {
+        } else {
             sourceIndices = new ArrayList<>();
             for (int i = 0; i < img.getNSlices(); i++) {
                 sourceIndices.add(i);
@@ -206,10 +204,9 @@ public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         // Generate the source slice indices
         List<Integer> sourceIndices;
-        if(restrictToIndices.isEnabled()) {
+        if (restrictToIndices.isEnabled()) {
             sourceIndices = restrictToIndices.getContent().getIntegers(0, img.getNChannels() - 1, variables);
-        }
-        else {
+        } else {
             sourceIndices = new ArrayList<>();
             for (int i = 0; i < img.getNChannels(); i++) {
                 sourceIndices.add(i);
@@ -218,13 +215,13 @@ public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         for (int z = 0; z < newDepth; z++) {
             for (int t = 0; t < newFrames; t++) {
-                ImageSliceIndex firstSliceIndex = new ImageSliceIndex(0,z,t);
+                ImageSliceIndex firstSliceIndex = new ImageSliceIndex(0, z, t);
                 progressInfo.log(firstSliceIndex.toString());
 
                 // Extract the C slices into the stack
                 ImageStack extracted = new ImageStack(img.getWidth(), img.getHeight());
                 for (int c : sourceIndices) {
-                    ImageProcessor processor = ImageJUtils.getSliceZero(img, c,z,t);
+                    ImageProcessor processor = ImageJUtils.getSliceZero(img, c, z, t);
                     extracted.addSlice(processor);
                 }
 
@@ -232,7 +229,7 @@ public class NewZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
                 ImagePlus extractedImp = new ImagePlus("stack", extracted);
                 ImagePlus projected = ZProjector.run(extractedImp, method.toString());
 
-                resultStack.setProcessor(projected.getProcessor(), ImageJUtils.zeroSliceIndexToOneStackIndex(0,z,t, newChannels, newDepth, newFrames));
+                resultStack.setProcessor(projected.getProcessor(), ImageJUtils.zeroSliceIndexToOneStackIndex(0, z, t, newChannels, newDepth, newFrames));
             }
         }
 

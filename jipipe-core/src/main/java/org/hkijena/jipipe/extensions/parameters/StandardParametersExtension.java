@@ -48,16 +48,12 @@ import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameterEd
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.parameters.library.colors.*;
 import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.FilePathParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataDisplayOperationIdEnumParameter;
-import org.hkijena.jipipe.extensions.parameters.library.jipipe.DynamicDataImportOperationIdEnumParameter;
-import org.hkijena.jipipe.extensions.parameters.library.jipipe.JIPipeAuthorMetadataParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.library.jipipe.JIPipeParameterCollectionParameterEditorUI;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.*;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLTextParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.matrix.Matrix2DFloat;

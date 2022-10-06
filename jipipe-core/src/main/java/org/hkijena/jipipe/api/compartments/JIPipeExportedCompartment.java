@@ -30,7 +30,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
-import java.awt.Point;
+import java.awt.*;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -108,7 +108,7 @@ public class JIPipeExportedCompartment {
         String locationCompartment = "";
         for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
             if (!(algorithm instanceof JIPipeCompartmentOutput)) {
-                if(!algorithm.getLocations().keySet().isEmpty())
+                if (!algorithm.getLocations().keySet().isEmpty())
                     locationCompartment = algorithm.getLocations().keySet().iterator().next();
             }
         }
@@ -119,10 +119,10 @@ public class JIPipeExportedCompartment {
         for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
             graph.setCompartment(algorithm.getUUIDInParentGraph(), compartmentUUID);
             Map<String, Point> map = algorithm.getLocations().getOrDefault(locationCompartment, null);
-            if(map != null) {
+            if (map != null) {
                 locations.put(algorithm, map);
             }
-            if(algorithm instanceof JIPipeCompartmentOutput) {
+            if (algorithm instanceof JIPipeCompartmentOutput) {
                 outputLocation = map;
             }
         }
@@ -134,7 +134,7 @@ public class JIPipeExportedCompartment {
                 copies.put(algorithm.getUUIDInParentGraph(), projectOutputNode);
 
                 // Set location
-                if(outputLocation != null)
+                if (outputLocation != null)
                     projectOutputNode.getLocations().put(compartmentUUID.toString(), outputLocation);
 
                 // Copy the slot configuration over

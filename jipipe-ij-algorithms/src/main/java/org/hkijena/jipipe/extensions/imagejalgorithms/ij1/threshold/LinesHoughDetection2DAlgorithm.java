@@ -139,7 +139,7 @@ public class LinesHoughDetection2DAlgorithm extends JIPipeSimpleIteratingAlgorit
                     float[] row = houghArray[y];
                     System.arraycopy(row, 0, pixels, y * accWidth, accWidth);
                 }
-                if(outputAccumulatorStack[0] == null) {
+                if (outputAccumulatorStack[0] == null) {
                     outputAccumulatorStack[0] = new ImageStack(accWidth, accHeight, inputMask.getStackSize());
                 }
             }

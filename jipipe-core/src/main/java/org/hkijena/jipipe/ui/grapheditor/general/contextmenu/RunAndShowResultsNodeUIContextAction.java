@@ -16,8 +16,8 @@ package org.hkijena.jipipe.ui.grapheditor.general.contextmenu;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.actions.RunAndShowResultsAction;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -31,7 +31,7 @@ public class RunAndShowResultsNodeUIContextAction implements NodeUIContextAction
     public boolean matches(Set<JIPipeNodeUI> selection) {
         if (selection.size() == 1) {
             JIPipeGraphNode node = selection.iterator().next().getNode();
-            if(node instanceof JIPipeProjectCompartment)
+            if (node instanceof JIPipeProjectCompartment)
                 return true;
             if (!node.getInfo().isRunnable())
                 return false;

@@ -14,7 +14,6 @@
 package org.hkijena.jipipe.ui.components.renderers;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -28,7 +27,7 @@ public class JIPipeParameterTypeInfoListCellRenderer extends JPanel implements L
     private final JLabel infoLabel = new JLabel();
 
     public JIPipeParameterTypeInfoListCellRenderer() {
-       initialize();
+        initialize();
     }
 
     private void initialize() {

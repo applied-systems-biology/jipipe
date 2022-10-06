@@ -35,14 +35,14 @@ public class GetItemFunction extends ExpressionFunction {
         if (target instanceof List) {
             int i = ((Number) index).intValue();
             List<?> list = (List<?>) target;
-            if(i < 0) {
+            if (i < 0) {
                 i += list.size();
             }
             return list.get(i);
         } else if (target instanceof String) {
             int i = ((Number) index).intValue();
             String string = (String) target;
-            if(i < 0) {
+            if (i < 0) {
                 i += string.length();
             }
             return string.charAt(i) + "";

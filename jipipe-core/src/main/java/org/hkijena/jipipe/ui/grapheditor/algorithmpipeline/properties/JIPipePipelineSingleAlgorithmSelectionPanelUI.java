@@ -52,17 +52,16 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
     private final JIPipeGraphEditorUI graphEditorUI;
     private final JIPipeGraphCanvasUI canvas;
     private final JIPipeGraphNode node;
+    private final JButton loadExampleButton = new JButton("Load example", UIUtils.getIconFromResources("actions/graduation-cap.png"));
     private JPanel testBenchTabContent;
     private JPanel cacheBrowserTabContent;
     private JPanel batchAssistantTabContent;
     private JPanel currentRunTabContent;
     private DocumentTabPane tabbedPane;
 
-    private final JButton loadExampleButton = new JButton("Load example", UIUtils.getIconFromResources("actions/graduation-cap.png"));
-
     /**
      * @param graphEditorUI the graph editor
-     * @param node     the algorithm
+     * @param node          the algorithm
      */
     public JIPipePipelineSingleAlgorithmSelectionPanelUI(JIPipeGraphEditorUI graphEditorUI, JIPipeGraphNode node) {
         super((JIPipeProjectWorkbench) graphEditorUI.getWorkbench());
@@ -84,8 +83,8 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         tabbedPane.registerSingletonTab("PARAMETERS", "Parameters", UIUtils.getIconFromResources("actions/configure.png"),
                 () -> parametersUI, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
 
-        if(JIPipeAdvancedParameterEditorUI.supports(node)) {
-            tabbedPane.registerSingletonTab("ADVANCED_PARAMETERS","Advanced parameters", UIUtils.getIconFromResources("actions/configure_toolbars.png"),
+        if (JIPipeAdvancedParameterEditorUI.supports(node)) {
+            tabbedPane.registerSingletonTab("ADVANCED_PARAMETERS", "Advanced parameters", UIUtils.getIconFromResources("actions/configure_toolbars.png"),
                     () -> new JIPipeAdvancedParameterEditorUI(getWorkbench(), node),
                     DocumentTabPane.CloseMode.withoutCloseButton,
                     DocumentTabPane.SingletonTabMode.Present);
@@ -129,8 +128,7 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
                 tabbedPane.registerSingletonTab("CURRENT_RUN", "Current process", UIUtils.getIconFromResources("actions/show_log.png"),
                         () -> currentRunTabContent, DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
             }
-        }
-        else {
+        } else {
             JIPipeSlotEditorUI slotEditorUI = new JIPipeSlotEditorUI(graphEditorUI, node);
             tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIconFromResources("actions/plug.png"),
                     () -> slotEditorUI,
@@ -199,11 +197,10 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
     }
 
     private void updateExampleButton() {
-        if(node instanceof JIPipeAlgorithm) {
+        if (node instanceof JIPipeAlgorithm) {
             List<JIPipeNodeExample> nodeExamples = getProject().getNodeExamples(node.getInfo().getId());
             loadExampleButton.setVisible(!nodeExamples.isEmpty());
-        }
-        else {
+        } else {
             loadExampleButton.setVisible(false);
         }
     }
@@ -255,8 +252,8 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
         List<JIPipeNodeExample> nodeExamples = getProject().getNodeExamples(node.getInfo().getId());
         pickerDialog.setAvailableItems(nodeExamples);
         JIPipeNodeExample selection = pickerDialog.showDialog();
-        if(selection != null) {
-            ((JIPipeAlgorithm)node).loadExample(selection);
+        if (selection != null) {
+            ((JIPipeAlgorithm) node).loadExample(selection);
         }
     }
 

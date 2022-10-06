@@ -3,7 +3,6 @@ package org.hkijena.jipipe.extensions.parameters.library.quantities;
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
 import org.apache.commons.lang3.math.NumberUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,6 +22,21 @@ public class Quantity {
      * Time: s
      */
     public static final Map<String, Double> UNITS_FACTORS = new HashMap<>();
+    public static final Pattern PARSE_QUANTITY_PATTERN = Pattern.compile("([+-]?\\d+[,.]?\\d*)(.*)");
+    public static final String UNIT_NO_UNIT = "";
+    public static final String[] KNOWN_UNITS_IMAGE_DIMENSIONS = new String[]{
+            "pixel", "nm", "µm", "microns", "mm", "cm", "dm", "m", "km",
+            "inch", "in", "foot", "ft", "yard", "yd"
+    };
+    public static final String[] KNOWN_UNITS = new String[]{
+            "pixel",
+            "nm", "µm", "microns", "mm", "cm", "dm", "m", "km",
+            "inch", "in", "foot", "ft", "yard", "yd",
+            "ng", "µg", "mg", "g", "kg", "t",
+            "Da",
+            "oz", "lb",
+            "ns", "µs", "ms", "s", "min", "h", "d"
+    };
 
     static {
         // Length
@@ -72,21 +86,6 @@ public class Quantity {
         UNITS_FACTORS.put("a", 3.154e+7);
     }
 
-    public static final Pattern PARSE_QUANTITY_PATTERN = Pattern.compile("([+-]?\\d+[,.]?\\d*)(.*)");
-    public static final String UNIT_NO_UNIT = "";
-    public static final String[] KNOWN_UNITS_IMAGE_DIMENSIONS = new String[]{
-            "pixel", "nm", "µm", "microns", "mm", "cm", "dm", "m", "km",
-            "inch", "in", "foot", "ft", "yard", "yd"
-    };
-    public static final String[] KNOWN_UNITS = new String[]{
-            "pixel",
-            "nm", "µm", "microns", "mm", "cm", "dm", "m", "km",
-            "inch", "in", "foot", "ft", "yard", "yd",
-            "ng", "µg", "mg", "g", "kg", "t",
-            "Da",
-            "oz", "lb",
-            "ns", "µs", "ms", "s", "min", "h", "d"
-    };
     private double value;
     private String unit;
 
@@ -147,7 +146,7 @@ public class Quantity {
     }
 
     public Quantity convertTo(String targetUnit) {
-        if(Objects.equals(targetUnit, unit)) {
+        if (Objects.equals(targetUnit, unit)) {
             return this;
         }
 

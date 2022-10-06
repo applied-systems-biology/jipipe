@@ -3,7 +3,6 @@ package org.hkijena.jipipe.ui.grapheditor.general.properties;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.grouping.parameters.GraphNodeParameterReference;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.*;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionEvaluator;
@@ -14,17 +13,14 @@ import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.ParameterTreeUI;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.pickers.JIPipeParameterTypeInfoPicker;
 import org.hkijena.jipipe.ui.parameters.AdaptiveParameterBuilder;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
-import org.python.antlr.ast.Str;
 
 import javax.swing.*;
-import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
 import java.util.HashSet;
 import java.util.List;
@@ -42,22 +38,26 @@ public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel {
         this.node = node;
         this.settings = new Settings(node);
         initialize();
-        if(node instanceof JIPipeParameterSlotAlgorithm) {
+        if (node instanceof JIPipeParameterSlotAlgorithm) {
             enableMultiParametersToggle.setSelected(((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().isHasParameterSlot());
             ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings().getEventBus().register(this);
         }
-        if(node instanceof JIPipeAdaptiveParametersAlgorithm) {
+        if (node instanceof JIPipeAdaptiveParametersAlgorithm) {
             ((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings().getEventBus().register(this);
         }
+    }
+
+    public static boolean supports(JIPipeGraphNode node) {
+        return (node instanceof JIPipeParameterSlotAlgorithm) || (node instanceof JIPipeAdaptiveParametersAlgorithm);
     }
 
     private void initialize() {
         setLayout(new BorderLayout());
         FormPanel formPanel = new FormPanel(FormPanel.WITH_SCROLLING);
-        if(node instanceof JIPipeParameterSlotAlgorithm) {
+        if (node instanceof JIPipeParameterSlotAlgorithm) {
             initializeMultiParameterQuickSettings(formPanel);
         }
-        if(node instanceof JIPipeAdaptiveParametersAlgorithm) {
+        if (node instanceof JIPipeAdaptiveParametersAlgorithm) {
             initializeAdaptiveParameterSettings(formPanel);
         }
         ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(), settings, new MarkdownDocument(), FormPanel.WITH_DOCUMENTATION | FormPanel.DOCUMENTATION_NO_UI);
@@ -71,7 +71,7 @@ public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel {
         JPanel buttonPanel = new JPanel(new BorderLayout());
         JLabel infoLabel = UIUtils.createInfoLabel("This node supports adaptive parameters", "Specific parameters are <i>adapted</i> to the properties (e.g., annotations) of the currently processed data batch.");
         buttonPanel.add(infoLabel, BorderLayout.CENTER);
-        JButton addButton =new JButton("Add adaptive parameter", UIUtils.getIcon32FromResources("actions/add.png"));
+        JButton addButton = new JButton("Add adaptive parameter", UIUtils.getIcon32FromResources("actions/add.png"));
         JPopupMenu addMenu = UIUtils.addPopupMenuToComponent(addButton);
         addMenu.add(UIUtils.createMenuItem("Pick existing parameter", "Picks a parameter from the node. Its current value is added into the list of adapted parameters with the appropriate settings.", UIUtils.getIconFromResources("actions/color-select.png"), this::addAdaptiveParameterFromNode));
         addMenu.add(UIUtils.createMenuItem("Switch/case builder", "Opens an interface that helps creating an adaptive parameter based on branching (switch/case)", UIUtils.getIconFromResources("actions/configure.png"), this::addAdaptiveParameterSwitchCase));
@@ -83,7 +83,7 @@ public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel {
                 "Custom parameter values are attached as annotations to generated outputs. You can find all settings in the <strong>Adaptive parameter settings</strong> section below."
                 + (settings.parameterSlotAlgorithmSettings != null ? "<br/><br/><i>Please note that multiple parameters (if enabled) are overridden by adaptive parameters.</i>" : ""), false);
         UIUtils.setJTextPaneFont(helpText, infoLabel.getFont(), UIManager.getColor("Label.foreground"));
-        helpText.setBorder(BorderFactory.createEmptyBorder(16,43,16,16));
+        helpText.setBorder(BorderFactory.createEmptyBorder(16, 43, 16, 16));
         formPanel.addWideToForm(helpText);
 
         JIPipeParameterAccess access = settings.getAdaptiveParameterSettings().getParameterAccess("overridden-parameters");
@@ -129,25 +129,23 @@ public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel {
         for (Object parameter : selected) {
             if (parameter != null) {
                 for (JIPipeParameterAccess child : parameterTree.getAllChildParameters(parameter)) {
-                    if(child.getSource() == settings.adaptiveParameterSettings || child.getSource() == settings.parameterSlotAlgorithmSettings)
+                    if (child.getSource() == settings.adaptiveParameterSettings || child.getSource() == settings.parameterSlotAlgorithmSettings)
                         continue;
                     String uniqueKey = parameterTree.getUniqueKey(child);
-                    if("jipipe:algorithm:pass-through".equals(uniqueKey)) {
+                    if ("jipipe:algorithm:pass-through".equals(uniqueKey)) {
                         foundPassThrough = true;
                     }
-                    if(existing.contains(uniqueKey)) {
+                    if (existing.contains(uniqueKey)) {
                         skipped = true;
                         continue;
                     }
                     Object o = child.get(Object.class);
                     String expression;
-                    if(o instanceof Number) {
+                    if (o instanceof Number) {
                         expression = "" + o;
-                    }
-                    else if(o instanceof String) {
+                    } else if (o instanceof String) {
                         expression = (String) o;
-                    }
-                    else {
+                    } else {
                         expression = "\"" + DefaultExpressionEvaluator.escapeString(JsonUtils.toJsonString(o)) + "\"";
                     }
                     target.add(new StringQueryExpressionAndStringPairParameter(expression, uniqueKey));
@@ -155,10 +153,10 @@ public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel {
             }
         }
         settings.getAdaptiveParameterSettings().setParameter("overridden-parameters", target);
-        if(skipped) {
+        if (skipped) {
             JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Some selected entries were already present in the list of overridden parameters and were skipped.", "Add adaptive parameters", JOptionPane.INFORMATION_MESSAGE);
         }
-        if(foundPassThrough) {
+        if (foundPassThrough) {
             JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "Please note that a pass through via adaptive parameters is not always possible for various nodes (as the pass through happens early during processing).\n" +
                     "In these cases, pass through has no effect if set via adaptive parameters.", "Add adaptive parameters", JOptionPane.INFORMATION_MESSAGE);
         }
@@ -175,7 +173,7 @@ public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel {
                 "Alternatively, you can use <strong>Generate parameters from expression</strong> if you prefer creating parameter sets automatically.<br/><br/>" +
                 "For each parameter set, outputs are labeled by non-<code>#</code> annotations based on the parameter values. If you want to change this behavior, scroll down to the <strong>Multi-parameter settings</strong>.", false);
         UIUtils.setJTextPaneFont(helpText, infoLabel.getFont(), UIManager.getColor("Label.foreground"));
-        helpText.setBorder(BorderFactory.createEmptyBorder(16,43,16,16));
+        helpText.setBorder(BorderFactory.createEmptyBorder(16, 43, 16, 16));
         formPanel.addWideToForm(helpText);
         formPanel.addWideToForm(new JSeparator(SwingConstants.HORIZONTAL));
 
@@ -184,20 +182,15 @@ public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel {
         });
     }
 
-    public static boolean supports(JIPipeGraphNode node) {
-        return (node instanceof JIPipeParameterSlotAlgorithm) || (node instanceof JIPipeAdaptiveParametersAlgorithm);
-    }
-
     public JIPipeGraphNode getNode() {
         return node;
     }
 
     @Subscribe
     public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-        if(event.getSource() instanceof JIPipeParameterSlotAlgorithmSettings) {
+        if (event.getSource() instanceof JIPipeParameterSlotAlgorithmSettings) {
             enableMultiParametersToggle.setSelected(((JIPipeParameterSlotAlgorithmSettings) event.getSource()).isHasParameterSlot());
-        }
-        else if(event.getSource() instanceof JIPipeAdaptiveParameterSettings) {
+        } else if (event.getSource() instanceof JIPipeAdaptiveParameterSettings) {
 
         }
     }
@@ -207,18 +200,16 @@ public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel {
         private final JIPipeAdaptiveParameterSettings adaptiveParameterSettings;
 
         public Settings(JIPipeGraphNode node) {
-            if(node instanceof JIPipeParameterSlotAlgorithm) {
+            if (node instanceof JIPipeParameterSlotAlgorithm) {
                 parameterSlotAlgorithmSettings = ((JIPipeParameterSlotAlgorithm) node).getParameterSlotAlgorithmSettings();
                 parameterSlotAlgorithmSettings.getEventBus().register(this);
-            }
-            else {
+            } else {
                 parameterSlotAlgorithmSettings = null;
             }
-            if(node instanceof JIPipeAdaptiveParametersAlgorithm) {
+            if (node instanceof JIPipeAdaptiveParametersAlgorithm) {
                 adaptiveParameterSettings = ((JIPipeAdaptiveParametersAlgorithm) node).getAdaptiveParameterSettings();
                 adaptiveParameterSettings.getEventBus().register(this);
-            }
-            else {
+            } else {
                 adaptiveParameterSettings = null;
             }
         }
@@ -241,12 +232,11 @@ public class JIPipeAdvancedParameterEditorUI extends JIPipeWorkbenchPanel {
 
         @Override
         public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
-            if(access.getSource() == parameterSlotAlgorithmSettings) {
-                if("has-parameter-slot".equals(access.getKey()))
+            if (access.getSource() == parameterSlotAlgorithmSettings) {
+                if ("has-parameter-slot".equals(access.getKey()))
                     return false;
-            }
-            else if(access.getSource() == adaptiveParameterSettings) {
-                if("overridden-parameters".equals(access.getKey()))
+            } else if (access.getSource() == adaptiveParameterSettings) {
+                if ("overridden-parameters".equals(access.getKey()))
                     return false;
             }
             return super.isParameterUIVisible(tree, access);

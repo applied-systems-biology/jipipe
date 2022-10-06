@@ -16,15 +16,12 @@ package org.hkijena.jipipe.extensions.parameters.api.enums;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.PickDynamicEnumValueDialog;
-import org.hkijena.jipipe.ui.components.PickEnumValueDialog;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.Supplier;
@@ -56,12 +53,11 @@ public class DynamicEnumParameterEditorUI extends JIPipeParameterEditorUI {
     @Override
     public void reload() {
         DynamicEnumParameter<Object> parameter = getParameter(DynamicEnumParameter.class);
-        if(isComboBox) {
+        if (isComboBox) {
             if (!Objects.equals(parameter.getValue(), comboBox.getSelectedItem())) {
                 comboBox.setSelectedItem(parameter.getValue());
             }
-        }
-        else {
+        } else {
             currentlyDisplayed.setIcon(parameter.renderIcon(parameter.getValue()));
             currentlyDisplayed.setToolTipText(parameter.renderTooltip(parameter.getValue()));
             currentlyDisplayed.setText(parameter.renderLabel(parameter.getValue()));
@@ -118,7 +114,7 @@ public class DynamicEnumParameterEditorUI extends JIPipeParameterEditorUI {
 
     private void pickEnum() {
         DynamicEnumParameter target = getParameterAccess().get(DynamicEnumParameter.class);
-        Object selected = PickDynamicEnumValueDialog.showDialog(getWorkbench().getWindow(),target, target.getValue(), "Select value");
+        Object selected = PickDynamicEnumValueDialog.showDialog(getWorkbench().getWindow(), target, target.getValue(), "Select value");
         if (selected != null) {
             target.setValue(selected);
             setParameter(target, true);

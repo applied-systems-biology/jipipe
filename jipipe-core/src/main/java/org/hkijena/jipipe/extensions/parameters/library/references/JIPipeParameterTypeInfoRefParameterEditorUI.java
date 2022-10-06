@@ -13,22 +13,15 @@
 
 package org.hkijena.jipipe.extensions.parameters.library.references;
 
-import com.google.common.eventbus.Subscribe;
-import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.pickers.JIPipeNodeInfoPicker;
 import org.hkijena.jipipe.ui.components.pickers.JIPipeParameterTypeInfoPicker;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
-import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collections;
-import java.util.stream.Collectors;
 
 /**
  * Parameter for {@link JIPipeParameterTypeInfoRef}
@@ -79,18 +72,17 @@ public class JIPipeParameterTypeInfoRefParameterEditorUI extends JIPipeParameter
     private void pickNodeInfo() {
         JIPipeParameterTypeInfoRef infoRef = getParameter(JIPipeParameterTypeInfoRef.class);
         JIPipeParameterTypeInfoPicker picker;
-        if(infoRef.getUiAllowedParameterTypes() == null || infoRef.getUiAllowedParameterTypes().isEmpty()) {
+        if (infoRef.getUiAllowedParameterTypes() == null || infoRef.getUiAllowedParameterTypes().isEmpty()) {
             picker = new JIPipeParameterTypeInfoPicker(getWorkbench().getWindow());
-        }
-        else {
+        } else {
             picker = new JIPipeParameterTypeInfoPicker(getWorkbench().getWindow(), infoRef.getUiAllowedParameterTypes());
         }
         JIPipeParameterTypeInfo info = infoRef.getInfo();
-        if(info != null) {
+        if (info != null) {
             picker.setSelectedItem(info);
         }
         JIPipeParameterTypeInfo selection = picker.showDialog();
-        if(selection != null) {
+        if (selection != null) {
             setParameter(new JIPipeParameterTypeInfoRef(selection), true);
         }
     }

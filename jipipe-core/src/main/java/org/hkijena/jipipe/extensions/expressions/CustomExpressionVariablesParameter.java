@@ -33,19 +33,20 @@ public class CustomExpressionVariablesParameter extends JIPipeDynamicParameterCo
 
     /**
      * Writes the parameter values to variables
-     * @param variables the target
-     * @param asVariables write as variables (accessible via the key)
+     *
+     * @param variables       the target
+     * @param asVariables     write as variables (accessible via the key)
      * @param variablesPrefix prefix for the variables
-     * @param toMap if a map should be created (accessible via the key)
-     * @param mapName the name of the map
+     * @param toMap           if a map should be created (accessible via the key)
+     * @param mapName         the name of the map
      */
     public void writeToVariables(ExpressionVariables variables, boolean asVariables, String variablesPrefix, boolean toMap, String mapName) {
-        if(asVariables) {
+        if (asVariables) {
             for (Map.Entry<String, JIPipeParameterAccess> entry : getParameters().entrySet()) {
                 variables.set(variablesPrefix + entry.getKey(), entry.getValue().get(Object.class));
             }
         }
-        if(toMap) {
+        if (toMap) {
             Map<String, Object> map = new HashMap<>();
             for (Map.Entry<String, JIPipeParameterAccess> entry : getParameters().entrySet()) {
                 map.put(entry.getKey(), entry.getValue().get(Object.class));

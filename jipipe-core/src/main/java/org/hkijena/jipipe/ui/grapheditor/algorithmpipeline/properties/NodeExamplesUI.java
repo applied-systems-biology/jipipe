@@ -34,7 +34,7 @@ public class NodeExamplesUI extends JIPipeProjectWorkbenchPanel {
         exampleJList.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent mouseEvent) {
-                if(mouseEvent.getClickCount() == 2) {
+                if (mouseEvent.getClickCount() == 2) {
                     loadExample();
                 }
             }
@@ -48,16 +48,16 @@ public class NodeExamplesUI extends JIPipeProjectWorkbenchPanel {
         toolBar.add(Box.createHorizontalGlue());
 
         JButton loadExampleButton = new JButton("Load example", UIUtils.getIconFromResources("actions/document-open-folder.png"));
-        loadExampleButton.addActionListener(e->loadExample());
+        loadExampleButton.addActionListener(e -> loadExample());
         toolBar.add(loadExampleButton);
     }
 
     private void loadExample() {
         JIPipeNodeExample example = exampleJList.getSelectedValue();
-        if(example == null) {
+        if (example == null) {
             return;
         }
-        if(JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this), "Do you really want to load the example '" + example.getNodeTemplate().getName() + "'?\n" +
+        if (JOptionPane.showConfirmDialog(SwingUtilities.getWindowAncestor(this), "Do you really want to load the example '" + example.getNodeTemplate().getName() + "'?\n" +
                 "This will override all your existing settings.", "Load example", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
             return;
         }

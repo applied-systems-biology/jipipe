@@ -18,11 +18,8 @@ import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
 import org.hkijena.jipipe.ui.running.RunWorkerStartedEvent;
-import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.geom.AffineTransform;
 
 public class JIPipeRunThrobberIcon extends NewThrobberIcon {
 

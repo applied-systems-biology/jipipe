@@ -63,10 +63,9 @@ public class JIPipeJavaNodeRegistrationTask extends JIPipeDefaultNodeRegistratio
         alreadyRegistered = true;
         JIPipeJavaNodeInfo info = new JIPipeJavaNodeInfo(id, nodeClass);
         JIPipe.getNodes().register(info, source);
-        if(nodeClass.getAnnotation(Deprecated.class) != null) {
+        if (nodeClass.getAnnotation(Deprecated.class) != null) {
             JIPipe.getNodes().registerIcon(info, UIUtils.getIconURLFromResources("emblems/deprecated.png"));
-        }
-        else {
+        } else {
             if (icon != null)
                 JIPipe.getNodes().registerIcon(info, icon);
         }

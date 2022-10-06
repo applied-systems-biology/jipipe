@@ -15,9 +15,7 @@
 package org.hkijena.jipipe.utils;
 
 import javax.swing.*;
-import java.awt.BorderLayout;
-import java.awt.Component;
-import java.awt.Dimension;
+import java.awt.*;
 
 public class OKCancelDialog extends JDialog {
     private final String title;
@@ -31,6 +29,15 @@ public class OKCancelDialog extends JDialog {
         this.editor = editor;
         this.okLabel = okLabel;
         initialize();
+    }
+
+    public static boolean showDialog(Component parent, String title, Component editor, String okLabel, Dimension size) {
+        OKCancelDialog dialog = new OKCancelDialog(parent, title, editor, okLabel);
+        dialog.pack();
+        dialog.setSize(size);
+        dialog.setLocationRelativeTo(parent);
+        dialog.setVisible(true);
+        return !dialog.isCancelled();
     }
 
     private void initialize() {
@@ -55,20 +62,11 @@ public class OKCancelDialog extends JDialog {
         });
 
         JPanel buttonPanel = UIUtils.boxHorizontal(Box.createHorizontalGlue(), cancelButton, okButton);
-        buttonPanel.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
         getContentPane().add(buttonPanel, BorderLayout.SOUTH);
     }
 
     public boolean isCancelled() {
         return cancelled;
-    }
-
-    public static boolean showDialog(Component parent, String title, Component editor, String okLabel, Dimension size) {
-        OKCancelDialog dialog = new OKCancelDialog(parent, title, editor, okLabel);
-        dialog.pack();
-        dialog.setSize(size);
-        dialog.setLocationRelativeTo(parent);
-        dialog.setVisible(true);
-        return !dialog.isCancelled();
     }
 }

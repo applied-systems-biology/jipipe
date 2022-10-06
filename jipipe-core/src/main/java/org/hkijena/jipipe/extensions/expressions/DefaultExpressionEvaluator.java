@@ -241,17 +241,17 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
             char c = expression.charAt(i);
 
             // Expression escape behavior
-            if(!isQuoted && !escape && c == '$' && i < expression.length() - 1 && expression.charAt(i + 1) == '{') {
+            if (!isQuoted && !escape && c == '$' && i < expression.length() - 1 && expression.charAt(i + 1) == '{') {
                 ++expressionEscape;
                 i += 1; // Yes, this is ugly - we need to skip two steps
-                if(expressionEscape == 1) {
+                if (expressionEscape == 1) {
                     buffer.setLength(0);
                 }
                 continue;
             }
-            if(expressionEscape > 0 && c == '}') {
+            if (expressionEscape > 0 && c == '}') {
                 --expressionEscape;
-                if(expressionEscape <= 0) {
+                if (expressionEscape <= 0) {
                     // Convert to string and flush
                     String escaped = "\"" + escapeString(buffer.toString()) + "\"";
                     tokens.add(escaped);
@@ -259,7 +259,7 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
                 }
                 continue;
             }
-            if(expressionEscape > 0) {
+            if (expressionEscape > 0) {
                 buffer.append(c);
                 continue;
             }

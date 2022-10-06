@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.extensions.expressions.functions.math;
 
 import ij.IJ;
-import org.apache.commons.math3.util.Precision;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;

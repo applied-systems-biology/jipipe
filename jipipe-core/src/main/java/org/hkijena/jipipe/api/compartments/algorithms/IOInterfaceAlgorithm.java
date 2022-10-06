@@ -43,18 +43,6 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
         super(info, new JIPipeIOSlotConfiguration());
     }
 
-    @Override
-    protected boolean canAutoPassThrough() {
-        return false;
-    }
-
-    @Override
-    protected void runPassThrough(JIPipeProgressInfo progressInfo) {
-        for (JIPipeInputDataSlot inputSlot : getDataInputSlots()) {
-            getOutputSlot(inputSlot.getName()).addData(inputSlot, progressInfo);
-        }
-    }
-
     /**
      * Creates a copy of the other algorithm
      *
@@ -131,6 +119,18 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
             for (JIPipeDataSlot target : entry.getValue()) {
                 graph.connect(source, target);
             }
+        }
+    }
+
+    @Override
+    protected boolean canAutoPassThrough() {
+        return false;
+    }
+
+    @Override
+    protected void runPassThrough(JIPipeProgressInfo progressInfo) {
+        for (JIPipeInputDataSlot inputSlot : getDataInputSlots()) {
+            getOutputSlot(inputSlot.getName()).addData(inputSlot, progressInfo);
         }
     }
 

@@ -61,15 +61,13 @@ import java.util.stream.Collectors;
 public class TracksManagerPlugin extends ImageViewerPanelPlugin {
     private final JList<Integer> tracksListControl = new JList<>();
     private final SmallToggleButtonAction displayTracksViewMenuItem = new SmallToggleButtonAction("Display tracks", "Determines whether tracks are displayed", UIUtils.getIconFromResources("actions/eye.png"));
-    private TrackCollectionData tracksCollection;
-    private JIPipeDataTableDataSource dataSource;
     private final List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
+    private final Ribbon ribbon = new Ribbon(3);
+    private TrackCollectionData tracksCollection;
+    private JIPipeDataTableDataSource dataSource;
     private TrackDrawer trackDrawer = new TrackDrawer();
     private TrackListCellRenderer tracksListCellRenderer;
-
-    private final Ribbon ribbon = new Ribbon(3);
-
     private JPanel mainPanel;
 
     public TracksManagerPlugin(ImageViewerPanel viewerPanel) {
@@ -145,7 +143,7 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
                     displayMenu.add(item);
                 }
             }
-            visualizationBand.add(new Ribbon.Action(new JPanel(), 1, new Insets(2,2,2,2)));
+            visualizationBand.add(new Ribbon.Action(new JPanel(), 1, new Insets(2, 2, 2, 2)));
 
             visualizationBand.add(new SmallButtonAction("More settings ...", "Opens a dialog where all available visualization settings can be changed", UIUtils.getIconFromResources("actions/configure.png"), this::openDrawingSettings));
             visualizationBand.add(new SmallButtonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/save.png"), this::saveDefaults));
@@ -261,6 +259,7 @@ public class TracksManagerPlugin extends ImageViewerPanelPlugin {
     public TrackDrawer getTrackDrawer() {
         return trackDrawer;
     }
+
     private void importTracksFromFile() {
         Path path = FileChooserSettings.openFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Data, "Import tracks", UIUtils.EXTENSION_FILTER_ZIP);
         if (path != null && displayTracksViewMenuItem.getState()) {

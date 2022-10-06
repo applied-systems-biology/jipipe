@@ -1,7 +1,6 @@
 package org.hkijena.jipipe.ui.parameters;
 
 import com.google.common.eventbus.Subscribe;
-import com.vladsch.flexmark.util.collection.OrderedSet;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.*;
@@ -19,11 +18,9 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkbenchAccess {
@@ -83,16 +80,15 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
             model.addElement(parameterEntry);
         }
         parameterEntryJList.setModel(model);
-        if(selectedValue != null && parameterEntryList.contains(selectedValue)) {
+        if (selectedValue != null && parameterEntryList.contains(selectedValue)) {
             parameterEntryJList.setSelectedValue(selectedValue, true);
         }
     }
 
     private boolean supportsAddingFieldClass(Class<?> klass) {
-        if(dynamicParameterCollection.getAllowedTypes() == null || dynamicParameterCollection.getAllowedTypes().isEmpty()) {
+        if (dynamicParameterCollection.getAllowedTypes() == null || dynamicParameterCollection.getAllowedTypes().isEmpty()) {
             return true;
-        }
-        else {
+        } else {
             return dynamicParameterCollection.getAllowedTypes().contains(klass);
         }
     }
@@ -123,10 +119,9 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
     private void onListSelectionChanged() {
         ParameterEntry entry = parameterEntryJList.getSelectedValue();
         contentPanel.removeAll();
-        if(entry == null) {
+        if (entry == null) {
             contentPanel.add(new MarkdownReader(false, documentation), BorderLayout.CENTER);
-        }
-        else {
+        } else {
             ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(), entry, documentation, FormPanel.WITH_SCROLLING | FormPanel.WITH_DOCUMENTATION | FormPanel.DOCUMENTATION_BELOW);
             contentPanel.add(parameterPanel, BorderLayout.CENTER);
         }
@@ -136,40 +131,39 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
 
     private void initializeAddButton(JToolBar toolBar) {
         Set<Class<?>> quickAccessParameterTypes = new LinkedHashSet<>();
-        if(!dynamicParameterCollection.supportsAllParameterTypes()) {
-            if(dynamicParameterCollection.getAllowedTypes().size() < 15) {
+        if (!dynamicParameterCollection.supportsAllParameterTypes()) {
+            if (dynamicParameterCollection.getAllowedTypes().size() < 15) {
                 quickAccessParameterTypes.addAll(dynamicParameterCollection.getAllowedTypes());
             }
         }
         // Add common types
-        if(supportsAddingFieldClass(Boolean.class)) {
+        if (supportsAddingFieldClass(Boolean.class)) {
             quickAccessParameterTypes.add(Boolean.class);
         }
-        if(supportsAddingFieldClass(Byte.class)) {
+        if (supportsAddingFieldClass(Byte.class)) {
             quickAccessParameterTypes.add(Byte.class);
         }
-        if(supportsAddingFieldClass(Short.class)) {
+        if (supportsAddingFieldClass(Short.class)) {
             quickAccessParameterTypes.add(Short.class);
         }
-        if(supportsAddingFieldClass(Integer.class)) {
+        if (supportsAddingFieldClass(Integer.class)) {
             quickAccessParameterTypes.add(Integer.class);
         }
-        if(supportsAddingFieldClass(Long.class)) {
+        if (supportsAddingFieldClass(Long.class)) {
             quickAccessParameterTypes.add(Long.class);
         }
-        if(supportsAddingFieldClass(Float.class)) {
+        if (supportsAddingFieldClass(Float.class)) {
             quickAccessParameterTypes.add(Float.class);
         }
-        if(supportsAddingFieldClass(Double.class)) {
+        if (supportsAddingFieldClass(Double.class)) {
             quickAccessParameterTypes.add(Double.class);
         }
 
-        if(quickAccessParameterTypes.isEmpty()) {
+        if (quickAccessParameterTypes.isEmpty()) {
             JButton addButton = new JButton("Add", UIUtils.getIconFromResources("actions/add.png"));
             addButton.addActionListener(e -> addParameterByPicker());
             toolBar.add(addButton);
-        }
-        else {
+        } else {
             JButton addButton = new JButton("Add", UIUtils.getIconFromResources("actions/add.png"));
             JPopupMenu popupMenu = UIUtils.addPopupMenuToComponent(addButton);
             popupMenu.add(UIUtils.createMenuItem("Search ...", null, UIUtils.getIconFromResources("actions/search.png"), this::addParameterByPicker));
@@ -184,7 +178,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
 
     private void removeSelectedItems() {
         List<ParameterEntry> selectedValuesList = parameterEntryJList.getSelectedValuesList();
-        if(!selectedValuesList.isEmpty()) {
+        if (!selectedValuesList.isEmpty()) {
             parameterEntryList.removeAll(selectedValuesList);
         }
         updateJList();
@@ -204,7 +198,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
 
     @Subscribe
     public void onParameterEntryUpdated(JIPipeParameterCollection.ParameterChangedEvent event) {
-        if(event.getSource() instanceof ParameterEntry) {
+        if (event.getSource() instanceof ParameterEntry) {
             parameterEntryJList.repaint();
         }
     }
@@ -212,7 +206,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
     private void addParameterByPicker() {
         JIPipeParameterTypeInfoPicker picker = new JIPipeParameterTypeInfoPicker(this, dynamicParameterCollection.getAllowedTypes());
         JIPipeParameterTypeInfo info = picker.showDialog();
-        if(info != null) {
+        if (info != null) {
             addParameterByFieldClass(info.getFieldClass());
         }
     }
@@ -230,7 +224,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
 
         JButton confirmButton = new JButton("OK", UIUtils.getIconFromResources("actions/dialog-ok.png"));
         confirmButton.addActionListener(e -> {
-            if(checkSettings()) {
+            if (checkSettings()) {
                 copyEntriesToParameterCollection();
                 this.setVisible(false);
             }
@@ -243,7 +237,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
     private boolean checkSettings() {
         Set<String> existing = parameterEntryList.stream().map(ParameterEntry::getKey).collect(Collectors.toSet());
         for (String s : existing) {
-            if(StringUtils.isNullOrEmpty(StringUtils.nullToEmpty(s).trim())) {
+            if (StringUtils.isNullOrEmpty(StringUtils.nullToEmpty(s).trim())) {
                 JOptionPane.showMessageDialog(this,
                         "The unique parameter keys cannot be empty!",
                         "Empty keys found",
@@ -251,7 +245,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
                 return false;
             }
         }
-        if(existing.size() != parameterEntryList.size()) {
+        if (existing.size() != parameterEntryList.size()) {
             JOptionPane.showMessageDialog(this,
                     "There are " + (parameterEntryList.size() - existing.size()) + " entries that share the same key. Please ensure that each parameter has its unique key!",
                     "Non-unique keys found",
@@ -279,8 +273,7 @@ public class DynamicParameterEditorDialog extends JDialog implements JIPipeWorkb
                 }
                 dynamicParameterCollection.addParameter(access);
             }
-        }
-        finally {
+        } finally {
             dynamicParameterCollection.endModificationBlock();
         }
     }

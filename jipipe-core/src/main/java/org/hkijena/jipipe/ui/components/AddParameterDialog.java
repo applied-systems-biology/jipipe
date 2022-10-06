@@ -26,10 +26,8 @@ import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.jdesktop.swingx.JXTextField;
 
 import javax.swing.*;
-import javax.swing.event.DocumentEvent;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -48,13 +46,12 @@ public class AddParameterDialog extends JIPipeWorkbenchPanel {
      */
     private static JIPipeParameterTypeInfo lastSelectedType = null;
     private final JIPipeDynamicParameterCollection parameterCollection;
+    private final Set<JIPipeParameterTypeInfo> availableTypes;
+    private final Settings currentSettings = new Settings();
     private SearchTextField searchField;
     private JList<JIPipeParameterTypeInfo> datatypeList;
     private JIPipeParameterTypeInfo selectedInfo;
     private JDialog dialog;
-    private final Set<JIPipeParameterTypeInfo> availableTypes;
-
-    private final Settings currentSettings = new Settings();
 
     /**
      * @param parameterCollection the parameter collection
@@ -67,7 +64,7 @@ public class AddParameterDialog extends JIPipeWorkbenchPanel {
         setInitialName();
         initialize();
         reloadTypeList();
-        if(lastSelectedType != null) {
+        if (lastSelectedType != null) {
             datatypeList.setSelectedValue(lastSelectedType, true);
         }
     }
@@ -230,7 +227,7 @@ public class AddParameterDialog extends JIPipeWorkbenchPanel {
         this.dialog = dialog;
     }
 
-    public static class Settings extends AbstractJIPipeParameterCollection  {
+    public static class Settings extends AbstractJIPipeParameterCollection {
         private String id;
         private String name;
         private HTMLText description = new HTMLText();

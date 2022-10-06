@@ -48,10 +48,10 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
     private final Set<String> availableFonts = new HashSet<>(Arrays.asList(GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames()));
     private final Map<String, Action> availableEditorKitActions = new HashMap<>();
     private final boolean enableDialogEditor;
+    private final Map<JToggleButton, BooleanSupplier> updatedButtons = new HashMap<>();
     private JTextPane wysiwygEditorPane;
     private EditorPane htmlEditorPane;
     private HTMLEditorKit wysiwygEditorKit;
-    private final Map<JToggleButton, BooleanSupplier> updatedButtons = new HashMap<>();
     private JComboBox<String> fontSelection;
     private JComboBox<Integer> sizeSelection;
     private ColorChooserButton foregroundColorButton;
@@ -88,7 +88,7 @@ public class HTMLEditor extends JIPipeWorkbenchPanel {
     }
 
     public void setMode(Mode mode) {
-        if(mode != this.mode) {
+        if (mode != this.mode) {
             if (this.mode == Mode.HTML) {
                 // Copy to wysiwyg
                 wysiwygEditorPane.setText(htmlEditorPane.getText());

@@ -14,7 +14,6 @@
 
 package org.hkijena.jipipe.extensions.nodetemplate.templatedownloader;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.extensions.settings.NodeTemplateSettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -25,7 +24,6 @@ import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -67,7 +65,7 @@ public class NodeTemplateDownloaderDialog extends JDialog {
         for (JIPipeNodeTemplate nodeTemplate : NodeTemplateSettings.getInstance().getNodeTemplates()) {
             allSources.add(StringUtils.orElse(nodeTemplate.getSource(), JIPipeNodeTemplate.SOURCE_USER));
         }
-        if(installer.getWorkbench() instanceof JIPipeProjectWorkbench) {
+        if (installer.getWorkbench() instanceof JIPipeProjectWorkbench) {
             for (JIPipeNodeTemplate nodeTemplate : ((JIPipeProjectWorkbench) installer.getWorkbench()).getProject().getMetadata().getNodeTemplates()) {
                 allSources.add(StringUtils.orElse(nodeTemplate.getSource(), JIPipeNodeTemplate.SOURCE_USER));
             }
@@ -110,7 +108,7 @@ public class NodeTemplateDownloaderDialog extends JDialog {
                 new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
         panel.add(UIUtils.makeBorderlessReadonlyTextPane(availablePackage.getSizeInfo(), false), new GridBagConstraints(0, 3, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
-        JTextArea idField = UIUtils.makeReadonlyBorderlessTextArea( availablePackage.getUrl());
+        JTextArea idField = UIUtils.makeReadonlyBorderlessTextArea(availablePackage.getUrl());
         idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
         panel.add(idField, new GridBagConstraints(0, 4, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
@@ -118,10 +116,9 @@ public class NodeTemplateDownloaderDialog extends JDialog {
         JCheckBox installToggle = new JCheckBox("Download this template");
         installToggle.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));
         installToggle.addActionListener(e -> {
-            if(installToggle.isSelected()) {
+            if (installToggle.isSelected()) {
                 targetPackages.add(availablePackage);
-            }
-            else {
+            } else {
                 targetPackages.remove(availablePackage);
             }
         });
@@ -153,13 +150,11 @@ public class NodeTemplateDownloaderDialog extends JDialog {
                     null,
                     new Object[]{"Global storage", "Project storage", "Cancel"},
                     "Global storage");
-            if(response == JOptionPane.YES_OPTION) {
+            if (response == JOptionPane.YES_OPTION) {
                 addToProject = false;
-            }
-            else if(response == JOptionPane.NO_OPTION) {
+            } else if (response == JOptionPane.NO_OPTION) {
                 addToProject = true;
-            }
-            else {
+            } else {
                 return;
             }
             setVisible(false);

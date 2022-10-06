@@ -154,7 +154,7 @@ public class JIPipeSingleCompartmentSelectionPanelUI extends JIPipeProjectWorkbe
      * @param excludeSelected          if the current algorithm should be excluded
      */
     public void executeQuickRun(boolean showResults, boolean showCache, boolean saveToDisk, boolean storeIntermediateOutputs, boolean excludeSelected) {
-        if(compartment.getOutputNode().getOutputSlots().isEmpty()) {
+        if (compartment.getOutputNode().getOutputSlots().isEmpty()) {
             JOptionPane.showMessageDialog(SwingUtilities.getWindowAncestor(this), "<html>The output node of the compartment '" + compartment.getName() + "' transfers no data.<br/>" +
                     "This means that the there will be no outputs generated for the compartment.<br/><br/>" +
                     "Please edit the compartment via a double-click and add inputs into the '" + compartment.getOutputNode().getName() + "' node.</html>", "No outputs to generate", JOptionPane.WARNING_MESSAGE);

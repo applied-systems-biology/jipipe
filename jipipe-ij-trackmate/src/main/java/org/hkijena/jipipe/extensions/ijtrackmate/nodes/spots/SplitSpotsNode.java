@@ -45,9 +45,8 @@ import java.util.Map;
 @JIPipeOutputSlot(value = SpotsCollectionData.class, slotName = "Output", autoCreate = true)
 public class SplitSpotsNode extends JIPipeSimpleIteratingAlgorithm {
 
-    private NamedTextAnnotationGeneratorExpression.List annotationGenerator = new NamedTextAnnotationGeneratorExpression.List();
-
     private final CustomExpressionVariablesParameter customVariables;
+    private NamedTextAnnotationGeneratorExpression.List annotationGenerator = new NamedTextAnnotationGeneratorExpression.List();
 
     public SplitSpotsNode(JIPipeNodeInfo info) {
         super(info);

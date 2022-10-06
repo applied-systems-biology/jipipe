@@ -14,42 +14,34 @@
 
 package org.hkijena.jipipe.ui.project.templatedownloader;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.collect.ImmutableList;
 import org.apache.commons.io.FilenameUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.environments.ExternalEnvironment;
-import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.utils.ArchiveUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.WebUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.stream.Collectors;
 
 public class ProjectTemplateDownloaderRun implements JIPipeRunnable {
 
     private final JIPipeWorkbench workbench;
-    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private final List<ProjectTemplateDownloaderPackage> availablePackages = new ArrayList<>();
-
+    private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
     private Set<ProjectTemplateDownloaderPackage> targetPackages = new HashSet<>();
 
 

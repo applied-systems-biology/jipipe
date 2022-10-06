@@ -449,7 +449,7 @@ public class UIUtils {
      * Adds an existing popup menu to a button
      * Adds a function that is run before the popup is shown
      *
-     * @param target         target button
+     * @param target target button
      * @return the popup menu
      */
     public static JPopupMenu addRightClickPopupMenuToComponent(AbstractButton target) {
@@ -483,7 +483,7 @@ public class UIUtils {
      * Adds an existing popup menu to a button
      * Adds a function that is run before the popup is shown
      *
-     * @param target         target button
+     * @param target target button
      * @return the popup menu
      */
     public static JPopupMenu addRightClickPopupMenuToComponent(AbstractButton target, JPopupMenu popupMenu) {
@@ -916,21 +916,21 @@ public class UIUtils {
 
     public static void openNotificationsDialog(JIPipeWorkbench workbench, Component parent, JIPipeNotificationInbox notifications, String title, String infoText, boolean autoClose) {
 
-        if(autoClose && notifications.isEmpty()) {
+        if (autoClose && notifications.isEmpty()) {
             return;
         }
 
-        JPanel contentPanel = new JPanel(new BorderLayout(8,8));
+        JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
 
         GenericNotificationInboxUI inboxUI = new GenericNotificationInboxUI(workbench, notifications);
         contentPanel.add(inboxUI, BorderLayout.CENTER);
 
         JPanel messagePanel = new JPanel(new GridBagLayout());
-        messagePanel.setBorder(BorderFactory.createEmptyBorder(16,8,16,8));
+        messagePanel.setBorder(BorderFactory.createEmptyBorder(16, 8, 16, 8));
         messagePanel.add(new JLabel(UIUtils.getIcon32FromResources("dialog-warning.png")),
-                new GridBagConstraints(0,0,1,1,0,0,GridBagConstraints.NORTHWEST,GridBagConstraints.NONE, new Insets(4,4,4,4), 0,0));
+                new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
         messagePanel.add(makeReadonlyBorderlessTextArea(infoText),
-                new GridBagConstraints(1,0,1,1,1,1,GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(4,4,4,4), 0,0));
+                new GridBagConstraints(1, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(4, 4, 4, 4), 0, 0));
         contentPanel.add(messagePanel, BorderLayout.NORTH);
 
         JDialog dialog = new JDialog();
@@ -942,11 +942,11 @@ public class UIUtils {
         dialog.setLocationRelativeTo(parent);
         dialog.setVisible(true);
 
-        if(autoClose) {
+        if (autoClose) {
             notifications.getEventBus().register(new Object() {
                 @Subscribe
                 public void onUpdated(JIPipeNotificationInbox.UpdatedEvent event) {
-                    if(notifications.isEmpty()) {
+                    if (notifications.isEmpty()) {
                         dialog.setVisible(false);
                     }
                 }
@@ -959,23 +959,23 @@ public class UIUtils {
      *
      * @param parent   the parent component
      * @param report   the report
-     * @param title the title
+     * @param title    the title
      * @param infoText the info text
      * @param modal    make the dialog modal
      */
     public static void openValidityReportDialog(Component parent, JIPipeIssueReport report, String title, String infoText, boolean modal) {
-        JPanel contentPanel = new JPanel(new BorderLayout(8,8));
+        JPanel contentPanel = new JPanel(new BorderLayout(8, 8));
 
         JIPipeValidityReportUI ui = new JIPipeValidityReportUI(false);
         ui.setReport(report);
         contentPanel.add(ui, BorderLayout.CENTER);
 
         JPanel messagePanel = new JPanel(new GridBagLayout());
-        messagePanel.setBorder(BorderFactory.createEmptyBorder(16,8,16,8));
+        messagePanel.setBorder(BorderFactory.createEmptyBorder(16, 8, 16, 8));
         messagePanel.add(new JLabel(UIUtils.getIcon32FromResources("dialog-error.png")),
-                new GridBagConstraints(0,0,1,1,0,0,GridBagConstraints.NORTHWEST,GridBagConstraints.NONE, new Insets(4,4,4,4), 0,0));
+                new GridBagConstraints(0, 0, 1, 1, 0, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(4, 4, 4, 4), 0, 0));
         messagePanel.add(makeReadonlyBorderlessTextArea(infoText),
-                new GridBagConstraints(1,0,1,1,1,1,GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(4,4,4,4), 0,0));
+                new GridBagConstraints(1, 0, 1, 1, 1, 1, GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(4, 4, 4, 4), 0, 0));
         contentPanel.add(messagePanel, BorderLayout.NORTH);
 
         JDialog dialog = new JDialog();
@@ -1573,7 +1573,7 @@ public class UIUtils {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
         for (Component component : components) {
-            if(component != null) {
+            if (component != null) {
                 panel.add(component);
             }
         }
@@ -1584,7 +1584,7 @@ public class UIUtils {
         JPanel panel = new JPanel();
         panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
         for (Component component : components) {
-            if(component != null) {
+            if (component != null) {
                 panel.add(component);
             }
         }
@@ -1596,7 +1596,7 @@ public class UIUtils {
         for (int i = 0; i < components.length; i++) {
             Component component = components[i];
             if (component != null) {
-                panel.add(component, new GridBagConstraints(0,i, 1,1,1,0,GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL,new Insets(0,0,0,0),0,0));
+                panel.add(component, new GridBagConstraints(0, i, 1, 1, 1, 0, GridBagConstraints.NORTH, GridBagConstraints.HORIZONTAL, new Insets(0, 0, 0, 0), 0, 0));
             }
         }
         return panel;
@@ -1622,12 +1622,13 @@ public class UIUtils {
             tree.collapsePath(path);
         }
     }
+
     public static JPanel gridHorizontal(Component... components) {
         JPanel panel = new JPanel(new GridBagLayout());
         for (int i = 0; i < components.length; i++) {
             Component component = components[i];
             if (component != null) {
-                panel.add(component, new GridBagConstraints(i,0, 1,1,0,1,GridBagConstraints.WEST, GridBagConstraints.VERTICAL,new Insets(0,0,0,0),0,0));
+                panel.add(component, new GridBagConstraints(i, 0, 1, 1, 0, 1, GridBagConstraints.WEST, GridBagConstraints.VERTICAL, new Insets(0, 0, 0, 0), 0, 0));
             }
         }
         return panel;
@@ -1752,7 +1753,7 @@ public class UIUtils {
 
     public static void redirectDragEvents(Component component, Component target) {
         component.setFocusable(false);
-        DragThroughMouseListener listener = new DragThroughMouseListener(component,target);
+        DragThroughMouseListener listener = new DragThroughMouseListener(component, target);
         component.addMouseListener(listener);
         component.addMouseMotionListener(listener);
     }
@@ -1763,7 +1764,6 @@ public class UIUtils {
         item.addActionListener(e -> action.run());
         return item;
     }
-
 
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {

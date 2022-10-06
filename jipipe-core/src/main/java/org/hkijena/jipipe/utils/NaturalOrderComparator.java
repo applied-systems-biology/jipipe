@@ -159,7 +159,7 @@ public class NaturalOrderComparator<T> implements Comparator<T> {
         String a = StringUtils.nullToEmpty(o1);
         String b = StringUtils.nullToEmpty(o2);
 
-        if(NumberUtils.isCreatable(a) && NumberUtils.isCreatable(b)) {
+        if (NumberUtils.isCreatable(a) && NumberUtils.isCreatable(b)) {
             return Double.compare(NumberUtils.createDouble(a), NumberUtils.createDouble(b));
         }
 

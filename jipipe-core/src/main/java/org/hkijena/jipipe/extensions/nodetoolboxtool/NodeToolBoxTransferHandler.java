@@ -20,15 +20,14 @@ public class NodeToolBoxTransferHandler extends TransferHandler {
         if (c instanceof JList) {
             JIPipeGraph graph = new JIPipeGraph();
             for (Object obj : ((JList<?>) c).getSelectedValuesList()) {
-                if(obj instanceof JIPipeNodeInfo) {
+                if (obj instanceof JIPipeNodeInfo) {
                     JIPipeNodeInfo info = (JIPipeNodeInfo) obj;
                     graph.insertNode(info.newInstance());
-                }
-                else if(obj instanceof JIPipeNodeExample) {
+                } else if (obj instanceof JIPipeNodeExample) {
                     JIPipeNodeExample example = (JIPipeNodeExample) obj;
                     JIPipeNodeInfo info = example.getNodeInfo();
                     JIPipeGraphNode node = info.newInstance();
-                    if(node instanceof JIPipeAlgorithm) {
+                    if (node instanceof JIPipeAlgorithm) {
                         ((JIPipeAlgorithm) node).loadExample(example);
                     }
                     graph.insertNode(node);

@@ -17,14 +17,14 @@ public enum FontStyleParameter {
 
     @Override
     public String toString() {
-        if(this == BoldItalic) {
+        if (this == BoldItalic) {
             return "Bold + Italic";
         }
         return super.toString();
     }
 
     public Font toFont(FontFamilyParameter family, int size) {
-       return family.toFont(nativeValue, size);
+        return family.toFont(nativeValue, size);
     }
 
     public int getNativeValue() {

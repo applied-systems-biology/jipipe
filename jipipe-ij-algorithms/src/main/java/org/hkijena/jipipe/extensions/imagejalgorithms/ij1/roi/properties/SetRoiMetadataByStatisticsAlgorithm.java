@@ -54,10 +54,9 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
 
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
             JIPipe.createNode(RoiStatisticsAlgorithm.class);
-    private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
-
-    private ParameterCollectionList metadataGenerators = ParameterCollectionList.containingCollection(MetadataProperty.class);
     private final CustomExpressionVariablesParameter customVariables;
+    private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
+    private ParameterCollectionList metadataGenerators = ParameterCollectionList.containingCollection(MetadataProperty.class);
     private boolean measureInPhysicalUnits = true;
     private boolean clearBeforeWrite = false;
 
@@ -120,10 +119,9 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
         // Write statistics into variables
         for (int col = 0; col < statistics.getColumnCount(); col++) {
             TableColumn column = statistics.getColumnReference(col);
-            if(column.isNumeric()) {
+            if (column.isNumeric()) {
                 variableSet.set("all." + column.getLabel(), new ArrayList<>(Doubles.asList(column.getDataAsDouble(column.getRows()))));
-            }
-            else {
+            } else {
                 variableSet.set("all." + column.getLabel(), new ArrayList<>(Arrays.asList(column.getDataAsString(column.getRows()))));
             }
         }
@@ -139,7 +137,7 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
             for (int col = 0; col < statistics.getColumnCount(); col++) {
                 variableSet.set(statistics.getColumnName(col), statistics.getValueAt(row, col));
             }
-            if(clearBeforeWrite) {
+            if (clearBeforeWrite) {
                 roiProperties.clear();
             }
             for (MetadataProperty property : metadataGenerators.mapToCollection(MetadataProperty.class)) {

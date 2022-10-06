@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.nodeexamples;
 
-import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeExample;
 import org.hkijena.jipipe.ui.components.pickers.PickerDialog;
 

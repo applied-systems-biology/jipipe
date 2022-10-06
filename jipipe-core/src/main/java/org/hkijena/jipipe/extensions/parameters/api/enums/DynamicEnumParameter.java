@@ -103,6 +103,7 @@ public abstract class DynamicEnumParameter<T> {
 
     /**
      * The search string used for the searchable mode
+     *
      * @return the search string
      */
     public String getSearchString(T value) {

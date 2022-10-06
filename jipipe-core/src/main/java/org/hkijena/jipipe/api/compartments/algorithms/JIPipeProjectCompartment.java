@@ -116,7 +116,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     public Map<String, JIPipeParameterCollection> getChildParameterCollections() {
         updateExportedParameters();
         Map<String, JIPipeParameterCollection> result = new HashMap<>();
-        if(project != null) {
+        if (project != null) {
             result.put("exported", new GraphNodeParameterReferenceAccessGroupList(exportedParameters, project.getGraph().getParameterTree(false, null), false));
         }
         return result;
@@ -175,7 +175,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     }
 
     private void updateExportedParameters() {
-        if(project != null) {
+        if (project != null) {
             exportedParameters.setGraph(project.getGraph());
             exportedParameters.setUiRestrictToCompartments(Collections.singleton(getProjectCompartmentUUID()));
         }

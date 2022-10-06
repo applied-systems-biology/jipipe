@@ -17,7 +17,6 @@ import com.google.common.collect.Sets;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
-import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -32,7 +31,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.hkijena.jipipe.utils.UIUtils.UI_PADDING;
 
@@ -136,13 +134,12 @@ public class FormPanel extends JXPanel {
 
         if ((flags & WITH_DOCUMENTATION) == WITH_DOCUMENTATION) {
             this.withDocumentation = true;
-            if((flags & DOCUMENTATION_NO_UI) != DOCUMENTATION_NO_UI) {
+            if ((flags & DOCUMENTATION_NO_UI) != DOCUMENTATION_NO_UI) {
                 this.documentationHasUI = true;
                 boolean documentationBelow = (flags & DOCUMENTATION_BELOW) == DOCUMENTATION_BELOW;
                 AutoResizeSplitPane splitPane = new AutoResizeSplitPane(documentationBelow ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT, content, helpPanel, AutoResizeSplitPane.RATIO_3_TO_1);
                 add(splitPane, BorderLayout.CENTER);
-            }
-            else {
+            } else {
                 this.documentationHasUI = false;
                 add(content, BorderLayout.CENTER);
             }
@@ -254,7 +251,7 @@ public class FormPanel extends JXPanel {
             contentPanel.add(description, labelPosition);
         }
         Component propertiesComponent;
-        if(withDocumentation)
+        if (withDocumentation)
             propertiesComponent = createAndAddEntryPropertiesComponent(component, description, numRows, documentation);
         else
             propertiesComponent = null;
@@ -313,7 +310,7 @@ public class FormPanel extends JXPanel {
             }
         };
         Component propertiesComponent;
-        if(withDocumentation)
+        if (withDocumentation)
             propertiesComponent = createAndAddEntryPropertiesComponent(component, null, numRows, documentation);
         else
             propertiesComponent = null;
@@ -324,13 +321,12 @@ public class FormPanel extends JXPanel {
     }
 
     public void showDocumentation(MarkdownDocument documentation) {
-        if(redirectDocumentationTarget == null) {
-            if(withDocumentation && documentationHasUI) {
+        if (redirectDocumentationTarget == null) {
+            if (withDocumentation && documentationHasUI) {
                 parameterHelp.setTemporaryDocument(documentation);
                 getEventBus().post(new HoverHelpEvent(documentation));
                 updateParameterHelpDrillDown();
-            }
-            else {
+            } else {
                 // Just popup the documentation
                 MarkdownReader reader = new MarkdownReader(false, documentation);
                 JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this));
@@ -348,8 +344,7 @@ public class FormPanel extends JXPanel {
                 UIUtils.addEscapeListener(dialog);
                 dialog.setVisible(true);
             }
-        }
-        else {
+        } else {
             redirectDocumentationTarget.showDocumentation(documentation);
         }
     }

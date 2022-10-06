@@ -13,6 +13,7 @@ public class ExtractTemplateZipFileRun implements JIPipeRunnable {
     private final JIPipeProjectTemplate template;
     private final Path targetDirectory;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+
     public ExtractTemplateZipFileRun(JIPipeProjectTemplate template, Path targetDirectory) {
         this.template = template;
         this.targetDirectory = targetDirectory;

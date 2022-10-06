@@ -586,9 +586,9 @@ public class JIPipeGraph implements JIPipeValidatable {
     public JIPipeParameterTree getParameterTree(boolean useAliasIds, Set<UUID> restrictToCompartments) {
         JIPipeParameterTree tree = new JIPipeParameterTree();
         for (Map.Entry<UUID, JIPipeGraphNode> entry : nodeUUIDs.entrySet()) {
-            if(restrictToCompartments != null && !restrictToCompartments.isEmpty()) {
+            if (restrictToCompartments != null && !restrictToCompartments.isEmpty()) {
                 UUID compartmentUUID = entry.getValue().getCompartmentUUIDInParentGraph();
-                if(!restrictToCompartments.contains(compartmentUUID))
+                if (!restrictToCompartments.contains(compartmentUUID))
                     continue;
             }
             String id;
@@ -665,7 +665,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return The output slot that generates data for the input. Null if no source exists.
      */
     public Set<JIPipeDataSlot> getInputIncomingSourceSlots(JIPipeDataSlot target) {
-        if(!graph.containsVertex(target))
+        if (!graph.containsVertex(target))
             return Collections.emptySet();
         if (target.isInput()) {
             Set<JIPipeGraphEdge> edges = graph.incomingEdgesOf(target);
@@ -686,7 +686,7 @@ public class JIPipeGraph implements JIPipeValidatable {
      * @return All slots that receive data from the output slot
      */
     public Set<JIPipeDataSlot> getOutputOutgoingTargetSlots(JIPipeDataSlot source) {
-        if(!graph.containsVertex(source))
+        if (!graph.containsVertex(source))
             return Collections.emptySet();
         if (source.isOutput()) {
             Set<JIPipeGraphEdge> edges = graph.outgoingEdgesOf(source);

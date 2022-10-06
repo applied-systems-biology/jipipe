@@ -33,14 +33,12 @@ public class ParameterTableEditorWindow extends JFrame {
     private final JIPipeWorkbench workbench;
     private final JIPipeParameterAccess parameterAccess;
     private final ParameterTable parameterTable;
-    private JXTable table;
-    private FormPanel palettePanel;
-
     private final JLabel emptyColumnsLabel = new JLabel("<html><strong>This table has no columns</strong><br/>Import a parameter type from an existing node or define a new column.</html>",
             UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
-
     private final JLabel emptyRowsLabel = new JLabel("<html><strong>This table has no rows</strong><br/>Click the 'Add' button insert rows.</html>",
             UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT);
+    private JXTable table;
+    private FormPanel palettePanel;
 
     private ParameterTableEditorWindow(JIPipeWorkbench workbench, JIPipeParameterAccess parameterAccess, ParameterTable parameterTable) {
         this.workbench = workbench;
@@ -90,8 +88,8 @@ public class ParameterTableEditorWindow extends JFrame {
         contentPanel.getSideBar().addTab("Edit value", UIUtils.getIconFromResources("actions/edit.png"), palettePanel, DocumentTabPane.CloseMode.withoutCloseButton);
 
         // Init info labels
-        emptyRowsLabel.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
-        emptyColumnsLabel.setBorder(BorderFactory.createEmptyBorder(8,8,8,8));
+        emptyRowsLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
+        emptyColumnsLabel.setBorder(BorderFactory.createEmptyBorder(8, 8, 8, 8));
 
         // Create table panel and set as main content
         table = new JXTable();
@@ -141,7 +139,7 @@ public class ParameterTableEditorWindow extends JFrame {
             UIUtils.addReloadablePopupMenuToComponent(action.getButton(), menu, () -> {
                 menu.removeAll();
                 int[] selectedColumns = getSelectedColumns(true);
-                if(selectedColumns.length > 0) {
+                if (selectedColumns.length > 0) {
                     createReplaceMenuFor(selectedColumns[0], menu);
                 }
             });
@@ -169,7 +167,7 @@ public class ParameterTableEditorWindow extends JFrame {
         if (selectedRows.length > 0) {
             if (selectedColumns.length > 1) {
                 palettePanel.addGroupHeader("Edit multiple parameters", UIUtils.getIconFromResources("actions/document-edit.png"));
-                palettePanel.addWideToForm( new JLabel("<html><strong>Please select only one column</strong><br/>Currently, you can only edit one parameter type.</html>",
+                palettePanel.addWideToForm(new JLabel("<html><strong>Please select only one column</strong><br/>Currently, you can only edit one parameter type.</html>",
                         UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT));
             } else if (selectedColumns.length == 1) {
                 if (selectedRows.length == 1) {
@@ -198,10 +196,9 @@ public class ParameterTableEditorWindow extends JFrame {
                                 "and will replace the parameter of given identifier if used in a parameter input slot.",
                         parameterTable.getColumnInfo(selectedColumns[0]).getKey())));
             }
-        }
-        else {
+        } else {
             palettePanel.addGroupHeader("Edit parameter", UIUtils.getIconFromResources("actions/document-edit.png"));
-            palettePanel.addWideToForm( new JLabel("<html><strong>Nothing selected</strong><br/>To edit a parameter value, select it in the table.</html>",
+            palettePanel.addWideToForm(new JLabel("<html><strong>Nothing selected</strong><br/>To edit a parameter value, select it in the table.</html>",
                     UIUtils.getIcon32FromResources("info.png"), JLabel.LEFT));
         }
 
@@ -213,10 +210,10 @@ public class ParameterTableEditorWindow extends JFrame {
 
     private void createGenerateMenuFor(int[] selectedColumns, JPopupMenu generateMenu) {
         generateMenu.removeAll();
-        if(parameterTable.getColumnCount() == 0) {
+        if (parameterTable.getColumnCount() == 0) {
             return;
         }
-        if(selectedColumns == null || selectedColumns.length == 0) {
+        if (selectedColumns == null || selectedColumns.length == 0) {
             selectedColumns = new int[parameterTable.getColumnCount()];
             for (int i = 0; i < parameterTable.getColumnCount(); i++) {
                 selectedColumns[i] = i;

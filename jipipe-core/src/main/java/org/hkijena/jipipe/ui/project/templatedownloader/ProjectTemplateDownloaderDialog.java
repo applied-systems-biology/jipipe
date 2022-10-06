@@ -21,7 +21,6 @@ import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -94,7 +93,7 @@ public class ProjectTemplateDownloaderDialog extends JDialog {
                 new GridBagConstraints(0, 2, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
         panel.add(UIUtils.makeBorderlessReadonlyTextPane(availablePackage.getSizeInfo(), false), new GridBagConstraints(0, 3, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
-        JTextArea idField = UIUtils.makeReadonlyBorderlessTextArea( availablePackage.getUrl());
+        JTextArea idField = UIUtils.makeReadonlyBorderlessTextArea(availablePackage.getUrl());
         idField.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 11));
         panel.add(idField, new GridBagConstraints(0, 4, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
 
@@ -102,10 +101,9 @@ public class ProjectTemplateDownloaderDialog extends JDialog {
         JCheckBox installToggle = new JCheckBox("Download this template");
         installToggle.setFont(new Font(Font.DIALOG, Font.PLAIN, 22));
         installToggle.addActionListener(e -> {
-            if(installToggle.isSelected()) {
+            if (installToggle.isSelected()) {
                 targetPackages.add(availablePackage);
-            }
-            else {
+            } else {
                 targetPackages.remove(availablePackage);
             }
         });

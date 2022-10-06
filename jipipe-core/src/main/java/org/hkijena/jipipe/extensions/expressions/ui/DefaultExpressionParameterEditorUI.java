@@ -31,15 +31,15 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import javax.swing.event.DocumentEvent;
 import java.awt.*;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI {
 
     private final JPanel expressionEditorPanel = new JPanel(new BorderLayout());
-    private RSyntaxTextArea expressionEditor;
     private final DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
     private final Set<ExpressionParameterVariable> variables = new HashSet<>();
+    private RSyntaxTextArea expressionEditor;
 
     /**
      * Creates new instance
@@ -146,10 +146,10 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
                 variables.addAll(variableSource.getVariables(getParameterAccess()));
             }
             List<ExpressionParameterSettingsVariable> variableAnnotations = getParameterAccess().getAnnotationsOfType(ExpressionParameterSettingsVariable.class);
-            if(variableAnnotations.isEmpty()) {
+            if (variableAnnotations.isEmpty()) {
                 // Maybe the repeatable is not resolved
                 ExpressionParameterSettingsVariables container = getParameterAccess().getAnnotationOfType(ExpressionParameterSettingsVariables.class);
-                if(container != null) {
+                if (container != null) {
                     variableAnnotations.addAll(Arrays.asList(container.value()));
                 }
             }

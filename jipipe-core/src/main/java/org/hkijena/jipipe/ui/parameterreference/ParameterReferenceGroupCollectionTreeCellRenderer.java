@@ -42,7 +42,7 @@ public class ParameterReferenceGroupCollectionTreeCellRenderer extends JPanel im
     public ParameterReferenceGroupCollectionTreeCellRenderer(GraphNodeParameterReferenceGroupCollectionEditorUI editorUI) {
         this.editorUI = editorUI;
         setOpaque(true);
-        setBorder(BorderFactory.createEmptyBorder(4,4,4,4));
+        setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
         setLayout(new GridBagLayout());
 
         iconLabel = new JLabel();
@@ -50,7 +50,7 @@ public class ParameterReferenceGroupCollectionTreeCellRenderer extends JPanel im
             {
                 gridx = 0;
                 gridy = 0;
-                insets = new Insets(0,4,0,4);
+                insets = new Insets(0, 4, 0, 4);
             }
         });
 
@@ -84,21 +84,19 @@ public class ParameterReferenceGroupCollectionTreeCellRenderer extends JPanel im
             GraphNodeParameterReferenceGroup group = (GraphNodeParameterReferenceGroup) o;
             mainLabel.setText(StringUtils.orElse(group.getName(), "<No name>"));
             infoLabel.setText(group.getContent().size() == 1 ? "1 parameter" : group.getContent().size() + " parameters");
-            if(StringUtils.isNullOrEmpty(group.getName())) {
+            if (StringUtils.isNullOrEmpty(group.getName())) {
                 iconLabel.setIcon(UIUtils.getIconFromResources("emblems/warning.png"));
-            }
-            else {
+            } else {
                 iconLabel.setIcon(UIUtils.getIconFromResources("actions/configure.png"));
             }
-        }else if(o instanceof GraphNodeParameterReference) {
+        } else if (o instanceof GraphNodeParameterReference) {
             GraphNodeParameterReference reference = (GraphNodeParameterReference) o;
             JIPipeParameterAccess access = reference.resolve(editorUI.getParameterTree());
-            if(access != null) {
+            if (access != null) {
                 mainLabel.setText(reference.getName(editorUI.getParameterTree()));
                 infoLabel.setText(JIPipe.getParameterTypes().getInfoByFieldClass(access.getFieldClass()).getName());
                 iconLabel.setIcon(UIUtils.getIconFromResources("data-types/parameters.png"));
-            }
-            else {
+            } else {
                 mainLabel.setText("Not found!");
                 infoLabel.setText("No parameter " + reference.getPath());
                 iconLabel.setIcon(UIUtils.getIconFromResources("emblems/vcs-conflicting.png"));

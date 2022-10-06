@@ -53,13 +53,12 @@ public class WebUtils {
             } catch (Throwable ex) {
                 ex.printStackTrace();
             }
-            if(settings != null) {
+            if (settings != null) {
                 useExternalDownloader = settings.isPreferCustomDownloader() && settings.getExternalDownloaderProcess().generateValidityReport().isValid();
                 try {
-                    if(!useExternalDownloader) {
+                    if (!useExternalDownloader) {
                         downloadNative(url, outputFile, label, progressInfo);
-                    }
-                    else {
+                    } else {
                         ProcessEnvironment process = settings.getExternalDownloaderProcess();
                         ExpressionVariables variables = new ExpressionVariables();
                         variables.set("output_file", outputFile.toAbsolutePath().toString());
@@ -67,11 +66,10 @@ public class WebUtils {
                         ProcessUtils.runProcess(process, variables, progressInfo);
                     }
 
-                    if(Files.isRegularFile(outputFile)) {
+                    if (Files.isRegularFile(outputFile)) {
                         return; // We are done here if it finishes
-                    }
-                    else {
-                        if(!useExternalDownloader) {
+                    } else {
+                        if (!useExternalDownloader) {
                             throw new RuntimeException("Output file " + outputFile + " does not exist!");
                         }
                         progressInfo.log("Output file " + outputFile + " does not exist!");
@@ -79,14 +77,13 @@ public class WebUtils {
                     }
 
                 } catch (Throwable ex) {
-                    if(!useExternalDownloader) {
+                    if (!useExternalDownloader) {
                         throw ex;
                     }
                     progressInfo.log("Error: " + ex);
                     progressInfo.log("Falling back to native downloader");
                 }
-            }
-            else {
+            } else {
                 progressInfo.log("Falling back to native downloader");
             }
         }

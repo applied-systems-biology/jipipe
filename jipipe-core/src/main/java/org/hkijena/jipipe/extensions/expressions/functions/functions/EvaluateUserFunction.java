@@ -2,10 +2,8 @@ package org.hkijena.jipipe.extensions.expressions.functions.functions;
 
 import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.expressions.functions.EvaluateFunction;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.Collection;
 import java.util.List;
@@ -40,11 +38,10 @@ public class EvaluateUserFunction extends ExpressionFunction {
 
             // Add other variables
             for (int i = 1; i < parameters.size(); i++) {
-                if(parameters.get(i) instanceof Collection)  {
+                if (parameters.get(i) instanceof Collection) {
                     List<?> items = ImmutableList.copyOf((Collection<?>) parameters.get(i));
                     localVariables.set("" + items.get(0), items.get(1));
-                }
-                else {
+                } else {
                     String parameter = (String) parameters.get(i);
                     EvaluateFunction.parseVariableAssignment(variables, localVariables, parameter);
                 }

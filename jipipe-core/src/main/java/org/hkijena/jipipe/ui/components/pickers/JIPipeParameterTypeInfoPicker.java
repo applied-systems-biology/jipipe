@@ -13,25 +13,15 @@
 
 package org.hkijena.jipipe.ui.components.pickers;
 
-import com.google.common.eventbus.EventBus;
-import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTypeInfo;
-import org.hkijena.jipipe.ui.components.MultiSelectionModel;
-import org.hkijena.jipipe.ui.components.SingleSelectionModel;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeParameterTypeInfoListCellRenderer;
-import org.hkijena.jipipe.ui.components.search.SearchTextField;
-import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 
-import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.util.List;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -50,11 +40,10 @@ public class JIPipeParameterTypeInfoPicker extends PickerDialog<JIPipeParameterT
         super(parent);
         setCellRenderer(new JIPipeParameterTypeInfoListCellRenderer());
         ArrayList<JIPipeParameterTypeInfo> infos;
-        if(allowedParameterTypes == null || allowedParameterTypes.isEmpty()) {
+        if (allowedParameterTypes == null || allowedParameterTypes.isEmpty()) {
             infos = new ArrayList<>(JIPipe.getParameterTypes().getRegisteredParameters().values());
             infos.sort(Comparator.comparing(JIPipeParameterTypeInfo::getName));
-        }
-        else {
+        } else {
             infos = allowedParameterTypes.stream().map(klass -> JIPipe.getParameterTypes().getInfoByFieldClass(klass)).sorted(Comparator.comparing(JIPipeParameterTypeInfo::getName)).collect(Collectors.toCollection(ArrayList::new));
         }
         setAvailableItems(infos);

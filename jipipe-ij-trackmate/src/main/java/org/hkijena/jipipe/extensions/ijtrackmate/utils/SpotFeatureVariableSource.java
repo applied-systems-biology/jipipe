@@ -13,8 +13,8 @@ import java.util.Set;
 
 public class SpotFeatureVariableSource implements ExpressionParameterVariableSource {
 
-    private static Set<ExpressionParameterVariable> VARIABLES;
     private static final BiMap<String, String> KEY_TO_VARIABLE_MAP = HashBiMap.create();
+    private static Set<ExpressionParameterVariable> VARIABLES;
 
     public static void initializeVariablesIfNeeded() {
         if (VARIABLES == null) {

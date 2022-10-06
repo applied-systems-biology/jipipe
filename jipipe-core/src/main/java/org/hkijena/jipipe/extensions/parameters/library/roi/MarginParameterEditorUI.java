@@ -32,8 +32,8 @@ import java.util.Set;
  */
 public class MarginParameterEditorUI extends JIPipeParameterEditorUI {
 
-    private boolean skipNextReload = false;
     private final Map<Anchor, JToggleButton> anchorSelectionMap = new HashMap<>();
+    private boolean skipNextReload = false;
     private ParameterPanel parameterPanel;
 
     /**

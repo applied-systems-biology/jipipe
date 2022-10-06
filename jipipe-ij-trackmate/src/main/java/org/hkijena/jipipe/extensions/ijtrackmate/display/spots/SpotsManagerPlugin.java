@@ -19,12 +19,9 @@ import fiji.plugin.trackmate.Spot;
 import fiji.plugin.trackmate.SpotCollection;
 import ij.ImagePlus;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeZIPWriteDataStorage;
-import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
-import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.ijtrackmate.TrackMateExtension;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.nodes.spots.MeasureSpotsNode;
@@ -32,18 +29,15 @@ import org.hkijena.jipipe.extensions.ijtrackmate.parameters.SpotFeature;
 import org.hkijena.jipipe.extensions.ijtrackmate.settings.ImageViewerUISpotsDisplaySettings;
 import org.hkijena.jipipe.extensions.ijtrackmate.utils.SpotDrawer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.ImageViewerPanelPlugin;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.MeasurementSettings;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIPickerTool;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.ribbon.*;
+import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
+import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
+import org.hkijena.jipipe.ui.components.ribbon.SmallToggleButtonAction;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
@@ -63,12 +57,12 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
     private final JList<Spot> spotsListControl = new JList<>();
     private final SmallToggleButtonAction displaySpotsViewMenuItem = new SmallToggleButtonAction("Display spots", "Determines whether spots are displayed", UIUtils.getIconFromResources("actions/eye.png"));
     private final SmallToggleButtonAction displayLabelsViewMenuItem = new SmallToggleButtonAction("Display labels", "Determines whether spot labels are displayed", UIUtils.getIconFromResources("actions/tag.png"));
-    private SpotsCollectionData spotsCollection;
     private final List<SelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
+    private final Ribbon ribbon = new Ribbon(3);
+    private SpotsCollectionData spotsCollection;
     private SpotDrawer spotDrawer = new SpotDrawer();
     private SpotListCellRenderer spotsListCellRenderer;
-    private final Ribbon ribbon = new Ribbon(3);
     private JPanel mainPanel;
 
     public SpotsManagerPlugin(ImageViewerPanel viewerPanel) {
@@ -139,7 +133,7 @@ public class SpotsManagerPlugin extends ImageViewerPanelPlugin {
                     setLabelMenu.add(setLabelMenuEntry);
                 });
             }
-            visualizationBand.add(new Ribbon.Action(new JPanel(), 1, new Insets(2,2,2,2)));
+            visualizationBand.add(new Ribbon.Action(new JPanel(), 1, new Insets(2, 2, 2, 2)));
 
             visualizationBand.add(new SmallButtonAction("More settings ...", "Opens a dialog where all available visualization settings can be changed", UIUtils.getIconFromResources("actions/configure.png"), this::openDrawingSettings));
             visualizationBand.add(new SmallButtonAction("Save settings", "Saves the current settings as default", UIUtils.getIconFromResources("actions/save.png"), this::saveDefaults));

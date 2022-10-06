@@ -38,7 +38,7 @@ public class FontFamilyParameter extends DynamicStringEnumParameter {
     }
 
     private void initializeAvailableValues() {
-        if(AVAILABLE_FONTS.isEmpty()) {
+        if (AVAILABLE_FONTS.isEmpty()) {
             String[] familyNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
             AVAILABLE_FONTS.addAll(Arrays.asList(familyNames));
         }
@@ -47,7 +47,7 @@ public class FontFamilyParameter extends DynamicStringEnumParameter {
 
     @Override
     public String renderLabel(String value) {
-        return "<html><span style=\"font-family: " + value +";\">" + value + "</span></html>";
+        return "<html><span style=\"font-family: " + value + ";\">" + value + "</span></html>";
     }
 
     @Override

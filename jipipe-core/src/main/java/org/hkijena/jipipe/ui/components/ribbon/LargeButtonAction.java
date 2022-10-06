@@ -35,7 +35,7 @@ public class LargeButtonAction extends Ribbon.Action {
         button.setHorizontalTextPosition(SwingConstants.CENTER);
         button.setBorder(Ribbon.DEFAULT_BORDER);
 
-        if(menuItems.length > 0) {
+        if (menuItems.length > 0) {
             JPopupMenu menu = UIUtils.addPopupMenuToComponent(button);
             for (JMenuItem item : menuItems) {
                 if (item == null) {

@@ -1,22 +1,11 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer;
 
-import ij.IJ;
-import ij.ImagePlus;
-import ij.gui.Roi;
-import ij.plugin.filter.EDM;
-import ij.process.Blitter;
-import ij.process.ByteProcessor;
-import ij.process.ImageConverter;
-import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelCanvas;
-import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.ui.BusyCursor;
 
 import javax.swing.*;
 import java.awt.*;
-import java.nio.file.Path;
 
 /**
  * The standard mouse selection.

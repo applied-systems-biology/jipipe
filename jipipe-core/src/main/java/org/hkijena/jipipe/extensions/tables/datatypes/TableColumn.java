@@ -139,16 +139,18 @@ public interface TableColumn extends JIPipeData {
 
     /**
      * Gets the data at the specified row as object
+     *
      * @param row the row
      * @return the object
      */
     default Object getRowAsObject(int row) {
-        return  isNumeric() ? getRowAsDouble(row) : getRowAsString(row);
+        return isNumeric() ? getRowAsDouble(row) : getRowAsString(row);
     }
 
     /**
      * Returns the data as list of objects
      * The objects are strings or numbers depending on the column type
+     *
      * @return the list of objects
      */
     default List<Object> getDataAsObjectList() {

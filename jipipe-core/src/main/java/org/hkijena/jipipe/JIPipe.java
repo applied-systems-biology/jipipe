@@ -196,11 +196,6 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         return instance.datatypeRegistry;
     }
 
-    @Override
-    public JIPipeProjectTemplateRegistry getProjectTemplateRegistry() {
-        return projectTemplateRegistry;
-    }
-
     /**
      * @return Singleton instance
      */
@@ -326,8 +321,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     /**
      * Loads a project
      *
-     * @param fileName      Project file
-     * @param report        Report whether the project is valid
+     * @param fileName Project file
+     * @param report   Report whether the project is valid
      * @return the project
      * @throws IOException thrown if the file could not be read or the file is corrupt
      */
@@ -525,6 +520,11 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         return false;
     }
 
+    @Override
+    public JIPipeProjectTemplateRegistry getProjectTemplateRegistry() {
+        return projectTemplateRegistry;
+    }
+
     public JIPipeProgressInfo getProgressInfo() {
         return progressInfo;
     }
@@ -631,8 +631,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         for (JIPipeNodeRegistrationTask task : nodeRegistry.getScheduledRegistrationTasks()) {
             try {
                 task.register();
-            }
-            catch (Throwable ex) {
+            } catch (Throwable ex) {
                 logService.error("Could not register: " + task.toString() + " -> " + ex);
                 registerFeaturesProgress.log("Could not register: " + task + " -> " + ex);
             }
@@ -745,10 +744,10 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     private void registerProjectTemplatesFromFileSystem() {
         Path examplesDir = PathUtils.getImageJDir().resolve("jipipe").resolve("templates");
         try {
-            if(!Files.isDirectory(examplesDir))
+            if (!Files.isDirectory(examplesDir))
                 Files.createDirectories(examplesDir);
             Files.walk(examplesDir).forEach(path -> {
-                if(Files.isRegularFile(path)) {
+                if (Files.isRegularFile(path)) {
                     if (UIUtils.EXTENSION_FILTER_JIP.accept(path.toFile()) || UIUtils.EXTENSION_FILTER_ZIP.accept(path.toFile())) {
                         try {
                             progressInfo.log("[Project templates] Importing template from " + path);
@@ -760,8 +759,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                     }
                 }
             });
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             progressInfo.log("Error while loading project templates from " + examplesDir + ": " + e);
         }
@@ -770,10 +768,10 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     private void registerNodeExamplesFromFileSystem() {
         Path examplesDir = PathUtils.getImageJDir().resolve("jipipe").resolve("examples");
         try {
-            if(!Files.isDirectory(examplesDir))
+            if (!Files.isDirectory(examplesDir))
                 Files.createDirectories(examplesDir);
             Files.walk(examplesDir).forEach(path -> {
-                if(Files.isRegularFile(path)) {
+                if (Files.isRegularFile(path)) {
                     if (UIUtils.EXTENSION_FILTER_JSON.accept(path.toFile())) {
                         try {
                             progressInfo.log("[Node examples] Importing node template list from " + path);
@@ -787,8 +785,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
                     }
                 }
             });
-        }
-        catch (Throwable e) {
+        } catch (Throwable e) {
             e.printStackTrace();
             progressInfo.log("Error while loading node examples from " + examplesDir + ": " + e);
         }

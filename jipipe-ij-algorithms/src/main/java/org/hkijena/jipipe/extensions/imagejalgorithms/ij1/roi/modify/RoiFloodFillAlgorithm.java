@@ -15,7 +15,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify;
 
 import ij.IJ;
 import ij.ImagePlus;
-import ij.gui.PointRoi;
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -28,7 +27,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import java.awt.*;
-import java.awt.geom.Point2D;
 
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
@@ -84,7 +82,7 @@ public class RoiFloodFillAlgorithm extends JIPipeIteratingAlgorithm {
                     wrapper.setRoi((Roi) null);
                     collection.add(wand);
                 }
-                if(collection.size() > 1) {
+                if (collection.size() > 1) {
                     collection.logicalOr();
                 }
                 Roi output = collection.get(0);
@@ -92,7 +90,6 @@ public class RoiFloodFillAlgorithm extends JIPipeIteratingAlgorithm {
                 outputRoi.add(output);
             }
         }, progressInfo);
-
 
 
         dataBatch.addOutputData(getFirstOutputSlot(), outputRoi, progressInfo);

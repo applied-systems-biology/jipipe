@@ -2,7 +2,6 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager;
 
 import com.google.common.eventbus.Subscribe;
 import ij.gui.Roi;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelCanvas;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelCanvasTool;
@@ -66,7 +65,7 @@ public class ROIPickerTool implements ImageViewerPanelCanvasTool {
     }
 
     private void pickRoiFromCanvas(boolean modify) {
-        if(selectionFirst != null && selectionSecond != null) {
+        if (selectionFirst != null && selectionSecond != null) {
             ImageViewerPanelCanvas canvas = roiManagerPlugin.getViewerPanel().getCanvas();
             Point p1 = canvas.screenToImageCoordinate(selectionFirst, false);
             Point p2 = canvas.screenToImageCoordinate(selectionSecond, false);
@@ -78,26 +77,24 @@ public class ROIPickerTool implements ImageViewerPanelCanvasTool {
             int y = Math.min(y0, y1);
             int w = Math.abs(x0 - x1);
             int h = Math.abs(y0 - y1);
-            Rectangle selection = new Rectangle(x,y, Math.max(1, w), Math.max(1, h));
+            Rectangle selection = new Rectangle(x, y, Math.max(1, w), Math.max(1, h));
             List<Roi> currentSelection = roiManagerPlugin.getRoiListControl().getSelectedValuesList();
             Set<Roi> toSelect = new HashSet<>();
             Set<Roi> toDeselect = new HashSet<>();
             for (Roi roi : roiManagerPlugin.getRoiDrawer().filterVisibleROI(roiManagerPlugin.getRois(), roiManagerPlugin.getCurrentSlicePosition())) {
-                if( roi.getPolygon().intersects(selection)) {
-                    if(modify) {
-                        if(currentSelection.contains(roi)) {
+                if (roi.getPolygon().intersects(selection)) {
+                    if (modify) {
+                        if (currentSelection.contains(roi)) {
                             toDeselect.add(roi);
-                        }
-                        else {
+                        } else {
                             toSelect.add(roi);
                         }
-                    }
-                    else {
+                    } else {
                         toSelect.add(roi);
                     }
                 }
             }
-            if(modify) {
+            if (modify) {
                 toSelect.addAll(currentSelection);
                 toSelect.removeAll(toDeselect);
             }
@@ -106,10 +103,9 @@ public class ROIPickerTool implements ImageViewerPanelCanvasTool {
     }
 
 
-
     @Override
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
-        if(selectionFirst != null && selectionSecond != null) {
+        if (selectionFirst != null && selectionSecond != null) {
             graphics2D.setStroke(STROKE_MARQUEE);
             graphics2D.setColor(Color.WHITE);
             int x0 = selectionFirst.x;
@@ -128,14 +124,14 @@ public class ROIPickerTool implements ImageViewerPanelCanvasTool {
 
     @Subscribe
     public void onMouseDown(MousePressedEvent event) {
-        if(toolIsActive() && SwingUtilities.isLeftMouseButton(event)) {
+        if (toolIsActive() && SwingUtilities.isLeftMouseButton(event)) {
             selectionFirst = event.getPoint();
         }
     }
 
     @Subscribe
     public void onMouseUp(MouseReleasedEvent event) {
-        if(toolIsActive()) {
+        if (toolIsActive()) {
             pickRoiFromCanvas(event.isShiftDown());
         }
         cancelPicking();
@@ -148,7 +144,7 @@ public class ROIPickerTool implements ImageViewerPanelCanvasTool {
 
     @Subscribe
     public void onMouseDrag(MouseDraggedEvent event) {
-        if(toolIsActive() && selectionFirst != null) {
+        if (toolIsActive() && selectionFirst != null) {
             selectionSecond = event.getPoint();
             roiManagerPlugin.getViewerPanel().uploadSliceToCanvas();
         }

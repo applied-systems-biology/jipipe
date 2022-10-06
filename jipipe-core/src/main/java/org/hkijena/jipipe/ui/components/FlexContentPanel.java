@@ -21,34 +21,31 @@ public class FlexContentPanel extends JPanel {
 
     public static final int WITH_PIN_TOOLBAR = 4;
     public static final int WITH_SIDEBAR = 8;
-    private Ribbon ribbon;
-    private JToolBar toolBar;
-
-    private JToolBar pinToolBar;
-    private DocumentTabPane sideBar;
-
-    private boolean sideBarVisible = true;
-
     private final JToggleButton sideBarToggle = new JToggleButton(UIUtils.getIcon16FromResources("actions/sidebar.png"));
     private final JPanel contentPanel = new JPanel(new BorderLayout());
+    private Ribbon ribbon;
+    private JToolBar toolBar;
+    private JToolBar pinToolBar;
+    private DocumentTabPane sideBar;
+    private boolean sideBarVisible = true;
 
     public FlexContentPanel() {
         this(NONE);
     }
 
     public FlexContentPanel(int flags) {
-        if((flags & WITH_RIBBON) == WITH_RIBBON) {
+        if ((flags & WITH_RIBBON) == WITH_RIBBON) {
             ribbon = new Ribbon();
         }
-        if((flags & WITH_TOOLBAR) == WITH_TOOLBAR) {
+        if ((flags & WITH_TOOLBAR) == WITH_TOOLBAR) {
             toolBar = new JToolBar();
             toolBar.setFloatable(false);
         }
-        if((flags & WITH_PIN_TOOLBAR) == WITH_PIN_TOOLBAR) {
+        if ((flags & WITH_PIN_TOOLBAR) == WITH_PIN_TOOLBAR) {
             pinToolBar = new JToolBar();
             pinToolBar.setFloatable(false);
         }
-        if((flags & WITH_SIDEBAR) == WITH_SIDEBAR) {
+        if ((flags & WITH_SIDEBAR) == WITH_SIDEBAR) {
             sideBar = new DocumentTabPane(false);
         }
         initialize();
@@ -57,14 +54,14 @@ public class FlexContentPanel extends JPanel {
 
     private void initialize() {
         sideBarToggle.setToolTipText("Show/hide sidebar");
-        sideBarToggle.addActionListener(e->{
+        sideBarToggle.addActionListener(e -> {
             setSideBarVisible(sideBarToggle.isSelected());
         });
         sideBarToggle.setSelected(sideBarVisible);
     }
 
     public Ribbon getRibbon() {
-        if(ribbon == null) {
+        if (ribbon == null) {
             ribbon = new Ribbon();
             rebuildLayout();
         }
@@ -74,29 +71,28 @@ public class FlexContentPanel extends JPanel {
     public void rebuildLayout() {
         removeAll();
         setLayout(new BorderLayout());
-        if(sideBar != null) {
+        if (sideBar != null) {
             ensurePinToolBar();
         }
-        if(pinToolBar != null) {
+        if (pinToolBar != null) {
             ensureToolBar();
         }
         JPanel toolBarPanel = null;
-        if(toolBar != null) {
+        if (toolBar != null) {
             toolBar.setMaximumSize(new Dimension(Short.MAX_VALUE, 100));
             toolBarPanel = UIUtils.boxHorizontal(toolBar, pinToolBar);
         }
         JPanel topPanel = UIUtils.boxVertical(toolBarPanel, ribbon);
         add(topPanel, BorderLayout.NORTH);
-        if(sideBar != null) {
-            if(!ArrayUtils.contains(pinToolBar.getComponents(), sideBarToggle)) {
+        if (sideBar != null) {
+            if (!ArrayUtils.contains(pinToolBar.getComponents(), sideBarToggle)) {
                 pinToolBar.add(sideBarToggle);
             }
         }
         JComponent centerPanel;
-        if(sideBar != null && sideBarVisible) {
+        if (sideBar != null && sideBarVisible) {
             centerPanel = new AutoResizeSplitPane(AutoResizeSplitPane.LEFT_RIGHT, contentPanel, sideBar, AutoResizeSplitPane.RATIO_3_TO_1);
-        }
-        else {
+        } else {
             centerPanel = contentPanel;
         }
         add(centerPanel, BorderLayout.CENTER);
@@ -105,7 +101,7 @@ public class FlexContentPanel extends JPanel {
     }
 
     private JToolBar ensureToolBar() {
-        if(toolBar == null) {
+        if (toolBar == null) {
             toolBar = new JToolBar();
             toolBar.setFloatable(false);
         }
@@ -113,7 +109,7 @@ public class FlexContentPanel extends JPanel {
     }
 
     public JToolBar getToolBar() {
-        if(toolBar == null) {
+        if (toolBar == null) {
             toolBar = new JToolBar();
             toolBar.setFloatable(false);
             rebuildLayout();
@@ -122,7 +118,7 @@ public class FlexContentPanel extends JPanel {
     }
 
     private JToolBar ensurePinToolBar() {
-        if(pinToolBar == null) {
+        if (pinToolBar == null) {
             pinToolBar = new JToolBar();
             pinToolBar.setFloatable(false);
         }
@@ -130,7 +126,7 @@ public class FlexContentPanel extends JPanel {
     }
 
     public JToolBar getPinToolBar() {
-        if(pinToolBar == null) {
+        if (pinToolBar == null) {
             pinToolBar = new JToolBar();
             pinToolBar.setFloatable(false);
             rebuildLayout();
@@ -139,14 +135,14 @@ public class FlexContentPanel extends JPanel {
     }
 
     private DocumentTabPane ensureSideBar() {
-        if(sideBar == null) {
+        if (sideBar == null) {
             sideBar = new DocumentTabPane(false);
         }
         return sideBar;
     }
 
     public DocumentTabPane getSideBar() {
-        if(sideBar == null) {
+        if (sideBar == null) {
             sideBar = new DocumentTabPane(false);
             rebuildLayout();
         }

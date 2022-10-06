@@ -164,7 +164,7 @@ public class ExpressionBuilderParameterUI extends JPanel {
 
         @Override
         public java.lang.String toString() {
-            if(this == RawExpression) {
+            if (this == RawExpression) {
                 return "Raw expression";
             }
             return super.toString();

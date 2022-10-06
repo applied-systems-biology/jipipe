@@ -42,8 +42,8 @@ import org.hkijena.jipipe.extensions.expressions.functions.ColumnOperationAdapte
 import org.hkijena.jipipe.extensions.parameters.api.collections.ListParameter;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterGenerator;
 import org.hkijena.jipipe.extensions.parameters.api.enums.EnumParameterTypeInfo;
-import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.tables.ColumnOperation;
@@ -682,6 +682,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     /**
      * Registers a node template as example for a node.
      * Silently fails if the template does not contain exactly one node
+     *
      * @param template the template
      */
     public void registerNodeExample(JIPipeNodeTemplate template) {
@@ -691,8 +692,9 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     /**
      * Registers node examples from plugin resources via a {@link JIPipeResourceManager}.
      * Will detect *.json files and attempt to load them (fails silently)
+     *
      * @param resourceManager the resource manager
-     * @param subDirectory the directory within the resource manager's base path
+     * @param subDirectory    the directory within the resource manager's base path
      */
     public void registerNodeExamplesFromResources(JIPipeResourceManager resourceManager, String subDirectory) {
         registerNodeExamplesFromResources(resourceManager.getResourceClass(), JIPipeResourceManager.formatBasePath(resourceManager.getBasePath() + "/" + subDirectory));
@@ -701,8 +703,9 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     /**
      * Registers node examples from plugin resources.
      * Will detect *.json files and attempt to load them (fails silently)
+     *
      * @param resourceClass the resource class
-     * @param directory the directory within the resources
+     * @param directory     the directory within the resources
      */
     public void registerNodeExamplesFromResources(Class<?> resourceClass, String directory) {
         JIPipe.getInstance().getProgressInfo().log("Scanning for node examples within " + resourceClass + " -> " + directory);
@@ -718,7 +721,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
                 return s;
         }).collect(Collectors.toSet());
         for (String resource : jsonResources) {
-            if(resource.startsWith(directory)) {
+            if (resource.startsWith(directory)) {
                 JIPipe.getInstance().getProgressInfo().log("Loading node template list " + resource);
                 try {
                     try (InputStream stream = resourceClass.getResourceAsStream(resource)) {
@@ -727,8 +730,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
                             registerNodeExample(template);
                         }
                     }
-                }
-                catch (Throwable throwable) {
+                } catch (Throwable throwable) {
                     JIPipe.getInstance().getProgressInfo().log("Error: " + throwable + " @ " + resource);
                 }
             }
@@ -738,8 +740,9 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     /**
      * Registers project templates from plugin resources via a {@link JIPipeResourceManager}.
      * Will detect *.jip files and attempt to load them (fails silently)
+     *
      * @param resourceManager the resource manager
-     * @param subDirectory the directory within the resource manager's base path
+     * @param subDirectory    the directory within the resource manager's base path
      */
     public void registerProjectTemplatesFromResources(JIPipeResourceManager resourceManager, String subDirectory) {
         registerProjectTemplatesFromResources(resourceManager.getResourceClass(), JIPipeResourceManager.formatBasePath(resourceManager.getBasePath() + "/" + subDirectory));
@@ -748,8 +751,9 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
     /**
      * Registers project templates from plugin resources
      * Will detect *.jip files and attempt to load them (fails silently)
+     *
      * @param resourceClass the resource class
-     * @param directory the directory within the resources
+     * @param directory     the directory within the resources
      */
     public void registerProjectTemplatesFromResources(Class<?> resourceClass, String directory) {
         JIPipe.getInstance().getProgressInfo().log("Scanning for project templates within " + resourceClass + " -> " + directory);
@@ -765,7 +769,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
                 return s;
         }).collect(Collectors.toSet());
         for (String resource : jsonResources) {
-            if(resource.startsWith(directory)) {
+            if (resource.startsWith(directory)) {
                 JIPipe.getInstance().getProgressInfo().log("Loading project template " + resource);
                 try {
                     try (InputStream stream = resourceClass.getResourceAsStream(resource)) {
@@ -775,8 +779,7 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
                         JIPipeProjectTemplate template = new JIPipeProjectTemplate(id, node, templateMetadata, null, null);
                         registry.getProjectTemplateRegistry().register(template);
                     }
-                }
-                catch (Throwable throwable) {
+                } catch (Throwable throwable) {
                     JIPipe.getInstance().getProgressInfo().log("Error: " + throwable + " @ " + resource);
                 }
             }

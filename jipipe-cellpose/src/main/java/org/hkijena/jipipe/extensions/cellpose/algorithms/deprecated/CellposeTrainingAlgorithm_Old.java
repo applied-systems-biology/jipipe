@@ -463,15 +463,14 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
         arguments.add("masks");
 
         // Channels
-        if(segmentedChannel.isEnabled()) {
+        if (segmentedChannel.isEnabled()) {
             arguments.add("--chan");
             arguments.add(segmentedChannel.getContent() + "");
-        }
-        else {
+        } else {
             arguments.add("--chan");
             arguments.add("0");
         }
-        if(nuclearChannel.isEnabled()) {
+        if (nuclearChannel.isEnabled()) {
             arguments.add("--chan2");
             arguments.add(nuclearChannel.getContent() + "");
         }
@@ -479,7 +478,7 @@ public class CellposeTrainingAlgorithm_Old extends JIPipeSingleIterationAlgorith
         // GPU
         if (gpuSettings.isEnableGPU())
             arguments.add("--use_gpu");
-        if(gpuSettings.getGpuDevice().isEnabled()) {
+        if (gpuSettings.getGpuDevice().isEnabled()) {
             arguments.add("--gpu_device");
             arguments.add(gpuSettings.getGpuDevice().getContent() + "");
         }

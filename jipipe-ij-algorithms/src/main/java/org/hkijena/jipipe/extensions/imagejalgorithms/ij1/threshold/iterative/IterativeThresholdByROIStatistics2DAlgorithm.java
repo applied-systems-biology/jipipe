@@ -39,7 +39,7 @@ import java.util.List;
 
 @JIPipeDocumentation(name = "Object-based iterative thresholding 2D", description = "Applies a ROI detection and measurement for each threshold value. Based on the user-provided ROI criteria the threshold is either accepted or rejected. " +
         "Returns the mask with the first applicable threshold or an image with zero values. "
-+"If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+        + "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Threshold\nIterative")
 @JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", description = "The image to be thresholded", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Reference", description = "An optional reference image for the ROI statistics. If none is provided, the input image is used as reference.", optional = true, autoCreate = true)
@@ -47,26 +47,19 @@ import java.util.List;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", description = "Pre-filtered ROI (according to the criteria)", autoCreate = true)
 public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private IntegerRange thresholds = new IntegerRange("0-255");
-    private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
     private final CustomExpressionVariablesParameter customFilterVariables;
-    private boolean measureInPhysicalUnits = true;
     private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
             JIPipe.createNode(RoiStatisticsAlgorithm.class);
-
     private final FindParticles2D findParticles2DAlgorithm = JIPipe.createNode(FindParticles2D.class);
-
-    private OptionalAnnotationNameParameter thresholdAnnotation = new OptionalAnnotationNameParameter("Threshold", true);
-
-    private DefaultExpressionParameter thresholdCombinationExpression = new DefaultExpressionParameter("MIN(thresholds)");
-
-    private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
-
-    private boolean excludeEdgeROIs = false;
-
     private final FilteringParameters filteringParameters;
-
     private final ScoreParameters scoreParameters;
+    private IntegerRange thresholds = new IntegerRange("0-255");
+    private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
+    private boolean measureInPhysicalUnits = true;
+    private OptionalAnnotationNameParameter thresholdAnnotation = new OptionalAnnotationNameParameter("Threshold", true);
+    private DefaultExpressionParameter thresholdCombinationExpression = new DefaultExpressionParameter("MIN(thresholds)");
+    private JIPipeTextAnnotationMergeMode thresholdAnnotationStrategy = JIPipeTextAnnotationMergeMode.OverwriteExisting;
+    private boolean excludeEdgeROIs = false;
 
     public IterativeThresholdByROIStatistics2DAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -115,10 +108,9 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         ImagePlus referenceImage;
         {
             ImagePlusGreyscaleData referenceData = dataBatch.getInputData("Reference", ImagePlusGreyscaleData.class, progressInfo);
-            if(referenceData != null) {
+            if (referenceData != null) {
                 referenceImage = referenceData.getImage();
-            }
-            else {
+            } else {
                 referenceImage = inputImage;
             }
         }
@@ -160,9 +152,9 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
                 int threshold = thresholds.get(i);
                 JIPipeProgressInfo thresholdProgress = progressInfo.resolve(index.toString()).resolveAndLog("Threshold " + threshold, i, thresholds.size());
                 ThresholdingResult result = applyThreshold(inputIp, referenceIp, threshold, roiFilterVariables, thresholdCriteriaVariables, accumulationVariables, thresholdProgress);
-                if(result != null) {
+                if (result != null) {
                     results.add(result);
-                    if(!optimize)
+                    if (!optimize)
                         break;
                 }
             }
@@ -171,10 +163,9 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
                 progressInfo.resolve(index.toString()).log(" - threshold=" + result.threshold + " --> score=" + result.score);
             }
 
-            if(results.isEmpty()) {
+            if (results.isEmpty()) {
                 outputStack.setProcessor(new ByteProcessor(inputIp.getWidth(), inputIp.getHeight()), index.zeroSliceIndexToOneStackIndex(inputImage));
-            }
-            else {
+            } else {
                 ThresholdingResult bestResult = results.stream().max(Comparator.comparing(ThresholdingResult::getScore)).get();
                 detectedThresholds.add(bestResult.getThreshold());
                 outputStack.setProcessor(bestResult.mask, index.zeroSliceIndexToOneStackIndex(inputImage));
@@ -188,7 +179,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
 
         // Combine thresholds
         List<JIPipeTextAnnotation> annotations = new ArrayList<>();
-        if(!detectedThresholds.isEmpty()) {
+        if (!detectedThresholds.isEmpty()) {
             ExpressionVariables variables = new ExpressionVariables();
             variables.putAnnotations(dataBatch.getMergedTextAnnotations());
             customFilterVariables.writeToVariables(variables, true, "custom.", true, "custom");
@@ -230,7 +221,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         // Filter ROI
         ROIListData filteredRois = new ROIListData();
         List<Double> scores = new ArrayList<>();
-        if(!rois.isEmpty()) {
+        if (!rois.isEmpty()) {
             roiStatisticsAlgorithm.clearSlotData();
             roiStatisticsAlgorithm.getInputSlot("ROI").addData(rois, progressInfo);
             roiStatisticsAlgorithm.getInputSlot("Reference").addData(new ImagePlusGreyscaleData(inputReference), progressInfo);
@@ -246,7 +237,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
                     filteredRois.add(rois.get(row));
 
                     // Apply scoring
-                    if(scoreParameters.scoreExpression.isEnabled()) {
+                    if (scoreParameters.scoreExpression.isEnabled()) {
                         double score = scoreParameters.scoreExpression.getContent().evaluateToDouble(roiFilterVariables);
                         scores.add(score);
                     }
@@ -261,7 +252,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
             thresholdCriteriaVariables.set("all_roi", rois);
             thresholdCriteriaVariables.set("filtered_roi", filteredRois);
 
-            if(!filteringParameters.thresholdCriteriaExpression.test(thresholdCriteriaVariables)) {
+            if (!filteringParameters.thresholdCriteriaExpression.test(thresholdCriteriaVariables)) {
                 progressInfo.log("Criteria not matched.");
                 return null;
             }
@@ -269,7 +260,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
 
         // Accumulate scores
         double score = 0;
-        if(scoreParameters.scoreExpression.isEnabled()) {
+        if (scoreParameters.scoreExpression.isEnabled()) {
             accumulationVariables.set("scores", scores);
             score = scoreParameters.scoreAccumulationExpression.evaluateToDouble(accumulationVariables);
             progressInfo.log("Accumulated score for threshold " + threshold + " is " + score);

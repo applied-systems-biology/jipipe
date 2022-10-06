@@ -1,7 +1,8 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration;
 
 import ij.ImagePlus;
-import ij.gui.*;
+import ij.gui.Overlay;
+import ij.gui.Roi;
 import ij.measure.Calibration;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -31,6 +32,7 @@ import java.awt.*;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nTools", aliasName = "Scale Bar...")
 public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final TextSettings textSettings;
     private OptionalQuantity horizontalBarSize = new OptionalQuantity(new Quantity(1, "µm"), false);
     private OptionalQuantity verticalBarSize = new OptionalQuantity(new Quantity(1, "µm"), false);
     private int barThickness = 4;
@@ -39,8 +41,6 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private ScaleBarGenerator.ScaleBarPosition location = ScaleBarGenerator.ScaleBarPosition.LowerRight;
     private boolean drawHorizontal = true;
     private boolean drawVertical = false;
-
-    private final TextSettings textSettings;
 
     public DrawScaleBarAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -64,16 +64,16 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus imp =dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
+        ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getDuplicateImage();
         ScaleBarGenerator generator = new ScaleBarGenerator(imp);
         Calibration cal = imp.getCalibration();
 
         // Generate bar width (in units)
         generator.computeDefaultBarWidth();
-        if(horizontalBarSize.isEnabled()) {
+        if (horizontalBarSize.isEnabled()) {
             generator.getConfig().sethBarWidth(horizontalBarSize.getContent().convertTo(cal.getXUnit()).getValue());
         }
-        if(verticalBarSize.isEnabled()) {
+        if (verticalBarSize.isEnabled()) {
             generator.getConfig().setvBarHeight(verticalBarSize.getContent().convertTo(cal.getYUnit()).getValue());
         }
 
@@ -81,14 +81,12 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
 
-        if(!generator.getConfig().isHideText())
-        {
+        if (!generator.getConfig().isHideText()) {
             variables.set("unit", cal.getXUnit());
             variables.set("value", generator.getConfig().gethBarWidth());
             generator.getConfig().sethLabel(textSettings.horizontalLabel.evaluateToString(variables));
         }
-        if(!generator.getConfig().isHideText())
-        {
+        if (!generator.getConfig().isHideText()) {
             variables.set("unit", cal.getYUnit());
             variables.set("value", generator.getConfig().getvBarHeight());
             generator.getConfig().setvLabel(textSettings.verticalLabel.evaluateToString(variables));
@@ -108,10 +106,9 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         generator.getConfig().setHideText(textSettings.isHideLabels());
 
         Overlay scaleBarOverlay = generator.createScaleBarOverlay();
-        if(imp.getOverlay() == null) {
+        if (imp.getOverlay() == null) {
             imp.setOverlay(scaleBarOverlay);
-        }
-        else {
+        } else {
             for (Roi roi : scaleBarOverlay) {
                 imp.getOverlay().add(roi);
             }
@@ -119,7 +116,6 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp), progressInfo);
     }
-
 
 
     @JIPipeDocumentation(name = "Label settings", description = "The following settings allow you to control the text labels")
@@ -173,7 +169,6 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
 
-
     @JIPipeDocumentation(name = "Background color", description = "If enabled, the background of the bar")
     @JIPipeParameter("background-color")
     public OptionalColorParameter getBackgroundColor() {
@@ -184,7 +179,6 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public void setBackgroundColor(OptionalColorParameter backgroundColor) {
         this.backgroundColor = backgroundColor;
     }
-
 
 
     @JIPipeDocumentation(name = "Location", description = "Location of the scale bar")

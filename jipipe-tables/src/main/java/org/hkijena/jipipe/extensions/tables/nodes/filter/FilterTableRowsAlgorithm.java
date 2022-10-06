@@ -73,15 +73,14 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
         for (int col = 0; col < input.getColumnCount(); col++) {
             TableColumn column = input.getColumnReference(col);
-            if(column.isNumeric()) {
+            if (column.isNumeric()) {
                 variableSet.set("all." + column.getLabel(), Doubles.asList(column.getDataAsDouble(column.getRows())));
-            }
-            else {
+            } else {
                 variableSet.set("all." + column.getLabel(), Arrays.asList(column.getDataAsString(column.getRows())));
             }
         }
         for (int row = 0; row < input.getRowCount(); row++) {
-            if(progressInfo.isCancelled())
+            if (progressInfo.isCancelled())
                 return;
             for (int col = 0; col < input.getColumnCount(); col++) {
                 variableSet.set(input.getColumnName(col), input.getValueAt(row, col));

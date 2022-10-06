@@ -145,12 +145,12 @@ public class JIPipeCLI {
             project.reportValidity(projectIssues);
             projectIssues.print();
 
-            if(!notifications.isEmpty()) {
+            if (!notifications.isEmpty()) {
                 System.err.println("The following notifications were generated:");
                 for (JIPipeNotification notification : notifications.getNotifications()) {
                     System.err.println("- " + notification.getHeading() + " [" + notification.getId() + "]");
                     System.err.println("  " + notification.getDescription());
-                    if(!notification.getActions().isEmpty()) {
+                    if (!notification.getActions().isEmpty()) {
                         System.err.println("  -->> GUI actions detected. Please run the JIPipe GUI to execute them");
                     }
                 }

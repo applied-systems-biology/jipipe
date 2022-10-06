@@ -22,7 +22,6 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.api.enums.DynamicEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -163,23 +162,21 @@ public class ProjectsSettings implements JIPipeParameterCollection {
         }
 
         private void initialize() {
-            if(JIPipe.getInstance() != null && JIPipe.getInstance().getProjectTemplateRegistry() != null) {
+            if (JIPipe.getInstance() != null && JIPipe.getInstance().getProjectTemplateRegistry() != null) {
                 setAllowedValues(new ArrayList<>(JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().keySet()));
             }
         }
 
         @Override
         public String renderLabel(String value) {
-            if(JIPipe.getInstance() != null && JIPipe.getInstance().getProjectTemplateRegistry() != null) {
+            if (JIPipe.getInstance() != null && JIPipe.getInstance().getProjectTemplateRegistry() != null) {
                 JIPipeProjectTemplate template = JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().getOrDefault(value, null);
-                if(template != null) {
+                if (template != null) {
                     return template.getMetadata().getName();
-                }
-                else {
+                } else {
                     return "<Invalid>";
                 }
-            }
-            else {
+            } else {
                 return value;
             }
         }

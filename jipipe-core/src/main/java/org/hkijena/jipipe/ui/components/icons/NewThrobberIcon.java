@@ -13,16 +13,13 @@ public class NewThrobberIcon implements Icon {
 
     public static final int ANIMATION_DELAY = 80;
     private final Timer timer;
-
-    private Component parent;
     private final int numLines = 14;
     private final double[] x1Locations = new double[numLines];
     private final double[] y1Locations = new double[numLines];
     private final double[] x2Locations = new double[numLines];
     private final double[] y2Locations = new double[numLines];
-
     private final Color[] colors;
-
+    private Component parent;
     private int colorShift = 0;
 
     public NewThrobberIcon(Component parent) {
@@ -45,6 +42,20 @@ public class NewThrobberIcon implements Icon {
                 new ColorUtils.GradientStop(0.0f, baseColor),
                 new ColorUtils.GradientStop(0.75f, ModernMetalTheme.PRIMARY5),
                 new ColorUtils.GradientStop(1.0f, ModernMetalTheme.PRIMARY6)), numLines);
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame();
+        JPanel panel = new JPanel(new BorderLayout());
+        frame.setContentPane(panel);
+        NewThrobberIcon icon = new NewThrobberIcon(panel);
+        icon.start();
+        JLabel label = new JLabel(icon);
+        panel.add(label, BorderLayout.CENTER);
+        frame.setSize(400, 400);
+        frame.revalidate();
+        frame.repaint();
+        frame.setVisible(true);
     }
 
     @Override
@@ -96,20 +107,6 @@ public class NewThrobberIcon implements Icon {
     @Override
     public int getIconHeight() {
         return 16;
-    }
-
-    public static void main(String[] args) {
-        JFrame frame = new JFrame();
-        JPanel panel = new JPanel(new BorderLayout());
-        frame.setContentPane(panel);
-        NewThrobberIcon icon = new NewThrobberIcon(panel);
-        icon.start();
-        JLabel label = new JLabel(icon);
-        panel.add(label, BorderLayout.CENTER);
-        frame.setSize(400,400);
-        frame.revalidate();
-        frame.repaint();
-        frame.setVisible(true);
     }
 
 

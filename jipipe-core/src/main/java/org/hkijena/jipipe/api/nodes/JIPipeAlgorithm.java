@@ -19,20 +19,20 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
+import org.hkijena.jipipe.api.JIPipeIssueReport;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
-import org.hkijena.jipipe.api.parameters.*;
-import org.hkijena.jipipe.extensions.nodeexamples.JIPipeNodeExamplePickerDialog;
-import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.utils.ParameterUtils;
-import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import java.io.IOException;
 import java.io.StringWriter;
-import java.util.*;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
+import java.util.Map;
 
 /**
  * An {@link JIPipeGraphNode} that contains a non-empty workload.
@@ -226,16 +226,17 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     /**
      * Loads an example.
      * Warning: This method will not ask for confirmation
+     *
      * @param example the example
      */
     public void loadExample(JIPipeNodeExample example) {
         JIPipeGraph graph = example.getNodeTemplate().getGraph();
         JIPipeGraphNode node = graph.getGraphNodes().iterator().next();
-        if(node.getInfo() != getInfo()) {
+        if (node.getInfo() != getInfo()) {
             throw new RuntimeException("Cannot load example from wrong node type!");
         }
-        try(StringWriter writer = new StringWriter()) {
-            try(JsonGenerator generator = JsonUtils.getObjectMapper().createGenerator(writer)) {
+        try (StringWriter writer = new StringWriter()) {
+            try (JsonGenerator generator = JsonUtils.getObjectMapper().createGenerator(writer)) {
                 generator.writeStartObject();
                 ParameterUtils.serializeParametersToJson(node, generator, entry -> !entry.getKey().startsWith("jipipe:"));
                 generator.writeEndObject();
@@ -246,7 +247,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
             getSlotConfiguration().setTo(node.getSlotConfiguration());
             ParameterUtils.deserializeParametersFromJson(this, node2, report);
             getSlotConfiguration().setTo(node.getSlotConfiguration());
-            if(!report.isValid()) {
+            if (!report.isValid()) {
                 report.print();
             }
         } catch (IOException e) {

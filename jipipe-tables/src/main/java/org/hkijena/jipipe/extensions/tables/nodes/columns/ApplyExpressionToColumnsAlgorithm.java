@@ -83,10 +83,9 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
         }
         for (int col = 0; col < input.getColumnCount(); col++) {
             TableColumn column = input.getColumnReference(col);
-            if(column.isNumeric()) {
+            if (column.isNumeric()) {
                 expressionVariables.set(column.getLabel(), Doubles.asList(column.getDataAsDouble(column.getRows())));
-            }
-            else {
+            } else {
                 expressionVariables.set(column.getLabel(), Arrays.asList(column.getDataAsString(column.getRows())));
             }
         }

@@ -27,8 +27,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.components.icons.ZoomIcon;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -248,7 +248,7 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
                 }
             }
         }
-        if(location.x != getX() ||location.y != getY()) {
+        if (location.x != getX() || location.y != getY()) {
             setLocation(location);
         }
         if (save) {
@@ -358,12 +358,12 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
     public JIPipeDataSlotUI pickSlotComponent(MouseEvent mouseEvent) {
         for (JIPipeDataSlotUI ui : getInputSlotUIs().values()) {
             MouseEvent converted = SwingUtilities.convertMouseEvent(getGraphUI(), mouseEvent, ui);
-            if(ui.contains(converted.getX(), converted.getY()))
+            if (ui.contains(converted.getX(), converted.getY()))
                 return ui;
         }
         for (JIPipeDataSlotUI ui : getOutputSlotUIs().values()) {
             MouseEvent converted = SwingUtilities.convertMouseEvent(getGraphUI(), mouseEvent, ui);
-            if(ui.contains(converted.getX(), converted.getY()))
+            if (ui.contains(converted.getX(), converted.getY()))
                 return ui;
         }
         return null;

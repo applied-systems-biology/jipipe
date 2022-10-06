@@ -25,41 +25,40 @@ public class JIPipeNodeExample {
     }
 
     public JIPipeNodeInfo getNodeInfo() {
-        if(cachedNodeInfo != null)
+        if (cachedNodeInfo != null)
             return cachedNodeInfo;
-        if(getNodeId() != null) {
+        if (getNodeId() != null) {
             cachedNodeInfo = JIPipe.getNodes().getInfoById(getNodeId());
         }
         return cachedNodeInfo;
     }
+
     public String getNodeId() {
-        if(!nodeIdIdentified) {
-            if(nodeTemplate.getGraph() == null) {
+        if (!nodeIdIdentified) {
+            if (nodeTemplate.getGraph() == null) {
                 try {
                     JsonNode rootNode = JsonUtils.readFromString(nodeTemplate.getData(), JsonNode.class);
                     JsonNode nodeList = rootNode.get("nodes");
-                    if(nodeList.size() != 1) {
+                    if (nodeList.size() != 1) {
                         nodeIdIdentified = true;
                         return null;
                     }
                     JsonNode node = nodeList.fields().next().getValue();
-                    if(node == null) {
+                    if (node == null) {
                         nodeIdIdentified = true;
                         return null;
                     }
                     JsonNode node1 = node.path("jipipe:node-info-id");
-                    if(node1.isMissingNode()) {
+                    if (node1.isMissingNode()) {
                         nodeIdIdentified = true;
                         return null;
                     }
                     nodeId = node1.textValue();
+                } catch (Throwable throwable) {
                 }
-                catch (Throwable throwable) {
-                }
-            }
-            else {
+            } else {
                 Set<JIPipeGraphNode> graphNodes = nodeTemplate.getGraph().getGraphNodes();
-                if(graphNodes.size() != 1) {
+                if (graphNodes.size() != 1) {
                     nodeIdIdentified = true;
                     return null;
                 }
@@ -77,6 +76,7 @@ public class JIPipeNodeExample {
     /**
      * An additional info label used by the UI.
      * Not serialized
+     *
      * @return the info
      */
     public String getSourceInfo() {

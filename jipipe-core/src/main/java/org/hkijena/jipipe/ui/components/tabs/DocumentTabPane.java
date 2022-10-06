@@ -119,18 +119,17 @@ public class DocumentTabPane extends JPanel {
 
     public void setScrollable(boolean scrollable) {
         this.scrollable = scrollable;
-        if(scrollable) {
+        if (scrollable) {
             for (DocumentTab tab : tabs) {
                 tab.getTabComponent().setCompactMode(false);
             }
-        }
-        else {
+        } else {
             updateCompactTabs();
         }
     }
 
     private void updateCompactTabs() {
-        if(scrollable)
+        if (scrollable)
             return;
         Insets tabInsets = UIManager.getInsets("TabbedPane.tabInsets");
         int sumWidth = 0;
@@ -138,28 +137,27 @@ public class DocumentTabPane extends JPanel {
             int width = tabInsets.left + tabInsets.right + 3;
             DocumentTabComponent tabComponent = tab.getTabComponent();
             width += tabComponent.getPreferredSize().width;
-            if(tabComponent.isCompactMode()) {
+            if (tabComponent.isCompactMode()) {
                 FontMetrics fontMetrics = tabComponent.getTitleLabel().getFontMetrics(tabComponent.getTitleLabel().getFont());
                 width += fontMetrics.stringWidth(tab.title);
             }
             sumWidth += width;
         }
         boolean changed = false;
-        if(sumWidth > getWidth() - 64) {
+        if (sumWidth > getWidth() - 64) {
             for (DocumentTab tab : tabs) {
-                if(!tab.getTabComponent().isCompactMode())
+                if (!tab.getTabComponent().isCompactMode())
                     changed = true;
                 tab.getTabComponent().setCompactMode(true);
             }
-        }
-        else {
+        } else {
             for (DocumentTab tab : tabs) {
-                if(tab.getTabComponent().isCompactMode())
+                if (tab.getTabComponent().isCompactMode())
                     changed = true;
                 tab.getTabComponent().setCompactMode(false);
             }
         }
-        if(changed) {
+        if (changed) {
             revalidate();
         }
     }
@@ -730,8 +728,8 @@ public class DocumentTabPane extends JPanel {
 
     public static class DocumentTabComponent extends JPanel {
         private final Border tabPanelBorder;
-        private DocumentTab documentTab;
         private final Icon icon;
+        private DocumentTab documentTab;
         private JLabel titleLabel;
 
         private boolean compactMode;
@@ -768,11 +766,10 @@ public class DocumentTabPane extends JPanel {
         }
 
         public void updateContents() {
-            if(compactMode) {
+            if (compactMode) {
                 titleLabel.setText("");
 //                setToolTipText(documentTab.getTitle());
-            }
-            else if(documentTab != null) {
+            } else if (documentTab != null) {
                 titleLabel.setText(documentTab.title);
 //                setToolTipText(null);
             }
@@ -783,7 +780,7 @@ public class DocumentTabPane extends JPanel {
         }
 
         public void setDocumentTab(DocumentTab documentTab) {
-            if(this.documentTab != null) {
+            if (this.documentTab != null) {
                 this.documentTab.eventBus.unregister(this);
             }
             this.documentTab = documentTab;

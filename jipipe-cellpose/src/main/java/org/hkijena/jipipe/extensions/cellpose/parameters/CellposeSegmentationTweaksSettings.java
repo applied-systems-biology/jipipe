@@ -15,6 +15,7 @@ public class CellposeSegmentationTweaksSettings implements JIPipeParameterCollec
     private OptionalDoubleParameter anisotropy = new OptionalDoubleParameter(1.0, false);
 
     private boolean disableResample = false;
+
     public CellposeSegmentationTweaksSettings() {
     }
 
@@ -30,7 +31,6 @@ public class CellposeSegmentationTweaksSettings implements JIPipeParameterCollec
     public EventBus getEventBus() {
         return eventBus;
     }
-
 
 
     @JIPipeDocumentation(name = "Normalize", description = "Normalize data so 0.0=1st percentile and 1.0=99th percentile of image intensities in each channel")

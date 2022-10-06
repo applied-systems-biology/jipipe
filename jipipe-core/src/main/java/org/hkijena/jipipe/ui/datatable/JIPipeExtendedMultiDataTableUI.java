@@ -37,7 +37,8 @@ import org.hkijena.jipipe.extensions.tables.datatypes.AnnotationTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.cache.*;
+import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
+import org.hkijena.jipipe.ui.cache.JIPipeDataTableRowUI;
 import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToFilesByMetadataExporterRun;
 import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToOutputExporterRun;
 import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToZIPExporterRun;
@@ -231,14 +232,14 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
         tableBand.add(new LargeButtonAction("Open as tab", "Opens the current table in a new tab", UIUtils.getIcon32FromResources("actions/link.png"), this::openTableInNewTab));
         tableBand.add(new LargeButtonAction("Filter", "Opens the current filtered table in a new tab", UIUtils.getIcon32FromResources("actions/view-filter.png"), this::openFilteredTableInNewTab));
         tableBand.add(new SmallButtonAction("Fit columns", "Fits the table columns to their contents", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), table::packAll));
-        tableBand.add(new SmallButtonAction("Compact columns", "Auto-size columns to the default size", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), () ->  UIUtils.packDataTable(table)));
+        tableBand.add(new SmallButtonAction("Compact columns", "Auto-size columns to the default size", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), () -> UIUtils.packDataTable(table)));
 
         // Preview band
         previewBand.add(new SmallToggleButtonAction("Enable previews", "Allows to toggle previews on and off", UIUtils.getIconFromResources("actions/zoom.png"), GeneralDataSettings.getInstance().isGenerateCachePreviews(), (toggle) -> {
             GeneralDataSettings.getInstance().setGenerateCachePreviews(toggle.isSelected());
             reloadTable();
         }));
-        previewBand.add(new Ribbon.Action(UIUtils.boxHorizontal(new JLabel("Size"), new DataPreviewControlUI()), 1, new Insets(2,2,2,2)));
+        previewBand.add(new Ribbon.Action(UIUtils.boxHorizontal(new JLabel("Size"), new DataPreviewControlUI()), 1, new Insets(2, 2, 2, 2)));
     }
 
     private void initializeExportRibbon() {
@@ -258,6 +259,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
         tableBand.add(new SmallButtonAction("As ZIP", "Exports the whole table as ZIP file", UIUtils.getIcon16FromResources("actions/package.png"), this::exportAsJIPipeSlotZIP));
         tableBand.add(new SmallButtonAction("As directory", "Exports the whole table as directory", UIUtils.getIcon16FromResources("actions/folder-open.png"), this::exportAsJIPipeSlotDirectory));
     }
+
     private void openFilteredTableInNewTab() {
         String name = dataTables.stream().map(slot -> slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "")).distinct().collect(Collectors.joining(", "));
         if (searchTextField.getSearchStrings().length > 0) {
@@ -386,10 +388,9 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
             for (JIPipeDataTable slot : multiSlotTable.getSlotList()) {
                 tableData.addRows(slot.toAnnotationTable(true));
             }
-            if(UIUtils.EXTENSION_FILTER_XLSX.accept(path.toFile())) {
+            if (UIUtils.EXTENSION_FILTER_XLSX.accept(path.toFile())) {
                 tableData.saveAsXLSX(path);
-            }
-            else {
+            } else {
                 tableData.saveAsCSV(path);
             }
         }

@@ -102,8 +102,9 @@ public enum TableColumnNormalization {
 
     /**
      * Normalizes a whole table
+     *
      * @param tableData the table
-     * @param nRow number of rows
+     * @param nRow      number of rows
      * @return table with at least nRow rows
      */
     public ResultsTableData normalize(ResultsTableData tableData, int nRow) {

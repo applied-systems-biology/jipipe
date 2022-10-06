@@ -25,12 +25,12 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.algorithmfinder.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.algorithmfinder.JIPipeAlgorithmSourceFinderUI;
 import org.hkijena.jipipe.ui.algorithmfinder.JIPipeAlgorithmTargetFinderUI;
+import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -251,7 +251,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             if (assignButtonMenu.getComponentCount() > 0)
                 assignButtonMenu.addSeparator();
 
-            if(!(getNodeUI().getNode() instanceof JIPipeProjectCompartment)) {
+            if (!(getNodeUI().getNode() instanceof JIPipeProjectCompartment)) {
                 if (getSlot().getInfo().isSaveOutputs()) {
                     JMenuItem toggleSaveOutputsButton = new JMenuItem("Disable saving outputs", UIUtils.getIconFromResources("actions/no-save.png"));
                     toggleSaveOutputsButton.setToolTipText("Makes that the data stored in this slot are not saved in a full analysis. Does not have an effect when updating the cache.");

@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.ui.settings;
 
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDefaultDocumentation;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
@@ -100,18 +98,16 @@ public class JIPipeApplicationSettingsUI extends JIPipeWorkbenchPanel {
         if (tree.getLastSelectedPathComponent() instanceof SettingsCategoryNode) {
             SettingsCategoryNode node = (SettingsCategoryNode) tree.getLastSelectedPathComponent();
 
-            if(node.sheets.isEmpty()) {
+            if (node.sheets.isEmpty()) {
                 splitPane.setRightComponent(UIUtils.createInfoLabel("No settings available", "There are no settings within the category '" + node.label + "'"));
-            }
-            else if(node.sheets.size() == 1) {
+            } else if (node.sheets.size() == 1) {
                 JIPipeSettingsRegistry.Sheet sheet = node.sheets.get(0);
                 ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
                         sheet.getParameterCollection(),
                         MarkdownDocument.fromPluginResource("documentation/application-settings.md", new HashMap<>()),
                         ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.WITH_SEARCH_BAR);
                 splitPane.setRightComponent(parameterPanel);
-            }
-            else {
+            } else {
                 FormPanel formPanel = new FormPanel(FormPanel.WITH_SCROLLING);
                 formPanel.addWideToForm(new JLabel("<html><h1>" + node.label + "</h1></html>", UIUtils.getIcon32FromResources("actions/configure.png"), SwingConstants.LEFT));
                 node.sheets.stream().sorted(Comparator.comparing(JIPipeSettingsRegistry.Sheet::getName)).forEach(sheet -> {

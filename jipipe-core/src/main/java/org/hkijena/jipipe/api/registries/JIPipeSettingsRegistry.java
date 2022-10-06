@@ -107,7 +107,7 @@ public class JIPipeSettingsRegistry implements JIPipeParameterCollection, JIPipe
      *
      * @param id                  unique ID of the sheet
      * @param name                sheet name
-     * @param description sheet description
+     * @param description         sheet description
      * @param icon                sheet icon
      * @param category            sheet category. If left null or empty, it will default to "General"
      * @param categoryIcon        optional icon. If null, a wrench icon is used.

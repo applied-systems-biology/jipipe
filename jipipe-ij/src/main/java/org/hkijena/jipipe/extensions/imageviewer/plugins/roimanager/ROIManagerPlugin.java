@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Ints;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
@@ -23,9 +22,9 @@ import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.ribbon.*;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
+import org.hkijena.jipipe.ui.components.ribbon.*;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
@@ -47,15 +46,12 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     private final RoiDrawer roiDrawer = new RoiDrawer();
     private final LargeToggleButtonAction displayROIViewMenuItem = new LargeToggleButtonAction("Display ROI", "Determines whether ROI are displayed", UIUtils.getIcon32FromResources("data-types/roi.png"));
     private final SmallToggleButtonAction renderROIAsOverlayViewMenuItem = new SmallToggleButtonAction("Draw ROI as overlay", "If disabled, ROI are drawn as pixels directly into the displayed image.", UIUtils.getIconFromResources("actions/path-break-apart.png"));
-    private ROIListData rois = new ROIListData();
-    private boolean filterListHideInvisible = false;
-
-    private boolean filterListOnlySelected = false;
     private final List<ROIManagerPluginSelectionContextPanel> selectionContextPanels = new ArrayList<>();
     private final JPanel selectionContentPanelUI = new JPanel();
-
     private final Ribbon ribbon = new Ribbon(3);
-
+    private ROIListData rois = new ROIListData();
+    private boolean filterListHideInvisible = false;
+    private boolean filterListOnlySelected = false;
     private JPanel mainPanel;
 
     public ROIManagerPlugin(ImageViewerPanel viewerPanel) {
@@ -235,7 +231,8 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
             modifyBand.add(new SmallButtonAction("Delete", "Deletes the selected ROI", UIUtils.getIconFromResources("actions/delete.png"), () -> removeSelectedROIs(false)));
 
-            SmallButtonAction modifyEditAction = new SmallButtonAction("Modify", "Modifies the selected ROI", UIUtils.getIconFromResources("actions/edit.png"), () -> {});
+            SmallButtonAction modifyEditAction = new SmallButtonAction("Modify", "Modifies the selected ROI", UIUtils.getIconFromResources("actions/edit.png"), () -> {
+            });
             JPopupMenu modifyEditMenu = new JPopupMenu();
             UIUtils.addReloadablePopupMenuToComponent(modifyEditAction.getButton(), modifyEditMenu, () -> reloadEditRoiMenu(modifyEditMenu));
             modifyBand.add(modifyEditAction);
@@ -616,7 +613,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
     public void exportROIsToManager() {
         ROIListData rois = getSelectedROIOrAll("Export ROI to ImageJ", "Please select which ROI should be exported.");
-        if(rois != null) {
+        if (rois != null) {
             exportROIsToManager(rois);
         }
     }
@@ -662,7 +659,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
             boolean excluded = excludeFromFilter.contains(roi);
             if (!excluded && (filterListHideInvisible && !ROIListData.isVisibleIn(roi, currentIndex, roiDrawer.isIgnoreZ(), roiDrawer.isIgnoreC(), roiDrawer.isIgnoreT())))
                 continue;
-            if(!excluded && !selectedValuesList.isEmpty() && (filterListOnlySelected && !selectedValuesList.contains(roi)))
+            if (!excluded && !selectedValuesList.isEmpty() && (filterListOnlySelected && !selectedValuesList.contains(roi)))
                 continue;
             model.addElement(roi);
         }
@@ -692,15 +689,15 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
         TIntList indices = new TIntArrayList();
         DefaultListModel<Roi> model = (DefaultListModel<Roi>) roiListControl.getModel();
 
-        if(force) {
-            boolean rebuild =false;
+        if (force) {
+            boolean rebuild = false;
             for (Roi roi : select) {
-                if(rois.contains(roi) && !model.contains(roi)) {
+                if (rois.contains(roi) && !model.contains(roi)) {
                     rebuild = true;
                     break;
                 }
             }
-            if(rebuild) {
+            if (rebuild) {
                 roiListControl.clearSelection();
                 updateListModel(false, select);
                 model = (DefaultListModel<Roi>) roiListControl.getModel();
@@ -709,7 +706,7 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
 
         for (Roi roi : select) {
             int i = model.indexOf(roi);
-            if(i >= 0) {
+            if (i >= 0) {
                 indices.add(i);
             }
         }

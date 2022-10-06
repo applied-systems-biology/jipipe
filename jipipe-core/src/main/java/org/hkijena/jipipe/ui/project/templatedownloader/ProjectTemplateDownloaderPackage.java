@@ -2,12 +2,9 @@ package org.hkijena.jipipe.ui.project.templatedownloader;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
-import com.fasterxml.jackson.databind.JsonNode;
-import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.utils.PathUtils;
 
 import java.nio.file.Path;
-import java.util.List;
 
 public class ProjectTemplateDownloaderPackage {
     private String name;

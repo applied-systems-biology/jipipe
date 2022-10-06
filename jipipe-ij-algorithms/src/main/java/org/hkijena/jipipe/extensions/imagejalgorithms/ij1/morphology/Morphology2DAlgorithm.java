@@ -28,7 +28,6 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.transform.AddBorder2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
@@ -55,13 +54,11 @@ import java.util.ArrayList;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nFiltering", aliasName = "Morphological Filters")
 public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final AddBorder2DAlgorithm addBorder2DAlgorithm;
     private Morphology.Operation operation = Morphology.Operation.DILATION;
     private Strel.Shape element = Strel.Shape.DISK;
     private int radius = 1;
-
     private boolean addBorder = false;
-
-    private final AddBorder2DAlgorithm addBorder2DAlgorithm;
 
     /**
      * Instantiates a new node type.
@@ -103,10 +100,9 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ImagePlus originalImg = inputData.getImage();
         ImagePlus img;
         Rectangle crop = null;
-        if(!addBorder) {
+        if (!addBorder) {
             img = inputData.getDuplicateImage();
-        }
-        else {
+        } else {
             ExpressionVariables variables = new ExpressionVariables();
             variables.putAnnotations(dataBatch.getMergedTextAnnotations());
             ImageQueryExpressionVariableSource.buildVariablesSet(originalImg, variables);
@@ -134,7 +130,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             resultProcessor.setColorModel(ip.getColorModel());
 
             // Crop border if one is set
-            if(addBorder) {
+            if (addBorder) {
                 resultProcessor.setRoi(finalCrop);
                 resultProcessor = resultProcessor.crop();
             }
@@ -207,7 +203,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeParameter("add-border")
     public void setAddBorder(boolean addBorder) {
-        if(this.addBorder != addBorder) {
+        if (this.addBorder != addBorder) {
             this.addBorder = addBorder;
             triggerParameterUIChange();
         }
@@ -215,7 +211,7 @@ public class Morphology2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterCollection subParameter) {
-        if(!addBorder && subParameter == addBorder2DAlgorithm) {
+        if (!addBorder && subParameter == addBorder2DAlgorithm) {
             return false;
         }
         return super.isParameterUIVisible(tree, subParameter);

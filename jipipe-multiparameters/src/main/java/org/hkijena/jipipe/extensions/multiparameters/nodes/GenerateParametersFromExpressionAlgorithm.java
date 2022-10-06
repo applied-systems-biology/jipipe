@@ -31,8 +31,8 @@ import java.util.*;
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private ParameterCollectionList columns;
     private final CustomExpressionVariablesParameter customVariables;
+    private ParameterCollectionList columns;
 
     public GenerateParametersFromExpressionAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -51,10 +51,10 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
     public void reportValidity(JIPipeIssueReport report) {
         super.reportValidity(report);
         for (Column column : columns.mapToCollection(Column.class)) {
-            if(StringUtils.isNullOrEmpty(column.key)) {
+            if (StringUtils.isNullOrEmpty(column.key)) {
                 report.reportIsInvalid("Column key cannot be empty!", "You cannot have empty parameter keys!", "Provide an appropriate parameter key.", column);
             }
-            if(column.type.getInfo() == null) {
+            if (column.type.getInfo() == null) {
                 report.reportIsInvalid("Column type cannot be empty!", "You cannot have empty parameter type!", "Provide an appropriate parameter type.", column);
             }
         }
@@ -74,12 +74,11 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
         for (Column column : columns.mapToCollection(Column.class)) {
             Object evaluationResult = column.values.evaluate(variables);
             List<Object> values = new ArrayList<>();
-            if(evaluationResult instanceof Collection) {
+            if (evaluationResult instanceof Collection) {
                 for (Object o : ((Collection<?>) evaluationResult)) {
                     values.add(parseColumnValue(o, column));
                 }
-            }
-            else {
+            } else {
                 values.add(parseColumnValue(evaluationResult, column));
             }
             nRow = Math.max(nRow, values.size());
@@ -88,7 +87,7 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
 
         // Normalize columns
         for (List<Object> objects : valueMap.values()) {
-            while(objects.size() < nRow) {
+            while (objects.size() < nRow) {
                 objects.add(objects.get(objects.size() - 1));
             }
         }
@@ -104,40 +103,33 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
     }
 
     private Object parseColumnValue(Object obj, Column column) {
-        if(column.valuesAreJson) {
+        if (column.valuesAreJson) {
             String json;
-            if(obj instanceof String) {
+            if (obj instanceof String) {
                 json = (String) obj;
-            }
-            else {
+            } else {
                 json = JsonUtils.toJsonString(obj);
             }
             return JsonUtils.readFromString(json, column.type.getInfo().getFieldClass());
-        }
-        else {
+        } else {
             Class<?> fieldClass = column.getType().getInfo().getFieldClass();
             // Handle special case: numbers
-            if(Number.class.isAssignableFrom(obj.getClass())) {
-                if(fieldClass == Byte.class) {
-                    return ((Number)obj).byteValue();
-                }
-                else if(fieldClass == Short.class) {
-                    return ((Number)obj).shortValue();
-                }
-                else if(fieldClass == Integer.class) {
-                    return ((Number)obj).intValue();
-                }
-                else if(fieldClass == Long.class) {
-                    return ((Number)obj).longValue();
-                }
-                else if(fieldClass == Float.class) {
-                    return ((Number)obj).floatValue();
-                }
-                else if(fieldClass == Double.class) {
-                    return ((Number)obj).doubleValue();
+            if (Number.class.isAssignableFrom(obj.getClass())) {
+                if (fieldClass == Byte.class) {
+                    return ((Number) obj).byteValue();
+                } else if (fieldClass == Short.class) {
+                    return ((Number) obj).shortValue();
+                } else if (fieldClass == Integer.class) {
+                    return ((Number) obj).intValue();
+                } else if (fieldClass == Long.class) {
+                    return ((Number) obj).longValue();
+                } else if (fieldClass == Float.class) {
+                    return ((Number) obj).floatValue();
+                } else if (fieldClass == Double.class) {
+                    return ((Number) obj).doubleValue();
                 }
             }
-            if(column.type.getInfo().getFieldClass().isAssignableFrom(obj.getClass())) {
+            if (column.type.getInfo().getFieldClass().isAssignableFrom(obj.getClass())) {
                 return obj;
             }
             throw new RuntimeException("Cannot convert " + obj + " into a value compatible with " + fieldClass);

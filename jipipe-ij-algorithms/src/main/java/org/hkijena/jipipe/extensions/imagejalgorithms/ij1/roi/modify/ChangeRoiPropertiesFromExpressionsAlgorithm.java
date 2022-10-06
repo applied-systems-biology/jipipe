@@ -51,6 +51,9 @@ import java.util.Set;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIteratingAlgorithm {
 
+    private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
+            JIPipe.createNode(RoiStatisticsAlgorithm.class);
+    private final CustomExpressionVariablesParameter customFilterVariables;
     private OptionalDefaultExpressionParameter roiName = new OptionalDefaultExpressionParameter(false, "roi_name");
     private OptionalDefaultExpressionParameter positionX = new OptionalDefaultExpressionParameter(false, "x");
     private OptionalDefaultExpressionParameter positionY = new OptionalDefaultExpressionParameter(false, "y");
@@ -63,14 +66,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
     private OptionalDefaultExpressionParameter scaleX = new OptionalDefaultExpressionParameter(false, "1.0");
     private OptionalDefaultExpressionParameter scaleY = new OptionalDefaultExpressionParameter(false, "1.0");
     private OptionalDefaultExpressionParameter centerScale = new OptionalDefaultExpressionParameter(false, "false");
-
-    private final RoiStatisticsAlgorithm roiStatisticsAlgorithm =
-            JIPipe.createNode(RoiStatisticsAlgorithm.class);
-
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
-
-    private final CustomExpressionVariablesParameter customFilterVariables;
-
     private boolean measureInPhysicalUnits = true;
 
     /**

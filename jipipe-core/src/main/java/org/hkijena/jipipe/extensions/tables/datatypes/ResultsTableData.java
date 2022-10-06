@@ -133,20 +133,6 @@ public class ResultsTableData implements JIPipeData, TableModel {
         this.table = (ResultsTable) other.table.clone();
     }
 
-    /**
-     * Adds missing columns from the other table
-     * @param other the other table
-     */
-    public void copyColumnSchemaFrom(ResultsTableData other) {
-        for (int col = 0; col < other.getColumnCount(); col++) {
-            String name = other.getColumnName(col);
-            boolean stringColumn = other.isStringColumn(col);
-            if(!getColumnNames().contains(name)) {
-                addColumn(name, stringColumn);
-            }
-        }
-    }
-
     public static ResultsTableData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
         try {
             return new ResultsTableData(ResultsTable.open(PathUtils.findFileByExtensionIn(storage.getFileSystemPath(), ".csv").toString()));
@@ -437,6 +423,21 @@ public class ResultsTableData implements JIPipeData, TableModel {
             uniqueName = StringUtils.makeUniqueString(name, " ", existing);
         }
         return uniqueName;
+    }
+
+    /**
+     * Adds missing columns from the other table
+     *
+     * @param other the other table
+     */
+    public void copyColumnSchemaFrom(ResultsTableData other) {
+        for (int col = 0; col < other.getColumnCount(); col++) {
+            String name = other.getColumnName(col);
+            boolean stringColumn = other.isStringColumn(col);
+            if (!getColumnNames().contains(name)) {
+                addColumn(name, stringColumn);
+            }
+        }
     }
 
     private void importDataColumns(Map<String, TableColumn> columns) {
@@ -1240,7 +1241,7 @@ public class ResultsTableData implements JIPipeData, TableModel {
      */
     public int addColumn(String name, TableColumn data, boolean extendRows) {
         int col = addColumn(name, !data.isNumeric());
-        if(extendRows && data.getRows() > getRowCount()) {
+        if (extendRows && data.getRows() > getRowCount()) {
             addRows(data.getRows() - getRowCount());
         }
 //        System.out.println(name + ": " + col + " / " + getColumnCount());
@@ -1517,8 +1518,9 @@ public class ResultsTableData implements JIPipeData, TableModel {
 
     /**
      * Extracts rows
+     *
      * @param start the first row index (inclusive)
-     * @param end the last row index (exclusive)
+     * @param end   the last row index (exclusive)
      * @return table with rows within [start, end)
      */
     public ResultsTableData getRows(int start, int end) {

@@ -1,6 +1,5 @@
 package org.hkijena.jipipe.extensions.annotation.algorithms;
 
-import com.google.common.collect.ImmutableList;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -26,12 +25,10 @@ import java.util.Map;
 @JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
 
+    private final CustomExpressionVariablesParameter customVariables;
     private DefaultExpressionParameter removeExistingAnnotationsFilter = new AnnotationQueryExpression("false");
     private DefaultExpressionParameter sourceAnnotationFilter = new AnnotationQueryExpression("true");
-
     private JIPipeTextAnnotationMergeMode mergeMode = JIPipeTextAnnotationMergeMode.OverwriteExisting;
-
-    private final CustomExpressionVariablesParameter customVariables;
 
     public OverwriteAnnotations(JIPipeNodeInfo info) {
         super(info);
@@ -59,7 +56,7 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
         for (Map.Entry<String, String> entry : targetAnnotationMap.entrySet()) {
             variables.set("name", entry.getValue());
             variables.set("value", entry.getValue());
-            if(removeExistingAnnotationsFilter.test(variables)) {
+            if (removeExistingAnnotationsFilter.test(variables)) {
                 dataBatch.removeMergedTextAnnotation(entry.getKey());
             }
         }
@@ -71,7 +68,7 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
             variables.set("name", originalAnnotation.getName());
             variables.set("source.value", originalAnnotation.getValue());
             variables.set("target.value", targetAnnotationMap.getOrDefault(originalAnnotation.getName(), null));
-            if(sourceAnnotationFilter.test(variables)) {
+            if (sourceAnnotationFilter.test(variables)) {
                 annotations.add(originalAnnotation);
             }
         }
@@ -83,8 +80,8 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("remove-existing-annotations-filter")
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(name = "Source annotations map",description = "Map of all source annotations (key to value)", key = "source.annotations")
-    @ExpressionParameterSettingsVariable(name = "Target annotations map",description = "Map of all target annotations (key to value)", key = "target.annotations")
+    @ExpressionParameterSettingsVariable(name = "Source annotations map", description = "Map of all source annotations (key to value)", key = "source.annotations")
+    @ExpressionParameterSettingsVariable(name = "Target annotations map", description = "Map of all target annotations (key to value)", key = "target.annotations")
     @ExpressionParameterSettingsVariable(name = "Annotation name", key = "name", description = "The name of the currently processed annotation")
     @ExpressionParameterSettingsVariable(name = "Annotation value", key = "value", description = "The value of the currently processed annotation")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
@@ -100,8 +97,8 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
     @JIPipeDocumentation(name = "Selected source annotations", description = "Expression that determines whether a source annotation is copied into the target. Set to <code>true</code> to copy all annotations.")
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
-    @ExpressionParameterSettingsVariable(name = "Source annotations map",description = "Map of all source annotations (key to value)", key = "source.annotations")
-    @ExpressionParameterSettingsVariable(name = "Target annotations map",description = "Map of all target annotations (key to value)", key = "target.annotations")
+    @ExpressionParameterSettingsVariable(name = "Source annotations map", description = "Map of all source annotations (key to value)", key = "source.annotations")
+    @ExpressionParameterSettingsVariable(name = "Target annotations map", description = "Map of all target annotations (key to value)", key = "target.annotations")
     @ExpressionParameterSettingsVariable(name = "Annotation name", key = "name", description = "The name of the currently processed annotation")
     @ExpressionParameterSettingsVariable(name = "Source annotation value", key = "source.value", description = "The value of the currently processed source annotation")
     @ExpressionParameterSettingsVariable(name = "Target annotation value", key = "target.value", description = "The value of the target annotation. NULL if it is not set.")

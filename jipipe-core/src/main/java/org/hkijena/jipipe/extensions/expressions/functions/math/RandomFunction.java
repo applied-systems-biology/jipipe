@@ -35,14 +35,13 @@ public class RandomFunction extends ExpressionFunction {
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
         double min = 0;
         double max = 1;
-        if(parameters.size() == 1) {
-            max = ((Number)parameters.get(0)).doubleValue();
+        if (parameters.size() == 1) {
+            max = ((Number) parameters.get(0)).doubleValue();
+        } else if (parameters.size() == 2) {
+            min = ((Number) parameters.get(0)).doubleValue();
+            max = ((Number) parameters.get(1)).doubleValue();
         }
-        else  if(parameters.size() ==2) {
-            min = ((Number)parameters.get(0)).doubleValue();
-            max = ((Number)parameters.get(1)).doubleValue();
-        }
-        if(min > max) {
+        if (min > max) {
             double t = min;
             min = max;
             max = t;

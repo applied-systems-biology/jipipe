@@ -17,8 +17,8 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
-import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
+import org.hkijena.jipipe.extensions.parameters.library.jipipe.PluginCategoriesEnumParameter;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringList;
 import org.hkijena.jipipe.extensions.r.algorithms.ImportRDatasetAlgorithm;
@@ -61,11 +61,6 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
         getMetadata().setThumbnail(new ImageParameter(ResourceUtils.getPluginResource("thumbnails/r.png")));
     }
 
-    @Override
-    public boolean isBeta() {
-        return true;
-    }
-
     private static void installR(JIPipeWorkbench workbench) {
         RExtensionSettings settings = RExtensionSettings.getInstance();
         JIPipeParameterTree tree = new JIPipeParameterTree(settings);
@@ -86,6 +81,33 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
         DocumentTabPane.DocumentTab tab = workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_APPLICATION_SETTINGS);
         JIPipeApplicationSettingsUI applicationSettingsUI = (JIPipeApplicationSettingsUI) tab.getContent();
         applicationSettingsUI.selectNode("/Extensions/R integration");
+    }
+
+    public static void createMissingRNotificationIfNeeded(JIPipeNotificationInbox inbox) {
+        if (!RExtensionSettings.RSettingsAreValid()) {
+            JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":r-not-configured");
+            notification.setHeading("R is not configured");
+            notification.setDescription("To make use of R within JIPipe, you need to either provide JIPipe with an " +
+                    "existing R installation or let JIPipe install a R distribution for you. Please note that we cannot provide you with an R " +
+                    "setup tool for Linux and Mac.\n\n" +
+                    "For more information, please visit https://www.jipipe.org/installation/third-party/r/");
+            if (SystemUtils.IS_OS_WINDOWS) {
+                notification.getActions().add(new JIPipeNotificationAction("Install R",
+                        "Installs a prepackaged version of R",
+                        UIUtils.getIconFromResources("actions/browser-download.png"),
+                        RExtension::easyInstallR));
+            }
+            notification.getActions().add(new JIPipeNotificationAction("Configure R",
+                    "Opens the applications settings page",
+                    UIUtils.getIconFromResources("actions/configure.png"),
+                    RExtension::configureR));
+            inbox.push(notification);
+        }
+    }
+
+    @Override
+    public boolean isBeta() {
+        return true;
     }
 
     @Override
@@ -167,30 +189,8 @@ public class RExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeExamplesFromResources(RESOURCES, "examples");
     }
 
-    public static void createMissingRNotificationIfNeeded(JIPipeNotificationInbox inbox) {
-        if (!RExtensionSettings.RSettingsAreValid()) {
-            JIPipeNotification notification = new JIPipeNotification(AS_DEPENDENCY.getDependencyId() + ":r-not-configured");
-            notification.setHeading("R is not configured");
-            notification.setDescription("To make use of R within JIPipe, you need to either provide JIPipe with an " +
-                    "existing R installation or let JIPipe install a R distribution for you. Please note that we cannot provide you with an R " +
-                    "setup tool for Linux and Mac.\n\n" +
-                    "For more information, please visit https://www.jipipe.org/installation/third-party/r/");
-            if (SystemUtils.IS_OS_WINDOWS) {
-                notification.getActions().add(new JIPipeNotificationAction("Install R",
-                        "Installs a prepackaged version of R",
-                        UIUtils.getIconFromResources("actions/browser-download.png"),
-                        RExtension::easyInstallR));
-            }
-            notification.getActions().add(new JIPipeNotificationAction("Configure R",
-                    "Opens the applications settings page",
-                    UIUtils.getIconFromResources("actions/configure.png"),
-                    RExtension::configureR));
-            inbox.push(notification);
-        }
-    }
-
     @Override
     public void postprocess() {
-      createMissingRNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
+        createMissingRNotificationIfNeeded(JIPipeNotificationInbox.getInstance());
     }
 }

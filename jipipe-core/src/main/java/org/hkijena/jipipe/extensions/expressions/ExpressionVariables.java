@@ -32,6 +32,7 @@ public class ExpressionVariables extends HashMap<String, Object> {
             put(entry.getKey(), entry.getValue().getValue());
         }
     }
+
     public void putAnnotations(List<JIPipeTextAnnotation> textAnnotations) {
         for (JIPipeTextAnnotation textAnnotation : textAnnotations) {
             put(textAnnotation.getName(), textAnnotation.getValue());

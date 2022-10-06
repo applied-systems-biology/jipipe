@@ -15,7 +15,6 @@
 package org.hkijena.jipipe.extensions.tables.nodes.rows;
 
 import com.google.common.primitives.Doubles;
-import com.google.common.primitives.Ints;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -64,10 +63,9 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
         variableSet.set("num_rows", data.getRowCount());
         for (int col = 0; col < data.getColumnCount(); col++) {
             TableColumn column = data.getColumnReference(col);
-            if(column.isNumeric()) {
+            if (column.isNumeric()) {
                 variableSet.set("all." + column.getLabel(), Doubles.asList(column.getDataAsDouble(column.getRows())));
-            }
-            else {
+            } else {
                 variableSet.set("all." + column.getLabel(), Arrays.asList(column.getDataAsString(column.getRows())));
             }
         }

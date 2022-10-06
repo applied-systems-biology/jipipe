@@ -36,7 +36,7 @@ public class GrayscaleAttributeFiltering3DAlgorithm extends JIPipeIteratingAlgor
     private Operation operation = Operation.Opening;
     private Attribute attribute = Attribute.Volume;
 
-    private  int minVoxelNumber = 100;
+    private int minVoxelNumber = 100;
     private Neighborhood3D connectivity = Neighborhood3D.SixConnected;
 
     public GrayscaleAttributeFiltering3DAlgorithm(JIPipeNodeInfo info) {
@@ -59,9 +59,8 @@ public class GrayscaleAttributeFiltering3DAlgorithm extends JIPipeIteratingAlgor
 
         // Identify image to process (original, or inverted)
         ImagePlus image2 = imagePlus.duplicate();
-        if( operation == Operation.Closing || operation == Operation.BottomHat )
-        {
-            IJ.run( image2, "Invert", "stack" );
+        if (operation == Operation.Closing || operation == Operation.BottomHat) {
+            IJ.run(image2, "Invert", "stack");
         }
 
         // apply volume opening
@@ -72,20 +71,17 @@ public class GrayscaleAttributeFiltering3DAlgorithm extends JIPipeIteratingAlgor
 
         // For top-hat and bottom-hat, we consider the difference with the
         // original image
-        if (operation == Operation.TopHat || operation == Operation.BottomHat)
-        {
-            for( int x = 0; x < image.getWidth(); x++ )
-                for( int y = 0; y < image.getHeight(); y++ )
-                    for( int z = 0; z < image.getSize(); z++ )
-                    {
+        if (operation == Operation.TopHat || operation == Operation.BottomHat) {
+            for (int x = 0; x < image.getWidth(); x++)
+                for (int y = 0; y < image.getHeight(); y++)
+                    for (int z = 0; z < image.getSize(); z++) {
                         double diff = Math.abs(result.getVoxel(x, y, z) - image.getVoxel(x, y, z));
                         result.setVoxel(x, y, z, diff);
                     }
         }
 
         // For closing, invert back the result
-        else if (operation == Operation.Closing)
-        {
+        else if (operation == Operation.Closing) {
             IJ.run(resultPlus, "Invert", "stack");
         }
 

@@ -34,7 +34,7 @@ public class OmniposeSettings implements JIPipeParameterCollection {
     /**
      * Checks the Python settings
      *
-     * @return if the settings are correctpip install git+https://github.com/guiwitz/cellpose.git 
+     * @return if the settings are correctpip install git+https://github.com/guiwitz/cellpose.git
      */
     public static boolean pythonSettingsAreValid() {
         if (JIPipe.getInstance() != null) {

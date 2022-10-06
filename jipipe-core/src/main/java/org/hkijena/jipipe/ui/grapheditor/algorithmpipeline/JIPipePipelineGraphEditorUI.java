@@ -35,20 +35,20 @@ import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.dragdrop.JIPipeCreateNodesFromDraggedDataDragAndDropBehavior;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.actions.RunAndShowResultsAction;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.actions.UpdateCacheAction;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorMinimap;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
-import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.dragdrop.JIPipeCreateNodesFromDraggedDataDragAndDropBehavior;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties.JIPipePipelineMultiAlgorithmSelectionPanelUI;
+import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties.JIPipePipelineSingleAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.AlgorithmGraphCopyNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.AlgorithmGraphCutNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.AlgorithmGraphDuplicateNodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.AlgorithmGraphPasteNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorMinimap;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
-import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties.JIPipePipelineMultiAlgorithmSelectionPanelUI;
-import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties.JIPipePipelineSingleAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grouping.JIPipeNodeGroupUI;
 import org.hkijena.jipipe.ui.history.HistoryJournalUI;
 import org.hkijena.jipipe.utils.*;
@@ -421,10 +421,9 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                     JIPipeNodeGroupUI.openGroupNodeGraph(getWorkbench(), (NodeGroup) event.getUi().getNode(), true);
                 }
             }
-        }
-        else if(event.getUi().getNode() instanceof JIPipeCompartmentOutput) {
+        } else if (event.getUi().getNode() instanceof JIPipeCompartmentOutput) {
             // Open the compartment
-            if(!Objects.equals(getCompartment(), event.getUi().getNode().getCompartmentUUIDInParentGraph()) && getWorkbench() instanceof JIPipeProjectWorkbench) {
+            if (!Objects.equals(getCompartment(), event.getUi().getNode().getCompartmentUUIDInParentGraph()) && getWorkbench() instanceof JIPipeProjectWorkbench) {
                 JIPipeProjectWorkbench projectWorkbench = (JIPipeProjectWorkbench) getWorkbench();
                 UUID uuid = event.getUi().getNode().getCompartmentUUIDInParentGraph();
                 JIPipeProjectCompartment projectCompartment = projectWorkbench.getProject().getCompartments().get(uuid);

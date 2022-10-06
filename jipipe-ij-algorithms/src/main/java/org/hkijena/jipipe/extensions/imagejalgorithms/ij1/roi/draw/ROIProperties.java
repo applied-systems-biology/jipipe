@@ -14,12 +14,10 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw;
 
-import com.google.common.eventbus.EventBus;
 import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -140,13 +138,14 @@ public class ROIProperties extends AbstractJIPipeParameterCollection {
 
     /**
      * Note that this is without cloning the ROI
+     *
      * @param target target
      */
     public void applyToRoiReference(Roi target, ExpressionVariables variables) {
         target.setPosition(positionC, positionZ, positionT);
-        if(fillColor.isEnabled())
+        if (fillColor.isEnabled())
             target.setFillColor(fillColor.getContent());
-        if(lineColor.isEnabled())
+        if (lineColor.isEnabled())
             target.setStrokeColor(lineColor.getContent());
         target.setStrokeWidth(lineWidth);
         target.setName(roiName.evaluateToString(variables));

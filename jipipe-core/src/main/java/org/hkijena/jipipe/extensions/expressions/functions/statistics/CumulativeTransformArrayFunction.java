@@ -20,7 +20,7 @@ public class CumulativeTransformArrayFunction extends ExpressionFunction {
         ExpressionVariables localVariables = new ExpressionVariables(variables);
         List<?> items = ImmutableList.copyOf((Collection<?>) parameters.get(0));
         String accumulator = "SUM(values)";
-        if(parameters.size() > 1) {
+        if (parameters.size() > 1) {
             accumulator = DefaultExpressionEvaluator.unescapeString("\"" + parameters.get(1) + "\"");
         }
         List<Object> results = new ArrayList<>();

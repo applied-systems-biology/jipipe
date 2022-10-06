@@ -47,13 +47,11 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ROIElementDrawingMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.RoiOutline;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.Measurement;
-import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.PathUtils;
-import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
@@ -92,7 +90,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         for (Roi roi : other) {
             String properties = roi.getProperties();
             Roi clone = (Roi) roi.clone();
-            if(properties != null) {
+            if (properties != null) {
                 // We have to force the props variable to null, because Roi does not make a deep copy of it
                 try {
                     Field field = Roi.class.getDeclaredField("props");
@@ -105,7 +103,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             // Keep the image reference
             clone.setImage(roi.getImage());
             // Roi clone does not copy properties for some reason (keeps reference)
-            if(properties != null)
+            if (properties != null)
                 clone.setProperties(properties);
             add(clone);
         }
@@ -118,16 +116,6 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
      */
     public ROIListData(RoiManager roiManager) {
         this.addAll(Arrays.asList(roiManager.getRoisAsArray()));
-    }
-
-    /**
-     * Creates a shallow copy of this list
-     * @return shallow copy
-     */
-    public ROIListData shallowClone() {
-        ROIListData result = new ROIListData();
-        result.addAll(this);
-        return result;
     }
 
     /**
@@ -253,7 +241,6 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         return new Point2D.Double(roi.getContourCentroid()[0], roi.getContourCentroid()[1]);
     }
 
-
     /**
      * Returns true if the ROI is visible at given slice index
      *
@@ -290,6 +277,146 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Method based on https://github.com/ndefrancesco/macro-frenzy/blob/master/geometry/fitting/fitMinRectangle.ijm
+     *
+     * @param roi the roi
+     * @return the mbr
+     */
+    public static Roi calculateMinimumBoundingRectangle(Roi roi) {
+        roi = new PolygonRoi(roi.getConvexHull(), Roi.POLYGON);
+        int np = roi.getFloatPolygon().npoints;
+        float[] xp = roi.getFloatPolygon().xpoints;
+        float[] yp = roi.getFloatPolygon().ypoints;
+
+        double minArea = 2 * roi.getBounds().getWidth() * roi.getBounds().getHeight();
+        double minFD = roi.getBounds().getWidth() + roi.getBounds().getHeight(); // FD now stands for first diameter :)
+        int imin = -1;
+        int i2min = -1;
+        int jmin = -1;
+        double min_hmin = 0;
+        double min_hmax = 0;
+        for (int i = 0; i < np; i++) {
+            double maxLD = 0;
+            int imax = -1;
+            int i2max = -1;
+            int jmax = -1;
+            int i2;
+            if (i < np - 1) i2 = i + 1;
+            else i2 = 0;
+
+            for (int j = 0; j < np; j++) {
+                double d = Math.abs(perpDist(xp[i], yp[i], xp[i2], yp[i2], xp[j], yp[j]));
+                if (maxLD < d) {
+                    maxLD = d;
+                    imax = i;
+                    jmax = j;
+                    i2max = i2;
+                }
+            }
+
+            double hmin = 0;
+            double hmax = 0;
+
+            for (int k = 0; k < np; k++) { // rotating calipers
+                double hd = parDist(xp[imax], yp[imax], xp[i2max], yp[i2max], xp[k], yp[k]);
+                hmin = Math.min(hmin, hd);
+                hmax = Math.max(hmax, hd);
+            }
+
+            double area = maxLD * (hmax - hmin);
+
+            if (minArea > area) {
+
+                minArea = area;
+                minFD = maxLD;
+                min_hmin = hmin;
+                min_hmax = hmax;
+
+                imin = imax;
+                i2min = i2max;
+                jmin = jmax;
+            }
+        }
+
+        double pd = perpDist(xp[imin], yp[imin], xp[i2min], yp[i2min], xp[jmin], yp[jmin]); // signed feret diameter
+        double pairAngle = Math.atan2(yp[i2min] - yp[imin], xp[i2min] - xp[imin]);
+        double minAngle = pairAngle + Math.PI / 2;
+
+        float[] nxp = new float[4];
+        float[] nyp = new float[4];
+
+        nxp[0] = (float) (xp[imin] + Math.cos(pairAngle) * min_hmax);
+        nyp[0] = (float) (yp[imin] + Math.sin(pairAngle) * min_hmax);
+
+        nxp[1] = (float) (nxp[0] + Math.cos(minAngle) * pd);
+        nyp[1] = (float) (nyp[0] + Math.sin(minAngle) * pd);
+
+        nxp[2] = (float) (nxp[1] + Math.cos(pairAngle) * (min_hmin - min_hmax));
+        nyp[2] = (float) (nyp[1] + Math.sin(pairAngle) * (min_hmin - min_hmax));
+
+        nxp[3] = (float) (nxp[2] + Math.cos(minAngle) * -pd);
+        nyp[3] = (float) (nyp[2] + Math.sin(minAngle) * -pd);
+
+        return new PolygonRoi(nxp, nyp, 4, Roi.POLYGON);
+    }
+
+    /**
+     * Method based on https://github.com/ndefrancesco/macro-frenzy/blob/master/geometry/fitting/fitMinRectangle.ijm
+     *
+     * @param x1 x1
+     * @param y1 y1
+     * @param x2 x2
+     * @param y2 y2
+     * @return dist2
+     */
+    private static double dist2(double x1, double y1, double x2, double y2) {
+        return Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2);
+    }
+
+    /**
+     * Method based on https://github.com/ndefrancesco/macro-frenzy/blob/master/geometry/fitting/fitMinRectangle.ijm
+     *
+     * @param p1x p1x
+     * @param p1y p1y
+     * @param p2x p2x
+     * @param p2y p2y
+     * @param x   x
+     * @param y   y
+     * @return signed distance from a point (x,y) to a line passing through p1 and p2
+     */
+    private static double perpDist(double p1x, double p1y, double p2x, double p2y, double x, double y) {
+        // signed distance from a point (x,y) to a line passing through p1 and p2
+        return ((p2x - p1x) * (y - p1y) - (x - p1x) * (p2y - p1y)) / Math.sqrt(dist2(p1x, p1y, p2x, p2y));
+    }
+
+    /**
+     * Method based on https://github.com/ndefrancesco/macro-frenzy/blob/master/geometry/fitting/fitMinRectangle.ijm
+     *
+     * @param p1x p1x
+     * @param p1y p1y
+     * @param p2x p2x
+     * @param p2y p2y
+     * @param x   x
+     * @param y   y
+     * @return signed projection of vector (x,y)-p1 into a line passing through p1 and p2
+     */
+    private static double parDist(double p1x, double p1y, double p2x, double p2y, double x, double y) {
+        // signed projection of vector (x,y)-p1 into a line passing through p1 and p2
+        return ((p2x - p1x) * (x - p1x) + (y - p1y) * (p2y - p1y)) / Math.sqrt(dist2(p1x, p1y, p2x, p2y));
+    }
+
+    /**
+     * Creates a shallow copy of this list
+     *
+     * @return shallow copy
+     */
+    public ROIListData shallowClone() {
+        ROIListData result = new ROIListData();
+        result.addAll(this);
+        return result;
     }
 
     /**
@@ -496,7 +623,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
             mask = copy.toRGBImage(margin, ROIElementDrawingMode.Always, ROIElementDrawingMode.IfAvailable, 1, Color.RED, Color.RED);
 //            mask.setLut(LUT.createLutFromColor(Color.RED));
         }
-        if(mask.getWidth() * mask.getHeight() == 0)
+        if (mask.getWidth() * mask.getHeight() == 0)
             return null;
         return new ImagePlusData(mask).preview(width, height);
     }
@@ -1078,130 +1205,6 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     /**
-     * Method based on https://github.com/ndefrancesco/macro-frenzy/blob/master/geometry/fitting/fitMinRectangle.ijm
-     * @param roi the roi
-     * @return the mbr
-     */
-    public static Roi calculateMinimumBoundingRectangle(Roi roi) {
-        roi = new PolygonRoi(roi.getConvexHull(), Roi.POLYGON);
-        int np = roi.getFloatPolygon().npoints;
-        float[] xp = roi.getFloatPolygon().xpoints;
-        float[] yp = roi.getFloatPolygon().ypoints;
-
-        double minArea = 2 * roi.getBounds().getWidth() * roi.getBounds().getHeight();
-        double minFD = roi.getBounds().getWidth() + roi.getBounds().getHeight(); // FD now stands for first diameter :)
-        int imin = -1;
-        int i2min = -1;
-        int jmin = -1;
-        double min_hmin = 0;
-        double min_hmax = 0;
-        for (int i = 0; i < np; i++) {
-            double maxLD = 0;
-            int imax = -1;
-            int i2max = -1;
-            int jmax = -1;
-            int i2;
-            if(i<np-1) i2 = i + 1; else i2 = 0;
-
-            for (int j = 0; j < np; j++) {
-                double d = Math.abs(perpDist(xp[i], yp[i], xp[i2], yp[i2], xp[j], yp[j]));
-                if (maxLD < d) {
-                    maxLD = d;
-                    imax = i;
-                    jmax = j;
-                    i2max = i2;
-                }
-            }
-
-            double hmin = 0;
-            double hmax = 0;
-
-            for (int k = 0; k < np; k++) { // rotating calipers
-               double  hd = parDist(xp[imax], yp[imax], xp[i2max], yp[i2max], xp[k], yp[k]);
-                hmin = Math.min(hmin, hd);
-                hmax = Math.max(hmax, hd);
-            }
-
-            double area = maxLD * (hmax - hmin);
-
-            if (minArea > area){
-
-                minArea = area;
-                minFD = maxLD;
-                min_hmin = hmin;
-                min_hmax = hmax;
-
-                imin = imax;
-                i2min = i2max;
-                jmin = jmax;
-            }
-        }
-
-        double pd = perpDist(xp[imin], yp[imin], xp[i2min], yp[i2min], xp[jmin], yp[jmin]); // signed feret diameter
-        double pairAngle = Math.atan2( yp[i2min]- yp[imin], xp[i2min]- xp[imin]);
-        double minAngle = pairAngle + Math.PI/2;
-
-        float[] nxp= new float[4];
-        float[] nyp= new float[4];
-
-        nxp[0] = (float) (xp[imin] + Math.cos(pairAngle) * min_hmax);
-        nyp[0] = (float) (yp[imin] + Math.sin(pairAngle) * min_hmax);
-
-        nxp[1] = (float) (nxp[0] + Math.cos(minAngle) * pd);
-        nyp[1] = (float) (nyp[0] + Math.sin(minAngle) * pd);
-
-        nxp[2] = (float) (nxp[1] + Math.cos(pairAngle) * (min_hmin - min_hmax));
-        nyp[2] = (float) (nyp[1] + Math.sin(pairAngle) * (min_hmin - min_hmax));
-
-        nxp[3] = (float) (nxp[2] + Math.cos(minAngle) * - pd);
-        nyp[3] = (float) (nyp[2] + Math.sin(minAngle) * - pd);
-
-        return new PolygonRoi(nxp, nyp, 4, Roi.POLYGON);
-    }
-
-    /**
-     * Method based on https://github.com/ndefrancesco/macro-frenzy/blob/master/geometry/fitting/fitMinRectangle.ijm
-     * @param x1 x1
-     * @param y1 y1
-     * @param x2 x2
-     * @param y2 y2
-     * @return dist2
-     */
-    private static double dist2(double x1,double y1,double x2,double y2){
-        return Math.pow(x1-x2, 2) + Math.pow(y1-y2, 2);
-    }
-
-    /**
-     * Method based on https://github.com/ndefrancesco/macro-frenzy/blob/master/geometry/fitting/fitMinRectangle.ijm
-     * @param p1x p1x
-     * @param p1y p1y
-     * @param p2x p2x
-     * @param p2y p2y
-     * @param x x
-     * @param y y
-     * @return signed distance from a point (x,y) to a line passing through p1 and p2
-     */
-    private static double perpDist(double p1x, double p1y, double p2x, double p2y, double x, double y){
-        // signed distance from a point (x,y) to a line passing through p1 and p2
-        return ((p2x - p1x)*(y - p1y) - (x - p1x)*(p2y - p1y))/Math.sqrt(dist2(p1x, p1y, p2x, p2y));
-    }
-
-    /**
-     * Method based on https://github.com/ndefrancesco/macro-frenzy/blob/master/geometry/fitting/fitMinRectangle.ijm
-     * @param p1x p1x
-     * @param p1y p1y
-     * @param p2x p2x
-     * @param p2y p2y
-     * @param x x
-     * @param y y
-     * @return signed projection of vector (x,y)-p1 into a line passing through p1 and p2
-     */
-    private static double parDist(double p1x, double p1y, double p2x, double p2y, double x, double y){
-        // signed projection of vector (x,y)-p1 into a line passing through p1 and p2
-        return ((p2x - p1x)*(x - p1x) + (y - p1y)*(p2y - p1y))/Math.sqrt(dist2(p1x, p1y, p2x, p2y));
-    }
-
-    /**
      * Splits all {@link ij.gui.ShapeRoi} that consist of multiple sub-Roi into their individual sub-Roi.
      * The original {@link ShapeRoi} is removed.
      */
@@ -1419,8 +1422,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
                                         forRoi = new ResultsTableData();
                                         forRoi.addStringColumn("Name");
                                         forRoi.addRows(new ResultsTableData(rtSys));
-                                    }
-                                    else {
+                                    } else {
                                         forRoi = new ResultsTableData(rtSys);
                                     }
                                     if (measurements.getValues().contains(Measurement.StackPosition)) {

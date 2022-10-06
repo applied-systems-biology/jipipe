@@ -10,7 +10,6 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
-import org.hkijena.jipipe.ui.components.renderers.JIPipeNodeInfoListCellRenderer;
 import org.hkijena.jipipe.ui.components.renderers.JIPipeNodeInfoOrExamplesListCellRenderer;
 import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
@@ -123,11 +122,10 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
         algorithmList.setCellRenderer(new JIPipeNodeInfoOrExamplesListCellRenderer());
         algorithmList.setModel(new DefaultListModel<>());
         algorithmList.addListSelectionListener(e -> {
-            if(algorithmList.getSelectedValue() instanceof JIPipeNodeInfo) {
+            if (algorithmList.getSelectedValue() instanceof JIPipeNodeInfo) {
                 selectNodeInfo((JIPipeNodeInfo) algorithmList.getSelectedValue());
-            }
-            else if(algorithmList.getSelectedValue() instanceof JIPipeNodeExample) {
-                selectNodeExample((JIPipeNodeExample)algorithmList.getSelectedValue());
+            } else if (algorithmList.getSelectedValue() instanceof JIPipeNodeExample) {
+                selectNodeExample((JIPipeNodeExample) algorithmList.getSelectedValue());
             }
         });
         algorithmList.setDragEnabled(true);
@@ -146,7 +144,7 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
                 continue;
             }
             model.addElement(info);
-            if(getWorkbench() instanceof JIPipeProjectWorkbench) {
+            if (getWorkbench() instanceof JIPipeProjectWorkbench) {
                 for (JIPipeNodeExample example : ((JIPipeProjectWorkbench) getWorkbench()).getProject().getNodeExamples(info.getId())) {
                     model.addElement(example);
                 }
@@ -161,13 +159,13 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
     }
 
     private void selectNodeExample(JIPipeNodeExample example) {
-        if(example != null) {
+        if (example != null) {
             JIPipeNodeInfo info = example.getNodeInfo();
 
             StringBuilder builder = new StringBuilder();
             builder.append("# ").append(info.getName()).append("\n\n");
 
-            if(!StringUtils.isNullOrEmpty(example.getNodeTemplate().getDescription().getBody())) {
+            if (!StringUtils.isNullOrEmpty(example.getNodeTemplate().getDescription().getBody())) {
                 builder.append(example.getNodeTemplate().getDescription().getBody()).append("<br/>");
             }
             if (!StringUtils.isNullOrEmpty(info.getDescription().getBody())) {
@@ -195,8 +193,7 @@ public class NodeToolBox extends JIPipeWorkbenchPanel {
             builder.append("</table>\n\n");
 
             documentationReader.setDocument(new MarkdownDocument(builder.toString()));
-        }
-        else {
+        } else {
             documentationReader.setDocument(new MarkdownDocument(""));
         }
     }

@@ -75,14 +75,12 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private final Map<String, FormPanel> formPanels = new HashMap<>();
     private final JIPipeWorkbench workbench;
     private final JCheckBoxMenuItem exportDisplayedScaleToggle = new JCheckBoxMenuItem("Export as displayed", true);
+    private final Map<ImageSliceIndex, ImageStatistics> statisticsMap = new HashMap<>();
     private ImagePlus image;
-
     private ImageCanvas zoomedDummyCanvas;
-
     private ImageCanvas exportDummyCanvas;
     private ImageProcessor currentSlice;
     private ImageViewerPanelCanvas canvas;
-    private final Map<ImageSliceIndex, ImageStatistics> statisticsMap = new HashMap<>();
     private FormPanel bottomPanel;
     private long lastTimeZoomed;
     private JScrollPane scrollPane;
@@ -90,8 +88,8 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
     private JMenuItem exportAllSlicesItem;
     private JMenuItem exportMovieItem;
     private List<ImageViewerPanelPlugin> plugins = new ArrayList<>();
-    private Component currentContentPanel;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
-    private boolean isUpdatingSliders = false;
+    private Component currentContentPanel;
+    private boolean isUpdatingSliders = false;    private final Timer animationTimer = new Timer(250, e -> animateNextSlice());
     /**
      * Initializes a new image viewer
      *
@@ -179,6 +177,10 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         ACTIVE_PANEL = this;
     }
 
+    public void addToOpenPanels() {
+        OPEN_PANELS.add(this);
+    }
+
 //    public void setRotationEnabled(boolean enabled) {
 //        rotateLeftButton.setVisible(enabled);
 //        rotateRightButton.setVisible(enabled);
@@ -188,10 +190,6 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
 //            refreshSlice();
 //        }
 //    }
-
-    public void addToOpenPanels() {
-        OPEN_PANELS.add(this);
-    }
 
     public void dispose() {
         if (ACTIVE_PANEL == this) {
@@ -651,6 +649,17 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         zoomStatusButton.setText((int) Math.round(canvas.getZoom() * 100) + "%");
     }
 
+    /**
+     * A dummy {@link ImageCanvas} that is needed by some visualization algorithms for magnification
+     * It is updated by {@link ImageViewerPanelCanvas}
+     * Please do not make any changes to the display properties here, as the image viewer has its own canvas
+     *
+     * @return the dummy canvas
+     */
+    public ImageCanvas getZoomedDummyCanvas() {
+        return zoomedDummyCanvas;
+    }
+
 //    private void rotateLeft() {
 //        if (rotation == 0)
 //            rotation = 270;
@@ -665,17 +674,6 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
 //        refreshImageInfo();
 //        refreshSlice();
 //    }
-
-    /**
-     * A dummy {@link ImageCanvas} that is needed by some visualization algorithms for magnification
-     * It is updated by {@link ImageViewerPanelCanvas}
-     * Please do not make any changes to the display properties here, as the image viewer has its own canvas
-     *
-     * @return the dummy canvas
-     */
-    public ImageCanvas getZoomedDummyCanvas() {
-        return zoomedDummyCanvas;
-    }
 
     /**
      * A dummy {@link ImageCanvas} that is needed by some visualization algorithms for magnification

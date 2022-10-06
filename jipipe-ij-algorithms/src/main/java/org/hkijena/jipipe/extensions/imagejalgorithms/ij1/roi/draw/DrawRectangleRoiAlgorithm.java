@@ -35,7 +35,7 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     public DrawRectangleRoiAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        this.roiProperties= new ROIProperties();
+        this.roiProperties = new ROIProperties();
         rectangles.setCustomInstanceGenerator(this::createNewDefinition);
         rectangles.addNewInstance();
     }
@@ -67,32 +67,29 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
         // Collect target and reference
         ROIListData target = dataBatch.getInputData("ROI", ROIListData.class, progressInfo);
-        if(target == null) {
+        if (target == null) {
             target = new ROIListData();
-        }
-        else {
+        } else {
             target = new ROIListData(target);
         }
         Rectangle reference;
         ImagePlusData referenceImage = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
-        if(referenceImage != null) {
-            reference = new Rectangle(0,0,referenceImage.getWidth(), referenceImage.getHeight());
-        }
-        else {
+        if (referenceImage != null) {
+            reference = new Rectangle(0, 0, referenceImage.getWidth(), referenceImage.getHeight());
+        } else {
             reference = target.getBounds();
         }
 
         // Generate items
         for (Margin rectangle : rectangles) {
             Rectangle area = rectangle.getInsideArea(reference, variables);
-            if(center) {
+            if (center) {
                 area.x -= area.width / 2;
                 area.y -= area.height / 2;
             }
-            if(arcWidth <= 0 && arcHeight <= 0) {
+            if (arcWidth <= 0 && arcHeight <= 0) {
                 target.add(new ShapeRoi(area));
-            }
-            else {
+            } else {
                 RoundRectangle2D rectangle2D = new RoundRectangle2D.Double(area.x, area.y, area.width, area.height, arcWidth, arcHeight);
                 target.add(new ShapeRoi(rectangle2D));
             }

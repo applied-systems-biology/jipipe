@@ -72,6 +72,7 @@ public class JIPipeParameterTypeInfoRef implements JIPipeValidatable {
     /**
      * Non-serialized list of allowed parameter types.
      * Will be passed to the parameter type picker for the UI
+     *
      * @return allowed parameter types. null or empty = all parameter types
      */
     public Set<Class<?>> getUiAllowedParameterTypes() {

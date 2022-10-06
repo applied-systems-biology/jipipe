@@ -111,6 +111,7 @@ public @interface JIPipeParameter {
     /**
      * Marks the parameter as pinned. It will be sorted to the top in the parameter panel and visually separated.
      * Intended mostly for JIPipe-internal node parameters that should be separated from other parameters
+     *
      * @return if the parameter is pinned
      */
     boolean pinned() default false;

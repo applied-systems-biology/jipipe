@@ -30,12 +30,12 @@ public class CheckBoxAction extends Ribbon.Action {
         return getCheckBox().isSelected();
     }
 
-    public boolean isSelected() {
-        return getCheckBox().isSelected();
-    }
-
     public void setState(boolean state) {
         getCheckBox().setSelected(state);
+    }
+
+    public boolean isSelected() {
+        return getCheckBox().isSelected();
     }
 
     public void setSelected(boolean state) {

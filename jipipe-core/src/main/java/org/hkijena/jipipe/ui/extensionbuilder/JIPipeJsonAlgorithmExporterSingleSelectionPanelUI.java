@@ -35,12 +35,12 @@ import java.util.Collections;
  */
 public class JIPipeJsonAlgorithmExporterSingleSelectionPanelUI extends JIPipeWorkbenchPanel {
     private final JIPipeGraphEditorUI graphEditorUI;
-    private JIPipeGraphCanvasUI canvas;
     private final JIPipeGraphNode node;
+    private JIPipeGraphCanvasUI canvas;
 
     /**
      * @param graphEditorUI the graph editor
-     * @param node     The algorithm
+     * @param node          The algorithm
      */
     public JIPipeJsonAlgorithmExporterSingleSelectionPanelUI(JIPipeGraphEditorUI graphEditorUI, JIPipeGraphNode node) {
         super(graphEditorUI.getWorkbench());
@@ -63,7 +63,7 @@ public class JIPipeJsonAlgorithmExporterSingleSelectionPanelUI extends JIPipeWor
                 DocumentTabPane.CloseMode.withoutCloseButton,
                 false);
 
-        if(JIPipeAdvancedParameterEditorUI.supports(node)) {
+        if (JIPipeAdvancedParameterEditorUI.supports(node)) {
             tabbedPane.addTab("Advanced parameters", UIUtils.getIconFromResources("actions/configure_toolbars.png"),
                     new JIPipeAdvancedParameterEditorUI(getWorkbench(), node),
                     DocumentTabPane.CloseMode.withoutCloseButton,

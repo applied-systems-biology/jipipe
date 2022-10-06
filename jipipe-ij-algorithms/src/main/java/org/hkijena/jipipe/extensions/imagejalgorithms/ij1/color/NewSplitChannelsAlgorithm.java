@@ -19,7 +19,9 @@ import ij.ImageStack;
 import ij.measure.Calibration;
 import ij.plugin.ChannelSplitter;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
@@ -34,7 +36,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.parameters.library.graph.OutputSlotMapParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Wrapper around {@link ChannelSplitter}
@@ -96,35 +99,33 @@ public class NewSplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
         ImagePlus[] split;
-        if(!imp.isComposite() && imp.getType() != ImagePlus.COLOR_RGB) {
+        if (!imp.isComposite() && imp.getType() != ImagePlus.COLOR_RGB) {
             imp = new CompositeImage(imp);
         }
         if (imp.isComposite()) {
             split = ChannelSplitter.split(imp);
-        }
-        else {
+        } else {
             String title = imp.getTitle();
             Calibration cal = imp.getCalibration();
             ImageStack[] channels = ChannelSplitter.splitRGB(imp.getStack(), true);
-            ImagePlus rImp = new ImagePlus(title+" (red)", channels[0]);
+            ImagePlus rImp = new ImagePlus(title + " (red)", channels[0]);
             rImp.setCalibration(cal);
-            ImagePlus gImp = new ImagePlus(title+" (green)", channels[1]);
+            ImagePlus gImp = new ImagePlus(title + " (green)", channels[1]);
             gImp.setCalibration(cal);
-            ImagePlus bImp = new ImagePlus(title+" (blue)", channels[2]);
+            ImagePlus bImp = new ImagePlus(title + " (blue)", channels[2]);
             bImp.setCalibration(cal);
-            split = new ImagePlus[] { rImp, gImp, bImp };
+            split = new ImagePlus[]{rImp, gImp, bImp};
         }
 
         for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
             String slotName = outputSlot.getName();
             int channelIndex = channelToSlotAssignment.getParameter(outputSlot.getName(), Integer.class);
 
-            if(channelIndex >= split.length) {
-                if(ignoreMissingChannels) {
+            if (channelIndex >= split.length) {
+                if (ignoreMissingChannels) {
                     progressInfo.log("Ignoring missing channel index " + channelIndex);
                     continue;
-                }
-                else {
+                } else {
                     throw new UserFriendlyRuntimeException(new IndexOutOfBoundsException("Requested channel " + channelIndex + ", but only " + split.length + " channels are available."),
                             "Could not find channel with index " + channelIndex,
                             "'Split channels' algorithm, slot '" + slotName + "'",

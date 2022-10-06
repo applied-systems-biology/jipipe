@@ -36,6 +36,7 @@ import java.util.*;
 
 /**
  * Algorithm that creates {@link PlotData} from {@link ResultsTableData}
+ *
  * @deprecated Instead, the new dynamically generated plotting should be utilized
  */
 @JIPipeDocumentation(name = "Plot tables", description = "Plots incoming tables. First, set the plot type via a parameter. This " +

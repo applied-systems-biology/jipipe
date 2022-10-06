@@ -73,6 +73,7 @@ public interface JIPipeParameterAccess {
 
     /**
      * Returns true if the parameter is pinned to the top
+     *
      * @return if the parameter is pinned to the top
      */
     default boolean isPinned() {

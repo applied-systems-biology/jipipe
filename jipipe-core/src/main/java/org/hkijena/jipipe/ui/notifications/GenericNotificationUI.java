@@ -21,7 +21,7 @@ public class GenericNotificationUI extends JIPipeWorkbenchPanel {
      * @param inboxUI      the workbench
      * @param notification the notification instance
      * @param dismissed    if dismissed
-     * @param blocked if blocked
+     * @param blocked      if blocked
      */
     public GenericNotificationUI(GenericNotificationInboxUI inboxUI, JIPipeNotification notification, boolean dismissed, boolean blocked) {
         super(inboxUI.getWorkbench());

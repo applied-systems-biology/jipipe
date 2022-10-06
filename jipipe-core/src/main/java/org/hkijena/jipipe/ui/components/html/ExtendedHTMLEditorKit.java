@@ -1,13 +1,9 @@
 package org.hkijena.jipipe.ui.components.html;
 
-import javax.swing.*;
 import javax.swing.text.*;
 import javax.swing.text.html.HTML;
 import javax.swing.text.html.HTMLEditorKit;
 import java.awt.*;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 
 /**
  * {@link HTMLEditorKit}

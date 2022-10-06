@@ -53,11 +53,10 @@ import java.util.Map;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images")
 public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
+    private final CustomExpressionVariablesParameter customVariables;
     private ImageStatisticsSetParameter overlapFilterMeasurements = new ImageStatisticsSetParameter();
     private LabelFilterSettings labels1Settings = new LabelFilterSettings();
     private LabelFilterSettings labels2Settings = new LabelFilterSettings();
-
-    private final CustomExpressionVariablesParameter customVariables;
 
     public FilterLabelsByOverlapAlgorithm(JIPipeNodeInfo info) {
         super(info);

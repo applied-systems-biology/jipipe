@@ -249,7 +249,7 @@ public class JIPipeSlotEditorUI extends JPanel {
      */
     public void reloadList() {
 
-        if(algorithm.getParentGraph() == null || !algorithm.getParentGraph().containsNode(algorithm)) {
+        if (algorithm.getParentGraph() == null || !algorithm.getParentGraph().containsNode(algorithm)) {
             return;
         }
 

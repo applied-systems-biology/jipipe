@@ -15,7 +15,6 @@ package org.hkijena.jipipe.api.grouping.parameters;
 
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
-import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.parameterreference.GraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
 import org.hkijena.jipipe.utils.OKCancelDialog;
@@ -51,8 +50,8 @@ public class GraphNodeParameterReferenceGroupCollectionParameterEditorUI extends
         GraphNodeParameterReferenceGroupCollection original = getParameter(GraphNodeParameterReferenceGroupCollection.class);
         GraphNodeParameterReferenceGroupCollection copy = new GraphNodeParameterReferenceGroupCollection(original);
         copy.setGraph(original.getGraph());
-        GraphNodeParameterReferenceGroupCollectionEditorUI parametersUI = new GraphNodeParameterReferenceGroupCollectionEditorUI(getWorkbench(), copy, null,false);
-        if(OKCancelDialog.showDialog(getWorkbench().getWindow(), "Edit parameters", parametersUI, "OK", new Dimension(1024,768))) {
+        GraphNodeParameterReferenceGroupCollectionEditorUI parametersUI = new GraphNodeParameterReferenceGroupCollectionEditorUI(getWorkbench(), copy, null, false);
+        if (OKCancelDialog.showDialog(getWorkbench().getWindow(), "Edit parameters", parametersUI, "OK", new Dimension(1024, 768))) {
             original.setParameterReferenceGroups(copy.getParameterReferenceGroups());
             setParameter(original, true);
         }

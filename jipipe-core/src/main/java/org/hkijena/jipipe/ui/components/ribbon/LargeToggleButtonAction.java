@@ -34,12 +34,12 @@ public class LargeToggleButtonAction extends Ribbon.Action {
         return getButton().isSelected();
     }
 
-    public boolean isSelected() {
-        return getButton().isSelected();
-    }
-
     public void setState(boolean state) {
         getButton().setSelected(state);
+    }
+
+    public boolean isSelected() {
+        return getButton().isSelected();
     }
 
     public void setSelected(boolean state) {

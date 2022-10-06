@@ -31,7 +31,6 @@ import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
 import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
 import org.hkijena.jipipe.ui.plotbuilder.PlotEditor;
-import org.hkijena.jipipe.ui.theme.CustomTabbedPaneUI;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -54,9 +53,9 @@ import java.util.stream.Collectors;
 public class TableEditor extends FlexContentWorkbenchPanel {
     private static final int MAX_UNDO = 10;
     private final TableViewerUISettings settings;
+    private final Stack<ResultsTableData> undoBuffer = new Stack<>();
     private ResultsTableData tableModel;
     private JXTable jxTable;
-    private final Stack<ResultsTableData> undoBuffer = new Stack<>();
     private boolean isRebuildingSelection = false;
 
     /**
@@ -108,6 +107,16 @@ public class TableEditor extends FlexContentWorkbenchPanel {
         window.setVisible(true);
         SwingUtilities.invokeLater(editor::repaint);
         return editor;
+    }
+
+    public static void main(String[] args) {
+        JIPipeUITheme.ModernLight.install();
+        JFrame frame = new JFrame();
+        JIPipeWorkbench workbench = new JIPipeDummyWorkbench();
+        TableEditor editor = new TableEditor(workbench, ResultsTableData.fromCSV(Paths.get("/data/JIPipe/metadata.csv")));
+        frame.setContentPane(editor);
+        frame.setSize(1024, 768);
+        frame.setVisible(true);
     }
 
     private void initialize() {
@@ -177,8 +186,8 @@ public class TableEditor extends FlexContentWorkbenchPanel {
 
         addBand.add(new LargeButtonAction("New string column", "Adds a new string column", UIUtils.getIcon32FromResources("actions/edit-table-insert-column-right.png"), () -> addColumn(true)));
         addBand.add(new LargeButtonAction("New numeric column", "Adds a new numeric column", UIUtils.getIcon32FromResources("actions/edit-table-insert-column-right.png"), () -> addColumn(false)));
-        addBand.add(new SmallButtonAction("Duplicate", "Duplicates the selected columns", UIUtils.getIconFromResources("actions/edit-duplicate.png"),this::copyColumn));
-        addBand.add(new SmallButtonAction("Delete", "Deletes the selected columns", UIUtils.getIconFromResources("actions/delete.png"),this::removeSelectedColumns));
+        addBand.add(new SmallButtonAction("Duplicate", "Duplicates the selected columns", UIUtils.getIconFromResources("actions/edit-duplicate.png"), this::copyColumn));
+        addBand.add(new SmallButtonAction("Delete", "Deletes the selected columns", UIUtils.getIconFromResources("actions/delete.png"), this::removeSelectedColumns));
 
         modifyBand.add(new LargeButtonAction("Rename", "Renames the selected column", UIUtils.getIcon32FromResources("actions/tag.png"), this::renameColumn));
 //        modifyBand.add(new LargeButtonAction("Combine", "Creates a new column that contains the values of the selected columns assigned by the pattern colum0=row0, column1=row0, ... for each row.", UIUtils.getIcon32FromResources("actions/rabbitvcs-merge.png"), this::addNewCombinedColumn));
@@ -204,7 +213,8 @@ public class TableEditor extends FlexContentWorkbenchPanel {
 
         dataBand.add(new LargeButtonAction("Integrate", "Collapses the table into a one-row table by applying an integration operation on each column", UIUtils.getIcon32FromResources("actions/statistics.png"), this::integrateColumns));
         {
-            LargeButtonAction convertButton = new LargeButtonAction("Apply function", "Applies a function to the selected table cells", UIUtils.getIcon32FromResources("actions/insert-math-expression.png"), () -> {});
+            LargeButtonAction convertButton = new LargeButtonAction("Apply function", "Applies a function to the selected table cells", UIUtils.getIcon32FromResources("actions/insert-math-expression.png"), () -> {
+            });
             JPopupMenu convertMenu = new JPopupMenu();
             UIUtils.addReloadablePopupMenuToComponent(convertButton.getButton(), convertMenu, () -> updateConvertMenu(convertButton.getButton(), convertMenu));
             dataBand.add(convertButton);
@@ -268,10 +278,9 @@ public class TableEditor extends FlexContentWorkbenchPanel {
         Path fileName = FileChooserSettings.openFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Open table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (fileName != null) {
             ResultsTableData tableData;
-            if(UIUtils.EXTENSION_FILTER_XLSX.accept(fileName.toFile())) {
+            if (UIUtils.EXTENSION_FILTER_XLSX.accept(fileName.toFile())) {
                 tableData = ResultsTableData.fromXLSX(fileName).values().iterator().next();
-            }
-            else {
+            } else {
                 tableData = ResultsTableData.fromCSV(fileName);
             }
             tableModel = tableData;
@@ -568,10 +577,9 @@ public class TableEditor extends FlexContentWorkbenchPanel {
     private void exportTableToFile() {
         Path selectedPath = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (selectedPath != null) {
-            if(UIUtils.EXTENSION_FILTER_XLSX.accept(selectedPath.toFile())) {
+            if (UIUtils.EXTENSION_FILTER_XLSX.accept(selectedPath.toFile())) {
                 tableModel.saveAsXLSX(selectedPath);
-            }
-            else {
+            } else {
                 tableModel.saveAsCSV(selectedPath);
             }
         }
@@ -586,16 +594,6 @@ public class TableEditor extends FlexContentWorkbenchPanel {
         jxTable.setModel(new ResultsTableData());
         jxTable.setModel(tableModel);
         SwingUtilities.invokeLater(this::autoSizeColumns);
-    }
-
-    public static void main(String[] args) {
-        JIPipeUITheme.ModernLight.install();
-        JFrame frame = new JFrame();
-        JIPipeWorkbench workbench = new JIPipeDummyWorkbench();
-        TableEditor editor = new TableEditor(workbench, ResultsTableData.fromCSV(Paths.get("/data/JIPipe/metadata.csv")));
-        frame.setContentPane(editor);
-        frame.setSize(1024,768);
-        frame.setVisible(true);
     }
 
     /**

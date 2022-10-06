@@ -13,7 +13,6 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
-import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.HashSet;
 import java.util.Map;
@@ -50,7 +49,7 @@ public class RemoveROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             for (Map.Entry<String, String> entry : map.entrySet()) {
                 variables.set("key", entry.getKey());
                 variables.set("value", entry.getValue());
-                if(filterExpression.evaluateToBoolean(variables)) {
+                if (filterExpression.evaluateToBoolean(variables)) {
                     toRemove.add(entry.getKey());
                 }
             }

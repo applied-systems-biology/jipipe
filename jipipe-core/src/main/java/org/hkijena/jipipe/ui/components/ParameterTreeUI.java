@@ -80,11 +80,11 @@ public class ParameterTreeUI extends JPanel {
         buttonPanel.setLayout(new BoxLayout(buttonPanel, BoxLayout.X_AXIS));
 
         JButton collapseAllButton = new JButton("Collapse all", UIUtils.getIconFromResources("actions/tree.png"));
-        collapseAllButton.addActionListener(e-> UIUtils.setTreeExpandedState(ui.treeComponent, false));
+        collapseAllButton.addActionListener(e -> UIUtils.setTreeExpandedState(ui.treeComponent, false));
         buttonPanel.add(collapseAllButton);
 
         JButton expandAllButton = new JButton("Expand all", UIUtils.getIconFromResources("actions/tree.png"));
-        expandAllButton.addActionListener(e-> UIUtils.setTreeExpandedState(ui.treeComponent, true));
+        expandAllButton.addActionListener(e -> UIUtils.setTreeExpandedState(ui.treeComponent, true));
         buttonPanel.add(expandAllButton);
 
         buttonPanel.add(Box.createHorizontalGlue());

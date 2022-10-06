@@ -55,8 +55,8 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Writer;
 import java.nio.file.Path;
-import java.util.*;
 import java.util.List;
+import java.util.*;
 
 /**
  * A JIPipe project.
@@ -102,8 +102,8 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Loads a project from a file
      *
-     * @param fileName      JSON file
-     * @param report        issue report
+     * @param fileName JSON file
+     * @param report   issue report
      * @return Loaded project
      * @throws IOException Triggered by {@link ObjectMapper}
      */
@@ -742,6 +742,7 @@ public class JIPipeProject implements JIPipeValidatable {
     /**
      * Gets all examples for a node type ID.
      * Includes project templates
+     *
      * @param nodeTypeId the ID
      * @return the examples
      */
@@ -749,7 +750,7 @@ public class JIPipeProject implements JIPipeValidatable {
         List<JIPipeNodeExample> result = new ArrayList<>(JIPipe.getNodes().getNodeExamples(nodeTypeId));
         for (JIPipeNodeTemplate nodeTemplate : NodeTemplateSettings.getInstance().getNodeTemplates()) {
             JIPipeNodeExample example = new JIPipeNodeExample(nodeTemplate);
-            if(Objects.equals(example.getNodeId(), nodeTypeId)) {
+            if (Objects.equals(example.getNodeId(), nodeTypeId)) {
                 example.setSourceInfo("From node templates (global)");
                 result.add(example);
             }
@@ -757,7 +758,7 @@ public class JIPipeProject implements JIPipeValidatable {
         for (JIPipeNodeTemplate nodeTemplate : metadata.getNodeTemplates()) {
             JIPipeNodeExample example = new JIPipeNodeExample(nodeTemplate);
             example.setSourceInfo("From node templates (project)");
-            if(Objects.equals(example.getNodeId(), nodeTypeId)) {
+            if (Objects.equals(example.getNodeId(), nodeTypeId)) {
                 result.add(example);
             }
         }

@@ -153,11 +153,10 @@ public abstract class ExpressionParameter {
      */
     public Color evaluateToColor(ExpressionVariables variables) {
         Object o = evaluate(variables);
-        if(o instanceof Number) {
+        if (o instanceof Number) {
             int rgb = ((Number) o).intValue();
             return new Color(rgb, rgb, rgb);
-        }
-        else if (o instanceof Color) {
+        } else if (o instanceof Color) {
             return (Color) o;
         } else if (o instanceof String) {
             return ColorUtils.parseColor((String) o);

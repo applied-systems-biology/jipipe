@@ -35,8 +35,8 @@ import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
 import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
 import org.hkijena.jipipe.ui.datatable.JIPipeExtendedDataTableUI;
 import org.hkijena.jipipe.ui.datatable.JIPipeExtendedMultiDataTableUI;
-import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.actions.UpdateCacheAction;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.quickrun.QuickRun;
 import org.hkijena.jipipe.ui.quickrun.QuickRunSettings;
@@ -92,28 +92,26 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     public void refreshTable() {
         List<JIPipeDataSlot> slotsToDisplay = new ArrayList<>();
         Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode.getUUIDInParentGraph());
-        if(stateMap != null && !stateMap.isEmpty()) {
-            if(!stateMap.containsKey(selectedCacheState)) {
+        if (stateMap != null && !stateMap.isEmpty()) {
+            if (!stateMap.containsKey(selectedCacheState)) {
                 selectedCacheState = null;
             }
-            if(selectedCacheState == null) {
+            if (selectedCacheState == null) {
                 // Select the newest available state
                 selectedCacheState = stateMap.keySet().stream().sorted().findFirst().get();
             }
             Map<String, JIPipeDataSlot> slotMap = stateMap.get(selectedCacheState);
-            if(slotMap != null) {
-                if(selectedSlot == null) {
+            if (slotMap != null) {
+                if (selectedSlot == null) {
                     slotsToDisplay.addAll(slotMap.values());
-                }
-                else {
+                } else {
                     JIPipeDataSlot cachedSlot = slotMap.getOrDefault(selectedSlot.getName(), null);
-                    if(cachedSlot != null) {
+                    if (cachedSlot != null) {
                         slotsToDisplay.add(cachedSlot);
                     }
                 }
             }
-        }
-        else {
+        } else {
             selectedCacheState = null;
         }
         if (slotsToDisplay.size() == 1) {
@@ -160,24 +158,24 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         initializeSlotSelectionComboBox(slotSelection);
         initializeCacheSnapshotSelectionComboBox(cacheSelection);
 
-        resultsBand.add(new Ribbon.Action(Arrays.asList(new JLabel("Data slot"), Box.createHorizontalStrut(8), slotSelection), 1, new Insets(2,2,2,2)));
-        resultsBand.add(new Ribbon.Action(Arrays.asList(new JLabel("Snapshot"), Box.createHorizontalStrut(8), cacheSelection), 1, new Insets(2,2,2,2)));
+        resultsBand.add(new Ribbon.Action(Arrays.asList(new JLabel("Data slot"), Box.createHorizontalStrut(8), slotSelection), 1, new Insets(2, 2, 2, 2)));
+        resultsBand.add(new Ribbon.Action(Arrays.asList(new JLabel("Snapshot"), Box.createHorizontalStrut(8), cacheSelection), 1, new Insets(2, 2, 2, 2)));
 
         Ribbon.Band cacheUpdateBand = cacheTask.addBand("Update");
         LargeButtonAction updateCacheAction = new LargeButtonAction("Update cache", "Updates the cache. Intermediate results are not stored", UIUtils.getIcon32FromResources("actions/update-cache.png"), () -> {
         });
         JPopupMenu updateCacheMenu = UIUtils.addPopupMenuToComponent(updateCacheAction.getButton());
-        JMenuItem updateCacheMenuItem = new JMenuItem("Update cache",  UIUtils.getIcon16FromResources("actions/update-cache.png"));
-        updateCacheMenuItem.addActionListener(e->updateCache(false));
+        JMenuItem updateCacheMenuItem = new JMenuItem("Update cache", UIUtils.getIcon16FromResources("actions/update-cache.png"));
+        updateCacheMenuItem.addActionListener(e -> updateCache(false));
         updateCacheMenu.add(updateCacheMenuItem);
-        JMenuItem cacheIntermediateResultsItem = new JMenuItem("Cache intermediate results",  UIUtils.getIcon16FromResources("actions/cache-intermediate-results.png"));
-        cacheIntermediateResultsItem.addActionListener(e->updateCache(true));
+        JMenuItem cacheIntermediateResultsItem = new JMenuItem("Cache intermediate results", UIUtils.getIcon16FromResources("actions/cache-intermediate-results.png"));
+        cacheIntermediateResultsItem.addActionListener(e -> updateCache(true));
         updateCacheMenu.add(cacheIntermediateResultsItem);
         cacheUpdateBand.add(updateCacheAction);
 
         Ribbon.Band cacheManageBand = cacheTask.addBand("Data");
-        cacheManageBand.add(new SmallButtonAction("Clear all", "Clears all cached data of this node", UIUtils.getIconFromResources("actions/clear-brush.png"), () ->  getProject().getCache().clear(this.graphNode.getUUIDInParentGraph())));
-        cacheManageBand.add(new SmallButtonAction("Clear outdated", "Clears all cached data of this node that was not generated with the current parameters", UIUtils.getIconFromResources("actions/document-open-recent.png"), () ->  getProject().getCache().autoClean(false, true, new JIPipeProgressInfo())));
+        cacheManageBand.add(new SmallButtonAction("Clear all", "Clears all cached data of this node", UIUtils.getIconFromResources("actions/clear-brush.png"), () -> getProject().getCache().clear(this.graphNode.getUUIDInParentGraph())));
+        cacheManageBand.add(new SmallButtonAction("Clear outdated", "Clears all cached data of this node that was not generated with the current parameters", UIUtils.getIconFromResources("actions/document-open-recent.png"), () -> getProject().getCache().autoClean(false, true, new JIPipeProgressInfo())));
 
         // Export task
         Ribbon.Band exportCacheBand = exportTask.addBand("Cache");
@@ -192,7 +190,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         cacheSelection.setRenderer(new CacheStateListCellRenderer());
         DefaultComboBoxModel<JIPipeProjectCacheState> model = new DefaultComboBoxModel<>();
         Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode.getUUIDInParentGraph());
-        if(stateMap != null) {
+        if (stateMap != null) {
             stateMap.keySet().stream().sorted().forEach(model::addElement);
         }
         cacheSelection.setModel(model);

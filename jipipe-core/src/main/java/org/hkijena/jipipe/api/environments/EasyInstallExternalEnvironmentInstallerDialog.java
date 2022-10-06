@@ -20,7 +20,6 @@ import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -87,10 +86,9 @@ public class EasyInstallExternalEnvironmentInstallerDialog extends JDialog {
         panel.setBorder(BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2), BorderFactory.createEmptyBorder(8, 8, 8, 8)));
         panel.add(UIUtils.createJLabel(availablePackage.getName(), UIUtils.getIcon32FromResources("module-json.png"), 16), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(4, 4, 4, 4), 0, 0));
         String urlText;
-        if(availablePackage.getUrlMultiPart() != null && !availablePackage.getUrlMultiPart().isEmpty()) {
-            urlText = String.join("\n",availablePackage.getUrlMultiPart());
-        }
-        else {
+        if (availablePackage.getUrlMultiPart() != null && !availablePackage.getUrlMultiPart().isEmpty()) {
+            urlText = String.join("\n", availablePackage.getUrlMultiPart());
+        } else {
             urlText = availablePackage.getUrl();
         }
         JTextArea idField = UIUtils.makeReadonlyBorderlessTextArea(urlText);

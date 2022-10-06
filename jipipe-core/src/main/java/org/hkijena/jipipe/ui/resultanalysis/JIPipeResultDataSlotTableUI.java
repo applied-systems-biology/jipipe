@@ -160,14 +160,14 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
 
         // Table band
         tableBand.add(new SmallButtonAction("Fit columns", "Fits the table columns to their contents", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), table::packAll));
-        tableBand.add(new SmallButtonAction("Compact columns", "Auto-size columns to the default size", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), () ->  UIUtils.packDataTable(table)));
+        tableBand.add(new SmallButtonAction("Compact columns", "Auto-size columns to the default size", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), () -> UIUtils.packDataTable(table)));
 
         // Preview band
         previewBand.add(new SmallToggleButtonAction("Enable previews", "Allows to toggle previews on and off", UIUtils.getIconFromResources("actions/zoom.png"), GeneralDataSettings.getInstance().isGenerateResultPreviews(), (toggle) -> {
             GeneralDataSettings.getInstance().setGenerateResultPreviews(toggle.isSelected());
             reloadTable();
         }));
-        previewBand.add(new Ribbon.Action(UIUtils.boxHorizontal(new JLabel("Size"), new DataPreviewControlUI()), 1, new Insets(2,2,2,2)));
+        previewBand.add(new Ribbon.Action(UIUtils.boxHorizontal(new JLabel("Size"), new DataPreviewControlUI()), 1, new Insets(2, 2, 2, 2)));
 
         // Data band
         dataBand.add(new LargeButtonAction("Open directory", "Opens the directory that contains the displayed results", UIUtils.getIcon32FromResources("actions/folder-open.png"), this::openResultsFolder));
@@ -230,10 +230,9 @@ public class JIPipeResultDataSlotTableUI extends JIPipeProjectWorkbenchPanel {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export as file", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (path != null) {
             ResultsTableData tableData = dataTable.toAnnotationTable();
-            if(UIUtils.EXTENSION_FILTER_XLSX.accept(path.toFile())) {
+            if (UIUtils.EXTENSION_FILTER_XLSX.accept(path.toFile())) {
                 tableData.saveAsXLSX(path);
-            }
-            else {
+            } else {
                 tableData.saveAsCSV(path);
             }
         }

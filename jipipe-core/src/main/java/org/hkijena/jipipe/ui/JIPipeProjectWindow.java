@@ -104,7 +104,7 @@ public class JIPipeProjectWindow extends JFrame {
         if (ProjectsSettings.getInstance().getProjectTemplate().getValue() != null) {
             try {
                 String id = ProjectsSettings.getInstance().getProjectTemplate().getValue();
-                if(StringUtils.isNullOrEmpty(id) || !JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().containsKey(id)) {
+                if (StringUtils.isNullOrEmpty(id) || !JIPipe.getInstance().getProjectTemplateRegistry().getRegisteredTemplates().containsKey(id)) {
                     id = JIPipeProjectTemplate.getFallbackTemplateId();
                     ProjectsSettings.getInstance().getProjectTemplate().setValue(id);
                     JIPipe.getInstance().getSettingsRegistry().save();
@@ -223,9 +223,9 @@ public class JIPipeProjectWindow extends JFrame {
      */
     public void newProjectFromTemplate(JIPipeProjectTemplate template) {
         Path loadZipTarget = null;
-        if(template.getZipFile() != null && Files.isRegularFile(template.getZipFile())) {
+        if (template.getZipFile() != null && Files.isRegularFile(template.getZipFile())) {
             try {
-                double sizeMB = Files.size(template.getZipFile()) / 1024.0 /1024.0;
+                double sizeMB = Files.size(template.getZipFile()) / 1024.0 / 1024.0;
                 int result = JOptionPane.showOptionDialog(this,
                         "The template contains " + Precision.round(sizeMB, 2) + " MB of data.\nYou can choose to either load only the " +
                                 "pipeline or extract the template project and related data into a directory.",
@@ -248,16 +248,16 @@ public class JIPipeProjectWindow extends JFrame {
                 e.printStackTrace();
             }
         }
-        if(loadZipTarget != null) {
+        if (loadZipTarget != null) {
             ExtractTemplateZipFileRun run = new ExtractTemplateZipFileRun(template, loadZipTarget);
             Path finalLoadZipTarget = loadZipTarget;
             JIPipeRunnerQueue.getInstance().getEventBus().register(new Object() {
                 @Subscribe
                 public void onRunFinished(RunWorkerFinishedEvent event) {
-                    if(event.getRun() == run) {
+                    if (event.getRun() == run) {
                         SwingUtilities.invokeLater(() -> {
                             Path projectFile = PathUtils.findFileByExtensionRecursivelyIn(finalLoadZipTarget, ".jip");
-                            if(projectFile == null) {
+                            if (projectFile == null) {
                                 JOptionPane.showMessageDialog(JIPipeProjectWindow.this,
                                         "No project file in " + finalLoadZipTarget,
                                         "Load template",
@@ -269,8 +269,7 @@ public class JIPipeProjectWindow extends JFrame {
                 }
             });
             JIPipeRunExecuterUI.runInDialog(this, run);
-        }
-        else {
+        } else {
             try {
                 JIPipeIssueReport report = new JIPipeIssueReport();
                 JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
@@ -281,7 +280,7 @@ public class JIPipeProjectWindow extends JFrame {
                 window.projectSavePath = null;
                 window.updateTitle();
                 window.getProjectUI().sendStatusBarText("Created new project");
-                if(!notifications.isEmpty()) {
+                if (!notifications.isEmpty()) {
                     UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
                 }
                 if (!report.isValid()) {
@@ -356,7 +355,7 @@ public class JIPipeProjectWindow extends JFrame {
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
                 window.updateTitle();
                 ProjectsSettings.getInstance().addRecentProject(path);
-                if(!notifications.isEmpty()) {
+                if (!notifications.isEmpty()) {
                     UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
                 }
             } catch (IOException e) {
@@ -414,7 +413,7 @@ public class JIPipeProjectWindow extends JFrame {
                     // Load into cache with a run
                     JIPipeRunExecuterUI.runInDialog(this, new LoadResultIntoCacheRun(projectUI, project, path));
                 }
-                if(!notifications.isEmpty()) {
+                if (!notifications.isEmpty()) {
                     UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
                 }
             } catch (IOException e) {

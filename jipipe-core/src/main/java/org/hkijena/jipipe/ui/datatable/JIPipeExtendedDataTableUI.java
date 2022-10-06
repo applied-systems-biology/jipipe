@@ -32,7 +32,8 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.cache.*;
+import org.hkijena.jipipe.ui.cache.JIPipeDataInfoCellRenderer;
+import org.hkijena.jipipe.ui.cache.JIPipeDataTableRowUI;
 import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToFilesByMetadataExporterRun;
 import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToOutputExporterRun;
 import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToZIPExporterRun;
@@ -220,14 +221,14 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
         tableBand.add(new LargeButtonAction("Open as tab", "Opens the current table in a new tab", UIUtils.getIcon32FromResources("actions/link.png"), this::openTableInNewTab));
         tableBand.add(new LargeButtonAction("Filter", "Opens the current filtered table in a new tab", UIUtils.getIcon32FromResources("actions/view-filter.png"), this::openFilteredTableInNewTab));
         tableBand.add(new SmallButtonAction("Fit columns", "Fits the table columns to their contents", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), table::packAll));
-        tableBand.add(new SmallButtonAction("Compact columns", "Auto-size columns to the default size", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), () ->  UIUtils.packDataTable(table)));
+        tableBand.add(new SmallButtonAction("Compact columns", "Auto-size columns to the default size", UIUtils.getIconFromResources("actions/zoom-fit-width.png"), () -> UIUtils.packDataTable(table)));
 
         // Preview band
         previewBand.add(new SmallToggleButtonAction("Enable previews", "Allows to toggle previews on and off", UIUtils.getIconFromResources("actions/zoom.png"), GeneralDataSettings.getInstance().isGenerateCachePreviews(), (toggle) -> {
             GeneralDataSettings.getInstance().setGenerateCachePreviews(toggle.isSelected());
             reloadTable();
         }));
-        previewBand.add(new Ribbon.Action(UIUtils.boxHorizontal(new JLabel("Size"), new DataPreviewControlUI()), 1, new Insets(2,2,2,2)));
+        previewBand.add(new Ribbon.Action(UIUtils.boxHorizontal(new JLabel("Size"), new DataPreviewControlUI()), 1, new Insets(2, 2, 2, 2)));
     }
 
     private void initializeExportRibbon() {
@@ -352,10 +353,9 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
         Path path = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Export as file", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (path != null) {
             ResultsTableData tableData = dataTableModel.getDataTable().toAnnotationTable(true);
-            if(UIUtils.EXTENSION_FILTER_XLSX.accept(path.toFile())) {
+            if (UIUtils.EXTENSION_FILTER_XLSX.accept(path.toFile())) {
                 tableData.saveAsXLSX(path);
-            }
-            else {
+            } else {
                 tableData.saveAsCSV(path);
             }
         }
@@ -466,14 +466,13 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
                 return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
             } else {
                 int annotationColumnIndex = toAnnotationColumnIndex(modelColumn);
-                if(annotationColumnIndex < dataTable.getAnnotationColumns().size()) {
+                if (annotationColumnIndex < dataTable.getAnnotationColumns().size()) {
                     String info = dataTable.getAnnotationColumns().get(annotationColumnIndex);
                     String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                             UIUtils.getIconFromResources("data-types/annotation.png"),
                             info);
                     return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
-                }
-                else {
+                } else {
                     return defaultRenderer.getTableCellRendererComponent(table, "Annotation", isSelected, hasFocus, row, column);
                 }
             }

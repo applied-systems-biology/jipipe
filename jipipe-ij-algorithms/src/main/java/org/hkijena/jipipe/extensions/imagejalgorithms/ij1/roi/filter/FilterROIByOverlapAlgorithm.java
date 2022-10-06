@@ -41,11 +41,10 @@ import java.util.*;
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI 2", autoCreate = true)
 public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
 
+    private final CustomExpressionVariablesParameter customVariables;
     private ImageStatisticsSetParameter overlapFilterMeasurements = new ImageStatisticsSetParameter();
     private ROIFilterSettings roi1Settings = new ROIFilterSettings();
     private ROIFilterSettings roi2Settings = new ROIFilterSettings();
-
-    private final CustomExpressionVariablesParameter customVariables;
 
     public FilterROIByOverlapAlgorithm(JIPipeNodeInfo info) {
         super(info);

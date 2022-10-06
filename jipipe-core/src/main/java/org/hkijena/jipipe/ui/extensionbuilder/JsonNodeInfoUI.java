@@ -15,7 +15,6 @@ package org.hkijena.jipipe.ui.extensionbuilder;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.grouping.JsonNodeInfo;
-import org.hkijena.jipipe.ui.parameterreference.GraphNodeParameterReferenceGroupCollectionEditorUI;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbench;
 import org.hkijena.jipipe.ui.JIPipeJsonExtensionWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;

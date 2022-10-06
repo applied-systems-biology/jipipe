@@ -132,8 +132,8 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
             for (ImageViewerPanelPlugin plugin : imageViewerPanel.getPlugins()) {
                 plugin.postprocessDraw(graphics2D, new Rectangle(x, y, w, h), imageSliceIndex);
             }
-            if(tool != null) {
-                tool.postprocessDraw(graphics2D, new Rectangle(x,y,w,h), imageSliceIndex);
+            if (tool != null) {
+                tool.postprocessDraw(graphics2D, new Rectangle(x, y, w, h), imageSliceIndex);
             }
         }
         if (error != null) {
@@ -203,7 +203,7 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     }
 
     private Cursor getStandardCursor() {
-        if(tool == null)
+        if (tool == null)
             return Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
         return tool.getToolCursor();
     }
@@ -528,11 +528,11 @@ public class ImageViewerPanelCanvas extends JPanel implements MouseListener, Mou
     public void setTool(ImageViewerPanelCanvasTool tool) {
         ImageViewerPanelCanvasTool oldTool = this.tool;
         setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-        if(this.tool != null) {
+        if (this.tool != null) {
             this.tool.onToolDeactivate(this);
         }
         this.tool = tool;
-        if(tool != null) {
+        if (tool != null) {
             tool.onToolActivate(this);
             setCursor(tool.getToolCursor());
         }

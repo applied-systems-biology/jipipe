@@ -55,12 +55,10 @@ import java.util.Arrays;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMorphoLibJ\nLabel Images")
 public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
+    private final CustomExpressionVariablesParameter customFilterVariables;
     private DefaultExpressionParameter filters = new DefaultExpressionParameter();
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
-
     private boolean measureInPhysicalUnits = true;
-
-    private final CustomExpressionVariablesParameter customFilterVariables;
 
     /**
      * Instantiates a new node type.
@@ -119,10 +117,9 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
             // Write statistics into variables
             for (int col = 0; col < statistics.getColumnCount(); col++) {
                 TableColumn column = statistics.getColumnReference(col);
-                if(column.isNumeric()) {
+                if (column.isNumeric()) {
                     variables.set("all." + column.getLabel(), new ArrayList<>(Doubles.asList(column.getDataAsDouble(column.getRows()))));
-                }
-                else {
+                } else {
                     variables.set("all." + column.getLabel(), new ArrayList<>(Arrays.asList(column.getDataAsString(column.getRows()))));
                 }
             }

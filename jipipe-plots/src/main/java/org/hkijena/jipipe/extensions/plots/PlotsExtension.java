@@ -216,9 +216,9 @@ public class PlotsExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     private void tryRegisterPlotCreatorNode(String datatypeId) {
         JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(datatypeId);
-        if(!PlotData.class.isAssignableFrom(dataInfo.getDataClass()))
+        if (!PlotData.class.isAssignableFrom(dataInfo.getDataClass()))
             return;
-        if(Modifier.isAbstract(dataInfo.getDataClass().getModifiers()))
+        if (Modifier.isAbstract(dataInfo.getDataClass().getModifiers()))
             return;
         registerNodeType(new PlotTables2AlgorithmInfo(dataInfo), UIUtils.getIconURLFromResources("actions/office-chart-area.png"));
     }

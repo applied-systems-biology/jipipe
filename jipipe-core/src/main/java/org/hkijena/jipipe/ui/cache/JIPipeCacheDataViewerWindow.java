@@ -136,11 +136,11 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     private void reloadInfoLabelMenu() {
         rowInfoLabelMenu.removeAll();
         JMenuItem setRowItem = new JMenuItem("Go to row ...", UIUtils.getIconFromResources("actions/go-jump.png"));
-        setRowItem.addActionListener(e-> gotoUserDefinedRow());
+        setRowItem.addActionListener(e -> gotoUserDefinedRow());
         rowInfoLabelMenu.add(setRowItem);
 
         int nRow = getDataSource().getDataTable().getRowCount();
-        if(nRow > 0) {
+        if (nRow > 0) {
             rowInfoLabelMenu.addSeparator();
             JComponent currentMenu = rowInfoLabelMenu;
             for (int i = 0; i < nRow; i++) {
@@ -149,7 +149,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
                 item.addActionListener(e -> gotoRow(finalI + 1));
                 currentMenu.add(item);
 
-                if(i != nRow - 1 && currentMenu.getComponentCount() >= 10) {
+                if (i != nRow - 1 && currentMenu.getComponentCount() >= 10) {
                     JMenu newMenu = new JMenu("More ...");
                     currentMenu.add(newMenu);
                     currentMenu = newMenu;
@@ -187,7 +187,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
                 getDataSource().getRow() + 1);
         if (!StringUtils.isNullOrEmpty(input)) {
             Integer index = NumberUtils.createInteger(input);
-            if(index != null) {
+            if (index != null) {
                 gotoRow(index);
             }
         }
@@ -248,6 +248,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     /**
      * The toolbar where the window pin controls are added.
      * Defaults to getToolBar(). For {@link org.hkijena.jipipe.ui.components.FlexContentPanel}, return getPinToolBar();
+     *
      * @return the pin toolbar
      */
     public JToolBar getPinToolBar() {
@@ -351,7 +352,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     }
 
     private void reloadFromCurrentCache() {
-        if(!project.getGraph().containsNode(algorithm)) {
+        if (!project.getGraph().containsNode(algorithm)) {
             lastVirtualData = null;
             showErrorUI();
             return;

@@ -35,9 +35,8 @@ import java.awt.event.MouseEvent;
 public class JIPipeTemplateSelectionDialog extends JDialog {
 
     private final JIPipeWorkbench workbench;
-    private JList<JIPipeProjectTemplate> templateJList;
-
     private final SearchTextField templateSearch = new SearchTextField();
+    private JList<JIPipeProjectTemplate> templateJList;
     private boolean isConfirmed = false;
 
     public JIPipeTemplateSelectionDialog(JIPipeWorkbench workbench, Window owner) {

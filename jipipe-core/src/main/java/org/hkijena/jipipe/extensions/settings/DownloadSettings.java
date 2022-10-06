@@ -47,36 +47,37 @@ public class DownloadSettings extends AbstractJIPipeParameterCollection {
         autoDetectEnvironments();
     }
 
+    public static DownloadSettings getInstance() {
+        return JIPipe.getSettings().getSettings(ID, DownloadSettings.class);
+    }
+
     private void autoDetectEnvironments() {
 
-        if(!externalDownloaderProcess.generateValidityReport().isValid()) {
-            if(SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX) {
+        if (!externalDownloaderProcess.generateValidityReport().isValid()) {
+            if (SystemUtils.IS_OS_LINUX || SystemUtils.IS_OS_MAC_OSX) {
                 // Attempt to get wget
                 Path wgetPath = PathUtils.findAnyOf(Paths.get("/bin/wget"), Paths.get("/usr/local/bin/wget"), Paths.get("/usr/bin/wget"));
                 if (wgetPath != null && Files.isRegularFile(wgetPath)) {
-                    if(SystemUtils.IS_OS_LINUX) {
+                    if (SystemUtils.IS_OS_LINUX) {
                         externalDownloaderProcess.setExecutablePathLinux(wgetPath);
-                    }
-                    else {
+                    } else {
                         externalDownloaderProcess.setExecutablePathOSX(wgetPath);
                     }
                     externalDownloaderProcess.setArguments(new DefaultExpressionParameter("ARRAY(\"-O\", output_file, url)"));
                 }
                 // Attempt to get cURL
-                if(!externalDownloaderProcess.generateValidityReport().isValid()) {
+                if (!externalDownloaderProcess.generateValidityReport().isValid()) {
                     Path curlPath = PathUtils.findAnyOf(Paths.get("/bin/curl"), Paths.get("/usr/local/bin/curl"), Paths.get("/usr/bin/curl"));
                     if (curlPath != null && Files.isRegularFile(curlPath)) {
-                        if(SystemUtils.IS_OS_LINUX) {
+                        if (SystemUtils.IS_OS_LINUX) {
                             externalDownloaderProcess.setExecutablePathLinux(curlPath);
-                        }
-                        else{
+                        } else {
                             externalDownloaderProcess.setExecutablePathOSX(curlPath);
                         }
                         externalDownloaderProcess.setArguments(new DefaultExpressionParameter("ARRAY(\"-L\", \"--retry\", \"5\", url, \"--output\", output_file)"));
                     }
                 }
-            }
-            else if(SystemUtils.IS_OS_WINDOWS) {
+            } else if (SystemUtils.IS_OS_WINDOWS) {
 //                // Configure powershell downloading
 //                Path powerShellPath = PathUtils.findAnyOf(Paths.get("C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"));
 //                if(powerShellPath != null) {
@@ -88,6 +89,7 @@ public class DownloadSettings extends AbstractJIPipeParameterCollection {
             }
         }
     }
+
     @JIPipeDocumentation(name = "Prefer custom downloader", description = "If enabled, a custom downloader process is preferred.")
     @JIPipeParameter("prefer-external-downloader")
     public boolean isPreferCustomDownloader() {
@@ -108,10 +110,6 @@ public class DownloadSettings extends AbstractJIPipeParameterCollection {
     @JIPipeParameter("external-downloader-process")
     public void setExternalDownloaderProcess(DownloadEnvironment externalDownloaderProcess) {
         this.externalDownloaderProcess = externalDownloaderProcess;
-    }
-
-    public static DownloadSettings getInstance() {
-        return JIPipe.getSettings().getSettings(ID, DownloadSettings.class);
     }
 
     public static class DownloadEnvironment extends ProcessEnvironment {

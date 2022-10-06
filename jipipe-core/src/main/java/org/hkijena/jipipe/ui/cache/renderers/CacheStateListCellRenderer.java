@@ -30,7 +30,7 @@ public class CacheStateListCellRenderer extends JLabel implements ListCellRender
     public CacheStateListCellRenderer() {
         setOpaque(true);
         setIcon(UIUtils.getIconFromResources("actions/camera.png"));
-        setBorder(BorderFactory.createEmptyBorder(2,2,2,2));
+        setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
     }
 
     @Override

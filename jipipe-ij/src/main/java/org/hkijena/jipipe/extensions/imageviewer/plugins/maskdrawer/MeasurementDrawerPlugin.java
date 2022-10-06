@@ -4,19 +4,14 @@ import com.google.common.eventbus.Subscribe;
 import ij.IJ;
 import ij.ImagePlus;
 import ij.gui.Roi;
-import ij.measure.ResultsTable;
-import ij.plugin.filter.ParticleAnalyzer;
 import ij.plugin.filter.ThresholdToSelection;
-import ij.plugin.frame.RoiManager;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.ImageStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
-import org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager.ROIManagerPlugin;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.ui.JIPipeDummyWorkbench;
@@ -27,7 +22,6 @@ import org.hkijena.jipipe.ui.components.ribbon.SmallButtonAction;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -42,11 +36,9 @@ import java.util.Arrays;
 public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
 
     public static final Settings SETTINGS = new Settings();
-
-    private JXTable table = new JXTable();
-
-    private ResultsTableData lastMeasurements;
     private final JCheckBox autoMeasureToggle = new JCheckBox("Measure on changes");
+    private JXTable table = new JXTable();
+    private ResultsTableData lastMeasurements;
 
     public MeasurementDrawerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
@@ -83,7 +75,7 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
         dialog.revalidate();
         dialog.repaint();
         dialog.setVisible(true);
-        if(autoMeasureToggle.isSelected()) {
+        if (autoMeasureToggle.isSelected()) {
             measureCurrentMask();
         }
     }
@@ -95,7 +87,7 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
         Ribbon.Band generalBand = measureTask.addBand("General");
         generalBand.add(new LargeButtonAction("Measure", "Measures the image/mask now", UIUtils.getIcon32FromResources("actions/statistics.png"), this::measureCurrentMask));
         generalBand.add(new SmallButtonAction("Settings ...", "Opens the settings for the measurement tool", UIUtils.getIconFromResources("actions/configure.png"), this::showSettings));
-        generalBand.add(new Ribbon.Action(autoMeasureToggle, 1, new Insets(2,2,2,2)));
+        generalBand.add(new Ribbon.Action(autoMeasureToggle, 1, new Insets(2, 2, 2, 2)));
 
         Ribbon.Task importExportTask = getRibbon().getOrCreateTask("Import/Export");
         Ribbon.Band importExportMeasurementsBand = importExportTask.addBand("Measurements");
@@ -107,22 +99,21 @@ public class MeasurementDrawerPlugin extends MaskDrawerPlugin {
     }
 
     private void exportMeasurementsToEditor() {
-        if(lastMeasurements == null) {
+        if (lastMeasurements == null) {
             return;
         }
         TableEditor.openWindow(getWorkbench(), new ResultsTableData(lastMeasurements), "Measurements");
     }
 
     private void exportMeasurementsToFile() {
-        if(lastMeasurements == null) {
+        if (lastMeasurements == null) {
             return;
         }
         Path selectedPath = FileChooserSettings.saveFile(getViewerPanel(), FileChooserSettings.LastDirectoryKey.Projects, "Export table", UIUtils.EXTENSION_FILTER_CSV, UIUtils.EXTENSION_FILTER_XLSX);
         if (selectedPath != null) {
-            if(UIUtils.EXTENSION_FILTER_XLSX.accept(selectedPath.toFile())) {
+            if (UIUtils.EXTENSION_FILTER_XLSX.accept(selectedPath.toFile())) {
                 lastMeasurements.saveAsXLSX(selectedPath);
-            }
-            else {
+            } else {
                 lastMeasurements.saveAsCSV(selectedPath);
             }
         }

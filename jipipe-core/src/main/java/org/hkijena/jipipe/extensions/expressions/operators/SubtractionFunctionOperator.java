@@ -60,10 +60,9 @@ public class SubtractionFunctionOperator extends GenericOperator {
 
     @Override
     public Object evaluate(String left, String right) {
-        if(NumberUtils.isCreatable(left) && NumberUtils.isCreatable(right)) {
+        if (NumberUtils.isCreatable(left) && NumberUtils.isCreatable(right)) {
             return NumberUtils.createDouble(left) - NumberUtils.createDouble(right);
-        }
-        else {
+        } else {
             throw new IllegalArgumentException("Cannot subtract strings '" + left + "' and '" + right + "'!");
         }
     }

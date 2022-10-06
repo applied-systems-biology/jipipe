@@ -33,7 +33,6 @@ public class CellposeSegmentationEnhancementSettings_Old implements JIPipeParame
     }
 
 
-
     @JIPipeDocumentation(name = "Normalize", description = "Normalize data so 0.0=1st percentile and 1.0=99th percentile of image intensities in each channel")
     @JIPipeParameter("normalize")
     public boolean isNormalize() {

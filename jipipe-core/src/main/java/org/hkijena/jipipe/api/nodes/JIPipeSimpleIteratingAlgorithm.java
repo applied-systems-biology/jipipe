@@ -166,7 +166,7 @@ public abstract class JIPipeSimpleIteratingAlgorithm extends JIPipeParameterSlot
         }
 
         // Handle case: All optional input, no data
-        if(dataBatches.isEmpty() && getDataInputSlots().stream().allMatch(slot -> slot.getInfo().isOptional() && slot.isEmpty())) {
+        if (dataBatches.isEmpty() && getDataInputSlots().stream().allMatch(slot -> slot.getInfo().isOptional() && slot.isEmpty())) {
             progressInfo.log("Generating dummy data batch because of the [all inputs empty optional] condition");
             // Generate a dummy batch
             JIPipeDataBatch dataBatch = new JIPipeDataBatch(this);

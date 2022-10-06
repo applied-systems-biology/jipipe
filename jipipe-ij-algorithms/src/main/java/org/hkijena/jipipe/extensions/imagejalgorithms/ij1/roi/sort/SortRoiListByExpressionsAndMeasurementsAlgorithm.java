@@ -5,7 +5,6 @@ import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -20,7 +19,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.measure.MeasurementCol
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.ResourceUtils;
-import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.*;
 
@@ -31,14 +29,12 @@ import java.util.*;
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIteratingAlgorithm {
 
+    private final CustomExpressionVariablesParameter customFilterVariables;
     private StringQueryExpression expression = new StringQueryExpression();
     private boolean includeAnnotations = true;
     private ImageStatisticsSetParameter measurements = new ImageStatisticsSetParameter();
     private boolean measureInPhysicalUnits = true;
-
     private boolean reverseSortOrder = false;
-
-    private final CustomExpressionVariablesParameter customFilterVariables;
 
     public SortRoiListByExpressionsAndMeasurementsAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -95,7 +91,7 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
         }
 
         ROIListData outputRois = inputRois.shallowClone();
-        if(reverseSortOrder)
+        if (reverseSortOrder)
             outputRois.sort(Comparator.comparing(sortKeys::get, NaturalOrderComparator.INSTANCE).reversed());
         else
             outputRois.sort(Comparator.comparing(sortKeys::get, NaturalOrderComparator.INSTANCE));

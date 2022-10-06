@@ -562,8 +562,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     /**
      * Override this method to add operations to be run after deserialization from JSON
      *
-     * @param node the JSON node where the data was loaded
-     * @param issues issues during deserialization. if you want to notify the user about potential issues that can be acted upon, use the notification inbox
+     * @param node          the JSON node where the data was loaded
+     * @param issues        issues during deserialization. if you want to notify the user about potential issues that can be acted upon, use the notification inbox
      * @param notifications additional notifications for the user. these can be acted upon
      */
     protected void onDeserialized(JsonNode node, JIPipeIssueReport issues, JIPipeNotificationInbox notifications) {
@@ -762,10 +762,9 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return The UUID within getGraph()
      */
     public UUID getUUIDInParentGraph() {
-        if(parentGraph != null) {
+        if (parentGraph != null) {
             return parentGraph.getUUIDOf(this);
-        }
-        else {
+        } else {
             return null;
         }
     }

@@ -103,7 +103,7 @@ public class JIPipeNodeInfoOrExamplesListCellRenderer extends JPanel implements 
 
         setFont(list.getFont());
 
-        if(obj instanceof JIPipeNodeInfo) {
+        if (obj instanceof JIPipeNodeInfo) {
             JIPipeNodeInfo info = (JIPipeNodeInfo) obj;
             nodeColor.setFillColor(UIUtils.getFillColorFor(info));
             String menuPath = info.getCategory().getName();
@@ -130,8 +130,7 @@ public class JIPipeNodeInfoOrExamplesListCellRenderer extends JPanel implements 
                 }
                 alternativeLabel.setText(builder.toString());
             }
-        }
-        else if(obj instanceof JIPipeNodeExample) {
+        } else if (obj instanceof JIPipeNodeExample) {
             JIPipeNodeExample example = (JIPipeNodeExample) obj;
             JIPipeNodeInfo info = example.getNodeInfo();
             nodeColor.setFillColor(UIUtils.getFillColorFor(info));
@@ -145,8 +144,7 @@ public class JIPipeNodeInfoOrExamplesListCellRenderer extends JPanel implements 
 
             alternativeLabel.setForeground(ModernMetalTheme.PRIMARY5);
             alternativeLabel.setText("Example");
-        }
-        else {
+        } else {
             nameLabel.setText("<Null>");
         }
 

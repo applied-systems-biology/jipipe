@@ -18,10 +18,8 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
-import org.hkijena.jipipe.extensions.tables.TableColumnReference;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
-import org.hkijena.jipipe.extensions.tables.parameters.enums.TableColumnIntegrationParameter;
 
 import java.util.Arrays;
 import java.util.List;
@@ -70,7 +68,7 @@ public class HistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             double key = keyColumn_.getRowAsDouble(row);
             double value = valueColumn_.getRowAsDouble(row);
             TDoubleList list = bucketedValues.get(key);
-            if(list == null) {
+            if (list == null) {
                 list = new TDoubleArrayList();
                 bucketedValues.put(key, list);
             }
@@ -96,7 +94,7 @@ public class HistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         Arrays.sort(sortedKeys);
 
         // Cumulative if enabled
-        if(cumulative) {
+        if (cumulative) {
             TDoubleDoubleMap cumulativeIntegratedValues = new TDoubleDoubleHashMap();
             double cumulativeValue = 0;
             for (double key : sortedKeys) {
@@ -109,7 +107,7 @@ public class HistogramAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
 
         // Normalize if enabled
-        if(normalize) {
+        if (normalize) {
             double max = Double.NEGATIVE_INFINITY;
             for (double value : integratedValues.values()) {
                 max = Math.max(max, value);

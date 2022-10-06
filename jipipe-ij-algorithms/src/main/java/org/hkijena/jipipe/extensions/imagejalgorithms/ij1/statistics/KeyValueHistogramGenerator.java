@@ -1,10 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics;
 
-import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
-import gnu.trove.list.TDoubleList;
 import gnu.trove.list.TFloatList;
-import gnu.trove.list.array.TDoubleArrayList;
 import gnu.trove.list.array.TFloatArrayList;
 import gnu.trove.map.TDoubleDoubleMap;
 import gnu.trove.map.hash.TDoubleDoubleHashMap;
@@ -17,22 +14,16 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
-import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.imagejalgorithms.utils.ImageJAlgorithmUtils;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
-import org.hkijena.jipipe.utils.CoreImageJUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -69,7 +60,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         ImagePlus valueImage = dataBatch.getInputData("Value", ImagePlusGreyscale32FData.class, progressInfo).getImage();
         TDoubleObjectHashMap<TFloatList> bucketedValues = new TDoubleObjectHashMap<>();
 
-        if(!ImageJUtils.imagesHaveSameSize(keyImage, valueImage)) {
+        if (!ImageJUtils.imagesHaveSameSize(keyImage, valueImage)) {
             throw new UserFriendlyRuntimeException("Input images do not have the same size!",
                     "Input images do not have the same size!",
                     getDisplayName(),
@@ -86,7 +77,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
                 float key = keyPixels[i];
                 float value = valuePixels[i];
                 TFloatList list = bucketedValues.get(key);
-                if(list == null) {
+                if (list == null) {
                     list = new TFloatArrayList();
                     bucketedValues.put(key, list);
                 }
@@ -102,7 +93,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         progressInfo.log("Integrating " + bucketedValues.size() + " buckets ...");
         TDoubleDoubleMap integratedValues = new TDoubleDoubleHashMap();
         for (double key : bucketedValues.keys()) {
-            if(progressInfo.isCancelled())
+            if (progressInfo.isCancelled())
                 return;
             TFloatList list = bucketedValues.get(key);
             List<Float> asList = Floats.asList(list.toArray());
@@ -116,11 +107,11 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         Arrays.sort(sortedKeys);
 
         // Cumulative if enabled
-        if(cumulative) {
+        if (cumulative) {
             TDoubleDoubleMap cumulativeIntegratedValues = new TDoubleDoubleHashMap();
             double previousValue = 0;
             for (double key : sortedKeys) {
-                if(progressInfo.isCancelled())
+                if (progressInfo.isCancelled())
                     return;
                 double value = integratedValues.get(key) + previousValue;
                 previousValue = value;
@@ -130,7 +121,7 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         }
 
         // Normalize if enabled
-        if(normalize) {
+        if (normalize) {
             double max = Double.NEGATIVE_INFINITY;
             for (double value : integratedValues.values()) {
                 max = Math.max(max, value);

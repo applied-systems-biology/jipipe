@@ -19,10 +19,9 @@ public class ExpressionSequenceFunction extends ExpressionFunction {
     public ParameterInfo getParameterInfo(int index) {
         if (index == 0) {
             return new ParameterInfo("Expression", "String that contains an expression");
-        } else if(index == 1 ){
+        } else if (index == 1) {
             return new ParameterInfo("Indices", "Array of values that are passed into the expression as variable (default 'item')");
-        }
-        else {
+        } else {
             return new ParameterInfo("Custom item variable name", "Allows to customize the variable name where the item will be written.");
         }
     }
@@ -31,14 +30,13 @@ public class ExpressionSequenceFunction extends ExpressionFunction {
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
         String expression = StringUtils.nullToEmpty(parameters.get(0));
         Collection<?> indices;
-        if(parameters.get(1) instanceof Collection) {
+        if (parameters.get(1) instanceof Collection) {
             indices = (Collection<?>) parameters.get(1);
-        }
-        else {
+        } else {
             indices = Arrays.asList(parameters.get(1));
         }
         String itemVariable = "item";
-        if(parameters.size() >= 3) {
+        if (parameters.size() >= 3) {
             itemVariable = StringUtils.nullToEmpty(parameters.get(2));
         }
 

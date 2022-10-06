@@ -138,10 +138,9 @@ public class SortAndExtractRoiByStatisticsAlgorithm2 extends JIPipeIteratingAlgo
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
 
         List<Integer> indices;
-        if(selectedIndices.isEnabled()) {
+        if (selectedIndices.isEnabled()) {
             indices = selectedIndices.getContent().getIntegers(0, data.size() - 1, variables);
-        }
-        else {
+        } else {
             indices = new ArrayList<>();
             for (int i = 0; i < data.size(); i++) {
                 indices.add(i);

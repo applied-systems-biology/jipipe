@@ -46,15 +46,15 @@ public class SetROIMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm {
 
         for (int i = 0; i < indexColumn.getRows(); i++) {
             int roiIndex = (int) indexColumn.getRowAsDouble(i);
-            if(roiIndex < 0 || roiIndex >= rois.size()) {
-                if(ignoreMissingRoiIndices)
+            if (roiIndex < 0 || roiIndex >= rois.size()) {
+                if (ignoreMissingRoiIndices)
                     continue;
                 throw new IndexOutOfBoundsException("There is no ROI with index " + roiIndex);
             }
             Roi roi = rois.get(i);
             Map<String, String> properties = clearBeforeWrite ? new HashMap<>() : ImageJUtils.getRoiProperties(roi);
             for (String columnName : metadata.getColumnNames()) {
-                if(roiIndexColumn.getKey() == TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn && columnName.equals(indexColumn.getLabel()))
+                if (roiIndexColumn.getKey() == TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn && columnName.equals(indexColumn.getLabel()))
                     continue;
                 properties.put(columnName, metadata.getValueAsString(i, columnName));
             }

@@ -89,7 +89,7 @@ public class JIPipeProjectCacheQuery {
      */
     public Map<String, JIPipeDataSlot> getCachedData(JIPipeGraphNode node) {
         UUID uuid = node.getUUIDInParentGraph();
-        if(uuid == null) {
+        if (uuid == null) {
             return Collections.emptyMap();
         }
         return project.getCache().extract(uuid, getCachedId(uuid));

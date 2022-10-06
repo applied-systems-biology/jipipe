@@ -168,7 +168,7 @@ public class FixedMargin implements JIPipeParameterCollection {
      * Generates the rectangle defined by the definition.
      * If the rectangle is invalid, null is returned
      *
-     * @param object the object to be placed
+     * @param object        the object to be placed
      * @param availableArea rectangle describing the available area.
      * @param parameters    additional expression variables
      * @return Rectangle within the area

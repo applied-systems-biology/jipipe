@@ -26,7 +26,10 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumnNormalization;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Algorithm that integrates columns

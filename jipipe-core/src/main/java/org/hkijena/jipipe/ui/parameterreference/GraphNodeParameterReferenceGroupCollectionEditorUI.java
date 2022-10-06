@@ -51,15 +51,15 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
     private final GraphNodeParameterReferenceGroupCollection parameters;
     private final JTree groupJTree = new JTree();
     private final JPanel rightPanel = new JPanel(new BorderLayout());
-    private JIPipeParameterTree parameterTree;
     private final MarkdownDocument documentation;
-    private boolean withRefresh;
     private final JLabel noGroupsLabel = UIUtils.createInfoLabel("No groups", "Click <i>Add &gt; Empty group</i> to begin editing parameters.");
+    private JIPipeParameterTree parameterTree;
+    private boolean withRefresh;
 
     /**
-     * @param workbench      the workbench
-     * @param parameters     the parameters to edit
-     * @param withRefresh    if the editor should refresh on changes
+     * @param workbench   the workbench
+     * @param parameters  the parameters to edit
+     * @param withRefresh if the editor should refresh on changes
      */
     public GraphNodeParameterReferenceGroupCollectionEditorUI(JIPipeWorkbench workbench, GraphNodeParameterReferenceGroupCollection parameters, MarkdownDocument documentation, boolean withRefresh) {
         super(workbench);
@@ -108,16 +108,14 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
     }
 
     private void onTreeNodeSelected() {
-        if(groupJTree.getSelectionPath() != null) {
+        if (groupJTree.getSelectionPath() != null) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) groupJTree.getSelectionPath().getLastPathComponent();
-            if(node.getUserObject() instanceof GraphNodeParameterReferenceGroup) {
-                selectGroup((GraphNodeParameterReferenceGroup)node.getUserObject());
+            if (node.getUserObject() instanceof GraphNodeParameterReferenceGroup) {
+                selectGroup((GraphNodeParameterReferenceGroup) node.getUserObject());
+            } else if (node.getUserObject() instanceof GraphNodeParameterReference) {
+                selectReference((GraphNodeParameterReference) node.getUserObject());
             }
-            else if(node.getUserObject() instanceof GraphNodeParameterReference) {
-                selectReference((GraphNodeParameterReference)node.getUserObject());
-            }
-        }
-        else {
+        } else {
             selectNone();
         }
     }
@@ -156,8 +154,8 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
     }
 
     private void addParameterReference() {
-        if(!parameters.getParameterReferenceGroups().isEmpty()) {
-            if(groupJTree.getSelectionPath() != null) {
+        if (!parameters.getParameterReferenceGroups().isEmpty()) {
+            if (groupJTree.getSelectionPath() != null) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) groupJTree.getSelectionPath().getLastPathComponent();
                 GraphNodeParameterReferenceGroup group;
                 if (node.getUserObject() instanceof GraphNodeParameterReference) {
@@ -166,16 +164,14 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
                     group = (GraphNodeParameterReferenceGroup) node.getUserObject();
                 }
                 addParameterReference(group);
-            }
-            else {
+            } else {
                 DefaultMutableTreeNode root = (DefaultMutableTreeNode) groupJTree.getModel().getRoot();
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) root.getChildAt(0);
                 GraphNodeParameterReferenceGroup group = (GraphNodeParameterReferenceGroup) node.getUserObject();
                 groupJTree.setSelectionPath(new TreePath(node.getPath()));
                 addParameterReference(group);
             }
-        }
-        else {
+        } else {
             JOptionPane.showMessageDialog(this, "Please add a parameter group first. To do this, click 'Add' and select 'Empty group'.", "Add parameter reference", JOptionPane.ERROR_MESSAGE);
         }
     }
@@ -190,14 +186,14 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
                 }
             }
         }
-        if(referenceList.isEmpty())
+        if (referenceList.isEmpty())
             return;
         group.addContent(referenceList);
         refreshContent(true, referenceList.get(0));
     }
 
     private void removeSelectedItems() {
-        if(groupJTree.getSelectionPaths() != null) {
+        if (groupJTree.getSelectionPaths() != null) {
             for (TreePath path : groupJTree.getSelectionPaths()) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
                 if (node.getUserObject() instanceof GraphNodeParameterReference) {
@@ -207,7 +203,7 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
             }
             for (TreePath path : groupJTree.getSelectionPaths()) {
                 DefaultMutableTreeNode node = (DefaultMutableTreeNode) path.getLastPathComponent();
-                if(node.getUserObject() instanceof GraphNodeParameterReferenceGroup) {
+                if (node.getUserObject() instanceof GraphNodeParameterReferenceGroup) {
                     parameters.removeGroup((GraphNodeParameterReferenceGroup) node.getUserObject());
                 }
             }
@@ -253,12 +249,12 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
     private void addEmptyGroup() {
         GraphNodeParameterReferenceGroup group = parameters.addNewGroup();
         if (!withRefresh) {
-            refreshContent(true,group);
+            refreshContent(true, group);
         }
     }
 
     public void refreshContent(boolean selectAfterwards, Object selectedObject) {
-        if(selectedObject == null && groupJTree.getSelectionPath() !=null) {
+        if (selectedObject == null && groupJTree.getSelectionPath() != null) {
             DefaultMutableTreeNode node = (DefaultMutableTreeNode) groupJTree.getSelectionPath().getLastPathComponent();
             selectedObject = node.getUserObject();
         }
@@ -270,15 +266,15 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
         for (GraphNodeParameterReferenceGroup referenceGroup : parameters.getParameterReferenceGroups()) {
             DefaultMutableTreeNode groupNode = new DefaultMutableTreeNode(referenceGroup);
             for (GraphNodeParameterReference parameterReference : referenceGroup.getContent()) {
-                   DefaultMutableTreeNode referenceNode = new DefaultMutableTreeNode(parameterReference);
-                   groupNode.add(referenceNode);
+                DefaultMutableTreeNode referenceNode = new DefaultMutableTreeNode(parameterReference);
+                groupNode.add(referenceNode);
 
-                   if(parameterReference == selectedObject) {
-                       toSelect = referenceNode;
-                   }
+                if (parameterReference == selectedObject) {
+                    toSelect = referenceNode;
+                }
             }
 
-            if(referenceGroup == selectedObject) {
+            if (referenceGroup == selectedObject) {
                 toSelect = groupNode;
             }
             rootNode.add(groupNode);
@@ -288,7 +284,7 @@ public class GraphNodeParameterReferenceGroupCollectionEditorUI extends JIPipeWo
         noGroupsLabel.setVisible(parameters.getParameterReferenceGroups().isEmpty());
         UIUtils.expandAllTree(groupJTree);
 
-        if(selectAfterwards && toSelect != null) {
+        if (selectAfterwards && toSelect != null) {
             DefaultMutableTreeNode finalToSelect = toSelect;
             SwingUtilities.invokeLater(() -> {
                 groupJTree.setSelectionPath(new TreePath(finalToSelect.getPath()));

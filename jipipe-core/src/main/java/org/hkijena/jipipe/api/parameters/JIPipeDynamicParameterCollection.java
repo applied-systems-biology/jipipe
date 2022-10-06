@@ -60,7 +60,7 @@ public class JIPipeDynamicParameterCollection implements JIPipeCustomParameterCo
      */
     public JIPipeDynamicParameterCollection(boolean allowUserModification) {
         this.allowUserModification = allowUserModification;
-        if(allowUserModification && JIPipe.isInstantiated()) {
+        if (allowUserModification && JIPipe.isInstantiated()) {
             for (JIPipeParameterTypeInfo info : JIPipe.getParameterTypes().getRegisteredParameters().values()) {
                 this.allowedTypes.add(info.getFieldClass());
             }

@@ -27,7 +27,6 @@ import org.hkijena.jipipe.utils.WebUtils;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -145,7 +144,7 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
         Path outputFile;
         String extension;
 
-        if(targetPackage.getUrlMultiPart() != null && !targetPackage.getUrlMultiPart().isEmpty()) {
+        if (targetPackage.getUrlMultiPart() != null && !targetPackage.getUrlMultiPart().isEmpty()) {
             progressInfo.log("The archive was split into the following parts by the developer: ");
             for (String url : targetPackage.getUrlMultiPart()) {
                 progressInfo.log(" - " + url);
@@ -184,7 +183,7 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
             for (Path multiPartFile : multiPartFiles) {
                 progressInfo.log(" - " + multiPartFile);
             }
-            try(FileOutputStream stream = new FileOutputStream(outputFile.toFile())) {
+            try (FileOutputStream stream = new FileOutputStream(outputFile.toFile())) {
                 for (int i = 0; i < multiPartFiles.size(); i++) {
                     JIPipeProgressInfo partProgress = progressInfo.resolveAndLog("Merge part", i, urlMultiPart.size());
                     Path partFile = multiPartFiles.get(i);
@@ -206,8 +205,7 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
                 }
             }
 
-        }
-        else {
+        } else {
             progressInfo.log("The following URL will be downloaded: " + targetPackage.getUrl());
 
             // Detect extension
@@ -325,13 +323,13 @@ public abstract class EasyInstallExternalEnvironmentInstaller<T extends External
 
                 // Read URL
                 JsonNode urlNode = packageNodeEntry.path("url");
-                if(!urlNode.isMissingNode()) {
+                if (!urlNode.isMissingNode()) {
                     availablePackage.setUrl(urlNode.textValue());
                 }
 
                 // Multipart URL
                 JsonNode urlMultiPartNode = packageNodeEntry.path("url-multipart");
-                if(!urlMultiPartNode.isMissingNode()) {
+                if (!urlMultiPartNode.isMissingNode()) {
                     availablePackage.setUrlMultiPart(new ArrayList<>());
                     for (JsonNode node : ImmutableList.copyOf(urlMultiPartNode.elements())) {
                         availablePackage.getUrlMultiPart().add(node.textValue());

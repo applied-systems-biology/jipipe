@@ -13,9 +13,7 @@
 
 package org.hkijena.jipipe.ui.components.renderers;
 
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProjectCacheState;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;

@@ -27,7 +27,6 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParamet
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 
 import java.util.Arrays;
-import java.util.List;
 
 @JIPipeDocumentation(name = "Threshold/Value statistics 5D", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. The values assigned to each key are collected and then integrated for each threshold in the key image.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")

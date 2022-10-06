@@ -18,11 +18,7 @@ import com.google.common.collect.Sets;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeDataBatch;
-import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
-import org.hkijena.jipipe.api.nodes.JIPipeIteratingAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
-import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
@@ -33,12 +29,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumnNormalization;
 import org.hkijena.jipipe.utils.StringUtils;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Algorithm that integrates columns
@@ -100,8 +91,8 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
             Set<String> existing = new HashSet<>(inputTarget.getColumnNames());
             for (String columnName : inputSource.getColumnNames()) {
                 String newColumnName;
-                if(selectedReferenceColumns.contains(columnName))
-                    newColumnName =columnName;
+                if (selectedReferenceColumns.contains(columnName))
+                    newColumnName = columnName;
                 else {
                     newColumnName = StringUtils.makeUniqueString(columnName, ".", existing);
                 }
@@ -117,9 +108,9 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
             ResultsTableData target = splitInputTarget.getOrDefault(condition, new ResultsTableData());
             ResultsTableData source = splitInputSource.getOrDefault(condition, new ResultsTableData());
             boolean targetWasEmpty = target.getRowCount() == 0;
-            if(target.getRowCount() <= 0 && skipEmptyTarget)
+            if (target.getRowCount() <= 0 && skipEmptyTarget)
                 continue;
-            if(!extendTarget && source.getRowCount() > target.getRowCount()) {
+            if (!extendTarget && source.getRowCount() > target.getRowCount()) {
                 // Downsize the source table
                 source = source.getRows(0, target.getRowCount());
             }
@@ -131,7 +122,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
             // Apply merging
             ResultsTableData merged = target;
             for (String columnName : source.getColumnNames()) {
-                if((targetWasEmpty || !selectedReferenceColumns.contains(columnName)) && columnFilter.test(columnName, variables)) {
+                if ((targetWasEmpty || !selectedReferenceColumns.contains(columnName)) && columnFilter.test(columnName, variables)) {
                     String newColumnName = sourceToTargetColumnNameMap.get(columnName);
                     merged.addColumn(newColumnName, source.getColumnReference(columnName), true);
                 }
@@ -154,7 +145,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
             conditionBuilder.setLength(0);
             for (String column : selectedReferenceColumns) {
                 int columnIndex = data.getColumnIndex(column);
-                if(columnIndex >= 0)
+                if (columnIndex >= 0)
                     conditionBuilder.append(StringUtils.nullToEmpty(data.getValueAt(row, columnIndex))).append("\n");
                 else
                     conditionBuilder.append("\n");
@@ -162,7 +153,7 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
 
             // Fix case where there is no reference column
             String condition = conditionBuilder.toString();
-            if(conditionBuilder.length() == 0) {
+            if (conditionBuilder.length() == 0) {
                 // Generate unique condition
                 condition = StringUtils.makeUniqueString(dummyConditionLabel, " ", existingConditions);
             }
@@ -170,11 +161,10 @@ public class MergeTableColumnsSupplementAlgorithm extends JIPipeIteratingAlgorit
 
             // Merge into existing table for this condition
             ResultsTableData conditionTargetTable = result.getOrDefault(condition, null);
-            if(conditionTargetTable == null) {
+            if (conditionTargetTable == null) {
                 conditionTargetTable = data.getRow(row);
                 result.put(condition, conditionTargetTable);
-            }
-            else {
+            } else {
                 conditionTargetTable.addRows(data.getRow(row));
             }
         }

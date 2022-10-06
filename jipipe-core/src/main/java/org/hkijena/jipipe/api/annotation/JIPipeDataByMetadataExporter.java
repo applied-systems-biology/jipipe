@@ -101,8 +101,8 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataTableList     list of data tables the will be exported
-     * @param outputPath        the path where the files will be put
+     * @param dataTableList list of data tables the will be exported
+     * @param outputPath    the path where the files will be put
      */
     public void writeToFolder(List<? extends JIPipeDataTable> dataTableList, Path outputPath, JIPipeProgressInfo progressInfo) {
         if (!Files.isDirectory(outputPath)) {
@@ -123,8 +123,8 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataTable         the data slot
-     * @param outputPath        the path where the files will be put
+     * @param dataTable  the data slot
+     * @param outputPath the path where the files will be put
      */
     public void writeToFolder(JIPipeDataTable dataTable, Path outputPath, JIPipeProgressInfo progressInfo) {
         writeToFolder(dataTable, outputPath, progressInfo, new HashSet<>());
@@ -133,9 +133,9 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataTable         the data slot
-     * @param outputPath        the path where the files will be put
-     * @param existingMetadata  list of existing entries. used to avoid duplicates.
+     * @param dataTable        the data slot
+     * @param outputPath       the path where the files will be put
+     * @param existingMetadata list of existing entries. used to avoid duplicates.
      */
     public void writeToFolder(JIPipeDataTable dataTable, Path outputPath, JIPipeProgressInfo progressInfo, Set<String> existingMetadata) {
         for (int row = 0; row < dataTable.getRowCount(); row++) {
@@ -148,9 +148,9 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataTable         the data slot
-     * @param row               the data row
-     * @param outputPath        the path where the files will be put
+     * @param dataTable  the data slot
+     * @param row        the data row
+     * @param outputPath the path where the files will be put
      */
     public void writeToFolder(JIPipeDataTable dataTable, int row, Path outputPath, JIPipeProgressInfo progressInfo) {
         writeToFolder(dataTable, row, outputPath, progressInfo, new HashSet<>());
@@ -159,10 +159,10 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     /**
      * Writes data to the specified folder
      *
-     * @param dataTable         the data slot
-     * @param row               the data row
-     * @param outputPath        the path where the files will be put
-     * @param existingMetadata  list of existing entries. used to avoid duplicates
+     * @param dataTable        the data slot
+     * @param row              the data row
+     * @param outputPath       the path where the files will be put
+     * @param existingMetadata list of existing entries. used to avoid duplicates
      */
     public void writeToFolder(JIPipeDataTable dataTable, int row, Path outputPath, JIPipeProgressInfo progressInfo, Set<String> existingMetadata) {
         Path metadataPath = generatePath(dataTable, row, existingMetadata);

@@ -170,8 +170,7 @@ public class ExtensionItemPanel extends JIPipeWorkbenchPanel {
             JLabel infoLabel = new JLabel("ImageJ plugin", UIUtils.getIconFromResources("apps/imagej.png"), JLabel.LEFT);
             infoLabel.setToolTipText("This is not an extension for JIPipe, but an ImageJ update site that might contain functionality for JIPipe.");
             buttonPanel.add(infoLabel);
-        }
-        else if(extension.isBeta()) {
+        } else if (extension.isBeta()) {
             JLabel infoLabel = new JLabel("Beta", UIUtils.getIconFromResources("emblems/vcs-locally-modified-unstaged.png"), JLabel.LEFT);
             infoLabel.setToolTipText("This extension is currently in beta-testing and might receive extensive changes in future updates.");
             buttonPanel.add(infoLabel);

@@ -101,10 +101,9 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
             // Write statistics into variables
             for (int col = 0; col < table.getColumnCount(); col++) {
                 TableColumn column = table.getColumnReference(col);
-                if(column.isNumeric()) {
+                if (column.isNumeric()) {
                     variables.set("all." + column.getLabel(), new ArrayList<>(Doubles.asList(column.getDataAsDouble(column.getRows()))));
-                }
-                else {
+                } else {
                     variables.set("all." + column.getLabel(), new ArrayList<>(Arrays.asList(column.getDataAsString(column.getRows()))));
                 }
             }
@@ -155,6 +154,13 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
         report.checkNonEmpty(getValue().getExpression(), this);
     }
 
+    @Override
+    public DefaultExpressionParameter getValue() {
+        // Add the UI variables
+        super.getValue().getAdditionalUIVariables().addAll(VariableSource.VARIABLES);
+        return super.getValue();
+    }
+
     public enum TableSourceType {
         Generate,
         ExistingColumn;
@@ -171,13 +177,6 @@ public class TableColumnSourceExpressionParameter extends PairParameter<TableCol
                     throw new UnsupportedOperationException();
             }
         }
-    }
-
-    @Override
-    public DefaultExpressionParameter getValue() {
-        // Add the UI variables
-        super.getValue().getAdditionalUIVariables().addAll(VariableSource.VARIABLES);
-        return super.getValue();
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {

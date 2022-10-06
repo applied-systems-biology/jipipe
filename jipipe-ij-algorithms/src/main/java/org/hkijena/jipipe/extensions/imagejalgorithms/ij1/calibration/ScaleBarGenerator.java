@@ -44,37 +44,37 @@ public class ScaleBarGenerator {
     public void computeDefaultBarWidth() {
         Calibration cal = imp.getCalibration();
         ImageWindow win = imp.getWindow();
-        double mag = (win!=null)?win.getCanvas().getMagnification():1.0;
-        if (mag>1.0)
+        double mag = (win != null) ? win.getCanvas().getMagnification() : 1.0;
+        if (mag > 1.0)
             mag = 1.0;
 
         double pixelWidth = cal.pixelWidth;
-        if (pixelWidth==0.0)
+        if (pixelWidth == 0.0)
             pixelWidth = 1.0;
         double pixelHeight = cal.pixelHeight;
-        if (pixelHeight==0.0)
+        if (pixelHeight == 0.0)
             pixelHeight = 1.0;
-        double imageWidth = imp.getWidth()*pixelWidth;
-        double imageHeight = imp.getHeight()*pixelHeight;
+        double imageWidth = imp.getWidth() * pixelWidth;
+        double imageHeight = imp.getHeight() * pixelHeight;
 
-        if (config.hBarWidth<=0.0 || config.hBarWidth>0.67*imageWidth) {
+        if (config.hBarWidth <= 0.0 || config.hBarWidth > 0.67 * imageWidth) {
             // If the bar is of negative width or too wide for the image,
             // set the bar width to 80 pixels.
-            config.hBarWidth = (80.0*pixelWidth)/mag;
-            if (config.hBarWidth>0.67*imageWidth)
+            config.hBarWidth = (80.0 * pixelWidth) / mag;
+            if (config.hBarWidth > 0.67 * imageWidth)
                 // If 80 pixels is too much, do 2/3 of the image.
-                config.hBarWidth = 0.67*imageWidth;
-            if (config.hBarWidth>5.0)
+                config.hBarWidth = 0.67 * imageWidth;
+            if (config.hBarWidth > 5.0)
                 // If the resulting size is larger than 5 units, round the value.
                 config.hBarWidth = (int) config.hBarWidth;
         }
 
-        if (config.vBarHeight<=0.0 || config.vBarHeight>0.67*imageHeight) {
-            config.vBarHeight = (80.0*pixelHeight)/mag;
-            if (config.vBarHeight>0.67*imageHeight)
+        if (config.vBarHeight <= 0.0 || config.vBarHeight > 0.67 * imageHeight) {
+            config.vBarHeight = (80.0 * pixelHeight) / mag;
+            if (config.vBarHeight > 0.67 * imageHeight)
                 // If 80 pixels is too much, do 2/3 of the image.
-                config.vBarHeight = 0.67*imageHeight;
-            if (config.vBarHeight>5.0)
+                config.vBarHeight = 0.67 * imageHeight;
+            if (config.vBarHeight > 5.0)
                 // If the resulting size is larger than 5 units, round the value.
                 config.vBarHeight = (int) config.vBarHeight;
         }
@@ -86,7 +86,7 @@ public class ScaleBarGenerator {
     String getHUnit() {
         String hUnits = imp.getCalibration().getXUnits();
         if (hUnits.equals("microns"))
-            hUnits = IJ.micronSymbol+"m";
+            hUnits = IJ.micronSymbol + "m";
         return hUnits;
     }
 
@@ -96,7 +96,7 @@ public class ScaleBarGenerator {
     String getVUnit() {
         String vUnits = imp.getCalibration().getYUnits();
         if (vUnits.equals("microns"))
-            vUnits = IJ.micronSymbol+"m";
+            vUnits = IJ.micronSymbol + "m";
         return vUnits;
     }
 
@@ -233,7 +233,7 @@ public class ScaleBarGenerator {
      */
     int getInnerMarginSizeInPixels() {
         int maxWidth = Math.max(getHBoxWidthInPixels(), getVBoxHeightInPixels());
-        int margin = Math.max(maxWidth/20, 2);
+        int margin = Math.max(maxWidth / 20, 2);
         return config.backgroundColor == null ? 0 : margin;
     }
 
@@ -253,8 +253,8 @@ public class ScaleBarGenerator {
      */
     void setBackgroundBoxesPositions() {
         Calibration cal = imp.getCalibration();
-        hBarWidthInPixels = (int)(config.hBarWidth/cal.pixelWidth);
-        vBarHeightInPixels = (int)(config.vBarHeight/cal.pixelHeight);
+        hBarWidthInPixels = (int) (config.hBarWidth / cal.pixelWidth);
+        vBarHeightInPixels = (int) (config.vBarHeight / cal.pixelHeight);
 
         boolean hTextTop = config.showVertical && (config.location.equals(ScaleBarPosition.UpperLeft) || config.location.equals(ScaleBarPosition.UpperRight));
 
@@ -287,7 +287,7 @@ public class ScaleBarGenerator {
             vBackground.height += (config.showHorizontal ? hBoxHeight - config.barThicknessInPixels : 0);
 
         } else if (config.location.equals(ScaleBarPosition.UpperLeft)) {
-            hBackground.x = outerMargin + (config.showVertical ? vBackground.width - 2*innerMargin - config.barThicknessInPixels : 0);
+            hBackground.x = outerMargin + (config.showVertical ? vBackground.width - 2 * innerMargin - config.barThicknessInPixels : 0);
             hBackground.y = outerMargin;
             vBackground.x = outerMargin;
             vBackground.y = outerMargin + (hTextTop ? hBoxHeight - config.barThicknessInPixels : 0);
@@ -295,21 +295,21 @@ public class ScaleBarGenerator {
             hBackground.x -= (config.showVertical ? vBoxWidth - config.barThicknessInPixels : 0);
 
         } else if (config.location.equals(ScaleBarPosition.LowerLeft)) {
-            hBackground.x = outerMargin + (config.showVertical ? vBackground.width - 2*innerMargin - config.barThicknessInPixels : 0);
+            hBackground.x = outerMargin + (config.showVertical ? vBackground.width - 2 * innerMargin - config.barThicknessInPixels : 0);
             hBackground.y = imageHeight - outerMargin - innerMargin - hBoxHeight - innerMargin;
             vBackground.x = outerMargin;
             vBackground.y = imageHeight - outerMargin - innerMargin - hBoxHeight + (config.showHorizontal ? config.barThicknessInPixels : 0) - vBoxHeight - innerMargin;
             vBackground.height += (config.showHorizontal ? hBoxHeight - config.barThicknessInPixels : 0);
 
         } else {
-           throw new UnsupportedOperationException();
+            throw new UnsupportedOperationException();
         }
     }
 
     /**
      * Sets the rectangles x y positions for scalebar elements (hBar, hText, vBar, vText),
      * based on the current configuration. Also sets the width and height of the rectangles.
-     *
+     * <p>
      * The position of each rectangle is relative to hBackground and vBackground,
      * so setBackgroundBoxesPositions() must run before this method computes positions.
      * This method calls setBackgroundBoxesPositions().
@@ -330,25 +330,25 @@ public class ScaleBarGenerator {
         boolean upper = config.location.equals(ScaleBarPosition.UpperRight) || config.location.equals(ScaleBarPosition.UpperLeft);
         boolean hTextTop = config.showVertical && upper;
 
-        hBar.x = hBackground.x + innerMargin + (hBoxWidth - hBarWidthInPixels)/2 + (config.showVertical && !right && upper ? vBoxWidth - config.barThicknessInPixels : 0);
+        hBar.x = hBackground.x + innerMargin + (hBoxWidth - hBarWidthInPixels) / 2 + (config.showVertical && !right && upper ? vBoxWidth - config.barThicknessInPixels : 0);
         hBar.y = hBackground.y + innerMargin + (hTextTop ? hBoxHeight - config.barThicknessInPixels : 0);
         hBar.width = hBarWidthInPixels;
         hBar.height = config.barThicknessInPixels;
 
         hText.height = config.hideText ? 0 : config.fontSize;
         hText.width = config.hideText ? 0 : ip.getStringWidth(getHLabel());
-        hText.x = hBackground.x + innerMargin + (hBoxWidth - hText.width)/2 + (config.showVertical && !right && upper ? vBoxWidth - config.barThicknessInPixels : 0);
-        hText.y = hTextTop ? (hBackground.y + innerMargin - (int)(config.fontSize*0.25)) : (hBar.y + hBar.height);
+        hText.x = hBackground.x + innerMargin + (hBoxWidth - hText.width) / 2 + (config.showVertical && !right && upper ? vBoxWidth - config.barThicknessInPixels : 0);
+        hText.y = hTextTop ? (hBackground.y + innerMargin - (int) (config.fontSize * 0.25)) : (hBar.y + hBar.height);
 
         vBar.width = config.barThicknessInPixels;
         vBar.height = vBarHeightInPixels;
         vBar.x = vBackground.x + (right ? innerMargin : vBackground.width - config.barThicknessInPixels - innerMargin);
-        vBar.y = vBackground.y + innerMargin + (vBoxHeight - vBar.height)/2;
+        vBar.y = vBackground.y + innerMargin + (vBoxHeight - vBar.height) / 2;
 
         vText.height = config.hideText ? 0 : ip.getStringWidth(getVLabel());
         vText.width = config.hideText ? 0 : config.fontSize;
-        vText.x = right ? (vBar.x + vBar.width) : (vBar.x - vBoxWidth + config.barThicknessInPixels - (int)(config.fontSize*0.25));
-        vText.y = vBackground.y + innerMargin + (vBoxHeight - vText.height)/2;
+        vText.x = right ? (vBar.x + vBar.width) : (vBar.x - vBoxWidth + config.barThicknessInPixels - (int) (config.fontSize * 0.25));
+        vText.y = vBackground.y + innerMargin + (vBoxHeight - vText.height) / 2;
     }
 
     public enum ScaleBarPosition {
@@ -374,15 +374,15 @@ public class ScaleBarGenerator {
 
     public static class ScaleBarConfiguration {
         public Color textColor = Color.WHITE;
+        FontFamilyParameter fontFamily = new FontFamilyParameter();
+        FontStyleParameter fontStyle = FontStyleParameter.Bold;
+        boolean labelAll;
         private boolean showHorizontal;
         private boolean showVertical;
         private double hBarWidth;
         private double vBarHeight;
-
         private String vLabel;
-
         private String hLabel;
-
         private int barThicknessInPixels;
         private ScaleBarPosition location = ScaleBarPosition.LowerRight;
         private Color barColor = Color.WHITE;
@@ -390,11 +390,6 @@ public class ScaleBarGenerator {
         private boolean hideText;
         private boolean useOverlay;
         private int fontSize;
-
-        FontFamilyParameter fontFamily = new FontFamilyParameter();
-
-        FontStyleParameter fontStyle = FontStyleParameter.Bold;
-        boolean labelAll;
 
         /**
          * Create ScaleBarConfiguration with default values.

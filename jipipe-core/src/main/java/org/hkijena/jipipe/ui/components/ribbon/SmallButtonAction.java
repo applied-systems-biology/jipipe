@@ -30,7 +30,7 @@ public class SmallButtonAction extends Ribbon.Action {
         button.setHorizontalAlignment(SwingConstants.LEFT);
         button.setBorder(Ribbon.DEFAULT_BORDER);
 
-        if(menuItems.length > 0) {
+        if (menuItems.length > 0) {
             JPopupMenu menu = UIUtils.addPopupMenuToComponent(button);
             for (JMenuItem item : menuItems) {
                 if (item == null) {
