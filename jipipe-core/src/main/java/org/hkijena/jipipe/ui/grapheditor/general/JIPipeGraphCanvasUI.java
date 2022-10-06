@@ -687,39 +687,73 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
             repaint(50);
         } else if (!currentlyDraggedOffsets.isEmpty()) {
+            int negativeDx = 0;
+            int negativeDy = 0;
+
+            // Calculate dx, dy values for all nodes
             for (Map.Entry<JIPipeNodeUI, Point> entry : currentlyDraggedOffsets.entrySet()) {
-                JIPipeNodeUI currentlyDragged = entry.getKey();
                 Point currentlyDraggedOffset = entry.getValue();
 
                 int xu = currentlyDraggedOffset.x + mouseEvent.getX();
                 int yu = currentlyDraggedOffset.y + mouseEvent.getY();
                 if (xu < 0 || yu < 0) {
                     long currentTimeMillis = System.currentTimeMillis();
-                    int dx = xu < 0 ? 1 : 0;
-                    int dy = yu < 0 ? 1 : 0;
                     if (currentTimeMillis - lastTimeExpandedNegative > 100) {
-                        for (JIPipeNodeUI value : nodeUIs.values()) {
-                            if (value != currentlyDragged) {
-                                Point storedGridLocation = value.getStoredGridLocation();
-                                value.moveToGridLocation(new Point(storedGridLocation.x + dx, storedGridLocation.y + dy), true, true);
-                            }
-                        }
+                        negativeDx = xu < 0 ? 1 : 0;
+                        negativeDy = yu < 0 ? 1 : 0;
                         lastTimeExpandedNegative = currentTimeMillis;
+                        break;
+                    }
+                    else {
+                        // Cancel the event
+                        return;
                     }
                 }
+            }
+
+            // Negative expansion
+            for (JIPipeNodeUI value : nodeUIs.values()) {
+                if (!currentlyDraggedOffsets.containsKey(value)) {
+                    Point storedGridLocation = value.getStoredGridLocation();
+                    value.moveToGridLocation(new Point(storedGridLocation.x + negativeDx, storedGridLocation.y + negativeDy), true, true);
+                }
+            }
+
+            // Calculate final movement for all nodes
+            int gridDx = 0;
+            int gridDy = 0;
+            for (Map.Entry<JIPipeNodeUI, Point> entry : currentlyDraggedOffsets.entrySet()) {
+                JIPipeNodeUI currentlyDragged = entry.getKey();
+                Point currentlyDraggedOffset = entry.getValue();
 
                 int x = Math.max(0, currentlyDraggedOffset.x + mouseEvent.getX());
                 int y = Math.max(0, currentlyDraggedOffset.y + mouseEvent.getY());
 
+                Point targetGridPoint = getViewMode().realLocationToGrid(new Point(x,y), getZoom());
+                int dx = targetGridPoint.x - entry.getKey().getStoredGridLocation().x;
+                int dy = targetGridPoint.y - entry.getKey().getStoredGridLocation().y;
+
+                if(dx != 0 || dy != 0) {
+                    gridDx = dx;
+                    gridDy = dy;
+                    break;
+                }
+            }
+
+            for (Map.Entry<JIPipeNodeUI, Point> entry : currentlyDraggedOffsets.entrySet()) {
+                JIPipeNodeUI currentlyDragged = entry.getKey();
+                Point newGridLocation = new Point(currentlyDragged.getStoredGridLocation().x + gridDx, currentlyDragged.getStoredGridLocation().y + gridDy);
+
                 if (!hasDragSnapshot) {
                     // Check if something would change
-                    if (!Objects.equals(currentlyDragged.getLocation(), viewMode.realLocationToGrid(new Point(x, y), zoom))) {
+                    if (!Objects.equals(currentlyDragged.getStoredGridLocation(),newGridLocation)) {
                         createMoveSnapshotIfNeeded();
                     }
                 }
 
-                currentlyDragged.moveToClosestGridPoint(new Point(x, y), true, true);
+                currentlyDragged.moveToGridLocation(newGridLocation, true, true);
             }
+
             repaint();
             if(SystemUtils.IS_OS_LINUX) {
                 Toolkit.getDefaultToolkit().sync();
