@@ -77,7 +77,7 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData input = (ROIListData) dataBatch.getInputData("ROI", ROIListData.class, progressInfo).duplicate(progressInfo);
+        ROIListData input = (ROIListData) dataBatch.getInputData("Input", ROIListData.class, progressInfo).duplicate(progressInfo);
         DefaultUndirectedGraph<Integer, DefaultEdge> graph = new DefaultUndirectedGraph<>(DefaultEdge.class);
         for (int i = 0; i < input.size(); i++) {
             // Add to graph

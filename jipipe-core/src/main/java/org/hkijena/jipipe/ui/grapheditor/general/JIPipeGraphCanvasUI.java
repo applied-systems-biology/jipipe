@@ -687,43 +687,42 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
             repaint(50);
         } else if (!currentlyDraggedOffsets.isEmpty()) {
-            int negativeDx = 0;
-            int negativeDy = 0;
-
-            // Calculate dx, dy values for all nodes
-            for (Map.Entry<JIPipeNodeUI, Point> entry : currentlyDraggedOffsets.entrySet()) {
-                Point currentlyDraggedOffset = entry.getValue();
-
-                int xu = currentlyDraggedOffset.x + mouseEvent.getX();
-                int yu = currentlyDraggedOffset.y + mouseEvent.getY();
-                if (xu < 0 || yu < 0) {
-                    long currentTimeMillis = System.currentTimeMillis();
-                    if (currentTimeMillis - lastTimeExpandedNegative > 100) {
-                        negativeDx = xu < 0 ? 1 : 0;
-                        negativeDy = yu < 0 ? 1 : 0;
-                        lastTimeExpandedNegative = currentTimeMillis;
-                        break;
-                    }
-                    else {
-                        // Cancel the event
-                        return;
-                    }
-                }
-            }
-
-            // Negative expansion
-            for (JIPipeNodeUI value : nodeUIs.values()) {
-                if (!currentlyDraggedOffsets.containsKey(value)) {
-                    Point storedGridLocation = value.getStoredGridLocation();
-                    value.moveToGridLocation(new Point(storedGridLocation.x + negativeDx, storedGridLocation.y + negativeDy), true, true);
-                }
-            }
+//            int negativeDx = 0;
+//            int negativeDy = 0;
+//
+//            // Calculate dx, dy values for all nodes
+//            for (Map.Entry<JIPipeNodeUI, Point> entry : currentlyDraggedOffsets.entrySet()) {
+//                Point currentlyDraggedOffset = entry.getValue();
+//
+//                int xu = currentlyDraggedOffset.x + mouseEvent.getX();
+//                int yu = currentlyDraggedOffset.y + mouseEvent.getY();
+//                if (xu < 0 || yu < 0) {
+//                    long currentTimeMillis = System.currentTimeMillis();
+//                    if (currentTimeMillis - lastTimeExpandedNegative > 100) {
+//                        negativeDx = xu < 0 ? 1 : 0;
+//                        negativeDy = yu < 0 ? 1 : 0;
+//                        lastTimeExpandedNegative = currentTimeMillis;
+//                        break;
+//                    }
+//                    else {
+//                        // Cancel the event
+//                        return;
+//                    }
+//                }
+//            }
+//
+//            // Negative expansion
+//            for (JIPipeNodeUI value : nodeUIs.values()) {
+//                if (!currentlyDraggedOffsets.containsKey(value)) {
+//                    Point storedGridLocation = value.getStoredGridLocation();
+//                    value.moveToGridLocation(new Point(storedGridLocation.x + negativeDx, storedGridLocation.y + negativeDy), true, true);
+//                }
+//            }
 
             // Calculate final movement for all nodes
             int gridDx = 0;
             int gridDy = 0;
             for (Map.Entry<JIPipeNodeUI, Point> entry : currentlyDraggedOffsets.entrySet()) {
-                JIPipeNodeUI currentlyDragged = entry.getKey();
                 Point currentlyDraggedOffset = entry.getValue();
 
                 int x = Math.max(0, currentlyDraggedOffset.x + mouseEvent.getX());
@@ -737,6 +736,16 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     gridDx = dx;
                     gridDy = dy;
                     break;
+                }
+            }
+
+            if(gridDx < 0 || gridDy < 0) {
+                // Negative expansion
+                for (JIPipeNodeUI value : nodeUIs.values()) {
+                    if (!currentlyDraggedOffsets.containsKey(value)) {
+                        Point storedGridLocation = value.getStoredGridLocation();
+                        value.moveToGridLocation(new Point(storedGridLocation.x - gridDx, storedGridLocation.y - gridDy), true, true);
+                    }
                 }
             }
 

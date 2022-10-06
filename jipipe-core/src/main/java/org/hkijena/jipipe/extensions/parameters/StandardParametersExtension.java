@@ -466,6 +466,10 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Font family",
                 "Available font families",
                 null);
+        registerEnumParameterType("font-style",
+                FontStyleParameter.class,
+                "Font style",
+                "Available font styles");
 
         // Enums
         registerEnumParameterType("color-map",
