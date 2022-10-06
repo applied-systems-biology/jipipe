@@ -36,10 +36,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.analyze.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.background.RollingBallBackgroundEstimator2DAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.binary.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.blur.*;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.DrawScaleBarAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.SetPhysicalDimensionsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.SetPhysicalDimensionsByAnnotationsAlgorithm;
-import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.SetPhysicalDimensionsByExpressionsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.calibration.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.colocalization.Coloc2Node;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.color.SplitChannelsAlgorithm;
@@ -944,6 +941,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
     }
 
     private void registerCalibrationAlgorithms() {
+        registerEnumParameterType("ij1-calibration-draw-scale-bar:location", ScaleBarGenerator.ScaleBarPosition.class, "Scale bar location", "Location of the scale bar");
+
         registerNodeType("ij1-calibration-set-physical-dimensions", SetPhysicalDimensionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
         registerNodeType("ij1-calibration-set-physical-dimensions-from-expressions", SetPhysicalDimensionsByExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
         registerNodeType("ij1-calibration-set-physical-dimensions-from-annotations", SetPhysicalDimensionsByAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
