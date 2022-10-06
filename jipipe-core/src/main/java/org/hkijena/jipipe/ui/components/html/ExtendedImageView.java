@@ -1012,7 +1012,7 @@ public class ExtendedImageView extends View {
      * the attribute specified an alt attribute. It overriden a handle of
      * methods as the text is hardcoded and does not come from the document.
      */
-    private class ImageLabelView extends InlineView {
+    private static class ImageLabelView extends InlineView {
         private Segment segment;
         private Color fg;
 

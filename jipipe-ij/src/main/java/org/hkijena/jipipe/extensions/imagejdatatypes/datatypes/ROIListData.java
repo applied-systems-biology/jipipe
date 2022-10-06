@@ -280,7 +280,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     /**
-     * Method based on https://github.com/ndefrancesco/macro-frenzy/blob/master/geometry/fitting/fitMinRectangle.ijm
+     * Method based on <a href="https://github.com/ndefrancesco/macro-frenzy/blob/master/geometry/fitting/fitMinRectangle.ijm">fitMinRectangle</a>
      *
      * @param roi the roi
      * @return the mbr
@@ -364,7 +364,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     /**
-     * Method based on https://github.com/ndefrancesco/macro-frenzy/blob/master/geometry/fitting/fitMinRectangle.ijm
+     * Method based on <a href="https://github.com/ndefrancesco/macro-frenzy/blob/master/geometry/fitting/fitMinRectangle.ijm">fitMinRectangle</a>
      *
      * @param x1 x1
      * @param y1 y1
@@ -377,7 +377,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     /**
-     * Method based on https://github.com/ndefrancesco/macro-frenzy/blob/master/geometry/fitting/fitMinRectangle.ijm
+     * Method based on <a href="https://github.com/ndefrancesco/macro-frenzy/blob/master/geometry/fitting/fitMinRectangle.ijm">fitMinRectangle</a>
      *
      * @param p1x p1x
      * @param p1y p1y
@@ -393,7 +393,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
     }
 
     /**
-     * Method based on https://github.com/ndefrancesco/macro-frenzy/blob/master/geometry/fitting/fitMinRectangle.ijm
+     * Method based on <a href="https://github.com/ndefrancesco/macro-frenzy/blob/master/geometry/fitting/fitMinRectangle.ijm">fitMinRectangle</a>
      *
      * @param p1x p1x
      * @param p1y p1y

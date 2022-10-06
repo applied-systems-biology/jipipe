@@ -97,7 +97,7 @@ public abstract class ImageViewerPanelPlugin implements JIPipeWorkbenchAccess {
      * Called after the image has been drawn after the image has been drawn
      *
      * @param graphics2D the graphics
-     * @param renderArea
+     * @param renderArea the render area
      * @param sliceIndex the index of the slice
      */
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
@@ -110,7 +110,7 @@ public abstract class ImageViewerPanelPlugin implements JIPipeWorkbenchAccess {
      *
      * @param image         the image
      * @param sliceIndex    the slice
-     * @param magnification
+     * @param magnification the magnification
      */
     public void postprocessDrawForExport(BufferedImage image, ImageSliceIndex sliceIndex, double magnification) {
 

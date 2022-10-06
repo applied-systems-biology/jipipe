@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.Vector;
 
 /**
- * Adapted from https://github.com/davidchatting/hough_lines/blob/master/HoughTransform.java
+ * Adapted from <a href="https://github.com/davidchatting/hough_lines/blob/master/HoughTransform.java">HoughTransform</a>
  *
  * @author David Chatting - 4th March 2013
  */
