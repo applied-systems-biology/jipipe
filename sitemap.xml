@@ -82,6 +82,8 @@
   </url><url>
     <loc>https://www.jipipe.org/tutorials/features/cellpose-1/step1/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/cellpose-2/step1/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step1/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step1/</loc>
@@ -167,6 +169,8 @@
     <loc>https://www.jipipe.org/tutorials/basic/table-processing/step2/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/features/cellpose-1/step2/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/cellpose-2/step2/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step2/</loc>
   </url><url>
@@ -258,6 +262,8 @@
   </url><url>
     <loc>https://www.jipipe.org/tutorials/features/cellpose-1/step3/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/cellpose-2/step3/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step3/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step3/</loc>
@@ -331,6 +337,8 @@
     <loc>https://www.jipipe.org/tutorials/basic/table-processing/step4/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/features/cellpose-1/step4/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/cellpose-2/step4/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step4/</loc>
   </url><url>
@@ -406,6 +414,8 @@
   </url><url>
     <loc>https://www.jipipe.org/tutorials/features/cellpose-1/step5/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/cellpose-2/step5/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step5/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step5/</loc>
@@ -472,6 +482,8 @@
   </url><url>
     <loc>https://www.jipipe.org/tutorials/features/cellpose-1/step6/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/cellpose-2/step6/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step6/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step6/</loc>
@@ -530,6 +542,8 @@
   </url><url>
     <loc>https://www.jipipe.org/tutorials/features/cellpose-1/step7/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/cellpose-2/step7/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step7/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step7/</loc>
@@ -580,6 +594,8 @@
   </url><url>
     <loc>https://www.jipipe.org/tutorials/features/cellpose-1/step8/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/cellpose-2/step8/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step8/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step8/</loc>
@@ -615,6 +631,8 @@
     <loc>https://www.jipipe.org/tutorials/basic/table-processing/step9/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/features/cellpose-1/step9/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/cellpose-2/step9/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step9/</loc>
   </url><url>
@@ -674,6 +692,8 @@
   </url><url>
     <loc>https://www.jipipe.org/tutorials/features/cellpose-1/step10/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/cellpose-2/step10/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step10/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step10/</loc>
@@ -698,6 +718,8 @@
   </url><url>
     <loc>https://www.jipipe.org/tutorials/features/cellpose-1/step11/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/cellpose-2/step11/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step11/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step12/</loc>
@@ -713,6 +735,8 @@
     <loc>https://www.jipipe.org/tutorials/basic/quantification-plotting/step12/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/basic/table-processing/step12/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/cellpose-2/step12/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step12/</loc>
   </url><url>
@@ -797,6 +821,8 @@
     <loc>https://www.jipipe.org/faq/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/advanced/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/tutorials/features/cellpose-2/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation-java-api/algorithm/</loc>
   </url><url>

@@ -280,6 +280,13 @@
 	"content": "Load a 1-compartment template into JIPipe and add the data folder of the tutorial to the UI (red arrow 1).\n👉 This tutorial requires that you have installed node template Import images.\nIf you do not have the template, you can download it via Manage \u0026gt; Download more templates or by importing the Templates.json file that is provided in the data package. If you do not know how to download or import node templates, please check out our tutorial.\n Drag the Import images template node from the Node templates list to the UI and connect it to the Folders node (red arrows 2). Run this node and observe that cache browser (red arrow 3) that now shows 20 images of the droplet example (red rectangle 4).\n"
 },
 {
+	"uri": "https://www.jipipe.org/tutorials/features/cellpose-2/step1/",
+	"title": "Step 1",
+	"tags": [],
+	"description": "",
+	"content": "Load the example pipeline.\nAdd a second compartment, name it Train Cellpose (red arrow 1) and open it in a tab by double-clicking it (red arrow 2).\n"
+},
+{
 	"uri": "https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step1/",
 	"title": "Step 1",
 	"tags": [],
@@ -579,6 +586,13 @@
 	"tags": [],
 	"description": "",
 	"content": "Add a Cellpose (2.x) node to the UI (red arrow 1) and connect it to the Import images node (red arrow 2).\nIn the Parameters tab (red arrow 3) observe the default annotation Diameter (which is the size guidance for the objects to be found; red arrow 4) and set the Average object diameter parameter to Enabled and its value to 120 (red arrow 5).\nSet the segmentation model to Cytoplasm (red arrow 6), which is one of the pre-trained models of Cellpose, and it should work well with the general circular shape of the droplets.\n"
+},
+{
+	"uri": "https://www.jipipe.org/tutorials/features/cellpose-2/step2/",
+	"title": "Step 2",
+	"tags": [],
+	"description": "",
+	"content": "Drop the data folder on the UI (red arrow 1) and add the nodes List subfolders and Add path to annotations (red rectangle 2).\nConfigure the Add path to annotations to generate an annotation #Folder (red arrow 3). Note the # to make it recognizable by the data management system as mode to group data.\n"
 },
 {
 	"uri": "https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step2/",
@@ -896,6 +910,13 @@
 	"content": "Still in Parameters (red arrow 1), select the outputs of your choice.\nIn this example, we will chose the segmented areas as ROIs (red arrow 2), the flows (red arrow 3), and the probability map (red arrow 4).\n"
 },
 {
+	"uri": "https://www.jipipe.org/tutorials/features/cellpose-2/step3/",
+	"title": "Step 3",
+	"tags": [],
+	"description": "",
+	"content": "Note that the training dataset (red arrow 1) consists of subfolders (red arrow 2) with matching pairs of TIFF and ZIP files (note 3).\nThe latter contains the manually annotated objects as ROIs, designed to be used by the Cellpose trainer.\n"
+},
+{
 	"uri": "https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step3/",
 	"title": "Step 3",
 	"tags": [],
@@ -1153,6 +1174,13 @@
 	"tags": [],
 	"description": "",
 	"content": "The flow and probability maps are thresholded before the segmented ROIs are generated.\nThese threshold values can be set in the corresponding menu (red arrow 1), where the probability threshold (red arrow 2) and the flow threshold (red arrow 3) can be set.\n"
+},
+{
+	"uri": "https://www.jipipe.org/tutorials/features/cellpose-2/step4/",
+	"title": "Step 4",
+	"tags": [],
+	"description": "",
+	"content": "Accordingly, we need to read the TIFF and ZIP files separately.\nThis can be achieved by establishing two branches, one each for the two file types by the introduction of two List files nodes that we renamed to List TIFF and List ZIP in our figure (red rectangle 1).\nThe List files node can be configured with a filter expression to only detect specific files. In the case of the the List ZIP node, set the expression to\nSTRING_MATCHES_GLOB(name, \u0026quot;*.zip\u0026quot;) For List TIFF, set the expression to\nSTRING_MATCHES_GLOB(name, \u0026quot;*.tif\u0026quot;) After the List TIFF node, add another Add path to annotations to also save the image file name.\n"
 },
 {
 	"uri": "https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step4/",
@@ -1414,6 +1442,13 @@
 	"content": "Guidance for these levels can be gained from examining the probability map and identifying the typical levels at the image features of interest.\nIn the Cache browser (red arrow 1) choose the Probabilities data slot (red arrow 2) and examine the outcome (red rectangle 3). Open an item of interest by double-clicking it and use the mouse pointer to observe the values.\n"
 },
 {
+	"uri": "https://www.jipipe.org/tutorials/features/cellpose-2/step5/",
+	"title": "Step 5",
+	"tags": [],
+	"description": "",
+	"content": "Cellpose training requires label images or masks.\nThe can be created directly from ROI, for example via the node Convert ROI to mask, given the input image as reference (red arrow 1).\nThe generated mask will be dilated before being used for the Cellpose training (red arrow 2). The dilation serves the purpose of adding environment to the manual annotations, which should help the learning process (red arrows 3-5).\nSetting the Radius parameter (red arrow 4) to various values may help to optimize the learning process.\n"
+},
+{
 	"uri": "https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step5/",
 	"title": "Step 5",
 	"tags": [],
@@ -1645,6 +1680,13 @@
 	"content": "By examining the ROI output, it is evident that the results need to be filtered in order to select the round main object.\n"
 },
 {
+	"uri": "https://www.jipipe.org/tutorials/features/cellpose-2/step6/",
+	"title": "Step 6",
+	"tags": [],
+	"description": "",
+	"content": "We continue with assigning the annotation masks to the actual images.\nIn preparation for this, we first correct the image for illumination inhomogeneities via Illumination correction 2D (red arrow 1), where we use 20 px radius for both Sigma (X) and Sigma (Y) in underlying Gaussian filter.\nBoth the image and the annotations are scaled (red arrows 2 and 3) with a factor of 2.5 (red arrow 4 and 5):\n X axis set to width * 2.5 Y axis set to height * 2.5  The raw image and the labels are now merged together via a data annotations.\nData annotations are a special type of annotation that contain JIPipe data instead of text. Data annotations are managed separately from the more commonly used text annotations and thus can share column names.\n Annotate with data is utilized to annotate each raw image with its corresponding mask (red arrow 6). This will generate a new column next to the text annotations that can be read by the Cellpose training node.\nFinally, connect the annotated data to a node Split data randomly (percentage).\n"
+},
+{
 	"uri": "https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step6/",
 	"title": "Step 6",
 	"tags": [],
@@ -1848,6 +1890,13 @@
 	"content": "This task will be carried out by adding a Filter ROI by statistics node (red arrow 1), connecting it to the ROI output of the Cellpose (2.x) node (red arrow 2), and setting the roundness threshold to 0.7 (red arrow 3):\nRound \u0026gt; 0.7 "
 },
 {
+	"uri": "https://www.jipipe.org/tutorials/features/cellpose-2/step7/",
+	"title": "Step 7",
+	"tags": [],
+	"description": "",
+	"content": "Use the slot editing capabilities of Split data randomly (percentage) to create the following output slots of type Image:\n Train Validate Test  Then configure the percentages in the Parameters tab and the Weights category (red rectangle 1) as following:\n Train set to 80 Validate set to 10 Test set to 10  "
+},
+{
 	"uri": "https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step7/",
 	"title": "Step 7",
 	"tags": [],
@@ -2023,6 +2072,13 @@
 	"content": "We will now shape the identified droplet ROI by converting the ROIs to a mask (red arrow 1) by applying a Morphological operation 2D (red arrow 2) to open the object (red arrow 3) with a Radius of 10 px (red arrow 4), using a Disk-shaped kernel (red arrow 5).\n"
 },
 {
+	"uri": "https://www.jipipe.org/tutorials/features/cellpose-2/step8/",
+	"title": "Step 8",
+	"tags": [],
+	"description": "",
+	"content": "The Cellpose training (2.x) node is then added (red arrow 1) and connected to the training (red arrow 2) and validation (red arrow 3) output of the Split data randomly (percentage) node.\nThe number of training epochs (red arrow 4) and the mean diameter of the object that we seek (red arrow 5) are the most important setting here.\nMake sure to activate the GPU if the PC has one (red arrow 6 and 7) to expedite the learning process.\nFinally, the training setting can be easily adjusted in the UI (red rectangle 8).\n"
+},
+{
 	"uri": "https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step8/",
 	"title": "Step 8",
 	"tags": [],
@@ -2147,6 +2203,13 @@
 	"tags": [],
 	"description": "",
 	"content": "The next Morphological operation 2D (red arrow 1) will implement an erosion (red arrow 2) with a 1-pixel (red arrow 3) disk kernel (red arrow 4).\n"
+},
+{
+	"uri": "https://www.jipipe.org/tutorials/features/cellpose-2/step9/",
+	"title": "Step 9",
+	"tags": [],
+	"description": "",
+	"content": "The trained model can be saved from the cache browser (see Tutorial), and it can be used directly to visualize the segmentation quality using the test dataset.\nFor the latter, use the output model of the training node (red arrow 1) to guide a Cellpose (2.x) node (red arrow 2) via connecting the newly trained model to the corresponding input of the Cellpose (2.x) node (red arrow 3).\nThe data input of the Cellpose (2.x) node (red arrow 4) will come from the test output of the random data splitter (red arrow 5).\nIn the Cellpose (2.x) node parameters, set the diameter to the same value as the model (red rectangle 6).\nVery importantly, set the Model to Custom (red arrow 7, red rectangle) to have the Cellpose node accept an outside model connection.\n"
 },
 {
 	"uri": "https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step9/",
@@ -2352,6 +2415,13 @@
 	"content": "The last three nodes will convert the mask back to ROIs (red arrow 1), split them in case more than one full droplet is found (red arrow 2), and show the quality of the segmentation by overlaying the ROIs with the image (red arrow 3).\n Mask to ROI is basically the ImageJ particle finder without the measurements output and filtering settings.\n Split multi-component ROI splits ImageJ ROI that consist of multiple components into their individual basic shapes. This is helpful in our case, as Mask to ROI might create compound ROIs.\n "
 },
 {
+	"uri": "https://www.jipipe.org/tutorials/features/cellpose-2/step10/",
+	"title": "Step 10",
+	"tags": [],
+	"description": "",
+	"content": "In order to utilize a saved model drag the Cellpose model file (a file with a very long name) into JIPipe. This will create a File list node as usual.\nAlternatively, you can also create a File list node manually and use the file browser to select the Cellpose mode (red arrows).\nCellpose model files look for example like this: \u0026ldquo;cellpose_residual_on_style_on_concatenation_off_training_2022_10_04_17_53_41.794691\u0026rdquo;\nWe do not recommend to rename them, as Cellpose might look for vital information in the file name and will fail to load the model if the information is missing.\n "
+},
+{
 	"uri": "https://www.jipipe.org/tutorials/intermediate/create-node-templates-1/step10/",
 	"title": "Step 10",
 	"tags": [],
@@ -2436,6 +2506,13 @@
 	"content": "Here the Image input slot (red arrow 2) of the Convert ROI to RGB node (red arrow 1) is connected to the Image output of the Import images node (red arrow 3).\n"
 },
 {
+	"uri": "https://www.jipipe.org/tutorials/features/cellpose-2/step11/",
+	"title": "Step 11",
+	"tags": [],
+	"description": "",
+	"content": "Run the node (red arrow 1) and observe the Cache browser (red arrow 2). The segmented peroxisomes are now illustrated by the selected outputs of the Cellpose (2.x) node, e.g., in this example, we set Labels, ROI, Probabilities and XY flows as outputs (red rectangle), and selected Probabilities to be displayed (red arrow 3).\nYou might have noticed the Label data annotation in the list. You can remove them after the training step via the Remove data annotations node.\n "
+},
+{
 	"uri": "https://www.jipipe.org/tutorials/intermediate/multi-parameters/step11/",
 	"title": "Step 11",
 	"tags": [],
@@ -2490,6 +2567,13 @@
 	"tags": [],
 	"description": "",
 	"content": "Select the Integrate table columns (red arrow 1) and edit the Processors parameters in the Parameters tab (red arrow 2):\nSet the Input column to the following value:\n\u0026quot;Density\u0026quot;  If you reference existing columns, always put the name in quotation marks. The function for selecting columns can be heavily customized, as it is expression-based an can under certain circumstances yield unexpected results if the name is typed in as is.\nFor example, if there is an annotation Density set to XYZ, and the expression is just set to Density, the node would search for a column with the name XYZ, as the expression system tries to look for a known value with the name Density.\nThis will not happen if you put quotation marks around the column name, e.g., \u0026quot;Density\u0026quot;.\n Proceed by choosing the Average as a mode of operation (red arrow 4), and provide a name for the new results (e.g., AVG density, red arrow 5).\nThe Output column does not require quotation marks, as it is not an expression - just a text.\nYou can differentiate expressions from text by the UI design:\n Expressions are colored, while pure text is always black Expressions have an Edit button, while pure text has a button to clear the current value.   "
+},
+{
+	"uri": "https://www.jipipe.org/tutorials/features/cellpose-2/step12/",
+	"title": "Step 12",
+	"tags": [],
+	"description": "",
+	"content": "To check the quality of the segmentation results visually, add a Convert ROI to RGB node to the UI (red arrow 1), connect it to the ROI output of the Cellpose (2.x) node (red arrow 2) and to the Test dataset (red arrow 3) of the Split data randomly (Percentage) node.\nObserve the output in a viewer (red arrow 4) and notice the high quality of the segmentation (yellow circles outlining the peroxisomes).\n"
 },
 {
 	"uri": "https://www.jipipe.org/tutorials/intermediate/multi-parameters/step12/",
@@ -2566,7 +2650,7 @@
 	"title": "Examples",
 	"tags": [],
 	"description": "",
-	"content": "Here you can find all example projects and results. If you do not know what to do with the packages, please read through the tutorials referenced below.\n👉 Tutorial: How to load projects Please take a look at this tutorial if you don\u0026#39;t know what to do with downloaded example projects.  \r👉 Tutorial: How to browse results Please take a look at this tutorial if you don\u0026#39;t know what to do with downloaded project \u0026#43; data packages.  \r👉 Tutorial: How to import node templates Please take a look at this tutorial if you don\u0026#39;t know what to do if a package comes with a Template.json file (Project \u0026#43; Data \u0026#43; Node templates).  \r  Using the Coloc2 nodes small size colocalization simple tutorial  A small example showcasing how to utilize the Coloc2 nodes. Project \u0026#43; Data Dataset    Host-pathogen interactions large size fluorescence confocal cellpose complex  Alveolar macrophages were confronted with various species of fungi, including Aspergillus fumigatus and various Lichtheimia species, followed either directly by microscopy, or first by tissue fixation and fluorescence labeling, and then confocal microscopy. Project \u0026#43; Data (44 MB) Project \u0026#43; Data \u0026#43; Outputs (293 MB) Publication    Bacterial growth measured in fluid droplets medium size droplets cellpose complex  Microfluidic droplets of approximately 100 micrometer diameter were filled with a solution containing E. coli bacteria and the bacterial growth was observed via brightfield transmitted light microscopy. This JIPipe workflow finds the droplets that show bacterial growth. Project \u0026#43; Data (92 MB) Project \u0026#43; Data \u0026#43; Outputs (186 MB) Publication    Kidney status check via glomeruli counting medium size kidney lsfm  This pipeline analyzes light-sheet fluorescence microscopy of whole murine kidney data. These images were generated with staining specific to glomeruli, functional units of kidney. Here, we reduced the size of the image stack from 700 to 20, which non-workstation computers can process without issues. Project \u0026#43; Data (26 MB) Project \u0026#43; Data \u0026#43; Outputs (295 MB) Publication    Conversion between ROIs and labels small size simple tutorial  A small example showcasing nodes for conversion between labels and ROIs and vice versa. Project \u0026#43; Data    Nanoparticle delivery analysis in liver large size liver published complex  Micelle nanocarriers were injected into the circulatory system of the mouse vie the tail veins. Two-photon microscopy was utilized to image the cargo delivered by the micelles to the hepatocytes, sinusoids, canaliculi and liver-sinusoidal endothelial cells. Project \u0026#43; Data (797 MB) Project \u0026#43; Data \u0026#43; Outputs (4 GB) Publication    Training of a fully automated pipeline for detecting tissue in MSOT data large size msot real data published cellpose complex  For our 'MSOT cluster analysis toolkit' (MCAT), we developed a deep-learning-based approach for detecting the mouse tissue. The training was applied in JIPipe via our Cellpose nodes. Project \u0026#43; Data (2 GB) Publication    Using the Omnipose segmentation nodes small size segmentation deep learning simple tutorial  A small example showcasing how to utilize the Omnipose nodes. Project \u0026#43; Data Dataset    Using the Analyze skeleton 2D/3D small size simple tutorial  A small example showcasing how to utilize the Analyze skeleton 2D/3D node. Project \u0026#43; Data    Using the TrackMate nodes small size tracking simple tutorial  A small example showcasing how to utilize the TrackMate nodes. Project \u0026#43; Data Dataset    Tutorial: Adding and running nodes small size simple tutorial  Accompanying data and project for the tutorial 'Adding and running nodes'. Project \u0026#43; Data Tutorial    Tutorial: Importing an image I/II/III small size simple tutorial  Accompanying data and project for the tutorial series 'Importing an image'. Project \u0026#43; Data Tutorial    Tutorial: Importing a directory of images I small size simple tutorial  Accompanying data and project for the tutorial 'Importing a directory of images I'. Project \u0026#43; Data Tutorial    Tutorial: Importing a directory of images II small size simple tutorial  Accompanying data and project for the tutorial 'Importing a directory of images II'. Project \u0026#43; Data Tutorial    Tutorial: Handling multi-channel images I small size simple tutorial  Accompanying data and project for the tutorial 'Handling multi-channel images I'. Project \u0026#43; Data Tutorial    Tutorial: Creating node groups small size simple tutorial  Accompanying data and project for the tutorial 'Creating node groups I/II'. Project \u0026#43; Data Tutorial    Tutorial: Creating node templates small size simple tutorial  Accompanying data and project for the tutorial 'Creating node templates'. Project \u0026#43; Data Tutorial    Tutorial: Annotations I (Filtering) small size simple tutorial  Accompanying data and project for the tutorial 'Annotations I: Filtering'. Project \u0026#43; Data Tutorial    Tutorial: Annotations II (Branching) small size simple tutorial  Accompanying data and project for the tutorial 'Annotations II: Branching'. Project \u0026#43; Data Tutorial    Tutorial: Annotations III (Modifying and merging) small size simple tutorial  Accompanying data and project for the tutorial 'Annotations III: Modifying and merging'. Project Tutorial    Tutorial: Compartments I (Creating and connecting) small size simple tutorial  Accompanying data and project for the tutorial 'Compartments I: Creating and connecting'. Project \u0026#43; Data Tutorial    Tutorial: Quantification and plotting small size simple tutorial  Accompanying data and project for the tutorial 'Quantification and plotting'. Project \u0026#43; Data Tutorial    Tutorial: Cache I (Generating and viewing) small size simple tutorial  Accompanying data and project for the tutorial 'Cache I: Generating and viewing'. Project \u0026#43; Data Tutorial    Tutorial: ROI processing small size simple tutorial  Accompanying data and project for the tutorial 'ROI processing'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: Image properties and LUT small size simple tutorial  Accompanying data and project for the tutorial 'Image properties and LUT'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: Table processing small size simple tutorial  Accompanying data and project for the tutorial 'Table processing'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: Exporting data I (Machine-readable) small size simple tutorial  Accompanying data and project for the tutorial 'Exporting data I: Machine-readable'. Project \u0026#43; Data \u0026#43; Node templates \u0026#43; Exports Tutorial    Tutorial: Exporting data II (Human-readable) small size simple tutorial  Accompanying data and project for the tutorial 'Exporting data II: Human-readable'. Project \u0026#43; Data \u0026#43; Node templates \u0026#43; Exports Tutorial    Tutorial: Annotating data with measurements small size simple tutorial  Accompanying data and project for the tutorial 'Annotating data with measurements'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: Multiple parameter sets small size simple tutorial  Accompanying data and project for the tutorial 'Multiple parameter sets'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: ImageJ macros small size simple tutorial  Accompanying data and project for the tutorial 'ImageJ macros'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: Loops small size simple tutorial  Accompanying data and project for the tutorial 'Loops'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: Python small size simple tutorial  Accompanying data and project for the tutorial 'Python'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: Cellpose I (Segmentation) small size simple tutorial  Accompanying data and project for the tutorial 'Cellpose I: Segmentation'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Using the Weka segmentation nodes small size weka simple tutorial  A small example showcasing how to utilize the Trainable Weka Segmentation nodes. Project \u0026#43; Data Dataset    Track analysis of unlabeled nematodes large size nematodes real data published complex  Live worms of the species C. elegans were recorded via transmitted light microscopy. The resulting time-series images are analyzed by a JIPipe pipeline. Project \u0026#43; Data (5 GB) Project \u0026#43; Data \u0026#43; Outputs (8 GB) Publication    "
+	"content": "Here you can find all example projects and results. If you do not know what to do with the packages, please read through the tutorials referenced below.\n👉 Tutorial: How to load projects Please take a look at this tutorial if you don\u0026#39;t know what to do with downloaded example projects.  \r👉 Tutorial: How to browse results Please take a look at this tutorial if you don\u0026#39;t know what to do with downloaded project \u0026#43; data packages.  \r👉 Tutorial: How to import node templates Please take a look at this tutorial if you don\u0026#39;t know what to do if a package comes with a Template.json file (Project \u0026#43; Data \u0026#43; Node templates).  \r  Using the Coloc2 nodes small size colocalization simple tutorial  A small example showcasing how to utilize the Coloc2 nodes. Project \u0026#43; Data Dataset    Host-pathogen interactions large size fluorescence confocal cellpose complex  Alveolar macrophages were confronted with various species of fungi, including Aspergillus fumigatus and various Lichtheimia species, followed either directly by microscopy, or first by tissue fixation and fluorescence labeling, and then confocal microscopy. Project \u0026#43; Data (44 MB) Project \u0026#43; Data \u0026#43; Outputs (293 MB) Publication    Bacterial growth measured in fluid droplets medium size droplets cellpose complex  Microfluidic droplets of approximately 100 micrometer diameter were filled with a solution containing E. coli bacteria and the bacterial growth was observed via brightfield transmitted light microscopy. This JIPipe workflow finds the droplets that show bacterial growth. Project \u0026#43; Data (92 MB) Project \u0026#43; Data \u0026#43; Outputs (186 MB) Publication    Kidney status check via glomeruli counting medium size kidney lsfm  This pipeline analyzes light-sheet fluorescence microscopy of whole murine kidney data. These images were generated with staining specific to glomeruli, functional units of kidney. Here, we reduced the size of the image stack from 700 to 20, which non-workstation computers can process without issues. Project \u0026#43; Data (26 MB) Project \u0026#43; Data \u0026#43; Outputs (295 MB) Publication    Conversion between ROIs and labels small size simple tutorial  A small example showcasing nodes for conversion between labels and ROIs and vice versa. Project \u0026#43; Data    Nanoparticle delivery analysis in liver large size liver published complex  Micelle nanocarriers were injected into the circulatory system of the mouse vie the tail veins. Two-photon microscopy was utilized to image the cargo delivered by the micelles to the hepatocytes, sinusoids, canaliculi and liver-sinusoidal endothelial cells. Project \u0026#43; Data (797 MB) Project \u0026#43; Data \u0026#43; Outputs (4 GB) Publication    Training of a fully automated pipeline for detecting tissue in MSOT data large size msot real data published cellpose complex  For our 'MSOT cluster analysis toolkit' (MCAT), we developed a deep-learning-based approach for detecting the mouse tissue. The training was applied in JIPipe via our Cellpose nodes. Project \u0026#43; Data (2 GB) Publication    Using the Omnipose segmentation nodes small size segmentation deep learning simple tutorial  A small example showcasing how to utilize the Omnipose nodes. Project \u0026#43; Data Dataset    Using the Analyze skeleton 2D/3D small size simple tutorial  A small example showcasing how to utilize the Analyze skeleton 2D/3D node. Project \u0026#43; Data    Using the TrackMate nodes small size tracking simple tutorial  A small example showcasing how to utilize the TrackMate nodes. Project \u0026#43; Data Dataset    Tutorial: Adding and running nodes small size simple tutorial  Accompanying data and project for the tutorial 'Adding and running nodes'. Project \u0026#43; Data Tutorial    Tutorial: Importing an image I/II/III small size simple tutorial  Accompanying data and project for the tutorial series 'Importing an image'. Project \u0026#43; Data Tutorial    Tutorial: Importing a directory of images I small size simple tutorial  Accompanying data and project for the tutorial 'Importing a directory of images I'. Project \u0026#43; Data Tutorial    Tutorial: Importing a directory of images II small size simple tutorial  Accompanying data and project for the tutorial 'Importing a directory of images II'. Project \u0026#43; Data Tutorial    Tutorial: Handling multi-channel images I small size simple tutorial  Accompanying data and project for the tutorial 'Handling multi-channel images I'. Project \u0026#43; Data Tutorial    Tutorial: Creating node groups small size simple tutorial  Accompanying data and project for the tutorial 'Creating node groups I/II'. Project \u0026#43; Data Tutorial    Tutorial: Creating node templates small size simple tutorial  Accompanying data and project for the tutorial 'Creating node templates'. Project \u0026#43; Data Tutorial    Tutorial: Annotations I (Filtering) small size simple tutorial  Accompanying data and project for the tutorial 'Annotations I: Filtering'. Project \u0026#43; Data Tutorial    Tutorial: Annotations II (Branching) small size simple tutorial  Accompanying data and project for the tutorial 'Annotations II: Branching'. Project \u0026#43; Data Tutorial    Tutorial: Annotations III (Modifying and merging) small size simple tutorial  Accompanying data and project for the tutorial 'Annotations III: Modifying and merging'. Project Tutorial    Tutorial: Compartments I (Creating and connecting) small size simple tutorial  Accompanying data and project for the tutorial 'Compartments I: Creating and connecting'. Project \u0026#43; Data Tutorial    Tutorial: Quantification and plotting small size simple tutorial  Accompanying data and project for the tutorial 'Quantification and plotting'. Project \u0026#43; Data Tutorial    Tutorial: Cache I (Generating and viewing) small size simple tutorial  Accompanying data and project for the tutorial 'Cache I: Generating and viewing'. Project \u0026#43; Data Tutorial    Tutorial: ROI processing small size simple tutorial  Accompanying data and project for the tutorial 'ROI processing'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: Image properties and LUT small size simple tutorial  Accompanying data and project for the tutorial 'Image properties and LUT'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: Table processing small size simple tutorial  Accompanying data and project for the tutorial 'Table processing'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: Exporting data I (Machine-readable) small size simple tutorial  Accompanying data and project for the tutorial 'Exporting data I: Machine-readable'. Project \u0026#43; Data \u0026#43; Node templates \u0026#43; Exports Tutorial    Tutorial: Exporting data II (Human-readable) small size simple tutorial  Accompanying data and project for the tutorial 'Exporting data II: Human-readable'. Project \u0026#43; Data \u0026#43; Node templates \u0026#43; Exports Tutorial    Tutorial: Annotating data with measurements small size simple tutorial  Accompanying data and project for the tutorial 'Annotating data with measurements'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: Multiple parameter sets small size simple tutorial  Accompanying data and project for the tutorial 'Multiple parameter sets'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: ImageJ macros small size simple tutorial  Accompanying data and project for the tutorial 'ImageJ macros'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: Loops small size simple tutorial  Accompanying data and project for the tutorial 'Loops'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: Python small size simple tutorial  Accompanying data and project for the tutorial 'Python'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: Cellpose I (Segmentation) small size simple tutorial  Accompanying data and project for the tutorial 'Cellpose I: Segmentation'. Project \u0026#43; Data \u0026#43; Node templates Tutorial    Tutorial: Cellpose II (Training) small size simple tutorial  Accompanying data and project for the tutorial 'Cellpose II: Training'. Project \u0026#43; Data \u0026#43; Node templates \u0026#43; Model Tutorial    Using the Weka segmentation nodes small size weka simple tutorial  A small example showcasing how to utilize the Trainable Weka Segmentation nodes. Project \u0026#43; Data Dataset    Track analysis of unlabeled nematodes large size nematodes real data published complex  Live worms of the species C. elegans were recorded via transmitted light microscopy. The resulting time-series images are analyzed by a JIPipe pipeline. Project \u0026#43; Data (5 GB) Project \u0026#43; Data \u0026#43; Outputs (8 GB) Publication    "
 },
 {
 	"uri": "https://www.jipipe.org/documentation-java-api/algorithm/merging-algorithms/",
@@ -2657,7 +2741,7 @@
 	"title": "Features",
 	"tags": [],
 	"description": "Tutorials that focus an a specific feature of JIPipe",
-	"content": "1.74.x\u0026#43;  The guides were written for JIPipe version 1.74.0 or newer   Here you can find a list of tutorials that focus on a specific feature or use case\n JIPipe for teaching\nGives an overview about the JIPipe features that help teaching image analysis\n  Cellpose I: Segmentation\nExplains how to utilize the Cellpose nodes for segmentation\n  "
+	"content": "1.74.x\u0026#43;  The guides were written for JIPipe version 1.74.0 or newer   Here you can find a list of tutorials that focus on a specific feature or use case\n JIPipe for teaching\nGives an overview about the JIPipe features that help teaching image analysis\n  Cellpose I: Segmentation\nExplains how to utilize the Cellpose nodes for segmentation\n  Cellpose II: Training\nExplains how to utilize the Cellpose nodes for segmentation and transfer learning\n  "
 },
 {
 	"uri": "https://www.jipipe.org/tutorials/features/teaching/compartments2/",
@@ -2784,6 +2868,13 @@
 	"tags": [],
 	"description": "Tutorials that explain the advanced features of JIPipe",
 	"content": "1.74.x\u0026#43;  The guides were written for JIPipe version 1.74.0 or newer   Here you can find a list of tutorials that explain advanced JIPipe features.\n Integrating ImageJ macros\nExplains how to integrate ImageJ macros.\n  Loops\nExplains how to use loops.\n  Python\nExplains how to setup a Python node.\n  "
+},
+{
+	"uri": "https://www.jipipe.org/tutorials/features/cellpose-2/",
+	"title": "Cellpose II: Training",
+	"tags": [],
+	"description": "Explains how to utilize the Cellpose nodes for segmentation and transfer learning",
+	"content": "👉 Related tutorial: Cellpose I (Segmentation) This guide is a followup of other tutorials.     Tutorial: Cellpose II (Training) small size simple tutorial  Accompanying data and project for the tutorial 'Cellpose II: Training'. Project \u0026#43; Data \u0026#43; Node templates \u0026#43; Model Tutorial    1.74.x\u0026#43;  This guide was written for JIPipe version 1.74.0 or newer   "
 },
 {
 	"uri": "https://www.jipipe.org/documentation-java-api/algorithm/",
