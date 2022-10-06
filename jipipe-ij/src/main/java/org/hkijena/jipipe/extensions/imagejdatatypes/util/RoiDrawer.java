@@ -558,7 +558,8 @@ public class RoiDrawer implements JIPipeParameterCollection {
 
         // Draw the ROIs
         if (withHighlight) {
-            for (Roi roi : roisToDraw) {
+            for (int i = 0; i < roisToDraw.size(); i++) {
+                Roi roi = roisToDraw.get(i);
                 if (!roisToHighlight.contains(roi)) {
                     drawRoiOnGraphics(roi, graphics2D, renderArea, z, c, t, roiCentroids, roiIndices, labelFont, true, false, magnification);
                 }
@@ -567,7 +568,8 @@ public class RoiDrawer implements JIPipeParameterCollection {
                 drawRoiOnGraphics(roi, graphics2D, renderArea, z, c, t, roiCentroids, roiIndices, labelFont, false, true, magnification);
             }
         } else {
-            for (Roi roi : roisToDraw) {
+            for (int i = 0; i < roisToDraw.size(); i++) {
+                Roi roi = roisToDraw.get(i);
                 drawRoiOnGraphics(roi, graphics2D, renderArea, z, c, t, roiCentroids, roiIndices, labelFont, false, false, magnification);
             }
         }

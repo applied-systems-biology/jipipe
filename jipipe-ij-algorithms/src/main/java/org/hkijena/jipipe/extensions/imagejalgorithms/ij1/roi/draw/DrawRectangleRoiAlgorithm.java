@@ -10,13 +10,13 @@ import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.BooleanParameterSettings;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Margin;
 
 import java.awt.*;
+import java.awt.geom.RoundRectangle2D;
 
-@JIPipeDocumentation(name = "Draw rectangular ROI", description = "Draws one or multiple rectangular ROI")
+@JIPipeDocumentation(name = "Draw rectangular ROI", description = "Draws one or multiple rectangular ROI. Also supports the drawing of rounded rectangles.")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "Optional existing list of ROI. The new ROI will be appended to it.", optional = true, autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", optional = true, autoCreate = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
@@ -28,6 +28,10 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
     private Margin.List rectangles = new Margin.List();
 
     private boolean center = false;
+
+    private int arcWidth = 0;
+
+    private int arcHeight = 0;
 
     public DrawRectangleRoiAlgorithm(JIPipeNodeInfo info) {
         super(info);
@@ -41,6 +45,8 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.roiProperties = new ROIProperties(other.roiProperties);
         this.rectangles = new Margin.List(other.rectangles);
         this.center = other.center;
+        this.arcWidth = other.arcWidth;
+        this.arcHeight = other.arcHeight;
     }
 
     private Margin createNewDefinition() {
@@ -83,7 +89,13 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
                 area.x -= area.width / 2;
                 area.y -= area.height / 2;
             }
-            target.add(new ShapeRoi(area));
+            if(arcWidth <= 0 && arcHeight <= 0) {
+                target.add(new ShapeRoi(area));
+            }
+            else {
+                RoundRectangle2D rectangle2D = new RoundRectangle2D.Double(area.x, area.y, area.width, area.height, arcWidth, arcHeight);
+                target.add(new ShapeRoi(rectangle2D));
+            }
         }
 
         // Output
@@ -116,5 +128,27 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("center")
     public void setCenter(boolean center) {
         this.center = center;
+    }
+
+    @JIPipeDocumentation(name = "Arc width", description = "If set to a value larger than zero, a rounded rectangle is created")
+    @JIPipeParameter("arc-width")
+    public int getArcWidth() {
+        return arcWidth;
+    }
+
+    @JIPipeParameter("arc-width")
+    public void setArcWidth(int arcWidth) {
+        this.arcWidth = arcWidth;
+    }
+
+    @JIPipeDocumentation(name = "Arc height", description = "If set to a value larger than zero, a rounded rectangle is created")
+    @JIPipeParameter("arc-height")
+    public int getArcHeight() {
+        return arcHeight;
+    }
+
+    @JIPipeParameter("arc-height")
+    public void setArcHeight(int arcHeight) {
+        this.arcHeight = arcHeight;
     }
 }

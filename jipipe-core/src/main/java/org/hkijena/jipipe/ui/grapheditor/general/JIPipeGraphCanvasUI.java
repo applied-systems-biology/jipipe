@@ -771,8 +771,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      * @param gridTop  expand top (in grid coordinates)
      */
     public void expandLeftTop(int gridLeft, int gridTop) {
-        if (gridLeft == 0 && gridTop == 0)
+        if (gridLeft == 0 && gridTop == 0) {
+//            System.out.println("ref1");
             return;
+        }
         for (JIPipeNodeUI value : nodeUIs.values()) {
             if (!currentlyDraggedOffsets.containsKey(value)) {
                 Point gridLocation = viewMode.realLocationToGrid(value.getLocation(), zoom);

@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins.roimanager;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.primitives.Ints;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TIntArrayList;
@@ -394,7 +395,8 @@ public class ROIManagerPlugin extends ImageViewerPanelPlugin {
     @Override
     public void postprocessDraw(Graphics2D graphics2D, Rectangle renderArea, ImageSliceIndex sliceIndex) {
         if (displayROIViewMenuItem.getState() && renderROIAsOverlayViewMenuItem.getState()) {
-            for (Roi roi : rois) {
+            for (int i = 0; i < rois.size(); i++) {
+                Roi roi = rois.get(i);
                 ImageJUtils.setRoiCanvas(roi, getCurrentImage(), getViewerPanel().getZoomedDummyCanvas());
             }
             roiDrawer.drawOverlayOnGraphics(rois, graphics2D, renderArea, sliceIndex, new HashSet<>(roiListControl.getSelectedValuesList()), getViewerPanel().getCanvas().getZoom());
