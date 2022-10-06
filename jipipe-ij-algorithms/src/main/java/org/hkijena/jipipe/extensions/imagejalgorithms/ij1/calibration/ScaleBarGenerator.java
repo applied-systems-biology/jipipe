@@ -160,14 +160,14 @@ public class ScaleBarGenerator {
     }
 
     /**
-     * Returns the text to draw near the scalebar (<width> <unit>).
+     * Returns the text to draw near the scalebar
      */
     String getHLabel() {
         return config.hLabel;
     }
 
     /**
-     * Returns the text to draw near the scalebar (<height> <unit>).
+     * Returns the text to draw near the scalebar
      */
     String getVLabel() {
         return config.vLabel;
@@ -309,7 +309,7 @@ public class ScaleBarGenerator {
     /**
      * Sets the rectangles x y positions for scalebar elements (hBar, hText, vBar, vText),
      * based on the current configuration. Also sets the width and height of the rectangles.
-     * <p>
+     *
      * The position of each rectangle is relative to hBackground and vBackground,
      * so setBackgroundBoxesPositions() must run before this method computes positions.
      * This method calls setBackgroundBoxesPositions().
