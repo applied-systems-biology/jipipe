@@ -772,7 +772,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      */
     public void expandLeftTop(int gridLeft, int gridTop) {
         if (gridLeft == 0 && gridTop == 0) {
-//            System.out.println("ref1");
             return;
         }
         for (JIPipeNodeUI value : nodeUIs.values()) {
