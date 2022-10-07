@@ -18,6 +18,17 @@ The dependency installation was revised in JIPipe version 1.74.0. Please follow 
     </item>
     
     <item>
+      <title>Regarding OMERO</title>
+      <link>https://www.jipipe.org/installation/omero/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/installation/omero/</guid>
+      <description>If you are installing JIPipe via the ImageJ updater site, you might have noticed a directory jars/omero that will be downloaded with the package.
+It contains the absolute minimum of files to use OMERO for uploading and downloading images. We cannot guarantee that the JIPipe-provided OMERO libraries are compatible with your server setup or sufficient for any task outside basic image uploading and downloading.
+👉 We strongly recommend to install one of the OMERO packages from the ImageJ updater.</description>
+    </item>
+    
+    <item>
       <title>JIPipe extensions</title>
       <link>https://www.jipipe.org/installation/extensions/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

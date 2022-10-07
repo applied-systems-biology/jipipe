@@ -22,8 +22,6 @@
   </url><url>
     <loc>https://www.jipipe.org/_header/</loc>
   </url><url>
-    <loc>https://www.jipipe.org/installation/dependencies/</loc>
-  </url><url>
     <loc>https://www.jipipe.org/tutorials/features/teaching/introduction/</loc>
   </url><url>
     <loc>https://www.jipipe.org/examples/how-to-load-projects/step1/</loc>
@@ -192,15 +190,11 @@
   </url><url>
     <loc>https://www.jipipe.org/tutorials/ui/project-open/step2/</loc>
   </url><url>
-    <loc>https://www.jipipe.org/installation/third-party/</loc>
-  </url><url>
     <loc>https://www.jipipe.org/faq/user-interface/</loc>
   </url><url>
     <loc>https://www.jipipe.org/faq/data-processing/</loc>
   </url><url>
     <loc>https://www.jipipe.org/examples/how-to-import-node-templates/json2/</loc>
-  </url><url>
-    <loc>https://www.jipipe.org/installation/extensions/</loc>
   </url><url>
     <loc>https://www.jipipe.org/examples/how-to-load-projects/step3/</loc>
   </url><url>
@@ -660,6 +654,8 @@
   </url><url>
     <loc>https://www.jipipe.org/tutorials/old/analysis/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/installation/dependencies/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/documentation-java-api/javadocs/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/features/teaching/</loc>
@@ -764,6 +760,8 @@
   </url><url>
     <loc>https://www.jipipe.org/documentation/create-pipelines/parameters/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/installation/omero/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/tutorials/basic/annotations-1/step15/</loc>
   </url><url>
     <loc>https://www.jipipe.org/tutorials/basic/image-roi-processing/step15/</loc>
@@ -806,6 +804,8 @@
   </url><url>
     <loc>https://www.jipipe.org/tutorials/ui/project-new-three-compartments/</loc>
   </url><url>
+    <loc>https://www.jipipe.org/installation/third-party/</loc>
+  </url><url>
     <loc>https://www.jipipe.org/tutorials/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation/standard-library/macro-node/</loc>
@@ -839,6 +839,8 @@
     <loc>https://www.jipipe.org/tutorials/features/teaching/compartments3/</loc>
   </url><url>
     <loc>https://www.jipipe.org/examples/how-to-import-node-templates/</loc>
+  </url><url>
+    <loc>https://www.jipipe.org/installation/extensions/</loc>
   </url><url>
     <loc>https://www.jipipe.org/documentation/standard-library/multi-parameter/</loc>
   </url><url>

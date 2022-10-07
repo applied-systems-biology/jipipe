@@ -7,17 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language><atom:link href="https://www.jipipe.org/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Version 1.74.0 (preliminary)</title>
+      <title>Version 1.74.0 (current version)</title>
       <link>https://www.jipipe.org/download/changelog/1.74.0/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/download/changelog/1.74.0/</guid>
-      <description>This changelog is preliminary, as JIPipe version 1.74.0 is not released, yet.
- Table Of Contents  Plugin manager Environment EasyInstaller TrackMate integration (Beta) Cellpose integration Omnipose integration (Beta) Image processing  ROI processing Coloc2 integration   Table processing Plotting General data processing Parameters Expressions Node examples User interface  Project management Parameters Graph editor Compartment editor Cache browser / Results viewer ImageJ alias menu Image viewer  ROI manager Measurement tool / mask drawer / ROI drawer   Plot editor Table editor Dependency management Node templates   Data management Data API Bugfixes and small improvements Known issues    Plugin manager In older JIPipe versions, all extensions are automatically loaded during the JIPipe startup.</description>
+      <description>Table Of Contents  Plugin manager Environment EasyInstaller TrackMate integration (Beta) Cellpose integration Omnipose integration (Beta) Image processing  ROI processing Coloc2 integration   Table processing Plotting General data processing Parameters Expressions Node examples User interface  Project management Parameters Graph editor Compartment editor Cache browser / Results viewer ImageJ alias menu Image viewer  ROI manager Measurement tool / mask drawer / ROI drawer   Plot editor Table editor Dependency management Node templates   Data management Data API Bugfixes and small improvements Known issues    Plugin manager In older JIPipe versions, all extensions are automatically loaded during the JIPipe startup.</description>
     </item>
     
     <item>
-      <title>Version 1.73.0 (current version)</title>
+      <title>Version 1.73.0</title>
       <link>https://www.jipipe.org/download/changelog/1.73.0/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
@@ -73,17 +72,6 @@ Does JIPipe have a backup function? Yes. By default, JIPipe creates a backup eve
       
       <guid>https://www.jipipe.org/_header/</guid>
       <description></description>
-    </item>
-    
-    <item>
-      <title>ImageJ Dependencies</title>
-      <link>https://www.jipipe.org/installation/dependencies/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/installation/dependencies/</guid>
-      <description>JIPipe has various dependencies in form of ImageJ update sites that are not always provided via the Fiji update site or the ZIP package. During the startup of the software, JIPipe will automatically check for the appropriate ImageJ update sites and will guide you through the installation of all necessary libraries.
-The dependency installation was revised in JIPipe version 1.74.0. Please follow the appropriate procedures in the tutorial below.
- JIPipe 1.</description>
     </item>
     
     <item>
@@ -941,17 +929,6 @@ What is the difference between groups and compartments? If you use compartments,
       <description>You will now have two options that determine where the loaded templates will be stored:
  Globally: the newly imported templates will be available in whole JIPipe (all projects) Inside project: the templates will be directly stored inside the project and thus only available within the project itself  Choose the option that is most convenient for you.
 You can also move templates from/to global store into/from project storage via the Manage menu.</description>
-    </item>
-    
-    <item>
-      <title>JIPipe extensions</title>
-      <link>https://www.jipipe.org/installation/extensions/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/installation/extensions/</guid>
-      <description>Table Of Contents  Installing new extensions Activating extensions    Installing new extensions JIPipe extensions are ImageJ plugins and thus can be installed just as any plugin.
-Available options are:
- Installation via the Fiji updater Manual installation by copying the files into the plugins or jars directory  Older JIPipe versions (1.73.x or older) will automatically load all extensions during the startup. This behavior was changed in JIPipe 1.</description>
     </item>
     
     <item>
@@ -3203,6 +3180,17 @@ A solution can be JIPipeIteratingAlgorithm or JIPipeSimpleIteratingAlgorithm tha
     </item>
     
     <item>
+      <title>ImageJ Dependencies</title>
+      <link>https://www.jipipe.org/installation/dependencies/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/installation/dependencies/</guid>
+      <description>JIPipe has various dependencies in form of ImageJ update sites that are not always provided via the Fiji update site or the ZIP package. During the startup of the software, JIPipe will automatically check for the appropriate ImageJ update sites and will guide you through the installation of all necessary libraries.
+The dependency installation was revised in JIPipe version 1.74.0. Please follow the appropriate procedures in the tutorial below.
+ JIPipe 1.</description>
+    </item>
+    
+    <item>
       <title>JavaDocs</title>
       <link>https://www.jipipe.org/documentation-java-api/javadocs/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -3702,6 +3690,17 @@ Please access data via the data interface.
     </item>
     
     <item>
+      <title>Regarding OMERO</title>
+      <link>https://www.jipipe.org/installation/omero/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/installation/omero/</guid>
+      <description>If you are installing JIPipe via the ImageJ updater site, you might have noticed a directory jars/omero that will be downloaded with the package.
+It contains the absolute minimum of files to use OMERO for uploading and downloading images. We cannot guarantee that the JIPipe-provided OMERO libraries are compatible with your server setup or sufficient for any task outside basic image uploading and downloading.
+👉 We strongly recommend to install one of the OMERO packages from the ImageJ updater.</description>
+    </item>
+    
+    <item>
       <title>Step 15</title>
       <link>https://www.jipipe.org/tutorials/basic/annotations-1/step15/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
@@ -3964,6 +3963,17 @@ The difference between compartments and simple node groups is that compartments 
       <description>Designing exercises around the generation of compartment outputs simplifies the process of reviewing the results of an exercise.
 As JIPipe compartment outputs can be directly run from within the Compartments tab, one can quickly test if the expected results are produced.
 For example, if the pipeline within the Preprocessing compartment (red box 1) contains a file loading and Gaussian blurring process, the generated results can be directly generated (red arrow 2) and reviewed (red arrow 3) directly within the Compartments tab.</description>
+    </item>
+    
+    <item>
+      <title>JIPipe extensions</title>
+      <link>https://www.jipipe.org/installation/extensions/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/installation/extensions/</guid>
+      <description>Table Of Contents  Installing new extensions Activating extensions    Installing new extensions JIPipe extensions are ImageJ plugins and thus can be installed just as any plugin.
+Available options are:
+ Installation via the Fiji updater Manual installation by copying the files into the plugins or jars directory  Older JIPipe versions (1.73.x or older) will automatically load all extensions during the startup. This behavior was changed in JIPipe 1.</description>
     </item>
     
     <item>

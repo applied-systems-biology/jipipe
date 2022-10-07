@@ -5,8 +5,8 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-06T14:28:12 CEST">
-<title>Version 1.74.0 (preliminary) :: JIPipe for ImageJ</title>
+<meta name="revised" content="2022-10-07T12:10:56 CEST">
+<title>Version 1.74.0 (current version) :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
 <link href="../../../css/nucleus.css" rel="stylesheet">
@@ -81,14 +81,14 @@
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.74.0/" class="dd-item active">
         <div>
           <a href="../../../download/changelog/1.74.0/">
-            Version 1.74.0 (preliminary)
+            Version 1.74.0 (current version)
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.73.0/" class="dd-item">
         <div>
           <a href="../../../download/changelog/1.73.0/">
-            Version 1.73.0 (current version)
+            Version 1.73.0
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -113,6 +113,13 @@
         <div>
           <a href="../../../installation/dependencies/">
             ImageJ Dependencies
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/installation/omero/" class="dd-item">
+        <div>
+          <a href="../../../installation/omero/">
+            Regarding OMERO
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -1206,8 +1213,8 @@
     <option value="/download/changelog/" >
   - 
    Changelog</option> 
-      <option value="/download/changelog/1.74.0/"  selected>-- Version 1.74.0 (preliminary)</option>
-      <option value="/download/changelog/1.73.0/" >-- Version 1.73.0 (current version)</option>
+      <option value="/download/changelog/1.74.0/"  selected>-- Version 1.74.0 (current version)</option>
+      <option value="/download/changelog/1.73.0/" >-- Version 1.73.0</option>
       <option value="/download/changelog/1.72.x/" >-- Version 1.72.x</option>
   
   
@@ -1253,15 +1260,12 @@
       </div>
     
 
-    <h1>Version 1.74.0 (preliminary)</h1>
+    <h1>Version 1.74.0 (current version)</h1>
 
     
     
     
-    
-<div class="notices info" ><p>This changelog is preliminary, as JIPipe version 1.74.0 is not released, yet.</p></div>
-
-<div class="toc">
+    <div class="toc">
     <h2>Table Of Contents</h2>
     <nav id="TableOfContents">
   <ul>
@@ -1600,6 +1604,7 @@ To simplify the installation of various environments, JIPipe now provides ready-
 <li><span class="text-icon text-icon-new">new</span> Node &ldquo;Threshold/Value statistics 5D (fast, average)&rdquo;</li>
 <li><span class="text-icon text-icon-new">new</span> Node &ldquo;Threshold/Value statistics 5D (fast)&rdquo;</li>
 <li><span class="text-icon text-icon-new">new</span> Node &ldquo;Threshold/Value statistics 5D&rdquo;</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Draw scale bar&rdquo;</li>
 </ul>
 <h2 id="roi-processing">ROI processing</h2>
 <p>There were various ROI-generating nodes with different feature sets. A new set of nodes was developed that make use of modern JIPipe API features.
@@ -1741,6 +1746,7 @@ All nodes consume two optional inputs:</p>
 <h1 id="general-data-processing">General data processing</h1>
 <ul>
 <li><span class="text-icon text-icon-new">new</span> Node &ldquo;Sort data rows (Expression)&rdquo;</li>
+<li><span class="text-icon text-icon-new">new</span> Node &ldquo;Override annotations&rdquo;</li>
 <li><span class="text-icon text-icon-improved">improved</span> &ldquo;Loop start&rdquo;: if set to &ldquo;Pass through&rdquo;, the loop mode is set to &ldquo;Pass through&rdquo;</li>
 </ul>
 <h1 id="parameters">Parameters</h1>
@@ -1921,7 +1927,7 @@ Various existing JIPipe nodes were organized into a menu &ldquo;IJ&rdquo; that f
         <div class="chevrons">
     <div id="navigation">
 <a class="nav nav-prev" href="../../../download/changelog/" title="Changelog"> <i class="fa fa-chevron-left"></i><label>Changelog</label></a>
-    <a class="nav nav-next" href="../../../download/changelog/1.73.0/" title="Version 1.73.0 (current version)" style="margin-right: 0px;"><label>Version 1.73.0 (current version)</label><i class="fa fa-chevron-right"></i></a></div>
+    <a class="nav nav-next" href="../../../download/changelog/1.73.0/" title="Version 1.73.0" style="margin-right: 0px;"><label>Version 1.73.0</label><i class="fa fa-chevron-right"></i></a></div>
   </div>
 
   </section>

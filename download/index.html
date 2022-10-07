@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-06T14:28:13 CEST">
+<meta name="revised" content="2022-10-07T12:10:57 CEST">
 <title>Download :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
 <link href="../css/font-awesome.min.css" rel="stylesheet">
@@ -80,14 +80,14 @@
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.74.0/" class="dd-item">
         <div>
           <a href="../download/changelog/1.74.0/">
-            Version 1.74.0 (preliminary)
+            Version 1.74.0 (current version)
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.73.0/" class="dd-item">
         <div>
           <a href="../download/changelog/1.73.0/">
-            Version 1.73.0 (current version)
+            Version 1.73.0
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -112,6 +112,13 @@
         <div>
           <a href="../installation/dependencies/">
             ImageJ Dependencies
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/installation/omero/" class="dd-item">
+        <div>
+          <a href="../installation/omero/">
+            Regarding OMERO
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -1285,14 +1292,14 @@ Please choose how you want to install JIPipe
     <strong><i class="fa fa-apple"></i> Info:</strong> We have only limited capabilities to test software on Apple computers and are aware of issues regarding the integration of external software (Python, R, Cellpose, ...). We are open to contributions to resolve these problems.<br/>
   </div>
   <div class="download-panel-content" id="download-windows-package-content">
-    <div class="notices info">
+    <!-- <div class="notices info">
       <p>
         Please note that this package might contain an older version of Fiji and JIPipe. We recommend to use the ImageJ update site to install JIPipe.
       </p>
-    </div>
+    </div> -->
     You can download a package that provides an existing <a href="https://fiji.sc/" target="_blank">Fiji</a> installation plus all necessary files for JIPipe.
     <ol>
-      <li><a class="btn btn-default" type="button" href="https://github.com/applied-systems-biology/jipipe/releases/download/v1.73.0/jipipe-full-1.72.0-win.zip"> <i class="fa fa-download"></i> Download </a> the package</li>
+      <li><a class="btn btn-default" type="button" href="https://github.com/applied-systems-biology/jipipe/releases/download/pom-jipipe-1.74.0/JIPipe-1.74.0-Prepackaged-Win64.zip"> <i class="fa fa-download"></i> Download </a> the package</li>
       <li>Extract the *.zip file</li>
       <li>Run ImageJ-win64.exe</li>
       <li>Go to Plugins/JIPipe/JIPipe GUI</li>
@@ -1300,21 +1307,21 @@ Please choose how you want to install JIPipe
     <strong>Tip:</strong> If you want a desktop shortcut, open JIPipe and run <i>Tools &gt; Create launchers</i>
   </div>
   <div class="download-panel-content" id="download-linux-package-content">
-      <div class="notices info">
+      <!-- <div class="notices info">
       <p>
         Please note that this package might contain an older version of Fiji and JIPipe. We recommend to use the ImageJ update site to install JIPipe.
       </p>
-    </div>
+    </div> -->
     You can download a package that provides an existing <a href="https://fiji.sc/" target="_blank">Fiji</a> installation plus all necessary files for JIPipe.
     <ol>
-      <li><a class="btn btn-default" type="button" href="https://github.com/applied-systems-biology/jipipe/releases/download/v1.73.0/jipipe-full-1.72.0-linux.zip"> <i class="fa fa-download"></i> Download </a> the package</li>
+      <li><a class="btn btn-default" type="button" href="https://github.com/applied-systems-biology/jipipe/releases/download/pom-jipipe-1.74.0/JIPipe-1.74.0-Prepackaged-Linux64.zip"> <i class="fa fa-download"></i> Download </a> the package</li>
       <li>Extract the *.zip file</li>
       <li>Run ImageJ-win64</li>
       <li>Go to Plugins/JIPipe/JIPipe GUI</li>
     </ol>
     <strong>Tip:</strong> If you want an application menu entry, open JIPipe and run <i>Tools &gt; Create launchers</i>
   </div>
-  <div class="download-panel-content" id="download-osx-package-content">
+  <!-- <div class="download-panel-content" id="download-osx-package-content">
       <div class="notices info">
       <p>
         Please note that this package might contain an older version of Fiji and JIPipe. We recommend to use the ImageJ update site to install JIPipe.
@@ -1328,11 +1335,11 @@ Please choose how you want to install JIPipe
     <strong><i class="fa fa-warning"></i> Info:</strong> We only have limited capabilities to test software on Apple computers. If you experience any issues, try to install JIPipe via the ImageJ update site.</i><br/>
     <strong><i class="fa fa-warning"></i> Info:</strong> We are aware of some issues regarding the integration of external software (Python, R, Cellpose, ...). We are open to contributions to resolve these problems.</i><br/>
     <strong><i class="fa fa-info"></i> Info:</strong> Please do not install the app globally (using administrator rights). This can prevent ImageJ updates.</i><br/>
-  </div>
+  </div> -->
   <div class="download-panel-content" id="download-jar-content">
     JIPipe is available as standalone ImageJ plugin in *.jar format that you can install into an existing installation of ImageJ.
     <ol>
-      <li><a class="btn btn-default" type="button" href="https://github.com/applied-systems-biology/jipipe/releases/download/v1.72.0/JIPipe-1.72.0.zip"> <i class="fa fa-download"></i> Download </a> the package</li>
+      <li><a class="btn btn-default" type="button" href="https://github.com/applied-systems-biology/jipipe/releases/download/pom-jipipe-1.74.0/JIPipe-1.74.0.zip"> <i class="fa fa-download"></i> Download </a> the package</li>
       <li><a href="https://fiji.sc/" target="_blank">Download</a> ImageJ if you have no ImageJ installation, then open the ImageJ plugin folder</li>
       <dl>
         <dt><i class="fa fa-windows"></i> <i class="fa fa-linux"></i> Windows/Linux</dt>
