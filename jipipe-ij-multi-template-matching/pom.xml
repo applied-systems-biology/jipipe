@@ -4,11 +4,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.74.0-SNAPSHOT</version>
+        <version>1.74.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>jipipe-ij-multi-template-matching</artifactId>
-    <version>1.74.0-SNAPSHOT</version>
+    <version>1.74.1-SNAPSHOT</version>
 
     <name>jipipe-ij-multi-template-matching</name>
     <description>JIPipe integration for the Multi-Template-Matching ImageJ plugin</description>
