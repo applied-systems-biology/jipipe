@@ -7,7 +7,6 @@ import gnu.trove.map.TDoubleDoubleMap;
 import gnu.trove.map.hash.TDoubleDoubleHashMap;
 import gnu.trove.map.hash.TDoubleObjectHashMap;
 import ij.ImagePlus;
-import ij.process.AutoThresholder;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -15,6 +14,7 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
@@ -28,39 +28,35 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleMaskData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
+import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
+import org.python.antlr.ast.Num;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Key/Value Histogram 5D", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. The values assigned to each key are collected and integrated, thus allowing to generate histograms. Allows the generation of normalized and cumulative histograms.")
+@JIPipeDocumentation(name = "Key/Value threshold statistics 5D", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. " +
+        "The set of value pixels is partitioned into two sets based on whether the key is lower, or equal/higher than the currently processed key. " +
+        "One or multiple values can be created for each ")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Key", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Histogram", autoCreate = true)
-public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
-    private String outputKeyColumn = "key";
-
-    private String outputValueColumn = "value";
-    private DefaultExpressionParameter integrationFunction = new DefaultExpressionParameter("SUM(values)");
-    private boolean cumulative = false;
-    private boolean normalize = false;
-
+public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorithm {
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;
+    private ParameterCollectionList generatedColumns = ParameterCollectionList.containingCollection(GeneratedColumn.class);
 
-    public KeyValueHistogramGenerator(JIPipeNodeInfo info) {
+    public KeyValueThresholdPartitionGenerator(JIPipeNodeInfo info) {
         super(info);
+        generatedColumns.addFromTemplate(new GeneratedColumn("Key", new DefaultExpressionParameter("key")));
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
-    public KeyValueHistogramGenerator(KeyValueHistogramGenerator other) {
+    public KeyValueThresholdPartitionGenerator(KeyValueThresholdPartitionGenerator other) {
         super(other);
-        this.integrationFunction = new DefaultExpressionParameter(other.integrationFunction);
-        this.cumulative = other.cumulative;
-        this.normalize = other.normalize;
-        this.outputKeyColumn = other.outputKeyColumn;
-        this.outputValueColumn = other.outputValueColumn;
+        this.generatedColumns = new ParameterCollectionList(other.generatedColumns);
         this.sourceArea = other.sourceArea;
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
@@ -87,6 +83,8 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         ROIListData finalRoiInput = roiInput;
         ImagePlus finalMaskInput = maskInput;
 
+        List<Float> allValues = new ArrayList<>();
+        List<Float> allKeys = new ArrayList<>();
         TDoubleObjectHashMap<TFloatList> bucketedValues = new TDoubleObjectHashMap<>();
 
         if (!ImageJUtils.imagesHaveSameSize(keyImage, valueImage)) {
@@ -120,6 +118,8 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
                         bucketedValues.put(key, list);
                     }
                     list.add(value);
+                    allValues.add(value);
+                    allKeys.add(key);
                 }
             }
         }, progressInfo.resolve("Collect pixels"));
@@ -127,58 +127,55 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         // Setup values
         ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
-
-        // Integrate buckets
-        progressInfo.log("Integrating " + bucketedValues.size() + " buckets ...");
-        TDoubleDoubleMap integratedValues = new TDoubleDoubleHashMap();
-        for (double key : bucketedValues.keys()) {
-            if (progressInfo.isCancelled())
-                return;
-            TFloatList list = bucketedValues.get(key);
-            List<Float> asList = Floats.asList(list.toArray());
-            variables.set("values", asList);
-            double integrated = integrationFunction.evaluateToDouble(variables);
-            integratedValues.put(key, integrated);
-        }
+        variables.set("all.values", allValues);
+        variables.set("all.keys", allKeys);
 
         // Get sorted keys
-        double[] sortedKeys = integratedValues.keys();
+        double[] sortedKeys = bucketedValues.keys();
         Arrays.sort(sortedKeys);
 
-        // Cumulative if enabled
-        if (cumulative) {
-            TDoubleDoubleMap cumulativeIntegratedValues = new TDoubleDoubleHashMap();
-            double previousValue = 0;
-            for (double key : sortedKeys) {
-                if (progressInfo.isCancelled())
-                    return;
-                double value = integratedValues.get(key) + previousValue;
-                previousValue = value;
-                cumulativeIntegratedValues.put(key, value);
-            }
-            integratedValues = cumulativeIntegratedValues;
-        }
+        List<GeneratedColumn> mappedGeneratedColumns = generatedColumns.mapToCollection(GeneratedColumn.class);
 
-        // Normalize if enabled
-        if (normalize) {
-            double max = Double.NEGATIVE_INFINITY;
-            for (double value : integratedValues.values()) {
-                max = Math.max(max, value);
-            }
-            for (double key : integratedValues.keys()) {
-                integratedValues.put(key, integratedValues.get(key) / max);
-            }
-        }
-
+        progressInfo.log("Processing " + sortedKeys.length + " keys ...");
         // Convert to table
+        List<Float> class0 = new ArrayList<>();
+        List<Float> class1 = new ArrayList<>();
         ResultsTableData outputTable = new ResultsTableData();
-        int outputKeyColumnIndex = outputTable.addNumericColumn(outputKeyColumn);
-        int outputValueColumnIndex = outputTable.addNumericColumn(outputValueColumn);
-        for (double key : sortedKeys) {
-            double value = integratedValues.get(key);
+
+        long lastProgressUpdate = System.currentTimeMillis();
+
+        for (int i = 0; i < sortedKeys.length; i++) {
+            double key = sortedKeys[i];
+
+            if (progressInfo.isCancelled())
+                return;
+
+            variables.set("key", key);
+            class0.clear();
+            class1.clear();
+            for (double bucketedKey : bucketedValues.keys()) {
+                if (bucketedKey < key) {
+                    class0.addAll(Floats.asList(bucketedValues.get(bucketedKey).toArray()));
+                } else {
+                    class1.addAll(Floats.asList(bucketedValues.get(bucketedKey).toArray()));
+                }
+            }
+            variables.set("class0", class0);
+            variables.set("class1", class1);
+
             int row = outputTable.addRow();
-            outputTable.setValueAt(key, row, outputKeyColumnIndex);
-            outputTable.setValueAt(value, row, outputValueColumnIndex);
+            for (GeneratedColumn generatedColumn : mappedGeneratedColumns) {
+                if (generatedColumn.skipEmpty && (class0.isEmpty() || class1.isEmpty()))
+                    continue;
+                Object evaluated = generatedColumn.value.evaluate(variables);
+                outputTable.setValueAt(evaluated, row, generatedColumn.name);
+            }
+
+            long currentTime = System.currentTimeMillis();
+            if ((currentTime - lastProgressUpdate) > 3000) {
+                progressInfo.resolveAndLog(Math.round((1.0 * i / sortedKeys.length) * 100) + "%", i, sortedKeys.length);
+                lastProgressUpdate = currentTime;
+            }
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), outputTable, progressInfo);
@@ -186,6 +183,17 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
 
     private ImageProcessor getMask(int width, int height, ROIListData rois, ImagePlus mask, ImageSliceIndex sliceIndex) {
         return ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea, width, height, rois, mask, sliceIndex);
+    }
+
+    @JIPipeDocumentation(name = "Generated columns", description = "The list of generated columns")
+    @JIPipeParameter("generated-columns")
+    public ParameterCollectionList getGeneratedColumns() {
+        return generatedColumns;
+    }
+
+    @JIPipeParameter("generated-columns")
+    public void setGeneratedColumns(ParameterCollectionList generatedColumns) {
+        this.generatedColumns = generatedColumns;
     }
 
     @JIPipeDocumentation(name = "Extract values from ...", description = "Determines from which image areas the pixel values used for extracting the values")
@@ -200,62 +208,63 @@ public class KeyValueHistogramGenerator extends JIPipeIteratingAlgorithm {
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
-    @JIPipeDocumentation(name = "Output column (keys)", description = "The table column where the keys will be written to")
-    @JIPipeParameter(value = "output-key-column", uiOrder = 100)
-    @StringParameterSettings(monospace = true)
-    public String getOutputKeyColumn() {
-        return outputKeyColumn;
-    }
+    public static class GeneratedColumn extends AbstractJIPipeParameterCollection {
+        private String name;
+        private DefaultExpressionParameter value = new DefaultExpressionParameter();
 
-    @JIPipeParameter("output-key-column")
-    public void setOutputKeyColumn(String outputKeyColumn) {
-        this.outputKeyColumn = outputKeyColumn;
-    }
+        private boolean skipEmpty = false;
 
-    @JIPipeDocumentation(name = "Output column (integrated values)", description = "The table column where the integrated values will be written to")
-    @JIPipeParameter(value = "output-value-column", uiOrder = 110)
-    @StringParameterSettings(monospace = true)
-    public String getOutputValueColumn() {
-        return outputValueColumn;
-    }
+        public GeneratedColumn() {
+        }
 
-    @JIPipeParameter("output-value-column")
-    public void setOutputValueColumn(String outputValueColumn) {
-        this.outputValueColumn = outputValueColumn;
-    }
+        public GeneratedColumn(String name, DefaultExpressionParameter value) {
+            this.name = name;
+            this.value = value;
+        }
 
-    @JIPipeDocumentation(name = "Integration function", description = "The function that integrates the values assigned to the same key")
-    @JIPipeParameter("integration-function")
-    @ExpressionParameterSettingsVariable(key = "values", name = "Values", description = "The values to be integrated")
-    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-    public DefaultExpressionParameter getIntegrationFunction() {
-        return integrationFunction;
-    }
+        public GeneratedColumn(GeneratedColumn other) {
+            this.name = other.name;
+            this.value = other.value;
+            this.skipEmpty = other.skipEmpty;
+        }
 
-    @JIPipeParameter("integration-function")
-    public void setIntegrationFunction(DefaultExpressionParameter integrationFunction) {
-        this.integrationFunction = integrationFunction;
-    }
+        @JIPipeDocumentation(name = "Name")
+        @JIPipeParameter("name")
+        public String getName() {
+            return name;
+        }
 
-    @JIPipeDocumentation(name = "Cumulative", description = "If enabled, the histogram will be cumulative")
-    @JIPipeParameter("cumulative")
-    public boolean isCumulative() {
-        return cumulative;
-    }
+        @JIPipeParameter("name")
+        public void setName(String name) {
+            this.name = name;
+        }
 
-    @JIPipeParameter("cumulative")
-    public void setCumulative(boolean cumulative) {
-        this.cumulative = cumulative;
-    }
+        @JIPipeDocumentation(name = "Value")
+        @JIPipeParameter("value")
+        @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+        @ExpressionParameterSettingsVariable(key = "key", name = "Key", description = "The current key/threshold")
+        @ExpressionParameterSettingsVariable(key = "class0", name = "Class 0", description = "Array of all value pixels with a key less than the current threshold")
+        @ExpressionParameterSettingsVariable(key = "class1", name = "Class 1", description = "Array of all value pixels with a key larger or equal to the current threshold")
+        @ExpressionParameterSettingsVariable(key = "all.values", name = "All values", description = "Array of all values")
+        @ExpressionParameterSettingsVariable(key = "all.keys", name = "All keys", description = "Array of all keys")
+        public DefaultExpressionParameter getValue() {
+            return value;
+        }
 
-    @JIPipeDocumentation(name = "Normalize", description = "If enabled, normalizes the values")
-    @JIPipeParameter("normalize")
-    public boolean isNormalize() {
-        return normalize;
-    }
+        @JIPipeParameter("value")
+        public void setValue(DefaultExpressionParameter value) {
+            this.value = value;
+        }
 
-    @JIPipeParameter("normalize")
-    public void setNormalize(boolean normalize) {
-        this.normalize = normalize;
+        @JIPipeDocumentation(name = "Skip if class0 or class1 are empty")
+        @JIPipeParameter("skip-empty")
+        public boolean isSkipEmpty() {
+            return skipEmpty;
+        }
+
+        @JIPipeParameter("skip-empty")
+        public void setSkipEmpty(boolean skipEmpty) {
+            this.skipEmpty = skipEmpty;
+        }
     }
 }

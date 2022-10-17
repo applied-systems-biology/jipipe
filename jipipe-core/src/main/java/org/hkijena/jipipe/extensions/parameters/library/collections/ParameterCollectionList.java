@@ -126,6 +126,15 @@ public class ParameterCollectionList extends ListParameter<JIPipeDynamicParamete
         }
     }
 
+    public void addFromTemplate(JIPipeParameterCollection source) {
+        JIPipeDynamicParameterCollection target = addNewInstance();
+        JIPipeParameterTree tree = new JIPipeParameterTree(source);
+        for (Map.Entry<String, JIPipeParameterAccess> entry : target.getParameters().entrySet()) {
+            Object o = tree.getParameters().get(entry.getKey()).get(Object.class);
+            entry.getValue().set(o);
+        }
+    }
+
     /**
      * Applies the entries of the current template to all items (adding/removing/changing items)
      */

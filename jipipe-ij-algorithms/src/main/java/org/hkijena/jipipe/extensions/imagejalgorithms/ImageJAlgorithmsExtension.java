@@ -1243,6 +1243,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-analyze-statistics-threshold-value", KeyValueThresholdStatisticsGenerator.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
         registerNodeType("ij1-analyze-statistics-threshold-value-fast", FastKeyValueThresholdStatisticsGenerator.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
         registerNodeType("ij1-analyze-statistics-threshold-value-fast-avg", AverageKeyValueThresholdStatisticsGenerator.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
+        registerNodeType("ij1-analyze-statistics-threshold-partition-key-value", KeyValueThresholdPartitionGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
 
         registerEnumParameterType("ij1-analyze-statistics-histogram:multi-channel-mode", HistogramGenerator.MultiChannelMode.class,
                 "Multichannel mode", "Available modes");
