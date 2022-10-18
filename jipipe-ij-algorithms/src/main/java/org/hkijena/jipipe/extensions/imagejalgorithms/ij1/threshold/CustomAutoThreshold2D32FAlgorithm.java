@@ -76,7 +76,7 @@ public class CustomAutoThreshold2D32FAlgorithm extends JIPipeIteratingAlgorithm 
      * @param info the info
      */
     public CustomAutoThreshold2D32FAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale16UData.class)
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale32FData.class)
                 .addOutputSlot("Output", "", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
                 .allowOutputSlotInheritance(true)
                 .seal()
