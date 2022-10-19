@@ -142,7 +142,9 @@ public class JIPipeExportedCompartment {
             } else {
                 JIPipeGraphNode copy = algorithm.getInfo().duplicate(algorithm);
                 Map<String, Point> locationMapEntry = locations.getOrDefault(algorithm, null);
-                copy.getLocations().put(compartmentUUID.toString(), new HashMap<>(locationMapEntry));
+                if(locationMapEntry != null) {
+                    copy.getLocations().put(compartmentUUID.toString(), new HashMap<>(locationMapEntry));
+                }
                 project.getGraph().insertNode(copy, compartmentUUID);
                 copies.put(algorithm.getUUIDInParentGraph(), copy);
             }
