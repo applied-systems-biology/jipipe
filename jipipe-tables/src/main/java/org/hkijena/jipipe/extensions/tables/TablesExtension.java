@@ -36,6 +36,7 @@ import org.hkijena.jipipe.extensions.tables.nodes.annotations.ConvertAnnotationT
 import org.hkijena.jipipe.extensions.tables.nodes.columns.*;
 import org.hkijena.jipipe.extensions.tables.nodes.filter.FilterTableRowsAlgorithm;
 import org.hkijena.jipipe.extensions.tables.nodes.filter.FilterTablesAlgorithm;
+import org.hkijena.jipipe.extensions.tables.nodes.filter.SliceTableRowsAlgorithm;
 import org.hkijena.jipipe.extensions.tables.nodes.merge.MergeColumnsAlgorithm;
 import org.hkijena.jipipe.extensions.tables.nodes.merge.MergeTableColumnsSimpleAlgorithm;
 import org.hkijena.jipipe.extensions.tables.nodes.merge.MergeTableColumnsSupplementAlgorithm;
@@ -177,6 +178,7 @@ public class TablesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("table-split-by-columns", SplitTableByColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("table-filter", FilterTableRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("table-filter-2", FilterTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("table-slice-rows", SliceTableRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
         registerNodeType("table-sort", SortTableRowsAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
         registerNodeType("table-sort-columns", SortTableColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
         registerNodeType("table-add-annotation-columns", AddAnnotationColumnsAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-table-insert-column-right.png"));

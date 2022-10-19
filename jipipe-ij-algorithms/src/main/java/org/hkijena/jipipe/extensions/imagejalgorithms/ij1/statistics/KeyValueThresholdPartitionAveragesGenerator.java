@@ -3,8 +3,6 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.statistics;
 import com.google.common.primitives.Floats;
 import gnu.trove.list.TFloatList;
 import gnu.trove.list.array.TFloatArrayList;
-import gnu.trove.map.TDoubleDoubleMap;
-import gnu.trove.map.hash.TDoubleDoubleHashMap;
 import gnu.trove.map.hash.TDoubleObjectHashMap;
 import ij.ImagePlus;
 import ij.process.ImageProcessor;
@@ -29,35 +27,45 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalStringParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
-import org.python.antlr.ast.Num;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Key/Value threshold statistics 5D", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. " +
+@JIPipeDocumentation(name = "Key/Value threshold statistics 5D (fast averages)", description = "This node consumes two images with the same dimensions that respectively contain the keys and value components of each pixel position. " +
         "The set of value pixels is partitioned into two sets based on whether the key is lower, or equal/higher than the currently processed key. " +
-        "One or multiple values can be created for each partitioning.")
+        "This is a fast version of 'Key/Value threshold statistics 5D' that only produces the number of pixels in each partition, the sum of values, as well as the average.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Key", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
-public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorithm {
+public class KeyValueThresholdPartitionAveragesGenerator extends JIPipeIteratingAlgorithm {
     private ImageROITargetArea sourceArea = ImageROITargetArea.WholeImage;
-    private ParameterCollectionList generatedColumns = ParameterCollectionList.containingCollection(GeneratedColumn.class);
+    private OptionalStringParameter keyColumnName = new OptionalStringParameter("key", true);
+    private OptionalStringParameter class0CountColumnName = new OptionalStringParameter("class0.count", true);
+    private OptionalStringParameter class0SumColumnName = new OptionalStringParameter("class0.sum", true);
+    private OptionalStringParameter class0MeanColumnName = new OptionalStringParameter("class0.mean", true);
+    private OptionalStringParameter class1CountColumnName = new OptionalStringParameter("class0.count", true);
+    private OptionalStringParameter class1SumColumnName = new OptionalStringParameter("class0.sum", true);
+    private OptionalStringParameter class1MeanColumnName = new OptionalStringParameter("class0.mean", true);
 
-    public KeyValueThresholdPartitionGenerator(JIPipeNodeInfo info) {
+    public KeyValueThresholdPartitionAveragesGenerator(JIPipeNodeInfo info) {
         super(info);
-        generatedColumns.addFromTemplate(new GeneratedColumn("Key", new DefaultExpressionParameter("key")));
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
-    public KeyValueThresholdPartitionGenerator(KeyValueThresholdPartitionGenerator other) {
+    public KeyValueThresholdPartitionAveragesGenerator(KeyValueThresholdPartitionAveragesGenerator other) {
         super(other);
-        this.generatedColumns = new ParameterCollectionList(other.generatedColumns);
         this.sourceArea = other.sourceArea;
+        this.keyColumnName = new OptionalStringParameter(other.keyColumnName);
+        this.class0CountColumnName = new OptionalStringParameter(other.class0CountColumnName);
+        this.class0SumColumnName = new OptionalStringParameter(other.class0SumColumnName);
+        this.class0MeanColumnName = new OptionalStringParameter(other.class0MeanColumnName);
+        this.class1CountColumnName = new OptionalStringParameter(other.class1CountColumnName);
+        this.class1SumColumnName = new OptionalStringParameter(other.class1SumColumnName);
+        this.class1MeanColumnName = new OptionalStringParameter(other.class1MeanColumnName);
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
@@ -134,42 +142,59 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
         double[] sortedKeys = bucketedValues.keys();
         Arrays.sort(sortedKeys);
 
-        List<GeneratedColumn> mappedGeneratedColumns = generatedColumns.mapToCollection(GeneratedColumn.class);
-
         progressInfo.log("Processing " + sortedKeys.length + " keys ...");
         // Convert to table
-        List<Float> class0 = new ArrayList<>();
-        List<Float> class1 = new ArrayList<>();
+
         ResultsTableData outputTable = new ResultsTableData();
 
         long lastProgressUpdate = System.currentTimeMillis();
 
+        // Init
+        int class1Count = 0;
+        double class1Sum = 0;
+        int class0Count = 0;
+        double class0Sum = 0;
+
+        for (double key : sortedKeys) {
+            TFloatList forBucket = bucketedValues.get(key);
+            for (int j = 0; j < forBucket.size(); j++) {
+                class1Sum += forBucket.get(j);
+                ++class1Count;
+            }
+        }
+
+        assert class1Count == allValues.size();
+
         for (int i = 0; i < sortedKeys.length; i++) {
             double key = sortedKeys[i];
+            TFloatList forBucket = bucketedValues.get(key);
 
             if (progressInfo.isCancelled())
                 return;
 
-            variables.set("key", key);
-            class0.clear();
-            class1.clear();
-            for (double bucketedKey : bucketedValues.keys()) {
-                if (bucketedKey < key) {
-                    class0.addAll(Floats.asList(bucketedValues.get(bucketedKey).toArray()));
-                } else {
-                    class1.addAll(Floats.asList(bucketedValues.get(bucketedKey).toArray()));
-                }
+            for (int j = 0; j < forBucket.size(); j++) {
+                --class1Count;
+                class1Sum -= forBucket.get(j);
+                ++class0Count;
+                class0Sum += forBucket.get(j);
             }
-            variables.set("class0", class0);
-            variables.set("class1", class1);
 
-            int row = outputTable.addRow();
-            for (GeneratedColumn generatedColumn : mappedGeneratedColumns) {
-                if (generatedColumn.skipEmpty && (class0.isEmpty() || class1.isEmpty()))
-                    continue;
-                Object evaluated = generatedColumn.value.evaluate(variables);
-                outputTable.setValueAt(evaluated, row, generatedColumn.name);
-            }
+            outputTable.addRow();
+
+            if(keyColumnName.isEnabled())
+                outputTable.setLastValue(key, keyColumnName.getContent());
+            if(class0CountColumnName.isEnabled())
+                outputTable.setLastValue(class0Count, class0CountColumnName.getContent());
+            if(class0SumColumnName.isEnabled())
+                outputTable.setLastValue(class0Sum, class0SumColumnName.getContent());
+            if(class0MeanColumnName.isEnabled())
+                outputTable.setLastValue(class0Sum / class0Count, class0MeanColumnName.getContent());
+            if(class1CountColumnName.isEnabled())
+                outputTable.setLastValue(class1Count, class1CountColumnName.getContent());
+            if(class1SumColumnName.isEnabled())
+                outputTable.setLastValue(class1Sum, class1SumColumnName.getContent());
+            if(class1MeanColumnName.isEnabled())
+                outputTable.setLastValue(class1Sum / class1Count, class1MeanColumnName.getContent());
 
             long currentTime = System.currentTimeMillis();
             if ((currentTime - lastProgressUpdate) > 3000) {
@@ -185,17 +210,6 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
         return ImageJAlgorithmUtils.getMaskProcessorFromMaskOrROI(sourceArea, width, height, rois, mask, sliceIndex);
     }
 
-    @JIPipeDocumentation(name = "Generated columns", description = "The list of generated columns")
-    @JIPipeParameter("generated-columns")
-    public ParameterCollectionList getGeneratedColumns() {
-        return generatedColumns;
-    }
-
-    @JIPipeParameter("generated-columns")
-    public void setGeneratedColumns(ParameterCollectionList generatedColumns) {
-        this.generatedColumns = generatedColumns;
-    }
-
     @JIPipeDocumentation(name = "Extract values from ...", description = "Determines from which image areas the pixel values used for extracting the values")
     @JIPipeParameter("source-area")
     public ImageROITargetArea getSourceArea() {
@@ -208,63 +222,80 @@ public class KeyValueThresholdPartitionGenerator extends JIPipeIteratingAlgorith
         ImageJAlgorithmUtils.updateROIOrMaskSlot(sourceArea, getSlotConfiguration());
     }
 
-    public static class GeneratedColumn extends AbstractJIPipeParameterCollection {
-        private String name;
-        private DefaultExpressionParameter value = new DefaultExpressionParameter();
+    @JIPipeDocumentation(name = "Column name: key", description = "Column name for the key")
+    @JIPipeParameter("key-column-name")
+    public OptionalStringParameter getKeyColumnName() {
+        return keyColumnName;
+    }
 
-        private boolean skipEmpty = false;
+    @JIPipeParameter("key-column-name")
+    public void setKeyColumnName(OptionalStringParameter keyColumnName) {
+        this.keyColumnName = keyColumnName;
+    }
 
-        public GeneratedColumn() {
-        }
+    @JIPipeDocumentation(name = "Column name: class 0 count", description = "Column name for the count of class 0 values")
+    @JIPipeParameter("class0-count-column-name")
+    public OptionalStringParameter getClass0CountColumnName() {
+        return class0CountColumnName;
+    }
 
-        public GeneratedColumn(String name, DefaultExpressionParameter value) {
-            this.name = name;
-            this.value = value;
-        }
+    @JIPipeParameter("class0-count-column-name")
+    public void setClass0CountColumnName(OptionalStringParameter class0CountColumnName) {
+        this.class0CountColumnName = class0CountColumnName;
+    }
 
-        public GeneratedColumn(GeneratedColumn other) {
-            this.name = other.name;
-            this.value = other.value;
-            this.skipEmpty = other.skipEmpty;
-        }
+    @JIPipeDocumentation(name = "Column name: class 0 sum", description = "Column name for the sum of class 0 values")
+    @JIPipeParameter("class0-sum-column-name")
+    public OptionalStringParameter getClass0SumColumnName() {
+        return class0SumColumnName;
+    }
 
-        @JIPipeDocumentation(name = "Name")
-        @JIPipeParameter("name")
-        public String getName() {
-            return name;
-        }
+    @JIPipeParameter("class0-sum-column-name")
+    public void setClass0SumColumnName(OptionalStringParameter class0SumColumnName) {
+        this.class0SumColumnName = class0SumColumnName;
+    }
 
-        @JIPipeParameter("name")
-        public void setName(String name) {
-            this.name = name;
-        }
+    @JIPipeDocumentation(name = "Column name: class 0 mean", description = "Column name for the mean of class 0 values")
+    @JIPipeParameter("class0-mean-column-name")
+    public OptionalStringParameter getClass0MeanColumnName() {
+        return class0MeanColumnName;
+    }
 
-        @JIPipeDocumentation(name = "Value")
-        @JIPipeParameter("value")
-        @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        @ExpressionParameterSettingsVariable(key = "key", name = "Key", description = "The current key/threshold")
-        @ExpressionParameterSettingsVariable(key = "class0", name = "Class 0", description = "Array of all value pixels with a key less than the current threshold")
-        @ExpressionParameterSettingsVariable(key = "class1", name = "Class 1", description = "Array of all value pixels with a key larger or equal to the current threshold")
-        @ExpressionParameterSettingsVariable(key = "all.values", name = "All values", description = "Array of all values")
-        @ExpressionParameterSettingsVariable(key = "all.keys", name = "All keys", description = "Array of all keys")
-        public DefaultExpressionParameter getValue() {
-            return value;
-        }
+    @JIPipeParameter("class0-mean-column-name")
+    public void setClass0MeanColumnName(OptionalStringParameter class0MeanColumnName) {
+        this.class0MeanColumnName = class0MeanColumnName;
+    }
 
-        @JIPipeParameter("value")
-        public void setValue(DefaultExpressionParameter value) {
-            this.value = value;
-        }
+    @JIPipeDocumentation(name = "Column name: class 1 count", description = "Column name for the count of class 1 values")
+    @JIPipeParameter("class1-count-column-name")
+    public OptionalStringParameter getClass1CountColumnName() {
+        return class1CountColumnName;
+    }
 
-        @JIPipeDocumentation(name = "Skip if class0 or class1 are empty")
-        @JIPipeParameter("skip-empty")
-        public boolean isSkipEmpty() {
-            return skipEmpty;
-        }
+    @JIPipeParameter("class1-count-column-name")
+    public void setClass1CountColumnName(OptionalStringParameter class1CountColumnName) {
+        this.class1CountColumnName = class1CountColumnName;
+    }
 
-        @JIPipeParameter("skip-empty")
-        public void setSkipEmpty(boolean skipEmpty) {
-            this.skipEmpty = skipEmpty;
-        }
+    @JIPipeDocumentation(name = "Column name: class 1 sum", description = "Column name for the sum of class 1 values")
+    @JIPipeParameter("class1-sum-column-name")
+    public OptionalStringParameter getClass1SumColumnName() {
+        return class1SumColumnName;
+    }
+
+    @JIPipeParameter("class1-sum-column-name")
+    public void setClass1SumColumnName(OptionalStringParameter class1SumColumnName) {
+        this.class1SumColumnName = class1SumColumnName;
+    }
+
+    @JIPipeDocumentation(name = "Column name: class 1 mean", description = "Column name for the mean of class 1 values")
+    @JIPipeParameter("class1-mean-column-name")
+    public OptionalStringParameter getClass1MeanColumnName() {
+        return class1MeanColumnName;
+    }
+
+    @JIPipeParameter("class1-mean-column-name")
+    public void setClass1MeanColumnName(OptionalStringParameter class1MeanColumnName) {
+        this.class1MeanColumnName = class1MeanColumnName;
     }
 }

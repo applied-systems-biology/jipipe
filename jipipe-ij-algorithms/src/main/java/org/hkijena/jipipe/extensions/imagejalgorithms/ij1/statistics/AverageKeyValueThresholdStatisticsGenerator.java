@@ -28,7 +28,7 @@ import java.util.Arrays;
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Statistics")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Threshold", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Value", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Histogram", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class AverageKeyValueThresholdStatisticsGenerator extends JIPipeIteratingAlgorithm {
     private String outputThresholdColumn = "threshold";
     private String outputForegroundColumn = "foreground";

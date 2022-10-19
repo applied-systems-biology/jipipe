@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.ui.tableeditor;
 
 import com.google.common.primitives.Ints;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compat.ImageJExportParameters;
@@ -38,6 +39,7 @@ import org.hkijena.jipipe.utils.ui.BusyCursor;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
+import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import java.awt.*;
@@ -132,6 +134,7 @@ public class TableEditor extends FlexContentWorkbenchPanel {
         jxTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         jxTable.setDefaultRenderer(String.class, new Renderer(this));
         jxTable.setDefaultRenderer(Double.class, new Renderer(this));
+        jxTable.setDefaultEditor(Double.class, new NumberEditor());
         jxTable.packAll();
 
         getContentPanel().add(jxTable.getTableHeader(), BorderLayout.NORTH);
@@ -631,6 +634,59 @@ public class TableEditor extends FlexContentWorkbenchPanel {
             }
 
             return this;
+        }
+    }
+
+    public static class NumberEditor extends DefaultCellEditor {
+
+        private Object value;
+
+        public NumberEditor() {
+            super(new JTextField());
+        }
+
+        @Override
+        public Object getCellEditorValue() {
+            return value;
+        }
+
+        @Override
+        public boolean stopCellEditing() {
+            JTextField textField = (JTextField) getComponent();
+            boolean success = true;
+
+            try {
+                String editingValue = StringUtils.nullToEmpty(super.getCellEditorValue());
+                editingValue = editingValue.replace(',', '.').replace(" ", "");
+                if (NumberUtils.isCreatable(editingValue)) {
+                    value = NumberUtils.createDouble(editingValue);
+                }
+                else if(StringUtils.isNullOrEmpty(editingValue)) {
+                    value = 0d;
+                }
+                else if(editingValue.toLowerCase().startsWith("-inf")) {
+                    value = Double.NEGATIVE_INFINITY;
+                }
+                else if(editingValue.toLowerCase().startsWith("inf")) {
+                    value = Double.POSITIVE_INFINITY;
+                }
+                else if(editingValue.equalsIgnoreCase("na") || editingValue.equalsIgnoreCase("nan")) {
+                    value = Double.NaN;
+                }
+                else {
+                    success = false;
+                }
+            } catch (NumberFormatException exception) {
+                success = false;
+            }
+
+            if (success) {
+                textField.setBorder(UIManager.getBorder("TextField.border"));
+                return super.stopCellEditing();
+            } else {
+                textField.setBorder(new LineBorder(Color.red));
+                return false;
+            }
         }
     }
 }

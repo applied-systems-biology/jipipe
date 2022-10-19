@@ -1239,11 +1239,13 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-analyze-image-statistics-expression", ImageStatisticsExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("ij1-analyze-annotate-by-image-statistics-expression", AnnotateByImageStatisticsExpressionAlgorithm.class, UIUtils.getIconURLFromResources("actions/statistics.png"));
         registerNodeType("ij1-analyze-statistics-histogram", HistogramGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
+        registerNodeType("ij1-analyze-statistics-key-value-avg", KeyValueAveragesGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
         registerNodeType("ij1-analyze-statistics-histogram-key-value", KeyValueHistogramGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
         registerNodeType("ij1-analyze-statistics-threshold-value", KeyValueThresholdStatisticsGenerator.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
         registerNodeType("ij1-analyze-statistics-threshold-value-fast", FastKeyValueThresholdStatisticsGenerator.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
         registerNodeType("ij1-analyze-statistics-threshold-value-fast-avg", AverageKeyValueThresholdStatisticsGenerator.class, UIUtils.getIconURLFromResources("data-types/imgplus-2d-greyscale-mask.png"));
         registerNodeType("ij1-analyze-statistics-threshold-partition-key-value", KeyValueThresholdPartitionGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
+        registerNodeType("ij1-analyze-statistics-threshold-partition-key-value-avg", KeyValueThresholdPartitionAveragesGenerator.class, UIUtils.getIconURLFromResources("actions/office-chart-bar.png"));
 
         registerEnumParameterType("ij1-analyze-statistics-histogram:multi-channel-mode", HistogramGenerator.MultiChannelMode.class,
                 "Multichannel mode", "Available modes");

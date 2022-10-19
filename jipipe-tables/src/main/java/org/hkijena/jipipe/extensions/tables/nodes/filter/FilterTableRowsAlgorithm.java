@@ -68,6 +68,8 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<Integer> selectedRows = new ArrayList<>();
         ExpressionVariables variableSet = new ExpressionVariables();
+        variableSet.set("num_rows", input.getRowCount());
+        variableSet.set("num_cols", input.getColumnCount());
         for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
@@ -104,6 +106,8 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "<Columns>", description = "The column value of the current row")
     @ExpressionParameterSettingsVariable(name = "all.<Column>", description = "List of all values of the column")
     @ExpressionParameterSettingsVariable(name = "Row index", description = "The index of the table row. The first row is indexed with zero.", key = "index")
+    @ExpressionParameterSettingsVariable(name = "Number of rows", description = "The number of rows.", key = "num_row")
+    @ExpressionParameterSettingsVariable(name = "Number of columns", description = "The number of columns.", key = "num_cols")
     public DefaultExpressionParameter getFilters() {
         return filters;
     }
