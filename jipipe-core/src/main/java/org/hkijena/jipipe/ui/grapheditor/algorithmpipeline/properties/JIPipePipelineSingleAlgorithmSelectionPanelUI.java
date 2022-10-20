@@ -133,7 +133,14 @@ public class JIPipePipelineSingleAlgorithmSelectionPanelUI extends JIPipeProject
             tabbedPane.registerSingletonTab("SLOTS", "Slots", UIUtils.getIconFromResources("actions/plug.png"),
                     () -> slotEditorUI,
                     DocumentTabPane.CloseMode.withoutCloseButton, DocumentTabPane.SingletonTabMode.Present);
-
+            if (node instanceof JIPipeAlgorithm && !getProjectWorkbench().getProject().getNodeExamples(node.getInfo().getId()).isEmpty()) {
+                tabbedPane.registerSingletonTab("EXAMPLES",
+                        "Examples",
+                        UIUtils.getIconFromResources("actions/graduation-cap.png"),
+                        () -> new NodeExamplesUI(getProjectWorkbench(), (JIPipeAlgorithm) node),
+                        DocumentTabPane.CloseMode.withoutCloseButton,
+                        DocumentTabPane.SingletonTabMode.Present);
+            }
             if (node instanceof JIPipeDataBatchAlgorithm) {
                 tabbedPane.addTab("Data batches",
                         UIUtils.getIconFromResources("actions/package.png"),
