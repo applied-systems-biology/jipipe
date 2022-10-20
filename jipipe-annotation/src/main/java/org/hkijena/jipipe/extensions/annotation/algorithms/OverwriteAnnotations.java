@@ -78,7 +78,7 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Remove existing annotations", description = "Expression that determines whether an existing annotation is removed. Set to <code>false</code> to not remove existing annotations.")
     @JIPipeParameter("remove-existing-annotations-filter")
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(name = "Source annotations map", description = "Map of all source annotations (key to value)", key = "source.annotations")
     @ExpressionParameterSettingsVariable(name = "Target annotations map", description = "Map of all target annotations (key to value)", key = "target.annotations")
@@ -95,7 +95,7 @@ public class OverwriteAnnotations extends JIPipeIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Selected source annotations", description = "Expression that determines whether a source annotation is copied into the target. Set to <code>true</code> to copy all annotations.")
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(name = "Source annotations map", description = "Map of all source annotations (key to value)", key = "source.annotations")
     @ExpressionParameterSettingsVariable(name = "Target annotations map", description = "Map of all target annotations (key to value)", key = "target.annotations")

@@ -25,12 +25,12 @@ import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.TableColumnValuesExpressionParameterVariableSource;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.tables.datatypes.*;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnProcessorParameter;
+import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.*;
@@ -48,6 +48,8 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
     private ExpressionTableColumnProcessorParameterList processorParameters = new ExpressionTableColumnProcessorParameterList();
     private boolean append = false;
 
+    private final CustomExpressionVariablesParameter customExpressionVariables;
+
     /**
      * Creates a new instance
      *
@@ -55,6 +57,7 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
      */
     public ApplyExpressionToColumnsAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.customExpressionVariables = new CustomExpressionVariablesParameter(this);
         processorParameters.addNewInstance();
     }
 
@@ -65,6 +68,7 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
      */
     public ApplyExpressionToColumnsAlgorithm(ApplyExpressionToColumnsAlgorithm other) {
         super(other);
+        this.customExpressionVariables = new CustomExpressionVariablesParameter(other.customExpressionVariables, this);
         this.processorParameters = new ExpressionTableColumnProcessorParameterList(other.processorParameters);
         this.append = other.append;
     }
@@ -76,6 +80,7 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
         ExpressionVariables expressionVariables = new ExpressionVariables();
         Map<String, String> annotationsMap = JIPipeTextAnnotation.annotationListToMap(dataBatch.getMergedTextAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
         expressionVariables.set("annotations", annotationsMap);
+        customExpressionVariables.writeToVariables(expressionVariables, true, "custom.", true, "custom");
         if (append) {
             for (String columnName : input.getColumnNames()) {
                 resultColumns.add(input.getColumnReference(input.getColumnIndex(columnName)));
@@ -167,6 +172,8 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
     @JIPipeDocumentation(name = "Processors", description = "Defines which columns are processed")
     @JIPipeParameter("processors")
     @ExpressionParameterSettings(variableSource = TableColumnValuesExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public ExpressionTableColumnProcessorParameterList getProcessorParameters() {
         return processorParameters;
     }
@@ -174,6 +181,13 @@ public class ApplyExpressionToColumnsAlgorithm extends JIPipeSimpleIteratingAlgo
     @JIPipeParameter("processors")
     public void setProcessorParameters(ExpressionTableColumnProcessorParameterList processorParameters) {
         this.processorParameters = processorParameters;
+    }
+
+    @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
+    @JIPipeParameter(value = "custom-expression-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
+    public CustomExpressionVariablesParameter getCustomExpressionVariables() {
+        return customExpressionVariables;
     }
 
     @JIPipeDocumentation(name = "Append to existing table", description = "If enabled, the converted columns are appended to the existing table. Existing columns are overwritten.")

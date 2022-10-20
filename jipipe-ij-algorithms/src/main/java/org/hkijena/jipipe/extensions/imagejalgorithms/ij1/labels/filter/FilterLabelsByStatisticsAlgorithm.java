@@ -154,6 +154,8 @@ public class FilterLabelsByStatisticsAlgorithm extends JIPipeIteratingAlgorithm 
             "Annotations are available as variables.")
     @ExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(fromClass = AllMeasurementExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public DefaultExpressionParameter getFilters() {
         return filters;
     }

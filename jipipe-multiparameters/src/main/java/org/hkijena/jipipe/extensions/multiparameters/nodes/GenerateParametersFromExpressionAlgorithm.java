@@ -202,7 +202,7 @@ public class GenerateParametersFromExpressionAlgorithm extends JIPipeSimpleItera
         @JIPipeDocumentation(name = "Values", description = "Generated values")
         @JIPipeParameter("values")
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+        @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
         @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
         public DefaultExpressionParameter getValues() {
             return values;

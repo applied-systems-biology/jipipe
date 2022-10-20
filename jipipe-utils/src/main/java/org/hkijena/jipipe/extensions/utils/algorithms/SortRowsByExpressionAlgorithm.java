@@ -142,7 +142,7 @@ public class SortRowsByExpressionAlgorithm extends JIPipeParameterSlotAlgorithm 
         @JIPipeDocumentation(name = "Value")
         @JIPipeParameter(value = "value", uiOrder = -100)
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+        @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
         @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
         public DefaultExpressionParameter getValue() {
             return value;

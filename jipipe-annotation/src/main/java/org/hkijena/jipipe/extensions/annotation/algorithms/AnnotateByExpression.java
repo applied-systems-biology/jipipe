@@ -95,7 +95,7 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
     @PairParameterSettings(keyLabel = "Value", valueLabel = "Name")
     @StringParameterSettings(monospace = true)
     @ExpressionParameterSettings(variableSource = VariableSource.class)
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public NamedTextAnnotationGeneratorExpression.List getAnnotations() {
         return annotations;

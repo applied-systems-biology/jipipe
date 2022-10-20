@@ -120,7 +120,7 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
 
     @JIPipeDocumentationDescription(description = "The expression result will be converted to a string. All existing annotations are available " +
             "as variables that can be accessed directly, or if they contain special characters or spaces via the $ operator.")
-    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     @ExpressionParameterSettingsVariable(name = "Annotations map", description = "Map of all annotations (key to value)", key = "all.annotations")
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)

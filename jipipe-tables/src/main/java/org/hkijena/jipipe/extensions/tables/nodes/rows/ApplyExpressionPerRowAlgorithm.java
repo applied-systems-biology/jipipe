@@ -24,15 +24,14 @@ import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariable;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterVariableSource;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.*;
 
@@ -43,14 +42,17 @@ import java.util.*;
 public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private ExpressionTableColumnGeneratorProcessorParameterList expressionList = new ExpressionTableColumnGeneratorProcessorParameterList();
+    private final CustomExpressionVariablesParameter customExpressionVariables;
 
     public ApplyExpressionPerRowAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.customExpressionVariables = new CustomExpressionVariablesParameter(this);
         expressionList.addNewInstance();
     }
 
     public ApplyExpressionPerRowAlgorithm(ApplyExpressionPerRowAlgorithm other) {
         super(other);
+        this.customExpressionVariables = new CustomExpressionVariablesParameter(other.customExpressionVariables, this);
         this.expressionList = new ExpressionTableColumnGeneratorProcessorParameterList(other.expressionList);
     }
 
@@ -60,6 +62,7 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
         ExpressionVariables variableSet = new ExpressionVariables();
         Map<String, String> annotationsMap = JIPipeTextAnnotation.annotationListToMap(dataBatch.getMergedTextAnnotations().values(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
         variableSet.set("annotations", annotationsMap);
+        customExpressionVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
         variableSet.set("num_rows", data.getRowCount());
         for (int col = 0; col < data.getColumnCount(); col++) {
             TableColumn column = data.getColumnReference(col);
@@ -95,6 +98,8 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
     @JIPipeParameter("expression-list")
     @PairParameterSettings(singleRow = false, keyLabel = "Expression", valueLabel = "Column name")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public ExpressionTableColumnGeneratorProcessorParameterList getExpressionList() {
         return expressionList;
     }
@@ -102,6 +107,13 @@ public class ApplyExpressionPerRowAlgorithm extends JIPipeSimpleIteratingAlgorit
     @JIPipeParameter("expression-list")
     public void setExpressionList(ExpressionTableColumnGeneratorProcessorParameterList expressionList) {
         this.expressionList = expressionList;
+    }
+
+    @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
+    @JIPipeParameter(value = "custom-expression-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
+    public CustomExpressionVariablesParameter getCustomExpressionVariables() {
+        return customExpressionVariables;
     }
 
     public static class VariableSource implements ExpressionParameterVariableSource {

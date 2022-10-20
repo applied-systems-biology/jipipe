@@ -18,16 +18,18 @@ import com.google.common.primitives.Doubles;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.extensions.expressions.CustomExpressionVariablesParameter;
 import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
 import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +46,8 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter filters = new DefaultExpressionParameter();
 
+    private final CustomExpressionVariablesParameter customExpressionVariables;
+
     /**
      * Creates a new instance
      *
@@ -51,6 +55,7 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public FilterTableRowsAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.customExpressionVariables = new CustomExpressionVariablesParameter(this);
     }
 
     /**
@@ -60,6 +65,7 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public FilterTableRowsAlgorithm(FilterTableRowsAlgorithm other) {
         super(other);
+        this.customExpressionVariables = new CustomExpressionVariablesParameter(other.customExpressionVariables, this);
         this.filters = new DefaultExpressionParameter(other.filters);
     }
 
@@ -68,11 +74,10 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         ResultsTableData input = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         List<Integer> selectedRows = new ArrayList<>();
         ExpressionVariables variableSet = new ExpressionVariables();
+        variableSet.putAnnotations(dataBatch.getMergedTextAnnotations());
+        customExpressionVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
         variableSet.set("num_rows", input.getRowCount());
         variableSet.set("num_cols", input.getColumnCount());
-        for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
-            variableSet.set(annotation.getName(), annotation.getValue());
-        }
         for (int col = 0; col < input.getColumnCount(); col++) {
             TableColumn column = input.getColumnReference(col);
             if (column.isNumeric()) {
@@ -108,8 +113,17 @@ public class FilterTableRowsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(name = "Row index", description = "The index of the table row. The first row is indexed with zero.", key = "index")
     @ExpressionParameterSettingsVariable(name = "Number of rows", description = "The number of rows.", key = "num_row")
     @ExpressionParameterSettingsVariable(name = "Number of columns", description = "The number of columns.", key = "num_cols")
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public DefaultExpressionParameter getFilters() {
         return filters;
+    }
+
+    @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
+    @JIPipeParameter(value = "custom-expression-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
+    public CustomExpressionVariablesParameter getCustomExpressionVariables() {
+        return customExpressionVariables;
     }
 
     @JIPipeParameter("filters")

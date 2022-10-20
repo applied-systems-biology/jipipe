@@ -381,7 +381,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         @JIPipeDocumentation(name = "ROI filter", description = "This expression is applied for each ROI and determines whether the ROI fulfills the required criteria.")
         @ExpressionParameterSettings(variableSource = MeasurementExpressionParameterVariableSource.class)
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
-        @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+        @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
         @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
         @JIPipeParameter(value = "roi-filter", important = true)
         public DefaultExpressionParameter getRoiFilterExpression() {
@@ -397,7 +397,7 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
         @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
         @ExpressionParameterSettingsVariable(key = "all_roi", name = "All ROI", description = "A list of all ROI that were detected in this iteration")
         @ExpressionParameterSettingsVariable(key = "filtered_roi", name = "Filtered ROI", description = "A list of all filtered ROI that were detected in this iteration")
-        @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom filter variables (keys are the parameter keys)")
+        @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
         @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
         @JIPipeParameter(value = "threshold-criteria", important = true)
         public DefaultExpressionParameter getThresholdCriteriaExpression() {
