@@ -602,6 +602,20 @@ public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch
     }
 
     /**
+     * Returns true if no data is referenced
+     * @return if no data is referenced
+     */
+    public boolean isEmpty() {
+        if(inputSlotRows.isEmpty())
+            return true;
+        for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : inputSlotRows.entrySet()) {
+            if (!entry.getValue().isEmpty())
+                return false;
+        }
+        return true;
+    }
+
+    /**
      * Returns true if there is at least one slot that has no rows attached to it
      *
      * @return if the batch is incomplete
