@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imageviewer;
 
+import ij.IJ;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.filter.AVI_Writer;
@@ -23,6 +24,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.AVICompression;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.HyperstackDimension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 
@@ -59,13 +63,13 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
 
     @Override
     public String getTaskLabel() {
-        return "Image viewer: Export stack";
+        return "Image viewer: Export video";
     }
 
     @Override
     public void run() {
         ImagePlus image = viewerPanel.getImage();
-        ImageStack generatedStack = new ImageStack(image.getWidth(), image.getHeight());
+        ImageStack generatedStack = null;
 
         if (followedDimension == HyperstackDimension.Depth) {
             progressInfo.setMaxProgress(image.getNSlices());
@@ -75,9 +79,13 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("z = " + z);
-                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(referencePosition.getC(), z,
+                BufferedImage bufferedImage = viewerPanel.generateSlice(referencePosition.getC(), z,
                         referencePosition.getT(),
-                        magnification, true).getBufferedImage()));
+                        magnification, true).getBufferedImage();
+                if(generatedStack == null) {
+                    generatedStack = new ImageStack(bufferedImage.getWidth(), bufferedImage.getHeight());
+                }
+                generatedStack.addSlice(new ColorProcessor(bufferedImage));
             }
         } else if (followedDimension == HyperstackDimension.Channel) {
             progressInfo.setMaxProgress(image.getNChannels());
@@ -87,9 +95,13 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("c = " + c);
-                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(c, referencePosition.getZ(),
+                BufferedImage bufferedImage = viewerPanel.generateSlice(c, referencePosition.getZ(),
                         referencePosition.getT(),
-                        magnification, true).getBufferedImage()));
+                        magnification, true).getBufferedImage();
+                if(generatedStack == null) {
+                    generatedStack = new ImageStack(bufferedImage.getWidth(), bufferedImage.getHeight());
+                }
+                generatedStack.addSlice(new ColorProcessor(bufferedImage));
             }
         } else if (followedDimension == HyperstackDimension.Frame) {
             progressInfo.setMaxProgress(image.getNFrames());
@@ -99,9 +111,13 @@ public class ImageViewerVideoExporterRun implements JIPipeRunnable {
                     return;
                 progressInfo.incrementProgress();
                 subProgress.log("t = " + t);
-                generatedStack.addSlice(new ColorProcessor(viewerPanel.generateSlice(referencePosition.getC(), referencePosition.getZ(),
+                BufferedImage bufferedImage = viewerPanel.generateSlice(referencePosition.getC(), referencePosition.getZ(),
                         t,
-                        magnification, true).getBufferedImage()));
+                        magnification, true).getBufferedImage();
+                if(generatedStack == null) {
+                    generatedStack = new ImageStack(bufferedImage.getWidth(), bufferedImage.getHeight());
+                }
+                generatedStack.addSlice(new ColorProcessor(bufferedImage));
             }
         }
 

@@ -1,5 +1,6 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw;
 
+import ij.gui.Roi;
 import ij.gui.ShapeRoi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -92,6 +93,18 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
             } else {
                 RoundRectangle2D rectangle2D = new RoundRectangle2D.Double(area.x, area.y, area.width, area.height, arcWidth, arcHeight);
                 target.add(new ShapeRoi(rectangle2D));
+            }
+        }
+
+        for (Roi roi : target) {
+            roi.setName(roiProperties.getRoiName().evaluateToString(variables));
+            roi.setStrokeWidth(roiProperties.getLineWidth());
+            roi.setPosition(roiProperties.getPositionC(), roiProperties.getPositionZ(), roiProperties.getPositionT());
+            if(roiProperties.getFillColor().isEnabled()) {
+                roi.setFillColor(roiProperties.getFillColor().getContent());
+            }
+            if(roiProperties.getLineColor().isEnabled()) {
+                roi.setStrokeColor(roiProperties.getLineColor().getContent());
             }
         }
 

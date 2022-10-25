@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw;
 
 import ij.gui.OvalRoi;
+import ij.gui.Roi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -81,6 +82,18 @@ public class DrawOvalRoiAlgorithm extends JIPipeIteratingAlgorithm {
                 area.y -= area.height / 2;
             }
             target.add(new OvalRoi(area.x, area.y, area.width, area.height));
+        }
+
+        for (Roi roi : target) {
+            roi.setName(roiProperties.getRoiName().evaluateToString(variables));
+            roi.setStrokeWidth(roiProperties.getLineWidth());
+            roi.setPosition(roiProperties.getPositionC(), roiProperties.getPositionZ(), roiProperties.getPositionT());
+            if(roiProperties.getFillColor().isEnabled()) {
+                roi.setFillColor(roiProperties.getFillColor().getContent());
+            }
+            if(roiProperties.getLineColor().isEnabled()) {
+                roi.setStrokeColor(roiProperties.getLineColor().getContent());
+            }
         }
 
         // Output

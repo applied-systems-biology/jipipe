@@ -541,10 +541,8 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
             else if (UIUtils.EXTENSION_FILTER_JPEG.accept(targetFile.toFile()))
                 format = "JPEG";
             try {
-                BufferedImage image = BufferedImageUtils.copyBufferedImage(getCanvas().getImage());
-                for (ImageViewerPanelPlugin plugin : getPlugins()) {
-                    plugin.postprocessDrawForExport(image, getCurrentSliceIndex(), getExportedMagnification());
-                }
+                ImageProcessor processor = generateSlice(getCurrentSliceIndex().getC(), getCurrentSliceIndex().getZ(), getCurrentSliceIndex().getT(), getExportedMagnification(), true);
+                BufferedImage image = BufferedImageUtils.copyBufferedImageToARGB(processor.getBufferedImage());
                 ImageIO.write(image, format, targetFile.toFile());
             } catch (IOException e) {
                 IJ.handleException(e);
