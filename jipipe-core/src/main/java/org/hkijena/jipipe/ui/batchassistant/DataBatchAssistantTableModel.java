@@ -182,7 +182,11 @@ public class DataBatchAssistantTableModel implements TableModel {
             }
             return preview;
         } else {
-            return dataTable.getTextAnnotation(rowIndex, toAnnotationColumnIndex(columnIndex));
+            try {
+                return dataTable.getTextAnnotation(rowIndex, toAnnotationColumnIndex(columnIndex));
+            }catch (IndexOutOfBoundsException ex) {
+                return null;
+            }
         }
     }
 
