@@ -52,7 +52,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
     }
 
     public JIPipeDataByMetadataExporter(JIPipeDataByMetadataExporter other) {
-        this.fileNameGenerator = new StringQueryExpression(other.fileNameGenerator);
+        this.fileNameGenerator = new StringQueryExpression(other.fileNameGenerator.getExpression());
         this.makeFilesystemCompatible = other.makeFilesystemCompatible;
         this.forceName = other.forceName;
     }

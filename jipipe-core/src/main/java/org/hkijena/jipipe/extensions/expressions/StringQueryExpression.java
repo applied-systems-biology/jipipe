@@ -38,7 +38,7 @@ public class StringQueryExpression extends DefaultExpressionParameter implements
         super(expression);
     }
 
-    public StringQueryExpression(ExpressionParameter other) {
+    public StringQueryExpression(StringQueryExpression other) {
         super(other);
     }
 
