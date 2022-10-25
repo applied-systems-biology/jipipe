@@ -370,13 +370,8 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         statusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
 
         // Virtual control
-        JToggleButton virtualControlToggle = virtualDataControl.createToggleButton();
-        UIUtils.makeFlatH25(virtualControlToggle);
-        virtualControlToggle.setBorder(BorderFactory.createEmptyBorder(0, 3, 0, 3));
-
-        statusBar.add(virtualControlToggle);
         JButton optionsButton = virtualDataControl.createOptionsButton();
-        UIUtils.makeFlat25x25(optionsButton);
+        UIUtils.makeFlatH25(optionsButton);
         statusBar.add(optionsButton);
         statusBar.add(Box.createHorizontalStrut(4));
         statusBar.add(new MemoryStatusUI());

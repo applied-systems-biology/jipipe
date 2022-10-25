@@ -39,30 +39,12 @@ public class VirtualDataControl extends JIPipeProjectWorkbenchPanel {
         getProject().getGraph().getEventBus().register(this);
     }
 
-    public JToggleButton createToggleButton() {
-        JToggleButton button = new JToggleButton("Reduce memory", UIUtils.getIconFromResources("actions/rabbitvcs-drive.png"));
-        button.setSelected(virtualDataSettings.isVirtualMode());
-        button.setToolTipText("Enable/disable virtual mode. If enabled, any output indicated by the HDD icon is stored on the hard drive to reduce memory consumption. Increases the run time significantly.");
-        button.addActionListener(e -> {
-            if (button.isSelected() != virtualDataSettings.isVirtualMode()) {
-                virtualDataSettings.setVirtualMode(button.isSelected());
-                virtualDataSettings.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(virtualDataSettings, "virtual-mode"));
-                if (virtualDataSettings.isVirtualMode()) {
-                    checkForCacheToVirtual();
-                } else {
-                    checkForCacheToNonVirtual();
-                }
-            }
-        });
-        return button;
-    }
-
     public JButton createOptionsButton() {
-        JButton button = new JButton(UIUtils.getIconFromResources("actions/configure.png"));
+        JButton button = new JButton("Memory", UIUtils.getIconFromResources("devices/media-memory.png"));
         JPopupMenu menu = new JPopupMenu();
         UIUtils.addReloadablePopupMenuToComponent(button, menu, () -> {
             menu.removeAll();
-            JMenuItem gcItem = new JMenuItem("Clean memory", UIUtils.getIconFromResources("devices/media-memory.png"));
+            JMenuItem gcItem = new JMenuItem("Clean memory", UIUtils.getIconFromResources("actions/clear-brush.png"));
             gcItem.setToolTipText("Runs the garbage collector (GC) that attempts to clean unused memory. Please note that this will shortly freeze the application.");
             gcItem.addActionListener(e -> {
                 System.gc();
@@ -78,6 +60,21 @@ public class VirtualDataControl extends JIPipeProjectWorkbenchPanel {
             cacheToNonVirtualItem.setToolTipText("Moves all cached data of this project to system memory");
             cacheToNonVirtualItem.addActionListener(e -> moveCacheToNonVirtual());
             menu.add(cacheToNonVirtualItem);
+            menu.addSeparator();
+            JCheckBoxMenuItem reduceMemoryModeButton = new JCheckBoxMenuItem("Reduce memory (store unused data to HDD)");
+            reduceMemoryModeButton.setToolTipText("Enable/disable virtual mode. If enabled, any output indicated by the HDD icon is stored on the hard drive to reduce memory consumption. Increases the run time significantly.");
+            reduceMemoryModeButton.addActionListener(e -> {
+                if (reduceMemoryModeButton.isSelected() != virtualDataSettings.isVirtualMode()) {
+                    virtualDataSettings.setVirtualMode(reduceMemoryModeButton.isSelected());
+                    virtualDataSettings.getEventBus().post(new JIPipeParameterCollection.ParameterChangedEvent(virtualDataSettings, "virtual-mode"));
+                    if (virtualDataSettings.isVirtualMode()) {
+                        checkForCacheToVirtual();
+                    } else {
+                        checkForCacheToNonVirtual();
+                    }
+                }
+            });
+            menu.add(reduceMemoryModeButton);
         });
         return button;
     }

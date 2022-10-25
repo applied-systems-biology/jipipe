@@ -42,7 +42,6 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
     private JButton assignButton;
     private JLabel nameLabel;
     private JLabel noSaveLabel;
-    private JLabel virtualLabel;
     private JIPipeDataSlotCacheManagerUI cacheManagerUI;
 
     private String cachedGridSizeDisplayName;
@@ -87,13 +86,13 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
                     noSaveLabel.setVisible(false);
                 }
             }
-            if (virtualLabel != null) {
-                if (getSlot().getNode() instanceof JIPipeAlgorithm) {
-                    virtualLabel.setVisible(getSlot().isNewDataVirtual());
-                } else {
-                    virtualLabel.setVisible(false);
-                }
-            }
+//            if (virtualLabel != null) {
+//                if (getSlot().getNode() instanceof JIPipeAlgorithm) {
+//                    virtualLabel.setVisible(getSlot().isNewDataVirtual());
+//                } else {
+//                    virtualLabel.setVisible(false);
+//                }
+//            }
         }
     }
 
@@ -144,12 +143,12 @@ public class JIPipeHorizontalDataSlotUI extends JIPipeDataSlotUI {
 
         if (getSlot().isOutput() && getSlot().getNode() instanceof JIPipeAlgorithm) {
 
-            virtualLabel = new ZoomLabel("", new ZoomIcon(UIUtils.getIconFromResources("actions/rabbitvcs-drive.png"), getGraphUI()), getGraphUI());
-            virtualLabel.setToolTipText("Data is stored on hard drive when not in use (reduced memory mode). Enable 'Reduce memory' at the bottom of the window for this to take effect.");
-            virtualLabel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-            virtualLabel.setMaximumSize(new Dimension(16, 16));
-            UIUtils.redirectDragEvents(virtualLabel, getGraphUI());
-            bottomPanel.add(virtualLabel);
+//            virtualLabel = new ZoomLabel("", new ZoomIcon(UIUtils.getIconFromResources("actions/rabbitvcs-drive.png"), getGraphUI()), getGraphUI());
+//            virtualLabel.setToolTipText("Data is stored on hard drive when not in use (reduced memory mode). Enable 'Reduce memory' at the bottom of the window for this to take effect.");
+//            virtualLabel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+//            virtualLabel.setMaximumSize(new Dimension(16, 16));
+//            UIUtils.redirectDragEvents(virtualLabel, getGraphUI());
+//            bottomPanel.add(virtualLabel);
 
             noSaveLabel = new ZoomLabel("", new ZoomIcon(UIUtils.getIconFromResources("actions/no-save.png"), getGraphUI()), getGraphUI());
             noSaveLabel.setToolTipText("Data is not saved to hard drive during full run");
