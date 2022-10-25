@@ -645,6 +645,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         if (extensionSettings.isValidateNodeTypes()) {
             validateNodeTypes(issues);
         }
+        validateParameterTypes(issues);
 
         // Create dependency graph
         extensionRegistry.getDependencyGraph();
@@ -788,6 +789,28 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         } catch (Throwable e) {
             e.printStackTrace();
             progressInfo.log("Error while loading node examples from " + examplesDir + ": " + e);
+        }
+    }
+
+    private void validateParameterTypes(JIPipeRegistryIssues issues) {
+        for (Map.Entry<String, JIPipeParameterTypeInfo> entry : parameterTypeRegistry.getRegisteredParameters().entrySet()) {
+            try {
+                entry.getValue().newInstance();
+            }
+            catch (Throwable t) {
+                logService.warn("Parameter type '" + entry.getKey() + "' cannot be initialized.");
+                issues.getErroneousParameterTypes().add(entry.getValue());
+                t.printStackTrace();
+            }
+            try {
+                Object o = entry.getValue().newInstance();
+                entry.getValue().duplicate(o);
+            }
+            catch (Throwable t) {
+                logService.warn("Parameter type '" + entry.getKey() + "' cannot be duplicated.");
+                issues.getErroneousParameterTypes().add(entry.getValue());
+                t.printStackTrace();
+            }
         }
     }
 

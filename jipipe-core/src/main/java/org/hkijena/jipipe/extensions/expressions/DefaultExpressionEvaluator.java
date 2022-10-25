@@ -226,6 +226,10 @@ public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     }
 
     public static String unescapeString(String escapedString) {
+        escapedString = escapedString.trim();
+        if(!escapedString.startsWith("\"")) {
+            escapedString = "\"" + escapedString + "\"";
+        }
         return org.hkijena.jipipe.utils.StringUtils.nullToEmpty(DefaultExpressionParameter.getEvaluatorInstance().evaluate(escapedString, new ExpressionVariables()));
     }
 

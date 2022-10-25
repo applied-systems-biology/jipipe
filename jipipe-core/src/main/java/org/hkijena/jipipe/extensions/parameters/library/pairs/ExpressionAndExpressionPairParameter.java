@@ -36,8 +36,10 @@ public class ExpressionAndExpressionPairParameter extends PairParameter<DefaultE
      */
     public ExpressionAndExpressionPairParameter(ExpressionAndExpressionPairParameter other) {
         super(other);
-        this.setKey(new DefaultExpressionParameter(other.getKey()));
-        this.setValue(new DefaultExpressionParameter(other.getValue()));
+        if(other.getKey() != null)
+            this.setKey(new DefaultExpressionParameter(other.getKey()));
+        if(other.getValue() != null)
+            this.setValue(new DefaultExpressionParameter(other.getValue()));
     }
 
     /**

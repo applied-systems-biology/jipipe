@@ -65,14 +65,14 @@ public class ParameterTable implements TableModel {
         }
         for (List<Object> row : other.rows) {
             int columnIndex = 0;
-            JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().
-                    getInfoByFieldClass(columns.get(columnIndex).fieldClass);
             List<Object> thisRow = new ArrayList<>();
             for (Object o : row) {
+                JIPipeParameterTypeInfo info = JIPipe.getParameterTypes().
+                        getInfoByFieldClass(columns.get(columnIndex).fieldClass);
                 thisRow.add(info.duplicate(o));
+                ++columnIndex;
             }
             this.rows.add(thisRow);
-            ++columnIndex;
         }
     }
 

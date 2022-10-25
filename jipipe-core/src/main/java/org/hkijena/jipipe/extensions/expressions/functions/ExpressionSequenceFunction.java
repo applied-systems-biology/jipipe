@@ -1,10 +1,7 @@
 package org.hkijena.jipipe.extensions.expressions.functions;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.ParameterInfo;
+import org.hkijena.jipipe.extensions.expressions.*;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.util.*;
@@ -28,7 +25,7 @@ public class ExpressionSequenceFunction extends ExpressionFunction {
 
     @Override
     public Object evaluate(List<Object> parameters, ExpressionVariables variables) {
-        String expression = StringUtils.nullToEmpty(parameters.get(0));
+        String expression = DefaultExpressionEvaluator.unescapeString(StringUtils.nullToEmpty(parameters.get(0)));
         Collection<?> indices;
         if (parameters.get(1) instanceof Collection) {
             indices = (Collection<?>) parameters.get(1);

@@ -51,7 +51,7 @@ public class EvaluateUserFunction extends ExpressionFunction {
         }
 
         String functionExpression = (String) variables.get("+function." + parameters.get(0));
-        functionExpression = DefaultExpressionEvaluator.unescapeString("\"" + functionExpression + "\""); // The function is still escaped as string
+        functionExpression = DefaultExpressionEvaluator.unescapeString(functionExpression); // The function is still escaped as string
 
         return DefaultExpressionParameter.getEvaluatorInstance().evaluate(functionExpression, localVariables);
     }
