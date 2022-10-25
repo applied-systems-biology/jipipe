@@ -268,9 +268,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @return Copy
      */
     protected JIPipeSlotConfiguration copySlotConfiguration(JIPipeGraphNode other) {
-        JIPipeDefaultMutableSlotConfiguration configuration = JIPipeDefaultMutableSlotConfiguration.builder().build();
-        configuration.setTo(other.slotConfiguration);
-        return configuration;
+        return other.slotConfiguration.duplicate();
     }
 
     /**

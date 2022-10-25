@@ -15,6 +15,7 @@ package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.data.JIPipeSlotType;
 
 /**
@@ -25,6 +26,13 @@ public class JIPipeIOSlotConfiguration extends JIPipeDefaultMutableSlotConfigura
      * Creates a new instance
      */
     public JIPipeIOSlotConfiguration() {
+    }
+
+    @Override
+    public JIPipeSlotConfiguration duplicate() {
+        JIPipeIOSlotConfiguration result = new JIPipeIOSlotConfiguration();
+        result.setTo(this);
+        return result;
     }
 
     @Override
