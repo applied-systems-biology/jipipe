@@ -267,6 +267,7 @@ public class ExpressionExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerExpressionFunction(new CumulativeTransformArrayFunction());
         registerExpressionFunction(new TransformArrayFunction());
         registerExpressionFunction(new DoubleToStringFunction());
+        registerExpressionFunction(new StringFormatFunction());
     }
 
     @Override
