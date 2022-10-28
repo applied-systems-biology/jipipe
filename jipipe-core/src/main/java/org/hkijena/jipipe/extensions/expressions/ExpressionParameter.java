@@ -107,7 +107,12 @@ public abstract class ExpressionParameter {
      */
     public double evaluateToDouble(ExpressionVariables variables) {
         Object result = evaluate(variables);
-        return ((Number) result).doubleValue();
+        if(result instanceof Number) {
+            return ((Number) result).doubleValue();
+        }
+        else {
+            return StringUtils.parseDouble(StringUtils.nullToEmpty(result));
+        }
     }
 
     /**
@@ -118,7 +123,12 @@ public abstract class ExpressionParameter {
      */
     public float evaluateToFloat(ExpressionVariables variables) {
         Object result = evaluate(variables);
-        return ((Number) result).floatValue();
+        if(result instanceof Number) {
+            return ((Number) result).floatValue();
+        }
+        else {
+            return StringUtils.parseFloat(StringUtils.nullToEmpty(result));
+        }
     }
 
     /**

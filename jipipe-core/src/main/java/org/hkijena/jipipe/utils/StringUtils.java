@@ -15,6 +15,7 @@ package org.hkijena.jipipe.utils;
 
 import com.google.common.html.HtmlEscapers;
 import org.apache.commons.lang.WordUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 
 import java.net.URL;
@@ -466,5 +467,55 @@ public class StringUtils {
             }
         }
         return comparisonResult;
+    }
+
+    public static double parseDouble(String str) {
+        str = StringUtils.nullToEmpty(str);
+        str = str.replace(',', '.').replace(" ", "");
+        double value;
+        if (NumberUtils.isCreatable(str)) {
+            value = NumberUtils.createDouble(str);
+        }
+        else if(StringUtils.isNullOrEmpty(str)) {
+            value = 0d;
+        }
+        else if(str.toLowerCase().startsWith("-inf")) {
+            value = Double.NEGATIVE_INFINITY;
+        }
+        else if(str.toLowerCase().startsWith("inf")) {
+            value = Double.POSITIVE_INFINITY;
+        }
+        else if(str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
+            value = Double.NaN;
+        }
+        else {
+           throw new NumberFormatException("String is not a number: " + str);
+        }
+        return value;
+    }
+
+    public static float parseFloat(String str) {
+        str = StringUtils.nullToEmpty(str);
+        str = str.replace(',', '.').replace(" ", "");
+        float value;
+        if (NumberUtils.isCreatable(str)) {
+            value = NumberUtils.createFloat(str);
+        }
+        else if(StringUtils.isNullOrEmpty(str)) {
+            value = 0f;
+        }
+        else if(str.toLowerCase().startsWith("-inf")) {
+            value = Float.NEGATIVE_INFINITY;
+        }
+        else if(str.toLowerCase().startsWith("inf")) {
+            value = Float.POSITIVE_INFINITY;
+        }
+        else if(str.equalsIgnoreCase("na") || str.equalsIgnoreCase("nan")) {
+            value = Float.NaN;
+        }
+        else {
+            throw new NumberFormatException("String is not a number: " + str);
+        }
+        return value;
     }
 }

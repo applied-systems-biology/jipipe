@@ -13,7 +13,6 @@
 
 package org.hkijena.jipipe.extensions.expressions.functions.convert;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.extensions.expressions.ExpressionFunction;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
@@ -24,11 +23,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Convert to number", description = "Converts the input to a number. Strings must be formatted correctly. Boolean values are converted to TRUE = 1 and FALSE = 0")
-public class ToNumberFunction extends ExpressionFunction {
+@JIPipeDocumentation(name = "Convert to number (alternative)", description = "Converts the input to a number. Strings must be formatted correctly. Boolean values are converted to TRUE = 1 and FALSE = 0. Behaves exactly as TO_NUMBER.")
+public class ToNumber2Function extends ExpressionFunction {
 
-    public ToNumberFunction() {
-        super("TO_NUMBER", 1);
+    public ToNumber2Function() {
+        super("NUM", 1);
     }
 
     @Override
