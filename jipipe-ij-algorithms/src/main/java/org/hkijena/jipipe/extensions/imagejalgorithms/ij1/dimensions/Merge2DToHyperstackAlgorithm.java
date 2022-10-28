@@ -129,6 +129,7 @@ public class Merge2DToHyperstackAlgorithm extends JIPipeMergingAlgorithm {
         }
 
         ImagePlus outputImage = new ImagePlus("Merged", outputImageStack);
+        outputImage.setDimensions(cRemapping.size(), zRemapping.size(), tRemapping.size());
         outputImage.copyScale(referenceImage.getImage());
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(outputImage), progressInfo);
