@@ -84,8 +84,7 @@ public abstract class ExpressionParameter {
      * @return the result
      */
     public double evaluateToNumber(ExpressionVariables variables) {
-        Object result = evaluate(variables);
-        return ((Number) result).doubleValue();
+        return evaluateToDouble(variables);
     }
 
     /**
@@ -95,8 +94,7 @@ public abstract class ExpressionParameter {
      * @return the result
      */
     public int evaluateToInteger(ExpressionVariables variables) {
-        Object result = evaluate(variables);
-        return ((Number) result).intValue();
+        return (int)evaluateToDouble(variables);
     }
 
     /**

@@ -41,10 +41,11 @@ import java.util.Map;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Extract ROI statistics", description = "Generates a results table containing ROI statistics.")
+@JIPipeDocumentation(name = "Extract ROI statistics", description = "Generates a results table containing ROI statistics. If a reference image is provided, the statistics are calculated for the reference image. Otherwise, " +
+        "an empty reference image is automatically generated.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Measure")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true, description = "Optional image that is the basis for the measurements. If not set, an empty image is generated.")
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Measure (ROI)")
 public class RoiStatisticsAlgorithm extends JIPipeIteratingAlgorithm {

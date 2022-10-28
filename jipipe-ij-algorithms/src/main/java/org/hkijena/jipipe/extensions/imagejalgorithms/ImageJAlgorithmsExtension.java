@@ -1270,6 +1270,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-dimensions-stack-combine", StackCombinerAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-dimensions-inpput2montage", InputImagesToMontage.class, UIUtils.getIconURLFromResources("actions/view-grid.png"));
         registerNodeType("ij1-dimensions-reslice", ResliceAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-cuboid.png"));
+        registerNodeType("ij1-dimensions-merge-2d-to-hyperstack", Merge2DToHyperstackAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
 
         registerEnumParameterType("ij1-dimensions-zproject:method", ZProjectorAlgorithm.Method.class,
                 "Method", "Available methods");
