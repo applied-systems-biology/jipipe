@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.threshold;
 
+import com.google.common.eventbus.Subscribe;
 import ij.ImagePlus;
 import ij.ImageStack;
 import ij.plugin.ImageCalculator;
@@ -25,9 +26,12 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
+import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterTree;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.contrast.CLAHEContrastEnhancer;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
@@ -43,12 +47,8 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeDocumentation(name = "Internal gradient segmentation 2D", description = "Segments objects by finding the internal gradients. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
-
-
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
-
-
+@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double gaussSigma = 3;
@@ -59,18 +59,14 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     private boolean applySecondCLAHE = true;
     private boolean applyGaussian = true;
 
-    private AutoThreshold2DAlgorithm autoThresholding;
-    private CLAHEContrastEnhancer contrastEnhancer;
+    private final AutoThreshold2DAlgorithm autoThresholding;
+    private final CLAHEContrastEnhancer contrastEnhancer;
 
     /**
      * @param info the algorithm info
      */
     public InternalGradientSegmentation2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale8UData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
         this.contrastEnhancer = (CLAHEContrastEnhancer) JIPipe.getNodes().getInfoById("ij1-contrast-clahe").newInstance();
         this.autoThresholding = (AutoThreshold2DAlgorithm) JIPipe.getNodes().getInfoById("ij1-threshold-auto2d").newInstance();
     }
@@ -271,6 +267,14 @@ public class InternalGradientSegmentation2DAlgorithm extends JIPipeSimpleIterati
     @JIPipeParameter("apply-gaussian")
     public void setApplyGaussian(boolean applyGaussian) {
         this.applyGaussian = applyGaussian;
+    }
+
+    @Override
+    public boolean isParameterUIVisible(JIPipeParameterTree tree, JIPipeParameterAccess access) {
+        if(access.getSource() == autoThresholding && "source-area".equals(access.getKey())) {
+            return false;
+        }
+        return super.isParameterUIVisible(tree, access);
     }
 
     @Override
