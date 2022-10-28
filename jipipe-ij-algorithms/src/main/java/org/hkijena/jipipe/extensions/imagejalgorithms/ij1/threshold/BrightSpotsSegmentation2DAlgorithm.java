@@ -41,7 +41,16 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  * Applies Bright spots segmentation
  */
 @JIPipeDocumentation(name = "Bright spots segmentation 2D", description = "Applies thresholding by applying a background subtraction, auto thresholding, and " +
-        "various morphological operations. If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+        "various morphological operations. If higher-dimensional data is provided, the filter is applied to each 2D slice.<br/>" +
+        "If you want to further customize all steps, create a group or set of nodes that apply the following operations:" +
+        "<ol>" +
+        "<li>Subtract background (rolling ball): default radius = 20</li>" +
+        "<li>Auto threshold 2D</li>" +
+        "<li>Morphological dilation</li>" +
+        "<li>Morphological hole filling</li>" +
+        "<li>Morphological erosion</li>" +
+        "<li>Optional: Gaussian blur</li>" +
+        "</ol>")
 @JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
 
 

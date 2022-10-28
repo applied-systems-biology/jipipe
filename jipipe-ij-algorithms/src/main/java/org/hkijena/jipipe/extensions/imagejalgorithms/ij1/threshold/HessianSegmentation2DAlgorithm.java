@@ -48,7 +48,14 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  * Segments using a Hessian
  */
 @JIPipeDocumentation(name = "Hessian segmentation 2D", description = "Segments by applying a Hessian and morphological postprocessing. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice.<br/>" +
+        "If you want to further customize all steps, create a group or set of nodes that apply the following operations:" +
+        "<ol>" +
+        "<li>Calculate Hessian</li>" +
+        "<li>Morphological Internal Gradient</li>" +
+        "<li>Auto Threshold 2D</li>" +
+        "<li>Despeckle</li>" +
+        "</ol>")
 @JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)

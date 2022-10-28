@@ -45,7 +45,17 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
  * Internal gradient segmenter
  */
 @JIPipeDocumentation(name = "Internal gradient segmentation 2D", description = "Segments objects by finding the internal gradients. " +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice.<br/>" +
+        "If you want to further customize all steps, create a group or set of nodes that apply the following operations:" +
+        "<ol>" +
+        "<li>Optional: First CLAHE</li>" +
+        "<li>Optional: Gaussian filter</li>" +
+        "<li>Optional: Second CLAHE</li>" +
+        "<li>Auto Threshold 2D</li>" +
+        "<li>Morphological dilation</li>" +
+        "<li>Morphological hole filling</li>" +
+        "<li>Morphological erosion</li>" +
+        "</ol>")
 @JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
