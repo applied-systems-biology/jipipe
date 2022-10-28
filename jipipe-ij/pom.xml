@@ -4,11 +4,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.74.1-SNAPSHOT</version>
+        <version>1.75.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>jipipe-ij</artifactId>
-    <version>1.74.1-SNAPSHOT</version>
+    <version>1.75.0-SNAPSHOT</version>
 
     <name>jipipe-ij</name>
     <description>JIPipe ImageJ data types</description>
