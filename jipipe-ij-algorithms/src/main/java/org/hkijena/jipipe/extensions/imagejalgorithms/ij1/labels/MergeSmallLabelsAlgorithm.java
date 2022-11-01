@@ -135,15 +135,19 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
                     }
 
                     // Update mapping and counts
-                    for (int j = 0; j <= i; j++) {
-                        byte k = keys[j];
-                        if (remapping.get(k) == key) {
-                            remapping.put(k, targetKey);
-                            counts.adjustValue(targetKey, counts.get(k));
-                            counts.put(k, 0);
-                        }
-                    }
+                    remapping.put(key, targetKey);
+                    counts.adjustValue(targetKey, counts.get(key));
+                    counts.put(key, 0);
                 }
+            }
+
+            // Resolve mapping
+            for (byte sourceKey : keys) {
+                byte key = sourceKey;
+                while (remapping.get(key) != key) {
+                    key = remapping.get(key);
+                }
+                remapping.put(sourceKey, key);
             }
 
             // Apply remapping
@@ -220,15 +224,19 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
                     }
 
                     // Update mapping and counts
-                    for (int j = 0; j <= i; j++) {
-                        short k = keys[j];
-                        if (remapping.get(k) == key) {
-                            remapping.put(k, targetKey);
-                            counts.adjustValue(targetKey, counts.get(k));
-                            counts.put(k, 0);
-                        }
-                    }
+                    remapping.put(key, targetKey);
+                    counts.adjustValue(targetKey, counts.get(key));
+                    counts.put(key, 0);
                 }
+            }
+
+            // Resolve mapping
+            for (short sourceKey : keys) {
+                short key = sourceKey;
+                while (remapping.get(key) != key) {
+                    key = remapping.get(key);
+                }
+                remapping.put(sourceKey, key);
             }
 
             // Apply remapping
@@ -307,15 +315,19 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
                     }
 
                     // Update mapping and counts
-                    for (int j = 0; j <= i; j++) {
-                        float k = keys[j];
-                        if (remapping.get(k) == key) {
-                            remapping.put(k, targetKey);
-                            counts.adjustValue(targetKey, counts.get(k));
-                            counts.put(k, 0);
-                        }
-                    }
+                    remapping.put(key, targetKey);
+                    counts.adjustValue(targetKey, counts.get(key));
+                    counts.put(key, 0);
                 }
+            }
+
+            // Resolve mapping
+            for (float sourceKey : keys) {
+                float key = sourceKey;
+                while (remapping.get(key) != key) {
+                    key = remapping.get(key);
+                }
+                remapping.put(sourceKey, key);
             }
 
             // Apply remapping
