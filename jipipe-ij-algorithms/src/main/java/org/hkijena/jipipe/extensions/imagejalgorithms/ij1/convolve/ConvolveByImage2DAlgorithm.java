@@ -89,12 +89,15 @@ public class ConvolveByImage2DAlgorithm extends JIPipeIteratingAlgorithm {
         ImageJUtils.forEachSlice(img, imp -> {
             if(imp instanceof ColorProcessor) {
                 // Split into channels and convolve individually
-                ImagePlus channels = ImageJUtils.rgbToChannels(new ImagePlus("dummy", imp));
-                ImageJUtils.forEachSlice(channels, channelIp -> {
-                    convolver.convolve(channelIp, kernel, kernelWidth, kernelHeight);
-                }, progressInfo.resolve("Channel"));
-                ImagePlus mergedChannels = ImageJUtils.channelsToRGB(channels);
-                imp.setPixels(mergedChannels.getProcessor().getPixels()); // Copy pixels
+                FloatProcessor c0 = imp.toFloat(0, null);
+                FloatProcessor c1 = imp.toFloat(1, null);
+                FloatProcessor c2 = imp.toFloat(2, null);
+                convolver.convolve(c0, kernel, kernelWidth, kernelHeight);
+                convolver.convolve(c1, kernel, kernelWidth, kernelHeight);
+                convolver.convolve(c2, kernel, kernelWidth, kernelHeight);
+                imp.setPixels(0, c0);
+                imp.setPixels(1, c1);
+                imp.setPixels(2, c2);
             }
             else {
                 // Convolve directly
