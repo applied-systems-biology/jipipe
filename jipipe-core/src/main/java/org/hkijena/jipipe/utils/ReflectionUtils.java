@@ -266,10 +266,7 @@ public class ReflectionUtils {
      */
     public static <E extends Enum> E[] getEnumValues(Class<?> enumClass)
             throws NoSuchFieldException, IllegalAccessException {
-        Field f = enumClass.getDeclaredField("$VALUES");
-        f.setAccessible(true);
-        Object o = f.get(null);
-        return (E[]) o;
+        return (E[]) enumClass.getEnumConstants();
     }
 
     /**

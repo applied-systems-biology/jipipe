@@ -21,10 +21,10 @@ import org.hkijena.jipipe.utils.ReflectionUtils;
  */
 public class EnumParameterTypeInfo implements JIPipeParameterTypeInfo {
 
-    private String id;
-    private Class<? extends Enum<?>> fieldClass;
-    private String name;
-    private String description;
+    private final String id;
+    private final Class<? extends Enum<?>> fieldClass;
+    private final String name;
+    private final String description;
 
     /**
      * @param id          the id
