@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve;
 
 import ij.ImagePlus;
 import ij.plugin.filter.Convolver;
+import ij.process.ColorProcessor;
 import ij.process.FloatProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -81,9 +82,25 @@ public class ConvolveByImage2DAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
+        int kernelWidth = imgKernel.getWidth();
+        int kernelHeight = imgKernel.getHeight();
 
         convolver.setNormalize(normalize);
-        ImageJUtils.forEachSlice(img, imp -> convolver.convolve(imp, kernel, imgKernel.getWidth(), imgKernel.getHeight()), progressInfo);
+        ImageJUtils.forEachSlice(img, imp -> {
+            if(imp instanceof ColorProcessor) {
+                // Split into channels and convolve individually
+                ImagePlus channels = ImageJUtils.rgbToChannels(new ImagePlus("dummy", imp));
+                ImageJUtils.forEachSlice(channels, channelIp -> {
+                    convolver.convolve(channelIp, kernel, kernelWidth, kernelHeight);
+                }, progressInfo.resolve("Channel"));
+                ImagePlus mergedChannels = ImageJUtils.channelsToRGB(channels);
+                imp.setPixels(mergedChannels.getProcessor().getPixels()); // Copy pixels
+            }
+            else {
+                // Convolve directly
+                convolver.convolve(imp, kernel, kernelWidth, kernelHeight);
+            }
+        }, progressInfo);
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }

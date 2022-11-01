@@ -15,6 +15,7 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve;
 
 import ij.ImagePlus;
 import ij.plugin.filter.Convolver;
+import ij.process.ColorProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -80,14 +81,30 @@ public class ConvolveByParameter2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         ImagePlus img = inputData.getDuplicateImage();
 
         Convolver convolver = new Convolver();
-        float[] kernel = new float[matrix.getRowCount() * matrix.getColumnCount()];
-        for (int row = 0; row < matrix.getRowCount(); row++) {
-            for (int col = 0; col < matrix.getColumnCount(); col++) {
-                kernel[row * matrix.getColumnCount() + col] = (float) matrix.getValueAt(row, col);
+        int kernelWidth = matrix.getColumnCount();
+        int kernelHeight = matrix.getRowCount();
+        float[] kernel = new float[kernelHeight * kernelWidth];
+        for (int row = 0; row < kernelHeight; row++) {
+            for (int col = 0; col < kernelWidth; col++) {
+                kernel[row * kernelWidth + col] = (float) matrix.getValueAt(row, col);
             }
         }
         convolver.setNormalize(normalize);
-        ImageJUtils.forEachSlice(img, imp -> convolver.convolve(imp, kernel, matrix.getColumnCount(), matrix.getRowCount()), progressInfo);
+        ImageJUtils.forEachSlice(img, imp -> {
+            if(imp instanceof ColorProcessor) {
+                // Split into channels and convolve individually
+                ImagePlus channels = ImageJUtils.rgbToChannels(new ImagePlus("dummy", imp));
+                ImageJUtils.forEachSlice(channels, channelIp -> {
+                    convolver.convolve(channelIp, kernel, kernelWidth, kernelHeight);
+                }, progressInfo.resolve("Channel"));
+                ImagePlus mergedChannels = ImageJUtils.channelsToRGB(channels);
+                imp.setPixels(mergedChannels.getProcessor().getPixels()); // Copy pixels
+            }
+            else {
+                // Convolve directly
+                convolver.convolve(imp, kernel, kernelWidth, kernelHeight);
+            }
+        }, progressInfo);
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
     }
