@@ -4,11 +4,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.75.0-SNAPSHOT</version>
+        <version>1.75.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>jipipe-omnipose</artifactId>
-    <version>1.75.0-SNAPSHOT</version>
+    <version>1.75.1-SNAPSHOT</version>
 
     <name>jipipe-omnipose</name>
     <description>JIPipe Omnipose Integration</description>
