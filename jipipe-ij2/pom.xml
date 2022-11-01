@@ -4,11 +4,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.75.1-SNAPSHOT</version>
+        <version>1.75.1</version>
     </parent>
 
     <artifactId>jipipe-ij2</artifactId>
-    <version>1.75.1-SNAPSHOT</version>
+    <version>1.75.1</version>
 
     <name>jipipe-ij2</name>
     <description>JIPipe ImageJ2 Algorithms</description>
@@ -57,7 +57,7 @@
     <scm>
         <connection>scm:git:https://github.com/applied-systems-biology/jipipe.git</connection>
         <developerConnection>scm:git:https://github.com/applied-systems-biology/jipipe.git</developerConnection>
-        <tag>HEAD</tag>
+        <tag>pom-jipipe-1.75.1</tag>
         <url>https://github.com/applied-systems-biology/jipipe</url>
     </scm>
     <issueManagement>
