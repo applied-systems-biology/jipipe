@@ -7,12 +7,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language><atom:link href="https://www.jipipe.org/download/changelog/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Version 1.74.0 (current version)</title>
+      <title>Version 1.75.0 (current version)</title>
+      <link>https://www.jipipe.org/download/changelog/1.75.0/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/download/changelog/1.75.0/</guid>
+      <description>Table Of Contents 1.75.1 Image processing Data processing Expressions User interface Bugfixes and small improvements Known issues 1.75.1 fixed Critical bug where enum parameters could not be initialized Image processing Various nodes that generate statistics on labels
+new Node &amp;ldquo;Merge 2D slices into hyperstack&amp;rdquo; (inverse operation of &amp;ldquo;Split into 2D slices&amp;rdquo;). Intended for more advanced filtering of hyperstack slices. new Node &amp;ldquo;Merge small labels&amp;rdquo; (merges labels with a low number of pixels into a neighboring label index) new Node &amp;ldquo;Key/Value Histogram 5D&amp;rdquo; new Node &amp;ldquo;Key/Value threshold statistics 5D&amp;rdquo; new Node &amp;ldquo;Key/Value statistics 5D (fast averages)&amp;rdquo; new Node &amp;ldquo;Key/Value threshold statistics 5D (fast averages)&amp;rdquo; improved Convolve operators now have normalization parameter improved Convolve operators now support RGB images (same behavior as ImageJ) Data processing new Node &amp;ldquo;Filter by annotation&amp;rdquo; (more compact version of &amp;ldquo;Split &amp;amp; filter by annotation&amp;rdquo; that applies the same operation) Expressions new New function STRING_FORMAT (C-style string formatting) new New function NUM (Alternative to TO_NUMBER) improved Expressions that return numbers: valid numeric strings are automatically converted to numbers (before there was an exception if not a Number type is returned) fixed Escaping of expressions did not work as expected (errors if sub-strings contained spaces) User interface improved New &amp;ldquo;Memory&amp;rdquo; menu in the status bar that contains all memory-related operations (before was only a gear icon) improved &amp;ldquo;Reduce memory&amp;rdquo; moved into the &amp;ldquo;Memory&amp;rdquo; menu fixed Number editor behaved erratically in non-english locales (now uses the advanced number parser capable of parsing NA and infinity) Bugfixes and small improvements Please refer to the commits in the JIPipe GitHub repository to find a list of all bugfixes and improvements.</description>
+    </item>
+    
+    <item>
+      <title>Version 1.74.0</title>
       <link>https://www.jipipe.org/download/changelog/1.74.0/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/download/changelog/1.74.0/</guid>
-      <description>Table Of Contents  Plugin manager Environment EasyInstaller TrackMate integration (Beta) Cellpose integration Omnipose integration (Beta) Image processing  ROI processing Coloc2 integration   Table processing Plotting General data processing Parameters Expressions Node examples User interface  Project management Parameters Graph editor Compartment editor Cache browser / Results viewer ImageJ alias menu Image viewer  ROI manager Measurement tool / mask drawer / ROI drawer   Plot editor Table editor Dependency management Node templates   Data management Data API Bugfixes and small improvements Known issues    Plugin manager In older JIPipe versions, all extensions are automatically loaded during the JIPipe startup.</description>
+      <description>Table Of Contents Plugin manager Environment EasyInstaller TrackMate integration (Beta) Cellpose integration Omnipose integration (Beta) Image processing ROI processing Coloc2 integration Table processing Plotting General data processing Parameters Expressions Node examples User interface Project management Parameters Graph editor Compartment editor Cache browser / Results viewer ImageJ alias menu Image viewer ROI manager Measurement tool / mask drawer / ROI drawer Plot editor Table editor Dependency management Node templates Data management Data API Bugfixes and small improvements Known issues Plugin manager In older JIPipe versions, all extensions are automatically loaded during the JIPipe startup.</description>
     </item>
     
     <item>
@@ -21,8 +31,8 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/download/changelog/1.73.0/</guid>
-      <description>Table Of Contents  Trainable Weka Segmentation nodes  Example   Skeletons  Example   ROIs and labels    Trainable Weka Segmentation nodes JIPipe nodes and data types encapsulating the Trainable Weka Segmentation were added, making it possible to utilize these without the Macro node.
- new Data type “Weka model” (saves classifier, data, and metadata of the segmenter) new Node “Import Weka model” (allows to import existing models) new Node “Train Weka model from ROI (2D)” new Node “Train Weka model from ROI (3D)” new Node “Train Weka model from mask (2D)” new Node “Train Weka model from labels (2D)” new Node “Weka classifier 2D” new Node “Weka classifier 3D”  Example  Using the Weka segmentation nodes small size weka simple tutorial  A small example showcasing how to utilize the Trainable Weka Segmentation nodes.</description>
+      <description>Table Of Contents Trainable Weka Segmentation nodes Example Skeletons Example ROIs and labels Trainable Weka Segmentation nodes JIPipe nodes and data types encapsulating the Trainable Weka Segmentation were added, making it possible to utilize these without the Macro node.
+new Data type “Weka model” (saves classifier, data, and metadata of the segmenter) new Node “Import Weka model” (allows to import existing models) new Node “Train Weka model from ROI (2D)” new Node “Train Weka model from ROI (3D)” new Node “Train Weka model from mask (2D)” new Node “Train Weka model from labels (2D)” new Node “Weka classifier 2D” new Node “Weka classifier 3D” Example Using the Weka segmentation nodes small size weka simple tutorial A small example showcasing how to utilize the Trainable Weka Segmentation nodes.</description>
     </item>
     
     <item>
@@ -31,7 +41,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/download/changelog/1.72.x/</guid>
-      <description>Version 1.72.0  This is the first public release of JIPipe  Version 1.72.x  Mostly changes to make JIPipe compatible to SciJava Maven and cleanup new Node “Reduce &amp;amp; split hyperstack” (allows the slicing of Hyperstacks by indices; a more simple alternative to “Reduce &amp;amp; split hyperstack (Expression)”) new Node “Draw/modify ROIs” (interactive editing of ROI; it works but is currently incomplete and subject to change)  </description>
+      <description>Version 1.72.0 This is the first public release of JIPipe Version 1.72.x Mostly changes to make JIPipe compatible to SciJava Maven and cleanup new Node “Reduce &amp;amp; split hyperstack” (allows the slicing of Hyperstacks by indices; a more simple alternative to “Reduce &amp;amp; split hyperstack (Expression)”) new Node “Draw/modify ROIs” (interactive editing of ROI; it works but is currently incomplete and subject to change) </description>
     </item>
     
   </channel>

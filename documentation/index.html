@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-07T12:10:57 CEST">
+<meta name="revised" content="2022-11-01T17:46:50 CET">
 <title>Documentation :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
 <link href="../css/font-awesome.min.css" rel="stylesheet">
@@ -76,10 +76,17 @@
       <a href="../download/changelog/">Changelog</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.75.0/" class="dd-item">
+        <div>
+          <a href="../download/changelog/1.75.0/">
+            Version 1.75.0 (current version)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.74.0/" class="dd-item">
         <div>
           <a href="../download/changelog/1.74.0/">
-            Version 1.74.0 (current version)
+            Version 1.74.0
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -688,11 +695,10 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item parent active haschildren
+    <li data-nav-id="https://www.jipipe.org/documentation/" class="dd-item active haschildren
         ">
       <div>
-      <a href="../documentation/">Documentation</a>
-            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../documentation/">Documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
     <li data-nav-id="https://www.jipipe.org/documentation/basic-concepts/" class="dd-item haschildren
@@ -1218,26 +1224,7 @@
     <option value="/faq/" >
    Frequently asked questions</option>
     <option value="/documentation/"  selected>
-   Documentation</option> 
-    <option value="/documentation/basic-concepts/" >
-  - 
-   Basic concepts</option>
-    <option value="/documentation/create-pipelines/" >
-  - 
-   Creating pipelines</option>
-    <option value="/documentation/run-pipelines/" >
-  - 
-   Running pipelines</option>
-      <option value="/documentation/imagej-integration/" >- ImageJ integration</option>
-      <option value="/documentation/plugins/" >- Managing plugins</option>
-    <option value="/documentation/standard-library/" >
-  - 
-   Standard library</option>
-    <option value="/documentation/create-json-extensions/" >
-  - 
-   Extension builder</option>
-      <option value="/documentation/cli/" >- Command Line Interface</option>
-  
+   Documentation</option>
     <option value="/documentation-java-api/" >
    Java API documentation</option>
     <option value="/documentation-json-api/" >
@@ -1287,31 +1274,32 @@ run your pipeline and review results. You will also find guides how to connect J
 <p><span><li>
 <a href="../documentation/basic-concepts/" >Basic concepts</a></li></p>
 <p>This section explains some basic concepts that are helpful to understand if you want to use JIPipe.
- Visual programming
+Visual programming
 Explains the basics of visual programming.
-  Batch processing
-Explains basic concepts about how data is processed within JIPipe. We really recommend to take a look at this documentation.
-  </p>
+Batch processing
+Explains basic concepts about how data is processed within JIPipe. We really recommend to take a look at this documentation.</p>
 </span>
 <p><span><li>
 <a href="../documentation/create-pipelines/" >Creating pipelines</a></li></p>
 <p>This section explains the JIPipe user interface, how to create an analysis pipeline, and some concepts behind how analysis pipelines work.
- Pipeline editor
+Pipeline editor
 Explains the graph editor user interface, how to create a pipeline, and additional features like the algorithm finder tool.
-  Parameters
+Parameters
 Explains advanced parameter features.
-  Mathematical expressions
+Mathematical expressions
 Explains the expression parameter type language that is often used for filtering or generating numbers.
-  Graph compartments</p>
+Graph compartments
+Explains the concept of graph compartments that allow easy organization of the analysis pipeline into functional units.</p>
 </span>
 <p><span><li>
 <a href="../documentation/run-pipelines/" >Running pipelines</a></li></p>
 <p>This section contains documentation that explains how to run a pipeline and review the results. For example, you can run the whole workflow or make use of the cache feature to run single nodes.
- Running the whole pipeline
+Running the whole pipeline
 Explains the Quick Run feature that allows to test and compare different algorithm parameters without recalculating the whole pipeline.
-  Review results
+Review results
 Explains how to review results.
-  Use results in external software</p>
+Use results in external software
+JIPipe stores outputs in a standardized format that can be easily read with third-party software.</p>
 </span>
 <p><span><li>
 <a href="../documentation/imagej-integration/" >ImageJ integration</a></li></p>

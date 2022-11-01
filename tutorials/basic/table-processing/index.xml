@@ -96,7 +96,7 @@ open the Measurements cache results of the Basic blob finder (red arrow 1), doub
 Select the Apply expression per row node (red arrow 1), open the Parameters tab and apply the following changes:
 In parameter Expressions set the value of Expression to Mean / Area.
 Mean and Area reference the mean and area column values of the currently processed row. Always keep in mind that the Expression is applied per row.
- In parameter Expressions set the value of Column name to Density.</description>
+In parameter Expressions set the value of Column name to Density.</description>
     </item>
     
     <item>
@@ -129,7 +129,7 @@ If you want to write a custom integration function, use Apply expression to colu
       <guid>https://www.jipipe.org/tutorials/basic/table-processing/step12/</guid>
       <description>Select the Integrate table columns (red arrow 1) and edit the Processors parameters in the Parameters tab (red arrow 2):
 Set the Input column to the following value:
-&amp;quot;Density&amp;quot;  If you reference existing columns, always put the name in quotation marks. The function for selecting columns can be heavily customized, as it is expression-based an can under certain circumstances yield unexpected results if the name is typed in as is.</description>
+&amp;#34;Density&amp;#34; If you reference existing columns, always put the name in quotation marks. The function for selecting columns can be heavily customized, as it is expression-based an can under certain circumstances yield unexpected results if the name is typed in as is.</description>
     </item>
     
     <item>

@@ -22,7 +22,7 @@
       
       <guid>https://www.jipipe.org/tutorials/basic/comment-nodes/step4/</guid>
       <description>This image is from the standard ImageJ samples, described in ImageJ as follows:
-  This image is made from a Molecular Probes demo slide: Cells: bovine pulmonary arthery endothelial cells Blue: nucleus stained with DAPI Green: Tubulin stained with Bodipy FL goat anti-mouse IgG Red: F-Actin stained with Texas Red X-Phalloidin   We can add this information as a comment to the pipeline. Use the search bar (red arrow 1) to find the Comment node (red arrow 2)</description>
+This image is made from a Molecular Probes demo slide: Cells: bovine pulmonary arthery endothelial cells Blue: nucleus stained with DAPI Green: Tubulin stained with Bodipy FL goat anti-mouse IgG Red: F-Actin stained with Texas Red X-Phalloidin We can add this information as a comment to the pipeline. Use the search bar (red arrow 1) to find the Comment node (red arrow 2)</description>
     </item>
     
     <item>

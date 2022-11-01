@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-07T12:10:57 CEST">
+<meta name="revised" content="2022-11-01T17:46:51 CET">
 <title>Table processing :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -76,10 +76,17 @@
       <a href="../../../download/changelog/">Changelog</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.75.0/" class="dd-item">
+        <div>
+          <a href="../../../download/changelog/1.75.0/">
+            Version 1.75.0 (current version)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.74.0/" class="dd-item">
         <div>
           <a href="../../../download/changelog/1.74.0/">
-            Version 1.74.0 (current version)
+            Version 1.74.0
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -364,7 +371,7 @@
         <ul>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/tutorials/basic/table-processing/" class="dd-item parent active haschildren
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/table-processing/" class="dd-item active haschildren
         ">
       <div>
       <a href="../../../tutorials/basic/table-processing/">Table processing</a><i class="fa fa-circle-thin read-icon"></i>
@@ -1278,8 +1285,7 @@
    ROI processing</option>
     <option value="/tutorials/basic/table-processing/"  selected>
   -- 
-   Table processing</option> 
-  
+   Table processing</option>
     <option value="/tutorials/basic/annotating-data-with-measurements/" >
   -- 
    Annotating data with measurements</option>
@@ -1355,11 +1361,11 @@
     <div class="link-box">
     
     <div class="link">
-    <a href="../../../tutorials/basic/quantification-plotting/">👉 Related tutorial: Quantification and plotting</a>
-    <div class="link-description">
-        This guide is a followup of other tutorials.
+        <a href="../../../tutorials/basic/quantification-plotting/">👉 Related tutorial: Quantification and plotting</a>
+        <div class="link-description">
+            This guide is a followup of other tutorials.
+        </div>
     </div>
-</div>
 
 </div>
 <div class="examples">
@@ -1603,7 +1609,7 @@ The result will be a table with one row.</p>
             <h2 id="step-12">Step 12</h2>
             <p>Select the <code>Integrate table columns</code> (red arrow 1) and edit the <code>Processors</code> parameters in the <code>Parameters</code> tab (red arrow 2):</p>
 <p>Set the <code>Input column</code> to the following value:</p>
-<pre tabindex="0"><code>&quot;Density&quot;
+<pre tabindex="0"><code>&#34;Density&#34;
 </code></pre>
 <div class="notices info" ><p><p>If you reference existing columns, always put the name in quotation marks. The function for selecting columns can be heavily customized, as it is expression-based an can under certain circumstances yield unexpected results if the name is typed in as is.</p>
 <p>For example, if there is an annotation <code>Density</code> set to <code>XYZ</code>, and the expression is just set to <code>Density</code>, the node would search for a column with the name <code>XYZ</code>, as the expression system tries to look for a known value with the <em>name</em> <code>Density</code>.</p>

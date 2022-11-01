@@ -13,7 +13,7 @@
       
       <guid>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step1/</guid>
       <description>This guide assumes that you have followed the tutorial &amp;ldquo;Creating node groups I&amp;rdquo;
- In order to see the content of the group node, double-click on the node (red arrow 1), which will open the content of the group in a new tab (red arrow 2).</description>
+In order to see the content of the group node, double-click on the node (red arrow 1), which will open the content of the group in a new tab (red arrow 2).</description>
     </item>
     
     <item>
@@ -93,7 +93,7 @@ If you obtained the group node from a node template, re-create the template from
       
       <guid>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step8/</guid>
       <description>Consequently, Groups should only be generated, when the selection of nodes that will be unified into a group have already been tested and debugged thoroughly!
- Should changing and testing the individual nodes of a group become necessary, the member nodes of the group have to be copied into the main pipeline (red line 1) and tested there the traditional way.</description>
+Should changing and testing the individual nodes of a group become necessary, the member nodes of the group have to be copied into the main pipeline (red line 1) and tested there the traditional way.</description>
     </item>
     
   </channel>

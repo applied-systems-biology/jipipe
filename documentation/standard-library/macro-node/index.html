@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-07T12:10:56 CEST">
+<meta name="revised" content="2022-11-01T17:46:50 CET">
 <title>Macro node :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -76,10 +76,17 @@
       <a href="../../../download/changelog/">Changelog</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.75.0/" class="dd-item">
+        <div>
+          <a href="../../../download/changelog/1.75.0/">
+            Version 1.75.0 (current version)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.74.0/" class="dd-item">
         <div>
           <a href="../../../download/changelog/1.74.0/">
-            Version 1.74.0 (current version)
+            Version 1.74.0
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -1314,24 +1321,24 @@ commonly used in macros.</p>
 <p><strong>As input:</strong> The image is opened as ImageJ image window, named according to the slot name. We recommend to use the macro command <code>select(&lt;window name&gt;)</code> to first select the image window before applying the processing.</p>
 <p><strong>As output:</strong> The image is extracted from an image window, named according to the slot name. Use the <code>rename()</code> command to rename outputs accordingly.</p>
 <p><strong>Example</strong> (for the node shown above)</p>
-<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#75715e">// The input is created as window &#34;Input&#34;
-</span><span style="color:#75715e"></span><span style="color:#111">selectWindow</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">);</span>
-<span style="color:#111">run</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Gaussian Blur...&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;sigma=2&#34;</span><span style="color:#111">);</span>
-<span style="color:#75715e">// The node expects an image window &#34;Output&#34;
-</span><span style="color:#75715e"></span><span style="color:#111">rename</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">);</span>
-</code></pre></div><h2 id="results-table">Results table</h2>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#75715e">// The input is created as window &#34;Input&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#111">selectWindow</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">run</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Gaussian Blur...&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;sigma=2&#34;</span><span style="color:#111">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// The node expects an image window &#34;Output&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#111">rename</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">);</span>
+</span></span></code></pre></div><h2 id="results-table">Results table</h2>
 <p><strong>As input:</strong> The table is opened as ImageJ table window with the same name as the slot. If you set the slot name to <code>Results</code>, the special &ldquo;Results&rdquo; table is utilized.</p>
 <p><strong>As output:</strong> The table data is extracted from the table with the same name as the slot. If the slot name is <code>Results</code>, the special &ldquo;Results&rdquo; table is extracted. Please ensure that you use <code>table.rename(old, new)</code> to rename the output table to the slot name.</p>
-<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#75715e">// The input is created as window &#34;Input&#34;
-</span><span style="color:#75715e"></span><span style="color:#111">selectWindow</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">);</span>
-<span style="color:#111">run</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Gaussian Blur...&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;sigma=2&#34;</span><span style="color:#111">);</span>
-<span style="color:#111">run</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Auto Threshold&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;method=Default white&#34;</span><span style="color:#111">);</span>
-<span style="color:#111">run</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Analyze Particles...&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;display clear include summarize add&#34;</span><span style="color:#111">);</span>
-
-<span style="color:#75715e">// Results table output &#34;Results&#34;
-</span><span style="color:#75715e">// Results table output &#34;Summary&#34;
-</span><span style="color:#75715e">// ROI list output &#34;ROIs&#34;
-</span></code></pre></div><h2 id="roi-data">ROI data</h2>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#75715e">// The input is created as window &#34;Input&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#111">selectWindow</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">run</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Gaussian Blur...&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;sigma=2&#34;</span><span style="color:#111">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">run</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Auto Threshold&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;method=Default white&#34;</span><span style="color:#111">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">run</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Analyze Particles...&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;display clear include summarize add&#34;</span><span style="color:#111">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Results table output &#34;Results&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// Results table output &#34;Summary&#34;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">// ROI list output &#34;ROIs&#34;
+</span></span></span></code></pre></div><h2 id="roi-data">ROI data</h2>
 <p><strong>As input:</strong> The ROI are added to the ROI manager. The existing ROI manager is cleared.</p>
 <p><strong>As output:</strong> The ROI are extracted from the ROI manager.</p>
 
@@ -1410,14 +1417,14 @@ The values are converted as following:</p>
 </tbody>
 </table>
 <p>For example, a Gaussian blur node with a <code>Sigma</code> parameter will generate following code:</p>
-<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-C" data-lang="C"><span style="color:#75715e">// Code generated from parameters
-</span><span style="color:#75715e"></span><span style="color:#111">var</span> <span style="color:#111">sigma</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">2.0</span><span style="color:#111">;</span>
-
-<span style="color:#75715e">// Code written in the &#34;Code&#34; parameter
-</span><span style="color:#75715e"></span><span style="color:#111">selectWindow</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">);</span>
-<span style="color:#111">run</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Gaussian Blur...&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;sigma=&#34;</span> <span style="color:#f92672">+</span> <span style="color:#111">sigma</span><span style="color:#111">);</span>
-<span style="color:#111">rename</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">);</span>
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-C" data-lang="C"><span style="display:flex;"><span><span style="color:#75715e">// Code generated from parameters
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#111">var</span> <span style="color:#111">sigma</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">2.0</span><span style="color:#111">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Code written in the &#34;Code&#34; parameter
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#111">selectWindow</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">run</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Gaussian Blur...&#34;</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;sigma=&#34;</span> <span style="color:#f92672">+</span> <span style="color:#111">sigma</span><span style="color:#111">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">rename</span><span style="color:#111">(</span><span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">);</span>
+</span></span></code></pre></div>
 <div class="notices info" ><p>Path inputs are converted in a similar way.</p></div>
 
 <h2 id="importerexport-configurations">Importer/export configurations</h2>

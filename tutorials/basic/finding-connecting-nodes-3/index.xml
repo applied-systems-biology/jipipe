@@ -69,7 +69,7 @@ The node Import image consumes a JIPipe-managed File data and passes it into Ima
       <guid>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-3/step8/</guid>
       <description>As described before, double-clicking on the cache element (red arrow 1) will open it in a viewer (red arrow 2)
 Basic information about the image (resolution, bit depth, etc.) can be found in the toolbar of the image viewer and within the &amp;ldquo;String representation&amp;rdquo; column in the cache browser.
- The operations for File and Import image are different nodes, so you have the possibility to apply additional file manipulation operations (e.</description>
+The operations for File and Import image are different nodes, so you have the possibility to apply additional file manipulation operations (e.</description>
     </item>
     
   </channel>

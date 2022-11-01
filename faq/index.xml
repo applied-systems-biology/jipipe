@@ -12,7 +12,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/faq/general/</guid>
-      <description>Where do I find documentation? You can find all documentation pages in the Help  menu at the top right.
+      <description>Where do I find documentation? You can find all documentation pages in the Help menu at the top right.
 There are also context-based documentations available if you select a node in the graph. Hover your mouse over a parameter to show documentations for this parameter only.
 Does JIPipe have a backup function? Yes. By default, JIPipe creates a backup every 3 minutes. You can recover it via Project &amp;gt; Restore Backup.</description>
     </item>
@@ -24,7 +24,7 @@ Does JIPipe have a backup function? Yes. By default, JIPipe creates a backup eve
       
       <guid>https://www.jipipe.org/faq/issues/</guid>
       <description>JIPipe does not load. There can be multiple causes for issues:
-  Error Cause Solution    Splash screen says &#34;Module threw error&#34;. Various ImageJ errors.   A dependency might be missing.   Please check if all JIPipe dependencies are installed. Please do not hesitate to contact us. Provide us a screenshot, and ideally the full set of error messages.     Splash screen says &#34;</description>
+Error Cause Solution Splash screen says &#34;Module threw error&#34;. Various ImageJ errors. A dependency might be missing. Please check if all JIPipe dependencies are installed. Please do not hesitate to contact us. Provide us a screenshot, and ideally the full set of error messages. Splash screen says &#34;Module threw error&#34;. ImageJ error says &#34;Caused by: java.lang.NoSuchMethodError: com.fasterxml.jackson.core.JsonParser.getReadCapabilities()&#34; A plugin interferes with a software library.</description>
     </item>
     
     <item>

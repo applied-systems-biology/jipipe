@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-07T12:10:57 CEST">
+<meta name="revised" content="2022-11-01T17:46:50 CET">
 <title>Creating an algorithm :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -76,10 +76,17 @@
       <a href="../../download/changelog/">Changelog</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.75.0/" class="dd-item">
+        <div>
+          <a href="../../download/changelog/1.75.0/">
+            Version 1.75.0 (current version)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.74.0/" class="dd-item">
         <div>
           <a href="../../download/changelog/1.74.0/">
-            Version 1.74.0 (current version)
+            Version 1.74.0
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -945,11 +952,10 @@
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-    <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/" class="dd-item parent active haschildren
+    <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/" class="dd-item active haschildren
         ">
       <div>
-      <a href="../../documentation-java-api/algorithm/">Creating an algorithm</a>
-            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../../documentation-java-api/algorithm/">Creating an algorithm</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
       <li data-nav-id="https://www.jipipe.org/documentation-java-api/algorithm/iterating-algorithms/" class="dd-item">
@@ -1226,16 +1232,7 @@
       <option value="/documentation-java-api/create-extension/" >- Creating an extension project</option>
     <option value="/documentation-java-api/algorithm/"  selected>
   - 
-   Creating an algorithm</option> 
-      <option value="/documentation-java-api/algorithm/iterating-algorithms/" >-- Handling multiple inputs</option>
-      <option value="/documentation-java-api/algorithm/merging-algorithms/" >-- Merging input data</option>
-      <option value="/documentation-java-api/algorithm/slot-configuration/" >-- Customizing slots</option>
-      <option value="/documentation-java-api/algorithm/parameters/" >-- Parameters</option>
-      <option value="/documentation-java-api/algorithm/parallelization/" >-- Parallelization</option>
-      <option value="/documentation-java-api/algorithm/custom-info/" >-- Custom algorithm info</option>
-      <option value="/documentation-java-api/algorithm/context-actions/" >-- Context actions</option>
-      <option value="/documentation-java-api/algorithm/node-examples/" >-- Node examples</option>
-  
+   Creating an algorithm</option>
     <option value="/documentation-java-api/data-type/" >
   - 
    Creating a data type</option>
@@ -1326,63 +1323,63 @@
 <div class="notices warning" ><p>Commonly, you would utilize more higher-order algorithm classes instead of JIPipeAlgorithm.
 Usually you would choose a JIPipeSimpleIteratingAlgorithm (for single inputs), JIPipeIteratingAlgorithm (for multiple inputs), or JIPipeMergingAlgorithm (for merging single/multiple inputs). These classes provide the automated organization of data, multiple parameters, adaptive parameters, and more.</p></div>
 
-<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// Annotates documentation to the algorithm
-</span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;My Algorithm&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Does something&#34;</span><span style="color:#f92672">)</span>
-
-<span style="color:#75715e">// Sets the algorithm category
-</span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeNode</span><span style="color:#f92672">(</span><span style="color:#111">nodeTypeCategory</span> <span style="color:#f92672">=</span> <span style="color:#111">MiscellaneousNodeTypeCategory</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
-
-<span style="color:#75715e">// Input and output slots autoCreate automatically creates the slots if set to true and no slot configuration was provided
-</span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeInputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;The input&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
-<span style="color:#75af00">@JIPipeOutputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;The input&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
-
-<span style="color:#75715e">// You can add multiple JIPipeCitation annotations to provide citations for this node only
-</span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeCitation</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;Additional citation&#34;</span><span style="color:#f92672">)</span>
-
-<span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyAlgorithm</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeAlgorithm</span> <span style="color:#f92672">{</span>
-
-    <span style="color:#75715e">/*
-</span><span style="color:#75715e">    This is the main constructor of the algorithm.
-</span><span style="color:#75715e">    It contains a reference to the algorithm info that contains
-</span><span style="color:#75715e">    some important metadata
-</span><span style="color:#75715e">    */</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#75af00">MyAlgorithm</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeNodeInfo</span> <span style="color:#111">info</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#00a8c8">super</span><span style="color:#f92672">(</span><span style="color:#111">info</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-
-    <span style="color:#75715e">/*
-</span><span style="color:#75715e">    A deep copy constructor. It is required.
-</span><span style="color:#75715e">    Please do not forget to deep-copy all important fields
-</span><span style="color:#75715e">    */</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#75af00">MyAlgorithm</span><span style="color:#f92672">(</span><span style="color:#111">MyAlgorithm</span> <span style="color:#111">original</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#00a8c8">super</span><span style="color:#f92672">(</span><span style="color:#111">original</span><span style="color:#f92672">);</span>
-        <span style="color:#75715e">// Deep-copy additional fields here
-</span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
-
-    <span style="color:#75715e">/*
-</span><span style="color:#75715e">    The workload is run in this functon.
-</span><span style="color:#75715e">    You can also have the ability to inform the user about the current algorithm status
-</span><span style="color:#75715e">    for more complex algorithms.
-</span><span style="color:#75715e">    You can also query if the user requested cancellation
-</span><span style="color:#75715e">    */</span>
-    <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#75af00">run</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// Run your workload here
-</span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><p>To register the algorithm and provide it with an Id, use <a href="../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
-<span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
-
-    <span style="color:#75715e">// ... See previous tutorial for other methods
-</span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">register</span><span style="color:#f92672">(</span><span style="color:#111">JIPipe</span> <span style="color:#111">jiPipe</span><span style="color:#f92672">,</span> <span style="color:#111">Context</span> <span style="color:#111">context</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progressInfo</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// Registers our algorithm with a unique ID and an icon
-</span><span style="color:#75715e"></span>        <span style="color:#111">registerNodeType</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-algorithm&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">MyAlgorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">UIUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">getIconURLFromResources</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;actions/viewimage.png&#34;</span><span style="color:#f92672">));</span>
-    <span style="color:#f92672">}</span>
-
-<span style="color:#f92672">}</span>
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Annotates documentation to the algorithm
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;My Algorithm&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Does something&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Sets the algorithm category
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeNode</span><span style="color:#f92672">(</span><span style="color:#111">nodeTypeCategory</span> <span style="color:#f92672">=</span> <span style="color:#111">MiscellaneousNodeTypeCategory</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Input and output slots autoCreate automatically creates the slots if set to true and no slot configuration was provided
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeInputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;The input&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75af00">@JIPipeOutputSlot</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">slotName</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;The input&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">autoCreate</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// You can add multiple JIPipeCitation annotations to provide citations for this node only
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeCitation</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;Additional citation&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyAlgorithm</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeAlgorithm</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    This is the main constructor of the algorithm.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    It contains a reference to the algorithm info that contains
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    some important metadata
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#75af00">MyAlgorithm</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeNodeInfo</span> <span style="color:#111">info</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">super</span><span style="color:#f92672">(</span><span style="color:#111">info</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    A deep copy constructor. It is required.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    Please do not forget to deep-copy all important fields
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#75af00">MyAlgorithm</span><span style="color:#f92672">(</span><span style="color:#111">MyAlgorithm</span> <span style="color:#111">original</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">super</span><span style="color:#f92672">(</span><span style="color:#111">original</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Deep-copy additional fields here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">/*
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    The workload is run in this functon.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    You can also have the ability to inform the user about the current algorithm status
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    for more complex algorithms.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    You can also query if the user requested cancellation
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e">    */</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#75af00">run</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Run your workload here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>To register the algorithm and provide it with an Id, use <a href="../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a>:</p>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ... See previous tutorial for other methods
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">register</span><span style="color:#f92672">(</span><span style="color:#111">JIPipe</span> <span style="color:#111">jiPipe</span><span style="color:#f92672">,</span> <span style="color:#111">Context</span> <span style="color:#111">context</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progressInfo</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Registers our algorithm with a unique ID and an icon
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#111">registerNodeType</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-algorithm&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">MyAlgorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">UIUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">getIconURLFromResources</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;actions/viewimage.png&#34;</span><span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div>
 
 
     

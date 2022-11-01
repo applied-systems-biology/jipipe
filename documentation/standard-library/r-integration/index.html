@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2022-10-07T12:10:56 CEST">
+<meta name="revised" content="2022-11-01T17:46:50 CET">
 <title>R integration :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -76,10 +76,17 @@
       <a href="../../../download/changelog/">Changelog</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.75.0/" class="dd-item">
+        <div>
+          <a href="../../../download/changelog/1.75.0/">
+            Version 1.75.0 (current version)
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.74.0/" class="dd-item">
         <div>
           <a href="../../../download/changelog/1.74.0/">
-            Version 1.74.0 (current version)
+            Version 1.74.0
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -1359,36 +1366,36 @@ Currently, the nodes are designed for following data types:</p>
 <p>Result tables can be loaded via the <code>JIPipe.GetInputAsDataFrame(slot, row=0)</code> function. The <code>slot</code> parameter must be identical to the name of the input slot.
 The <code>row</code> parameter indicates which item of the current data batch should be returned. Please note that <code>row</code> can only be zero if you are using R script (iterating).</p>
 <p>If you have multiple rows, you can find their count in <code>JIPipe.InputSlotRowCounts</code></p>
-<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R"><span style="color:#75af00">for</span><span style="color:#111">(</span> <span style="color:#111">i</span> <span style="color:#111">in</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#111">JIPipe.InputSlotRowCounts</span><span style="color:#f92672">$</span><span style="color:#111">Tables</span><span style="color:#111">)</span> <span style="color:#111">{</span>
-  <span style="color:#75715e"># Note that the row has zero-based indices</span>
-  <span style="color:#111">table</span> <span style="color:#f92672">&lt;-</span> <span style="color:#75af00">JIPipe.GetInputAsDataFrame</span><span style="color:#111">(</span><span style="color:#111">slot</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;Tables&#34;</span><span style="color:#111">,</span> <span style="color:#111">row</span><span style="color:#f92672">=</span><span style="color:#111">i</span><span style="color:#ae81ff">-1</span><span style="color:#111">)</span>
-<span style="color:#111">}</span>
-</code></pre></div><h2 id="writing-result-tables">Writing result tables</h2>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-R" data-lang="R"><span style="display:flex;"><span><span style="color:#75af00">for</span><span style="color:#111">(</span> <span style="color:#111">i</span> <span style="color:#111">in</span> <span style="color:#ae81ff">1</span><span style="color:#f92672">:</span><span style="color:#111">JIPipe.InputSlotRowCounts</span><span style="color:#f92672">$</span><span style="color:#111">Tables</span><span style="color:#111">)</span> <span style="color:#111">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e"># Note that the row has zero-based indices</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#111">table</span> <span style="color:#f92672">&lt;-</span> <span style="color:#75af00">JIPipe.GetInputAsDataFrame</span><span style="color:#111">(</span><span style="color:#111">slot</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;Tables&#34;</span><span style="color:#111">,</span> <span style="color:#111">row</span><span style="color:#f92672">=</span><span style="color:#111">i</span><span style="color:#ae81ff">-1</span><span style="color:#111">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">}</span>
+</span></span></code></pre></div><h2 id="writing-result-tables">Writing result tables</h2>
 <p>Result tables can be written via a function <code>JIPipe.AddOutputDataFrame(data, slot, annotations=list())</code>. This will <strong>add</strong> a new result table to the specified output.
 Please note, that you can add <em>multiple</em> outputs.</p>
 <p>The provided data must be of a type compatible with <code>write.csv</code>, like <code>data.frame</code>.</p>
 <p>Optionally, you can provide a list of annotations that should be added to the specified output data as list of named strings.</p>
-<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R"><span style="color:#75af00">library</span><span style="color:#111">(</span><span style="color:#111">datasets</span><span style="color:#111">)</span>
-<span style="color:#75af00">JIPipe.AddOutputDataFrame</span><span style="color:#111">(</span><span style="color:#111">iris</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;Tables&#34;</span><span style="color:#111">,</span> <span style="color:#111">annotations</span><span style="color:#f92672">=</span><span style="color:#75af00">list</span><span style="color:#111">(</span><span style="color:#d88200">&#34;data set&#34;</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;Iris&#34;</span><span style="color:#111">))</span>
-</code></pre></div><h2 id="writing-plots-or-other-images">Writing plots or other images</h2>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-R" data-lang="R"><span style="display:flex;"><span><span style="color:#75af00">library</span><span style="color:#111">(</span><span style="color:#111">datasets</span><span style="color:#111">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75af00">JIPipe.AddOutputDataFrame</span><span style="color:#111">(</span><span style="color:#111">iris</span><span style="color:#111">,</span> <span style="color:#d88200">&#34;Tables&#34;</span><span style="color:#111">,</span> <span style="color:#111">annotations</span><span style="color:#f92672">=</span><span style="color:#75af00">list</span><span style="color:#111">(</span><span style="color:#d88200">&#34;data set&#34;</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;Iris&#34;</span><span style="color:#111">))</span>
+</span></span></code></pre></div><h2 id="writing-plots-or-other-images">Writing plots or other images</h2>
 <p>As R does not have a dedicated data type for images, the JIPipe API will only provide means to generate a valid output file name.
 For this, two methods <code>JIPipe.AddOutputPNGImagePath(data, slot, annotations=list())</code> and <code>JIPipe.AddOutputTIFFImagePath(data, slot, annotations=list())</code>
 are available that produce a path for PNG or TIFF files respectively.</p>
 
 <div class="notices info" ><p>We recommend to use the &lsquo;Image (RGB)&rsquo; or any other RGB output type. This is due to the R behavior of generating images with indexed colors that are detected as greyscale images by JIPipe.</p></div>
 
-<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-R" data-lang="R"><span style="color:#75af00">library</span><span style="color:#111">(</span><span style="color:#111">datasets</span><span style="color:#111">)</span>
-
-<span style="color:#75715e"># Generate the output file name</span>
-<span style="color:#111">png.file.name</span> <span style="color:#f92672">&lt;-</span> <span style="color:#75af00">JIPipe.AddOutputPNGImagePath</span><span style="color:#111">(</span><span style="color:#111">slot</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;Plot&#34;</span><span style="color:#111">)</span>
-
-<span style="color:#75715e"># Use standard R functions. Write into this file.</span>
-<span style="color:#75af00">png</span><span style="color:#111">(</span><span style="color:#111">png.file.name</span><span style="color:#111">,</span> <span style="color:#111">width</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">800</span><span style="color:#111">,</span> <span style="color:#111">height</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">600</span><span style="color:#111">)</span>
-<span style="color:#75af00">plot</span><span style="color:#111">(</span><span style="color:#111">iris</span><span style="color:#f92672">$</span><span style="color:#111">Petal.Length</span><span style="color:#111">,</span> <span style="color:#111">iris</span><span style="color:#f92672">$</span><span style="color:#111">Petal.Width</span><span style="color:#111">,</span> <span style="color:#111">pch</span><span style="color:#f92672">=</span><span style="color:#ae81ff">21</span><span style="color:#111">,</span> <span style="color:#111">bg</span><span style="color:#f92672">=</span><span style="color:#75af00">c</span><span style="color:#111">(</span><span style="color:#d88200">&#34;red&#34;</span><span style="color:#111">,</span><span style="color:#d88200">&#34;green3&#34;</span><span style="color:#111">,</span><span style="color:#d88200">&#34;blue&#34;</span><span style="color:#111">)</span><span style="color:#75af00">[unclass</span><span style="color:#111">(</span><span style="color:#111">iris</span><span style="color:#f92672">$</span><span style="color:#111">Species</span><span style="color:#111">)</span><span style="color:#111">]</span><span style="color:#111">,</span> <span style="color:#111">main</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;Edgar Anderson&#39;s Iris Data&#34;</span><span style="color:#111">)</span>
-<span style="color:#75af00">dev.off</span><span style="color:#111">()</span>
-
-<span style="color:#75715e"># JIPipe will automatically load the data</span>
-</code></pre></div><h2 id="reading-and-writing-other-data-types">Reading and writing other data types</h2>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-R" data-lang="R"><span style="display:flex;"><span><span style="color:#75af00">library</span><span style="color:#111">(</span><span style="color:#111">datasets</span><span style="color:#111">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Generate the output file name</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">png.file.name</span> <span style="color:#f92672">&lt;-</span> <span style="color:#75af00">JIPipe.AddOutputPNGImagePath</span><span style="color:#111">(</span><span style="color:#111">slot</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;Plot&#34;</span><span style="color:#111">)</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># Use standard R functions. Write into this file.</span>
+</span></span><span style="display:flex;"><span><span style="color:#75af00">png</span><span style="color:#111">(</span><span style="color:#111">png.file.name</span><span style="color:#111">,</span> <span style="color:#111">width</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">800</span><span style="color:#111">,</span> <span style="color:#111">height</span> <span style="color:#f92672">=</span> <span style="color:#ae81ff">600</span><span style="color:#111">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75af00">plot</span><span style="color:#111">(</span><span style="color:#111">iris</span><span style="color:#f92672">$</span><span style="color:#111">Petal.Length</span><span style="color:#111">,</span> <span style="color:#111">iris</span><span style="color:#f92672">$</span><span style="color:#111">Petal.Width</span><span style="color:#111">,</span> <span style="color:#111">pch</span><span style="color:#f92672">=</span><span style="color:#ae81ff">21</span><span style="color:#111">,</span> <span style="color:#111">bg</span><span style="color:#f92672">=</span><span style="color:#75af00">c</span><span style="color:#111">(</span><span style="color:#d88200">&#34;red&#34;</span><span style="color:#111">,</span><span style="color:#d88200">&#34;green3&#34;</span><span style="color:#111">,</span><span style="color:#d88200">&#34;blue&#34;</span><span style="color:#111">)</span><span style="color:#75af00">[unclass</span><span style="color:#111">(</span><span style="color:#111">iris</span><span style="color:#f92672">$</span><span style="color:#111">Species</span><span style="color:#111">)</span><span style="color:#111">]</span><span style="color:#111">,</span> <span style="color:#111">main</span><span style="color:#f92672">=</span><span style="color:#d88200">&#34;Edgar Anderson&#39;s Iris Data&#34;</span><span style="color:#111">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75af00">dev.off</span><span style="color:#111">()</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e"># JIPipe will automatically load the data</span>
+</span></span></code></pre></div><h2 id="reading-and-writing-other-data-types">Reading and writing other data types</h2>
 <p>Currently, only reading and writing of tables, as well as writing of image data is supported via convience functions.
 The node supports all other JIPipe data types, although import and export must be written via custom functions.</p>
 <p>JIPipe provides the input of each data item via a dedicated folder that contains all files related to this data.

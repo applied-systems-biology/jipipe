@@ -31,8 +31,7 @@
       
       <guid>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-1/step3/</guid>
       <description>This will show a list of compatible nodes, i.e., nodes that can accept the datatype from the active node. In this example node, which provides an image file location, the 2nd hit is the proper choice: Import image (red arrow 1)
-The node Import image consumes a JIPipe-managed File data and passes it into ImageJ for importing. The resulting ImageJ image is packaged into a JIPipe-managed image type.
- </description>
+The node Import image consumes a JIPipe-managed File data and passes it into ImageJ for importing. The resulting ImageJ image is packaged into a JIPipe-managed image type.</description>
     </item>
     
     <item>
@@ -79,7 +78,7 @@ The node Import image consumes a JIPipe-managed File data and passes it into Ima
       <guid>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-1/step8/</guid>
       <description>As described before, double-clicking on the cache element (red arrow 1) will open it in a viewer (red arrow 2)
 Basic information about the image (resolution, bit depth, etc.) can be found in the toolbar of the image viewer and within the &amp;ldquo;String representation&amp;rdquo; column in the cache browser.
- The operations for File and Import image are different nodes, so you have the possibility to apply additional file manipulation operations (e.</description>
+The operations for File and Import image are different nodes, so you have the possibility to apply additional file manipulation operations (e.</description>
     </item>
     
   </channel>

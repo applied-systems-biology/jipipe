@@ -206,6 +206,7 @@ org.hkijena.jipipe.extensions.multiparameters.datatypes
 org.hkijena.jipipe.extensions.multiparameters.nodes
 org.hkijena.jipipe.extensions.nodeexamples
 org.hkijena.jipipe.extensions.nodetemplate
+org.hkijena.jipipe.extensions.nodetemplate.templatedownloader
 org.hkijena.jipipe.extensions.nodetoolboxtool
 org.hkijena.jipipe.extensions.omero
 org.hkijena.jipipe.extensions.omero.algorithms

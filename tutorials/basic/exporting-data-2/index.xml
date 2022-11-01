@@ -44,7 +44,7 @@ Then choose the directory and click Open.</description>
       <guid>https://www.jipipe.org/tutorials/basic/exporting-data-2/step4/</guid>
       <description>Now JIPipe will give you options that determine how the file names should be generated. This is required, as JIPipe does not know anymore the name of the original input file unless it is stored in the annotations.
 The most important setting is the File name expression that defaults to
-SUMMARIZE_ANNOTATIONS_MAP(annotations, &amp;quot;#&amp;quot;) The expression is applied for each exported data item and returns the file name that should be used. The default method will take all known annotations that are marked with a # and form a filename based on the following pattern:</description>
+SUMMARIZE_ANNOTATIONS_MAP(annotations, &amp;#34;#&amp;#34;) The expression is applied for each exported data item and returns the file name that should be used. The default method will take all known annotations that are marked with a # and form a filename based on the following pattern:</description>
     </item>
     
     <item>
@@ -66,7 +66,7 @@ You can also clearly see the pattern [Annotation 1 name]=[Annotation 1 value] as
       <description>JIPipe offers various nodes for the export of data that are even outside the scope of the exporter implemented in the cache browser.
 You can find them in the Export menu or via the search bar.
 Proceed to add and connect the following nodes:
- Add Export data and connect it to AVG density Add Export image and connect it to Overlay image Add Export table as XLSX and connect it to All measurements Add Export ROI and connect it to ROI  In the following steps, we will show how to configure these nodes for the export into a single directory.</description>
+Add Export data and connect it to AVG density Add Export image and connect it to Overlay image Add Export table as XLSX and connect it to All measurements Add Export ROI and connect it to ROI In the following steps, we will show how to configure these nodes for the export into a single directory.</description>
     </item>
     
     <item>
@@ -77,7 +77,7 @@ Proceed to add and connect the following nodes:
       <guid>https://www.jipipe.org/tutorials/basic/exporting-data-2/step7/</guid>
       <description>We begin with the Export data node. It encapsulates the same functionality as the cache browser&amp;rsquo;s data exporter.
 Here we will export the AVG density table into a directory ExampleExports/ViaNodes relative to the project file. Begin by selecting the node and changing the following parameters:
- Output directory to ExampleExports/ViaNodes (red arrow 1) Enable Output relative to project directory. If this is not done, the files will be stored in a temporary directory (red arrow 2)  Output relative to project directory only works if you loaded the project from a *.</description>
+Output directory to ExampleExports/ViaNodes (red arrow 1) Enable Output relative to project directory. If this is not done, the files will be stored in a temporary directory (red arrow 2) Output relative to project directory only works if you loaded the project from a *.</description>
     </item>
     
     <item>
@@ -88,8 +88,7 @@ Here we will export the AVG density table into a directory ExampleExports/ViaNod
       <guid>https://www.jipipe.org/tutorials/basic/exporting-data-2/step8/</guid>
       <description>Run the Export data node via Update cache.
 Now navigate to the ExampleExports/ViaNodes directory that should have appeared next to the project file. It contains a file density_blobs.csv according to the pattern defined by the File name expression:
- &amp;quot;density_&amp;quot; plus #Filename, where #Filename is blobs, because the table was annotated with the original filename (blobs)
- </description>
+&amp;quot;density_&amp;quot; plus #Filename, where #Filename is blobs, because the table was annotated with the original filename (blobs)</description>
     </item>
     
     <item>
@@ -101,7 +100,7 @@ Now navigate to the ExampleExports/ViaNodes directory that should have appeared 
       <description>Select the Export image node and navigate to its parameters. Unlike the generic data exporter Export data, it allows you to change the output type of the generated file from TIFF to PNG or other formats.
 Again, set the Output directory to ExampleExports/ViaNodes with Output relative to project directory enabled.
 The filename expression set to
-&amp;quot;overlay_&amp;quot; + #Filename This would yield a file that is for example named overlay_blobs.png.</description>
+&amp;#34;overlay_&amp;#34; + #Filename This would yield a file that is for example named overlay_blobs.png.</description>
     </item>
     
     <item>
@@ -113,7 +112,7 @@ The filename expression set to
       <description>Move on to the Export table as XLSX node. While Export data will always export CSV files, this node will instead Excel files. It can even be configured to export multiple tables into one XLSX file.
 Again, set the Output directory to ExampleExports/ViaNodes with Output relative to project directory enabled.
 The filename expression set to
-&amp;quot;measurements_&amp;quot; + #Filename This would yield a file that is for example named measurements_blobs.xlsx.</description>
+&amp;#34;measurements_&amp;#34; + #Filename This would yield a file that is for example named measurements_blobs.xlsx.</description>
     </item>
     
     <item>
@@ -125,7 +124,7 @@ The filename expression set to
       <description>Finally, edit the parameters of Export ROI node. Export data will export a *.roi file if only one ROI is present and otherwise compress all ROIs into a *.zip file. This node can optionally turn off this export behavior and export all ROIs into an individual *.roi file.
 Again, set the Output directory to ExampleExports/ViaNodes with Output relative to project directory enabled.
 The filename expression set to
-&amp;quot;rois_&amp;quot; + #Filename This would yield a file that is for example named rois_blobs.</description>
+&amp;#34;rois_&amp;#34; + #Filename This would yield a file that is for example named rois_blobs.</description>
     </item>
     
     <item>

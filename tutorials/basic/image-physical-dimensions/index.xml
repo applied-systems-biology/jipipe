@@ -63,7 +63,7 @@ Connect the newly created node to the output of Import images.</description>
       <guid>https://www.jipipe.org/tutorials/basic/image-physical-dimensions/step6/</guid>
       <description>We will now apply a look-up table (LUT) to one of the channels.
 To do this, use the search bar (red arrow 1) to add the following nodes:
- Set LUT (color map) (red arrow 3) Apply LUT (red arrow 2)  Connect the input of Set LUT (color map) node to the Red output of Split channels: three channels R, G, B order.
+Set LUT (color map) (red arrow 3) Apply LUT (red arrow 2) Connect the input of Set LUT (color map) node to the Red output of Split channels: three channels R, G, B order.
 Then connect the output of Set LUT (color map) to the input of Apply LUT</description>
     </item>
     
@@ -84,8 +84,7 @@ In the Select value window (red arrow 4), chose the desired look-up table, e.g. 
       
       <guid>https://www.jipipe.org/tutorials/basic/image-physical-dimensions/step8/</guid>
       <description>To change the pixel size and other physical dimensions of an image, search for nodes with the keyword physical (red arrow 1). Select the Set physical dimensions node (red arrow 2).
-The Set physical dimensions allows to set the physical dimensions of the image pixels via parameters. Alternative nodes can set these values from annotations or via expressions.
- </description>
+The Set physical dimensions allows to set the physical dimensions of the image pixels via parameters. Alternative nodes can set these values from annotations or via expressions.</description>
     </item>
     
     <item>

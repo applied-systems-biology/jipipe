@@ -25,7 +25,7 @@ A solution can be JIPipeIteratingAlgorithm or JIPipeSimpleIteratingAlgorithm tha
       <guid>https://www.jipipe.org/documentation-java-api/algorithm/merging-algorithms/</guid>
       <description>You might need to develop an algorithm that does not simply iterate through its input(s), but organize it into groups to be merged. JIPipe comes with JIPipeMergingAlgorithm that uses the annotation attached during processing to find data rows that belong to the same data set. The implementation creates JIPipeMergingDataBatch instances that represent multiple data rows merged into one group.
 Please access data via the data interface.
- The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
+The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
     </item>
     
     <item>
@@ -36,7 +36,7 @@ Please access data via the data interface.
       <guid>https://www.jipipe.org/documentation-java-api/algorithm/slot-configuration/</guid>
       <description>In the previous examples, we used the @JIPipeInputSlot and @JIPipeOutputSlot annotations with autoCreate = true to automatically configure the slots.
 This is not sufficient for more complicated algorithms that require
- Restricting the number of slots Restricting the allowed data types Users to add more slots or remove existing ones  A custom JIPipeSlotConfiguration can be used to implement such more advanced behaviors.
+Restricting the number of slots Restricting the allowed data types Users to add more slots or remove existing ones A custom JIPipeSlotConfiguration can be used to implement such more advanced behaviors.
 For many cases, the default implementation JIPipeMutableSlotConfiguration is sufficient.</description>
     </item>
     
@@ -80,7 +80,7 @@ How algorithms are registered Algorithm instances are created by an JIPipeNodeIn
       
       <guid>https://www.jipipe.org/documentation-java-api/algorithm/context-actions/</guid>
       <description>Context actions allow you to add custom buttons into an algorithm&amp;rsquo;s parameter group that by default will also appear within a node&amp;rsquo;s context menu. They can be used for multiple purposes such as loading example data, applying an auto-configuration, opening websites, or displaying documentation or data in a new tab.
-1.74.x&amp;#43;  We do no anymore recommend the creation of context actions to implement examples. Instead, register node examples within the extension.</description>
+1.74.x&amp;#43; We do no anymore recommend the creation of context actions to implement examples. Instead, register node examples within the extension.</description>
     </item>
     
     <item>
@@ -89,8 +89,9 @@ How algorithms are registered Algorithm instances are created by an JIPipeNodeIn
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation-java-api/algorithm/node-examples/</guid>
-      <description>1.74.x&amp;#43;  This guide was written for JIPipe version 1.74.0 or newer   To teach users about the settings of more complex nodes or to improve the convenience, you can annotate nodes with node examples. These will appear in a dedicated tab &amp;ldquo;Examples&amp;rdquo; on selecting a node within the pipeline editor.
-The standardized example API is based around the &amp;ldquo;Node templates&amp;rdquo; functionality. To create an example, follow these steps:</description>
+      <description>1.74.x&amp;#43; This guide was written for JIPipe version 1.74.0 or newer To teach users about the settings of more complex nodes or to improve the convenience, you can annotate nodes with node examples. These will appear in a dedicated tab &amp;ldquo;Examples&amp;rdquo; on selecting a node within the pipeline editor.
+The standardized example API is based around the &amp;ldquo;Node templates&amp;rdquo; functionality. To create an example, follow these steps:
+Select a single node in the expected configuration and create a node template via Right click &amp;gt; Create node template Provide an appropriate name and description.</description>
     </item>
     
   </channel>

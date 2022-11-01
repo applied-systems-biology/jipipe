@@ -12,8 +12,8 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation/create-pipelines/pipeline-editor/</guid>
-      <description>This guide is also available as video tutorial.  The graph editor (pipeline editor) allows you to edit the processing steps of a graph compartment. Its user interface is separated into three sections:
- The analysis graph contains the processing steps (also referred as algorithms) The settings panel shows the properties of the currently selected algorithms The toolbar allows you to add more algorithms into the graph, navigate to existing algorithms, change some behavior settings of the graph editor, and create screenshots  Analysis graph The analysis graph contains algorithms that are represented by rectangles.</description>
+      <description>This guide is also available as video tutorial. The graph editor (pipeline editor) allows you to edit the processing steps of a graph compartment. Its user interface is separated into three sections:
+The analysis graph contains the processing steps (also referred as algorithms) The settings panel shows the properties of the currently selected algorithms The toolbar allows you to add more algorithms into the graph, navigate to existing algorithms, change some behavior settings of the graph editor, and create screenshots Analysis graph The analysis graph contains algorithms that are represented by rectangles.</description>
     </item>
     
     <item>
@@ -22,7 +22,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation/create-pipelines/parameters/</guid>
-      <description>Table Of Contents  Testing multiple parameters  Creating parameter sets  Interactive parameter designer Generate via expressions     Adaptive parameters    1.74.x&amp;#43;  Some features are only present in JIPipe version 1.74.0 or newer   Many important settings of a node are located within its parameter panel (accessible by selecting the node and going to the Parameters tab). The editor contains the list of all parameters, and a section containing the current documentation that by default shows general information about the node.</description>
+      <description>Table Of Contents Testing multiple parameters Creating parameter sets Interactive parameter designer Generate via expressions Adaptive parameters 1.74.x&amp;#43; Some features are only present in JIPipe version 1.74.0 or newer Many important settings of a node are located within its parameter panel (accessible by selecting the node and going to the Parameters tab). The editor contains the list of all parameters, and a section containing the current documentation that by default shows general information about the node.</description>
     </item>
     
     <item>
@@ -31,7 +31,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation/create-pipelines/expressions/</guid>
-      <description>Table Of Contents    Variables Statements Pairs Escaping expressions Operators Functions User functions   Data types  Numbers Strings Arrays Maps   Operators  Precedence Compatible types      When using nodes that filter or generate data, you might encounter a parameter type called &amp;ldquo;Expression&amp;rdquo;. This parameter allows to to write simple to complex functions that can test for one or multiple conditions or act as input for a generator node.</description>
+      <description>Table Of Contents Variables Statements Pairs Escaping expressions Operators Functions User functions Data types Numbers Strings Arrays Maps Operators Precedence Compatible types When using nodes that filter or generate data, you might encounter a parameter type called &amp;ldquo;Expression&amp;rdquo;. This parameter allows to to write simple to complex functions that can test for one or multiple conditions or act as input for a generator node. The basic concept of this expression language is to mix string, boolean, and numeric operations into one simple but powerful language.</description>
     </item>
     
     <item>

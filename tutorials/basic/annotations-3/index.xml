@@ -14,8 +14,7 @@
       <guid>https://www.jipipe.org/tutorials/basic/annotations-3/step1/</guid>
       <description>In this tutorial we will work with a generated image, which is a quick and convenient way to test various features.
 Begin by adding the node Add data &amp;gt; Image &amp;gt; Generate from math expression
-Generate from math expression generates an image with a user-defined size and generates the value via a custom math expression.
- </description>
+Generate from math expression generates an image with a user-defined size and generates the value via a custom math expression.</description>
     </item>
     
     <item>
@@ -25,7 +24,7 @@ Generate from math expression generates an image with a user-defined size and ge
       
       <guid>https://www.jipipe.org/tutorials/basic/annotations-3/step2/</guid>
       <description>Adding the node Annotate by image statistics (Expression) and configure the Generated annotations parameter in its parameter tab as following:
- Set Generator to stat_mean (the mean intensity value; click Edit to find out more about variables) Set Column name to MeanIntensity (the column name refers to the name of the generated annotation)  If you run the node via Update cache, you will see a new annotation MeanIntensity.</description>
+Set Generator to stat_mean (the mean intensity value; click Edit to find out more about variables) Set Column name to MeanIntensity (the column name refers to the name of the generated annotation) If you run the node via Update cache, you will see a new annotation MeanIntensity.</description>
     </item>
     
     <item>
@@ -46,8 +45,8 @@ Observe that the set of annotations include both the calculated Threshold and th
       <guid>https://www.jipipe.org/tutorials/basic/annotations-3/step4/</guid>
       <description>Let&amp;rsquo;s calculate the difference between the threshold and the mean image intensity.
 Add a node Set/Edit annotations and navigate to its Annotations parameter.
- Set the Value to ABS(TO_NUMBER(MeanIntensity) - TO_NUMBER(Threshold)) Set the Name to ThresholdDiff  On running the node you should notice a new annotation ThresholdDiff that is set to the absolute difference between the threshold and mean image intensity.
- Set/Edit annotations allows you to create new annotations by setting their value and to combine existing annotations or apply operations on them.</description>
+Set the Value to ABS(TO_NUMBER(MeanIntensity) - TO_NUMBER(Threshold)) Set the Name to ThresholdDiff On running the node you should notice a new annotation ThresholdDiff that is set to the absolute difference between the threshold and mean image intensity.
+Set/Edit annotations allows you to create new annotations by setting their value and to combine existing annotations or apply operations on them.</description>
     </item>
     
     <item>
@@ -86,9 +85,9 @@ Begin by adding Merge annotations into the graph and navigate to the Examples ta
       <guid>https://www.jipipe.org/tutorials/basic/annotations-3/step8/</guid>
       <description>Now let&amp;rsquo;s assume that we do not need Threshold and MeanIntensity again. These can be removed via dedicated nodes.
 Add a node Remove annotation and configure its Removed annotations parameter as following:
-key == &amp;quot;Threshold&amp;quot; OR key == &amp;quot;MeanIntensity&amp;quot; This will remove all annotations that either have the name/key Threshold or MeanIntensity.
- Remove annotation executes the expression for each annotation to determine if it should be deleted.
- You can also remove annotations by their value or implement even more complex filter expressions.</description>
+key == &amp;#34;Threshold&amp;#34; OR key == &amp;#34;MeanIntensity&amp;#34; This will remove all annotations that either have the name/key Threshold or MeanIntensity.
+Remove annotation executes the expression for each annotation to determine if it should be deleted.
+You can also remove annotations by their value or implement even more complex filter expressions.</description>
     </item>
     
     <item>

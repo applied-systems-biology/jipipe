@@ -12,7 +12,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/examples/how-to-load-projects/step1/</guid>
-      <description> If you downloaded a *.zip file, please extract it first Open JIPipe Navigate to Project &amp;gt; Open  </description>
+      <description> If you downloaded a *.zip file, please extract it first Open JIPipe Navigate to Project &amp;gt; Open </description>
     </item>
     
     <item>
@@ -21,8 +21,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/examples/how-to-load-projects/step2/</guid>
-      <description> Select a file that ends with *.jip Click Open  *.jip files are typically located either directly in the root directory of the package, or within a subdirectory ProtocolAndData.
- </description>
+      <description>Select a file that ends with *.jip Click Open *.jip files are typically located either directly in the root directory of the package, or within a subdirectory ProtocolAndData.</description>
     </item>
     
     <item>
@@ -32,10 +31,10 @@
       
       <guid>https://www.jipipe.org/examples/how-to-load-projects/step3/</guid>
       <description>You will have two options:
- This window will open the project in the current window New window will create a new JIPipe window for the project  Choose the option that is most convenient for you.
+This window will open the project in the current window New window will create a new JIPipe window for the project Choose the option that is most convenient for you.
 Afterwards, the project will be opened in the JIPipe editor.
 To execute the pipeline, you have two options:
- Running the whole pipeline: 👉 this is recommended for running finalized pipelines on the full dataset Caching specific nodes or compartments: 👉 use this option if still want to modify the pipeline or want to review intermediate results  </description>
+Running the whole pipeline: 👉 this is recommended for running finalized pipelines on the full dataset Caching specific nodes or compartments: 👉 use this option if still want to modify the pipeline or want to review intermediate results </description>
     </item>
     
     <item>
@@ -87,8 +86,8 @@ If you want more information about the result browser, please visit the result b
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/examples/how-to-load-projects/caching1/</guid>
-      <description>To run a specific node or compartment, click the  button that is located on the node. Afterwards, select one of the options:
- Update cache will run the pipeline up to the selected node and store only the results of the selected node Cache intermediate results will run the pipeline up to the selected node, but also store all results of all predecessors  Choose the option that is most convenient for you.</description>
+      <description>To run a specific node or compartment, click the button that is located on the node. Afterwards, select one of the options:
+Update cache will run the pipeline up to the selected node and store only the results of the selected node Cache intermediate results will run the pipeline up to the selected node, but also store all results of all predecessors Choose the option that is most convenient for you.</description>
     </item>
     
     <item>

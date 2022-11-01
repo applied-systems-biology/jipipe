@@ -7,12 +7,22 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language><atom:link href="https://www.jipipe.org/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Version 1.74.0 (current version)</title>
+      <title>Version 1.75.0 (current version)</title>
+      <link>https://www.jipipe.org/download/changelog/1.75.0/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/download/changelog/1.75.0/</guid>
+      <description>Table Of Contents 1.75.1 Image processing Data processing Expressions User interface Bugfixes and small improvements Known issues 1.75.1 fixed Critical bug where enum parameters could not be initialized Image processing Various nodes that generate statistics on labels
+new Node &amp;ldquo;Merge 2D slices into hyperstack&amp;rdquo; (inverse operation of &amp;ldquo;Split into 2D slices&amp;rdquo;). Intended for more advanced filtering of hyperstack slices. new Node &amp;ldquo;Merge small labels&amp;rdquo; (merges labels with a low number of pixels into a neighboring label index) new Node &amp;ldquo;Key/Value Histogram 5D&amp;rdquo; new Node &amp;ldquo;Key/Value threshold statistics 5D&amp;rdquo; new Node &amp;ldquo;Key/Value statistics 5D (fast averages)&amp;rdquo; new Node &amp;ldquo;Key/Value threshold statistics 5D (fast averages)&amp;rdquo; improved Convolve operators now have normalization parameter improved Convolve operators now support RGB images (same behavior as ImageJ) Data processing new Node &amp;ldquo;Filter by annotation&amp;rdquo; (more compact version of &amp;ldquo;Split &amp;amp; filter by annotation&amp;rdquo; that applies the same operation) Expressions new New function STRING_FORMAT (C-style string formatting) new New function NUM (Alternative to TO_NUMBER) improved Expressions that return numbers: valid numeric strings are automatically converted to numbers (before there was an exception if not a Number type is returned) fixed Escaping of expressions did not work as expected (errors if sub-strings contained spaces) User interface improved New &amp;ldquo;Memory&amp;rdquo; menu in the status bar that contains all memory-related operations (before was only a gear icon) improved &amp;ldquo;Reduce memory&amp;rdquo; moved into the &amp;ldquo;Memory&amp;rdquo; menu fixed Number editor behaved erratically in non-english locales (now uses the advanced number parser capable of parsing NA and infinity) Bugfixes and small improvements Please refer to the commits in the JIPipe GitHub repository to find a list of all bugfixes and improvements.</description>
+    </item>
+    
+    <item>
+      <title>Version 1.74.0</title>
       <link>https://www.jipipe.org/download/changelog/1.74.0/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/download/changelog/1.74.0/</guid>
-      <description>Table Of Contents  Plugin manager Environment EasyInstaller TrackMate integration (Beta) Cellpose integration Omnipose integration (Beta) Image processing  ROI processing Coloc2 integration   Table processing Plotting General data processing Parameters Expressions Node examples User interface  Project management Parameters Graph editor Compartment editor Cache browser / Results viewer ImageJ alias menu Image viewer  ROI manager Measurement tool / mask drawer / ROI drawer   Plot editor Table editor Dependency management Node templates   Data management Data API Bugfixes and small improvements Known issues    Plugin manager In older JIPipe versions, all extensions are automatically loaded during the JIPipe startup.</description>
+      <description>Table Of Contents Plugin manager Environment EasyInstaller TrackMate integration (Beta) Cellpose integration Omnipose integration (Beta) Image processing ROI processing Coloc2 integration Table processing Plotting General data processing Parameters Expressions Node examples User interface Project management Parameters Graph editor Compartment editor Cache browser / Results viewer ImageJ alias menu Image viewer ROI manager Measurement tool / mask drawer / ROI drawer Plot editor Table editor Dependency management Node templates Data management Data API Bugfixes and small improvements Known issues Plugin manager In older JIPipe versions, all extensions are automatically loaded during the JIPipe startup.</description>
     </item>
     
     <item>
@@ -21,8 +31,8 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/download/changelog/1.73.0/</guid>
-      <description>Table Of Contents  Trainable Weka Segmentation nodes  Example   Skeletons  Example   ROIs and labels    Trainable Weka Segmentation nodes JIPipe nodes and data types encapsulating the Trainable Weka Segmentation were added, making it possible to utilize these without the Macro node.
- new Data type “Weka model” (saves classifier, data, and metadata of the segmenter) new Node “Import Weka model” (allows to import existing models) new Node “Train Weka model from ROI (2D)” new Node “Train Weka model from ROI (3D)” new Node “Train Weka model from mask (2D)” new Node “Train Weka model from labels (2D)” new Node “Weka classifier 2D” new Node “Weka classifier 3D”  Example  Using the Weka segmentation nodes small size weka simple tutorial  A small example showcasing how to utilize the Trainable Weka Segmentation nodes.</description>
+      <description>Table Of Contents Trainable Weka Segmentation nodes Example Skeletons Example ROIs and labels Trainable Weka Segmentation nodes JIPipe nodes and data types encapsulating the Trainable Weka Segmentation were added, making it possible to utilize these without the Macro node.
+new Data type “Weka model” (saves classifier, data, and metadata of the segmenter) new Node “Import Weka model” (allows to import existing models) new Node “Train Weka model from ROI (2D)” new Node “Train Weka model from ROI (3D)” new Node “Train Weka model from mask (2D)” new Node “Train Weka model from labels (2D)” new Node “Weka classifier 2D” new Node “Weka classifier 3D” Example Using the Weka segmentation nodes small size weka simple tutorial A small example showcasing how to utilize the Trainable Weka Segmentation nodes.</description>
     </item>
     
     <item>
@@ -31,7 +41,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/download/changelog/1.72.x/</guid>
-      <description>Version 1.72.0  This is the first public release of JIPipe  Version 1.72.x  Mostly changes to make JIPipe compatible to SciJava Maven and cleanup new Node “Reduce &amp;amp; split hyperstack” (allows the slicing of Hyperstacks by indices; a more simple alternative to “Reduce &amp;amp; split hyperstack (Expression)”) new Node “Draw/modify ROIs” (interactive editing of ROI; it works but is currently incomplete and subject to change)  </description>
+      <description>Version 1.72.0 This is the first public release of JIPipe Version 1.72.x Mostly changes to make JIPipe compatible to SciJava Maven and cleanup new Node “Reduce &amp;amp; split hyperstack” (allows the slicing of Hyperstacks by indices; a more simple alternative to “Reduce &amp;amp; split hyperstack (Expression)”) new Node “Draw/modify ROIs” (interactive editing of ROI; it works but is currently incomplete and subject to change) </description>
     </item>
     
     <item>
@@ -60,7 +70,7 @@ As an example, add the Python script (iterating) node (red arrow 1) to the pipel
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/faq/general/</guid>
-      <description>Where do I find documentation? You can find all documentation pages in the Help  menu at the top right.
+      <description>Where do I find documentation? You can find all documentation pages in the Help menu at the top right.
 There are also context-based documentations available if you select a node in the graph. Hover your mouse over a parameter to show documentations for this parameter only.
 Does JIPipe have a backup function? Yes. By default, JIPipe creates a backup every 3 minutes. You can recover it via Project &amp;gt; Restore Backup.</description>
     </item>
@@ -82,7 +92,7 @@ Does JIPipe have a backup function? Yes. By default, JIPipe creates a backup eve
       <guid>https://www.jipipe.org/tutorials/features/teaching/introduction/</guid>
       <description>JIPipe comes with various features that help lecturers to setup exercises where students can have hands-on experience and first achievements in creating image analysis workflows.
 The following features will be explained:
- Graph compartments as means to structure the analysis into units with a clear purpose The project overview tab that allows to provide the list of tasks and explanations directly within the project file Comment nodes to annotate specific areas or nodes within a pipeline Node templates and its associated menu can be utilized to provide students with a selection of nodes to be used in a project A project permission system to prevent students from applying accidental modifications  </description>
+Graph compartments as means to structure the analysis into units with a clear purpose The project overview tab that allows to provide the list of tasks and explanations directly within the project file Comment nodes to annotate specific areas or nodes within a pipeline Node templates and its associated menu can be utilized to provide students with a selection of nodes to be used in a project A project permission system to prevent students from applying accidental modifications </description>
     </item>
     
     <item>
@@ -91,7 +101,7 @@ The following features will be explained:
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/examples/how-to-load-projects/step1/</guid>
-      <description> If you downloaded a *.zip file, please extract it first Open JIPipe Navigate to Project &amp;gt; Open  </description>
+      <description> If you downloaded a *.zip file, please extract it first Open JIPipe Navigate to Project &amp;gt; Open </description>
     </item>
     
     <item>
@@ -109,7 +119,7 @@ The following features will be explained:
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/examples/how-to-browse-results/step1/</guid>
-      <description> If you downloaded a *.zip file, please extract it first Open JIPipe Navigate to Project &amp;gt; Open analysis output  </description>
+      <description> If you downloaded a *.zip file, please extract it first Open JIPipe Navigate to Project &amp;gt; Open analysis output </description>
     </item>
     
     <item>
@@ -120,7 +130,7 @@ The following features will be explained:
       <guid>https://www.jipipe.org/tutorials/advanced/imagej-macros/step1/</guid>
       <description>👉 This tutorial requires that you have installed node template Import images.
 If you do not have the template, you can download it via Manage &amp;gt; Download more templates or by importing the Templates.json file that is provided in the data package. If you do not know how to download or import node templates, please check out our tutorial.
- Create a new project with one compartment.
+Create a new project with one compartment.
 Drag the data folder of the tutorial to the UI.</description>
     </item>
     
@@ -174,8 +184,7 @@ The node Annotate with image properties can create JIPipe-managed annotations fr
       <guid>https://www.jipipe.org/tutorials/basic/annotations-3/step1/</guid>
       <description>In this tutorial we will work with a generated image, which is a quick and convenient way to test various features.
 Begin by adding the node Add data &amp;gt; Image &amp;gt; Generate from math expression
-Generate from math expression generates an image with a user-defined size and generates the value via a custom math expression.
- </description>
+Generate from math expression generates an image with a user-defined size and generates the value via a custom math expression.</description>
     </item>
     
     <item>
@@ -196,7 +205,7 @@ Note that the method of updating the cache from the compartments works only if t
       
       <guid>https://www.jipipe.org/tutorials/basic/cache-2/step1/</guid>
       <description>We assume that you have followed the previous tutorial
- Load the example pipeline.
+Load the example pipeline.
 Go to the Compartments tab and update the cache directly from there. This can be achieved with the compartment nodes the same way as with regular nodes. Use the green arrow on the Processing compartment (red arrow 1) and choose the Cache intermediate results option to save the cache for all nodes (red arrow 2).</description>
     </item>
     
@@ -226,7 +235,7 @@ Before we start processing these images, we shall separate the processing nodes 
       
       <guid>https://www.jipipe.org/tutorials/basic/compartments-2/step1/</guid>
       <description>Please ensure that you have followed the tutorial Compartments I: Creating and connecting
- Navigate to the Processing compartment.
+Navigate to the Processing compartment.
 We start with segmenting the blob image. We can use the node search triangle (red arrow 1) to find matching nodes (red arrow 2). Search for gaussian blur (red arrow 3) and select the Gaussian blur 2D node (red arrow 4).
 Add the node to the pipeline (red arrow 5).</description>
     </item>
@@ -392,7 +401,7 @@ On the GUI, draw around a group of nodes using the mouse with the left button do
       
       <guid>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step1/</guid>
       <description>This guide assumes that you have followed the tutorial &amp;ldquo;Creating node groups I&amp;rdquo;
- In order to see the content of the group node, double-click on the node (red arrow 1), which will open the content of the group in a new tab (red arrow 2).</description>
+In order to see the content of the group node, double-click on the node (red arrow 1), which will open the content of the group in a new tab (red arrow 2).</description>
     </item>
     
     <item>
@@ -411,7 +420,7 @@ On the GUI, draw around a group of nodes using the mouse with the left button do
       
       <guid>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step1/</guid>
       <description>Many JIPipe nodes have the ability to apply multiple parameter sets. The following steps will guide you through how this feature is used.
- 👉 This tutorial requires that you have installed node template Import images.
+👉 This tutorial requires that you have installed node template Import images.
 If you do not have the template, you can download it via Manage &amp;gt; Download more templates or by importing the Templates.json file that is provided in the data package. If you do not know how to download or import node templates, please check out our tutorial.</description>
     </item>
     
@@ -507,7 +516,7 @@ The new tab will contain the content of the group, similarly to the previous vie
       
       <guid>https://www.jipipe.org/faq/issues/</guid>
       <description>JIPipe does not load. There can be multiple causes for issues:
-  Error Cause Solution    Splash screen says &#34;Module threw error&#34;. Various ImageJ errors.   A dependency might be missing.   Please check if all JIPipe dependencies are installed. Please do not hesitate to contact us. Provide us a screenshot, and ideally the full set of error messages.     Splash screen says &#34;</description>
+Error Cause Solution Splash screen says &#34;Module threw error&#34;. Various ImageJ errors. A dependency might be missing. Please check if all JIPipe dependencies are installed. Please do not hesitate to contact us. Provide us a screenshot, and ideally the full set of error messages. Splash screen says &#34;Module threw error&#34;. ImageJ error says &#34;Caused by: java.lang.NoSuchMethodError: com.fasterxml.jackson.core.JsonParser.getReadCapabilities()&#34; A plugin interferes with a software library.</description>
     </item>
     
     <item>
@@ -525,8 +534,7 @@ The new tab will contain the content of the group, similarly to the previous vie
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/examples/how-to-load-projects/step2/</guid>
-      <description> Select a file that ends with *.jip Click Open  *.jip files are typically located either directly in the root directory of the package, or within a subdirectory ProtocolAndData.
- </description>
+      <description>Select a file that ends with *.jip Click Open *.jip files are typically located either directly in the root directory of the package, or within a subdirectory ProtocolAndData.</description>
     </item>
     
     <item>
@@ -553,8 +561,7 @@ The new tab will contain the content of the group, similarly to the previous vie
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/examples/how-to-browse-results/step2/</guid>
-      <description> Select the results directory Click Open  Result directories contain a file project.jip and a log file log.txt. In our examples, the are usually folders ProjectAndCache.
- </description>
+      <description>Select the results directory Click Open Result directories contain a file project.jip and a log file log.txt. In our examples, the are usually folders ProjectAndCache.</description>
     </item>
     
     <item>
@@ -575,8 +582,7 @@ It will auto-configure the node with one image input and one image output, as we
       <guid>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step2/</guid>
       <description>Now the new File node will appear on the work area.
 The File nodes contains information where JIPipe should look for files. It is related to Folder (a directory) and Path (a file or directory).
-If you want to reference multiple files/directories/paths, you can also use File list/Folder list/Path list.
- </description>
+If you want to reference multiple files/directories/paths, you can also use File list/Folder list/Path list.</description>
     </item>
     
     <item>
@@ -588,7 +594,7 @@ If you want to reference multiple files/directories/paths, you can also use File
       <description>Add the node Annotate data with table values to the UI (red arrow 1).
 In the Parameters tab (red arrow 2) add the average density as an image annotation (red arrows 3 and 4).
 Each annotation consists of two parts:
- The Name is the name of the annotation. Set it to &amp;quot;Density&amp;quot;. Please note that this is an expression (as the text is colored) and text should be put into quotes.</description>
+The Name is the name of the annotation. Set it to &amp;quot;Density&amp;quot;. Please note that this is an expression (as the text is colored) and text should be put into quotes.</description>
     </item>
     
     <item>
@@ -608,7 +614,7 @@ The Split &amp;amp; filter by annotations node has a configurable number of outp
       
       <guid>https://www.jipipe.org/tutorials/basic/annotations-3/step2/</guid>
       <description>Adding the node Annotate by image statistics (Expression) and configure the Generated annotations parameter in its parameter tab as following:
- Set Generator to stat_mean (the mean intensity value; click Edit to find out more about variables) Set Column name to MeanIntensity (the column name refers to the name of the generated annotation)  If you run the node via Update cache, you will see a new annotation MeanIntensity.</description>
+Set Generator to stat_mean (the mean intensity value; click Edit to find out more about variables) Set Column name to MeanIntensity (the column name refers to the name of the generated annotation) If you run the node via Update cache, you will see a new annotation MeanIntensity.</description>
     </item>
     
     <item>
@@ -637,7 +643,7 @@ To run all the nodes and save their results in cache, use the green arrow in the
       
       <guid>https://www.jipipe.org/tutorials/basic/comment-nodes/step4/</guid>
       <description>This image is from the standard ImageJ samples, described in ImageJ as follows:
-  This image is made from a Molecular Probes demo slide: Cells: bovine pulmonary arthery endothelial cells Blue: nucleus stained with DAPI Green: Tubulin stained with Bodipy FL goat anti-mouse IgG Red: F-Actin stained with Texas Red X-Phalloidin   We can add this information as a comment to the pipeline. Use the search bar (red arrow 1) to find the Comment node (red arrow 2)</description>
+This image is made from a Molecular Probes demo slide: Cells: bovine pulmonary arthery endothelial cells Blue: nucleus stained with DAPI Green: Tubulin stained with Bodipy FL goat anti-mouse IgG Red: F-Actin stained with Texas Red X-Phalloidin We can add this information as a comment to the pipeline. Use the search bar (red arrow 1) to find the Comment node (red arrow 2)</description>
     </item>
     
     <item>
@@ -667,7 +673,7 @@ Experiment with the node by setting the Sigma (X) parameter (red arrow 3) to var
       
       <guid>https://www.jipipe.org/tutorials/basic/exporting-data-1/step2/</guid>
       <description>In the Cache browser switch to the Import/Export tab (red arrow 1). Here you can manually export data into a JIPipe-compatible format. You have two options:
- Exporting the the currently viewed table of data (red arrow 2) as ZIP or directory Exporting the cache of the whole node (red arrow 3) as directory  The difference between these options is that the cache export ensures that you can later load in the result back into the current node via the Import function in the Cache section.</description>
+Exporting the the currently viewed table of data (red arrow 2) as ZIP or directory Exporting the cache of the whole node (red arrow 3) as directory The difference between these options is that the cache export ensures that you can later load in the result back into the current node via the Import function in the Cache section.</description>
     </item>
     
     <item>
@@ -813,8 +819,7 @@ Configure the Add path to annotations to generate an annotation #Folder (red arr
       <guid>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step2/</guid>
       <description>Right-click anywhere in the white area of the GUI (red arrow 1) and select the Group option (red arrow 2.)
 The Group option will automatically add and configure a node of the type Group. You can also add node groups via already established means to add nodes.
-Group nodes contain a dedicated pipeline that is automatically executed when the node itself is run.
- </description>
+Group nodes contain a dedicated pipeline that is automatically executed when the node itself is run.</description>
     </item>
     
     <item>
@@ -927,7 +932,7 @@ What is the difference between groups and compartments? If you use compartments,
       
       <guid>https://www.jipipe.org/examples/how-to-import-node-templates/json2/</guid>
       <description>You will now have two options that determine where the loaded templates will be stored:
- Globally: the newly imported templates will be available in whole JIPipe (all projects) Inside project: the templates will be directly stored inside the project and thus only available within the project itself  Choose the option that is most convenient for you.
+Globally: the newly imported templates will be available in whole JIPipe (all projects) Inside project: the templates will be directly stored inside the project and thus only available within the project itself Choose the option that is most convenient for you.
 You can also move templates from/to global store into/from project storage via the Manage menu.</description>
     </item>
     
@@ -938,10 +943,10 @@ You can also move templates from/to global store into/from project storage via t
       
       <guid>https://www.jipipe.org/examples/how-to-load-projects/step3/</guid>
       <description>You will have two options:
- This window will open the project in the current window New window will create a new JIPipe window for the project  Choose the option that is most convenient for you.
+This window will open the project in the current window New window will create a new JIPipe window for the project Choose the option that is most convenient for you.
 Afterwards, the project will be opened in the JIPipe editor.
 To execute the pipeline, you have two options:
- Running the whole pipeline: 👉 this is recommended for running finalized pipelines on the full dataset Caching specific nodes or compartments: 👉 use this option if still want to modify the pipeline or want to review intermediate results  </description>
+Running the whole pipeline: 👉 this is recommended for running finalized pipelines on the full dataset Caching specific nodes or compartments: 👉 use this option if still want to modify the pipeline or want to review intermediate results </description>
     </item>
     
     <item>
@@ -981,7 +986,7 @@ The second option, Node as group, will add all exportable parameters to the list
       
       <guid>https://www.jipipe.org/examples/how-to-browse-results/step3/</guid>
       <description>You will have two options:
- This window will open the project in the current window New window will create a new JIPipe window for the project  Choose the option that is most convenient for you.
+This window will open the project in the current window New window will create a new JIPipe window for the project Choose the option that is most convenient for you.
 Afterwards, the project will be opened in the JIPipe editor.</description>
     </item>
     
@@ -992,7 +997,7 @@ Afterwards, the project will be opened in the JIPipe editor.</description>
       
       <guid>https://www.jipipe.org/tutorials/advanced/imagej-macros/step3/</guid>
       <description>Go back to Parameters (red arrow 1) and add the following macro code to the indicated place (red arrow 2) that needs to be executed here (red arrow 3):
-run(&amp;quot;Auto Local Threshold&amp;quot;, &amp;quot;method=[Try all] radius=5 parameter_1=0 parameter_2=0 white&amp;quot;) This example macro executes the 15 local thresholding methods of ImageJ on the blob image, using a radius of 5.</description>
+run(&amp;#34;Auto Local Threshold&amp;#34;, &amp;#34;method=[Try all] radius=5 parameter_1=0 parameter_2=0 white&amp;#34;) This example macro executes the 15 local thresholding methods of ImageJ on the blob image, using a radius of 5.</description>
     </item>
     
     <item>
@@ -1119,8 +1124,7 @@ Then choose the directory and click Open.</description>
       
       <guid>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-1/step3/</guid>
       <description>This will show a list of compatible nodes, i.e., nodes that can accept the datatype from the active node. In this example node, which provides an image file location, the 2nd hit is the proper choice: Import image (red arrow 1)
-The node Import image consumes a JIPipe-managed File data and passes it into ImageJ for importing. The resulting ImageJ image is packaged into a JIPipe-managed image type.
- </description>
+The node Import image consumes a JIPipe-managed File data and passes it into ImageJ for importing. The resulting ImageJ image is packaged into a JIPipe-managed image type.</description>
     </item>
     
     <item>
@@ -1130,8 +1134,7 @@ The node Import image consumes a JIPipe-managed File data and passes it into Ima
       
       <guid>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step3/</guid>
       <description>This will add the new node to the GUI, but it will not be connected yet (red arrow 1).
-The node will appear the the ⌖ icon. The location of the symbol is changed by clicking on the pipeline area.
- </description>
+The node will appear the the ⌖ icon. The location of the symbol is changed by clicking on the pipeline area.</description>
     </item>
     
     <item>
@@ -1162,8 +1165,7 @@ If you do not have these templates, you can download them via Manage &amp;gt; Do
       
       <guid>https://www.jipipe.org/tutorials/basic/image-roi-processing/step3/</guid>
       <description>Look for nodes with the name extract (red arrow 1) and choose the Extract image statistics node (red arrow 2).
-Extract image statistics measures statistics on the whole image or an optional ROI. It is related to the node Extract ROI statistics that requires a ROI and optionally requires an image. Both nodes apply the same ImageJ measurement algorithm.
- </description>
+Extract image statistics measures statistics on the whole image or an optional ROI. It is related to the node Extract ROI statistics that requires a ROI and optionally requires an image. Both nodes apply the same ImageJ measurement algorithm.</description>
     </item>
     
     <item>
@@ -1183,8 +1185,7 @@ The node Annotate with path properties allows to annotate the incoming File/Fold
       
       <guid>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step3/</guid>
       <description>Go to Parameters of the new node (red arrow 1)and check Recursive (red arrow 2). Run the node (red arrow 3) with Update cache.
-By default, the node will only list the direct children of the current path. Recursive ensures that also the N-th children are detected.
- </description>
+By default, the node will only list the direct children of the current path. Recursive ensures that also the N-th children are detected.</description>
     </item>
     
     <item>
@@ -1305,7 +1306,7 @@ Begin by adding Define multiple parameters into the pipeline (red arrow 1).</des
       
       <guid>https://www.jipipe.org/tutorials/ui/project-backups/step3/</guid>
       <description>The following steps are optional. By default, JIPipe will store backups into the Fiji.app/jipipe/backups directory.
- The location of the backup files can be customized via going to the Project tab (red arrow 1) and choosing the Application settings tab (red arrow 2). This will open a new tab in the JIPipe main GUI (red arrow 3). Choose the backup tab (red arrow 4) to set a custom folder for the backup projects.</description>
+The location of the backup files can be customized via going to the Project tab (red arrow 1) and choosing the Application settings tab (red arrow 2). This will open a new tab in the JIPipe main GUI (red arrow 3). Choose the backup tab (red arrow 4) to set a custom folder for the backup projects.</description>
     </item>
     
     <item>
@@ -1333,8 +1334,7 @@ Begin by adding Define multiple parameters into the pipeline (red arrow 1).</des
       
       <guid>https://www.jipipe.org/tutorials/ui/project-open/step3/</guid>
       <description>Now the saved project will reopen, showing the compartment structure(s).
-JIPipe will always attempt to restore the UI configuration (tabs etc.) that was present during the saving of the project.
- </description>
+JIPipe will always attempt to restore the UI configuration (tabs etc.) that was present during the saving of the project.</description>
     </item>
     
     <item>
@@ -1386,7 +1386,7 @@ The description editor can be in compact, full or HTML mode (red arrow 4).</desc
       
       <guid>https://www.jipipe.org/examples/how-to-browse-results/step4/</guid>
       <description>You will have two options:
- Load in new tab will open the results in a memory-efficient result browser Load into cache will load all results into the memory cache (Please be careful with this option if your data is very large)  Choose Load in new tab.</description>
+Load in new tab will open the results in a memory-efficient result browser Load into cache will load all results into the memory cache (Please be careful with this option if your data is very large) Choose Load in new tab.</description>
     </item>
     
     <item>
@@ -1396,7 +1396,7 @@ The description editor can be in compact, full or HTML mode (red arrow 4).</desc
       
       <guid>https://www.jipipe.org/tutorials/advanced/imagej-macros/step4/</guid>
       <description>Go back to Parameters (red arrow 1) and add the following macro code to the indicated place (red arrow 2) that needs to be executed here (red arrow 3):
-run(&amp;quot;Auto Local Threshold&amp;quot;, &amp;quot;method=[Try all] radius=5 parameter_1=0 parameter_2=0 white&amp;quot;) This example macro executes the 15 local thresholding methods of ImageJ on the blob image, using a radius of 5.</description>
+run(&amp;#34;Auto Local Threshold&amp;#34;, &amp;#34;method=[Try all] radius=5 parameter_1=0 parameter_2=0 white&amp;#34;) This example macro executes the 15 local thresholding methods of ImageJ on the blob image, using a radius of 5.</description>
     </item>
     
     <item>
@@ -1435,8 +1435,8 @@ In the expression editor window (red arrow 2) look for a number conversion funct
       <guid>https://www.jipipe.org/tutorials/basic/annotations-3/step4/</guid>
       <description>Let&amp;rsquo;s calculate the difference between the threshold and the mean image intensity.
 Add a node Set/Edit annotations and navigate to its Annotations parameter.
- Set the Value to ABS(TO_NUMBER(MeanIntensity) - TO_NUMBER(Threshold)) Set the Name to ThresholdDiff  On running the node you should notice a new annotation ThresholdDiff that is set to the absolute difference between the threshold and mean image intensity.
- Set/Edit annotations allows you to create new annotations by setting their value and to combine existing annotations or apply operations on them.</description>
+Set the Value to ABS(TO_NUMBER(MeanIntensity) - TO_NUMBER(Threshold)) Set the Name to ThresholdDiff On running the node you should notice a new annotation ThresholdDiff that is set to the absolute difference between the threshold and mean image intensity.
+Set/Edit annotations allows you to create new annotations by setting their value and to combine existing annotations or apply operations on them.</description>
     </item>
     
     <item>
@@ -1475,8 +1475,7 @@ Update cache and Cache intermediate results store the results into the RAM, whil
       
       <guid>https://www.jipipe.org/tutorials/basic/compartments-2/step4/</guid>
       <description>A simple segmentation can achieved by automatic thresholding. We search for such node e.g., via the Find matching algorithms option (red arrow 1) and searching for auto threshold (red arrow 2). Choose the matching node (Auto threshold 2D, red arrow 3) and add it to the pipeline (red arrow 4).
-The Auto threshold 2D node is the JIPipe equivalent of the ImageJ command Image &amp;gt; Adjust &amp;gt; Auto threshold.
- </description>
+The Auto threshold 2D node is the JIPipe equivalent of the ImageJ command Image &amp;gt; Adjust &amp;gt; Auto threshold.</description>
     </item>
     
     <item>
@@ -1499,7 +1498,7 @@ Provide a relative output directory (i.</description>
       <guid>https://www.jipipe.org/tutorials/basic/exporting-data-2/step4/</guid>
       <description>Now JIPipe will give you options that determine how the file names should be generated. This is required, as JIPipe does not know anymore the name of the original input file unless it is stored in the annotations.
 The most important setting is the File name expression that defaults to
-SUMMARIZE_ANNOTATIONS_MAP(annotations, &amp;quot;#&amp;quot;) The expression is applied for each exported data item and returns the file name that should be used. The default method will take all known annotations that are marked with a # and form a filename based on the following pattern:</description>
+SUMMARIZE_ANNOTATIONS_MAP(annotations, &amp;#34;#&amp;#34;) The expression is applied for each exported data item and returns the file name that should be used. The default method will take all known annotations that are marked with a # and form a filename based on the following pattern:</description>
     </item>
     
     <item>
@@ -1546,8 +1545,7 @@ The node Import image consumes a JIPipe-managed File data and passes it into Ima
       
       <guid>https://www.jipipe.org/tutorials/basic/image-roi-processing/step4/</guid>
       <description>Drag the new node to the UI and position it below the Find particles 2D node (red arrow 1). For convenience, rearrange to input slots of the new node by moving its right-side node to the left (red arrow 2) by clicking the ▼ button on the ROI slot and selecting Move to the left.
-You can also right-click a slot to open the slot settings menu.
- </description>
+You can also right-click a slot to open the slot settings menu.</description>
     </item>
     
     <item>
@@ -1653,8 +1651,8 @@ Note that the title of the node template (red arrow 4) and the detailed descript
       
       <guid>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step4/</guid>
       <description> The parameter table generated by Define multiple parameters is empty by default. This is why you first have to create rows = parameter sets and columns = parameters.
- We begin by adding a new column by applying the following steps.
- To add a column ( = parameter) by selecting Import from node (red arrow 2), which will auto-configure a new column based on an existing node parameter Find the Auto threshold 2D entry (red arrow 3) Choose the Method parameter (red arrow 4) and select it (red arrow 5)  </description>
+We begin by adding a new column by applying the following steps.
+To add a column ( = parameter) by selecting Import from node (red arrow 2), which will auto-configure a new column based on an existing node parameter Find the Auto threshold 2D entry (red arrow 3) Choose the Method parameter (red arrow 4) and select it (red arrow 5) </description>
     </item>
     
     <item>
@@ -1682,8 +1680,7 @@ Note that the title of the node template (red arrow 4) and the detailed descript
       
       <guid>https://www.jipipe.org/tutorials/ui/project-backups/step4/</guid>
       <description>In the Backup tab (red arrow 1) activate the Custom path option on the right side (red arrow 2) and navigate to the new backup folder (red line 3)
-It is worth to clear the backup folder every now and then, to save up space.
- </description>
+It is worth to clear the backup folder every now and then, to save up space.</description>
     </item>
     
     <item>
@@ -1771,7 +1768,7 @@ If you want more information about the result browser, please visit the result b
       
       <guid>https://www.jipipe.org/tutorials/advanced/imagej-macros/step5/</guid>
       <description>Now we build-in another macro node, this time we will only use the Phansalkar method, as this is judged to be the most successful thresholding method after examining the output of the first macro node. The new node (red arrow 1) was set up as the first one, the macro code (red arrow 2) will run this specific method only (red arrow 3).
-run(&amp;quot;Auto Local Threshold&amp;quot;, &amp;quot;method=Phansalkar radius=5 parameter_1=0 parameter_2=0 white&amp;quot;) </description>
+run(&amp;#34;Auto Local Threshold&amp;#34;, &amp;#34;method=Phansalkar radius=5 parameter_1=0 parameter_2=0 white&amp;#34;) </description>
     </item>
     
     <item>
@@ -1802,7 +1799,7 @@ The annotations table in the cache browser now contains the image properties tha
       <description>Enter the same filtering formula for the 1-channel slot (red arrow 1).
 Easiest is to copy-paste the content of the Three-channel slot expression (red arrow 2) and change the channel number to 1 (red arrow 3).
 The formulas now should be:
- Three channels: TO_NUMBER($&amp;quot;Image composite channel count&amp;quot;) == 3 1-channel: TO_NUMBER($&amp;quot;Image composite channel count&amp;quot;) == 1  </description>
+Three channels: TO_NUMBER($&amp;quot;Image composite channel count&amp;quot;) == 3 1-channel: TO_NUMBER($&amp;quot;Image composite channel count&amp;quot;) == 1 </description>
     </item>
     
     <item>
@@ -1854,7 +1851,7 @@ Move the node close to the rest of the nodes, click on the ➕ button to add a n
       
       <guid>https://www.jipipe.org/tutorials/basic/compartments-2/step5/</guid>
       <description>The Parameters tab (red arrow 1) exposes the settings, the most important of which (for this tutorial) are indicated by the red arrow 2 to 5:
- Calculate threshold based on ... allows to determine a ROI/mask from where the image threshold is calculated from (defaults to whole image) Method determines the thresholding algorithm (defaults to ImageJ&amp;rsquo;s default thresholding) Threshold annotation determines if generated masks should be annotated with the calculated threshold value (defaults to an annotation Threshold)  </description>
+Calculate threshold based on ... allows to determine a ROI/mask from where the image threshold is calculated from (defaults to whole image) Method determines the thresholding algorithm (defaults to ImageJ&amp;rsquo;s default thresholding) Threshold annotation determines if generated masks should be annotated with the calculated threshold value (defaults to an annotation Threshold) </description>
     </item>
     
     <item>
@@ -1969,7 +1966,7 @@ By repeating the red channel addition for green and blue, we end up with the nec
       
       <guid>https://www.jipipe.org/tutorials/basic/quantification-plotting/step5/</guid>
       <description>Similarly, the Measurement table (red arrow 1) can be opened in a new window (red arrow 2) by double-clicking. The measured parameters are the same as provided in ImageJ (red rectangle 3), and we can also observe the annotations (red rectangle 4).
- Many interfaces that can be opened by double-clicking entries in the cache browser allow to update the cache directly within the interface via the Update cache button. By this way, you can track a specific result of interest while testing different parameters.</description>
+Many interfaces that can be opened by double-clicking entries in the cache browser allow to update the cache directly within the interface via the Update cache button. By this way, you can track a specific result of interest while testing different parameters.</description>
     </item>
     
     <item>
@@ -2011,8 +2008,7 @@ Setting the Radius parameter (red arrow 4) to various values may help to optimiz
       
       <guid>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step5/</guid>
       <description>In order to use the new group node, we will connect it to the nodes preceding and proceeding the individual file reading nodes. Select the Split channels node (red arrow 1) and duplicate it (red arrow 2).
-Here we opt to create a branching path instead of replacing the existing nodes. You are completely free to replace nodes with groups or implement a branching how you see fit.
- </description>
+Here we opt to create a branching path instead of replacing the existing nodes. You are completely free to replace nodes with groups or implement a branching how you see fit.</description>
     </item>
     
     <item>
@@ -2069,8 +2065,7 @@ It is also possible to select and add multiple nodes from the template list and 
       <guid>https://www.jipipe.org/examples/how-to-import-node-templates/download2/</guid>
       <description>Please select the templates that will be downloaded.
 Proceed by clicking Download selected templates.
-We currently made only a small selection of templates available that are related to our tutorials. The list will be expanded in the future.
- </description>
+We currently made only a small selection of templates available that are related to our tutorials. The list will be expanded in the future.</description>
     </item>
     
     <item>
@@ -2170,7 +2165,7 @@ Exporting the metadata will yield a table with all information displayed in the 
       <description>Now the new input slot of the Preprocessing output node will appear (red arrow 1).
 Repeat the same process for the next three input slots, one each for the green and blue fluorescence channel and for the single channel of the blob image (red arrows 2 to 4).
 Please ensure that the following slots are present in the Preprocessing output node:
- Red_3channel (type should be Image) Green_3channel (type should be Image) Blue_3channel (type should be Image) 1-channel (type should be Image)  </description>
+Red_3channel (type should be Image) Green_3channel (type should be Image) Blue_3channel (type should be Image) 1-channel (type should be Image) </description>
     </item>
     
     <item>
@@ -2191,7 +2186,7 @@ The menu allows to choose from the wide range of ImageJ-based methods (red line 
       <guid>https://www.jipipe.org/tutorials/basic/exporting-data-1/step6/</guid>
       <description>A benefit of the machine-readable JIPipe format is that all contained data and metadata can be conveniently restored by JIPipe.
 Open the Tutorial_B22-1_Part1.jip project that comes pre-loaded with nodes that cover various import scenarios:
-The node Import data table (archive) (red rectangle 1) can import a ZIP file generated by the cache browsers&#39; ZIP-exporter function.
+The node Import data table (archive) (red rectangle 1) can import a ZIP file generated by the cache browsers&amp;rsquo; ZIP-exporter function.
 If the data is stored inside a directory (or if you just extract the ZIP), use the Import data table (directory) node (red rectangle 2 and 3).</description>
     </item>
     
@@ -2204,7 +2199,7 @@ If the data is stored inside a directory (or if you just extract the ZIP), use t
       <description>JIPipe offers various nodes for the export of data that are even outside the scope of the exporter implemented in the cache browser.
 You can find them in the Export menu or via the search bar.
 Proceed to add and connect the following nodes:
- Add Export data and connect it to AVG density Add Export image and connect it to Overlay image Add Export table as XLSX and connect it to All measurements Add Export ROI and connect it to ROI  In the following steps, we will show how to configure these nodes for the export into a single directory.</description>
+Add Export data and connect it to AVG density Add Export image and connect it to Overlay image Add Export table as XLSX and connect it to All measurements Add Export ROI and connect it to ROI In the following steps, we will show how to configure these nodes for the export into a single directory.</description>
     </item>
     
     <item>
@@ -2242,7 +2237,7 @@ Proceed to add and connect the following nodes:
       <guid>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-3/step8/</guid>
       <description>As described before, double-clicking on the cache element (red arrow 1) will open it in a viewer (red arrow 2)
 Basic information about the image (resolution, bit depth, etc.) can be found in the toolbar of the image viewer and within the &amp;ldquo;String representation&amp;rdquo; column in the cache browser.
- The operations for File and Import image are different nodes, so you have the possibility to apply additional file manipulation operations (e.</description>
+The operations for File and Import image are different nodes, so you have the possibility to apply additional file manipulation operations (e.</description>
     </item>
     
     <item>
@@ -2253,7 +2248,7 @@ Basic information about the image (resolution, bit depth, etc.) can be found in 
       <guid>https://www.jipipe.org/tutorials/basic/image-physical-dimensions/step6/</guid>
       <description>We will now apply a look-up table (LUT) to one of the channels.
 To do this, use the search bar (red arrow 1) to add the following nodes:
- Set LUT (color map) (red arrow 3) Apply LUT (red arrow 2)  Connect the input of Set LUT (color map) node to the Red output of Split channels: three channels R, G, B order.
+Set LUT (color map) (red arrow 3) Apply LUT (red arrow 2) Connect the input of Set LUT (color map) node to the Red output of Split channels: three channels R, G, B order.
 Then connect the output of Set LUT (color map) to the input of Apply LUT</description>
     </item>
     
@@ -2414,7 +2409,7 @@ Select the 2nd entry (red arrow 2) and edit it (red arrow 3). Choose the next me
       
       <guid>https://www.jipipe.org/examples/how-to-import-node-templates/download3/</guid>
       <description>You will now have two options that determine where the loaded templates will be stored:
- Global storage: the newly imported templates will be available in whole JIPipe (all projects) Project storage: the templates will be directly stored inside the project and thus only available within the project itself  Choose the option that is most convenient for you.
+Global storage: the newly imported templates will be available in whole JIPipe (all projects) Project storage: the templates will be directly stored inside the project and thus only available within the project itself Choose the option that is most convenient for you.
 You can also move templates from/to global store into/from project storage via the Manage menu.</description>
     </item>
     
@@ -2424,8 +2419,8 @@ You can also move templates from/to global store into/from project storage via t
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/examples/how-to-load-projects/caching1/</guid>
-      <description>To run a specific node or compartment, click the  button that is located on the node. Afterwards, select one of the options:
- Update cache will run the pipeline up to the selected node and store only the results of the selected node Cache intermediate results will run the pipeline up to the selected node, but also store all results of all predecessors  Choose the option that is most convenient for you.</description>
+      <description>To run a specific node or compartment, click the button that is located on the node. Afterwards, select one of the options:
+Update cache will run the pipeline up to the selected node and store only the results of the selected node Cache intermediate results will run the pipeline up to the selected node, but also store all results of all predecessors Choose the option that is most convenient for you.</description>
     </item>
     
     <item>
@@ -2444,8 +2439,7 @@ You can also move templates from/to global store into/from project storage via t
       
       <guid>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step7/</guid>
       <description>The result will be shown on the right side, under the Cache browser tab (red arrow 1), where the newly loaded file name and full path will be listed (red arrow 2)
-The cache stores the results of a pipeline/node in memory. Please note that to work with large images, you require a computer with sufficient RAM space.
- </description>
+The cache stores the results of a pipeline/node in memory. Please note that to work with large images, you require a computer with sufficient RAM space.</description>
     </item>
     
     <item>
@@ -2483,8 +2477,7 @@ The cache stores the results of a pipeline/node in memory. Please note that to w
       
       <guid>https://www.jipipe.org/tutorials/basic/cache-1/step7/</guid>
       <description>The entire project-wide cache can be viewed and managed via the Tools menu (red arrow 1), using the Cache browser option (red arrow 2).
-So far, we only used the Cache browser tab that is associated to a specific node. The global Cache browser option is useful for browsing through all data that has been cached.
- </description>
+So far, we only used the Cache browser tab that is associated to a specific node. The global Cache browser option is useful for browsing through all data that has been cached.</description>
     </item>
     
     <item>
@@ -2524,7 +2517,7 @@ While the format can be browsed by humans, it is mainly designed for reading via
       <guid>https://www.jipipe.org/tutorials/basic/exporting-data-2/step7/</guid>
       <description>We begin with the Export data node. It encapsulates the same functionality as the cache browser&amp;rsquo;s data exporter.
 Here we will export the AVG density table into a directory ExampleExports/ViaNodes relative to the project file. Begin by selecting the node and changing the following parameters:
- Output directory to ExampleExports/ViaNodes (red arrow 1) Enable Output relative to project directory. If this is not done, the files will be stored in a temporary directory (red arrow 2)  Output relative to project directory only works if you loaded the project from a *.</description>
+Output directory to ExampleExports/ViaNodes (red arrow 1) Enable Output relative to project directory. If this is not done, the files will be stored in a temporary directory (red arrow 2) Output relative to project directory only works if you loaded the project from a *.</description>
     </item>
     
     <item>
@@ -2630,8 +2623,8 @@ Round &amp;gt; 0.7 </description>
       
       <guid>https://www.jipipe.org/tutorials/features/cellpose-2/step7/</guid>
       <description>Use the slot editing capabilities of Split data randomly (percentage) to create the following output slots of type Image:
- Train Validate Test  Then configure the percentages in the Parameters tab and the Weights category (red rectangle 1) as following:
- Train set to 80 Validate set to 10 Test set to 10  </description>
+Train Validate Test Then configure the percentages in the Parameters tab and the Weights category (red rectangle 1) as following:
+Train set to 80 Validate set to 10 Test set to 10 </description>
     </item>
     
     <item>
@@ -2670,7 +2663,7 @@ When using the same name for saving, it is best to delete the outdated node from
       <guid>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step7/</guid>
       <description>If you want more entries, repeat the process until all the desired thresholding methods are n the parameters list (red rectangle 1).
 Alternatively, you can let the editor generate all values automatically:
- Select one value of the column (note: there must be at least one parameter set) Navigate to Generate and choose a generator (for the Method parameter there is only one)  </description>
+Select one value of the column (note: there must be at least one parameter set) Navigate to Generate and choose a generator (for the Method parameter there is only one) </description>
     </item>
     
     <item>
@@ -2719,8 +2712,7 @@ If you want more information about the cache browser, please visit the tutorials
       
       <guid>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step8/</guid>
       <description>By double-clicking on the cache entry row (red arrow 1), the newly loaded image will be opened in a dedicated viewer (red arrow 2)
-The File node packages the file path into a JIPipe-managed object called File. If you double-click a File/Folder/Path, it will be opened using your system&amp;rsquo;s standard behavior.
- </description>
+The File node packages the file path into a JIPipe-managed object called File. If you double-click a File/Folder/Path, it will be opened using your system&amp;rsquo;s standard behavior.</description>
     </item>
     
     <item>
@@ -2731,7 +2723,7 @@ The File node packages the file path into a JIPipe-managed object called File. I
       <guid>https://www.jipipe.org/tutorials/basic/annotations-1/step8/</guid>
       <description>Go to the Parameters tab and examine the filter expression in the category Filters (red arrow 1).
 The figure shows an expression (by default the expression is empty)
-TO_NUMBER($&amp;quot;Image composite channel count&amp;quot;) == 3 This text is called an expression and determines the filter conditions that determine wether an input data item is pass through the output.
+TO_NUMBER($&amp;#34;Image composite channel count&amp;#34;) == 3 This text is called an expression and determines the filter conditions that determine wether an input data item is pass through the output.
 In the following steps, we will briefly explain the functionality behind the expression.</description>
     </item>
     
@@ -2743,9 +2735,9 @@ In the following steps, we will briefly explain the functionality behind the exp
       <guid>https://www.jipipe.org/tutorials/basic/annotations-3/step8/</guid>
       <description>Now let&amp;rsquo;s assume that we do not need Threshold and MeanIntensity again. These can be removed via dedicated nodes.
 Add a node Remove annotation and configure its Removed annotations parameter as following:
-key == &amp;quot;Threshold&amp;quot; OR key == &amp;quot;MeanIntensity&amp;quot; This will remove all annotations that either have the name/key Threshold or MeanIntensity.
- Remove annotation executes the expression for each annotation to determine if it should be deleted.
- You can also remove annotations by their value or implement even more complex filter expressions.</description>
+key == &amp;#34;Threshold&amp;#34; OR key == &amp;#34;MeanIntensity&amp;#34; This will remove all annotations that either have the name/key Threshold or MeanIntensity.
+Remove annotation executes the expression for each annotation to determine if it should be deleted.
+You can also remove annotations by their value or implement even more complex filter expressions.</description>
     </item>
     
     <item>
@@ -2765,8 +2757,7 @@ The cache content appears on the right side of the UI, containing all the result
       
       <guid>https://www.jipipe.org/tutorials/basic/cache-2/step8/</guid>
       <description>The Import/Export menu (red arrow 1) also allows the importing/exporting of the entire cache of the selected node (red arrow 2) to a selected/created directory (red arrow 3).
-The difference between exporting the current table (as indicated by the Table label) and the whole node cache is that the full-cache options store all outputs of the node, while the Table-functions exclude all non-selected outputs.
- </description>
+The difference between exporting the current table (as indicated by the Table label) and the whole node cache is that the full-cache options store all outputs of the node, while the Table-functions exclude all non-selected outputs.</description>
     </item>
     
     <item>
@@ -2798,8 +2789,7 @@ Add a new input slot to the output node (red arrow 2) by searching for image in 
       <guid>https://www.jipipe.org/tutorials/basic/exporting-data-2/step8/</guid>
       <description>Run the Export data node via Update cache.
 Now navigate to the ExampleExports/ViaNodes directory that should have appeared next to the project file. It contains a file density_blobs.csv according to the pattern defined by the File name expression:
- &amp;quot;density_&amp;quot; plus #Filename, where #Filename is blobs, because the table was annotated with the original filename (blobs)
- </description>
+&amp;quot;density_&amp;quot; plus #Filename, where #Filename is blobs, because the table was annotated with the original filename (blobs)</description>
     </item>
     
     <item>
@@ -2810,7 +2800,7 @@ Now navigate to the ExampleExports/ViaNodes directory that should have appeared 
       <guid>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-1/step8/</guid>
       <description>As described before, double-clicking on the cache element (red arrow 1) will open it in a viewer (red arrow 2)
 Basic information about the image (resolution, bit depth, etc.) can be found in the toolbar of the image viewer and within the &amp;ldquo;String representation&amp;rdquo; column in the cache browser.
- The operations for File and Import image are different nodes, so you have the possibility to apply additional file manipulation operations (e.</description>
+The operations for File and Import image are different nodes, so you have the possibility to apply additional file manipulation operations (e.</description>
     </item>
     
     <item>
@@ -2821,7 +2811,7 @@ Basic information about the image (resolution, bit depth, etc.) can be found in 
       <guid>https://www.jipipe.org/tutorials/basic/finding-connecting-nodes-2/step8/</guid>
       <description>As described before, double-clicking on the cache element (red arrow 1) will open it in a viewer (red arrow 2)
 Basic information about the image (resolution, bit depth, etc.) can be found in the toolbar of the image viewer and within the &amp;ldquo;String representation&amp;rdquo; column in the cache browser.
- The operations for File and Import image are different nodes, so you have the possibility to apply additional file manipulation operations (e.</description>
+The operations for File and Import image are different nodes, so you have the possibility to apply additional file manipulation operations (e.</description>
     </item>
     
     <item>
@@ -2831,8 +2821,7 @@ Basic information about the image (resolution, bit depth, etc.) can be found in 
       
       <guid>https://www.jipipe.org/tutorials/basic/image-physical-dimensions/step8/</guid>
       <description>To change the pixel size and other physical dimensions of an image, search for nodes with the keyword physical (red arrow 1). Select the Set physical dimensions node (red arrow 2).
-The Set physical dimensions allows to set the physical dimensions of the image pixels via parameters. Alternative nodes can set these values from annotations or via expressions.
- </description>
+The Set physical dimensions allows to set the physical dimensions of the image pixels via parameters. Alternative nodes can set these values from annotations or via expressions.</description>
     </item>
     
     <item>
@@ -2919,7 +2908,7 @@ Make sure to activate the GPU if the PC has one (red arrow 6 and 7) to expedite 
       
       <guid>https://www.jipipe.org/tutorials/intermediate/create-node-groups-2/step8/</guid>
       <description>Consequently, Groups should only be generated, when the selection of nodes that will be unified into a group have already been tested and debugged thoroughly!
- Should changing and testing the individual nodes of a group become necessary, the member nodes of the group have to be copied into the main pipeline (red line 1) and tested there the traditional way.</description>
+Should changing and testing the individual nodes of a group become necessary, the member nodes of the group have to be copied into the main pipeline (red line 1) and tested there the traditional way.</description>
     </item>
     
     <item>
@@ -3005,7 +2994,7 @@ The exact name can be read out from the Annotate by image properties node (red a
       <description>Select the Export image node and navigate to its parameters. Unlike the generic data exporter Export data, it allows you to change the output type of the generated file from TIFF to PNG or other formats.
 Again, set the Output directory to ExampleExports/ViaNodes with Output relative to project directory enabled.
 The filename expression set to
-&amp;quot;overlay_&amp;quot; + #Filename This would yield a file that is for example named overlay_blobs.png.</description>
+&amp;#34;overlay_&amp;#34; + #Filename This would yield a file that is for example named overlay_blobs.png.</description>
     </item>
     
     <item>
@@ -3065,7 +3054,7 @@ From the drop-down list (red arrow 6) choose the proper dimensions (red arrows 7
 Select the Apply expression per row node (red arrow 1), open the Parameters tab and apply the following changes:
 In parameter Expressions set the value of Expression to Mean / Area.
 Mean and Area reference the mean and area column values of the currently processed row. Always keep in mind that the Expression is applied per row.
- In parameter Expressions set the value of Column name to Density.</description>
+In parameter Expressions set the value of Column name to Density.</description>
     </item>
     
     <item>
@@ -3124,7 +3113,7 @@ In this case, the saved templates will be found in the tutorial’s folder that 
       <guid>https://www.jipipe.org/documentation-data-api/data-table/</guid>
       <description>The data table structure is the smallest unit of the data API. Its purpose is to organize data of any supported kind into an annotated table and store all required metadata to recover the data from the file system.
 A data table is located in a directory within the file system and contains following parts:
-   Element Description     data-table.json Metadata file for this data table.</description>
+Element Description data-table.json Metadata file for this data table. &amp;lt;data row index&amp;gt; Stores the main data for this row.</description>
     </item>
     
     <item>
@@ -3135,7 +3124,7 @@ A data table is located in a directory within the file system and contains follo
       <guid>https://www.jipipe.org/documentation-java-api/data-type/result-ui/</guid>
       <description>After processing, users should be able to continue processing the data from within JIPipe. The data instances are cleared from memory after processing, meaning that the data needs to be loaded from its output folder after processing.
 An user interface is shown when a user select a row in the results table. There are two ways to modify the user interface:
- Registering additional operations that will be available to users (recommended) Replacing the interface with a custom one  Adding custom operations JIPipe already comes with some default operations, including as opening the containing folder.</description>
+Registering additional operations that will be available to users (recommended) Replacing the interface with a custom one Adding custom operations JIPipe already comes with some default operations, including as opening the containing folder.</description>
     </item>
     
     <item>
@@ -3156,7 +3145,7 @@ JIPipe facilitates this concept by its graph compartment feature that can be acc
       
       <guid>https://www.jipipe.org/documentation-json-api/graph-node/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: algorithm-node.schema.json
-Node in a graphjipipe:slot-configuration:object[object Object]User-defined slots. Might be ignored depending on the algorithm. The keys are the slot names.See slot-definitionjipipe:node-ui-location:object[object Object]Locations of this node within the UI.</description>
+Node in a graphjipipe:slot-configuration:object[object Object]User-defined slots. Might be ignored depending on the algorithm. The keys are the slot names.See slot-definitionjipipe:node-ui-location:object[object Object]Locations of this node within the UI. Optional. The keys depend on the UI implementation.See pointjipipe:node-info-id:stringAlgorithm type IDjipipe:graph-compartment:stringCompartment UUID.</description>
     </item>
     
     <item>
@@ -3176,7 +3165,7 @@ A solution can be JIPipeIteratingAlgorithm or JIPipeSimpleIteratingAlgorithm tha
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/tutorials/old/analysis/</guid>
-      <description>This tutorial is also available as video.1. First startOn starting JIPipe, you will see such a screen: It contains a short introduction, the graph compartment editor,an three pre-defined graph compartments Preprocessing, Analysis, and Postprocessing. As described in the graph compartment documentation, youcan ignore graph graph compartments. But in this tutorial we will make use of its capabilities to clearly separate the pipeline into the mentioned tree steps.</description>
+      <description>This tutorial is also available as video.1. First startOn starting JIPipe, you will see such a screen: It contains a short introduction, the graph compartment editor,an three pre-defined graph compartments Preprocessing, Analysis, and Postprocessing. As described in the graph compartment documentation, youcan ignore graph graph compartments. But in this tutorial we will make use of its capabilities to clearly separate the pipeline into the mentioned tree steps.</description>
     </item>
     
     <item>
@@ -3187,7 +3176,7 @@ A solution can be JIPipeIteratingAlgorithm or JIPipeSimpleIteratingAlgorithm tha
       <guid>https://www.jipipe.org/installation/dependencies/</guid>
       <description>JIPipe has various dependencies in form of ImageJ update sites that are not always provided via the Fiji update site or the ZIP package. During the startup of the software, JIPipe will automatically check for the appropriate ImageJ update sites and will guide you through the installation of all necessary libraries.
 The dependency installation was revised in JIPipe version 1.74.0. Please follow the appropriate procedures in the tutorial below.
- JIPipe 1.</description>
+JIPipe 1.</description>
     </item>
     
     <item>
@@ -3205,8 +3194,8 @@ The dependency installation was revised in JIPipe version 1.74.0. Please follow 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation/create-pipelines/pipeline-editor/</guid>
-      <description>This guide is also available as video tutorial.  The graph editor (pipeline editor) allows you to edit the processing steps of a graph compartment. Its user interface is separated into three sections:
- The analysis graph contains the processing steps (also referred as algorithms) The settings panel shows the properties of the currently selected algorithms The toolbar allows you to add more algorithms into the graph, navigate to existing algorithms, change some behavior settings of the graph editor, and create screenshots  Analysis graph The analysis graph contains algorithms that are represented by rectangles.</description>
+      <description>This guide is also available as video tutorial. The graph editor (pipeline editor) allows you to edit the processing steps of a graph compartment. Its user interface is separated into three sections:
+The analysis graph contains the processing steps (also referred as algorithms) The settings panel shows the properties of the currently selected algorithms The toolbar allows you to add more algorithms into the graph, navigate to existing algorithms, change some behavior settings of the graph editor, and create screenshots Analysis graph The analysis graph contains algorithms that are represented by rectangles.</description>
     </item>
     
     <item>
@@ -3215,8 +3204,7 @@ The dependency installation was revised in JIPipe version 1.74.0. Please follow 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation/standard-library/python/api/</guid>
-      <description>jipipe 
-jipipe.data_slot This file provides functions that are used to manage the contents of a data slot
+      <description>jipipe jipipe.data_slot This file provides functions that are used to manage the contents of a data slot
 Zoltán Cseresnyés, Ruman Gerst
 Research Group Applied Systems Biology - Head: Prof. Dr. Marc Thilo Figge https://www.leibniz-hki.de/en/applied-systems-biology.html HKI-Center for Systems Biology of Infection Leibniz Institute for Natural Product Research and Infection Biology - Hans Knöll Institute (HKI) Adolf-Reichwein-Straße 23, 07745 Jena, Germany
 The project code is licensed under BSD 2-Clause. See the LICENSE file provided with the code for the full license.</description>
@@ -3228,8 +3216,8 @@ The project code is licensed under BSD 2-Clause. See the LICENSE file provided w
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation/run-pipelines/run/</guid>
-      <description>JIPipe stores its results in a user-defined output folder. After clicking  Run (located at the top right corner of a project window) JIPipe will query the output folder from you. You can also generate a random folder that will be located on your operating system&amp;rsquo;s temporary directory by clicking the button.
-After confirming the settings by clicking  Run now, JIPipe will start processing the pipeline.
+      <description>JIPipe stores its results in a user-defined output folder. After clicking Run (located at the top right corner of a project window) JIPipe will query the output folder from you. You can also generate a random folder that will be located on your operating system&amp;rsquo;s temporary directory by clicking the button.
+After confirming the settings by clicking Run now, JIPipe will start processing the pipeline.
 You can have as many runs as you want.</description>
     </item>
     
@@ -3260,8 +3248,7 @@ Please observe the examples that are provided in the description field (red arro
       
       <guid>https://www.jipipe.org/tutorials/basic/cache-2/step10/</guid>
       <description>Under the folder name (red arrow 1), the groups of results are listed (red arrow 2-4), as they appeared in the cache. Inside each of the entries, data-table.csv and data-table.json files (red arrow 5) explains the content of the data subfolders, and contains the metadata.
-Only the data-table.json file is relevant for importing metadata. The data-table.csv table is generated for the sake of convenience.
- </description>
+Only the data-table.json file is relevant for importing metadata. The data-table.csv table is generated for the sake of convenience.</description>
     </item>
     
     <item>
@@ -3273,7 +3260,7 @@ Only the data-table.json file is relevant for importing metadata. The data-table
       <description>Move on to the Export table as XLSX node. While Export data will always export CSV files, this node will instead Excel files. It can even be configured to export multiple tables into one XLSX file.
 Again, set the Output directory to ExampleExports/ViaNodes with Output relative to project directory enabled.
 The filename expression set to
-&amp;quot;measurements_&amp;quot; + #Filename This would yield a file that is for example named measurements_blobs.xlsx.</description>
+&amp;#34;measurements_&amp;#34; + #Filename This would yield a file that is for example named measurements_blobs.xlsx.</description>
     </item>
     
     <item>
@@ -3293,7 +3280,7 @@ Run the node and observe the Cache browser (red arrow 2). Now both the X and Y d
       
       <guid>https://www.jipipe.org/tutorials/basic/image-roi-processing/step10/</guid>
       <description>Go to the Parameters tab of the Filter ROI by statistics node (red arrow 1) and use the expression editor (red arrow 2) as shown before to create the filtering formula (red arrow 3):
-Area &amp;gt; 150 AND Area &amp;lt; 700  Here you do not need to write TO_NUMBER(Area), as the values are already numeric to begin with. Unlike text-based annotations that come from JIPipe&amp;rsquo;s data management functions, Filter ROI by statistics extracts its values from ImageJ tables that support numbers.</description>
+Area &amp;gt; 150 AND Area &amp;lt; 700 Here you do not need to write TO_NUMBER(Area), as the values are already numeric to begin with. Unlike text-based annotations that come from JIPipe&amp;rsquo;s data management functions, Filter ROI by statistics extracts its values from ImageJ tables that support numbers.</description>
     </item>
     
     <item>
@@ -3333,8 +3320,8 @@ The cache entry (red arrow 3) now contains a new Density column (red arrow 4).</
       
       <guid>https://www.jipipe.org/tutorials/features/cellpose-1/step10/</guid>
       <description>The last three nodes will convert the mask back to ROIs (red arrow 1), split them in case more than one full droplet is found (red arrow 2), and show the quality of the segmentation by overlaying the ROIs with the image (red arrow 3).
- Mask to ROI is basically the ImageJ particle finder without the measurements output and filtering settings.
- Split multi-component ROI splits ImageJ ROI that consist of multiple components into their individual basic shapes.</description>
+Mask to ROI is basically the ImageJ particle finder without the measurements output and filtering settings.
+Split multi-component ROI splits ImageJ ROI that consist of multiple components into their individual basic shapes.</description>
     </item>
     
     <item>
@@ -3399,8 +3386,7 @@ The Split &amp;amp; filter by annotation node iterates through each individual i
       
       <guid>https://www.jipipe.org/tutorials/basic/cache-2/step11/</guid>
       <description>The numbered subfolder will contain the actual cached data of the 1-channel measurements output (red arrow 1) in a *.csv file (red arrow 2).
-The numeric folders are standardized. In JIPipe, navigate to Help &amp;gt; Data type compendium to review the exact specifications of the directory contents.
- </description>
+The numeric folders are standardized. In JIPipe, navigate to Help &amp;gt; Data type compendium to review the exact specifications of the directory contents.</description>
     </item>
     
     <item>
@@ -3412,7 +3398,7 @@ The numeric folders are standardized. In JIPipe, navigate to Help &amp;gt; Data 
       <description>Finally, edit the parameters of Export ROI node. Export data will export a *.roi file if only one ROI is present and otherwise compress all ROIs into a *.zip file. This node can optionally turn off this export behavior and export all ROIs into an individual *.roi file.
 Again, set the Output directory to ExampleExports/ViaNodes with Output relative to project directory enabled.
 The filename expression set to
-&amp;quot;rois_&amp;quot; + #Filename This would yield a file that is for example named rois_blobs.</description>
+&amp;#34;rois_&amp;#34; + #Filename This would yield a file that is for example named rois_blobs.</description>
     </item>
     
     <item>
@@ -3492,7 +3478,7 @@ You might have noticed the Label data annotation in the list. You can remove the
       <guid>https://www.jipipe.org/tutorials/basic/annotations-1/step12/</guid>
       <description>Begin by deleting the existing example expression. The expression will now be
 We will now use the function builder component of the expression editor to convert the annotation value of Image composite channel count to a number that can be tested to be equal to 3:
- Use the search field to look for functions that work with numbers by using the search word number (red arrow 1), which will yield a function TO_NUMBER (red arrow 3).</description>
+Use the search field to look for functions that work with numbers by using the search word number (red arrow 1), which will yield a function TO_NUMBER (red arrow 3).</description>
     </item>
     
     <item>
@@ -3522,8 +3508,7 @@ Observe the generated files.</description>
       
       <guid>https://www.jipipe.org/tutorials/basic/image-roi-processing/step12/</guid>
       <description>We now plot the selected ROIs in an overlay image with the original 1-channel data. Browse the ROI menu (red arrow 1) to look for Convert functions (red arrow 2), and select the Convert ROI to RGB function (red arrow 3).
-Convert ROI to RGB visualizes ROI on top of an image. It is JIPipe&amp;rsquo;s equivalent of the ImageJ ROI Manager&amp;rsquo;s visualization feature.
- </description>
+Convert ROI to RGB visualizes ROI on top of an image. It is JIPipe&amp;rsquo;s equivalent of the ImageJ ROI Manager&amp;rsquo;s visualization feature.</description>
     </item>
     
     <item>
@@ -3555,7 +3540,7 @@ This completes this workflow.</description>
       <guid>https://www.jipipe.org/tutorials/basic/table-processing/step12/</guid>
       <description>Select the Integrate table columns (red arrow 1) and edit the Processors parameters in the Parameters tab (red arrow 2):
 Set the Input column to the following value:
-&amp;quot;Density&amp;quot;  If you reference existing columns, always put the name in quotation marks. The function for selecting columns can be heavily customized, as it is expression-based an can under certain circumstances yield unexpected results if the name is typed in as is.</description>
+&amp;#34;Density&amp;#34; If you reference existing columns, always put the name in quotation marks. The function for selecting columns can be heavily customized, as it is expression-based an can under certain circumstances yield unexpected results if the name is typed in as is.</description>
     </item>
     
     <item>
@@ -3656,8 +3641,7 @@ Add a whole row (red arrow 2), import from a node (red arrow 3), select the Gaus
       
       <guid>https://www.jipipe.org/tutorials/intermediate/multi-parameters/step14/</guid>
       <description>Add more values (red arrow 1), edit their values (red arrow 2) b y setting the desired sigmas (red arrow 3), which will appear in the list (red arrow 4, red rectangle).
-A generator for numeric values is also available in Generate.
- </description>
+A generator for numeric values is also available in Generate.</description>
     </item>
     
     <item>
@@ -3666,7 +3650,7 @@ A generator for numeric values is also available in Generate.
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/tutorials/videos/analysis_video/</guid>
-      <description>&amp;lt;1.73.x  The video tutorial was designed for older versions of JIPipe. Please be aware that some GUI components have changed.   This tutorial is also available as text tutorial.</description>
+      <description> &amp;lt;1.73.x The video tutorial was designed for older versions of JIPipe. Please be aware that some GUI components have changed. This tutorial is also available as text tutorial.</description>
     </item>
     
     <item>
@@ -3677,7 +3661,7 @@ A generator for numeric values is also available in Generate.
       <guid>https://www.jipipe.org/documentation-java-api/algorithm/merging-algorithms/</guid>
       <description>You might need to develop an algorithm that does not simply iterate through its input(s), but organize it into groups to be merged. JIPipe comes with JIPipeMergingAlgorithm that uses the annotation attached during processing to find data rows that belong to the same data set. The implementation creates JIPipeMergingDataBatch instances that represent multiple data rows merged into one group.
 Please access data via the data interface.
- The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
+The only difference to JIPipeAlgorithm is that you need to override a different function called runIteration.</description>
     </item>
     
     <item>
@@ -3686,7 +3670,7 @@ Please access data via the data interface.
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation/create-pipelines/parameters/</guid>
-      <description>Table Of Contents  Testing multiple parameters  Creating parameter sets  Interactive parameter designer Generate via expressions     Adaptive parameters    1.74.x&amp;#43;  Some features are only present in JIPipe version 1.74.0 or newer   Many important settings of a node are located within its parameter panel (accessible by selecting the node and going to the Parameters tab). The editor contains the list of all parameters, and a section containing the current documentation that by default shows general information about the node.</description>
+      <description>Table Of Contents Testing multiple parameters Creating parameter sets Interactive parameter designer Generate via expressions Adaptive parameters 1.74.x&amp;#43; Some features are only present in JIPipe version 1.74.0 or newer Many important settings of a node are located within its parameter panel (accessible by selecting the node and going to the Parameters tab). The editor contains the list of all parameters, and a section containing the current documentation that by default shows general information about the node.</description>
     </item>
     
     <item>
@@ -3749,7 +3733,7 @@ Run the nodes and observe that now we have 32 results (a combination of 4 gaussi
       
       <guid>https://www.jipipe.org/documentation-json-api/algorithm/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: algorithm.schema.json
-Defines a new node typeid:stringUnique algorithm IDmetadata:See metadataGeneral algorithm metadatacategory:stringorg.hkijena.jipipe:miscellaneousThe categoryexported-parameters:object[object Object]List of parameters that will be exported to users of the nodegraph:See graphThis graph is executed when the algorithm is runmenu-path:stringOptional menu path within the category menujipipe:project-type:string, x ∈ {graph-wrapper-algorithm(default)}Identifies the JSON as algorithmExample { &amp;#34;id&amp;#34; : &amp;#34;folder-list-tif&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;List TIFF files&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Lists all TIFF files in a folder&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;license&amp;#34; : &amp;#34;BSD-2&amp;#34;, &amp;#34;citation&amp;#34; : &amp;#34;&amp;#34; }, &amp;#34;category&amp;#34; : &amp;#34;Converter&amp;#34;, &amp;#34;parameter-visibilities&amp;#34; : { &amp;#34;visible-keys&amp;#34; : [ ] }, &amp;#34;graph&amp;#34; : { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;jipipe:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;jipipe:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
+Defines a new node typeid:stringUnique algorithm IDmetadata:See metadataGeneral algorithm metadatacategory:stringorg.hkijena.jipipe:miscellaneousThe categoryexported-parameters:object[object Object]List of parameters that will be exported to users of the nodegraph:See graphThis graph is executed when the algorithm is runmenu-path:stringOptional menu path within the category menujipipe:project-type:string, x ∈ {graph-wrapper-algorithm(default)}Identifies the JSON as algorithmExample { &amp;#34;id&amp;#34; : &amp;#34;folder-list-tif&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;List TIFF files&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Lists all TIFF files in a folder&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;&amp;#34;, &amp;#34;license&amp;#34; : &amp;#34;BSD-2&amp;#34;, &amp;#34;citation&amp;#34; : &amp;#34;&amp;#34; }, &amp;#34;category&amp;#34; : &amp;#34;Converter&amp;#34;, &amp;#34;parameter-visibilities&amp;#34; : { &amp;#34;visible-keys&amp;#34; : [ ] }, &amp;#34;graph&amp;#34; : { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;jipipe:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;jipipe:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
     </item>
     
     <item>
@@ -3760,7 +3744,7 @@ Run the nodes and observe that now we have 32 results (a combination of 4 gaussi
       <guid>https://www.jipipe.org/documentation/basic-concepts/batch-processing/</guid>
       <description>JIPipe was designed to always process data in batches, meaning that algorithms always work on multiple data sets at once. This greatly reduces the required work to upscale a processing pipeline from one or few to a large amount of data sets.
 We will use this pipeline as example:
-mermaid.initialize({startOnLoad:true}); graph LR; A[File] -- B[Load image] B -- C[Apply gaussian]  In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
+graph LR; A[File] --&gt; B[Load image] B --&gt; C[Apply gaussian] In the pipeline, a file is provided as input. Then the file is loaded as image.</description>
     </item>
     
     <item>
@@ -3769,7 +3753,7 @@ mermaid.initialize({startOnLoad:true}); graph LR; A[File] -- B[Load image] B -- 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/tutorials/old/extension/</guid>
-      <description>1. Existing pipelineIn this tutorial, we will create a custom algorithm extension based on parts of the pipeline created in the other tutorial.Please open the project file for the pipeline and navigate to the Preprocessing tab.2. Selecting the algorithmsPlease select the following algorithms (you can either do this by holding the Shift keyboard button and clicking the nodes or dragging a selection around the nodes):Folder listPath to annotationList filesImport imageAfter selecting the algorithms, right-click a selected node and click Export.</description>
+      <description>1. Existing pipelineIn this tutorial, we will create a custom algorithm extension based on parts of the pipeline created in the other tutorial.Please open the project file for the pipeline and navigate to the Preprocessing tab.2. Selecting the algorithmsPlease select the following algorithms (you can either do this by holding the Shift keyboard button and clicking the nodes or dragging a selection around the nodes):Folder listPath to annotationList filesImport imageAfter selecting the algorithms, right-click a selected node and click Export.</description>
     </item>
     
     <item>
@@ -3778,8 +3762,8 @@ mermaid.initialize({startOnLoad:true}); graph LR; A[File] -- B[Load image] B -- 
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation-java-api/create-extension/</guid>
-      <description>1.74.x&amp;#43;  This guide was written for JIPipe version 1.74.0 or newer   Prerequisities  Java 8 (Java 9+ are not working)  If you are using Windows or a Linux distribution without Java 8, we recommend AdoptOpenJDK (Please choose OpenJDK 8)   Maven  Creating the project The project should have following structure:
-Project root└── pom.xml└── src└── main├── java└── resourcesBoth the java and resources folder should contain a folder structure that is equivalent the groupId and artifactId of the project.</description>
+      <description>1.74.x&amp;#43; This guide was written for JIPipe version 1.74.0 or newer Prerequisities Java 8 (Java 9+ are not working) If you are using Windows or a Linux distribution without Java 8, we recommend AdoptOpenJDK (Please choose OpenJDK 8) Maven Creating the project The project should have following structure:
+Project root└── pom.xml└── src└── main├── java└── resources Both the java and resources folder should contain a folder structure that is equivalent the groupId and artifactId of the project.</description>
     </item>
     
     <item>
@@ -3790,7 +3774,7 @@ Project root└── pom.xml└── src└── main├── java└�
       <guid>https://www.jipipe.org/documentation-java-api/algorithm/slot-configuration/</guid>
       <description>In the previous examples, we used the @JIPipeInputSlot and @JIPipeOutputSlot annotations with autoCreate = true to automatically configure the slots.
 This is not sufficient for more complicated algorithms that require
- Restricting the number of slots Restricting the allowed data types Users to add more slots or remove existing ones  A custom JIPipeSlotConfiguration can be used to implement such more advanced behaviors.
+Restricting the number of slots Restricting the allowed data types Users to add more slots or remove existing ones A custom JIPipeSlotConfiguration can be used to implement such more advanced behaviors.
 For many cases, the default implementation JIPipeMutableSlotConfiguration is sufficient.</description>
     </item>
     
@@ -3812,7 +3796,7 @@ Compartments communicate to each other via interface nodes: each compartment has
       
       <guid>https://www.jipipe.org/documentation/standard-library/imagej-integration/</guid>
       <description>The ImageJ integration library integrates common data types from ImageJ into JIPipe:
- Multi-dimensional images (ImagePlus). The standard output file format are TIFF files. Result tables. They are serialized to CSV files. Region of interest (ROI Manager). JIPipe handles ROI as *.zip files.  The ImageJ data types are marked as accessible from outside JIPipe, meaning that algorithms that only use those types can be executed standalone
+Multi-dimensional images (ImagePlus). The standard output file format are TIFF files. Result tables. They are serialized to CSV files. Region of interest (ROI Manager). JIPipe handles ROI as *.zip files. The ImageJ data types are marked as accessible from outside JIPipe, meaning that algorithms that only use those types can be executed standalone
 Image data types Various ImageJ algorithms only work on data with a specific color type, or dimensionality.</description>
     </item>
     
@@ -3831,7 +3815,7 @@ Image data types Various ImageJ algorithms only work on data with a specific col
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation/create-pipelines/expressions/</guid>
-      <description>Table Of Contents    Variables Statements Pairs Escaping expressions Operators Functions User functions   Data types  Numbers Strings Arrays Maps   Operators  Precedence Compatible types      When using nodes that filter or generate data, you might encounter a parameter type called &amp;ldquo;Expression&amp;rdquo;. This parameter allows to to write simple to complex functions that can test for one or multiple conditions or act as input for a generator node.</description>
+      <description>Table Of Contents Variables Statements Pairs Escaping expressions Operators Functions User functions Data types Numbers Strings Arrays Maps Operators Precedence Compatible types When using nodes that filter or generate data, you might encounter a parameter type called &amp;ldquo;Expression&amp;rdquo;. This parameter allows to to write simple to complex functions that can test for one or multiple conditions or act as input for a generator node. The basic concept of this expression language is to mix string, boolean, and numeric operations into one simple but powerful language.</description>
     </item>
     
     <item>
@@ -3881,7 +3865,7 @@ By default, there are four data types that can be used as input and output:</des
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/tutorials/videos/guide-user-interface/</guid>
-      <description>&amp;lt;1.73.x  The video tutorial was designed for older versions of JIPipe. Please be aware that some GUI components have changed.   </description>
+      <description> &amp;lt;1.73.x The video tutorial was designed for older versions of JIPipe. Please be aware that some GUI components have changed. </description>
     </item>
     
     <item>
@@ -3890,7 +3874,7 @@ By default, there are four data types that can be used as input and output:</des
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/tutorials/videos/guide-data-caches/</guid>
-      <description>&amp;lt;1.73.x  The video tutorial was designed for older versions of JIPipe. Please be aware that some GUI components have changed.   </description>
+      <description> &amp;lt;1.73.x The video tutorial was designed for older versions of JIPipe. Please be aware that some GUI components have changed. </description>
     </item>
     
     <item>
@@ -3899,7 +3883,7 @@ By default, there are four data types that can be used as input and output:</des
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/tutorials/videos/guide-graph-editor/</guid>
-      <description>&amp;lt;1.73.x  The video tutorial was designed for older versions of JIPipe. Please be aware that some GUI components have changed.   </description>
+      <description> &amp;lt;1.73.x The video tutorial was designed for older versions of JIPipe. Please be aware that some GUI components have changed. </description>
     </item>
     
     <item>
@@ -3908,7 +3892,7 @@ By default, there are four data types that can be used as input and output:</des
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/tutorials/videos/guide-batch-processing/</guid>
-      <description>&amp;lt;1.73.x  The video tutorial was designed for older versions of JIPipe. Please be aware that some GUI components have changed.   </description>
+      <description> &amp;lt;1.73.x The video tutorial was designed for older versions of JIPipe. Please be aware that some GUI components have changed. </description>
     </item>
     
     <item>
@@ -3919,8 +3903,8 @@ By default, there are four data types that can be used as input and output:</des
       <guid>https://www.jipipe.org/documentation-data-api/data-types/</guid>
       <description>2D FFT Image Trivial conversions A trivial conversion involves no potentially expensive conversion operation. The data will directly match to input slots of the converted type. The edge has a dark-gray color.
 This type can be trivially converted into following types:
-Data FFT Image Image  This type can be trivially converted from following types:
-3D FFT Image 4D FFT Image 5D FFT Image  Non-trivial conversions A non-trivial conversion is defined by the developer and might involve some more complex conversion operations.</description>
+Data FFT Image Image This type can be trivially converted from following types:
+3D FFT Image 4D FFT Image 5D FFT Image Non-trivial conversions A non-trivial conversion is defined by the developer and might involve some more complex conversion operations.</description>
     </item>
     
     <item>
@@ -3930,7 +3914,7 @@ Data FFT Image Image  This type can be trivially converted from following types:
       
       <guid>https://www.jipipe.org/documentation-json-api/dependency/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: dependency.schema.json
-Project or extension dependency. Refers to a JIPipe extension.metadata:See metadataid:stringUnique ID of this dependency should have format.:version:stringVersion of this dependencyExample { &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Filesystem types and algorithms&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Data types and algorithms for interacting with files and folders&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://jipipe.</description>
+Project or extension dependency. Refers to a JIPipe extension.metadata:See metadataid:stringUnique ID of this dependency should have format.:version:stringVersion of this dependencyExample { &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Filesystem types and algorithms&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Data types and algorithms for interacting with files and folders&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://jipipe.</description>
     </item>
     
     <item>
@@ -3941,7 +3925,7 @@ Data FFT Image Image  This type can be trivially converted from following types:
       <guid>https://www.jipipe.org/documentation/standard-library/filesystem/</guid>
       <description>The JIPipe standard library contains data types and algorithms to apply file system operations. The common use case is to extract the list of input files for the following algorithms.
 The filesystem library has two basic data types:
- A  File contains a path to a file A  Folder contains a path to a folder A Path contains a path to a file or folder  In the Add data menu you can define one file/folder or a list of files/folders.</description>
+A File contains a path to a file A Folder contains a path to a folder A Path contains a path to a file or folder In the Add data menu you can define one file/folder or a list of files/folders.</description>
     </item>
     
     <item>
@@ -3971,9 +3955,9 @@ For example, if the pipeline within the Preprocessing compartment (red box 1) co
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/installation/extensions/</guid>
-      <description>Table Of Contents  Installing new extensions Activating extensions    Installing new extensions JIPipe extensions are ImageJ plugins and thus can be installed just as any plugin.
+      <description>Table Of Contents Installing new extensions Activating extensions Installing new extensions JIPipe extensions are ImageJ plugins and thus can be installed just as any plugin.
 Available options are:
- Installation via the Fiji updater Manual installation by copying the files into the plugins or jars directory  Older JIPipe versions (1.73.x or older) will automatically load all extensions during the startup. This behavior was changed in JIPipe 1.</description>
+Installation via the Fiji updater Manual installation by copying the files into the plugins or jars directory Older JIPipe versions (1.73.x or older) will automatically load all extensions during the startup. This behavior was changed in JIPipe 1.74.0 where the extensions needs to be manually activated after the installation.</description>
     </item>
     
     <item>
@@ -4036,7 +4020,7 @@ How algorithms are registered Algorithm instances are created by an JIPipeNodeIn
       
       <guid>https://www.jipipe.org/documentation-json-api/graph-edge/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph-edge.schema.json
-Edge in a graphsource-node:stringAlgorithm ID of the edge sourcetarget-node:stringAlgorithm ID of the edge targetsource-slot:stringSlot name within the edge source algorithmtarget-slot:stringSlot name within the edge target algorithmExample { &amp;#34;source-node&amp;#34; : &amp;#34;default-preprocessing-list-files&amp;#34;, &amp;#34;target-node&amp;#34; : &amp;#34;default-preprocessing-filter-files&amp;#34;, &amp;#34;source-slot&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;target-slot&amp;#34; : &amp;#34;Files&amp;#34; } </description>
+Edge in a graphsource-node:stringAlgorithm ID of the edge sourcetarget-node:stringAlgorithm ID of the edge targetsource-slot:stringSlot name within the edge source algorithmtarget-slot:stringSlot name within the edge target algorithmExample { &amp;#34;source-node&amp;#34; : &amp;#34;default-preprocessing-list-files&amp;#34;, &amp;#34;target-node&amp;#34; : &amp;#34;default-preprocessing-filter-files&amp;#34;, &amp;#34;source-slot&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;target-slot&amp;#34; : &amp;#34;Files&amp;#34; } </description>
     </item>
     
     <item>
@@ -4047,7 +4031,7 @@ How algorithms are registered Algorithm instances are created by an JIPipeNodeIn
       <guid>https://www.jipipe.org/tutorials/features/teaching/projectoverview1/</guid>
       <description>Each JIPipe project comes with a customizable Project overview tab that can be accessed via the Help &amp;gt; Project overview menu (red box 1).
 It contains the following elements:
- A customizable title with authors, website, contact info and more (red box 2) A customizable rich text description with text and images (red box 3) Quick access to bookmarked nodes and selected parameters (both fully customizable; red box 4)  👉 Save the project while the Project overview is open.</description>
+A customizable title with authors, website, contact info and more (red box 2) A customizable rich text description with text and images (red box 3) Quick access to bookmarked nodes and selected parameters (both fully customizable; red box 4) 👉 Save the project while the Project overview is open.</description>
     </item>
     
     <item>
@@ -4057,7 +4041,7 @@ It contains the following elements:
       
       <guid>https://www.jipipe.org/documentation-java-api/algorithm/context-actions/</guid>
       <description>Context actions allow you to add custom buttons into an algorithm&amp;rsquo;s parameter group that by default will also appear within a node&amp;rsquo;s context menu. They can be used for multiple purposes such as loading example data, applying an auto-configuration, opening websites, or displaying documentation or data in a new tab.
-1.74.x&amp;#43;  We do no anymore recommend the creation of context actions to implement examples. Instead, register node examples within the extension.</description>
+1.74.x&amp;#43; We do no anymore recommend the creation of context actions to implement examples. Instead, register node examples within the extension.</description>
     </item>
     
     <item>
@@ -4077,7 +4061,7 @@ We recommend to use the algorithms in Annotation &amp;gt; Generate while setting
       
       <guid>https://www.jipipe.org/documentation-json-api/graph/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: graph.schema.json
-A graphadditional-metadata:object[object Object]Dict of additional metadataSee additional-metadatanodes:object[object Object]The nodes. Keys are the UUIDs.See graph-nodeedges:object[]The edges.</description>
+A graphadditional-metadata:object[object Object]Dict of additional metadataSee additional-metadatanodes:object[object Object]The nodes. Keys are the UUIDs.See graph-nodeedges:object[]The edges. IDs in the edge definition must be consistent to the UUIDs in the &#39;nodes&#39; entrySee graph-edgeExample { &amp;#34;nodes&amp;#34; : { &amp;#34;default-preprocessing-filter-files&amp;#34; : { &amp;#34;jipipe:slot-configuration&amp;#34; : { &amp;#34;Files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Input&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } }, &amp;#34;Filtered files&amp;#34; : { &amp;#34;slot-data-type&amp;#34; : &amp;#34;file&amp;#34;, &amp;#34;slot-type&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;inherited-slot&amp;#34; : null, &amp;#34;name&amp;#34; : &amp;#34;Filtered files&amp;#34;, &amp;#34;custom-name&amp;#34; : null, &amp;#34;inheritance-conversions&amp;#34; : { } } }, &amp;#34;jipipe:algorithm-ui-location&amp;#34; : { &amp;#34;{Vertical}&amp;#34; : { &amp;#34;x&amp;#34; : 25, &amp;#34;y&amp;#34; : 250 } }, &amp;#34;jipipe:algorithm-type&amp;#34; : &amp;#34;file-filter&amp;#34;, &amp;#34;jipipe:algorithm-compartment&amp;#34; : &amp;#34;DEFAULT&amp;#34;, &amp;#34;name&amp;#34; : &amp;#34;Filter *.</description>
     </item>
     
     <item>
@@ -4088,7 +4072,7 @@ We recommend to use the algorithms in Annotation &amp;gt; Generate while setting
       <guid>https://www.jipipe.org/documentation-data-api/pipeline-output/</guid>
       <description>A pipeline output folder is generated on running a pipeline using the Run function or via other means of running the pipeline and saving the results to the hard drive.
 The generated folder follows a hierarchical structure that is based on the location of data within graph compartments, nodes, and slots. It also contains a copy of the project that generated the data in a file project.jip.
-mermaid.initialize({startOnLoad:true}); graph LR; Root[&#34;</description>
+graph LR; Root[&#34;/&#34;] --&gt; DataTable[&#34;</description>
     </item>
     
     <item>
@@ -4098,8 +4082,8 @@ mermaid.initialize({startOnLoad:true}); graph LR; Root[&#34;</description>
       
       <guid>https://www.jipipe.org/tutorials/features/teaching/projectoverview2/</guid>
       <description>The custom titles, authors, and descriptions can be edited via the Project settings that can be accessed in two ways:
- While the Project overview tab is open, click Edit metadata in the top right panel Navigate to Project &amp;gt; Project settings  The General category includes the following settings:
- The project name/title The description editor Fields where other metadata like a citation, license, and website can be given The list of authors Acknowledgements  </description>
+While the Project overview tab is open, click Edit metadata in the top right panel Navigate to Project &amp;gt; Project settings The General category includes the following settings:
+The project name/title The description editor Fields where other metadata like a citation, license, and website can be given The list of authors Acknowledgements </description>
     </item>
     
     <item>
@@ -4110,7 +4094,7 @@ mermaid.initialize({startOnLoad:true}); graph LR; Root[&#34;</description>
       <guid>https://www.jipipe.org/documentation/run-pipelines/quick-run/</guid>
       <description>As an additional option to running the whole pipeline, JIPipe also allows you to run the workflow only up to the selected node. The most convenient way to run a single node can be accessed by clicking the green play button that is located inside each node.
 Here you will find following options:
- Update cache: Runs the pipeline up until the selected node. The result of the selected node will be stored inside a memory cache, which can be reviewed in the Cache browser tab (see below) Cache intermediate results: Runs the pipeline up until the selected node.</description>
+Update cache: Runs the pipeline up until the selected node. The result of the selected node will be stored inside a memory cache, which can be reviewed in the Cache browser tab (see below) Cache intermediate results: Runs the pipeline up until the selected node.</description>
     </item>
     
     <item>
@@ -4120,7 +4104,7 @@ Here you will find following options:
       
       <guid>https://www.jipipe.org/documentation/run-pipelines/cache/</guid>
       <description>JIPipe has a project-wide cache for generated results. This cache can be accessed by algorithms to prevent repeating previous calculation steps.
-Load data into the cache To cache data, right click a node and click  Update cache. This will execute a Quick run and store all results into the cache.
+Load data into the cache To cache data, right click a node and click Update cache. This will execute a Quick run and store all results into the cache.
 Accessing the cache Cache items are assigned a unique identifier ( Snapshot) that is based on relevant algorithm parameters and the processing pipeline behind the data generation.</description>
     </item>
     
@@ -4131,7 +4115,7 @@ Accessing the cache Cache items are assigned a unique identifier ( Snapshot) tha
       
       <guid>https://www.jipipe.org/documentation-json-api/json-extension/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: json-extension.schema.json
-An extension that can be put into the ImageJ plugin folderid:stringUnique ID of this extension. Should have format.:version:stringVersion of this extensionmetadata:See metadataGeneral metadata about the extensionalgorithms:object[]List of added algorithmsSee algorithmExample { &amp;#34;id&amp;#34; : &amp;#34;org.</description>
+An extension that can be put into the ImageJ plugin folderid:stringUnique ID of this extension. Should have format.:version:stringVersion of this extensionmetadata:See metadataGeneral metadata about the extensionalgorithms:object[]List of added algorithmsSee algorithmExample { &amp;#34;id&amp;#34; : &amp;#34;org.</description>
     </item>
     
     <item>
@@ -4152,7 +4136,7 @@ JIPipe to ImageJ JIPipe algorithms and pipelines can be executed from within an 
       <guid>https://www.jipipe.org/documentation/plugins/</guid>
       <description>JIPipe has its own plugin (extension) system that is independent of the one provided by ImageJ/SciJava. You can find a list of plugins in Plugins &amp;gt; Manage plugins.
 JIPipe by default supports two types of extensions:
- Java extensions are similar to ImageJ plugins (*.jar) and are the most powerful plugin type. Just like ImageJ plugins, they are located in the plugins directory. JSON plugins are similar to ImageJ macros or scripts, as they are pure text files.</description>
+Java extensions are similar to ImageJ plugins (*.jar) and are the most powerful plugin type. Just like ImageJ plugins, they are located in the plugins directory. JSON plugins are similar to ImageJ macros or scripts, as they are pure text files.</description>
     </item>
     
     <item>
@@ -4161,8 +4145,9 @@ JIPipe by default supports two types of extensions:
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation-java-api/algorithm/node-examples/</guid>
-      <description>1.74.x&amp;#43;  This guide was written for JIPipe version 1.74.0 or newer   To teach users about the settings of more complex nodes or to improve the convenience, you can annotate nodes with node examples. These will appear in a dedicated tab &amp;ldquo;Examples&amp;rdquo; on selecting a node within the pipeline editor.
-The standardized example API is based around the &amp;ldquo;Node templates&amp;rdquo; functionality. To create an example, follow these steps:</description>
+      <description>1.74.x&amp;#43; This guide was written for JIPipe version 1.74.0 or newer To teach users about the settings of more complex nodes or to improve the convenience, you can annotate nodes with node examples. These will appear in a dedicated tab &amp;ldquo;Examples&amp;rdquo; on selecting a node within the pipeline editor.
+The standardized example API is based around the &amp;ldquo;Node templates&amp;rdquo; functionality. To create an example, follow these steps:
+Select a single node in the expected configuration and create a node template via Right click &amp;gt; Create node template Provide an appropriate name and description.</description>
     </item>
     
     <item>
@@ -4206,8 +4191,8 @@ To add a Comment node, use the Miscellaneous menu and select Comment (red arrow 
       
       <guid>https://www.jipipe.org/documentation/standard-library/jython/</guid>
       <description>The standard library contains nodes that allow to run Python scripts using the Jython library. Python scripts have access to all JIPipe and ImageJ APIs that are available at runtime.
- Due to restrictions in the Jython library, Python libraries that are built on a native backend (such as Numpy) will not work.
- As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on how to expand Jython with additional libraries.</description>
+Due to restrictions in the Jython library, Python libraries that are built on a native backend (such as Numpy) will not work.
+As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on how to expand Jython with additional libraries.</description>
     </item>
     
     <item>
@@ -4217,7 +4202,7 @@ To add a Comment node, use the Miscellaneous menu and select Comment (red arrow 
       
       <guid>https://www.jipipe.org/documentation-json-api/metadata/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: metadata.schema.json
-Commonly used metadata type in JIPipe.name:stringA namedescription:stringA descriptionauthors:stringComma-separated list of authorswebsite:stringWebsite of the projectlicense:stringName of the licensecitation:stringCitation for the publicationExample { &amp;#34;name&amp;#34; : &amp;#34;Image property annotations&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Commonly used annotations for describing image properties&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://jipipe.</description>
+Commonly used metadata type in JIPipe.name:stringA namedescription:stringA descriptionauthors:stringComma-separated list of authorswebsite:stringWebsite of the projectlicense:stringName of the licensecitation:stringCitation for the publicationExample { &amp;#34;name&amp;#34; : &amp;#34;Image property annotations&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;Commonly used annotations for describing image properties&amp;#34;, &amp;#34;authors&amp;#34; : &amp;#34;Zoltán Cseresnyés, Ruman Gerst&amp;#34;, &amp;#34;website&amp;#34; : &amp;#34;https://jipipe.</description>
     </item>
     
     <item>
@@ -4248,7 +4233,7 @@ As with any JIPipe node, you an change the name displayed within the pipeline an
       
       <guid>https://www.jipipe.org/documentation-json-api/point/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: point.schema.json
-A pointx:integerX coordinatey:integerY coordinateExample { &amp;#34;x&amp;#34; : 2900, &amp;#34;y&amp;#34; : 100 } </description>
+A pointx:integerX coordinatey:integerY coordinateExample { &amp;#34;x&amp;#34; : 2900, &amp;#34;y&amp;#34; : 100 } </description>
     </item>
     
     <item>
@@ -4259,7 +4244,7 @@ As with any JIPipe node, you an change the name displayed within the pipeline an
       <guid>https://www.jipipe.org/documentation/standard-library/r-integration/</guid>
       <description>The standard library contains nodes that allow to run R scripts. This means that you will need to install a distribution of R.
 You will need to install R (https://www.r-project.org/) and setup JIPipe to find this installation.
- Setting up R You have the option to either select an existing R environment, or let JIPipe install a new R environment into a folder (only available on Windows).
+Setting up R You have the option to either select an existing R environment, or let JIPipe install a new R environment into a folder (only available on Windows).
 To setup Python, navigate to Project &amp;gt; Application settings &amp;gt; Extensions &amp;gt; R integration.</description>
     </item>
     
@@ -4293,7 +4278,7 @@ Bookmarks also render the description, so you can also use comments to ask for a
       
       <guid>https://www.jipipe.org/documentation-json-api/project/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: project.schema.json
-An analysis projectjipipe:project-type:string, x ∈ {project(default)}Used to identify this JSON as JIPipe projectmetadata:See metadata[object Object]General information about the projectdependencies:object[]Dependencies of this projectSee dependencygraph:See graph[object Object]Contains the pipeline nodescompartments:object[object Object]For organization of compartmentscompartment-graph:See graph[object Object]Structural graph of compartmentsExample { &amp;#34;jipipe:project-type&amp;#34; : &amp;#34;project&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Empty (3 compartments)&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;This template contains three compartments &amp;#39;Preprocessing&amp;#39;, &amp;#39;Analysis&amp;#39;, and &amp;#39;Postprocessing&amp;#39; that are connected to each other.</description>
+An analysis projectjipipe:project-type:string, x ∈ {project(default)}Used to identify this JSON as JIPipe projectmetadata:See metadata[object Object]General information about the projectdependencies:object[]Dependencies of this projectSee dependencygraph:See graph[object Object]Contains the pipeline nodescompartments:object[object Object]For organization of compartmentscompartment-graph:See graph[object Object]Structural graph of compartmentsExample { &amp;#34;jipipe:project-type&amp;#34; : &amp;#34;project&amp;#34;, &amp;#34;metadata&amp;#34; : { &amp;#34;name&amp;#34; : &amp;#34;Empty (3 compartments)&amp;#34;, &amp;#34;description&amp;#34; : &amp;#34;This template contains three compartments &amp;#39;Preprocessing&amp;#39;, &amp;#39;Analysis&amp;#39;, and &amp;#39;Postprocessing&amp;#39; that are connected to each other.</description>
     </item>
     
     <item>
@@ -4304,7 +4289,7 @@ Bookmarks also render the description, so you can also use comments to ask for a
       <guid>https://www.jipipe.org/documentation/cli/</guid>
       <description>You can run JIPipe pipelines without a graphical interface via the command line.
 Just run following command:
-./ImageJ --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLI run --project &amp;lt;project file&amp;gt; --output-folder &amp;lt;output folder&amp;gt; Command line options ./ImageJ --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLI run &amp;lt;options&amp;gt;  --project &amp;lt;Project file&amp;gt; provides the project file to be executed --output-folder &amp;lt;folder&amp;gt; defines where outputs will be written. Outputs are in standard JIPipe format. Optional: --num-threads &amp;lt;N=1,2,3,...&amp;gt; lets you enable multi-threading Optional: --overwrite-parameters &amp;lt;JSON file&amp;gt; allows you to overwrite specific parameters without the need for changing the project file Optional: --P&amp;lt;Node ID&amp;gt;/&amp;lt;Parameter ID&amp;gt; &amp;lt;Parameter value JSON&amp;gt; overwrites a specific parameter with the specified value  Overwriting parameters The JIPipe project file contains all parameters of a project.</description>
+./ImageJ --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLI run --project &amp;lt;project file&amp;gt; --output-folder &amp;lt;output folder&amp;gt; Command line options ./ImageJ --pass-classpath --full-classpath --main-class org.hkijena.jipipe.JIPipeCLI run &amp;lt;options&amp;gt; --project &amp;lt;Project file&amp;gt; provides the project file to be executed --output-folder &amp;lt;folder&amp;gt; defines where outputs will be written. Outputs are in standard JIPipe format. Optional: --num-threads &amp;lt;N=1,2,3,...&amp;gt; lets you enable multi-threading Optional: --overwrite-parameters &amp;lt;JSON file&amp;gt; allows you to overwrite specific parameters without the need for changing the project file Optional: --P&amp;lt;Node ID&amp;gt;/&amp;lt;Parameter ID&amp;gt; &amp;lt;Parameter value JSON&amp;gt; overwrites a specific parameter with the specified value Overwriting parameters The JIPipe project file contains all parameters of a project.</description>
     </item>
     
     <item>
@@ -4334,8 +4319,8 @@ The group node can be found in Miscellaneous &amp;gt; Group, or can be created f
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/tutorials/features/teaching/templates1/</guid>
-      <description>👉 Related tutorial: Creating node groups I Learn how to group a set of nodes into a single compound node.   👉 Related tutorial: Creating node templates Learn how to store nodes for re-use.    Node groups and node templates enable full control over the following aspects:
- How to reduce the complexity of some operations? Which functions/parameters should be accessible to students to avoid confusion and frustration?</description>
+      <description>👉 Related tutorial: Creating node groups I Learn how to group a set of nodes into a single compound node. 👉 Related tutorial: Creating node templates Learn how to store nodes for re-use. Node groups and node templates enable full control over the following aspects:
+How to reduce the complexity of some operations? Which functions/parameters should be accessible to students to avoid confusion and frustration? Which nodes should students use?</description>
     </item>
     
     <item>
@@ -4345,7 +4330,7 @@ The group node can be found in Miscellaneous &amp;gt; Group, or can be created f
       
       <guid>https://www.jipipe.org/documentation-json-api/slot-definition/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: slot-definition.schema.json
-Defines a data slotslot-data-type:stringThe data type ID of the data stored in this slotslot-type:string, x ∈ {Input,Output}Determines if the slot is an input or an outputinherited-slot:objectOnly valid for output slot.</description>
+Defines a data slotslot-data-type:stringThe data type ID of the data stored in this slotslot-type:string, x ∈ {Input,Output}Determines if the slot is an input or an outputinherited-slot:objectOnly valid for output slot. Defines from which slot to inherit the data type.</description>
     </item>
     
     <item>
@@ -4355,7 +4340,7 @@ The group node can be found in Miscellaneous &amp;gt; Group, or can be created f
       
       <guid>https://www.jipipe.org/documentation-json-api/data-table/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: data-table.schema.json
- Defines a data table   node-id:  string      The node type ID that generated the data. Optional.   slot:  string      The slot name that generated the data. Optional.   rows:  object[]       The data row items See data-table-row        data-type:  string       The data type ID behind the row      Example { &amp;#34;node-id&amp;#34; : &amp;#34;ij1-fft-forward2d&amp;#34;, &amp;#34;slot&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;internal-path&amp;#34; : &amp;#34;/fastdata/projects/JIPipe/Output&amp;#34;, &amp;#34;rows&amp;#34; : [ { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } ], &amp;#34;data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
+Defines a data table node-id: string The node type ID that generated the data. Optional. slot: string The slot name that generated the data. Optional. rows: object[] The data row items See data-table-row data-type: string The data type ID behind the row Example { &amp;#34;node-id&amp;#34; : &amp;#34;ij1-fft-forward2d&amp;#34;, &amp;#34;slot&amp;#34; : &amp;#34;Output&amp;#34;, &amp;#34;internal-path&amp;#34; : &amp;#34;/fastdata/projects/JIPipe/Output&amp;#34;, &amp;#34;rows&amp;#34; : [ { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } ], &amp;#34;data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
     </item>
     
     <item>
@@ -4365,7 +4350,7 @@ The group node can be found in Miscellaneous &amp;gt; Group, or can be created f
       
       <guid>https://www.jipipe.org/tutorials/features/teaching/templates2/</guid>
       <description>JIPipe node groups can be used to contain a set of multiple operations (red box 2) into a single node (red box 1). This is for example useful if advanced visualization or file loading processes should be provided to students without establishing all implementation details behind the operation.
-👉 Related tutorial: Creating node groups I Learn how to group a set of nodes into a single compound node.    👉 Node groups contents can be easily viewed by double-clicking them.</description>
+👉 Related tutorial: Creating node groups I Learn how to group a set of nodes into a single compound node. 👉 Node groups contents can be easily viewed by double-clicking them.</description>
     </item>
     
     <item>
@@ -4385,7 +4370,7 @@ Group nodes provide a feature that allows to loop the contained pipeline for eac
       
       <guid>https://www.jipipe.org/documentation-json-api/data-table-row/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: data-table-row.schema.json
- Defines a data table row   id:  number      Row index within the data table   annotations:  object[]       Annotations attached to the data row See annotation        true-data-type:  string       The true (not the slot) data type ID behind the row      Example { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
+Defines a data table row id: number Row index within the data table annotations: object[] Annotations attached to the data row See annotation true-data-type: string The true (not the slot) data type ID behind the row Example { &amp;#34;index&amp;#34; : 0, &amp;#34;annotations&amp;#34; : [ ], &amp;#34;true-data-type&amp;#34; : &amp;#34;imagej-imgplus-fft-2d&amp;#34; } </description>
     </item>
     
     <item>
@@ -4395,7 +4380,7 @@ Group nodes provide a feature that allows to loop the contained pipeline for eac
       
       <guid>https://www.jipipe.org/tutorials/features/teaching/templates3/</guid>
       <description>Groups by themselves are a an excellent mode of reducing the complexity of various operations. To still provide users of the group with means to customize the behaviour of the nodes contained within the group, Group nodes support the referencing/export of group-internal parameters (red box 1) to the group itself (red arrow 2).
-👉 Related tutorial: Creating node groups II Learn how to export group parameters.    👉 For example, teachers can provide a group responsible for segmenting and filtering objects with settings where students can input custom object size constraints:</description>
+👉 Related tutorial: Creating node groups II Learn how to export group parameters. 👉 For example, teachers can provide a group responsible for segmenting and filtering objects with settings where students can input custom object size constraints:</description>
     </item>
     
     <item>
@@ -4405,7 +4390,7 @@ Group nodes provide a feature that allows to loop the contained pipeline for eac
       
       <guid>https://www.jipipe.org/documentation-json-api/annotation/</guid>
       <description>This document describes the properties of the JSON API object. You also can access the document in JSON Schema format: annotation.schema.json
- An annotation   name:  string       Name of the annotation   value:  string       Value of the annotation      Example { &amp;#34;name&amp;#34; : &amp;#34;#Dataset&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;Experiment 1&amp;#34; } </description>
+An annotation name: string Name of the annotation value: string Value of the annotation Example { &amp;#34;name&amp;#34; : &amp;#34;#Dataset&amp;#34;, &amp;#34;value&amp;#34;: &amp;#34;Experiment 1&amp;#34; } </description>
     </item>
     
     <item>
@@ -4416,7 +4401,7 @@ Group nodes provide a feature that allows to loop the contained pipeline for eac
       <guid>https://www.jipipe.org/tutorials/features/teaching/templates4/</guid>
       <description>The node template system allows projects to carry a list of user-defined nodes. These node templates can be created for pre-configured nodes or a group with exported parameters.
 👉 Create project-associated node templates for nodes that should be used by the students
-👉 Related tutorial: Creating node templates Learn how to create node templates and store them inside the project.    Node templates appear both in the Node templates tab (red box 1), as well as in the Templates menu (red box 2).</description>
+👉 Related tutorial: Creating node templates Learn how to create node templates and store them inside the project. Node templates appear both in the Node templates tab (red box 1), as well as in the Templates menu (red box 2).</description>
     </item>
     
     <item>

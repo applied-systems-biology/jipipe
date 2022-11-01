@@ -23,8 +23,7 @@
       <guid>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step2/</guid>
       <description>Now the new File node will appear on the work area.
 The File nodes contains information where JIPipe should look for files. It is related to Folder (a directory) and Path (a file or directory).
-If you want to reference multiple files/directories/paths, you can also use File list/Folder list/Path list.
- </description>
+If you want to reference multiple files/directories/paths, you can also use File list/Folder list/Path list.</description>
     </item>
     
     <item>
@@ -70,8 +69,7 @@ If you want to reference multiple files/directories/paths, you can also use File
       
       <guid>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step7/</guid>
       <description>The result will be shown on the right side, under the Cache browser tab (red arrow 1), where the newly loaded file name and full path will be listed (red arrow 2)
-The cache stores the results of a pipeline/node in memory. Please note that to work with large images, you require a computer with sufficient RAM space.
- </description>
+The cache stores the results of a pipeline/node in memory. Please note that to work with large images, you require a computer with sufficient RAM space.</description>
     </item>
     
     <item>
@@ -81,8 +79,7 @@ The cache stores the results of a pipeline/node in memory. Please note that to w
       
       <guid>https://www.jipipe.org/tutorials/basic/adding-nodes-saving/step8/</guid>
       <description>By double-clicking on the cache entry row (red arrow 1), the newly loaded image will be opened in a dedicated viewer (red arrow 2)
-The File node packages the file path into a JIPipe-managed object called File. If you double-click a File/Folder/Path, it will be opened using your system&amp;rsquo;s standard behavior.
- </description>
+The File node packages the file path into a JIPipe-managed object called File. If you double-click a File/Folder/Path, it will be opened using your system&amp;rsquo;s standard behavior.</description>
     </item>
     
     <item>
