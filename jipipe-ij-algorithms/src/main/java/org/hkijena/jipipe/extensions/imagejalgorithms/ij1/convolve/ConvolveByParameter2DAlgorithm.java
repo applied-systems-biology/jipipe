@@ -26,6 +26,7 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.matrix.Matrix2DFloat;
 
@@ -35,12 +36,14 @@ import org.hkijena.jipipe.extensions.parameters.library.matrix.Matrix2DFloat;
 @JIPipeDocumentation(name = "Convolve 2D (Parameter)", description = "Applies a convolution with a user-defined filter kernel. The kernel is defined by a parameter." +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Convolve", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output")
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", aliasName = "Convolve... (matrix parameter)")
 public class ConvolveByParameter2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Matrix2DFloat matrix = new Matrix2DFloat();
+
+    private boolean normalize = true;
 
     /**
      * Instantiates a new node type.
@@ -48,11 +51,7 @@ public class ConvolveByParameter2DAlgorithm extends JIPipeSimpleIteratingAlgorit
      * @param info the info
      */
     public ConvolveByParameter2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale32FData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscale32FData.class, null)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
         for (int i = 0; i < 3; i++) {
             matrix.addColumn();
             matrix.addRow();
@@ -67,6 +66,7 @@ public class ConvolveByParameter2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     public ConvolveByParameter2DAlgorithm(ConvolveByParameter2DAlgorithm other) {
         super(other);
         this.matrix = new Matrix2DFloat(other.matrix);
+        this.normalize = other.normalize;
     }
 
     @Override
@@ -86,7 +86,7 @@ public class ConvolveByParameter2DAlgorithm extends JIPipeSimpleIteratingAlgorit
                 kernel[row * matrix.getColumnCount() + col] = (float) matrix.getValueAt(row, col);
             }
         }
-
+        convolver.setNormalize(normalize);
         ImageJUtils.forEachSlice(img, imp -> convolver.convolve(imp, kernel, matrix.getColumnCount(), matrix.getRowCount()), progressInfo);
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
@@ -112,6 +112,17 @@ public class ConvolveByParameter2DAlgorithm extends JIPipeSimpleIteratingAlgorit
     @JIPipeParameter("matrix")
     public void setMatrix(Matrix2DFloat matrix) {
         this.matrix = matrix;
+    }
+
+    @JIPipeDocumentation(name = "Normalize kernel")
+    @JIPipeParameter("normalize")
+    public boolean isNormalize() {
+        return normalize;
+    }
+
+    @JIPipeParameter("normalize")
+    public void setNormalize(boolean normalize) {
+        this.normalize = normalize;
     }
 
 }

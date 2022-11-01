@@ -22,8 +22,11 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d2.greyscale.ImagePlus2DGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 /**
@@ -37,6 +40,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFilters", aliasName = "Convolve... (image matrix)")
 public class ConvolveByImage2DAlgorithm extends JIPipeIteratingAlgorithm {
+
+    private boolean normalize = true;
 
     /**
      * Instantiates a new node type.
@@ -54,6 +59,7 @@ public class ConvolveByImage2DAlgorithm extends JIPipeIteratingAlgorithm {
      */
     public ConvolveByImage2DAlgorithm(ConvolveByImage2DAlgorithm other) {
         super(other);
+        this.normalize = other.normalize;
     }
 
     @Override
@@ -75,8 +81,21 @@ public class ConvolveByImage2DAlgorithm extends JIPipeIteratingAlgorithm {
             }
         }
 
+
+        convolver.setNormalize(normalize);
         ImageJUtils.forEachSlice(img, imp -> convolver.convolve(imp, kernel, imgKernel.getWidth(), imgKernel.getHeight()), progressInfo);
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);
+    }
+
+    @JIPipeDocumentation(name = "Normalize kernel")
+    @JIPipeParameter("normalize")
+    public boolean isNormalize() {
+        return normalize;
+    }
+
+    @JIPipeParameter("normalize")
+    public void setNormalize(boolean normalize) {
+        this.normalize = normalize;
     }
 }
