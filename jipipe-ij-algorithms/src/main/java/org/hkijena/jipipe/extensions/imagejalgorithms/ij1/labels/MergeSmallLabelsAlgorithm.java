@@ -257,6 +257,8 @@ public class MergeSmallLabelsAlgorithm extends JIPipeIteratingAlgorithm {
                 }
             }, progressInfo.resolve("Count pixels"));
 
+            progressInfo.log("Calculate remapping");
+
             // Create initial mapping
             float[] keys = counts.keys();
             TFloatFloatMap remapping = new TFloatFloatHashMap();
