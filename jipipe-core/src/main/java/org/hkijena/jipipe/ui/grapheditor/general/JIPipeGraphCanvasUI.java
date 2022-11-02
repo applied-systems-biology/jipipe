@@ -790,6 +790,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             if (selectionFirst != null) {
                 selectionSecond = mouseEvent.getPoint();
                 repaint();
+                if (SystemUtils.IS_OS_LINUX) {
+                    Toolkit.getDefaultToolkit().sync();
+                }
             }
         }
     }
