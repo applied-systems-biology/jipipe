@@ -37,6 +37,7 @@ import java.util.*;
 public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI {
 
     private final JPanel expressionEditorPanel = new JPanel(new BorderLayout());
+
     private final DefaultExpressionEvaluatorSyntaxTokenMaker tokenMaker = new DefaultExpressionEvaluatorSyntaxTokenMaker();
     private final Set<ExpressionParameterVariable> variables = new HashSet<>();
     private RSyntaxTextArea expressionEditor;
@@ -105,11 +106,25 @@ public class DefaultExpressionParameterEditorUI extends JIPipeParameterEditorUI 
         expressionEditorPanel.setBackground(UIManager.getColor("TextArea.background"));
         JPanel borderPanel = new JPanel(new BorderLayout());
         borderPanel.setBackground(UIManager.getColor("TextArea.background"));
-        borderPanel.setBorder(BorderFactory.createEmptyBorder(5, 4, 0, 4));
+        borderPanel.setBorder(BorderFactory.createEmptyBorder(5, 4, 4, 4));
         borderPanel.add(expressionEditor, BorderLayout.CENTER);
+
+        JLabel expressionHintLabel = new JLabel("Expression");
+        expressionHintLabel.setForeground(Color.GRAY);
+        expressionHintLabel.setFont(new Font(Font.DIALOG, Font.ITALIC, 10));
+        expressionHintLabel.setBorder(BorderFactory.createEmptyBorder(0,2,4,0));
+        borderPanel.add(expressionHintLabel, BorderLayout.NORTH);
+
         expressionEditorPanel.add(borderPanel, BorderLayout.CENTER);
 
         add(expressionEditorPanel, BorderLayout.CENTER);
+
+        ExpressionParameterSettings settings = getParameterAccess().getAnnotationOfType(ExpressionParameterSettings.class);
+        if (settings != null) {
+            if(!StringUtils.isNullOrEmpty(settings.hint())) {
+                expressionHintLabel.setText("Expression: " + settings.hint());
+            }
+        }
     }
 
     private void editInFunctionBuilder() {

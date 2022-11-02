@@ -37,5 +37,13 @@ public @interface ExpressionParameterSettings {
      *
      * @return the variable source class
      */
+    @Deprecated
     Class<? extends ExpressionParameterVariableSource> variableSource() default UndefinedExpressionParameterVariableSource.class;
+
+    /**
+     * Hint displayed in the UI.
+     * Should explain what the expression does or when it is applied
+     * @return the hint
+     */
+    String hint() default "";
 }
