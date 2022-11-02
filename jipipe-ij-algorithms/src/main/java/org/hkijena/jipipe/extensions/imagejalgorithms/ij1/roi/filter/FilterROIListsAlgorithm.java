@@ -86,7 +86,7 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Filter", description = "The filter expression used to test ROI lists. Must return a boolean.")
     @JIPipeParameter("filter")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettings(variableSource = VariableSource.class, hint = "per ROI list")
     public DefaultExpressionParameter getFilter() {
         return filter;
     }

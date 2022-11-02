@@ -35,7 +35,7 @@ import java.util.Set;
 /**
  * Parameter that acts as source (via matching a column) or a generator
  */
-@ExpressionParameterSettings(variableSource = TableColumnSourceExpressionParameter.VariableSource.class)
+@ExpressionParameterSettings(variableSource = TableColumnSourceExpressionParameter.VariableSource.class, hint = "table column/data")
 @PairParameterSettings(keyLabel = "Column source", valueLabel = "Column name/value")
 @JIPipeDocumentationDescription(description = "This parameter can be used to either select an existing column from a table or to generate a new column by providing a value for each row." +
         "<ul>" +

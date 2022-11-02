@@ -506,7 +506,7 @@ public class FilterLabelsByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 " Please open the expression builder to see a list of all available variables. If the filter is empty, " +
                 "no filtering is applied. " + "Please note that writing a custom expression into this field requires that statistics are obtained from labels and overlapping regions, which has a significant impact on the performance.")
         @JIPipeParameter("overlap-filter")
-        @ExpressionParameterSettings(variableSource = LabelOverlapStatisticsVariableSource.class)
+        @ExpressionParameterSettings(variableSource = LabelOverlapStatisticsVariableSource.class, hint = "per overlapping label")
         public DefaultExpressionParameter getOverlapFilter() {
             return overlapFilter;
         }

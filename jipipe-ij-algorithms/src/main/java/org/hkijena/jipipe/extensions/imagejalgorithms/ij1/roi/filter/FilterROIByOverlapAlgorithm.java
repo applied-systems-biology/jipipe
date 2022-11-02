@@ -375,7 +375,7 @@ public class FilterROIByOverlapAlgorithm extends JIPipeIteratingAlgorithm {
                 " Please open the expression builder to see a list of all available variables. If the filter is empty, " +
                 "no filtering is applied.")
         @JIPipeParameter("overlap-filter")
-        @ExpressionParameterSettings(variableSource = RoiOverlapStatisticsVariableSource.class)
+        @ExpressionParameterSettings(variableSource = RoiOverlapStatisticsVariableSource.class, hint = "per overlapping ROI")
         public DefaultExpressionParameter getOverlapFilter() {
             return overlapFilter;
         }

@@ -99,7 +99,7 @@ public class SortRoiListByExpressionsAndMeasurementsAlgorithm extends JIPipeIter
     }
 
     @JIPipeDocumentation(name = "Expression", description = "The expression is executed per ROI.")
-    @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettings(variableSource = VariableSource.class, hint = "per ROI")
     @JIPipeParameter("expression")
     @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
     @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
