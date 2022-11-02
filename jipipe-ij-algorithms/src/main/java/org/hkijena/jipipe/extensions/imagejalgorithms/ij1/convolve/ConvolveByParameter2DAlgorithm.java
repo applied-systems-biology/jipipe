@@ -15,19 +15,15 @@ package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.convolve;
 
 import ij.ImagePlus;
 import ij.plugin.filter.Convolver;
-import ij.process.ColorProcessor;
-import ij.process.FloatProcessor;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
-import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscaleData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.parameters.library.matrix.Matrix2DFloat;
@@ -36,7 +32,7 @@ import org.hkijena.jipipe.extensions.parameters.library.matrix.Matrix2DFloat;
  * Wrapper around {@link ij.plugin.filter.Convolver}
  */
 @JIPipeDocumentation(name = "Convolve 2D (Parameter)", description = "Applies a convolution with a user-defined filter kernel. The kernel is defined by a parameter." +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice. For the most precise results, we recommend to convert the image to 32-bit before applying a convolution. Otherwise ImageJ will apply conversion from and to 32-bit images itself, which can have unexpected results.")
 @JIPipeNode(menuPath = "Convolve", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output")
@@ -92,22 +88,7 @@ public class ConvolveByParameter2DAlgorithm extends JIPipeSimpleIteratingAlgorit
         }
         convolver.setNormalize(normalize);
         ImageJUtils.forEachSlice(img, imp -> {
-            if(imp instanceof ColorProcessor) {
-                // Split into channels and convolve individually
-                FloatProcessor c0 = imp.toFloat(0, null);
-                FloatProcessor c1 = imp.toFloat(1, null);
-                FloatProcessor c2 = imp.toFloat(2, null);
-                convolver.convolve(c0, kernel, kernelWidth, kernelHeight);
-                convolver.convolve(c1, kernel, kernelWidth, kernelHeight);
-                convolver.convolve(c2, kernel, kernelWidth, kernelHeight);
-                imp.setPixels(0, c0);
-                imp.setPixels(1, c1);
-                imp.setPixels(2, c2);
-            }
-            else {
-                // Convolve directly
-                convolver.convolve(imp, kernel, kernelWidth, kernelHeight);
-            }
+            ImageJUtils.convolveSlice(convolver, kernelWidth, kernelHeight, kernel, imp);
         }, progressInfo);
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);

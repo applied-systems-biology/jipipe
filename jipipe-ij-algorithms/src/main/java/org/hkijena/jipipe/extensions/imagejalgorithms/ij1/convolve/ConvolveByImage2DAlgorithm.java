@@ -34,7 +34,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
  * Wrapper around {@link Convolver}
  */
 @JIPipeDocumentation(name = "Convolve 2D", description = "Applies a convolution with a user-defined filter kernel. The kernel is defined by a second parameter slot." +
-        "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
+        "If higher-dimensional data is provided, the filter is applied to each 2D slice. For the most precise results, we recommend to convert the image to 32-bit before applying a convolution. Otherwise ImageJ will apply conversion from and to 32-bit images itself, which can have unexpected results.")
 @JIPipeNode(menuPath = "Convolve", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlus2DGreyscale32FData.class, slotName = "Kernel", autoCreate = true)
@@ -87,22 +87,7 @@ public class ConvolveByImage2DAlgorithm extends JIPipeIteratingAlgorithm {
 
         convolver.setNormalize(normalize);
         ImageJUtils.forEachSlice(img, imp -> {
-            if(imp instanceof ColorProcessor) {
-                // Split into channels and convolve individually
-                FloatProcessor c0 = imp.toFloat(0, null);
-                FloatProcessor c1 = imp.toFloat(1, null);
-                FloatProcessor c2 = imp.toFloat(2, null);
-                convolver.convolve(c0, kernel, kernelWidth, kernelHeight);
-                convolver.convolve(c1, kernel, kernelWidth, kernelHeight);
-                convolver.convolve(c2, kernel, kernelWidth, kernelHeight);
-                imp.setPixels(0, c0);
-                imp.setPixels(1, c1);
-                imp.setPixels(2, c2);
-            }
-            else {
-                // Convolve directly
-                convolver.convolve(imp, kernel, kernelWidth, kernelHeight);
-            }
+            ImageJUtils.convolveSlice(convolver, kernelWidth, kernelHeight, kernel, imp);
         }, progressInfo);
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(img), progressInfo);

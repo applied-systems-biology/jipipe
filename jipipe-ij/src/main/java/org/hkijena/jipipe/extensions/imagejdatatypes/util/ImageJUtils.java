@@ -27,6 +27,7 @@ import ij.gui.PolygonRoi;
 import ij.gui.Roi;
 import ij.plugin.PlugIn;
 import ij.plugin.filter.AVI_Writer;
+import ij.plugin.filter.Convolver;
 import ij.process.*;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -1919,5 +1920,28 @@ public class ImageJUtils {
         return outputImage;
     }
 
+    public static void convolveSlice(Convolver convolver, int kernelWidth, int kernelHeight, float[] kernel, ImageProcessor imp) {
+        if(imp instanceof ColorProcessor) {
+            // Split into channels and convolve individually
+            FloatProcessor c0 = imp.toFloat(0, null);
+            FloatProcessor c1 = imp.toFloat(1, null);
+            FloatProcessor c2 = imp.toFloat(2, null);
+            convolver.convolve(c0, kernel, kernelWidth, kernelHeight);
+            convolver.convolve(c1, kernel, kernelWidth, kernelHeight);
+            convolver.convolve(c2, kernel, kernelWidth, kernelHeight);
+            imp.setPixels(0, c0);
+            imp.setPixels(1, c1);
+            imp.setPixels(2, c2);
+        }
+        else if(imp instanceof FloatProcessor) {
+            convolver.convolve(imp, kernel, kernelWidth, kernelHeight);
+        }
+        else {
+            // Convolve directly
+            FloatProcessor c0 = imp.toFloat(0, null);
+            convolver.convolve(c0, kernel, kernelWidth, kernelHeight);
+            imp.setPixels(0, c0);
+        }
+    }
 }
 
