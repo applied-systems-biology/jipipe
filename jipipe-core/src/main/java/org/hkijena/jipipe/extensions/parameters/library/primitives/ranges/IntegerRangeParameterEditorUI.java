@@ -140,6 +140,11 @@ public class IntegerRangeParameterEditorUI extends JIPipeParameterEditorUI {
         }
 
         @Override
+        public String hint() {
+            return "";
+        }
+
+        @Override
         public Class<? extends Annotation> annotationType() {
             return ExpressionParameterSettings.class;
         }

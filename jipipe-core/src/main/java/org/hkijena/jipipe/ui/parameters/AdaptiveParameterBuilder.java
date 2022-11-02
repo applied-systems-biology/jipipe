@@ -359,6 +359,11 @@ public class AdaptiveParameterBuilder extends JDialog {
                         public Class<? extends ExpressionParameterVariableSource> variableSource() {
                             return JIPipeAdaptiveParameterSettings.VariableSource.class;
                         }
+
+                        @Override
+                        public String hint() {
+                            return "";
+                        }
                     })
                     .setKey("condition")
                     .setGetter(conditionValuePair::getCondition)
