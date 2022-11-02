@@ -30,7 +30,7 @@ public class TableCellValueQueryExpression extends DefaultExpressionParameter {
         super(expression);
     }
 
-    public TableCellValueQueryExpression(ExpressionParameter other) {
+    public TableCellValueQueryExpression(AbstractExpressionParameter other) {
         super(other);
     }
 

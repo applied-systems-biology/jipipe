@@ -28,7 +28,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
 /**
- * Describes basic properties of a {@link ExpressionParameter}
+ * Describes basic properties of a {@link AbstractExpressionParameter}
  */
 public class DefaultExpressionEvaluator extends ExpressionEvaluator {
     public static final ExpressionConstant CONSTANT_NULL = new NullConstant();

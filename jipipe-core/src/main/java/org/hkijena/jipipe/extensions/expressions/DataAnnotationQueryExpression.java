@@ -38,7 +38,7 @@ public class DataAnnotationQueryExpression extends DefaultExpressionParameter {
         super(expression);
     }
 
-    public DataAnnotationQueryExpression(ExpressionParameter other) {
+    public DataAnnotationQueryExpression(AbstractExpressionParameter other) {
         super(other);
     }
 

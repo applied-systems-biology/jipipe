@@ -27,17 +27,17 @@ import java.util.Iterator;
  * This allows users to set up filters etc. from within the UI.
  * Use {@link ExpressionParameterSettings} to control the behavior of this parameter.
  */
-public abstract class ExpressionParameter {
+public abstract class AbstractExpressionParameter {
     private String expression = "";
 
-    public ExpressionParameter() {
+    public AbstractExpressionParameter() {
     }
 
-    public ExpressionParameter(String expression) {
+    public AbstractExpressionParameter(String expression) {
         this.expression = expression;
     }
 
-    public ExpressionParameter(ExpressionParameter other) {
+    public AbstractExpressionParameter(AbstractExpressionParameter other) {
         this.expression = other.expression;
     }
 

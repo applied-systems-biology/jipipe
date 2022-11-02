@@ -33,7 +33,7 @@ public class AnnotationGeneratorExpression extends DefaultExpressionParameter {
         super(expression);
     }
 
-    public AnnotationGeneratorExpression(ExpressionParameter other) {
+    public AnnotationGeneratorExpression(AbstractExpressionParameter other) {
         super(other);
     }
 

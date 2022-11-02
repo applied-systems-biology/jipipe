@@ -21,9 +21,9 @@ import java.util.Collection;
 import java.util.HashSet;
 
 /**
- * An {@link ExpressionParameter} that utilizes the {@link DefaultExpressionEvaluator} to generate results
+ * An {@link AbstractExpressionParameter} that utilizes the {@link DefaultExpressionEvaluator} to generate results
  */
-public class DefaultExpressionParameter extends ExpressionParameter {
+public class DefaultExpressionParameter extends AbstractExpressionParameter {
     private static DefaultExpressionEvaluator EVALUATOR;
 
     private java.util.Set<ExpressionParameterVariable> additionalUIVariables = new HashSet<>();
@@ -35,7 +35,7 @@ public class DefaultExpressionParameter extends ExpressionParameter {
         super(expression);
     }
 
-    public DefaultExpressionParameter(ExpressionParameter other) {
+    public DefaultExpressionParameter(AbstractExpressionParameter other) {
         super(other);
     }
 

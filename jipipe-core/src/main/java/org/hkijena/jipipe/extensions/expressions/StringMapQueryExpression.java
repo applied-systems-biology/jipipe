@@ -29,7 +29,7 @@ public class StringMapQueryExpression extends DefaultExpressionParameter {
         super(expression);
     }
 
-    public StringMapQueryExpression(ExpressionParameter other) {
+    public StringMapQueryExpression(AbstractExpressionParameter other) {
         super(other);
     }
 

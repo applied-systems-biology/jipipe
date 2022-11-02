@@ -24,7 +24,7 @@ public interface ExpressionParameterVariableSource {
     /**
      * Returns the list of known variables for the user interface.
      *
-     * @param parameterAccess the parameter access that holds the {@link ExpressionParameter} instance.
+     * @param parameterAccess the parameter access that holds the {@link AbstractExpressionParameter} instance.
      * @return the list of variables
      */
     Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess);
