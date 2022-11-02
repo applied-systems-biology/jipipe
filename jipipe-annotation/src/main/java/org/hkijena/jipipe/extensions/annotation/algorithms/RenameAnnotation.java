@@ -23,6 +23,8 @@ import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.library.pairs.StringQueryExpressionAndStringPairParameter;
 
 import java.util.ArrayList;
@@ -81,6 +83,7 @@ public class RenameAnnotation extends JIPipeSimpleIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Renaming items", description = "Determines which annotation columns are renamed.")
     @JIPipeParameter("renaming-items")
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     public StringQueryExpressionAndStringPairParameter.List getRenamingItems() {
         return renamingItems;
     }
