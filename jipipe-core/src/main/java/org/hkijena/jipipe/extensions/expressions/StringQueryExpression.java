@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.extensions.expressions;
 
+import com.fasterxml.jackson.annotation.JsonGetter;
+import com.fasterxml.jackson.annotation.JsonSetter;
 import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.utils.StringUtils;
 
