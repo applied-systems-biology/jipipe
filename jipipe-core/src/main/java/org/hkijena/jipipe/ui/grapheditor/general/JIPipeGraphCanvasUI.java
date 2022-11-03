@@ -1162,6 +1162,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             }
         }
 
+        boolean layoutHelperEnabled = settings != null && settings.isLayoutAfterConnect();
         if (sourceNode != null && targetNode != null && layoutHelperEnabled) {
 
             // Disabled for comment nodes
@@ -1879,22 +1880,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
         xCoords.add(x2);
         yCoords.add(y2);
-    }
-
-    /**
-     * @return Returns true if the layout helper is enabled. It auto-layouts when connections are made
-     */
-    public boolean isLayoutHelperEnabled() {
-        return layoutHelperEnabled;
-    }
-
-    /**
-     * Enables or disables the layout helper
-     *
-     * @param layoutHelperEnabled If the layout helper should be enabled
-     */
-    public void setLayoutHelperEnabled(boolean layoutHelperEnabled) {
-        this.layoutHelperEnabled = layoutHelperEnabled;
     }
 
     /**

@@ -104,7 +104,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         updateNavigation();
         initializeHotkeys();
         SwingUtilities.invokeLater(() -> canvasUI.crop(true));
-        canvasUI.setLayoutHelperEnabled(graphUISettings.isEnableLayoutHelper());
     }
 
     /**
@@ -549,16 +548,24 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         autoLayoutItem.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_L, KeyEvent.CTRL_MASK | KeyEvent.SHIFT_MASK));
         layoutMenu.add(autoLayoutItem);
 
-        JCheckBoxMenuItem layoutHelperItem = new JCheckBoxMenuItem("Layout helper",
+        JCheckBoxMenuItem layoutOnConnectItem = new JCheckBoxMenuItem("Layout nodes on connect",
                 UIUtils.getIconFromResources("actions/connector-avoid.png"),
-                GraphEditorUISettings.getInstance().isEnableLayoutHelper());
-        layoutHelperItem.setToolTipText("Auto-layout layout on making data slot connections");
-        canvasUI.setLayoutHelperEnabled(GraphEditorUISettings.getInstance().isEnableLayoutHelper());
-        layoutHelperItem.addActionListener(e -> {
-            canvasUI.setLayoutHelperEnabled(layoutHelperItem.isSelected());
-            GraphEditorUISettings.getInstance().setEnableLayoutHelper(layoutHelperItem.isSelected());
+                GraphEditorUISettings.getInstance().isLayoutAfterConnect());
+        layoutOnConnectItem.setToolTipText("Auto-layout layout on making data slot connections");
+        layoutOnConnectItem.addActionListener(e -> {
+            GraphEditorUISettings.getInstance().setLayoutAfterConnect(layoutOnConnectItem.isSelected());
         });
-        layoutMenu.add(layoutHelperItem);
+
+        layoutMenu.add(layoutOnConnectItem);
+
+        JCheckBoxMenuItem layoutOnAlgorithmFinderItem = new JCheckBoxMenuItem("Layout nodes on 'Find matching algorithm'",
+                UIUtils.getIconFromResources("actions/connector-avoid.png"),
+                GraphEditorUISettings.getInstance().isLayoutAfterConnect());
+        layoutOnAlgorithmFinderItem.setToolTipText("Auto-layout layout on utilizing the 'Find matching algorithm' feature");
+        layoutOnAlgorithmFinderItem.addActionListener(e -> {
+            GraphEditorUISettings.getInstance().setLayoutAfterAlgorithmFinder(layoutOnAlgorithmFinderItem.isSelected());
+        });
+        layoutMenu.add(layoutOnAlgorithmFinderItem);
     }
 
     public void createScreenshotClipboard() {

@@ -35,7 +35,6 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private JIPipeGraphViewMode defaultViewMode = JIPipeGraphViewMode.VerticalCompact;
     private GraphAutoLayout autoLayout = GraphAutoLayout.MST;
     private boolean switchPanningDirection = false;
-    private boolean enableLayoutHelper = true;
     private boolean askOnDeleteNode = true;
     private boolean askOnDeleteCompartment = true;
     private boolean askOnDeleteParameter = true;
@@ -48,8 +47,11 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean accurateMiniMap = false;
     private boolean drawNodeShadows = true;
     private boolean drawImprovedEdges = true;
-
     private boolean drawArrowHeads = true;
+
+    private boolean layoutAfterAlgorithmFinder = true;
+
+    private boolean layoutAfterConnect = false;
 
     public static GraphEditorUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
@@ -144,17 +146,26 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
 
     }
 
-    @JIPipeDocumentation(name = "Enable layout helper by default",
-            description = "Auto-layout layout on making data slot connections")
-    @JIPipeParameter("enable-layout-helper")
-    public boolean isEnableLayoutHelper() {
-        return enableLayoutHelper;
+    @JIPipeDocumentation(name = "Layout nodes added by 'Find matching algorithm'", description = "Auto-layout nodes added by the 'Find matching algorithm' feature.")
+    @JIPipeParameter("layout-after-algorithm-find")
+    public boolean isLayoutAfterAlgorithmFinder() {
+        return layoutAfterAlgorithmFinder;
     }
 
-    @JIPipeParameter("enable-layout-helper")
-    public void setEnableLayoutHelper(boolean enableLayoutHelper) {
-        this.enableLayoutHelper = enableLayoutHelper;
+    @JIPipeParameter("layout-after-algorithm-find")
+    public void setLayoutAfterAlgorithmFinder(boolean layoutAfterAlgorithmFinder) {
+        this.layoutAfterAlgorithmFinder = layoutAfterAlgorithmFinder;
+    }
 
+    @JIPipeDocumentation(name = "Layout after connecting nodes", description = "Auto-layout the source/target node after a connection is created")
+    @JIPipeParameter("layout-after-connect")
+    public boolean isLayoutAfterConnect() {
+        return layoutAfterConnect;
+    }
+
+    @JIPipeParameter("layout-after-connect")
+    public void setLayoutAfterConnect(boolean layoutAfterConnect) {
+        this.layoutAfterConnect = layoutAfterConnect;
     }
 
     @JIPipeDocumentation(name = "Auto-layout method",
