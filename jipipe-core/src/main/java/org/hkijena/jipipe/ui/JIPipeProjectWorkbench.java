@@ -27,10 +27,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
-import org.hkijena.jipipe.extensions.settings.AutoSaveSettings;
-import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
-import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
-import org.hkijena.jipipe.extensions.settings.RuntimeSettings;
+import org.hkijena.jipipe.extensions.settings.*;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheBrowserUI;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheManagerUI;
 import org.hkijena.jipipe.ui.components.MemoryStatusUI;
@@ -54,6 +51,7 @@ import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.notifications.NotificationButton;
 import org.hkijena.jipipe.ui.notifications.WorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata;
+import org.hkijena.jipipe.ui.project.LoadResultIntoCacheRun;
 import org.hkijena.jipipe.ui.running.*;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectSettingsUI;
@@ -469,9 +467,17 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         saveProjectAndCache.setToolTipText("Saves the project and all current cached data into a folder.");
         saveProjectAndCache.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
         saveProjectAndCache.addActionListener(e -> {
-            window.saveProjectAndCache();
+            saveProjectAndCache("Save project and cache");
         });
         projectMenu.add(saveProjectAndCache);
+
+        // "Restore cache" entry
+        JMenuItem restoreCache = new JMenuItem("Restore cache ...", UIUtils.getIconFromResources("actions/document-import.png"));
+        restoreCache.setToolTipText("Restores the cache of the current project from a directory.");
+        restoreCache.addActionListener(e -> {
+            restoreCache();
+        });
+        projectMenu.add(restoreCache);
 
         // "Export as algorithm" entry
         JMenuItem exportProjectAsAlgorithmButton = new JMenuItem("Export as custom algorithm", UIUtils.getIconFromResources("actions/document-export.png"));
@@ -586,7 +592,9 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         menu.add(realtimeToggleButton);
 
         // Cache monitor
-        menu.add(new JIPipeCacheManagerUI(this));
+        JIPipeCacheManagerUI cacheManagerUI = new JIPipeCacheManagerUI(this);
+        UIUtils.makeFlat(cacheManagerUI);
+        menu.add(cacheManagerUI);
 
         // Queue monitor
         menu.add(new JIPipeRunnerQueueUI());
@@ -650,6 +658,18 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         UIUtils.installMenuExtension(this, helpMenu, JIPipeMenuExtensionTarget.ProjectHelpMenu, true);
 
         add(menu, BorderLayout.NORTH);
+    }
+
+    public void saveProjectAndCache(String title) {
+        window.saveProjectAndCache(title);
+    }
+
+    public void restoreCache() {
+        Path directory = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Select exported cache");
+        if(directory != null) {
+            // Load into cache with a run
+            JIPipeRunExecuterUI.runInDialog(this, new LoadResultIntoCacheRun(this, project, directory, true));
+        }
     }
 
     private void openManual() {
@@ -719,7 +739,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         }
     }
 
-    private void openCacheBrowser() {
+    public void openCacheBrowser() {
         JIPipeCacheBrowserUI cacheTable = new JIPipeCacheBrowserUI(this);
         getDocumentTabPane().addTab("Cache browser",
                 UIUtils.getIconFromResources("actions/database.png"),

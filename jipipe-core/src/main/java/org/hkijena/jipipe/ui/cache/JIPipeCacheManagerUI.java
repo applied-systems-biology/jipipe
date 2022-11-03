@@ -14,26 +14,22 @@
 package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
-import com.google.common.html.HtmlEscapers;
-import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.*;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
-import java.util.Map;
+import java.awt.*;
 
 /**
  * UI that monitors the queue
  */
-public class JIPipeCacheManagerUI extends JIPipeProjectWorkbenchPanel {
+public class JIPipeCacheManagerUI extends JButton implements JIPipeProjectWorkbenchAccess {
 
-    private JLabel statusLabel;
-    private JButton clearButton;
+    private final JIPipeWorkbench workbench;
+    private final JPopupMenu menu = new JPopupMenu();
 
     /**
      * Creates new instance
@@ -41,7 +37,7 @@ public class JIPipeCacheManagerUI extends JIPipeProjectWorkbenchPanel {
      * @param workbenchUI the workbench
      */
     public JIPipeCacheManagerUI(JIPipeProjectWorkbench workbenchUI) {
-        super(workbenchUI);
+        this.workbench = workbenchUI;
         initialize();
         updateStatus();
 
@@ -49,34 +45,40 @@ public class JIPipeCacheManagerUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void initialize() {
-        setLayout(new BoxLayout(this, BoxLayout.X_AXIS));
+        setLayout(new BorderLayout());
         setOpaque(false);
-        setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2),
-                        BorderFactory.createEmptyBorder(5, 15, 5, 15))));
+        setIcon(UIUtils.getIconFromResources("actions/database.png"));
+        UIUtils.addReloadablePopupMenuToComponent(this, menu, this::reloadMenu);
+    }
 
+    private void reloadMenu() {
+        JMenuItem openCacheBrowser = new JMenuItem("Open cache browser", UIUtils.getIconFromResources("actions/zoom.png"));
+        openCacheBrowser.addActionListener(e -> getProjectWorkbench().openCacheBrowser());
+        menu.add(openCacheBrowser);
 
-        statusLabel = new JLabel();
-        statusLabel.setIcon(UIUtils.getIconFromResources("actions/database.png"));
-        add(statusLabel);
+        menu.addSeparator();
 
-        clearButton = new JButton(UIUtils.getIconFromResources("actions/clear-brush.png"));
-        add(Box.createHorizontalStrut(4));
-        add(clearButton);
-        UIUtils.makeBorderlessWithoutMargin(clearButton);
-        JPopupMenu clearMenu = UIUtils.addPopupMenuToComponent(clearButton);
+        JMenuItem readCache = new JMenuItem("Restore cache", UIUtils.getIconFromResources("actions/document-import.png"));
+        readCache.addActionListener(e -> getProjectWorkbench().restoreCache());
+        menu.add(readCache);
 
-        JMenuItem clearOutdated = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("actions/clock.png"));
-        clearOutdated.setToolTipText("Removes all cached items that are have no representation in the project graph, anymore. " +
-                "This includes items where the algorithm parameters have been changed.");
-        clearOutdated.addActionListener(e -> getProject().getCache().autoClean(false, true, new JIPipeProgressInfo()));
-        clearMenu.add(clearOutdated);
+        JMenuItem writeCache = new JMenuItem("Export cache", UIUtils.getIconFromResources("actions/document-export.png"));
+        writeCache.addActionListener(e -> getProjectWorkbench().saveProjectAndCache("Export cache"));
+        menu.add(writeCache);
+        if (!getProject().getCache().isEmpty()) {
+            menu.addSeparator();
 
-        JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("actions/delete.png"));
-        clearAll.setToolTipText("Removes all cached items.");
-        clearAll.addActionListener(e -> getProject().getCache().clear());
-        clearMenu.add(clearAll);
+            JMenuItem clearOutdated = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("actions/clock.png"));
+            clearOutdated.setToolTipText("Removes all cached items that are have no representation in the project graph, anymore. " +
+                    "This includes items where the algorithm parameters have been changed.");
+            clearOutdated.addActionListener(e -> getProject().getCache().autoClean(false, true, new JIPipeProgressInfo()));
+            menu.add(clearOutdated);
 
+            JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("actions/delete.png"));
+            clearAll.setToolTipText("Removes all cached items.");
+            clearAll.addActionListener(e -> getProject().getCache().clear());
+            menu.add(clearAll);
+        }
     }
 
     /**
@@ -84,24 +86,10 @@ public class JIPipeCacheManagerUI extends JIPipeProjectWorkbenchPanel {
      */
     public void updateStatus() {
         if (getProject().getCache().isEmpty()) {
-            statusLabel.setText("Nothing cached");
-            statusLabel.setToolTipText("There is currently no data in the cache.");
-            clearButton.setVisible(false);
+            setText("Cache (Empty)");
         } else {
-            statusLabel.setText(getProject().getCache().getCachedRowNumber() + " items cached");
-            StringBuilder cacheInfo = new StringBuilder();
-            cacheInfo.append("<html>");
-            cacheInfo.append("Currently there are ").append(getProject().getCache().getCachedRowNumber()).append(" data rows stored in the cache.<br/><br/>");
-            cacheInfo.append("<table>");
-            for (Map.Entry<JIPipeDataInfo, Integer> entry : getProject().getCache().getCachedDataTypes().entrySet()) {
-                cacheInfo.append("<tr><td>").append("<img src=\"").append(JIPipe.getDataTypes().getIconURLFor(entry.getKey())).append("\"/></td>");
-                cacheInfo.append("<td>").append(HtmlEscapers.htmlEscaper().escape(entry.getKey().getName())).append("</td>");
-                cacheInfo.append("<td>").append(entry.getValue()).append(" rows").append("</td></tr>");
-            }
-            cacheInfo.append("</table>");
-            cacheInfo.append("</html>");
-            statusLabel.setToolTipText(cacheInfo.toString());
-            clearButton.setVisible(true);
+            int size = getProject().getCache().getCachedRowNumber();
+            setText(size == 1 ? "Cache (1 item)" : "Cache (" + size + " items)");
         }
     }
 
@@ -115,4 +103,8 @@ public class JIPipeCacheManagerUI extends JIPipeProjectWorkbenchPanel {
         updateStatus();
     }
 
+    @Override
+    public JIPipeWorkbench getWorkbench() {
+        return workbench;
+    }
 }

@@ -411,7 +411,7 @@ public class JIPipeProjectWindow extends JFrame {
                     window.getProjectUI().getDocumentTabPane().switchToLastTab();
                 } else if (selectedOption == JOptionPane.NO_OPTION) {
                     // Load into cache with a run
-                    JIPipeRunExecuterUI.runInDialog(this, new LoadResultIntoCacheRun(projectUI, project, path));
+                    JIPipeRunExecuterUI.runInDialog(this, new LoadResultIntoCacheRun(projectUI, project, path, true));
                 }
                 if (!notifications.isEmpty()) {
                     UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
@@ -544,8 +544,8 @@ public class JIPipeProjectWindow extends JFrame {
     /**
      * Saves the project and cache
      */
-    public void saveProjectAndCache() {
-        Path directory = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Projects, "Save project and cache");
+    public void saveProjectAndCache(String title) {
+        Path directory = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Projects, title);
         if (directory == null)
             return;
         try {

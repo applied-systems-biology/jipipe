@@ -28,12 +28,15 @@ public class LoadResultIntoCacheRun implements JIPipeRunnable {
     private final JIPipeWorkbench workbench;
     private final JIPipeProject project;
     private final Path resultPath;
+
+    private final boolean clearBefore;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
-    public LoadResultIntoCacheRun(JIPipeWorkbench workbench, JIPipeProject project, Path resultPath) {
+    public LoadResultIntoCacheRun(JIPipeWorkbench workbench, JIPipeProject project, Path resultPath, boolean clearBefore) {
         this.workbench = workbench;
         this.project = project;
         this.resultPath = resultPath;
+        this.clearBefore = clearBefore;
     }
 
     @Override
@@ -48,13 +51,17 @@ public class LoadResultIntoCacheRun implements JIPipeRunnable {
 
     @Override
     public String getTaskLabel() {
-        return "Load result into cache";
+        return "Load exported data into cache";
     }
 
     @Override
     public void run() {
         ArrayList<JIPipeGraphNode> nodes = new ArrayList<>(project.getGraph().getGraphNodes());
         progressInfo.setProgress(0, nodes.size());
+        if(clearBefore) {
+            progressInfo.log("Clearing existing cache ...");
+            project.getCache().clear();
+        }
         for (int i = 0; i < nodes.size(); i++) {
             if (getProgressInfo().isCancelled())
                 return;
