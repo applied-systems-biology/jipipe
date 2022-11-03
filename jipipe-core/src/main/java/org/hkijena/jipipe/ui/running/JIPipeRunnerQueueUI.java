@@ -14,9 +14,11 @@
 package org.hkijena.jipipe.ui.running;
 
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.JIPipeRunnable;
 import org.hkijena.jipipe.ui.components.icons.JIPipeRunThrobberIcon;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -24,12 +26,19 @@ import java.awt.*;
 /**
  * UI that monitors the queue
  */
-public class JIPipeRunnerQueueUI extends JPanel {
+public class JIPipeRunnerQueueUI extends JButton {
 
-    private JPanel emptyQueuePanel;
-    private JPanel runningQueuePanel;
-    private JProgressBar runningQueueProgress;
-    private JLabel queueCountLabel;
+    private boolean processAlreadyQueued;
+
+    private JIPipeRunThrobberIcon throbberIcon;
+
+    private boolean showProgress;
+
+    private int lastProgress;
+
+    private int lastMaxProgress;
+
+    private final JPopupMenu menu = new JPopupMenu();
 
     /**
      * Creates new instance
@@ -42,70 +51,104 @@ public class JIPipeRunnerQueueUI extends JPanel {
     }
 
     private void initialize() {
-        setMaximumSize(new Dimension(200, 32));
-        setLayout(new BorderLayout());
-        setOpaque(false);
+        setIcon(UIUtils.getIconFromResources("actions/check-circle.png"));
+        UIUtils.makeFlat(this);
 
-        // UI for empty queue
-        emptyQueuePanel = new JPanel(new BorderLayout());
-        emptyQueuePanel.setOpaque(false);
-        emptyQueuePanel.add(new JLabel("No processes are running", UIUtils.getIconFromResources("actions/media-pause.png"), JLabel.LEFT),
-                BorderLayout.EAST);
-        emptyQueuePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2),
-                        BorderFactory.createEmptyBorder(5, 15, 5, 15))));
+        throbberIcon = new JIPipeRunThrobberIcon(this);
 
-        // UI for running queue
-        runningQueuePanel = new JPanel();
-        runningQueuePanel.setOpaque(false);
-        runningQueuePanel.setLayout(new BoxLayout(runningQueuePanel, BoxLayout.X_AXIS));
-        runningQueuePanel.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createEmptyBorder(1, 1, 1, 1),
-                BorderFactory.createCompoundBorder(new RoundedLineBorder(UIManager.getColor("Button.borderColor"), 1, 2),
-                        BorderFactory.createEmptyBorder(5, 15, 5, 15))));
-        JLabel throbberLabel = new JLabel();
-        throbberLabel.setIcon(new JIPipeRunThrobberIcon(throbberLabel));
-        runningQueuePanel.add(throbberLabel);
-        runningQueuePanel.add(Box.createHorizontalStrut(2));
-        runningQueueProgress = new JProgressBar();
-        runningQueuePanel.add(runningQueueProgress);
-
-        queueCountLabel = new JLabel();
-        runningQueuePanel.add(queueCountLabel);
-
-        JButton cancelButton = new JButton(UIUtils.getIconFromResources("actions/cancel.png"));
-        UIUtils.makeBorderlessWithoutMargin(cancelButton);
-        cancelButton.setToolTipText("Cancel");
-        cancelButton.addActionListener(e -> cancelRun());
-        runningQueuePanel.add(Box.createHorizontalStrut(4));
-        runningQueuePanel.add(cancelButton);
+        UIUtils.addReloadablePopupMenuToComponent(this, menu, this::reloadMenu);
     }
 
-    private void cancelRun() {
-        if (JIPipeRunnerQueue.getInstance().getCurrentRun() != null)
-            JIPipeRunnerQueue.getInstance().cancel(JIPipeRunnerQueue.getInstance().getCurrentRun());
+    private void reloadMenu() {
+        menu.removeAll();
+
+        if(JIPipeRunnerQueue.getInstance().size() > 0) {
+
+            JMenuItem cancelAllItem = new JMenuItem("Cancel all tasks", UIUtils.getIcon32FromResources("actions/stock_calc-cancel.png"));
+            cancelAllItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
+            cancelAllItem.setToolTipText("Cancels all running and queued tasks");
+            cancelAllItem.addActionListener(e -> {
+                JIPipeRunnerQueue.getInstance().clearQueue();
+                JIPipeRunnable currentRun = JIPipeRunnerQueue.getInstance().getCurrentRun();
+                JIPipeRunnerQueue.getInstance().cancel(currentRun);
+            });
+            menu.add(cancelAllItem);
+
+            if(JIPipeRunnerQueue.getInstance().size() > 1) {
+                JMenuItem cancelQueuedItem = new JMenuItem("Cancel only enqueued tasks", UIUtils.getIcon32FromResources("actions/rabbitvcs-clear.png"));
+                cancelQueuedItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
+                cancelQueuedItem.setToolTipText("Cancels enqueued tasks. Currently running operations are not cancelled.");
+                cancelQueuedItem.addActionListener(e -> {
+                    JIPipeRunnerQueue.getInstance().clearQueue();
+                });
+                menu.add(cancelQueuedItem);
+            }
+
+            menu.addSeparator();
+
+            JIPipeRunWorker currentRun = JIPipeRunnerQueue.getInstance().getCurrentRunWorker();
+            if(currentRun != null) {
+                menu.add(new RunMenuItem(currentRun));
+            }
+            for (JIPipeRunWorker runWorker : JIPipeRunnerQueue.getInstance().getQueue()) {
+                menu.add(new RunMenuItem(runWorker));
+            }
+        }
+        else {
+            JMenuItem cancelAllItem = new JMenuItem("There are currently no tasks running", UIUtils.getIcon32FromResources("emblems/vcs-normal.png"));
+            menu.add(cancelAllItem);
+        }
     }
 
     /**
      * Updates the UI status
      */
     public void updateStatus() {
-        if (JIPipeRunnerQueue.getInstance().getCurrentRun() != null) {
-            removeAll();
-            add(runningQueuePanel, BorderLayout.EAST);
+        JIPipeRunnable currentRun = JIPipeRunnerQueue.getInstance().getCurrentRun();
+        if (currentRun != null) {
+            processAlreadyQueued = true;
+            showProgress = true;
+            lastProgress = currentRun.getProgressInfo().getProgress();
+            lastMaxProgress = currentRun.getProgressInfo().getMaxProgress();
+            setIcon(throbberIcon);
             int size = JIPipeRunnerQueue.getInstance().size();
             if (size <= 1) {
-                queueCountLabel.setText("");
+                setText("1 task running");
             } else {
-                queueCountLabel.setText(" +" + (size - 1) + "");
+                setText("1 task running (+" + (size - 1) + " enqueued)");
             }
-            revalidate();
             repaint();
         } else {
-            removeAll();
-            queueCountLabel.setText("");
-            add(emptyQueuePanel, BorderLayout.EAST);
-            revalidate();
+            showProgress = false;
+            setIcon(UIUtils.getIconFromResources("actions/check-circle.png"));
+            if(!processAlreadyQueued) {
+                setText("Ready");
+            }
+            else {
+                setText("A tasks finished");
+            }
             repaint();
+        }
+
+        reloadMenu();
+    }
+
+    @Override
+    public void paint(Graphics g) {
+        super.paint(g);
+
+        if(showProgress) {
+            g.setColor(Color.LIGHT_GRAY);
+            g.fillRect(15,getHeight() - 6,getWidth()-15*2, 2);
+            if(lastMaxProgress > 0) {
+                double perc = 1.0 * lastProgress / lastMaxProgress;
+                if(perc < 0)
+                    perc = 0;
+                if(perc > 1)
+                    perc = 1;
+                g.setColor(ModernMetalTheme.PRIMARY5);
+                g.fillRect(15,getHeight() - 6, (int) ((getWidth()-15*2) * perc), 2);
+            }
         }
     }
 
@@ -156,11 +199,146 @@ public class JIPipeRunnerQueueUI extends JPanel {
      */
     @Subscribe
     public void onWorkerProgress(RunWorkerProgressEvent event) {
-        runningQueueProgress.setMaximum(event.getStatus().getMaxProgress());
-        runningQueueProgress.setValue(event.getStatus().getProgress());
-        if (event.getStatus().getMessage() != null)
-            runningQueueProgress.setToolTipText("(" + runningQueueProgress.getValue() + "/" + runningQueueProgress.getMaximum() + ") " +
-                    event.getStatus().getMessage());
+        JIPipeRunnable currentRun = event.getRun();
+        lastProgress = currentRun.getProgressInfo().getProgress();
+        lastMaxProgress = currentRun.getProgressInfo().getMaxProgress();
+    }
+
+    public static class RunMenuItem extends JMenuItem {
+        private final JIPipeRunWorker worker;
+        private final JLabel titleLabel = new JLabel("Status");
+
+        private final JLabel iconLabel = new JLabel();
+        private final JLabel statusLabel = new JLabel();
+        private final JProgressBar progressBar = new JProgressBar();
+
+        private final JButton cancelButton = new JButton(UIUtils.getIcon32FromResources("actions/cancel.png"));
+
+        public RunMenuItem(JIPipeRunWorker worker) {
+            this.worker = worker;
+            initialize();
+            updateStatus(null);
+            JIPipeRunnerQueue.getInstance().getEventBus().register(this);
+        }
+
+        private void initialize() {
+            removeAll();
+            setPreferredSize(new Dimension(300, 48));
+            setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
+            setLayout(new GridBagLayout());
+
+            titleLabel.setText(worker.getRun().getTaskLabel());
+            titleLabel.setFont(new Font(Font.DIALOG, Font.BOLD, 12));
+            statusLabel.setFont(new Font(Font.DIALOG, Font.PLAIN, 10));
+            cancelButton.setBorder(null);
+            progressBar.setMaximumSize(new Dimension(Short.MAX_VALUE, 8));
+            progressBar.setBorder(null);
+
+            add(iconLabel, new GridBagConstraints(0,0,1,1,0,0,GridBagConstraints.NORTHWEST,GridBagConstraints.NONE,new Insets(2,2,2,2), 0, 0));
+            add(titleLabel, new GridBagConstraints(1,0,1,1,1,0,GridBagConstraints.NORTHWEST,GridBagConstraints.HORIZONTAL,new Insets(2,2,2,2), 0, 0));
+            add(statusLabel, new GridBagConstraints(1,1,1,1,1,0,GridBagConstraints.NORTHWEST,GridBagConstraints.HORIZONTAL,new Insets(2,2,2,2), 0, 0));
+            add(progressBar, new GridBagConstraints(1,2,1,1,1,0,GridBagConstraints.NORTHWEST,GridBagConstraints.HORIZONTAL,new Insets(2,2,2,2), 0, 0));
+            add(cancelButton, new GridBagConstraints(2,0,1,3,0,1,GridBagConstraints.NORTHWEST, GridBagConstraints.VERTICAL, new Insets(2,2,2,2), 0,0));
+
+            cancelButton.addActionListener(e-> cancelClicked());
+        }
+
+        private void cancelClicked() {
+            JPopupMenu ancestor = (JPopupMenu) SwingUtilities.getAncestorOfClass(JPopupMenu.class, this);
+            ancestor.setVisible(false);
+            JIPipeRunnerQueue.getInstance().cancel(worker.getRun());
+        }
+
+        private void updateStatus(JIPipeProgressInfo.StatusUpdatedEvent status) {
+            if(worker.isDone()) {
+                if(worker.isCancelled()) {
+                    iconLabel.setIcon(UIUtils.getIconFromResources("emblems/emblem-error.png"));
+                    statusLabel.setText("Cancelled.");
+                }
+                else {
+                    iconLabel.setIcon(UIUtils.getIconFromResources("emblems/emblem-success.png"));
+                    statusLabel.setText("Done.");
+                }
+                progressBar.setMaximum(1);
+                progressBar.setValue(1);
+                progressBar.setIndeterminate(false);
+                cancelButton.setEnabled(false);
+            }
+            else if(JIPipeRunnerQueue.getInstance().getCurrentRunWorker() == worker) {
+                cancelButton.setEnabled(true);
+                iconLabel.setIcon(UIUtils.getIconFromResources("emblems/emblem-insync-syncing.png"));
+                if(status != null) {
+                    progressBar.setIndeterminate(false);
+                    progressBar.setMaximum(status.getMaxProgress());
+                    progressBar.setValue(status.getProgress());
+                    statusLabel.setText(status.getMessage());
+                }
+                else {
+                    statusLabel.setText("In progress ...");
+                    progressBar.setMaximum(1);
+                    progressBar.setValue(0);
+                    progressBar.setIndeterminate(true);
+                }
+            }
+            else {
+                iconLabel.setIcon(UIUtils.getIconFromResources("emblems/emblem-hourglass.png"));
+                cancelButton.setEnabled(true);
+                statusLabel.setText("Enqueued.");
+                progressBar.setMaximum(1);
+                progressBar.setValue(0);
+                progressBar.setIndeterminate(true);
+            }
+        }
+
+        /**
+         * Triggered when a worker is started
+         *
+         * @param event Generated event
+         */
+        @Subscribe
+        public void onWorkerStarted(RunWorkerStartedEvent event) {
+            updateStatus(null);
+        }
+
+        /**
+         * Triggered when a worker is enqueued
+         *
+         * @param event Generated event
+         */
+        @Subscribe
+        public void onWorkerEnqueued(RunWorkerEnqueuedEvent event) {
+            updateStatus(null);
+        }
+
+        /**
+         * Triggered when a worker is finished
+         *
+         * @param event Generated event
+         */
+        @Subscribe
+        public void onWorkerFinished(RunWorkerFinishedEvent event) {
+            updateStatus(null);
+        }
+
+        /**
+         * Triggered when a worker is interrupted
+         *
+         * @param event Generated event
+         */
+        @Subscribe
+        public void onWorkerInterrupted(RunWorkerInterruptedEvent event) {
+            updateStatus(null);
+        }
+
+        /**
+         * Triggered when a worker reports progress
+         *
+         * @param event Generated event
+         */
+        @Subscribe
+        public void onWorkerProgress(RunWorkerProgressEvent event) {
+            updateStatus(event.getStatus());
+        }
     }
 
 }

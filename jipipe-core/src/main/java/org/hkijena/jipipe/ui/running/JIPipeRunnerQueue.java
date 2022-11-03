@@ -13,15 +13,13 @@
 
 package org.hkijena.jipipe.ui.running;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.JIPipeRunnable;
 
-import java.util.ArrayDeque;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Queue for {@link JIPipeRunnable}
@@ -62,6 +60,10 @@ public class JIPipeRunnerQueue {
         }
 
         return false;
+    }
+
+    public Queue<JIPipeRunWorker> getQueue() {
+        return new ArrayDeque<>(queue);
     }
 
     /**
@@ -187,7 +189,23 @@ public class JIPipeRunnerQueue {
     /**
      * @return The current run
      */
+    public JIPipeRunWorker getCurrentRunWorker() {
+        return currentlyRunningWorker;
+    }
+
+    /**
+     * @return The current run
+     */
     public JIPipeRunnable getCurrentRun() {
         return currentlyRunningWorker != null ? currentlyRunningWorker.getRun() : null;
+    }
+
+    /**
+     * Removes all enqueued (but not running tasks)
+     */
+    public void clearQueue() {
+        for (JIPipeRunWorker worker : ImmutableList.copyOf(queue)) {
+            cancel(worker.getRun());
+        }
     }
 }

@@ -65,7 +65,7 @@ public class NewThrobberIcon implements Icon {
         graphics2D.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
         for (int i = 0; i < numLines; i++) {
             graphics2D.setColor(colors[(numLines - i - 1 + colorShift) % numLines]);
-            graphics2D.draw(new Line2D.Double(x1Locations[i], y1Locations[i], x2Locations[i], y2Locations[i]));
+            graphics2D.draw(new Line2D.Double(x + x1Locations[i], y + y1Locations[i], x + x2Locations[i], y + y2Locations[i]));
         }
     }
 

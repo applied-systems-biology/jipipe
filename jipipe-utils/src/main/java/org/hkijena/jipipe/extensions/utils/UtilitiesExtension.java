@@ -121,6 +121,8 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("run-process-iterating", RunProcessIteratingAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_runterm.png"));
         registerNodeType("run-process-merging", RunProcessMergingAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_runterm.png"));
 
+        registerNodeType("sleep", SleepAlgorithm.class, UIUtils.getIconURLFromResources("actions/clock.png"));
+
         // Comment node
         JIPipeJavaNodeInfo commentNodeInfo = new JIPipeJavaNodeInfo("jipipe:comment", JIPipeCommentNode.class);
         commentNodeInfo.setRunnable(false);

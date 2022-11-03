@@ -52,6 +52,8 @@ public class JIPipeCacheManagerUI extends JButton implements JIPipeProjectWorkbe
     }
 
     private void reloadMenu() {
+        menu.removeAll();
+
         JMenuItem openCacheBrowser = new JMenuItem("Open cache browser", UIUtils.getIconFromResources("actions/zoom.png"));
         openCacheBrowser.addActionListener(e -> getProjectWorkbench().openCacheBrowser());
         menu.add(openCacheBrowser);
