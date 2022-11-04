@@ -223,7 +223,10 @@ public class JIPipeProjectCache {
             disableTriggerEvent = true;
             JIPipeProjectCacheQuery cacheQuery = new JIPipeProjectCacheQuery(project);
             List<JIPipeGraphNode> traversedAlgorithms = null;
-            for (UUID nodeUUID : ImmutableList.copyOf(cacheEntries.keySet())) {
+            ImmutableList<UUID> cacheEntriesCopy = ImmutableList.copyOf(cacheEntries.keySet());
+            int percentage = 0;
+            for (int i = 0; i < cacheEntriesCopy.size(); i++) {
+                UUID nodeUUID = cacheEntriesCopy.get(i);
                 if (project.getGraph().containsNode(nodeUUID)) {
                     JIPipeGraphNode node = project.getGraph().getNodeByUUID(nodeUUID);
                     if (compareSlots || compareProjectStates) {
@@ -233,18 +236,20 @@ public class JIPipeProjectCache {
                         JIPipeProjectCacheState stateId = cacheQuery.getCachedId(nodeUUID);
 
                         Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = cacheEntries.getOrDefault(nodeUUID, null);
-                        for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : ImmutableList.copyOf(stateMap.entrySet())) {
-                            if (compareProjectStates) {
-                                if (!Objects.equals(stateEntry.getKey(), stateId)) {
-                                    progressInfo.log("Clearing " + node.getDisplayName() + " state " + stateEntry.getKey());
-                                    clear(nodeUUID, stateEntry.getKey());
-                                }
-                            } else {
-                                for (String slotName : stateEntry.getValue().keySet()) {
-                                    if (!node.getOutputSlotMap().containsKey(slotName) || !node.getOutputSlotMap().get(slotName).isOutput()) {
+                        if (stateMap != null) {
+                            for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : ImmutableList.copyOf(stateMap.entrySet())) {
+                                if (compareProjectStates) {
+                                    if (!Objects.equals(stateEntry.getKey(), stateId)) {
                                         progressInfo.log("Clearing " + node.getDisplayName() + " state " + stateEntry.getKey());
                                         clear(nodeUUID, stateEntry.getKey());
-                                        break;
+                                    }
+                                } else {
+                                    for (String slotName : stateEntry.getValue().keySet()) {
+                                        if (!node.getOutputSlotMap().containsKey(slotName) || !node.getOutputSlotMap().get(slotName).isOutput()) {
+                                            progressInfo.log("Clearing " + node.getDisplayName() + " state " + stateEntry.getKey());
+                                            clear(nodeUUID, stateEntry.getKey());
+                                            break;
+                                        }
                                     }
                                 }
                             }
@@ -252,6 +257,11 @@ public class JIPipeProjectCache {
                     }
                 } else {
                     clear(nodeUUID);
+                }
+                int newPercentage = (i * 100) / cacheEntriesCopy.size();
+                if(newPercentage > percentage) {
+                    progressInfo.log("Analyzing cache ... " + newPercentage + "%");
+                    percentage = newPercentage;
                 }
             }
         } finally {
