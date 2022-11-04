@@ -15,6 +15,7 @@
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw;
 
 import ij.gui.Roi;
+import ij.gui.TextRoi;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.AbstractJIPipeParameterCollection;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
@@ -149,5 +150,17 @@ public class ROIProperties extends AbstractJIPipeParameterCollection {
             target.setStrokeColor(lineColor.getContent());
         target.setStrokeWidth(lineWidth);
         target.setName(roiName.evaluateToString(variables));
+    }
+
+    public void applyTo(Roi roi, ExpressionVariables variables) {
+        roi.setName(getRoiName().evaluateToString(variables));
+        roi.setStrokeWidth(getLineWidth());
+        roi.setPosition(getPositionC(), getPositionZ(), getPositionT());
+        if(getFillColor().isEnabled()) {
+            roi.setFillColor(getFillColor().getContent());
+        }
+        if(getLineColor().isEnabled()) {
+            roi.setStrokeColor(getLineColor().getContent());
+        }
     }
 }

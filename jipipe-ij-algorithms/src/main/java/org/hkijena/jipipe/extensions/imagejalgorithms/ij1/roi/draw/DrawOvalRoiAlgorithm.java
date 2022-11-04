@@ -81,19 +81,9 @@ public class DrawOvalRoiAlgorithm extends JIPipeIteratingAlgorithm {
                 area.x -= area.width / 2;
                 area.y -= area.height / 2;
             }
-            target.add(new OvalRoi(area.x, area.y, area.width, area.height));
-        }
-
-        for (Roi roi : target) {
-            roi.setName(roiProperties.getRoiName().evaluateToString(variables));
-            roi.setStrokeWidth(roiProperties.getLineWidth());
-            roi.setPosition(roiProperties.getPositionC(), roiProperties.getPositionZ(), roiProperties.getPositionT());
-            if(roiProperties.getFillColor().isEnabled()) {
-                roi.setFillColor(roiProperties.getFillColor().getContent());
-            }
-            if(roiProperties.getLineColor().isEnabled()) {
-                roi.setStrokeColor(roiProperties.getLineColor().getContent());
-            }
+            OvalRoi roi = new OvalRoi(area.x, area.y, area.width, area.height);
+            roiProperties.applyTo(roi, variables);
+            target.add(roi);
         }
 
         // Output

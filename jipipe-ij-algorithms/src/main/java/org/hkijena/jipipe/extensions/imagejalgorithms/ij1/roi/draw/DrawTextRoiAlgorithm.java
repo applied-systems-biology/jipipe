@@ -8,8 +8,11 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.RoiNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
+import org.hkijena.jipipe.extensions.expressions.DefaultExpressionParameter;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.StringQueryExpression;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.FontFamilyParameter;
@@ -27,7 +30,7 @@ import java.awt.geom.Rectangle2D;
 public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final ROIProperties roiProperties;
-    private StringQueryExpression text = new StringQueryExpression("\"your text here\"");
+    private DefaultExpressionParameter text = new DefaultExpressionParameter("\"your text here\"");
 
     private FixedMargin location = new FixedMargin();
     private boolean center = false;
@@ -55,6 +58,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         this.center = other.center;
         this.angle = other.angle;
         this.antialiased = other.antialiased;
+        this.text = new DefaultExpressionParameter(other.text);
     }
 
     @Override
@@ -79,7 +83,7 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
             reference = target.getBounds();
         }
 
-        String finalText = text.generate(variables);
+        String finalText = text.evaluateToString(variables);
         Font font = fontStyle.toFont(fontFamily, fontSize);
 
         // Calculate font metrics
@@ -98,20 +102,9 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
         TextRoi textRoi = new TextRoi(finalLocation.x, finalLocation.y, finalLocation.width, finalLocation.height, finalText, font);
         textRoi.setAngle(angle);
         textRoi.setAntialiased(antialiased);
+        roiProperties.applyTo(textRoi, variables);
 
         target.add(textRoi);
-
-        for (Roi roi : target) {
-            roi.setName(roiProperties.getRoiName().evaluateToString(variables));
-            roi.setStrokeWidth(roiProperties.getLineWidth());
-            roi.setPosition(roiProperties.getPositionC(), roiProperties.getPositionZ(), roiProperties.getPositionT());
-            if(roiProperties.getFillColor().isEnabled()) {
-                roi.setFillColor(roiProperties.getFillColor().getContent());
-            }
-            if(roiProperties.getLineColor().isEnabled()) {
-                roi.setStrokeColor(roiProperties.getLineColor().getContent());
-            }
-        }
 
         // Output
         dataBatch.addOutputData(getFirstOutputSlot(), target, progressInfo);
@@ -137,12 +130,13 @@ public class DrawTextRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     @JIPipeDocumentation(name = "Text", description = "Expression that generates the text")
     @JIPipeParameter(value = "text", important = true)
-    public StringQueryExpression getText() {
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    public DefaultExpressionParameter getText() {
         return text;
     }
 
     @JIPipeParameter("text")
-    public void setText(StringQueryExpression text) {
+    public void setText(DefaultExpressionParameter text) {
         this.text = text;
     }
 

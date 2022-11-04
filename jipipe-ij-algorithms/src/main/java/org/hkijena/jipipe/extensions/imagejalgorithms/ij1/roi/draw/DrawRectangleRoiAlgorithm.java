@@ -89,10 +89,14 @@ public class DrawRectangleRoiAlgorithm extends JIPipeIteratingAlgorithm {
                 area.y -= area.height / 2;
             }
             if (arcWidth <= 0 && arcHeight <= 0) {
-                target.add(new ShapeRoi(area));
+                ShapeRoi roi = new ShapeRoi(area);
+                roiProperties.applyTo(roi, variables);
+                target.add(roi);
             } else {
                 RoundRectangle2D rectangle2D = new RoundRectangle2D.Double(area.x, area.y, area.width, area.height, arcWidth, arcHeight);
-                target.add(new ShapeRoi(rectangle2D));
+                ShapeRoi roi = new ShapeRoi(rectangle2D);
+                roiProperties.applyTo(roi, variables);
+                target.add(roi);
             }
         }
 
