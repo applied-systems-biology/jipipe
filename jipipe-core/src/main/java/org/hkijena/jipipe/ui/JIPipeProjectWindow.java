@@ -411,7 +411,7 @@ public class JIPipeProjectWindow extends JFrame {
                     window.getProjectUI().getDocumentTabPane().switchToLastTab();
                 } else if (selectedOption == JOptionPane.NO_OPTION) {
                     // Load into cache with a run
-                    JIPipeRunExecuterUI.runInDialog(this, new LoadResultIntoCacheRun(projectUI, project, path, true));
+                    JIPipeRunExecuterUI.runInDialog(this, new LoadResultDirectoryIntoCacheRun(projectUI, project, path, true));
                 }
                 if (!notifications.isEmpty()) {
                     UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
@@ -544,7 +544,7 @@ public class JIPipeProjectWindow extends JFrame {
     /**
      * Saves the project and cache
      */
-    public void saveProjectAndCache(String title) {
+    public void saveProjectAndCacheToDirectory(String title, boolean addAsRecentProject) {
         Path directory = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Projects, title);
         if (directory == null)
             return;
@@ -562,7 +562,25 @@ public class JIPipeProjectWindow extends JFrame {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        SaveProjectAndCacheRun run = new SaveProjectAndCacheRun(projectUI, project, directory);
+        SaveProjectAndCacheToDirectoryRun run = new SaveProjectAndCacheToDirectoryRun(projectUI, project, directory, addAsRecentProject);
+        JIPipeRunExecuterUI.runInDialog(this, run);
+    }
+
+    /**
+     * Saves the project and cache
+     */
+    public void saveProjectAndCacheToZIP(String title) {
+        Path file = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, title, UIUtils.EXTENSION_FILTER_ZIP);
+        if(file == null)
+            return;
+        if(Files.exists(file)) {
+            try {
+                Files.delete(file);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        SaveProjectAndCacheToZipRun run = new SaveProjectAndCacheToZipRun(projectUI, project, file);
         JIPipeRunExecuterUI.runInDialog(this, run);
     }
 }

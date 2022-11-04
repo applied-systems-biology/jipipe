@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProjectCache;
 import org.hkijena.jipipe.ui.*;
 import org.hkijena.jipipe.utils.UIUtils;
-import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
 
 import javax.swing.*;
 import java.awt.*;
@@ -61,12 +60,13 @@ public class JIPipeCacheManagerUI extends JButton implements JIPipeProjectWorkbe
         menu.addSeparator();
 
         JMenuItem readCache = new JMenuItem("Restore cache", UIUtils.getIconFromResources("actions/document-import.png"));
-        readCache.addActionListener(e -> getProjectWorkbench().restoreCache());
+        readCache.addActionListener(e -> getProjectWorkbench().restoreCacheFromZIPOrDirectory());
         menu.add(readCache);
 
-        JMenuItem writeCache = new JMenuItem("Export cache", UIUtils.getIconFromResources("actions/document-export.png"));
-        writeCache.addActionListener(e -> getProjectWorkbench().saveProjectAndCache("Export cache"));
-        menu.add(writeCache);
+        JMenuItem writeCacheToDirectory = new JMenuItem("Export cache", UIUtils.getIconFromResources("actions/document-export.png"));
+        writeCacheToDirectory.addActionListener(e -> getProjectWorkbench().saveProjectAndCache("Export cache", false));
+        menu.add(writeCacheToDirectory);
+
         if (!getProject().getCache().isEmpty()) {
             menu.addSeparator();
 

@@ -30,16 +30,19 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class SaveProjectAndCacheRun implements JIPipeRunnable {
+public class SaveProjectAndCacheToDirectoryRun implements JIPipeRunnable {
     private final JIPipeWorkbench workbench;
     private final JIPipeProject project;
     private final Path outputPath;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
-    public SaveProjectAndCacheRun(JIPipeWorkbench workbench, JIPipeProject project, Path outputPath) {
+    private final boolean addAsRecentProject;
+
+    public SaveProjectAndCacheToDirectoryRun(JIPipeWorkbench workbench, JIPipeProject project, Path outputPath, boolean addAsRecentProject) {
         this.workbench = workbench;
         this.project = project;
         this.outputPath = outputPath;
+        this.addAsRecentProject = addAsRecentProject;
     }
 
     @Override
@@ -54,7 +57,7 @@ public class SaveProjectAndCacheRun implements JIPipeRunnable {
 
     @Override
     public String getTaskLabel() {
-        return "Save project and cache";
+        return "Save project and cache (directory)";
     }
 
     @Override
@@ -65,7 +68,8 @@ public class SaveProjectAndCacheRun implements JIPipeRunnable {
         try {
             Files.createDirectories(outputPath);
             project.saveProject(outputPath.resolve("project.jip"));
-            ProjectsSettings.getInstance().addRecentProject(outputPath);
+            if(addAsRecentProject)
+                ProjectsSettings.getInstance().addRecentProject(outputPath);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

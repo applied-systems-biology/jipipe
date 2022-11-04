@@ -84,7 +84,7 @@ public class JIPipeCachedDataDisplayCacheControl {
         cacheAwareToggle.setSelected(true);
         menu.add(cacheAwareToggle);
 
-        runnerQueue = new JIPipeRunnerQueueUI();
+        runnerQueue = new JIPipeRunnerQueueUI(workbench);
     }
 
     public void installRefreshOnActivate(Runnable refreshFunction) {

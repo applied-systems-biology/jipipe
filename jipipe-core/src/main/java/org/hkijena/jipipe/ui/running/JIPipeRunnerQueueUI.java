@@ -16,6 +16,9 @@ package org.hkijena.jipipe.ui.running;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.ui.JIPipeWorkbenchAccess;
 import org.hkijena.jipipe.ui.components.icons.JIPipeRunThrobberIcon;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -26,7 +29,9 @@ import java.awt.*;
 /**
  * UI that monitors the queue
  */
-public class JIPipeRunnerQueueUI extends JButton {
+public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAccess {
+
+    private final JIPipeWorkbench workbench;
 
     private boolean processAlreadyQueued;
 
@@ -43,7 +48,8 @@ public class JIPipeRunnerQueueUI extends JButton {
     /**
      * Creates new instance
      */
-    public JIPipeRunnerQueueUI() {
+    public JIPipeRunnerQueueUI(JIPipeWorkbench workbench) {
+        this.workbench = workbench;
         initialize();
         updateStatus();
 
@@ -95,8 +101,15 @@ public class JIPipeRunnerQueueUI extends JButton {
             }
         }
         else {
-            JMenuItem cancelAllItem = new JMenuItem("There are currently no tasks running", UIUtils.getIcon32FromResources("emblems/vcs-normal.png"));
-            menu.add(cancelAllItem);
+            JMenuItem noTasksItem = new JMenuItem("There are currently no tasks running", UIUtils.getIcon32FromResources("emblems/vcs-normal.png"));
+            menu.add(noTasksItem);
+        }
+
+        if(workbench instanceof JIPipeProjectWorkbench) {
+            menu.addSeparator();
+            JMenuItem openLogsItem = new JMenuItem("Open logs", UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"));
+            openLogsItem.addActionListener(e -> workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_LOG));
+            menu.add(openLogsItem);
         }
     }
 
@@ -125,7 +138,7 @@ public class JIPipeRunnerQueueUI extends JButton {
                 setText("Ready");
             }
             else {
-                setText("A tasks finished");
+                setText("All tasks finished");
             }
             repaint();
         }
@@ -202,6 +215,11 @@ public class JIPipeRunnerQueueUI extends JButton {
         JIPipeRunnable currentRun = event.getRun();
         lastProgress = currentRun.getProgressInfo().getProgress();
         lastMaxProgress = currentRun.getProgressInfo().getMaxProgress();
+    }
+
+    @Override
+    public JIPipeWorkbench getWorkbench() {
+        return workbench;
     }
 
     public static class RunMenuItem extends JMenuItem {

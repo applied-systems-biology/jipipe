@@ -51,7 +51,8 @@ import org.hkijena.jipipe.ui.ijupdater.JIPipeImageJPluginManager;
 import org.hkijena.jipipe.ui.notifications.NotificationButton;
 import org.hkijena.jipipe.ui.notifications.WorkbenchNotificationInboxUI;
 import org.hkijena.jipipe.ui.project.JIPipeProjectTabMetadata;
-import org.hkijena.jipipe.ui.project.LoadResultIntoCacheRun;
+import org.hkijena.jipipe.ui.project.LoadResultDirectoryIntoCacheRun;
+import org.hkijena.jipipe.ui.project.LoadResultZipIntoCacheRun;
 import org.hkijena.jipipe.ui.running.*;
 import org.hkijena.jipipe.ui.settings.JIPipeApplicationSettingsUI;
 import org.hkijena.jipipe.ui.settings.JIPipeProjectSettingsUI;
@@ -467,15 +468,15 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         saveProjectAndCache.setToolTipText("Saves the project and all current cached data into a folder.");
         saveProjectAndCache.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, KeyEvent.CTRL_DOWN_MASK + KeyEvent.SHIFT_DOWN_MASK + KeyEvent.ALT_DOWN_MASK));
         saveProjectAndCache.addActionListener(e -> {
-            saveProjectAndCache("Save project and cache");
+            saveProjectAndCache("Save project and cache", true);
         });
         projectMenu.add(saveProjectAndCache);
 
         // "Restore cache" entry
         JMenuItem restoreCache = new JMenuItem("Restore cache ...", UIUtils.getIconFromResources("actions/document-import.png"));
-        restoreCache.setToolTipText("Restores the cache of the current project from a directory.");
+        restoreCache.setToolTipText("Restores the cache of the current project from a directory or ZIP file.");
         restoreCache.addActionListener(e -> {
-            restoreCache();
+            restoreCacheFromZIPOrDirectory();
         });
         projectMenu.add(restoreCache);
 
@@ -597,7 +598,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         menu.add(cacheManagerUI);
 
         // Queue monitor
-        menu.add(new JIPipeRunnerQueueUI());
+        menu.add(new JIPipeRunnerQueueUI(this));
 
         // "Run" entry
         JButton runProjectButton = new JButton("Run", UIUtils.getIconFromResources("actions/run-build.png"));
@@ -660,15 +661,45 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         add(menu, BorderLayout.NORTH);
     }
 
-    public void saveProjectAndCache(String title) {
-        window.saveProjectAndCache(title);
+    public void saveProjectAndCache(String title, boolean addAsRecentProject) {
+        int option = JOptionPane.showOptionDialog(this,
+                "You can save cached data as directory or ZIP file. Please choose the most convenient option.",
+                title,
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new Object[]{"ZIP file", "Directory", "Cancel"},
+                "ZIP file");
+        switch (option) {
+            case JOptionPane.YES_OPTION:
+                saveProjectAndCacheToZIP(title);
+                break;
+            case JOptionPane.NO_OPTION:
+                saveProjectAndCacheToDirectory(title, addAsRecentProject);
+                break;
+        }
     }
 
-    public void restoreCache() {
-        Path directory = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Select exported cache");
-        if(directory != null) {
-            // Load into cache with a run
-            JIPipeRunExecuterUI.runInDialog(this, new LoadResultIntoCacheRun(this, project, directory, true));
+    public void saveProjectAndCacheToDirectory(String title, boolean addAsRecentProject) {
+        window.saveProjectAndCacheToDirectory(title, addAsRecentProject);
+    }
+
+    public void saveProjectAndCacheToZIP(String title) {
+        window.saveProjectAndCacheToZIP(title);
+    }
+
+
+    public void restoreCacheFromZIPOrDirectory() {
+        Path path = FileChooserSettings.openPath(this, FileChooserSettings.LastDirectoryKey.Projects, "Select exported cache (ZIP/directory)");
+        if(path != null) {
+            if(Files.isRegularFile(path)) {
+                // Load into cache with a run
+                JIPipeRunExecuterUI.runInDialog(this, new LoadResultZipIntoCacheRun(this, project, path, true));
+            }
+            else {
+                // Load into cache with a run
+                JIPipeRunExecuterUI.runInDialog(this, new LoadResultDirectoryIntoCacheRun(this, project, path, true));
+            }
         }
     }
 

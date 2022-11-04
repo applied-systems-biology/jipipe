@@ -24,7 +24,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
 
-public class LoadResultIntoCacheRun implements JIPipeRunnable {
+public class LoadResultDirectoryIntoCacheRun implements JIPipeRunnable {
     private final JIPipeWorkbench workbench;
     private final JIPipeProject project;
     private final Path resultPath;
@@ -32,7 +32,7 @@ public class LoadResultIntoCacheRun implements JIPipeRunnable {
     private final boolean clearBefore;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
-    public LoadResultIntoCacheRun(JIPipeWorkbench workbench, JIPipeProject project, Path resultPath, boolean clearBefore) {
+    public LoadResultDirectoryIntoCacheRun(JIPipeWorkbench workbench, JIPipeProject project, Path resultPath, boolean clearBefore) {
         this.workbench = workbench;
         this.project = project;
         this.resultPath = resultPath;
