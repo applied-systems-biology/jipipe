@@ -105,4 +105,13 @@ public class JIPipeProjectCacheQuery {
     public JIPipeProjectCacheState getCachedId(UUID nodeUUID) {
         return cachedStates.get(nodeUUID);
     }
+
+    /**
+     * Clears the cached equality values of the cached states
+     */
+    public void resetCacheIdEqualityCaches() {
+        for (JIPipeProjectCacheState cacheState : cachedStates.values()) {
+            cacheState.resetEqualityCache();
+        }
+    }
 }

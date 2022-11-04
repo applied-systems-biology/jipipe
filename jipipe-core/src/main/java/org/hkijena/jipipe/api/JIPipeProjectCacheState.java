@@ -18,10 +18,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Encapsulates a state
@@ -31,6 +28,8 @@ public class JIPipeProjectCacheState implements Comparable<JIPipeProjectCacheSta
     private final LocalDateTime generationTime;
     private final String stateId;
     private final Set<JIPipeProjectCacheState> predecessorStates;
+
+    private Map<JIPipeProjectCacheState, Boolean> equalityCache = new IdentityHashMap<>();
 
     /**
      * Creates a new instance
@@ -92,15 +91,28 @@ public class JIPipeProjectCacheState implements Comparable<JIPipeProjectCacheSta
         if (o == null || getClass() != o.getClass()) return false;
         JIPipeProjectCacheState state = (JIPipeProjectCacheState) o;
 
+        Boolean equalityCacheOrDefault = equalityCache.getOrDefault(state, null);
+        if(equalityCacheOrDefault != null) {
+            return equalityCacheOrDefault;
+        }
+
         // Our state maps are generally mutable, so we need to recreate hashsets
         if (nodeUUID.equals(state.nodeUUID) && stateId.equals(state.stateId)) {
             // Check predecessor step
-            return new HashSet<>(predecessorStates).equals(new HashSet<>(state.predecessorStates));
+            boolean equals = new HashSet<>(predecessorStates).equals(new HashSet<>(state.predecessorStates));
+            equalityCache.put(state, equals);
+            return equals;
         }
+
+        equalityCache.put(state, false);
         return false;
     }
 
     public Set<JIPipeProjectCacheState> getPredecessorStates() {
         return predecessorStates;
+    }
+
+    public void resetEqualityCache() {
+        equalityCache.clear();
     }
 }
