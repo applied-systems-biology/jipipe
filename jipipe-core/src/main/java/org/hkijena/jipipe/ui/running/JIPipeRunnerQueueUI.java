@@ -102,12 +102,14 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
         }
         else {
             JMenuItem noTasksItem = new JMenuItem("There are currently no tasks running", UIUtils.getIcon32FromResources("emblems/vcs-normal.png"));
+            noTasksItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
             menu.add(noTasksItem);
         }
 
         if(workbench instanceof JIPipeProjectWorkbench) {
             menu.addSeparator();
             JMenuItem openLogsItem = new JMenuItem("Open logs", UIUtils.getIcon32FromResources("actions/rabbitvcs-show_log.png"));
+            openLogsItem.setMaximumSize(new Dimension(Short.MAX_VALUE, 48));
             openLogsItem.addActionListener(e -> workbench.getDocumentTabPane().selectSingletonTab(JIPipeProjectWorkbench.TAB_LOG));
             menu.add(openLogsItem);
         }
