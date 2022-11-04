@@ -51,6 +51,8 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
 
     private double expectedStep = 1.0;
 
+    private boolean ignoreEmptyTables = true;
+
     public AddMissingRowsInSeriesAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
@@ -62,13 +64,14 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
         this.minCounter = new OptionalDefaultExpressionParameter(other.minCounter);
         this.maxCounter = new OptionalDefaultExpressionParameter(other.maxCounter);
         this.expectedStep = other.expectedStep;
+        this.ignoreEmptyTables = other.ignoreEmptyTables;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData inputTable = dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo);
         ResultsTableData outputTable;
-        if (inputTable.getRowCount() > 0) {
+        if (!ignoreEmptyTables || inputTable.getRowCount() > 0) {
             ExpressionVariables variables = new ExpressionVariables();
             variables.putAnnotations(dataBatch.getMergedTextAnnotations());
             variables.set("num_rows", inputTable.getRowCount());
@@ -180,6 +183,17 @@ public class AddMissingRowsInSeriesAlgorithm extends JIPipeSimpleIteratingAlgori
             return false;
         this.expectedStep = expectedStep;
         return true;
+    }
+
+    @JIPipeDocumentation(name = "Ignore empty tables", description = "If enabled, ignore empty tables")
+    @JIPipeParameter("ignore-empty-tables")
+    public boolean isIgnoreEmptyTables() {
+        return ignoreEmptyTables;
+    }
+
+    @JIPipeParameter("ignore-empty-tables")
+    public void setIgnoreEmptyTables(boolean ignoreEmptyTables) {
+        this.ignoreEmptyTables = ignoreEmptyTables;
     }
 
     @JIPipeDocumentation(name = "Counting column", description = "The column that contains the counter (e.g., the time frame)")

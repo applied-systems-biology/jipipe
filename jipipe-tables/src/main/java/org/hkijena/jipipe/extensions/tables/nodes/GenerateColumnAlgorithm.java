@@ -20,26 +20,31 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
-import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettings;
-import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
-import org.hkijena.jipipe.extensions.expressions.TableCellExpressionParameterVariableSource;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
+import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.parameters.api.pairs.PairParameterSettings;
+import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalIntegerParameter;
 import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import org.hkijena.jipipe.extensions.tables.parameters.collections.ExpressionTableColumnGeneratorProcessorParameterList;
 import org.hkijena.jipipe.extensions.tables.parameters.processors.ExpressionTableColumnGeneratorProcessor;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 /**
  * Algorithm that adds or replaces a column by a generated value
  */
 @JIPipeDocumentation(name = "Add table column", description = "Adds a new column. By default no changes are applied if the column already exists. " +
         "Can be optionally configured to replace existing columns.")
+@JIPipeNodeAlias(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append", aliasName = "Add missing columns")
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private final CustomExpressionVariablesParameter customFilterVariables;
     private ExpressionTableColumnGeneratorProcessorParameterList columns = new ExpressionTableColumnGeneratorProcessorParameterList();
     private boolean replaceIfExists = false;
+    private OptionalIntegerParameter ensureMinNumberOfRows = new OptionalIntegerParameter(false, 1);
 
     /**
      * Creates a new instance
@@ -48,6 +53,7 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public GenerateColumnAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.customFilterVariables = new CustomExpressionVariablesParameter(this);
         columns.addNewInstance();
     }
 
@@ -60,12 +66,20 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(other);
         this.replaceIfExists = other.replaceIfExists;
         this.columns = new ExpressionTableColumnGeneratorProcessorParameterList(other.columns);
+        this.ensureMinNumberOfRows = new OptionalIntegerParameter(other.ensureMinNumberOfRows);
+        this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ResultsTableData table = (ResultsTableData) dataBatch.getInputData(getFirstInputSlot(), ResultsTableData.class, progressInfo).duplicate(progressInfo);
+        if(ensureMinNumberOfRows.isEnabled()) {
+            table.addRows(ensureMinNumberOfRows.getContent() - table.getRowCount());
+        }
         ExpressionVariables variableSet = new ExpressionVariables();
+        variableSet.putAnnotations(dataBatch.getMergedTextAnnotations());
+        customFilterVariables.writeToVariables(variableSet, true, "custom.", true, "custom");
+
         variableSet.set("num_rows", table.getRowCount());
         for (ExpressionTableColumnGeneratorProcessor entry : columns) {
             String columnName = entry.getValue();
@@ -98,6 +112,13 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         report.resolve("Columns").report(columns);
     }
 
+    @JIPipeDocumentation(name = "Custom filter variables", description = "Here you can add parameters that will be included into the filter as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
+    @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
+    public CustomExpressionVariablesParameter getCustomFilterVariables() {
+        return customFilterVariables;
+    }
+
     @JIPipeDocumentation(name = "Replace existing data", description = "If the target column exists, replace its content")
     @JIPipeParameter("replace-existing")
     public boolean isReplaceIfExists() {
@@ -115,7 +136,10 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             "<pre>$\"%Area\" * 10</pre>")
     @JIPipeParameter("columns")
     @ExpressionParameterSettings(variableSource = TableCellExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @PairParameterSettings(singleRow = false, keyLabel = "Function", valueLabel = "Output column")
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public ExpressionTableColumnGeneratorProcessorParameterList getColumns() {
         return columns;
     }
@@ -123,5 +147,16 @@ public class GenerateColumnAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @JIPipeParameter("columns")
     public void setColumns(ExpressionTableColumnGeneratorProcessorParameterList columns) {
         this.columns = columns;
+    }
+
+    @JIPipeDocumentation(name = "Ensure minimum number of rows", description = "Ensures that the table has at least the specified number of rows prior to adding columns.")
+    @JIPipeParameter("ensure-min-number-of-rows")
+    public OptionalIntegerParameter getEnsureMinNumberOfRows() {
+        return ensureMinNumberOfRows;
+    }
+
+    @JIPipeParameter("ensure-min-number-of-rows")
+    public void setEnsureMinNumberOfRows(OptionalIntegerParameter ensureMinNumberOfRows) {
+        this.ensureMinNumberOfRows = ensureMinNumberOfRows;
     }
 }
