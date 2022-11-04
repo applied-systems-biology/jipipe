@@ -29,6 +29,7 @@ public class CalibrationPlugin extends GeneralImageViewerPanelPlugin {
         calibrationModes.setSelectedItem(ImageJCalibrationMode.AutomaticImageJ);
         displayRangeCalibrationControl = new ImageViewerPanelDisplayRangeControl(this);
         calibrationModes.addActionListener(e -> {
+            displayRangeCalibrationControl.updateFromCurrentSlice(false);
             uploadSliceToCanvas();
         });
 //        autoCalibrateButton.addActionListener(e -> {

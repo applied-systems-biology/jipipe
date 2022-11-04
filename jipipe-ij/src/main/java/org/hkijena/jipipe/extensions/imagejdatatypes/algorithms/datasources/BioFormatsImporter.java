@@ -41,6 +41,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.IntegerL
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 import org.hkijena.jipipe.extensions.parameters.library.roi.RectangleList;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.awt.*;
@@ -152,7 +153,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
             options.setCropRegion(i, new Region(rectangle.x, rectangle.y, rectangle.width, rectangle.height));
         }
 
-        try {
+        try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
             ImportProcess process = new ImportProcess(options);
             if (!process.execute()) {
                 throw new NullPointerException();

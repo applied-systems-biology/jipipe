@@ -35,6 +35,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataInfoRef;
 import org.hkijena.jipipe.extensions.parameters.library.references.JIPipeDataParameterSettings;
 import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
+import org.hkijena.jipipe.utils.IJLogToJIPipeProgressInfoPump;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -108,7 +109,9 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             importer.run(progressInfo);
             image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
         } else {
-            image = IJ.openImage(fileName.toString());
+            try(IJLogToJIPipeProgressInfoPump pump = new IJLogToJIPipeProgressInfoPump(progressInfo)) {
+                image = IJ.openImage(fileName.toString());
+            }
         }
         if (image == null) {
             // Try Bioformats again?

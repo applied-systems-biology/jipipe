@@ -30,6 +30,7 @@ import org.jdesktop.swingx.multislider.ThumbListener;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.lang.ref.WeakReference;
 import java.text.DecimalFormat;
 import java.util.Optional;
 
@@ -46,6 +47,8 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
     private double customMax;
     private double minSelectableValue;
     private double maxSelectableValue;
+
+    private WeakReference<ImagePlus> lastSelectableValueCalculationBasis;
 
     public ImageViewerPanelDisplayRangeControl(CalibrationPlugin calibrationPlugin) {
         this.calibrationPlugin = calibrationPlugin;
@@ -135,21 +138,47 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
     public void updateFromCurrentSlice(boolean clearCustom) {
         if (clearCustom || getCalibrationPlugin().getSelectedCalibration() != ImageJCalibrationMode.Custom) {
             isUpdating = true;
+            ImagePlus currentImage = getCalibrationPlugin().getCurrentImage();
             ImageProcessor currentSlice = getCalibrationPlugin().getCurrentSlice();
-            if (currentSlice != null) {
-                double min, max;
-                if (currentSlice instanceof FloatProcessor) {
-                    ImageStatistics statistics = currentSlice.getStats();
-                    if (statistics == null)
-                        return;
-                    min = statistics.min;
-                    max = statistics.max;
-                } else {
-                    min = currentSlice.minValue();
-                    max = currentSlice.maxValue();
+            if (currentImage != null && currentSlice != null) {
+                if(lastSelectableValueCalculationBasis == null || lastSelectableValueCalculationBasis.get() != currentImage) {
+                    double min;
+                    double max;
+                    if (currentImage.getBitDepth() == 32) {
+                        // We need to find the min and max
+                        if (currentImage.getStackSize() == 1) {
+                            ImageStatistics statistics = currentImage.getProcessor().getStats();
+                            if (statistics == null)
+                                return;
+                            min = statistics.min;
+                            max = statistics.max;
+                        } else {
+                            // Initial value
+                            {
+                                ImageProcessor processor = currentImage.getStack().getProcessor(1);
+                                ImageStatistics statistics = processor.getStats();
+                                if (statistics == null)
+                                    return;
+                                min = statistics.min;
+                                max = statistics.max;
+                            }
+                            for (int i = 2; i <= currentImage.getStackSize(); i++) {
+                                ImageProcessor processor = currentImage.getStack().getProcessor(i);
+                                ImageStatistics statistics = processor.getStats();
+                                if (statistics == null)
+                                    continue;
+                                min = Math.min(statistics.min, min);
+                                max = Math.max(statistics.max, max);
+                            }
+                        }
+                    } else {
+                        min = currentSlice.minValue();
+                        max = currentSlice.maxValue();
+                    }
+                    minSelectableValue = min;
+                    maxSelectableValue = max;
+                    lastSelectableValueCalculationBasis = new WeakReference<>(currentImage);
                 }
-                minSelectableValue = min;
-                maxSelectableValue = max;
                 double[] calibration = ImageJUtils.calculateCalibration(currentSlice,
                         getCalibrationPlugin().getSelectedCalibration(),
                         minSelectableValue,
@@ -159,8 +188,8 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
                 customMax = calibration[1];
                 double displayRangeMin = customMin;
                 double displayRangeMax = customMax;
-                double positionMin = Math.min(1, Math.max(0, displayRangeMin - min) / (max - min));
-                double positionMax = Math.min(1, Math.max(0, displayRangeMax - min) / (max - min));
+                double positionMin = Math.min(1, Math.max(0, displayRangeMin - minSelectableValue) / (maxSelectableValue - minSelectableValue));
+                double positionMax = Math.min(1, Math.max(0, displayRangeMax - minSelectableValue) / (maxSelectableValue - minSelectableValue));
                 slider.getModel().getThumbAt(0).setPosition((float) positionMin);
                 slider.getModel().getThumbAt(1).setPosition((float) positionMax);
             }
