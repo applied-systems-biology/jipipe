@@ -34,7 +34,7 @@ public class JIPipeCommentNode extends JIPipeGraphNode {
         super(other);
         this.backgroundColor = other.backgroundColor;
         this.textColor = other.textColor;
-        this.icon = new IconRef(other.icon);
+        this.icon = new IconRef(other.getIcon());
     }
 
     @Override
@@ -72,6 +72,9 @@ public class JIPipeCommentNode extends JIPipeGraphNode {
     @JIPipeDocumentation(name = "Icon", description = "Defines the icon of this comment node.")
     @JIPipeParameter("icon")
     public IconRef getIcon() {
+        if(icon == null) {
+            icon = new IconRef("actions/edit-comment.png");
+        }
         return icon;
     }
 
