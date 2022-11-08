@@ -1123,6 +1123,8 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         UUID currentCompartmentUUID = getCompartmentUUIDInParentGraph();
         if (Objects.equals(compartmentUUIDInGraph, currentCompartmentUUID))
             return true;
+        if(parentGraph == null)
+            return false;
         return parentGraph.getVisibleCompartmentUUIDsOf(this).contains(compartmentUUIDInGraph);
     }
 
