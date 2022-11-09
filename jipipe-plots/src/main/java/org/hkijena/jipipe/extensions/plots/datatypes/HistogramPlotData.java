@@ -69,6 +69,8 @@ public class HistogramPlotData extends PlotData {
         this.valueAxisFontSize = other.valueAxisFontSize;
         this.valueAxisMinimum = new OptionalDoubleParameter(other.valueAxisMinimum);
         this.valueAxisMaximum = new OptionalDoubleParameter(other.valueAxisMaximum);
+        this.bins = other.bins;
+        this.histogramType = other.histogramType;
     }
 
     public static HistogramPlotData importData(JIPipeReadDataStorage storage, JIPipeProgressInfo progressInfo) {
