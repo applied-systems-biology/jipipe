@@ -66,7 +66,7 @@ public class RemoveROIMetadataAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     @ExpressionParameterSettingsVariable(key = "key", name = "Metadata key", description = "The name of the metadata")
     @ExpressionParameterSettingsVariable(key = "value", name = "Metadata value", description = "The value of the metadata")
-    @ExpressionParameterSettingsVariable(key = "metadata.<Metadata key>", description = "Other ROI metadata/properties accessible via their string keys")
+    @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "Other ROI metadata/properties accessible via their string keys")
     public DefaultExpressionParameter getFilterExpression() {
         return filterExpression;
     }

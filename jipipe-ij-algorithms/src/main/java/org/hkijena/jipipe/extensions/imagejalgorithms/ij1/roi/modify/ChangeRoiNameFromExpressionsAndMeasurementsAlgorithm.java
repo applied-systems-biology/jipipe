@@ -101,7 +101,7 @@ public class ChangeRoiNameFromExpressionsAndMeasurementsAlgorithm extends JIPipe
     @ExpressionParameterSettings(variableSource = VariableSource.class)
     @JIPipeParameter("expression")
     @ExpressionParameterSettingsVariable(key = "metadata", name = "ROI metadata", description = "A map containing the ROI metadata/properties (string keys, string values)")
-    @ExpressionParameterSettingsVariable(key = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")
+    @ExpressionParameterSettingsVariable(name = "metadata.<Metadata key>", description = "ROI metadata/properties accessible via their string keys")
     public StringQueryExpression getExpression() {
         return expression;
     }
