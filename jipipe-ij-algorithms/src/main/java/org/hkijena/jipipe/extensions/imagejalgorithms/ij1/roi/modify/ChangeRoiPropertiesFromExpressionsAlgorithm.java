@@ -119,7 +119,7 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
         ROIListData inputRois = (ROIListData) dataBatch.getInputData("Input", ROIListData.class, progressInfo).duplicate(progressInfo);
         ImagePlusData inputReference = dataBatch.getInputData("Reference", ImagePlusData.class, progressInfo);
 
-        org.hkijena.jipipe.extensions.expressions.ExpressionVariables variables = new org.hkijena.jipipe.extensions.expressions.ExpressionVariables();
+        ExpressionVariables variables = new ExpressionVariables();
         variables.putAnnotations(dataBatch.getMergedTextAnnotations());
         customFilterVariables.writeToVariables(variables, true, "custom.", true, "custom");
 
