@@ -105,6 +105,7 @@ public abstract class JIPipeIteratingMissingDataGeneratorAlgorithm extends JIPip
                 dataBatchGenerationSettings.getCustomColumns());
         builder.setAnnotationMatchingMethod(dataBatchGenerationSettings.getAnnotationMatchingMethod());
         builder.setCustomAnnotationMatching(dataBatchGenerationSettings.getCustomAnnotationMatching());
+        builder.setForceFlowGraphSolver(dataBatchGenerationSettings.isForceFlowGraphSolver());
         List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
         dataBatches.sort(Comparator.naturalOrder());
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();

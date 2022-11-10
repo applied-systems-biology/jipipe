@@ -312,6 +312,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
                 dataBatchGenerationSettings.getCustomColumns());
         builder.setCustomAnnotationMatching(dataBatchGenerationSettings.getCustomAnnotationMatching());
         builder.setAnnotationMatchingMethod(dataBatchGenerationSettings.getAnnotationMatchingMethod());
+        builder.setForceFlowGraphSolver(dataBatchGenerationSettings.isForceFlowGraphSolver());
         List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
         dataBatches.sort(Comparator.naturalOrder());
         boolean withLimit = dataBatchGenerationSettings.getLimit().isEnabled();

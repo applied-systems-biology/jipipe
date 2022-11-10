@@ -41,6 +41,8 @@ public class JIPipeMergingDataBatchBuilder {
     private JIPipeTextAnnotationMatchingMethod annotationMatchingMethod = JIPipeTextAnnotationMatchingMethod.ExactMatch;
     private DefaultExpressionParameter customAnnotationMatching = new DefaultExpressionParameter("exact_match_results");
 
+    private boolean forceFlowGraphSolver = false;
+
     public JIPipeMergingDataBatchBuilder() {
 
     }
@@ -574,6 +576,14 @@ public class JIPipeMergingDataBatchBuilder {
 
     public void setCustomAnnotationMatching(DefaultExpressionParameter customAnnotationMatching) {
         this.customAnnotationMatching = customAnnotationMatching;
+    }
+
+    public boolean isForceFlowGraphSolver() {
+        return forceFlowGraphSolver;
+    }
+
+    public void setForceFlowGraphSolver(boolean forceFlowGraphSolver) {
+        this.forceFlowGraphSolver = forceFlowGraphSolver;
     }
 
     /**

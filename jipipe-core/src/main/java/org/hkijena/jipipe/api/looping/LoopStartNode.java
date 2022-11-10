@@ -94,6 +94,7 @@ public class LoopStartNode extends IOInterfaceAlgorithm implements JIPipeDataBat
                     batchGenerationSettings.getCustomColumns());
             builder.setCustomAnnotationMatching(batchGenerationSettings.getCustomAnnotationMatching());
             builder.setAnnotationMatchingMethod(batchGenerationSettings.getAnnotationMatchingMethod());
+            builder.setForceFlowGraphSolver(batchGenerationSettings.isForceFlowGraphSolver());
             List<JIPipeMergingDataBatch> dataBatches = builder.build(progressInfo);
             dataBatches.sort(Comparator.naturalOrder());
             boolean withLimit = batchGenerationSettings.getLimit().isEnabled();
