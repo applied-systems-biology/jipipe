@@ -24,7 +24,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Combine ROI lists", description = "Merges multiple ROI lists. Compared to 'Merge ROI lists', this node allows to control the order of the operation.")
+@JIPipeDocumentation(name = "Combine ROI lists", description = "Merges multiple ROI lists. The ROI from 'Source' are added to the end of the 'Target' list. Compared to 'Merge ROI lists', this node allows to control the order of the operation.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Target", autoCreate = true, description = "Where the ROI are added")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Source", autoCreate = true, description = "The ROI to be added")

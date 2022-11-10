@@ -33,7 +33,7 @@ import java.awt.*;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", description = "Reference image for the positioning. If not set, the area covered by the existing ROI are used (or width=0, height=0)", autoCreate = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nTools", aliasName = "Scale Bar... (as ROI)")
-public class DrawScaleBarRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
+public class DrawScaleBarRoiAlgorithm extends JIPipeIteratingAlgorithm {
 
     private final TextSettings textSettings;
     private OptionalQuantity horizontalBarSize = new OptionalQuantity(new Quantity(1, "µm"), false);

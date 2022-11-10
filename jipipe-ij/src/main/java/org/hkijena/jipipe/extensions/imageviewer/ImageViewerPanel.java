@@ -616,7 +616,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         formPanel.addToForm(dimensionEditor, new JLabel("Animated dimension"), null);
 
         JComboBox<AVICompression> compressionEditor = new JComboBox<>(AVICompression.values());
-        compressionEditor.setSelectedItem(AVICompression.JPEG);
+        compressionEditor.setSelectedItem(AVICompression.None);
         formPanel.addToForm(compressionEditor, new JLabel("Compression"), null);
 
         JSlider compressionQualityEditor = new JSlider(0, 100, 100);
