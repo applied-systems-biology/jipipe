@@ -86,6 +86,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.assemble.ExtractFr
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.convert.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw.DrawOvalRoiAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw.DrawRectangleRoiAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw.DrawScaleBarRoiAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.draw.DrawTextRoiAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.filter.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.generate.*;
@@ -1170,7 +1171,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-roi-draw-rectangle", DrawRectangleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-rectangle.png"));
         registerNodeType("ij1-roi-draw-oval", DrawOvalRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-ellipse.png"));
         registerNodeType("ij1-roi-draw-text", DrawTextRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-text.png"));
-        registerNodeType("ij1-roi-draw-scalebar", DrawTextRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
+        registerNodeType("ij1-roi-draw-scalebar", DrawScaleBarRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
 
         registerEnumParameterType("ij1-roi-flood-fill:mode",
                 RoiFloodFillAlgorithm.Mode.class,
