@@ -173,7 +173,7 @@ public class JIPipeMergingDataBatchBuilder {
             return applySplitAllSolver(progressInfo.resolveAndLog("Split into batches"));
         }
 
-        if (referenceColumns.size() == 1 && annotationMatchingMethod == JIPipeTextAnnotationMatchingMethod.ExactMatch) {
+        if (!forceFlowGraphSolver && referenceColumns.size() == 1 && annotationMatchingMethod == JIPipeTextAnnotationMatchingMethod.ExactMatch) {
             return applyDictionarySolver(progressInfo.resolveAndLog("Dictionary solver"));
         }
 
