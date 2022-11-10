@@ -92,6 +92,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.filter.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.generate.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.CountROIAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.measure.RoiStatisticsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.merge.AddRoiListsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.merge.FilterAndMergeRoiByStatisticsScriptAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.merge.MergeRoiListsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.modify.*;
@@ -1118,6 +1119,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-roi-split-into-connected-components", SplitRoiConnectedComponentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-roi-explode", ExplodeRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
         registerNodeType("ij1-roi-merge", MergeRoiListsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("ij1-roi-combine", AddRoiListsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
         registerNodeType("ij1-roi-calculator", RoiCalculatorAlgorithm.class, UIUtils.getIconURLFromResources("actions/calculator.png"));
         registerNodeType("ij1-roi-to-mask-unreferenced", UnreferencedRoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
         registerNodeType("ij1-roi-to-mask", RoiToMaskAlgorithm.class, UIUtils.getIconURLFromResources("actions/segment.png"));
