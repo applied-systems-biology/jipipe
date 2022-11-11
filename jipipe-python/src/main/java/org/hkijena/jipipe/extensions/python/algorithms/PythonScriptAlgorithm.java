@@ -43,7 +43,7 @@ import java.util.Map;
 /**
  * An algorithm that allows to run Python code
  */
-@JIPipeDocumentation(name = "Python script", description = "Runs a Python script that is executed once and has access to all incoming data. " +
+@JIPipeDocumentation(name = "Python script (multi-parameter capable, custom)", description = "Runs a Python script that is executed once and has access to all incoming data. " +
         "This node uses an existing dedicated Python interpreter that must be set up in the application settings. ")
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Python script")
 public class PythonScriptAlgorithm extends JIPipeParameterSlotAlgorithm {

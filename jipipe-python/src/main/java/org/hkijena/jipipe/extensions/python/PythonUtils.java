@@ -66,7 +66,7 @@ public class PythonUtils {
         code.append("jipipe_annotations = {}\n");
         for (JIPipeTextAnnotation annotation : annotations) {
             code.append("jipipe_annotations[\"").append(MacroUtils.escapeString(annotation.getName())).append("\"] = ")
-                    .append("\"").append(annotation.getValue()).append("\"\n");
+                    .append("\"").append(MacroUtils.escapeString(StringUtils.nullToEmpty(annotation.getValue()))).append("\"\n");
         }
     }
 

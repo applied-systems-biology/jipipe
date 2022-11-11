@@ -40,7 +40,7 @@ import java.util.List;
 /**
  * An algorithm that allows to run Python code
  */
-@JIPipeDocumentation(name = "Jython script (multi-parameter capable)", description = "Runs a Python script that has direct access to all input data slots. " +
+@JIPipeDocumentation(name = "Jython script (multi-parameter capable, custom)", description = "Runs a Python script that has direct access to all input data slots. " +
         "This node uses Jython, a Java interpreter for Python that currently does not support native functions (e.g. Numpy), but can access all Java types." +
         "Input slots can be accessed from variables 'input_slots' (array), 'input_slots_map' (map from name to slot). " +
         "Output slots can be accessed from variables 'output_slots' (array), 'output_slots_map' (map from name to slot)." +
