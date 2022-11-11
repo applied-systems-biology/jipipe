@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.utils.algorithms;
+package org.hkijena.jipipe.extensions.utils.algorithms.datatable;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -13,16 +13,17 @@ import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@JIPipeDocumentation(name = "Extract data table", description = "Extracts data stored in the input slot into the output." +
+@JIPipeDocumentation(name = "Unpack data table", description = "Extracts data stored in the input slot into the output." +
         " If multiple tables are supplied, the rows are merged.")
 @JIPipeInputSlot(value = JIPipeDataTable.class, slotName = "Table", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
+@JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Data tables")
 public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
 
     private boolean mergeAnnotations = true;

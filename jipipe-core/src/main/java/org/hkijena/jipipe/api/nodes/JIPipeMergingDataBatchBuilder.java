@@ -135,7 +135,7 @@ public class JIPipeMergingDataBatchBuilder {
     public Set<String> getInputAnnotationByFilter(StringQueryExpression expression) {
         Set<String> result = new HashSet<>();
         for (JIPipeDataSlot slot : slots.values()) {
-            result.addAll(slot.getAnnotationColumns());
+            result.addAll(slot.getTextAnnotationColumns());
         }
         return new HashSet<>(expression.queryAll(result, new ExpressionVariables()));
     }
@@ -143,7 +143,7 @@ public class JIPipeMergingDataBatchBuilder {
     public Set<String> getInputAnnotationColumnIntersection(String prefix) {
         Set<String> result = new HashSet<>();
         for (JIPipeDataSlot inputSlot : slots.values()) {
-            Set<String> filtered = inputSlot.getAnnotationColumns().stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toSet());
+            Set<String> filtered = inputSlot.getTextAnnotationColumns().stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toSet());
             if (result.isEmpty()) {
                 result.addAll(filtered);
             } else {
@@ -156,7 +156,7 @@ public class JIPipeMergingDataBatchBuilder {
     public Set<String> getInputAnnotationColumnUnion(String prefix) {
         Set<String> result = new HashSet<>();
         for (JIPipeDataSlot inputSlot : slots.values()) {
-            Set<String> filtered = inputSlot.getAnnotationColumns().stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toSet());
+            Set<String> filtered = inputSlot.getTextAnnotationColumns().stream().filter(s -> s.startsWith(prefix)).collect(Collectors.toSet());
             result.addAll(filtered);
         }
         return result;

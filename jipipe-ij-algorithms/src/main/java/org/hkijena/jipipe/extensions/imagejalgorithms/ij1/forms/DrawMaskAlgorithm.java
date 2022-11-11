@@ -108,7 +108,7 @@ public class DrawMaskAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgori
 
         // Create the form
         JIPipeDataSlot formsSlot = JIPipeDataSlot.createSingletonSlot(new MaskDrawerFormData(dataBatches, this), this);
-        formsSlot.addAnnotationToAllData(new JIPipeTextAnnotation("Tab", "Draw mask"), true);
+        formsSlot.addTextAnnotationToAllData(new JIPipeTextAnnotation("Tab", "Draw mask"), true);
 
         // Form user input
         progressInfo.log("Waiting for user input ...");

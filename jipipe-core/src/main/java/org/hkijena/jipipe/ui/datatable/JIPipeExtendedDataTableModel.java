@@ -117,7 +117,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
 
     @Override
     public int getColumnCount() {
-        return dataTable.getAnnotationColumns().size() + dataTable.getDataAnnotationColumns().size() + 4;
+        return dataTable.getTextAnnotationColumns().size() + dataTable.getDataAnnotationColumns().size() + 4;
     }
 
     @Override
@@ -133,7 +133,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
         else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
             return "$" + dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
         } else {
-            return dataTable.getAnnotationColumns().get(toAnnotationColumnIndex(columnIndex));
+            return dataTable.getTextAnnotationColumns().get(toAnnotationColumnIndex(columnIndex));
         }
     }
 

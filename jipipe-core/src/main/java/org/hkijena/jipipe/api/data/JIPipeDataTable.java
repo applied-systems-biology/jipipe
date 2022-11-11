@@ -41,7 +41,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     // The main data table
     private final ArrayList<JIPipeVirtualData> data = new ArrayList<>();
     // String annotations
-    private final List<String> annotationColumns = new ArrayList<>();
+    private final List<String> textAnnotationColumns = new ArrayList<>();
     private final Map<String, ArrayList<JIPipeTextAnnotation>> annotations = new HashMap<>();
     // Data annotations
     private final List<String> dataAnnotationColumns = new ArrayList<>();
@@ -130,7 +130,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
 
     @Override
     public int getColumnCount() {
-        return annotationColumns.size() + dataAnnotationColumns.size() + 1;
+        return textAnnotationColumns.size() + dataAnnotationColumns.size() + 1;
     }
 
     @Override
@@ -140,7 +140,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         } else if (columnIndex < dataAnnotationColumns.size() + 1) {
             return dataAnnotationColumns.get(columnIndex - 1);
         } else {
-            return annotationColumns.get(columnIndex - 1 - dataAnnotationColumns.size());
+            return textAnnotationColumns.get(columnIndex - 1 - dataAnnotationColumns.size());
         }
     }
 
@@ -188,7 +188,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         } else if (columnIndex < dataAnnotationColumns.size()) {
             return getVirtualDataAnnotation(rowIndex, dataAnnotationColumns.get(columnIndex - 1));
         } else {
-            return getTextAnnotation(rowIndex, annotationColumns.get(columnIndex - dataAnnotationColumns.size() - 1));
+            return getTextAnnotation(rowIndex, textAnnotationColumns.get(columnIndex - dataAnnotationColumns.size() - 1));
         }
     }
 
@@ -239,7 +239,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
             }
         }
         data.clear();
-        annotationColumns.clear();
+        textAnnotationColumns.clear();
         annotations.clear();
         dataAnnotations.clear();
         dataAnnotationColumns.clear();
@@ -263,8 +263,17 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     /**
      * @return Immutable list of all string annotation columns
      */
+    public List<String> getTextAnnotationColumns() {
+        return Collections.unmodifiableList(textAnnotationColumns);
+    }
+
+    /**
+     * @return Immutable list of all string annotation columns
+     * @deprecated use getTextAnnotationColumns()
+     */
+    @Deprecated
     public List<String> getAnnotationColumns() {
-        return Collections.unmodifiableList(annotationColumns);
+        return getTextAnnotationColumns();
     }
 
     /**
@@ -471,6 +480,37 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     }
 
     /**
+     * Sets a text annotation
+     * @param row the row
+     * @param column the column
+     * @param value the value
+     */
+    public void setTextAnnotation(int row, String column, String value) {
+        List<JIPipeTextAnnotation> columnData = getOrCreateTextAnnotationColumnData(column);
+        columnData.set(row, new JIPipeTextAnnotation(column, value));
+    }
+
+    /**
+     * Sets a text annotation
+     * @param row the row
+     * @param annotation the annotation
+     */
+    public void setTextAnnotation(int row, JIPipeTextAnnotation annotation) {
+        List<JIPipeTextAnnotation> columnData = getOrCreateTextAnnotationColumnData(annotation.getName());
+        columnData.set(row, annotation);
+    }
+
+    /**
+     * Sets a data annotation
+     *
+     * @param row    the row
+     * @param annotation the annotation
+     */
+    public void setDataAnnotation(int row, JIPipeDataAnnotation annotation) {
+        setVirtualDataAnnotation(row, annotation.getName(), annotation.getVirtualData());
+    }
+
+    /**
      * Sets a data annotation
      *
      * @param row    the row
@@ -544,6 +584,24 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     }
 
     /**
+     * Gets the list of all data annotations
+     *
+     * @return list of data annotations
+     */
+    public List<JIPipeDataAnnotation> getAllDataAnnotations() {
+        List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
+        for (int row = 0; row < getRowCount(); row++) {
+            for (String dataAnnotationColumn : getDataAnnotationColumns()) {
+                JIPipeVirtualData virtualDataAnnotation = getVirtualDataAnnotation(row, dataAnnotationColumn);
+                if (virtualDataAnnotation != null) {
+                    dataAnnotations.add(new JIPipeDataAnnotation(dataAnnotationColumn, virtualDataAnnotation));
+                }
+            }
+        }
+        return dataAnnotations;
+    }
+
+    /**
      * Gets the list of all data annotations in the specified row
      *
      * @param rows the rows
@@ -580,10 +638,27 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public synchronized List<JIPipeTextAnnotation> getTextAnnotations(int row) {
         List<JIPipeTextAnnotation> result = new ArrayList<>();
-        for (String info : annotationColumns) {
+        for (String info : textAnnotationColumns) {
             JIPipeTextAnnotation annotation = getOrCreateTextAnnotationColumnData(info).get(row);
             if (annotation != null)
                 result.add(annotation);
+        }
+        return result;
+    }
+
+    /**
+     * Gets the list of all text annotations
+     *
+     * @return Annotations at row
+     */
+    public synchronized List<JIPipeTextAnnotation> getAllTextAnnotations() {
+        List<JIPipeTextAnnotation> result = new ArrayList<>();
+        for (int i = 0; i < getRowCount(); i++) {
+            for (String info : textAnnotationColumns) {
+                JIPipeTextAnnotation annotation = getOrCreateTextAnnotationColumnData(info).get(i);
+                if (annotation != null)
+                    result.add(annotation);
+            }
         }
         return result;
     }
@@ -596,7 +671,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public synchronized List<JIPipeTextAnnotation> getTextAnnotations(Collection<Integer> rows) {
         List<JIPipeTextAnnotation> result = new ArrayList<>();
-        for (String info : annotationColumns) {
+        for (String info : textAnnotationColumns) {
             for (int row : rows) {
                 JIPipeTextAnnotation annotation = getOrCreateTextAnnotationColumnData(info).get(row);
                 if (annotation != null)
@@ -628,7 +703,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     private synchronized List<JIPipeTextAnnotation> getOrCreateTextAnnotationColumnData(String columnName) {
         ArrayList<JIPipeTextAnnotation> arrayList = annotations.getOrDefault(columnName, null);
         if (arrayList == null) {
-            annotationColumns.add(columnName);
+            textAnnotationColumns.add(columnName);
             arrayList = new ArrayList<>();
             annotations.put(columnName, arrayList);
         }
@@ -689,7 +764,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @param annotation The annotation instance
      * @param overwrite  If false, existing annotations of the same type are not overwritten
      */
-    public synchronized void addAnnotationToAllData(JIPipeTextAnnotation annotation, boolean overwrite) {
+    public synchronized void addTextAnnotationToAllData(JIPipeTextAnnotation annotation, boolean overwrite) {
         List<JIPipeTextAnnotation> annotationArray = getOrCreateTextAnnotationColumnData(annotation.getName());
         for (int i = 0; i < getRowCount(); ++i) {
             if (!overwrite && annotationArray.get(i) != null)
@@ -700,14 +775,26 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     }
 
     /**
+     * Adds an annotation to all existing data
+     *
+     * @param annotation The annotation instance
+     * @param overwrite  If false, existing annotations of the same type are not overwritten
+     * @deprecated use addTextAnnotationToAllData()
+     */
+    @Deprecated
+    public synchronized void addAnnotationToAllData(JIPipeTextAnnotation annotation, boolean overwrite) {
+        addTextAnnotationToAllData(annotation, overwrite);
+    }
+
+    /**
      * Removes an annotation column from the data
      *
      * @param column Annotation type
      */
     public synchronized void removeAllAnnotationsFromData(String column) {
-        int columnIndex = annotationColumns.indexOf(column);
+        int columnIndex = textAnnotationColumns.indexOf(column);
         if (columnIndex != -1) {
-            annotationColumns.remove(columnIndex);
+            textAnnotationColumns.remove(columnIndex);
             annotations.remove(column);
         }
     }
@@ -744,10 +831,10 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
     public int findRowWithAnnotations(List<JIPipeTextAnnotation> annotations) {
         String[] infoMap = new String[annotations.size()];
         for (int i = 0; i < annotations.size(); ++i) {
-            int infoIndex = annotationColumns.indexOf(annotations.get(i).getName());
+            int infoIndex = textAnnotationColumns.indexOf(annotations.get(i).getName());
             if (infoIndex == -1)
                 return -1;
-            infoMap[i] = annotationColumns.get(infoIndex);
+            infoMap[i] = textAnnotationColumns.get(infoIndex);
         }
         for (int row = 0; row < data.size(); ++row) {
             boolean equal = true;
@@ -955,7 +1042,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      * @return the annotation
      */
     public JIPipeTextAnnotation getTextAnnotation(int row, int column) {
-        String annotation = annotationColumns.get(column);
+        String annotation = textAnnotationColumns.get(column);
         return annotations.get(annotation).get(row);
     }
 
@@ -1049,7 +1136,7 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      */
     public AnnotationTableData toAnnotationTable(boolean withDataAsString) {
         AnnotationTableData output = new AnnotationTableData();
-        int dataColumn = withDataAsString ? output.addColumn(StringUtils.makeUniqueString("String representation", "_", getAnnotationColumns()), true) : -1;
+        int dataColumn = withDataAsString ? output.addColumn(StringUtils.makeUniqueString("String representation", "_", getTextAnnotationColumns()), true) : -1;
         int row = 0;
         for (int sourceRow = 0; sourceRow < getRowCount(); ++sourceRow) {
             output.addRow();

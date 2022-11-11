@@ -100,7 +100,7 @@ public class DrawROIAlgorithm extends JIPipeIteratingMissingDataGeneratorAlgorit
 
         // Create the form
         JIPipeDataSlot formsSlot = JIPipeDataSlot.createSingletonSlot(new ROIDrawerFormData(dataBatches, this), this);
-        formsSlot.addAnnotationToAllData(new JIPipeTextAnnotation("Tab", "Draw ROIs"), true);
+        formsSlot.addTextAnnotationToAllData(new JIPipeTextAnnotation("Tab", "Draw ROIs"), true);
 
         // Form user input
         progressInfo.log("Waiting for user input ...");

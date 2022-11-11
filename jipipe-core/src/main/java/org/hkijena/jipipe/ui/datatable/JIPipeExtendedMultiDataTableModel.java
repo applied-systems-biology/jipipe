@@ -71,7 +71,7 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
      * @param dataTable The data slot
      */
     public void add(JIPipeProject project, JIPipeDataTable dataTable) {
-        for (String annotationColumn : dataTable.getAnnotationColumns()) {
+        for (String annotationColumn : dataTable.getTextAnnotationColumns()) {
             if (!textAnnotationColumns.contains(annotationColumn))
                 textAnnotationColumns.add(annotationColumn);
         }

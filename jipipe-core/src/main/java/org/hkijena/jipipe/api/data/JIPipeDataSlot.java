@@ -271,7 +271,7 @@ public abstract class JIPipeDataSlot extends JIPipeDataTable {
 
     @Override
     public String toString() {
-        return String.format("%s: %s (%d rows, %d annotation columns, %d data annotation columns)", getSlotType(), getName(), getRowCount(), getAnnotationColumns().size(), getDataAnnotationColumns().size());
+        return String.format("%s: %s (%d rows, %d annotation columns, %d data annotation columns)", getSlotType(), getName(), getRowCount(), getTextAnnotationColumns().size(), getDataAnnotationColumns().size());
     }
 
     /**

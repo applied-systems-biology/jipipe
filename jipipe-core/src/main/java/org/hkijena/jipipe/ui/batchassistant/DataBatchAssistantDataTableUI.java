@@ -384,7 +384,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
                         info);
                 return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
             } else {
-                String info = dataTable.getAnnotationColumns().get(toAnnotationColumnIndex(modelColumn));
+                String info = dataTable.getTextAnnotationColumns().get(toAnnotationColumnIndex(modelColumn));
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                         UIUtils.getIconFromResources("data-types/annotation.png"),
                         info);

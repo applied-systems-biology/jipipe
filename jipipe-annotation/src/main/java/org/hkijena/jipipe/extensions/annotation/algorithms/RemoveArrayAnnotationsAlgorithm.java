@@ -56,7 +56,7 @@ public class RemoveArrayAnnotationsAlgorithm extends JIPipeParameterSlotAlgorith
     @Override
     public void runParameterSet(JIPipeProgressInfo progressInfo, List<JIPipeTextAnnotation> parameterAnnotations) {
         if (removeColumn) {
-            Set<String> toRemove = annotationNameFilter.queryAll(getFirstInputSlot().getAnnotationColumns(), new ExpressionVariables()).stream().filter(columnName -> {
+            Set<String> toRemove = annotationNameFilter.queryAll(getFirstInputSlot().getTextAnnotationColumns(), new ExpressionVariables()).stream().filter(columnName -> {
                 for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
                     JIPipeTextAnnotation existing = getFirstInputSlot().getTextAnnotationOr(row, columnName, null);
                     if (existing != null && existing.isArray())

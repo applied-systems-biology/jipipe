@@ -115,7 +115,7 @@ public class DataBatchAssistantTableModel implements TableModel {
 
     @Override
     public int getColumnCount() {
-        return dataTable.getAnnotationColumns().size() + dataTable.getDataAnnotationColumns().size() + 2;
+        return dataTable.getTextAnnotationColumns().size() + dataTable.getDataAnnotationColumns().size() + 2;
     }
 
     @Override
@@ -127,7 +127,7 @@ public class DataBatchAssistantTableModel implements TableModel {
         else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
             return "Slot: " + dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
         } else {
-            return dataTable.getAnnotationColumns().get(toAnnotationColumnIndex(columnIndex));
+            return dataTable.getTextAnnotationColumns().get(toAnnotationColumnIndex(columnIndex));
         }
     }
 
