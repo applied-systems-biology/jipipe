@@ -100,8 +100,8 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("merge-data-to-table", MergeDataToTableAlgorithm.class, UIUtils.getIconURLFromResources("data-types/data-table.png"));
         registerNodeType("extract-table-to-data", ExtractTableAlgorithm.class, UIUtils.getIconURLFromResources("data-types/data.png"));
         registerNodeType("data-table-annotate-with-properties", AnnotateWithDataTableProperties.class, UIUtils.getIconURLFromResources("data-types/data-table.png"));
-        registerNodeType("data-table-pull-annotations", AnnotateWithDataTableAnnotations.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
-        registerNodeType("data-table-push-annotations", CopyAnnotationsIntoDataTable.class, UIUtils.getIconURLFromResources("actions/document-import.png"));
+        registerNodeType("data-table-pull-annotations", PullDataTableAnnotations.class, UIUtils.getIconURLFromResources("actions/document-export.png"));
+        registerNodeType("data-table-push-annotations", PushDataTableAnnotations.class, UIUtils.getIconURLFromResources("actions/document-import.png"));
 
         registerNodeType("io-interface", IOInterfaceAlgorithm.class, UIUtils.getIconURLFromResources("devices/knemo-wireless-transmit-receive.png"));
         registerNodeType("node-group", NodeGroup.class, UIUtils.getIconURLFromResources("actions/object-group.png"));

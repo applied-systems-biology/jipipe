@@ -13,7 +13,6 @@ import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.AnnotationQueryExpression;
 import org.hkijena.jipipe.extensions.expressions.DataAnnotationQueryExpression;
-import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +21,7 @@ import java.util.List;
 @JIPipeInputSlot(value = JIPipeDataTable.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeDataTable.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For data tables")
-public class AnnotateWithDataTableAnnotations extends JIPipeSimpleIteratingAlgorithm {
+public class PullDataTableAnnotations extends JIPipeSimpleIteratingAlgorithm {
 
     private AnnotationQueryExpression textAnnotationFilter = new AnnotationQueryExpression();
 
@@ -31,11 +30,11 @@ public class AnnotateWithDataTableAnnotations extends JIPipeSimpleIteratingAlgor
 
     private JIPipeDataAnnotationMergeMode dataAnnotationMergeMode = JIPipeDataAnnotationMergeMode.OverwriteExisting;
 
-    public AnnotateWithDataTableAnnotations(JIPipeNodeInfo info) {
+    public PullDataTableAnnotations(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public AnnotateWithDataTableAnnotations(AnnotateWithDataTableAnnotations other) {
+    public PullDataTableAnnotations(PullDataTableAnnotations other) {
         super(other);
         this.textAnnotationFilter = new AnnotationQueryExpression(other.textAnnotationFilter);
         this.dataAnnotationFilter = new DataAnnotationQueryExpression(other.dataAnnotationFilter);

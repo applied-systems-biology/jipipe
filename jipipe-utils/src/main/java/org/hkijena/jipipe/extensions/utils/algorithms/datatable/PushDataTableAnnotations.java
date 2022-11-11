@@ -21,7 +21,7 @@ import java.util.List;
 @JIPipeInputSlot(value = JIPipeDataTable.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeDataTable.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For data tables")
-public class CopyAnnotationsIntoDataTable extends JIPipeSimpleIteratingAlgorithm {
+public class PushDataTableAnnotations extends JIPipeSimpleIteratingAlgorithm {
 
     private AnnotationQueryExpression textAnnotationFilter = new AnnotationQueryExpression();
 
@@ -30,11 +30,11 @@ public class CopyAnnotationsIntoDataTable extends JIPipeSimpleIteratingAlgorithm
 
     private JIPipeDataAnnotationMergeMode dataAnnotationMergeMode = JIPipeDataAnnotationMergeMode.OverwriteExisting;
 
-    public CopyAnnotationsIntoDataTable(JIPipeNodeInfo info) {
+    public PushDataTableAnnotations(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public CopyAnnotationsIntoDataTable(CopyAnnotationsIntoDataTable other) {
+    public PushDataTableAnnotations(PushDataTableAnnotations other) {
         super(other);
         this.textAnnotationFilter = new AnnotationQueryExpression(other.textAnnotationFilter);
         this.dataAnnotationFilter = new DataAnnotationQueryExpression(other.dataAnnotationFilter);
