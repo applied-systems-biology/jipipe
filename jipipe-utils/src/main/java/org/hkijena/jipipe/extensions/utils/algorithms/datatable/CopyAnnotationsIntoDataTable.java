@@ -69,7 +69,7 @@ public class CopyAnnotationsIntoDataTable extends JIPipeSimpleIteratingAlgorithm
 
         }
 
-        dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), outputData, progressInfo);
     }
 
     @JIPipeDocumentation(name = "Text annotation filter", description = "Allows to filter only specific text annotations. Set to false to completely ignore all text annotations.")
