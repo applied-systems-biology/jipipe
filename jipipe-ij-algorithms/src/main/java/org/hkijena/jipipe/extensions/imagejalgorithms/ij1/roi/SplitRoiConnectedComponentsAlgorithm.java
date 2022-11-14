@@ -122,6 +122,9 @@ public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorit
                     subProgress.log(newProgressPercentage + "%");
                     currentProgressPercentage = newProgressPercentage;
                 }
+                if (progressInfo.isCancelled()) {
+                    return;
+                }
                 Roi roi1 = input.get(i);
                 Roi roi2 = input.get(j);
 
