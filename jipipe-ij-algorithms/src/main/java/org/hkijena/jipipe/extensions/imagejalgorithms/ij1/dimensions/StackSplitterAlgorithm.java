@@ -28,7 +28,10 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariable;
+import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVariables;
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.parameters.library.graph.OutputSlotMapParameterCollection;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.StringParameterSettings;
@@ -101,9 +104,11 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus img = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
+        ExpressionVariables variables = new ExpressionVariables();
+        variables.putAnnotations(dataBatch.getMergedTextAnnotations());
         for (Map.Entry<String, JIPipeParameterAccess> entry : stackAssignments.getParameters().entrySet()) {
             IntegerRange sliceSelection = entry.getValue().get(IntegerRange.class);
-            List<Integer> sliceIndices = sliceSelection.getIntegers(0, img.getStackSize(), new ExpressionVariables());
+            List<Integer> sliceIndices = sliceSelection.getIntegers(0, img.getStackSize(), variables);
             if (ignoreMissingSlices) {
                 sliceIndices.removeIf(i -> i >= img.getStackSize());
             } else {
@@ -163,6 +168,7 @@ public class StackSplitterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             "that then will then generated as output of the corresponding data slot. Inverse ordered ranges (e.g. 10-5) are supported. " +
             "The first slice is indexed with 0.")
     @JIPipeParameter("stack-assignments")
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
     public OutputSlotMapParameterCollection getStackAssignments() {
         return stackAssignments;
     }
