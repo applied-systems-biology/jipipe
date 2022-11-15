@@ -264,6 +264,7 @@ public class JIPipeProjectCache {
                     percentage = newPercentage;
                 }
             }
+            progressInfo.log("Analyzing cache ... done");
         } finally {
             disableTriggerEvent = false;
         }
