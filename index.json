@@ -21,8 +21,15 @@
 	"content": "This section contains documentation that explains how to run a pipeline and review the results. For example, you can run the whole workflow or make use of the cache feature to run single nodes.\nRunning the whole pipeline\nExplains the Quick Run feature that allows to test and compare different algorithm parameters without recalculating the whole pipeline.\nReview results\nExplains how to review results.\nUse results in external software\nJIPipe stores outputs in a standardized format that can be easily read with third-party software. The output folder of always contains a file project.jip, which is the project that generated the output. This folder contains sub-folders named according to the graph compartment. The ID is the unique ID of the graph compartment and can be looked up in the project.jip file or the compartment graph editor. Each of these compartment folders contains a set of additional sub-folders based on unique ID of the node (also visible in the graph editor).\nRunning a single node\nExplains the Quick Run feature that allows to test and compare different algorithm parameters without recalculating the whole pipeline.\nData caching\nExplains the how JIPipe caches intermediate results and how to access them.\n"
 },
 {
+	"uri": "https://www.jipipe.org/download/changelog/1.76.x/",
+	"title": "Version 1.76.x (current version)",
+	"tags": [],
+	"description": "Changelog of JIPipe version 1.76.x",
+	"content": " Table Of Contents 1.76.0 1.76.0 improved Layout manager: do not move nodes (by default) improved \u0026ldquo;Add table columns\u0026rdquo; now supports annotations and custom variables improved \u0026ldquo;Add table columns\u0026rdquo; now allows to ensure a minimum number of rows improved \u0026ldquo;Split ROI into individual ROI lists\u0026rdquo;: support for custom annotation value new Cache manager: saving/loading all cached data from directory/zip new Node \u0026ldquo;Draw scale bar ROI\u0026rdquo; new Node \u0026ldquo;Combine ROI lists\u0026rdquo; (like Merge ROI lists but with strict ordering) new Node \u0026ldquo;Pull annotations from data tables\u0026rdquo; new Node \u0026ldquo;Annotate with data table properties\u0026rdquo; new Node \u0026ldquo;Push annotations into data tables\u0026rdquo; improved UX of the cache manager button in the menu bar improved \u0026ldquo;Reduce \u0026amp; split stacks (slice)\u0026rdquo; now supports annotations improved UX of the task/process manager button in the menu bar (now can cancel enqueued tasks) fixed Draw ROI nodes not applying ROI properties improved Cache cleanup performance improved Image viewer: minima and maxima for calibration are now sourced from all slices fixed Comment nodes: crash if icon is null improved Organization of annotation nodes (now in sub-menus that indicate the type of addressed data) improved UX of \u0026ldquo;Add slots\u0026rdquo;/\u0026ldquo;Edit slots\u0026rdquo; "
+},
+{
 	"uri": "https://www.jipipe.org/download/changelog/1.75.x/",
-	"title": "Version 1.75.x (current version)",
+	"title": "Version 1.75.x",
 	"tags": [],
 	"description": "Changelog of JIPipe version 1.75.x",
 	"content": " Table Of Contents 1.75.2 1.75.1 1.75.2 fixed Convolution nodes now behave exactly as the convolution operations from ImageJ improved Expressions are now marked more clearly in the parameter UI 1.75.1 fixed Critical bug where enum parameters could not be initialized "
@@ -2237,7 +2244,7 @@
 	"title": "Changelog",
 	"tags": [],
 	"description": "",
-	"content": " Version 1.75.x (current version)\nChangelog of JIPipe version 1.75.x\nVersion 1.75.0 Changelog of JIPipe version 1.75.0\nVersion 1.74.0\nChangelog of JIPipe version 1.74.0 (Overhaul 1)\nVersion 1.73.0\nChangelog of JIPipe version 1.73.0 (Weka update)\nVersion 1.72.x\nChangelog of JIPipe version 1.72.0 and its patches\n"
+	"content": " Version 1.76.x (current version)\nChangelog of JIPipe version 1.76.x\nVersion 1.75.x\nChangelog of JIPipe version 1.75.x\nVersion 1.75.0 Changelog of JIPipe version 1.75.0\nVersion 1.74.0\nChangelog of JIPipe version 1.74.0 (Overhaul 1)\nVersion 1.73.0\nChangelog of JIPipe version 1.73.0 (Weka update)\nVersion 1.72.x\nChangelog of JIPipe version 1.72.0 and its patches\n"
 },
 {
 	"uri": "https://www.jipipe.org/documentation-data-api/data-table/",

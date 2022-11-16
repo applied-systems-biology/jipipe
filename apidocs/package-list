@@ -290,6 +290,7 @@ org.hkijena.jipipe.extensions.tables.parameters.processors
 org.hkijena.jipipe.extensions.tools
 org.hkijena.jipipe.extensions.utils
 org.hkijena.jipipe.extensions.utils.algorithms
+org.hkijena.jipipe.extensions.utils.algorithms.datatable
 org.hkijena.jipipe.extensions.utils.algorithms.distribute
 org.hkijena.jipipe.extensions.utils.algorithms.meta
 org.hkijena.jipipe.extensions.utils.algorithms.processes
