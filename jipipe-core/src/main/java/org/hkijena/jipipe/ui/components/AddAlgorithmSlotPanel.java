@@ -78,13 +78,11 @@ public class AddAlgorithmSlotPanel extends JPanel {
         setInitialName();
         if (lastSelectedType != null && availableTypes.contains(lastSelectedType)) {
             datatypeList.setSelectedValue(lastSelectedType, true);
+        }
+        SwingUtilities.invokeLater(() -> {
             nameEditor.requestFocusInWindow();
             nameEditor.selectAll();
-        }
-        if (availableTypes.size() == 1) {
-            nameEditor.requestFocusInWindow();
-            nameEditor.selectAll();
-        }
+        });
     }
 
     /**
