@@ -34,6 +34,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.hkijena.jipipe.api.JIPipeCommonData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -78,6 +79,7 @@ import static ij.measure.ResultsTable.COLUMN_NOT_FOUND;
 @JsonDeserialize(using = ResultsTableData.Deserializer.class)
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains a single *.csv file that contains the table data.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/results-table.schema.json")
+@JIPipeCommonData
 public class ResultsTableData implements JIPipeData, TableModel {
 
     private static final char commaSubstitute = 0x08B3;

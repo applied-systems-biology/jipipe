@@ -19,6 +19,7 @@ import ij.gui.Overlay;
 import ij.gui.Roi;
 import ij.process.*;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeCommonData;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
@@ -53,6 +54,7 @@ import java.util.Collections;
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Contains one image file with one of following extensions: *.tif, *.tiff, *.png, *.jpeg, *.jpg, *.png. " +
         "We recommend the usage of TIFF.", jsonSchemaURL = "https://jipipe.org/schemas/datatypes/imageplus-data.schema.json")
 @ImageTypeInfo
+@JIPipeCommonData
 public class ImagePlusData implements JIPipeData {
 
     private ImagePlus image;

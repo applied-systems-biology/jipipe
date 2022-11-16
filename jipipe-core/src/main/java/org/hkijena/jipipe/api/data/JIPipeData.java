@@ -46,6 +46,7 @@ import java.util.stream.Collectors;
 @JIPipeDocumentation(name = "Data", description = "Generic data")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Unknown storage schema (generic data)",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
+@JIPipeCommonData
 public interface JIPipeData extends Closeable, AutoCloseable {
 
     /**
@@ -112,6 +113,17 @@ public interface JIPipeData extends Closeable, AutoCloseable {
     static boolean isHeavy(Class<? extends JIPipeData> klass) {
         return klass.getAnnotationsByType(JIPipeHeavyData.class).length > 0;
     }
+
+    /**
+     * Returns true if this data is commonly used (only for UI)
+     *
+     * @param klass Data class
+     * @return If this data is commonly used
+     */
+    static boolean isCommon(Class<? extends JIPipeData> klass) {
+        return klass.getAnnotationsByType(JIPipeCommonData.class).length > 0;
+    }
+
 
     /**
      * Returns the storage documentation for the data type or null if none was provided.

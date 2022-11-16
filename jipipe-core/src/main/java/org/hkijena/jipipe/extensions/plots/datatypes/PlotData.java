@@ -22,10 +22,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.google.common.eventbus.EventBus;
 import ij.measure.ResultsTable;
 import org.hkijena.jipipe.JIPipe;
-import org.hkijena.jipipe.api.JIPipeDocumentation;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
@@ -78,6 +75,7 @@ import java.util.stream.Collectors;
         "a string element <code>file-name</code>. The file name must point at the corresponding <code>series[Index].csv</code> file of the series. " +
         "Additional metadata in the root object and series metadata depend on the exact plot type.",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/plot-data.schema.json")
+@JIPipeCommonData
 public abstract class PlotData implements JIPipeData, JIPipeParameterCollection, JIPipeValidatable {
 
     private final EventBus eventBus = new EventBus();
