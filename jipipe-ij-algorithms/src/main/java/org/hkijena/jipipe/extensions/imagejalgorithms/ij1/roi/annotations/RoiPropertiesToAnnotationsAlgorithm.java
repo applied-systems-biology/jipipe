@@ -33,7 +33,7 @@ import java.util.List;
 @JIPipeDocumentation(name = "Annotate with ROI properties", description = "Extracts properties of the ROI lists and stores them into annotations. " +
         "This will create a list of annotation values if there are multiple ROI per list, unless you choose the option to only return the first entry. " +
         "By default, one value per ROI is generated. Enable de-duplication to disable this behavior.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For ROI")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class RoiPropertiesToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

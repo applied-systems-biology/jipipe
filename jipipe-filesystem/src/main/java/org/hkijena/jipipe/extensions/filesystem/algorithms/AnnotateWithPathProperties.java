@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Annotate with path properties", description = "Annotates files or directories with their properties")
-@JIPipeNode(menuPath = "Generate", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@JIPipeNode(menuPath = "For paths", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @JIPipeInputSlot(value = PathData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 public class AnnotateWithPathProperties extends JIPipeSimpleIteratingAlgorithm {

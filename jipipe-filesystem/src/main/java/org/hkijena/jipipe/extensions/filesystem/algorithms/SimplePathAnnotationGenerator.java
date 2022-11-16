@@ -34,7 +34,7 @@ import java.nio.file.Files;
  * Algorithm that generates annotations from folder names
  */
 @JIPipeDocumentation(name = "Add path to annotations", description = "Creates an annotation for each path based on its name or its full path.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For paths")
 @JIPipeInputSlot(value = PathData.class, slotName = "Paths", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Annotated paths", autoCreate = true, inheritedSlot = "Paths")
 public class SimplePathAnnotationGenerator extends JIPipeSimpleIteratingAlgorithm {

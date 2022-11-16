@@ -39,7 +39,7 @@ import java.util.List;
  */
 @JIPipeDocumentation(name = "Random annotation", description = "Generates a unique random numeric annotation. " +
         "The value range is [0, number of rows]. This is useful for randomly distributing data.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", inheritedSlot = "Data", autoCreate = true)
 public class GenerateRandomUniqueAnnotation extends JIPipeParameterSlotAlgorithm {

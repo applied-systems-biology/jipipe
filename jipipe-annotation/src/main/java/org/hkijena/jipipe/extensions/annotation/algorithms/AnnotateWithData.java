@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Annotate with data", description = "Annotates the incoming data with the other data.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Annotation", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")

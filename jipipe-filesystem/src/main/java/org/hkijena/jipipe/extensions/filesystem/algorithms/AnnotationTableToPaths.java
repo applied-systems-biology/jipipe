@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.AnnotationsNodeTypeCategory;
+import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.expressions.TableColumnSourceExpressionParameter;
 import org.hkijena.jipipe.extensions.filesystem.dataypes.PathData;
@@ -37,7 +38,7 @@ import java.util.Set;
  * Filters input files
  */
 @JIPipeDocumentation(name = "Annotation table to paths", description = "Converts an annotation table to path data. If available, annotation are added to the output.")
-@JIPipeNode(menuPath = "Convert", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@JIPipeNode(menuPath = "Convert", nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = AnnotationTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 public class AnnotationTableToPaths extends JIPipeSimpleIteratingAlgorithm {

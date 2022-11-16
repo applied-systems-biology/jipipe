@@ -22,7 +22,7 @@ import java.util.*;
  * Algorithm that merges the annotations of all inputs and outputs the data with the shared annotations
  */
 @JIPipeDocumentation(name = "Annotate by annotation table", description = "Merges matching annotations from an annotation table into the data set. Note: Please use 'Annotate with table values' if you intend to copy information from a table into the annotation set of a data.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
 @JIPipeInputSlot(value = AnnotationTableData.class, slotName = "Annotations", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", autoCreate = true, inheritedSlot = "Data")

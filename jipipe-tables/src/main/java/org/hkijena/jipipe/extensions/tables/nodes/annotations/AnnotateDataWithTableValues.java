@@ -24,7 +24,7 @@ import java.util.List;
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", description = "The data that should be annotated", autoCreate = true)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Table", description = "The table that contains the data", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Annotated data", description = "The annotated data", inheritedSlot = "Data", autoCreate = true)
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 public class AnnotateDataWithTableValues extends JIPipeIteratingAlgorithm {
 
     private JIPipeTextAnnotationMergeMode annotationMergeMode = JIPipeTextAnnotationMergeMode.Merge;

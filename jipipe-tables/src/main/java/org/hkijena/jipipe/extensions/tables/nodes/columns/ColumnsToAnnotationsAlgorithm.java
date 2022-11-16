@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import java.util.*;
 
 @JIPipeDocumentation(name = "Annotate table by merged columns", description = "Copies column values into an annotation. If the column has different values, the annotations are merged according to the selected merging strategy.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For tables")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class ColumnsToAnnotationsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

@@ -30,7 +30,7 @@ import java.util.Map;
  * Algorithm that integrates columns
  */
 @JIPipeDocumentation(name = "Add annotations as columns", description = "Adds column annotations to the table as new columns.")
-@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Append")
+@JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "For tables")
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
 public class AddAnnotationColumnsAlgorithm extends JIPipeSimpleIteratingAlgorithm {

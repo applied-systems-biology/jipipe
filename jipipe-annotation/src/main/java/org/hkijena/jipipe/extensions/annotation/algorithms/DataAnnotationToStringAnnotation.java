@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @JIPipeDocumentation(name = "Convert data annotation to string annotation", description = "Convert data annotations to a strings and generates a string annotation based on it. The string annotations have the same names as the data annotations.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For all data")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", autoCreate = true, inheritedSlot = "Input")
 public class DataAnnotationToStringAnnotation extends JIPipeSimpleIteratingAlgorithm {

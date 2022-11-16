@@ -49,7 +49,7 @@ import java.util.stream.Collectors;
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
 @JIPipeDocumentation(name = "Annotate by image statistics (Expression)", description = "Annotates the incoming images by their statistics. The statistics are created via annotations.")
-@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "Generate")
+@JIPipeNode(nodeTypeCategory = AnnotationsNodeTypeCategory.class, menuPath = "For images")
 @JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Image", autoCreate = true)
 public class AnnotateByImageStatisticsExpressionAlgorithm extends JIPipeIteratingAlgorithm {

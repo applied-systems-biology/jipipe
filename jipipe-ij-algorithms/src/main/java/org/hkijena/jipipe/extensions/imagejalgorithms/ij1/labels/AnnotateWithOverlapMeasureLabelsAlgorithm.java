@@ -42,7 +42,7 @@ import java.util.List;
         "<li>False Positive Error</li>" +
         "</ul>")
 @JIPipeCitation("See https://imagej.net/plugins/morpholibj#label-overlap-measures for the formulas")
-@JIPipeNode(menuPath = "Generate", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
+@JIPipeNode(menuPath = "For images", nodeTypeCategory = AnnotationsNodeTypeCategory.class)
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 1", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 2", autoCreate = true)
 @JIPipeOutputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Image 1", autoCreate = true)
