@@ -43,7 +43,7 @@ import java.util.stream.Collectors;
  * <p>
  * Update: 1.74.0: The class is now closable, which is useful for handling external resources. {@link JIPipeDataTable} and {@link JIPipeVirtualData} were adapted to handle the close() automatically.
  */
-@JIPipeDocumentation(name = "Data", description = "Generic data")
+@JIPipeDocumentation(name = "Data", description = "Generic data. Can hold any supported JIPipe data.")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Unknown storage schema (generic data)",
         jsonSchemaURL = "https://jipipe.org/schemas/datatypes/jipipe-empty-data.schema.json")
 @JIPipeCommonData
