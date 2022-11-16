@@ -110,7 +110,7 @@ See the LICENSE file provided with this code for the full license.
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>
                 <artifactId>jackson-databind</artifactId>
-                <version>2.12.5</version>
+                <version>2.12.7.1</version>
             </dependency>
             <dependency>
                 <groupId>org.slf4j</groupId>
