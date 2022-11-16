@@ -142,6 +142,7 @@ public class CropToRoiAlgorithm extends JIPipeIteratingAlgorithm {
         }, progressInfo);
         ImagePlus cropped = ImageJUtils.combineSlices(sliceMap);
         cropped.setTitle("cropped");
+        cropped.copyAttributes(input);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(cropped), progressInfo);
     }
 
