@@ -149,6 +149,12 @@ public class Quantity {
         if (Objects.equals(targetUnit, unit)) {
             return this;
         }
+        // Pixel special case
+        if("px".equals(unit) || "pixels".equals(unit) || "pixel".equals(unit)) {
+            if("px".equals(targetUnit) || "pixels".equals(targetUnit) || "pixel".equals(targetUnit)) {
+                return this;
+            }
+        }
 
         Double sourceFactor = UNITS_FACTORS.getOrDefault(getUnit(), null);
         Double targetFactor = UNITS_FACTORS.getOrDefault(targetUnit, null);

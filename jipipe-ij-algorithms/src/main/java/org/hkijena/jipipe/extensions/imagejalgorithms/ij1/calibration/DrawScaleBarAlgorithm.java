@@ -17,6 +17,7 @@ import org.hkijena.jipipe.extensions.expressions.ExpressionParameterSettingsVari
 import org.hkijena.jipipe.extensions.expressions.ExpressionVariables;
 import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
+import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.parameters.library.colors.OptionalColorParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.FontFamilyParameter;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.FontStyleParameter;
@@ -109,9 +110,14 @@ public class DrawScaleBarAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         if (imp.getOverlay() == null) {
             imp.setOverlay(scaleBarOverlay);
         } else {
-            for (Roi roi : scaleBarOverlay) {
-                imp.getOverlay().add(roi);
+            Overlay overlay = new Overlay();
+            for (Roi roi : imp.getOverlay()) {
+                overlay.add(roi);
             }
+            for (Roi roi : scaleBarOverlay) {
+                overlay.add(roi);
+            }
+            imp.setOverlay(overlay);
         }
 
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp), progressInfo);
