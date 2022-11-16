@@ -59,11 +59,11 @@ public class JIPipeCacheManagerUI extends JButton implements JIPipeProjectWorkbe
 
         menu.addSeparator();
 
-        JMenuItem readCache = new JMenuItem("Restore cache", UIUtils.getIconFromResources("actions/document-import.png"));
+        JMenuItem readCache = new JMenuItem("Restore cache from ZIP/directory", UIUtils.getIconFromResources("actions/document-import.png"));
         readCache.addActionListener(e -> getProjectWorkbench().restoreCacheFromZIPOrDirectory());
         menu.add(readCache);
 
-        JMenuItem writeCacheToDirectory = new JMenuItem("Export cache", UIUtils.getIconFromResources("actions/document-export.png"));
+        JMenuItem writeCacheToDirectory = new JMenuItem("Export cache to ZIP/directory", UIUtils.getIconFromResources("actions/document-export.png"));
         writeCacheToDirectory.addActionListener(e -> getProjectWorkbench().saveProjectAndCache("Export cache", false));
         menu.add(writeCacheToDirectory);
 
