@@ -375,6 +375,9 @@ public class ImagePlusData implements JIPipeData {
                 rois.addAll(Arrays.asList(image.getOverlay().toArray()));
             }
             if (!rois.isEmpty()) {
+                if(rgbImage == image || rgbImage.getProcessor() == image.getProcessor()) {
+                    rgbImage = ImageJUtils.duplicate(rgbImage);
+                }
                 rois.draw(rgbImage.getProcessor(),
                         new ImageSliceIndex(0, 0, 0),
                         false,
