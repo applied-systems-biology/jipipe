@@ -3,6 +3,7 @@ package org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer;
 import com.google.common.eventbus.Subscribe;
 import ij.gui.PolygonRoi;
 import ij.gui.Roi;
+import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelCanvas;
@@ -99,10 +100,23 @@ public class PolygonMaskDrawerTool extends MaskDrawerTool {
             if (mouse != null) {
                 lengthPlusMouse = length + referencePoints.get(referencePoints.size() - 1).distance(mouse);
             }
-            infoArea.setText(String.format("Length: %f px\n" +
-                            "Length (+ mouse): %f px",
-                    length,
-                    lengthPlusMouse));
+            Calibration calibration = getViewerPanel().getImage().getCalibration();
+            if(calibration != null && calibration.scaled() && calibration.pixelWidth == calibration.pixelHeight) {
+                infoArea.setText(String.format("Length: %f px (%f %s)\n" +
+                                "Length (+ mouse): %f px (%f %s)",
+                        length,
+                        length * calibration.pixelWidth,
+                        calibration.getXUnit(),
+                        lengthPlusMouse,
+                        lengthPlusMouse * calibration.pixelWidth,
+                        calibration.getXUnit()));
+            }
+            else {
+                infoArea.setText(String.format("Length: %f px\n" +
+                                "Length (+ mouse): %f px",
+                        length,
+                        lengthPlusMouse));
+            }
         }
     }
 

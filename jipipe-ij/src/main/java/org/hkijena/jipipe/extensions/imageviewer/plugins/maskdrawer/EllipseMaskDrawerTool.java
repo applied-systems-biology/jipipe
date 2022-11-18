@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer;
 
 import com.google.common.eventbus.Subscribe;
+import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelCanvas;
@@ -12,6 +13,7 @@ import org.hkijena.jipipe.utils.ui.MouseMovedEvent;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 /**
  * Ellipse drawing
@@ -97,21 +99,77 @@ public class EllipseMaskDrawerTool extends MaskDrawerTool {
                         "Circumference: -", p0.x, p0.y));
                 return;
             }
-            double a = r.getWidth() / 2.0;
-            double b = r.getHeight() / 2.0;
-            double h = Math.pow(a - b, 2) / Math.pow(a + b, 2);
-            infoArea.setText(String.format("P1: %d, %d\n" +
-                            "P2: %d, %d\n" +
-                            "Width: %d px\n" +
-                            "Height: %d px\n" +
-                            "Area: %f px²\n" +
-                            "Circumference: %f px",
-                    p0.x, p0.y,
-                    p1.x, p1.y,
-                    (int) r.getWidth(),
-                    (int) r.getHeight(),
-                    Math.PI * a * b,
-                    Math.PI * (a + b) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h))))); // Rananujan approximation
+
+            Calibration calibration = getViewerPanel().getImage().getCalibration();
+            if(calibration != null && calibration.scaled()) {
+                if(calibration.pixelWidth == calibration.pixelHeight && Objects.equals(calibration.getXUnit(), calibration.getYUnit())) {
+                    double a = r.getWidth() / 2.0;
+                    double b = r.getHeight() / 2.0;
+                    double h = Math.pow(a - b, 2) / Math.pow(a + b, 2);
+                    double a2 = (r.getWidth() * calibration.pixelWidth) / 2.0;
+                    double b2 = (r.getHeight() * calibration.pixelHeight) / 2.0;
+                    double h2 = Math.pow(a2 - b2, 2) / Math.pow(a2 + b2, 2);
+                    infoArea.setText(String.format("P1: %d, %d\n" +
+                                    "P2: %d, %d\n" +
+                                    "Width: %d px (%f %s)\n" +
+                                    "Height: %d px (%f %s)\n" +
+                                    "Area: %f px² (%f %s²)\n" +
+                                    "Circumference: %f px (%f %s)",
+                            p0.x, p0.y,
+                            p1.x, p1.y,
+                            (int) r.getWidth(),
+                            r.getWidth() * calibration.pixelWidth,
+                            calibration.getXUnit(),
+                            (int) r.getHeight(),
+                            r.getHeight() * calibration.pixelHeight,
+                            calibration.getYUnit(),
+                            Math.PI * a * b,
+                            Math.PI * a * b * calibration.pixelWidth * calibration.pixelHeight,
+                            calibration.getXUnit(),
+                            Math.PI * (a + b) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h))),
+                            Math.PI * (a2 + b2) * (1 + (3 * h2) / (10 + Math.sqrt(4 - 3 * h2))),
+                            calibration.getXUnit())); // Ramanujan approximation
+                }
+                else {
+                    double a = r.getWidth() / 2.0;
+                    double b = r.getHeight() / 2.0;
+                    double h = Math.pow(a - b, 2) / Math.pow(a + b, 2);
+                    infoArea.setText(String.format("P1: %d, %d\n" +
+                                    "P2: %d, %d\n" +
+                                    "Width: %d px (%f %s)\n" +
+                                    "Height: %d px (%f %s)\n" +
+                                    "Area: %f px²\n" +
+                                    "Circumference: %f px",
+                            p0.x, p0.y,
+                            p1.x, p1.y,
+                            (int) r.getWidth(),
+                            r.getWidth() * calibration.pixelWidth,
+                            calibration.getXUnit(),
+                            (int) r.getHeight(),
+                            r.getHeight() * calibration.pixelHeight,
+                            calibration.getYUnit(),
+                            Math.PI * a * b,
+                            Math.PI * (a + b) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h))))); // Ramanujan approximation
+                }
+            }
+            else {
+                double a = r.getWidth() / 2.0;
+                double b = r.getHeight() / 2.0;
+                double h = Math.pow(a - b, 2) / Math.pow(a + b, 2);
+                infoArea.setText(String.format("P1: %d, %d\n" +
+                                "P2: %d, %d\n" +
+                                "Width: %d px\n" +
+                                "Height: %d px\n" +
+                                "Area: %f px²\n" +
+                                "Circumference: %f px",
+                        p0.x, p0.y,
+                        p1.x, p1.y,
+                        (int) r.getWidth(),
+                        (int) r.getHeight(),
+                        Math.PI * a * b,
+                        Math.PI * (a + b) * (1 + (3 * h) / (10 + Math.sqrt(4 - 3 * h))))); // Ramanujan approximation
+            }
+
         } else {
             infoArea.setText("P1: -\n" +
                     "P2: -\n" +

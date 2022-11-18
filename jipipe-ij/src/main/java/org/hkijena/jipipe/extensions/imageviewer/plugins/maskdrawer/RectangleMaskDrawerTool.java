@@ -1,6 +1,7 @@
 package org.hkijena.jipipe.extensions.imageviewer.plugins.maskdrawer;
 
 import com.google.common.eventbus.Subscribe;
+import ij.measure.Calibration;
 import ij.process.ImageProcessor;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanelCanvas;
@@ -12,6 +13,7 @@ import org.hkijena.jipipe.utils.ui.MouseMovedEvent;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Objects;
 
 /**
  * Rectangle drawing
@@ -216,18 +218,63 @@ public class RectangleMaskDrawerTool extends MaskDrawerTool {
                         "Circumference: -", p0.x, p0.y));
                 return;
             }
-            infoArea.setText(String.format("P1: %d, %d\n" +
-                            "P2: %d, %d\n" +
-                            "Width: %d px\n" +
-                            "Height: %d px\n" +
-                            "Area: %d px²\n" +
-                            "Circumference: %d px",
-                    p0.x, p0.y,
-                    p1.x, p1.y,
-                    (int) r.getWidth(),
-                    (int) r.getHeight(),
-                    (int) (r.getWidth() * r.getHeight()),
-                    (int) (2 * r.getWidth() + 2 * r.getHeight())));
+            Calibration calibration = getViewerPanel().getImage().getCalibration();
+            if(calibration != null && calibration.scaled()) {
+                if(calibration.pixelWidth == calibration.pixelHeight && Objects.equals(calibration.getXUnit(), calibration.getYUnit())) {
+                    infoArea.setText(String.format("P1: %d, %d\n" +
+                                    "P2: %d, %d\n" +
+                                    "Width: %d px (%f %s)\n" +
+                                    "Height: %d px (%f %s)\n" +
+                                    "Area: %d px² (%f %s²)\n" +
+                                    "Circumference: %d px (%f %s)",
+                            p0.x, p0.y,
+                            p1.x, p1.y,
+                            (int) r.getWidth(),
+                            r.getWidth() * calibration.pixelWidth,
+                            calibration.getXUnit(),
+                            (int) r.getHeight(),
+                            r.getHeight() * calibration.pixelHeight,
+                            calibration.getYUnit(),
+                            (int) (r.getWidth() * r.getHeight()),
+                            (r.getWidth() * calibration.pixelWidth * r.getHeight() * calibration.pixelHeight),
+                            calibration.getXUnit(),
+                            (int) (2 * r.getWidth() + 2 * r.getHeight()),
+                            (2 * r.getWidth() * calibration.pixelWidth + 2 * r.getHeight() * calibration.pixelHeight),
+                            calibration.getXUnit()));
+                }
+                else {
+                    infoArea.setText(String.format("P1: %d, %d\n" +
+                                    "P2: %d, %d\n" +
+                                    "Width: %d px (%f %s)\n" +
+                                    "Height: %d px (%f %s)\n" +
+                                    "Area: %d px²\n" +
+                                    "Circumference: %d px",
+                            p0.x, p0.y,
+                            p1.x, p1.y,
+                            (int) r.getWidth(),
+                            r.getWidth() * calibration.pixelWidth,
+                            calibration.getXUnit(),
+                            (int) r.getHeight(),
+                            r.getHeight() * calibration.pixelHeight,
+                            calibration.getYUnit(),
+                            (int) (r.getWidth() * r.getHeight()),
+                            (int) (2 * r.getWidth() + 2 * r.getHeight())));
+                }
+            }
+            else {
+                infoArea.setText(String.format("P1: %d, %d\n" +
+                                "P2: %d, %d\n" +
+                                "Width: %d px\n" +
+                                "Height: %d px\n" +
+                                "Area: %d px²\n" +
+                                "Circumference: %d px",
+                        p0.x, p0.y,
+                        p1.x, p1.y,
+                        (int) r.getWidth(),
+                        (int) r.getHeight(),
+                        (int) (r.getWidth() * r.getHeight()),
+                        (int) (2 * r.getWidth() + 2 * r.getHeight())));
+            }
         } else {
             infoArea.setText("P1: -\n" +
                     "P2: -\n" +
