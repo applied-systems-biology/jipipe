@@ -13,11 +13,14 @@ import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
+import org.hkijena.jipipe.api.parameters.JIPipeParameterPersistence;
 import org.hkijena.jipipe.extensions.expressions.*;
+import org.hkijena.jipipe.extensions.expressions.variables.TextAnnotationsExpressionParameterVariableSource;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndices;
 import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.OptionalAnnotationNameParameter;
+import org.hkijena.jipipe.utils.ResourceUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -42,12 +45,16 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     private OptionalAnnotationNameParameter annotateC = new OptionalAnnotationNameParameter("C", true);
     private OptionalAnnotationNameParameter annotateT = new OptionalAnnotationNameParameter("T", true);
 
+    private final CustomExpressionVariablesParameter customFilterVariables;
+
     public ExpressionSlicerAlgorithm(JIPipeNodeInfo info) {
         super(info);
+        this.customFilterVariables = new CustomExpressionVariablesParameter(this);
     }
 
     public ExpressionSlicerAlgorithm(ExpressionSlicerAlgorithm other) {
         super(other);
+        this.customFilterVariables = new CustomExpressionVariablesParameter(other.customFilterVariables, this);
         this.expressionC = new DefaultExpressionParameter(other.expressionC);
         this.expressionZ = new DefaultExpressionParameter(other.expressionZ);
         this.expressionT = new DefaultExpressionParameter(other.expressionT);
@@ -67,6 +74,8 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         // Collect indices
         List<ImageSliceIndices> imageSliceIndicesList = new ArrayList<>();
         ExpressionVariables parameters = new ExpressionVariables();
+        parameters.putAnnotations(dataBatch.getMergedTextAnnotations());
+        customFilterVariables.writeToVariables(parameters, true, "custom.", true, "custom");
         parameters.set("width", img.getWidth());
         parameters.set("height", img.getHeight());
         parameters.set("size_z", img.getNSlices());
@@ -183,10 +192,20 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         }
     }
 
+    @JIPipeDocumentation(name = "Custom expression variables", description = "Here you can add parameters that will be included into the expression as variables <code>custom.[key]</code>. Alternatively, you can access them via <code>GET_ITEM(\"custom\", \"[key]\")</code>.")
+    @JIPipeParameter(value = "custom-filter-variables", iconURL = ResourceUtils.RESOURCE_BASE_PATH + "/icons/actions/insert-math-expression.png",
+            iconDarkURL = ResourceUtils.RESOURCE_BASE_PATH + "/dark/icons/actions/insert-math-expression.png", persistence = JIPipeParameterPersistence.NestedCollection)
+    public CustomExpressionVariablesParameter getCustomFilterVariables() {
+        return customFilterVariables;
+    }
+
     @JIPipeDocumentation(name = "Generate Z slices", description = "Expression that is executed for each Z/C/T slice and generates an array of slice indices (or a single slice index) that " +
             "determine which Z indices are exported. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("expression-z")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public DefaultExpressionParameter getExpressionZ() {
         return expressionZ;
     }
@@ -200,6 +219,9 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             "determine which C indices are exported. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("expression-c")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public DefaultExpressionParameter getExpressionC() {
         return expressionC;
     }
@@ -213,6 +235,9 @@ public class ExpressionSlicerAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             "determine which T indices are exported. All indices begin with zero. Indices outside the available range are automatically wrapped. Return an empty array to skip a slice.")
     @JIPipeParameter("expression-t")
     @ExpressionParameterSettings(variableSource = VariableSource.class)
+    @ExpressionParameterSettingsVariable(fromClass = TextAnnotationsExpressionParameterVariableSource.class)
+    @ExpressionParameterSettingsVariable(key = "custom", name = "Custom variables", description = "A map containing custom expression variables (keys are the parameter keys)")
+    @ExpressionParameterSettingsVariable(name = "custom.<Custom variable key>", description = "Custom variable parameters are added with a prefix 'custom.'")
     public DefaultExpressionParameter getExpressionT() {
         return expressionT;
     }
