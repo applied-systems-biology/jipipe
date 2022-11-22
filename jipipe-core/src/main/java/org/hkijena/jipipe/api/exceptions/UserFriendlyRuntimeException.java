@@ -86,11 +86,21 @@ public class UserFriendlyRuntimeException extends RuntimeException implements Us
 
     @Override
     public String toString() {
-        return "An error occurred @ " + userWhere + "\n" +
-                "What:\t" + userWhy + "\n" +
-                "Why:\t" + userWhat + "\n" +
-                "How to solve:\t" + userHow + "\n\n\n" +
-                getCause() != null ? super.toString() + "\n\n" + ExceptionUtils.getStackTrace(getCause()) : super.toString();
+        try {
+            return "An error occurred @ " + userWhere + "\n" +
+                    "What:\t" + userWhy + "\n" +
+                    "Why:\t" + userWhat + "\n" +
+                    "How to solve:\t" + userHow + "\n\n\n" +
+                    getCause() != null ? super.toString() + "\n\n" + ExceptionUtils.getStackTrace(getCause()) : super.toString();
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+            return "An error occurred @ " + userWhere + "\n" +
+                    "What:\t" + userWhy + "\n" +
+                    "Why:\t" + userWhat + "\n" +
+                    "How to solve:\t" + userHow + "\n\n\n" +
+                    super.toString();
+        }
     }
 
     public String getUserWhere() {

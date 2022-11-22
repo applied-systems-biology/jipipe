@@ -196,8 +196,14 @@ public class UIUtils {
      */
     public static void packDataTable(JXTable table) {
         int max = Math.max(-1, GeneralDataSettings.getInstance().getMaxTableColumnSize());
-        for (int c = 0; c < table.getColumnCount(); c++)
-            table.packColumn(c, -1, max);
+        for (int c = 0; c < table.getColumnCount(); c++) {
+            try {
+                table.packColumn(c, -1, max);
+            }
+            catch (Throwable e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
