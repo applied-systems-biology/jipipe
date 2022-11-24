@@ -26,6 +26,7 @@ import java.awt.*;
 public class JIPipeParameterCollectionParameterEditorUI extends JIPipeParameterEditorUI {
 
     private ParameterPanel parameterPanel;
+    private boolean isReloading;
 
     /**
      * Creates new instance
@@ -53,13 +54,21 @@ public class JIPipeParameterCollectionParameterEditorUI extends JIPipeParameterE
 
     @Override
     public void reload() {
-        JIPipeParameterCollection parameter = getParameter(JIPipeParameterCollection.class);
-        parameter.getEventBus().register(new Object() {
-            @Subscribe
-            public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-                setParameter(parameter, false);
-            }
-        });
-        parameterPanel.setDisplayedParameters(parameter);
+        if(isReloading)
+            return;
+        try {
+            JIPipeParameterCollection parameter = getParameter(JIPipeParameterCollection.class);
+            parameter.getEventBus().register(new Object() {
+                @Subscribe
+                public void onParameterChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+                    // Workaround: causes UX issues
+                    //setParameter(parameter, false);
+                }
+            });
+            parameterPanel.setDisplayedParameters(parameter);
+        }
+        finally {
+            isReloading = false;
+        }
     }
 }
