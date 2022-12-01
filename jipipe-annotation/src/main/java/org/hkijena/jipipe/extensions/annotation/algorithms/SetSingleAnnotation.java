@@ -72,6 +72,7 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
         variableSet.set("data_string", getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
         variableSet.set("data_type", JIPipe.getDataTypes().getIdOf(getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getDataClass()));
         variableSet.set("row", dataBatch.getInputSlotRows().get(getFirstInputSlot()));
+        variableSet.set("num_rows", dataBatch.getInputSlotRows().size());
         String name = StringUtils.nullToEmpty(annotationName.generate(variableSet));
         String value = StringUtils.nullToEmpty(annotationValue.generate(variableSet));
         if (StringUtils.isNullOrEmpty(name)) {
@@ -125,6 +126,9 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
             VARIABLES.add(new ExpressionParameterVariable("Row",
                     "The row inside the data table",
                     "row"));
+            VARIABLES.add(new ExpressionParameterVariable("Number of rows",
+                    "The number of rows in the data table",
+                    "num_rows"));
         }
 
         @Override
