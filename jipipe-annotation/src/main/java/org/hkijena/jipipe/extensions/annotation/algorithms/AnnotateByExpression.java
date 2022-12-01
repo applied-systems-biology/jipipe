@@ -83,7 +83,7 @@ public class AnnotateByExpression extends JIPipeSimpleIteratingAlgorithm {
             variableSet.set("data_string", getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
             variableSet.set("data_type", JIPipe.getDataTypes().getIdOf(getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getDataClass()));
             variableSet.set("row", dataBatch.getInputSlotRows().get(getFirstInputSlot()));
-            variableSet.set("num_rows", dataBatch.getInputSlotRows().size());
+            variableSet.set("num_rows", getFirstInputSlot().getRowCount());
             dataBatch.addMergedTextAnnotation(expression.generateTextAnnotation(dataBatch.getMergedTextAnnotations().values(), variableSet),
                     annotationMergeStrategy
             );
