@@ -39,7 +39,7 @@ import java.util.Set;
 /**
  * Algorithm that integrates columns
  */
-@JIPipeDocumentation(name = "Integrate table columns", description = "Integrates table columns by applying predefined operations like average, standard deviation, or median.")
+@JIPipeDocumentation(name = "Summarize table", description = "Summarize table columns by applying predefined operations like average, standard deviation, or median.")
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class)
 @JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Output", autoCreate = true)
