@@ -13,10 +13,12 @@
 
 package org.hkijena.jipipe.extensions.filesystem.datasources;
 
+import org.apache.commons.io.FileUtils;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -34,9 +36,13 @@ import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ResourceUtils;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Provides an input folder
@@ -137,6 +143,64 @@ public class PathListDataSource extends JIPipeAlgorithm {
             }
         }
         return result;
+    }
+
+    @Override
+    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory) {
+        PathList relativeFileNames = getRelativePaths();
+        PathList absoluteFileNames = getAbsolutePaths();
+        PathList newPaths = new PathList();
+        Set<String> externalFileNames = new HashSet<>();
+
+        for (int i = 0; i < relativeFileNames.size(); i++) {
+            Path source = absoluteFileNames.get(i);
+            if(source == null || !Files.exists(source)) {
+                throw new RuntimeException("Path " + relativeFileNames.get(i) + " does not exist!");
+            }
+            else {
+                Path target;
+                if(source.startsWith(originalBaseDirectory)) {
+                    // The data is located in the project directory. We can directly copy the file.
+                    Path relativePath = originalBaseDirectory.relativize(source);
+                    target = projectStorage.getFileSystemPath().resolve(relativePath);
+                }
+                else {
+                    // The data is located outside the project directory. Needs to be copied into a unique directory.
+                    String externalFileName = relativeFileNames.get(i).getFileName().toString();
+                    if(!externalFileNames.contains(externalFileName)) {
+                        // Not yet in external storage. Add it
+                        target = wrappedExternalStorage.resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(externalFileName);
+                        externalFileNames.add(externalFileName);
+                    }
+                    else {
+                        // We need to make a new target dir (UUID)
+                        progressInfo.log("Warning: Duplicate path name in external storage (" + externalFileName + "). Creating new UUID sub-storage in " + getAliasIdInParentGraph());
+                        target = wrappedExternalStorage.resolve(getAliasIdInParentGraph()).resolve(UUID.randomUUID().toString()).getFileSystemPath().resolve(externalFileName);
+                        externalFileNames.add(externalFileName);
+                    }
+                }
+
+                if(Files.exists(target)) {
+                    progressInfo.log("Not copying " + source + " -> " + target + " (Already exists)");
+                    continue;
+                }
+
+                progressInfo.log("Copy " + source + " -> " + target);
+                try {
+                    Files.createDirectories(target.getParent());
+                    if(Files.isRegularFile(source)) {
+                        Files.copy(source, target);
+                    }
+                    else {
+                        FileUtils.copyDirectory(source.toFile(), target.toFile());
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                newPaths.add(target);
+            }
+        }
+        setPaths(newPaths);
     }
 
     @JIPipeDocumentation(name = "Paths to absolute", description = "Converts the stored paths to absolute paths.")

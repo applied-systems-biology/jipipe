@@ -480,6 +480,13 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         });
         projectMenu.add(restoreCache);
 
+        JMenuItem archiveProjectButton = new JMenuItem("Archive project ...", UIUtils.getIconFromResources("actions/archive.png"));
+        archiveProjectButton.setToolTipText("Copies the project and all data into a ZIP file or directory");
+        archiveProjectButton.addActionListener(e -> {
+            archiveProject();
+        });
+        projectMenu.add(archiveProjectButton);
+
         // "Export as algorithm" entry
         JMenuItem exportProjectAsAlgorithmButton = new JMenuItem("Export as custom algorithm", UIUtils.getIconFromResources("actions/document-export.png"));
         exportProjectAsAlgorithmButton.setToolTipText("Exports the whole pipeline (all compartments) as custom algorithm");
@@ -659,6 +666,43 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         UIUtils.installMenuExtension(this, helpMenu, JIPipeMenuExtensionTarget.ProjectHelpMenu, true);
 
         add(menu, BorderLayout.NORTH);
+    }
+
+    private void archiveProject() {
+        if(getProject().getWorkDirectory() == null) {
+            JOptionPane.showMessageDialog(this, "Please save the project once before using the archive function.", "Archive project", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+        int option = JOptionPane.showOptionDialog(this,
+                "You can archive the project as directory or ZIP file. Please choose the most convenient option.\nPlease note that the archiving function cannot currently handle projects that involve advanced path processing.",
+                "Archive project",
+                JOptionPane.YES_NO_CANCEL_OPTION,
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                new Object[]{"ZIP file", "Directory", "Cancel"},
+                "ZIP file");
+        switch (option) {
+            case JOptionPane.YES_OPTION:
+                archiveProjectAsZIP();
+                break;
+            case JOptionPane.NO_OPTION:
+                archiveProjectAsDirectory();
+                break;
+        }
+    }
+
+    private void archiveProjectAsDirectory() {
+        Path directory = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Projects, "Archive project as directory");
+        if(directory != null) {
+            JIPipeRunExecuterUI.runInDialog(this, new ArchiveProjectToDirectoryRun(getProject(), directory));
+        }
+    }
+
+    private void archiveProjectAsZIP() {
+        Path file = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Projects, "Archive project as ZIP");
+        if(file != null) {
+            JIPipeRunExecuterUI.runInDialog(this, new ArchiveProjectToZIPRun(getProject(), file));
+        }
     }
 
     public void saveProjectAndCache(String title, boolean addAsRecentProject) {

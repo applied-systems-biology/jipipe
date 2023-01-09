@@ -17,6 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -30,6 +31,7 @@ import org.hkijena.jipipe.utils.PathIOMode;
 import org.hkijena.jipipe.utils.PathType;
 import org.hkijena.jipipe.utils.PathUtils;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Objects;
@@ -121,6 +123,43 @@ public class FileDataSource extends JIPipeAlgorithm {
             return currentWorkingDirectory.resolve(fileName);
         else
             return fileName;
+    }
+
+    @Override
+    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory) {
+        Path source = getAbsoluteFileName();
+        if(source == null || !Files.isRegularFile(source)) {
+            if(isNeedsToExist()) {
+                throw new RuntimeException("File " + getFileName() + " does not exist!");
+            }
+            progressInfo.log("Unable to archive: " + getFileName());
+        }
+        else {
+            Path target;
+            if(source.startsWith(originalBaseDirectory)) {
+                // The data is located in the project directory. We can directly copy the file.
+                Path relativePath = originalBaseDirectory.relativize(source);
+                target = projectStorage.getFileSystemPath().resolve(relativePath);
+            }
+            else {
+                // The data is located outside the project directory. Needs to be copied into a unique directory.
+                target = wrappedExternalStorage.resolve(getAliasIdInParentGraph()).getFileSystemPath().resolve(getFileName().getFileName());
+            }
+
+            if(Files.exists(target)) {
+                progressInfo.log("Not copying " + source + " -> " + target + " (Already exists)");
+                return;
+            }
+
+            progressInfo.log("Copy " + source + " -> " + target);
+            try {
+                Files.createDirectories(target.getParent());
+                Files.copy(source, target);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            setFileName(target);
+        }
     }
 
     @Override

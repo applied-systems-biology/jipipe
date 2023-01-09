@@ -29,6 +29,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
+import org.hkijena.jipipe.api.data.storage.JIPipeWriteDataStorage;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -847,6 +848,19 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     public void setBaseDirectory(Path baseDirectory) {
         this.baseDirectory = baseDirectory;
         eventBus.post(new BaseDirectoryChangedEvent(baseDirectory));
+    }
+
+    /**
+     * Called when the node is being archived into the specified storage.
+     * The function is called on the copy of the node
+     *
+     * @param projectStorage         the storage where the data will be archived
+     * @param wrappedExternalStorage
+     * @param progressInfo           the progress info
+     * @param originalBaseDirectory
+     */
+    public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory) {
+        // Do nothing
     }
 
     /**
