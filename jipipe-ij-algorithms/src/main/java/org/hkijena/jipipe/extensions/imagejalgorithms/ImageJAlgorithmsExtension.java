@@ -996,6 +996,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-convert-table-to-image", TableToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
         registerNodeType("ij1-convert-image-to-matrix", ImageToMatrixAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
         registerNodeType("ij1-convert-matrix-to-image", MatrixToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+        registerNodeType("ij1-convert-table-column-to-image", TableColumnToImageAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
+        registerNodeType("ij1-convert-image-to-table-column", ImageToTableColumnAlgorithm.class, UIUtils.getIconURLFromResources("actions/table.png"));
     }
 
     private void registerFormAlgorithms() {
