@@ -854,10 +854,10 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * Called when the node is being archived into the specified storage.
      * The function is called on the copy of the node
      *
-     * @param projectStorage         the storage where the data will be archived
-     * @param wrappedExternalStorage
+     * @param projectStorage         the storage where the data will be archived. storage where the project itself is located.
+     * @param wrappedExternalStorage storage where wrapped external files are put
      * @param progressInfo           the progress info
-     * @param originalBaseDirectory
+     * @param originalBaseDirectory current project directory
      */
     public void archiveTo(JIPipeWriteDataStorage projectStorage, JIPipeWriteDataStorage wrappedExternalStorage, JIPipeProgressInfo progressInfo, Path originalBaseDirectory) {
         // Do nothing
