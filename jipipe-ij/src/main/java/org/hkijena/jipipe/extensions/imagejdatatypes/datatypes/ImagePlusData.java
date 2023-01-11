@@ -350,10 +350,10 @@ public class ImagePlusData implements JIPipeData {
         if (image != null) {
             double factorX = 1.0 * width / image.getWidth();
             double factorY = 1.0 * height / image.getHeight();
-            double factor = Math.max(factorX, factorY);
+            double factor = Math.min(factorX, factorY);
             boolean smooth = factor < 0;
-            int imageWidth = (int) (image.getWidth() * factor);
-            int imageHeight = (int) (image.getHeight() * factor);
+            int imageWidth = (int) Math.max(1, image.getWidth() * factor);
+            int imageHeight = (int) Math.max(1, image.getHeight() * factor);
             ImagePlus rgbImage = ImageJUtils.channelsToRGB(image);
             if (rgbImage.getStackSize() != 1) {
                 // Reduce processing time

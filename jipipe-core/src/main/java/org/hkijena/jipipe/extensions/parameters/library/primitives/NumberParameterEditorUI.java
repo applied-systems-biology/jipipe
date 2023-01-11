@@ -59,7 +59,7 @@ public class NumberParameterEditorUI extends JIPipeParameterEditorUI {
     @Override
     public void reload() {
         String s = formatNumber(getCurrentValue());
-        if (!Objects.equals(s, numberField.getText()))
+        if (!Objects.equals(s, numberField.getText()) && !numberField.hasFocus())
             numberField.setText(s);
     }
 
