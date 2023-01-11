@@ -288,7 +288,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      *
      * @return algorithm name
      */
-    @JIPipeParameter(value = "jipipe:node:name", uiOrder = -9999, pinned = true)
+    @JIPipeParameter(value = "jipipe:node:name", uiOrder = -9999, pinned = true, functional = false)
     @JIPipeDocumentation(name = "Name", description = "Custom algorithm name.")
     public String getName() {
         if (customName == null || customName.isEmpty())
@@ -315,7 +315,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
     }
 
     @JIPipeDocumentation(name = "Bookmark this node", description = "If enabled, the node is highlighted in the graph editor UI and added into the bookmark list.")
-    @JIPipeParameter(value = "jipipe:node:bookmarked", pinned = true)
+    @JIPipeParameter(value = "jipipe:node:bookmarked", pinned = true, functional = false)
     public boolean isBookmarked() {
         return bookmarked;
     }
@@ -427,6 +427,18 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
         if (event.getConfiguration() == getSlotConfiguration()) {
             updateGraphNodeSlots();
         }
+    }
+
+    /**
+     * Returns true if this node and the other node are functionally equal (i.e. they have the same functional parameters).
+     * For non-functional nodes, this determines if the {@link JIPipeNodeInfo} is equal
+     * @param other the other node
+     * @return if the nodes are functionally equal
+     */
+    public boolean functionallyEquals(JIPipeGraphNode other) {
+        if(other == null)
+            return false;
+        return getInfo() == other.getInfo();
     }
 
     /**
@@ -795,7 +807,7 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      */
     @JIPipeDocumentation(name = "Description", description = "A custom description")
     @StringParameterSettings(multiline = true)
-    @JIPipeParameter(value = "jipipe:node:description", uiOrder = -999, pinned = true)
+    @JIPipeParameter(value = "jipipe:node:description", uiOrder = -999, pinned = true, functional = false)
     public HTMLText getCustomDescription() {
         if (customDescription == null)
             customDescription = new HTMLText();

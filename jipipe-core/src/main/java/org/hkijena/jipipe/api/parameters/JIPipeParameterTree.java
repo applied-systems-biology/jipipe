@@ -296,6 +296,7 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
                     childNode.setIconURL(entry.getValue().getIconURL());
                     childNode.setDarkIconURL(entry.getValue().getIconDarkURL());
                     childNode.setResourceClass(entry.getValue().getResourceClass());
+                    childNode.setFunctional(entry.getValue().isFunctional());
                 } catch (IllegalAccessException | InvocationTargetException e) {
                     e.printStackTrace();
                 }
@@ -558,6 +559,14 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
             return getterAnnotation.important() || setterAnnotation.important();
         }
 
+        public boolean isFunctional() {
+            JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
+            if (setter == null)
+                return getterAnnotation.functional();
+            JIPipeParameter setterAnnotation = setter.getAnnotation(JIPipeParameter.class);
+            return getterAnnotation.functional() || setterAnnotation.functional();
+        }
+
         public boolean isHidden() {
             JIPipeParameter getterAnnotation = getter.getAnnotation(JIPipeParameter.class);
             if (setter == null)
@@ -648,6 +657,8 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
         private JIPipeParameterCollection collection;
         private String key;
         private boolean hidden;
+
+        private boolean functional;
         private String name;
         private HTMLText description = new HTMLText();
         private int order;
@@ -817,6 +828,14 @@ public class JIPipeParameterTree implements JIPipeParameterCollection, JIPipeCus
 
         public void setPersistence(JIPipeParameterPersistence persistence) {
             this.persistence = persistence;
+        }
+
+        public boolean isFunctional() {
+            return functional;
+        }
+
+        public void setFunctional(boolean functional) {
+            this.functional = functional;
         }
     }
 }

@@ -40,8 +40,6 @@ import java.util.Map;
  * Please prefer to use this class or its derivatives if you write your algorithms.
  */
 public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
-
-    private static final StateSerializer STATE_SERIALIZER = new StateSerializer();
     private boolean enabled = true;
     private boolean passThrough = false;
     private JIPipeFixedThreadPool threadPool;
@@ -169,22 +167,38 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
         return super.isParameterUIVisible(tree, access);
     }
 
-    /**
-     * Returns a unique identifier that represents the state of the algorithm.
-     * Defaults to a JSON-serialized representation using the {@link StateSerializer}.
-     * Override this method if you have external influences.
-     *
-     * @return the state id
-     */
-    public String getStateId() {
-        try (StringWriter writer = new StringWriter()) {
-            try (JsonGenerator generator = JsonUtils.getObjectMapper().getFactory().createGenerator(writer)) {
-                STATE_SERIALIZER.serialize(this, generator, null);
+    @Override
+    public boolean functionallyEquals(JIPipeGraphNode other) {
+        if(!super.functionallyEquals(other))
+            return false;
+
+        // Compare functional parameters
+        JIPipeParameterTree here = new JIPipeParameterTree(this);
+        JIPipeParameterTree there = new JIPipeParameterTree(other);
+
+        if(!here.getParameters().keySet().equals(there.getParameters().keySet()))
+            return false;
+
+        for (String key : here.getParameters().keySet()) {
+            Object hereObj = here.getParameters().get(key).get(Object.class);
+            Object thereObj = there.getParameters().get(key).get(Object.class);
+            if(hereObj == null && thereObj == null) {
+                // Continue
             }
-            return writer.toString();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            else if(hereObj == null || thereObj == null) {
+                // Not equal
+                return false;
+            }
+            else {
+                String serializedHere = JsonUtils.toJsonString(hereObj);
+                String serializedThere = JsonUtils.toJsonString(thereObj);
+                if(!serializedThere.equals(serializedHere)) {
+                    return false;
+                }
+            }
         }
+
+        return true;
     }
 
     /**
@@ -254,47 +268,5 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
             throw new RuntimeException(e);
         }
 
-    }
-
-    /**
-     * Serializer used by getStateId()
-     * It automatically skips name, compartment, description, slot configuration, and UI parameters that are not relevant to the state
-     */
-    public static class StateSerializer extends JsonSerializer<JIPipeGraphNode> {
-        @Override
-        public void serialize(JIPipeGraphNode algorithm, JsonGenerator jsonGenerator, SerializerProvider serializerProvider) throws IOException, JsonProcessingException {
-            // Causes many cache misses
-//            Map<String, String> sources = new HashMap<>();
-//            if (algorithm.getGraph() != null) {
-//                for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
-//                    Set<JIPipeDataSlot> sourceSlots = algorithm.getGraph().getSourceSlots(inputSlot);
-//                    if (!sourceSlots.isEmpty()) {
-//                        sources.put(inputSlot.getName(), sourceSlots.getNode().getIdInGraph() + "/" + sourceSlots.getName());
-//                    } else {
-//                        sources.put(inputSlot.getName(), "");
-//                    }
-//                }
-//            }
-            jsonGenerator.writeStartObject();
-            jsonGenerator.writeStringField("jipipe:node-info-id", algorithm.getInfo().getId());
-//            if (algorithm.getGraph() != null) {
-//                jsonGenerator.writeStringField("jipipe:node-uuid", StringUtils.nullToEmpty(algorithm.getUUIDInGraph()));
-//                jsonGenerator.writeStringField("jipipe:node-alias-id", algorithm.getAliasIdInGraph());
-//            }
-//            jsonGenerator.writeObjectField("jipipe:cache-state:source-nodes", sources);
-            ParameterUtils.serializeParametersToJson(algorithm, jsonGenerator, this::serializeParameter);
-            jsonGenerator.writeEndObject();
-        }
-
-        /**
-         * Returns true if the parameter should be serialized
-         *
-         * @param entry the parameter
-         * @return if the parameter should be serialized
-         */
-        protected boolean serializeParameter(Map.Entry<String, JIPipeParameterAccess> entry) {
-            return !entry.getKey().equals("jipipe:node:name")
-                    && !entry.getKey().equals("jipipe:node:description");
-        }
     }
 }

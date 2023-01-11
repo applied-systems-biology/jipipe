@@ -115,4 +115,11 @@ public @interface JIPipeParameter {
      * @return if the parameter is pinned
      */
     boolean pinned() default false;
+
+    /**
+     * Marks the parameter as affecting the functionality of an algorithm.
+     * If false, the parameter will be ignored while testing whether two nodes are functionally equal.
+     * @return if the parameter affects the functionality of the node
+     */
+    boolean functional() default true;
 }

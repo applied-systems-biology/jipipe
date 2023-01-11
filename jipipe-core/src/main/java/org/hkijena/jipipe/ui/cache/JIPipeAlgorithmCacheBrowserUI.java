@@ -28,7 +28,6 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.cache.exporters.JIPipeDataTableToOutputExporterRun;
 import org.hkijena.jipipe.ui.cache.importers.JIPipeImportCachedSlotOutputRun;
-import org.hkijena.jipipe.ui.cache.renderers.CacheStateListCellRenderer;
 import org.hkijena.jipipe.ui.cache.renderers.CachedOutputDataSlotListCellRenderer;
 import org.hkijena.jipipe.ui.components.ribbon.LargeButtonAction;
 import org.hkijena.jipipe.ui.components.ribbon.Ribbon;
