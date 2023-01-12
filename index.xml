@@ -7,21 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language><atom:link href="https://www.jipipe.org/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Version 1.76.x (current version)</title>
-      <link>https://www.jipipe.org/download/changelog/1.76.x/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      
-      <guid>https://www.jipipe.org/download/changelog/1.76.x/</guid>
-      <description> Table Of Contents 1.76.0 1.76.0 improved Layout manager: do not move nodes (by default) improved &amp;ldquo;Add table columns&amp;rdquo; now supports annotations and custom variables improved &amp;ldquo;Add table columns&amp;rdquo; now allows to ensure a minimum number of rows improved &amp;ldquo;Split ROI into individual ROI lists&amp;rdquo;: support for custom annotation value new Cache manager: saving/loading all cached data from directory/zip new Node &amp;ldquo;Draw scale bar ROI&amp;rdquo; new Node &amp;ldquo;Combine ROI lists&amp;rdquo; (like Merge ROI lists but with strict ordering) new Node &amp;ldquo;Pull annotations from data tables&amp;rdquo; new Node &amp;ldquo;Annotate with data table properties&amp;rdquo; new Node &amp;ldquo;Push annotations into data tables&amp;rdquo; improved UX of the cache manager button in the menu bar improved &amp;ldquo;Reduce &amp;amp; split stacks (slice)&amp;rdquo; now supports annotations improved UX of the task/process manager button in the menu bar (now can cancel enqueued tasks) fixed Draw ROI nodes not applying ROI properties improved Cache cleanup performance improved Image viewer: minima and maxima for calibration are now sourced from all slices fixed Comment nodes: crash if icon is null improved Organization of annotation nodes (now in sub-menus that indicate the type of addressed data) improved UX of &amp;ldquo;Add slots&amp;rdquo;/&amp;ldquo;Edit slots&amp;rdquo; </description>
-    </item>
-    
-    <item>
       <title>Version 1.77.x (current version)</title>
       <link>https://www.jipipe.org/download/changelog/1.77.x/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/download/changelog/1.77.x/</guid>
       <description> Table Of Contents 1.77.0 1.77.0 new Archive functionality for projects (Project &amp;gt; Archive project ...) that collects all files and generates a directory or ZIP containing the project and all its data new Node &amp;ldquo;Replace label values by table&amp;rdquo; (mapping labels) new Node &amp;ldquo;Table column to image&amp;rdquo; (convert a table column into a 1px wide image with height = number of rows; allows to apply image operations on table columns) new Node &amp;ldquo;Image to table column&amp;rdquo; (put image back into a table column) new Image viewer measurement tool now measures physical sizes fixed Crash on starting JIPipe with a fresh Fiji installation fixed Previews of RGB images were changing the image fixed Freeze caused by updating certain parameters improved Rename &amp;ldquo;Integrate table columns&amp;rdquo; to &amp;ldquo;Summarize table&amp;rdquo; improved Performance of previews improved Expression-based hyperstack slicer now has custom variables improved &amp;ldquo;Set annotations&amp;rdquo; now has access to the number of rows in the data table </description>
+    </item>
+    
+    <item>
+      <title>Version 1.76.x (current version)</title>
+      <link>https://www.jipipe.org/download/changelog/1.76.x/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/download/changelog/1.76.x/</guid>
+      <description> Table Of Contents 1.76.0 1.76.0 improved Layout manager: do not move nodes (by default) improved &amp;ldquo;Add table columns&amp;rdquo; now supports annotations and custom variables improved &amp;ldquo;Add table columns&amp;rdquo; now allows to ensure a minimum number of rows improved &amp;ldquo;Split ROI into individual ROI lists&amp;rdquo;: support for custom annotation value new Cache manager: saving/loading all cached data from directory/zip new Node &amp;ldquo;Draw scale bar ROI&amp;rdquo; new Node &amp;ldquo;Combine ROI lists&amp;rdquo; (like Merge ROI lists but with strict ordering) new Node &amp;ldquo;Pull annotations from data tables&amp;rdquo; new Node &amp;ldquo;Annotate with data table properties&amp;rdquo; new Node &amp;ldquo;Push annotations into data tables&amp;rdquo; improved UX of the cache manager button in the menu bar improved &amp;ldquo;Reduce &amp;amp; split stacks (slice)&amp;rdquo; now supports annotations improved UX of the task/process manager button in the menu bar (now can cancel enqueued tasks) fixed Draw ROI nodes not applying ROI properties improved Cache cleanup performance improved Image viewer: minima and maxima for calibration are now sourced from all slices fixed Comment nodes: crash if icon is null improved Organization of annotation nodes (now in sub-menus that indicate the type of addressed data) improved UX of &amp;ldquo;Add slots&amp;rdquo;/&amp;ldquo;Edit slots&amp;rdquo; </description>
     </item>
     
     <item>
