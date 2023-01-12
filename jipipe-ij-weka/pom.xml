@@ -4,11 +4,11 @@
     <parent>
         <artifactId>pom-jipipe</artifactId>
         <groupId>org.hkijena</groupId>
-        <version>1.76.1-SNAPSHOT</version>
+        <version>1.77.1-SNAPSHOT</version>
     </parent>
 
     <artifactId>jipipe-ij-weka</artifactId>
-    <version>1.76.1-SNAPSHOT</version>
+    <version>1.77.1-SNAPSHOT</version>
 
     <name>jipipe-ij-weka</name>
     <description>JIPipe Trainable Weka Filter Integration</description>
