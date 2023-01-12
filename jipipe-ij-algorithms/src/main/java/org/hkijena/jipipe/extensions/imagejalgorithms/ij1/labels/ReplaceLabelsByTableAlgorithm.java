@@ -44,8 +44,8 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
 @JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Labels", autoCreate = true)
 public class ReplaceLabelsByTableAlgorithm extends JIPipeIteratingAlgorithm {
 
-    private TableColumnSourceExpressionParameter oldLabelColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "old");
-    private TableColumnSourceExpressionParameter newLabelColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "new");
+    private TableColumnSourceExpressionParameter oldLabelColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"old\"");
+    private TableColumnSourceExpressionParameter newLabelColumn = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"new\"");
     private OptionalDefaultExpressionParameter missingValueReplacement = new OptionalDefaultExpressionParameter(false, "0");
 
     private boolean ignoreZero = false;
