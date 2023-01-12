@@ -16,6 +16,15 @@
     </item>
     
     <item>
+      <title>Version 1.77.x (current version)</title>
+      <link>https://www.jipipe.org/download/changelog/1.77.x/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/download/changelog/1.77.x/</guid>
+      <description> Table Of Contents 1.77.0 1.77.0 new Archive functionality for projects (Project &amp;gt; Archive project ...) that collects all files and generates a directory or ZIP containing the project and all its data new Node &amp;ldquo;Replace label values by table&amp;rdquo; (mapping labels) new Node &amp;ldquo;Table column to image&amp;rdquo; (convert a table column into a 1px wide image with height = number of rows; allows to apply image operations on table columns) new Node &amp;ldquo;Image to table column&amp;rdquo; (put image back into a table column) new Image viewer measurement tool now measures physical sizes fixed Crash on starting JIPipe with a fresh Fiji installation fixed Previews of RGB images were changing the image fixed Freeze caused by updating certain parameters improved Rename &amp;ldquo;Integrate table columns&amp;rdquo; to &amp;ldquo;Summarize table&amp;rdquo; improved Performance of previews improved Expression-based hyperstack slicer now has custom variables improved &amp;ldquo;Set annotations&amp;rdquo; now has access to the number of rows in the data table </description>
+    </item>
+    
+    <item>
       <title>Version 1.75.x</title>
       <link>https://www.jipipe.org/download/changelog/1.75.x/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>

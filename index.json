@@ -28,6 +28,13 @@
 	"content": " Table Of Contents 1.76.0 1.76.0 improved Layout manager: do not move nodes (by default) improved \u0026ldquo;Add table columns\u0026rdquo; now supports annotations and custom variables improved \u0026ldquo;Add table columns\u0026rdquo; now allows to ensure a minimum number of rows improved \u0026ldquo;Split ROI into individual ROI lists\u0026rdquo;: support for custom annotation value new Cache manager: saving/loading all cached data from directory/zip new Node \u0026ldquo;Draw scale bar ROI\u0026rdquo; new Node \u0026ldquo;Combine ROI lists\u0026rdquo; (like Merge ROI lists but with strict ordering) new Node \u0026ldquo;Pull annotations from data tables\u0026rdquo; new Node \u0026ldquo;Annotate with data table properties\u0026rdquo; new Node \u0026ldquo;Push annotations into data tables\u0026rdquo; improved UX of the cache manager button in the menu bar improved \u0026ldquo;Reduce \u0026amp; split stacks (slice)\u0026rdquo; now supports annotations improved UX of the task/process manager button in the menu bar (now can cancel enqueued tasks) fixed Draw ROI nodes not applying ROI properties improved Cache cleanup performance improved Image viewer: minima and maxima for calibration are now sourced from all slices fixed Comment nodes: crash if icon is null improved Organization of annotation nodes (now in sub-menus that indicate the type of addressed data) improved UX of \u0026ldquo;Add slots\u0026rdquo;/\u0026ldquo;Edit slots\u0026rdquo; "
 },
 {
+	"uri": "https://www.jipipe.org/download/changelog/1.77.x/",
+	"title": "Version 1.77.x (current version)",
+	"tags": [],
+	"description": "Changelog of JIPipe version 1.77.x",
+	"content": " Table Of Contents 1.77.0 1.77.0 new Archive functionality for projects (Project \u0026gt; Archive project ...) that collects all files and generates a directory or ZIP containing the project and all its data new Node \u0026ldquo;Replace label values by table\u0026rdquo; (mapping labels) new Node \u0026ldquo;Table column to image\u0026rdquo; (convert a table column into a 1px wide image with height = number of rows; allows to apply image operations on table columns) new Node \u0026ldquo;Image to table column\u0026rdquo; (put image back into a table column) new Image viewer measurement tool now measures physical sizes fixed Crash on starting JIPipe with a fresh Fiji installation fixed Previews of RGB images were changing the image fixed Freeze caused by updating certain parameters improved Rename \u0026ldquo;Integrate table columns\u0026rdquo; to \u0026ldquo;Summarize table\u0026rdquo; improved Performance of previews improved Expression-based hyperstack slicer now has custom variables improved \u0026ldquo;Set annotations\u0026rdquo; now has access to the number of rows in the data table "
+},
+{
 	"uri": "https://www.jipipe.org/download/changelog/1.75.x/",
 	"title": "Version 1.75.x",
 	"tags": [],
@@ -2244,7 +2251,7 @@
 	"title": "Changelog",
 	"tags": [],
 	"description": "",
-	"content": " Version 1.76.x (current version)\nChangelog of JIPipe version 1.76.x\nVersion 1.75.x\nChangelog of JIPipe version 1.75.x\nVersion 1.75.0 Changelog of JIPipe version 1.75.0\nVersion 1.74.0\nChangelog of JIPipe version 1.74.0 (Overhaul 1)\nVersion 1.73.0\nChangelog of JIPipe version 1.73.0 (Weka update)\nVersion 1.72.x\nChangelog of JIPipe version 1.72.0 and its patches\n"
+	"content": " Version 1.76.x (current version)\nChangelog of JIPipe version 1.76.x\nVersion 1.77.x (current version)\nChangelog of JIPipe version 1.77.x\nVersion 1.75.x\nChangelog of JIPipe version 1.75.x\nVersion 1.75.0 Changelog of JIPipe version 1.75.0\nVersion 1.74.0\nChangelog of JIPipe version 1.74.0 (Overhaul 1)\nVersion 1.73.0\nChangelog of JIPipe version 1.73.0 (Weka update)\nVersion 1.72.x\nChangelog of JIPipe version 1.72.0 and its patches\n"
 },
 {
 	"uri": "https://www.jipipe.org/documentation-data-api/data-table/",
