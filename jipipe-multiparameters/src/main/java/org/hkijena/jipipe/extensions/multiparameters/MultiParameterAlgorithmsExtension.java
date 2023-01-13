@@ -71,6 +71,7 @@ public class MultiParameterAlgorithmsExtension extends JIPipePrepackagedDefaultJ
 
         registerNodeType("parameters-to-annotations", ParametersToAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));
         registerNodeType("annotations-to-parameters", AnnotationsToParametersAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));
+        registerNodeType("table-to-parameters", DefineParametersFromTableAlgorithm.class, UIUtils.getIconURLFromResources("data-types/parameters.png"));
         registerNodeType("parameters-merge", MergeParametersAlgorithm.class, UIUtils.getIconURLFromResources("actions/rabbitvcs-merge.png"));
     }
 

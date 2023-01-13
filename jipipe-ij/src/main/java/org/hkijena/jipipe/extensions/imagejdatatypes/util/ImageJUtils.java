@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
+import com.google.common.collect.ImmutableList;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TByteArrayList;
 import gnu.trove.list.array.TFloatArrayList;
@@ -92,6 +93,22 @@ public class ImageJUtils {
     }
 
     /**
+     * Returns the persistent properties of a {@link ImagePlus} as map
+     *
+     * @param imagePlus the image
+     * @return the properties
+     */
+    public static Map<String, String> getImageProperties(ImagePlus imagePlus) {
+        HashMap<String, String> map = new HashMap<>();
+        if(imagePlus.getImageProperties() != null) {
+            for (Map.Entry<Object, Object> entry : imagePlus.getImageProperties().entrySet()) {
+                map.put("" + entry.getKey(), "" + entry.getValue());
+            }
+        }
+        return map;
+    }
+
+    /**
      * Sets the properties of a {@link Roi} from a map
      *
      * @param roi        the roi
@@ -110,6 +127,23 @@ public class ImageJUtils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Sets the properties of a {@link ImagePlus} from a map
+     *
+     * @param imagePlus        the image
+     * @param properties the properties
+     */
+    public static void setImageProperties(ImagePlus imagePlus, Map<String, String> properties) {
+        ImmutableList<Map.Entry<String, String>> copyOf = ImmutableList.copyOf(properties.entrySet());
+        String[] props = new String[copyOf.size() * 2];
+        for (int i = 0; i < copyOf.size(); i++) {
+            Map.Entry<String, String> entry = copyOf.get(i);
+            props[2 * i] = StringUtils.nullToEmpty(entry.getKey()).replace(' ', '_').replace('=', '_').replace(':', '_');
+            props[2 * i + 1] = entry.getValue();
+        }
+        imagePlus.setProperties(props);
     }
 
     /**

@@ -65,6 +65,10 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.lut.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.distancemap.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.math.local.*;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.metadata.ChangeImageMetadataFromExpressionsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.metadata.ExtractImageMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.metadata.RemoveImageMetadataAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.metadata.SetImageMetadataFromTableAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.DataToPreviewAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.misc.RenderJIPipeProjectAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.morphology.*;
@@ -911,6 +915,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerSegmentationAlgorithms();
         registerCalibrationAlgorithms();
         registerColocalizationAlgorithms();
+        registerMetadataAlgorithms();
 
         registerNodeType("ij1-generate-missing-results-table", GenerateMissingTablesAlgorithm.class, UIUtils.getIconURLFromResources("actions/image-auto-adjust.png"));
         registerNodeType("ij1-generate-filter-kernel", GenerateStructureElement2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/morphology.png"));
@@ -933,6 +938,13 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         //// Register examples
         registerNodeExamplesFromResources(RESOURCES, "examples");
         registerProjectTemplatesFromResources(RESOURCES, "templates");
+    }
+
+    private void registerMetadataAlgorithms() {
+        registerNodeType("ij1-image-extract-metadata", ExtractImageMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_extractfiles.png"));
+        registerNodeType("ij1-image-set-metadata-from-table", SetImageMetadataFromTableAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_packfiles.png"));
+        registerNodeType("ij1-image-remove-metadata", RemoveImageMetadataAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("ij1-image-set-properties-from-expressions", ChangeImageMetadataFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit.png"));
     }
 
     private void registerColocalizationAlgorithms() {
