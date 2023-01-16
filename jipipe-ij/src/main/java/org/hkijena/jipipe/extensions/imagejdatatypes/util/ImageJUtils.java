@@ -42,6 +42,7 @@ import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.TriConsumer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -970,6 +971,34 @@ public class ImageJUtils {
             function.accept(img.getProcessor(), new ImageSliceIndex(0, 0, 0));
         }
     }
+
+    /**
+     * Runs the function for each Z, C, and T slice.
+     *
+     * @param img          the image
+     * @param function     the function. The indices are ZERO-based
+     * @param progressInfo the progress
+     */
+    public static void forEachIndexedZCTSliceWithProgress(ImagePlus img, TriConsumer<ImageProcessor, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
+        if (img.isStack()) {
+            int iterationIndex = 0;
+            for (int t = 0; t < img.getNFrames(); t++) {
+                for (int z = 0; z < img.getNSlices(); z++) {
+                    for (int c = 0; c < img.getNChannels(); c++) {
+                        if (progressInfo.isCancelled())
+                            return;
+                        int index = img.getStackIndex(c + 1, z + 1, t + 1);
+                        JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).resolve("z=" + z + ", c=" + c + ", t=" + t);
+                        ImageProcessor processor = img.getImageStack().getProcessor(index);
+                        function.accept(processor, new ImageSliceIndex(c, z, t), stackProgress);
+                    }
+                }
+            }
+        } else {
+            function.accept(img.getProcessor(), new ImageSliceIndex(0, 0, 0), progressInfo);
+        }
+    }
+
 
     /**
      * Sets the slice of an image to the processor based on the index. Handles all configurations of images.
