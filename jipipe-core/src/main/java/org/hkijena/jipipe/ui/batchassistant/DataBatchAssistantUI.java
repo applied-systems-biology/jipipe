@@ -149,7 +149,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         // Pass cache as input slots
         for (JIPipeDataSlot inputSlot : batchesNodeCopy.getDataInputSlots()) {
             for (JIPipeDataTable cacheSlot : currentCache.get(inputSlot.getName())) {
-                inputSlot.addData(cacheSlot, new JIPipeProgressInfo());
+                inputSlot.addDataFromTable(cacheSlot, new JIPipeProgressInfo());
             }
         }
         // Generate dry-run

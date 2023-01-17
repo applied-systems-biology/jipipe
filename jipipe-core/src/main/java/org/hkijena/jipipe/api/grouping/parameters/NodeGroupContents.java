@@ -22,6 +22,7 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import org.hkijena.jipipe.api.JIPipeFunctionallyComparable;
 import org.hkijena.jipipe.api.grouping.NodeGroup;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.utils.json.JsonUtils;
@@ -30,7 +31,7 @@ import java.io.IOException;
 
 @JsonSerialize(using = NodeGroupContents.Serializer.class)
 @JsonDeserialize(using = NodeGroupContents.Deserializer.class)
-public class NodeGroupContents {
+public class NodeGroupContents implements JIPipeFunctionallyComparable {
     private NodeGroup parent;
     private JIPipeGraph wrappedGraph;
 
@@ -65,6 +66,14 @@ public class NodeGroupContents {
 
     public void setWrappedGraph(JIPipeGraph wrappedGraph) {
         this.wrappedGraph = wrappedGraph;
+    }
+
+    @Override
+    public boolean functionallyEquals(Object other) {
+        if(other instanceof NodeGroupContents) {
+            return wrappedGraph.functionallyEquals(((NodeGroupContents) other).wrappedGraph);
+        }
+        return false;
     }
 
     public static class Serializer extends JsonSerializer<NodeGroupContents> {

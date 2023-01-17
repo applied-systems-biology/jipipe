@@ -74,7 +74,14 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         List<JIPipeGraphNode> predecessorAlgorithms = project.getGraph().getPredecessorAlgorithms(projectNode, project.getGraph().traverse());
         for (JIPipeGraphNode predecessorAlgorithm : predecessorAlgorithms) {
             UUID predecessorUUID = predecessorAlgorithm.getUUIDInParentGraph();
-            currentNodeStatePredecessorGraph.addVertex(predecessorUUID);
+
+            // Add if necessary
+            if(!currentNodeStatePredecessorGraph.containsVertex(predecessorUUID)) {
+                progressInfo.log("Register predecessor " + predecessorUUID + " of " + uuid);
+                currentNodeStatePredecessorGraph.addVertex(predecessorUUID);
+                putNodeIntoGraph(project.getGraph().getNodeByUUID(predecessorUUID), progressInfo);
+            }
+
             currentNodeStates.put(predecessorUUID, predecessorAlgorithm.duplicate());
             expectedPredecessors.add(predecessorUUID);
             currentNodeStatePredecessorGraph.addEdge(predecessorUUID, uuid);
@@ -122,7 +129,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
                 for (DefaultEdge defaultEdge : currentNodeStatePredecessorGraph.incomingEdgesOf(uuid)) {
                     availablePredecessors.add(currentNodeStatePredecessorGraph.getEdgeSource(defaultEdge));
                 }
-                Set<UUID> expectedPredecessors = expectedNodePredecessors.get(uuid);
+                Set<UUID> expectedPredecessors = expectedNodePredecessors.getOrDefault(uuid, null);
                 if(!expectedPredecessors.equals(availablePredecessors)) {
                     removeNodeCache(uuid);
 

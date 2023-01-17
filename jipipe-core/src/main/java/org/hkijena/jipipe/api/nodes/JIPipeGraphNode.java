@@ -57,7 +57,7 @@ import java.util.stream.Collectors;
  * Use {@link JIPipeAlgorithm} as base class to indicate a non-optional workload.
  */
 @JsonSerialize(using = JIPipeGraphNode.Serializer.class)
-public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParameterCollection {
+public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParameterCollection, JIPipeFunctionallyComparable {
     private final List<JIPipeInputDataSlot> inputSlots = new ArrayList<>();
     private final List<JIPipeOutputDataSlot> outputSlots = new ArrayList<>();
     private final BiMap<String, JIPipeInputDataSlot> inputSlotMap = HashBiMap.create();
@@ -435,10 +435,12 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
      * @param other the other node
      * @return if the nodes are functionally equal
      */
-    public boolean functionallyEquals(JIPipeGraphNode other) {
-        if(other == null)
-            return false;
-        return getInfo() == other.getInfo();
+    @Override
+    public boolean functionallyEquals(Object other) {
+        if(other instanceof JIPipeGraphNode) {
+            return getInfo() == ((JIPipeGraphNode) other).getInfo();
+        }
+        return false;
     }
 
     /**

@@ -27,10 +27,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
-import org.hkijena.jipipe.api.JIPipeGraphType;
-import org.hkijena.jipipe.api.JIPipeIssueReport;
-import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.JIPipeValidatable;
+import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -64,7 +61,7 @@ import java.util.stream.Collectors;
  */
 @JsonSerialize(using = JIPipeGraph.Serializer.class)
 @JsonDeserialize(using = JIPipeGraph.Deserializer.class)
-public class JIPipeGraph implements JIPipeValidatable {
+public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyComparable {
 
     private DefaultDirectedGraph<JIPipeDataSlot, JIPipeGraphEdge> graph = new DefaultDirectedGraph<>(JIPipeGraphEdge.class);
     private BiMap<UUID, String> nodeAliasIds = HashBiMap.create();
@@ -1825,6 +1822,31 @@ public class JIPipeGraph implements JIPipeValidatable {
 
     public boolean containsNode(UUID nodeUUID) {
         return this.nodeUUIDs.containsKey(nodeUUID);
+    }
+
+    @Override
+    public boolean functionallyEquals(Object other) {
+        if(other instanceof JIPipeGraph) {
+            JIPipeGraph otherGraph = (JIPipeGraph) other;
+            if(graph.vertexSet().size() != otherGraph.graph.vertexSet().size())
+                return false;
+            if(graph.edgeSet().size() != otherGraph.graph.edgeSet().size())
+                return false;
+
+            // Compare nodes by UUID (if we find the same UUID, we can be sure) as UUIDs are unlikely to collide
+            for (Map.Entry<UUID, JIPipeGraphNode> hereEntry : nodeUUIDs.entrySet()) {
+                JIPipeGraphNode thisNode = hereEntry.getValue();
+                JIPipeGraphNode otherNode = otherGraph.getNodeByUUID(hereEntry.getKey());
+                if(otherNode != null && !thisNode.functionallyEquals(otherNode)) {
+                    return false;
+                }
+            }
+
+            // TODO: Comparison of edges (outside the edge set)
+
+            return true;
+        }
+        return false;
     }
 
     /**

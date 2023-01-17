@@ -84,7 +84,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     }
 
     @Override
-    @JIPipeParameter("jipipe:node:name")
+    @JIPipeParameter(value = "jipipe:node:name", functional = false)
     public void setCustomName(String customName) {
         super.setCustomName(customName);
         if (outputNode != null) {
@@ -161,7 +161,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
     }
 
     @JIPipeDocumentation(name = "Exported parameters", description = "Allows you to export parameters from the group into the group node")
-    @JIPipeParameter("exported-parameters")
+    @JIPipeParameter(value = "exported-parameters", functional = false)
     public GraphNodeParameterReferenceGroupCollection getExportedParameters() {
         return exportedParameters;
     }
@@ -183,7 +183,7 @@ public class JIPipeProjectCompartment extends JIPipeGraphNode implements JIPipeC
 
     @JIPipeDocumentation(name = "Show limited parameter set", description = "If enabled, only the exported parameters, name, and description are shown as parameters. " +
             "The data batch generation will also be hidden. This can be useful for educational pipelines.")
-    @JIPipeParameter("show-limited-parameters")
+    @JIPipeParameter(value = "show-limited-parameters", functional = false)
     public boolean isShowLimitedParameters() {
         return showLimitedParameters;
     }

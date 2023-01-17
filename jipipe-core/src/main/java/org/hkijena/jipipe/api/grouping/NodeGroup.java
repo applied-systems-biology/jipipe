@@ -232,7 +232,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
     }
 
     @JIPipeDocumentation(name = "Exported parameters", description = "Allows you to export parameters from the group into the group node")
-    @JIPipeParameter("exported-parameters")
+    @JIPipeParameter(value = "exported-parameters", functional = false)
     public GraphNodeParameterReferenceGroupCollection getExportedParameters() {
         return exportedParameters;
     }
@@ -255,7 +255,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 
     @JIPipeDocumentation(name = "Show limited parameter set", description = "If enabled, only the exported parameters, name, and description are shown as parameters. " +
             "The data batch generation will also be hidden. This can be useful for educational pipelines.")
-    @JIPipeParameter("show-limited-parameters")
+    @JIPipeParameter(value = "show-limited-parameters", functional = false)
     public boolean isShowLimitedParameters() {
         return showLimitedParameters;
     }
@@ -335,7 +335,7 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
             "<li>The wrapped graph can be executed per data batch. Here you can choose between an iterative data batch (one item per slot) " +
             "or a merging data batch (multiple items per slot).</li>" +
             "</ul>")
-    @JIPipeParameter("iteration-mode")
+    @JIPipeParameter(value = "iteration-mode", functional = false)
     public IterationMode getIterationMode() {
         return super.getIterationMode();
     }
