@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
@@ -49,7 +50,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private final JIPipeAlgorithm algorithm;
     private final Runnable runTestBench;
     private final JIPipeParameterCollection batchSettings;
-    private final Multimap<String, JIPipeDataSlot> currentCache = HashMultimap.create();
+    private final Multimap<String, JIPipeDataTable> currentCache = HashMultimap.create();
     AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, AutoResizeSplitPane.RATIO_1_TO_3);
     private JPanel batchPanel;
     private JPanel errorPanel;
@@ -87,27 +88,19 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
             errorLabel.setText("No input slots");
             return;
         }
-        JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(getProject());
         for (JIPipeDataSlot inputSlot : algorithm.getInputSlots()) {
             Set<JIPipeDataSlot> sourceSlots = algorithm.getParentGraph().getInputIncomingSourceSlots(inputSlot);
             if (!sourceSlots.isEmpty()) {
                 for (JIPipeDataSlot sourceSlot : sourceSlots) {
-                    Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> sourceCaches = getProject().getCache().extract(sourceSlot.getNode().getUUIDInParentGraph());
-                    if (sourceCaches == null || sourceCaches.isEmpty()) {
+                    Map<String, JIPipeDataTable> sourceCache = getProject().getCache().query(sourceSlot.getNode(), sourceSlot.getNode().getUUIDInParentGraph(), new JIPipeProgressInfo());
+                    if (sourceCache == null || sourceCache.isEmpty()) {
                         errorLabel.setText("No cached data available");
                         currentCache.clear();
                         return;
                     }
-                    Map<String, JIPipeDataSlot> sourceCache = sourceCaches.getOrDefault(query.getCachedId(sourceSlot.getNode().getUUIDInParentGraph()), null);
-                    if (sourceCache != null) {
-                        JIPipeDataSlot cache = sourceCache.getOrDefault(sourceSlot.getName(), null);
-                        if (cache != null) {
-                            currentCache.put(inputSlot.getName(), cache);
-                        } else {
-                            currentCache.clear();
-                            errorLabel.setText("No up-to-date cached data available");
-                            return;
-                        }
+                    JIPipeDataTable cache = sourceCache.getOrDefault(sourceSlot.getName(), null);
+                    if (cache != null) {
+                        currentCache.put(inputSlot.getName(), cache);
                     } else {
                         currentCache.clear();
                         errorLabel.setText("No up-to-date cached data available");
@@ -155,7 +148,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         batchesNodeCopy = algorithm.getInfo().duplicate(algorithm);
         // Pass cache as input slots
         for (JIPipeDataSlot inputSlot : batchesNodeCopy.getDataInputSlots()) {
-            for (JIPipeDataSlot cacheSlot : currentCache.get(inputSlot.getName())) {
+            for (JIPipeDataTable cacheSlot : currentCache.get(inputSlot.getName())) {
                 inputSlot.addData(cacheSlot, new JIPipeProgressInfo());
             }
         }
@@ -319,7 +312,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      * @param event generated event
      */
     @Subscribe
-    public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
+    public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
         if (!isDisplayable())
             return;
         updateStatus();

@@ -21,6 +21,7 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
@@ -439,7 +440,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
      * @param event generated event
      */
     @Subscribe
-    public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
+    public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
         updateStatus();
     }
 

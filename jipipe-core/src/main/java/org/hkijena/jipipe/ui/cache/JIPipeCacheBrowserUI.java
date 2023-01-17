@@ -16,12 +16,14 @@ package org.hkijena.jipipe.ui.cache;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProjectRun;
+import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.cache.cachetree.JIPipeCacheTree;
+import org.hkijena.jipipe.ui.cache.cachetree.JIPipeCacheTreePanel;
 import org.hkijena.jipipe.ui.datatable.JIPipeExtendedDataTableUI;
 import org.hkijena.jipipe.ui.datatable.JIPipeExtendedMultiDataTableUI;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
@@ -38,7 +40,7 @@ import java.util.*;
  */
 public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     private JSplitPane splitPane;
-    private JIPipeCacheTree tree;
+    private JIPipeCacheTreePanel tree;
 
     /**
      * @param workbenchUI the workbench
@@ -53,7 +55,7 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
 
     private void initialize() {
         setLayout(new BorderLayout());
-        tree = new JIPipeCacheTree(getProjectWorkbench());
+        tree = new JIPipeCacheTreePanel(getProjectWorkbench());
 
         splitPane = new AutoResizeSplitPane(JSplitPane.HORIZONTAL_SPLIT, tree, new JPanel(), AutoResizeSplitPane.RATIO_1_TO_3);
         add(splitPane, BorderLayout.CENTER);
@@ -63,14 +65,11 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
             if (lastPathComponent instanceof DefaultMutableTreeNode) {
                 Object userObject = ((DefaultMutableTreeNode) lastPathComponent).getUserObject();
                 if (userObject instanceof JIPipeDataSlot) {
-                    showDataSlot((JIPipeDataSlot) userObject);
+                    showDataTable((JIPipeDataSlot) userObject);
                 } else if (userObject instanceof JIPipeProjectCompartment) {
                     showDataSlotsOfCompartment((JIPipeProjectCompartment) userObject);
                 } else if (userObject instanceof JIPipeGraphNode) {
-                    showDataSlotsOfAlgorithm((JIPipeGraphNode) userObject);
-                } else if (userObject instanceof JIPipeProjectCacheState) {
-                    JIPipeGraphNode algorithm = (JIPipeGraphNode) ((DefaultMutableTreeNode) ((DefaultMutableTreeNode) lastPathComponent).getParent()).getUserObject();
-                    showDataSlotsOfState(algorithm, (JIPipeProjectCacheState) userObject);
+                    showDataSlotsOfNode((JIPipeGraphNode) userObject);
                 } else {
                     showAllDataSlots();
                 }
@@ -80,66 +79,48 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         initializeToolbar();
     }
 
-    private void showDataSlotsOfState(JIPipeGraphNode algorithm, JIPipeProjectCacheState state) {
-        List<JIPipeDataSlot> result = new ArrayList<>();
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(algorithm.getUUIDInParentGraph());
-        if (stateMap != null) {
-            Map<String, JIPipeDataSlot> slotMap = stateMap.getOrDefault(state, null);
-            if (slotMap != null) {
+    private void showAllDataSlots() {
+        List<JIPipeDataTable> result = new ArrayList<>();
+        for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
+            Map<String, JIPipeDataTable> slotMap = getProject().getCache().query(node, node.getUUIDInParentGraph(), new JIPipeProgressInfo());
+            if(slotMap != null) {
                 result.addAll(slotMap.values());
             }
         }
-        showDataSlots(result);
+        showDataTables(result);
     }
 
-    private void showAllDataSlots() {
-        List<JIPipeDataSlot> result = new ArrayList<>();
-        for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
-            Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(node.getUUIDInParentGraph());
-            if (stateMap != null) {
-                for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
-                    result.addAll(stateEntry.getValue().values());
-                }
-            }
+    private void showDataSlotsOfNode(JIPipeGraphNode node) {
+        Map<String, JIPipeDataTable> slotMap = getProject().getCache().query(node, node.getUUIDInParentGraph(), new JIPipeProgressInfo());
+        List<JIPipeDataTable> result = new ArrayList<>();
+        if(slotMap != null) {
+           result.addAll(slotMap.values());
         }
-        showDataSlots(result);
-    }
-
-    private void showDataSlotsOfAlgorithm(JIPipeGraphNode algorithm) {
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(algorithm.getUUIDInParentGraph());
-        if (stateMap != null) {
-            List<JIPipeDataSlot> result = new ArrayList<>();
-            for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
-                result.addAll(stateEntry.getValue().values());
-            }
-            showDataSlots(result);
-        }
+        showDataTables(result);
     }
 
     private void showDataSlotsOfCompartment(JIPipeProjectCompartment compartment) {
-        List<JIPipeDataSlot> result = new ArrayList<>();
+        List<JIPipeDataTable> result = new ArrayList<>();
         UUID uuid = compartment.getUUIDInParentGraph();
         for (JIPipeGraphNode algorithm : getProject().getGraph().getGraphNodes()) {
             if (Objects.equals(algorithm.getCompartmentUUIDInParentGraph(), uuid)) {
-                Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(algorithm.getUUIDInParentGraph());
-                if (stateMap != null) {
-                    for (Map.Entry<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateEntry : stateMap.entrySet()) {
-                        result.addAll(stateEntry.getValue().values());
-                    }
+                Map<String, JIPipeDataTable> slotMap = getProject().getCache().query(algorithm, algorithm.getUUIDInParentGraph(), new JIPipeProgressInfo());
+                if(slotMap != null) {
+                    result.addAll(slotMap.values());
                 }
             }
         }
-        showDataSlots(result);
+        showDataTables(result);
     }
 
-    private void showDataSlots(List<JIPipeDataSlot> slots) {
-        JIPipeExtendedMultiDataTableUI ui = new JIPipeExtendedMultiDataTableUI(getProjectWorkbench(), slots, true);
+    private void showDataTables(List<JIPipeDataTable> dataTables) {
+        JIPipeExtendedMultiDataTableUI ui = new JIPipeExtendedMultiDataTableUI(getProjectWorkbench(), dataTables, true);
         splitPane.setRightComponent(ui);
         revalidate();
     }
 
-    private void showDataSlot(JIPipeDataSlot dataSlot) {
-        JIPipeExtendedDataTableUI ui = new JIPipeExtendedDataTableUI(getProjectWorkbench(), dataSlot, true);
+    private void showDataTable(JIPipeDataTable dataTable) {
+        JIPipeExtendedDataTableUI ui = new JIPipeExtendedDataTableUI(getProjectWorkbench(), dataTable, true);
         splitPane.setRightComponent(ui);
         revalidate();
     }
@@ -149,17 +130,17 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         toolBar.setFloatable(false);
 
         JButton clearOutdatedButton = new JButton("Clear outdated", UIUtils.getIconFromResources("actions/clear-brush.png"));
-        clearOutdatedButton.addActionListener(e -> getProject().getCache().autoClean(false, true, new JIPipeProgressInfo()));
+        clearOutdatedButton.addActionListener(e -> getProject().getCache().clearOutdated(new JIPipeProgressInfo()));
         toolBar.add(clearOutdatedButton);
 
         JButton clearAllButton = new JButton("Clear all", UIUtils.getIconFromResources("actions/clear-brush.png"));
-        clearAllButton.addActionListener(e -> getProject().getCache().clear());
+        clearAllButton.addActionListener(e -> getProject().getCache().clearAll(new JIPipeProgressInfo()));
         toolBar.add(clearAllButton);
 
         add(toolBar, BorderLayout.NORTH);
     }
 
-    public JIPipeCacheTree getTree() {
+    public JIPipeCacheTreePanel getTree() {
         return tree;
     }
 
@@ -169,7 +150,7 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
      * @param event generated event
      */
     @Subscribe
-    public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
+    public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
         tree.refreshTree();
         showAllDataSlots();
     }

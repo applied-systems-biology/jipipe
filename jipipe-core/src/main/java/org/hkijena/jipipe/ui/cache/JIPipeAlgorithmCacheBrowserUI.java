@@ -17,7 +17,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.*;
+import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -60,10 +62,7 @@ import java.util.*;
 public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     private final JIPipeGraphNode graphNode;
     private final JIPipeGraphCanvasUI graphCanvasUI;
-
     private JIPipeDataSlot selectedSlot;
-
-    private JIPipeProjectCacheState selectedCacheState;
     private Component currentContent;
 
     /**
@@ -89,54 +88,42 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     }
 
     public void refreshTable() {
-        List<JIPipeDataSlot> slotsToDisplay = new ArrayList<>();
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode.getUUIDInParentGraph());
-        if (stateMap != null && !stateMap.isEmpty()) {
-            if (!stateMap.containsKey(selectedCacheState)) {
-                selectedCacheState = null;
-            }
-            if (selectedCacheState == null) {
-                // Select the newest available state
-                selectedCacheState = stateMap.keySet().stream().sorted().findFirst().get();
-            }
-            Map<String, JIPipeDataSlot> slotMap = stateMap.get(selectedCacheState);
-            if (slotMap != null) {
-                if (selectedSlot == null) {
-                    slotsToDisplay.addAll(slotMap.values());
-                } else {
-                    JIPipeDataSlot cachedSlot = slotMap.getOrDefault(selectedSlot.getName(), null);
-                    if (cachedSlot != null) {
-                        slotsToDisplay.add(cachedSlot);
-                    }
+        List<JIPipeDataTable> slotsToDisplay = new ArrayList<>();
+        Map<String, JIPipeDataTable> slotMap = getProject().getCache().query(graphNode, graphNode.getUUIDInParentGraph(), new JIPipeProgressInfo());
+        if (slotMap != null) {
+            if (selectedSlot == null) {
+                slotsToDisplay.addAll(slotMap.values());
+            } else {
+                JIPipeDataTable cachedSlot = slotMap.getOrDefault(selectedSlot.getName(), null);
+                if (cachedSlot != null) {
+                    slotsToDisplay.add(cachedSlot);
                 }
             }
-        } else {
-            selectedCacheState = null;
         }
         if (slotsToDisplay.size() == 1) {
-            JIPipeDataSlot first = slotsToDisplay.iterator().next();
+            JIPipeDataTable first = slotsToDisplay.iterator().next();
             showDataSlot(first);
         } else {
             showDataSlots(slotsToDisplay);
         }
     }
 
-    private void showDataSlots(List<JIPipeDataSlot> slots) {
+    private void showDataSlots(List<JIPipeDataTable> dataTables) {
         if (currentContent != null) {
             remove(currentContent);
         }
-        JIPipeExtendedMultiDataTableUI ui = new JIPipeExtendedMultiDataTableUI(getProjectWorkbench(), slots, false);
+        JIPipeExtendedMultiDataTableUI ui = new JIPipeExtendedMultiDataTableUI(getProjectWorkbench(), dataTables, false);
         initializeDataTableAdditionalRibbon(ui.getRibbon());
         add(ui, BorderLayout.CENTER);
         currentContent = ui;
         revalidate();
     }
 
-    private void showDataSlot(JIPipeDataSlot dataSlot) {
+    private void showDataSlot(JIPipeDataTable dataTable) {
         if (currentContent != null) {
             remove(currentContent);
         }
-        JIPipeExtendedDataTableUI ui = new JIPipeExtendedDataTableUI(getProjectWorkbench(), dataSlot, true);
+        JIPipeExtendedDataTableUI ui = new JIPipeExtendedDataTableUI(getProjectWorkbench(), dataTable, true);
         initializeDataTableAdditionalRibbon(ui.getRibbon());
 //        initializeTableMenu(ui.getMenuManager());
         add(ui, BorderLayout.CENTER);
@@ -152,13 +139,10 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         // Cache task
         Ribbon.Band resultsBand = cacheTask.addBand("Displayed results");
         JComboBox<JIPipeDataSlot> slotSelection = new JComboBox<>();
-        JComboBox<JIPipeProjectCacheState> cacheSelection = new JComboBox<>();
 
         initializeSlotSelectionComboBox(slotSelection);
-        initializeCacheSnapshotSelectionComboBox(cacheSelection);
 
         resultsBand.add(new Ribbon.Action(Arrays.asList(new JLabel("Data slot"), Box.createHorizontalStrut(8), slotSelection), 1, new Insets(2, 2, 2, 2)));
-        resultsBand.add(new Ribbon.Action(Arrays.asList(new JLabel("Snapshot"), Box.createHorizontalStrut(8), cacheSelection), 1, new Insets(2, 2, 2, 2)));
 
         Ribbon.Band cacheUpdateBand = cacheTask.addBand("Update");
         LargeButtonAction updateCacheAction = new LargeButtonAction("Update cache", "Updates the cache. Intermediate results are not stored", UIUtils.getIcon32FromResources("actions/update-cache.png"), () -> {
@@ -173,8 +157,8 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         cacheUpdateBand.add(updateCacheAction);
 
         Ribbon.Band cacheManageBand = cacheTask.addBand("Data");
-        cacheManageBand.add(new SmallButtonAction("Clear all", "Clears all cached data of this node", UIUtils.getIconFromResources("actions/clear-brush.png"), () -> getProject().getCache().clear(this.graphNode.getUUIDInParentGraph())));
-        cacheManageBand.add(new SmallButtonAction("Clear outdated", "Clears all cached data of this node that was not generated with the current parameters", UIUtils.getIconFromResources("actions/document-open-recent.png"), () -> getProject().getCache().autoClean(false, true, new JIPipeProgressInfo())));
+        cacheManageBand.add(new SmallButtonAction("Clear all", "Clears all cached data of this node", UIUtils.getIconFromResources("actions/clear-brush.png"), () -> getProject().getCache().clearAll(this.graphNode.getUUIDInParentGraph(), new JIPipeProgressInfo())));
+        cacheManageBand.add(new SmallButtonAction("Clear outdated", "Clears all cached data of this node that was not generated with the current parameters", UIUtils.getIconFromResources("actions/document-open-recent.png"), () -> getProject().getCache().clearOutdated(new JIPipeProgressInfo())));
 
         // Export task
         Ribbon.Band exportCacheBand = exportTask.addBand("Cache");
@@ -183,21 +167,6 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
 
         ribbon.reorderTasks(Collections.singletonList("Cache")); // Will move the cache up
         ribbon.rebuildRibbon();
-    }
-
-    private void initializeCacheSnapshotSelectionComboBox(JComboBox<JIPipeProjectCacheState> cacheSelection) {
-        cacheSelection.setRenderer(new CacheStateListCellRenderer());
-        DefaultComboBoxModel<JIPipeProjectCacheState> model = new DefaultComboBoxModel<>();
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode.getUUIDInParentGraph());
-        if (stateMap != null) {
-            stateMap.keySet().stream().sorted().forEach(model::addElement);
-        }
-        cacheSelection.setModel(model);
-        cacheSelection.setSelectedItem(selectedCacheState);
-        cacheSelection.addActionListener(e -> {
-            selectedCacheState = (JIPipeProjectCacheState) cacheSelection.getSelectedItem();
-            refreshTable();
-        });
     }
 
     private void initializeSlotSelectionComboBox(JComboBox<JIPipeDataSlot> slotSelection) {
@@ -236,12 +205,11 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void exportCache() {
-        Map<JIPipeProjectCacheState, Map<String, JIPipeDataSlot>> stateMap = getProject().getCache().extract(graphNode.getUUIDInParentGraph());
-        if (stateMap.isEmpty()) {
+        Map<String, JIPipeDataTable> slotMap = getProject().getCache().query(graphNode, graphNode.getUUIDInParentGraph(), new JIPipeProgressInfo());
+        if (slotMap == null || slotMap.isEmpty()) {
             JOptionPane.showMessageDialog(this, "There is no cached data to export!", "Export cache", JOptionPane.ERROR_MESSAGE);
             return;
         }
-        JIPipeProjectCacheState exportedState = stateMap.keySet().stream().max(Comparator.naturalOrder()).get();
         Path outputFolder = FileChooserSettings.saveDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export cache");
         if (outputFolder != null) {
             // Save the node's state to a file
@@ -253,73 +221,74 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
                 e.printStackTrace();
             }
             JIPipeDataTableToOutputExporterRun run = new JIPipeDataTableToOutputExporterRun(getWorkbench(), outputFolder,
-                    new ArrayList<>(stateMap.get(exportedState).values()), true, false);
+                    new ArrayList<>(slotMap.values()), true, false);
             JIPipeRunExecuterUI.runInDialog(getWorkbench().getWindow(), run);
         }
     }
 
     private void importCache() {
         Path inputFolder = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Import cache");
-        Path nodeStateFile = inputFolder.resolve("node.json");
-        if (Files.exists(nodeStateFile)) {
-            try {
-                JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(nodeStateFile.toFile());
-                JIPipeIssueReport report = new JIPipeIssueReport();
-                JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
-                JIPipeGraphNode stateNode = JIPipeGraphNode.fromJsonNode(node, report, notifications);
-                if (!report.isValid()) {
-                    UIUtils.openValidityReportDialog(this, report, "Error while loading node", new HTMLText("Information about the cached node could not be loaded.<br/>" +
-                            "Although the data will be loaded, this could indicate a problem with the cached data.").getHtml(), true);
-                }
-                if (stateNode.getInfo() != graphNode.getInfo()) {
-                    if (JOptionPane.showConfirmDialog(this,
-                            "It looks like that this folder was created for a different node type.\n" +
-                                    "The node you have selected has the type ID '" + graphNode.getInfo().getId() + "',\n" +
-                                    "while the cache folder was created for type ID '" + stateNode.getInfo().getId() + "'.\n\nContinue anyways?",
-                            "Import cache",
-                            JOptionPane.YES_NO_OPTION,
-                            JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
-                        return;
-                    }
-                } else if ((graphNode instanceof JIPipeAlgorithm) && (stateNode instanceof JIPipeAlgorithm)) {
-                    String stateId = ((JIPipeAlgorithm) stateNode).getStateId();
-                    String currentStateId = ((JIPipeAlgorithm) graphNode).getStateId();
-                    ObjectNode stateIdJson = JsonUtils.getObjectMapper().readerFor(ObjectNode.class).readValue(stateId);
-                    ObjectNode currentStateIdJson = JsonUtils.getObjectMapper().readerFor(ObjectNode.class).readValue(currentStateId);
-                    stateIdJson.remove("jipipe:node-alias-id");
-                    stateIdJson.remove("jipipe:node-uuid");
-                    currentStateIdJson.remove("jipipe:node-alias-id");
-                    currentStateIdJson.remove("jipipe:node-uuid");
-                    if (!Objects.equals(stateIdJson, currentStateIdJson)) {
-                        if (JOptionPane.showConfirmDialog(this,
-                                "The cache folder was created for a different parameter set.\n\nContinue anyways?",
-                                "Import cache",
-                                JOptionPane.YES_NO_OPTION,
-                                JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
-                            return;
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                UIUtils.openErrorDialog(this, e);
-                if (JOptionPane.showConfirmDialog(this,
-                        "There was an error while checking for data compatibility.\n\nContinue anyways?",
-                        "Import cache",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
-                    return;
-                }
-            }
-        } else {
-            if (JOptionPane.showConfirmDialog(this,
-                    "The folder does not contain 'node.json', which is there to check if " +
-                            "you have chosen the correct node.\n\nContinue anyways?",
-                    "Import cache",
-                    JOptionPane.YES_NO_OPTION,
-                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
-                return;
-            }
-        }
+        // Temporarily removed
+//        Path nodeStateFile = inputFolder.resolve("node.json");
+//        if (Files.exists(nodeStateFile)) {
+//            try {
+//                JsonNode node = JsonUtils.getObjectMapper().readerFor(JsonNode.class).readValue(nodeStateFile.toFile());
+//                JIPipeIssueReport report = new JIPipeIssueReport();
+//                JIPipeNotificationInbox notifications = new JIPipeNotificationInbox();
+//                JIPipeGraphNode stateNode = JIPipeGraphNode.fromJsonNode(node, report, notifications);
+//                if (!report.isValid()) {
+//                    UIUtils.openValidityReportDialog(this, report, "Error while loading node", new HTMLText("Information about the cached node could not be loaded.<br/>" +
+//                            "Although the data will be loaded, this could indicate a problem with the cached data.").getHtml(), true);
+//                }
+//                if (stateNode.getInfo() != graphNode.getInfo()) {
+//                    if (JOptionPane.showConfirmDialog(this,
+//                            "It looks like that this folder was created for a different node type.\n" +
+//                                    "The node you have selected has the type ID '" + graphNode.getInfo().getId() + "',\n" +
+//                                    "while the cache folder was created for type ID '" + stateNode.getInfo().getId() + "'.\n\nContinue anyways?",
+//                            "Import cache",
+//                            JOptionPane.YES_NO_OPTION,
+//                            JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+//                        return;
+//                    }
+//                } else if ((graphNode instanceof JIPipeAlgorithm) && (stateNode instanceof JIPipeAlgorithm)) {
+//                    String stateId = ((JIPipeAlgorithm) stateNode).getStateId();
+//                    String currentStateId = ((JIPipeAlgorithm) graphNode).getStateId();
+//                    ObjectNode stateIdJson = JsonUtils.getObjectMapper().readerFor(ObjectNode.class).readValue(stateId);
+//                    ObjectNode currentStateIdJson = JsonUtils.getObjectMapper().readerFor(ObjectNode.class).readValue(currentStateId);
+//                    stateIdJson.remove("jipipe:node-alias-id");
+//                    stateIdJson.remove("jipipe:node-uuid");
+//                    currentStateIdJson.remove("jipipe:node-alias-id");
+//                    currentStateIdJson.remove("jipipe:node-uuid");
+//                    if (!Objects.equals(stateIdJson, currentStateIdJson)) {
+//                        if (JOptionPane.showConfirmDialog(this,
+//                                "The cache folder was created for a different parameter set.\n\nContinue anyways?",
+//                                "Import cache",
+//                                JOptionPane.YES_NO_OPTION,
+//                                JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+//                            return;
+//                        }
+//                    }
+//                }
+//            } catch (Exception e) {
+//                UIUtils.openErrorDialog(this, e);
+//                if (JOptionPane.showConfirmDialog(this,
+//                        "There was an error while checking for data compatibility.\n\nContinue anyways?",
+//                        "Import cache",
+//                        JOptionPane.YES_NO_OPTION,
+//                        JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+//                    return;
+//                }
+//            }
+//        } else {
+//            if (JOptionPane.showConfirmDialog(this,
+//                    "The folder does not contain 'node.json', which is there to check if " +
+//                            "you have chosen the correct node.\n\nContinue anyways?",
+//                    "Import cache",
+//                    JOptionPane.YES_NO_OPTION,
+//                    JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION) {
+//                return;
+//            }
+//        }
         List<String> missingSlots = new ArrayList<>();
         for (JIPipeDataSlot outputSlot : graphNode.getOutputSlots()) {
             if (!Files.isDirectory(inputFolder.resolve(outputSlot.getName()))) {
@@ -345,7 +314,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
      * @param event generated event
      */
     @Subscribe
-    public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
+    public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
         if (!isDisplayable())
             return;
         if (JIPipeRunnerQueue.getInstance().getCurrentRun() == null) {

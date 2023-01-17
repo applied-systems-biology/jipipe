@@ -60,7 +60,7 @@ public class LoadResultDirectoryIntoCacheRun implements JIPipeRunnable {
         progressInfo.setProgress(0, nodes.size());
         if(clearBefore) {
             progressInfo.log("Clearing existing cache ...");
-            project.getCache().clear();
+            project.getCache().clearAll(progressInfo.resolve("Clear cache"));
         }
         for (int i = 0; i < nodes.size(); i++) {
             if (getProgressInfo().isCancelled())

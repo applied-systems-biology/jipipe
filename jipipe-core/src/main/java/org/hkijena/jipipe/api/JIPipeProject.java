@@ -28,6 +28,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.api.cache.JIPipeLocalMemoryCache;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeData;
@@ -80,7 +81,7 @@ public class JIPipeProject implements JIPipeValidatable {
     private JIPipeProjectMetadata metadata = new JIPipeProjectMetadata();
     private Map<String, Object> additionalMetadata = new HashMap<>();
     private Path workDirectory;
-    private JIPipeProjectCache cache;
+    private final JIPipeLocalMemoryCache cache;
     private boolean isCleaningUp;
     private boolean isLoading;
     private JIPipeProjectHistoryJournal historyJournal;
@@ -90,7 +91,7 @@ public class JIPipeProject implements JIPipeValidatable {
      */
     public JIPipeProject() {
         this.historyJournal = new JIPipeProjectHistoryJournal(this);
-        this.cache = new JIPipeProjectCache(this);
+        this.cache = new JIPipeLocalMemoryCache();
         this.metadata.setDescription(new HTMLText(MarkdownDocument.fromPluginResource("documentation/new-project-template.md", new HashMap<>()).getRenderedHTML()));
         this.graph.attach(JIPipeProject.class, this);
         this.graph.attach(JIPipeGraphType.Project);
@@ -232,7 +233,7 @@ public class JIPipeProject implements JIPipeValidatable {
         mapper.writerWithDefaultPrettyPrinter().writeValue(outputStream, this);
     }
 
-    public JIPipeProjectCache getCache() {
+    public JIPipeLocalMemoryCache getCache() {
         return cache;
     }
 

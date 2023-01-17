@@ -4,6 +4,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.cache.JIPipeLocalMemoryCache;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
@@ -67,8 +68,7 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
         }
 
         // Push into cache
-        JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(project);
-        JIPipeProjectCacheState state = query.getCachedId(graphNode.getUUIDInParentGraph());
+        JIPipeLocalMemoryCache cache = project.getCache();
         for (int i = 0; i < graphNode.getOutputSlots().size(); i++) {
             JIPipeProgressInfo slotProgressInfo = this.progressInfo.resolveAndLog("Storing into cache", i, graphNode.getOutputSlots().size());
             JIPipeDataSlot outputSlot = graphNode.getOutputSlots().get(i);
@@ -76,7 +76,7 @@ public class JIPipeImportCachedSlotOutputRun implements JIPipeRunnable {
             if (tempSlot == null)
                 continue;
             slotProgressInfo.log("Slot '" + outputSlot.getName() + "'");
-            project.getCache().store(graphNode, state, tempSlot, slotProgressInfo);
+            cache.store(graphNode, graphNode.getUUIDInParentGraph(), tempSlot, tempSlot.getName(), slotProgressInfo);
         }
     }
 

@@ -29,8 +29,8 @@ import java.awt.*;
  * Renders the tree in {@link JIPipeResultAlgorithmTree}
  */
 public class JIPipeCacheStateTreeCellRenderer extends JLabel implements TreeCellRenderer {
-    private Icon compartmentIcon = UIUtils.getIconFromResources("data-types/graph-compartment.png");
-    private Icon rootIcon = UIUtils.getIconFromResources("actions/database.png");
+    private final Icon compartmentIcon = UIUtils.getIconFromResources("data-types/graph-compartment.png");
+    private final Icon rootIcon = UIUtils.getIconFromResources("actions/database.png");
 
     /**
      * Creates new renderer
@@ -55,14 +55,11 @@ public class JIPipeCacheStateTreeCellRenderer extends JLabel implements TreeCell
             } else if (userObject instanceof JIPipeDataSlot) {
                 JIPipeDataSlot slot = (JIPipeDataSlot) userObject;
                 setIcon(JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
-                if (!StringUtils.isNullOrEmpty(slot.getInfo().getCustomName()))
+                if (!StringUtils.isNullOrEmpty(slot.getInfo().getCustomName())) {
                     setText(slot.getInfo().getCustomName() + " [" + slot.getName() + "]");
-                else
+                } else {
                     setText(slot.getName());
-            } else if (userObject instanceof JIPipeProjectCacheState) {
-                JIPipeProjectCacheState state = (JIPipeProjectCacheState) userObject;
-                setIcon(UIUtils.getIconFromResources("actions/camera.png"));
-                setText(state.renderGenerationTime());
+                }
             } else {
                 setIcon(rootIcon);
                 setText("Cache");

@@ -885,8 +885,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
                 // Test cache state generation
                 try {
-                    if (algorithm instanceof JIPipeAlgorithm) {
-                        ((JIPipeAlgorithm) algorithm).getStateId();
+                    if(!algorithm.functionallyEquals(algorithm)) {
+                        throw new RuntimeException("Node " + algorithm.getInfo().getId() + " is not functionally equal to itself!");
                     }
                 } catch (Exception e1) {
                     throw new UserFriendlyRuntimeException(e1,

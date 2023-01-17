@@ -16,7 +16,9 @@ package org.hkijena.jipipe.ui.project;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRunnable;
+import org.hkijena.jipipe.api.cache.JIPipeLocalMemoryCache;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -74,7 +76,7 @@ public class SaveProjectAndCacheToDirectoryRun implements JIPipeRunnable {
         }
         ArrayList<JIPipeGraphNode> nodes = new ArrayList<>(project.getGraph().getGraphNodes());
         progressInfo.setProgress(0, nodes.size());
-        JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(project);
+        JIPipeLocalMemoryCache cache = project.getCache();
         for (int i = 0; i < nodes.size(); i++) {
             if (getProgressInfo().isCancelled())
                 return;
@@ -82,8 +84,8 @@ public class SaveProjectAndCacheToDirectoryRun implements JIPipeRunnable {
             JIPipeGraphNode node = nodes.get(i);
             JIPipeProgressInfo nodeProgress = progressInfo.resolveAndLog(node.getDisplayName(), i, nodes.size());
 
-            Map<String, JIPipeDataSlot> cache = query.getCachedData(node);
-            if (cache == null || cache.isEmpty())
+            Map<String, JIPipeDataTable> slotMap = cache.query(node, node.getUUIDInParentGraph(), nodeProgress);
+            if (slotMap == null || slotMap.isEmpty())
                 continue;
 
             Path nodeDir = outputPath.resolve(node.getProjectCompartment().getAliasIdInParentGraph()).resolve(node.getAliasIdInParentGraph());
@@ -94,7 +96,7 @@ public class SaveProjectAndCacheToDirectoryRun implements JIPipeRunnable {
             }
 
             JIPipeDataTableToOutputExporterRun run = new JIPipeDataTableToOutputExporterRun(workbench, nodeDir,
-                    new ArrayList<>(cache.values()), true, false);
+                    new ArrayList<>(slotMap.values()), true, false);
             run.setProgressInfo(nodeProgress);
             run.run();
         }

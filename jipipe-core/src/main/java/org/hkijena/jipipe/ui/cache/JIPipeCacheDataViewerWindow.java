@@ -17,6 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
@@ -58,7 +59,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     private JButton nextRowButton;
     private JButton rowInfoLabel;
 
-    private JPopupMenu rowInfoLabelMenu = new JPopupMenu();
+    private final JPopupMenu rowInfoLabelMenu = new JPopupMenu();
     private Function<JIPipeVirtualData, JIPipeVirtualData> dataConverterFunction;
 
     private JLabel standardErrorLabel;
@@ -355,9 +356,8 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
             showErrorUI();
             return;
         }
-        JIPipeProjectCacheQuery query = new JIPipeProjectCacheQuery(project);
-        Map<String, JIPipeDataSlot> currentCache = query.getCachedData(algorithm);
-        JIPipeDataSlot slot = currentCache.getOrDefault(slotName, null);
+        Map<String, JIPipeDataTable> currentCache = project.getCache().query(algorithm, algorithm.getUUIDInParentGraph(), new JIPipeProgressInfo());
+        JIPipeDataTable slot = currentCache.getOrDefault(slotName, null);
         if (slot != null && slot.getRowCount() > dataSource.getRow()) {
             hideErrorUI();
             dataSource = new JIPipeDataTableDataSource(slot, dataSource.getRow(), dataSource.getDataAnnotation());
@@ -393,7 +393,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     }
 
     @Subscribe
-    public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
+    public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
         if (!isVisible())
             return;
         if (!isDisplayable())

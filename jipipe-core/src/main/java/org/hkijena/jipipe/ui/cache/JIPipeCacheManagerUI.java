@@ -15,6 +15,7 @@ package org.hkijena.jipipe.ui.cache;
 
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.ui.*;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -72,12 +73,12 @@ public class JIPipeCacheManagerUI extends JButton implements JIPipeProjectWorkbe
             JMenuItem clearOutdated = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("actions/clock.png"));
             clearOutdated.setToolTipText("Removes all cached items that are have no representation in the project graph, anymore. " +
                     "This includes items where the algorithm parameters have been changed.");
-            clearOutdated.addActionListener(e -> getProject().getCache().autoClean(false, true, new JIPipeProgressInfo()));
+            clearOutdated.addActionListener(e -> getProject().getCache().clearOutdated( new JIPipeProgressInfo()));
             menu.add(clearOutdated);
 
             JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("actions/delete.png"));
             clearAll.setToolTipText("Removes all cached items.");
-            clearAll.addActionListener(e -> getProject().getCache().clear());
+            clearAll.addActionListener(e -> getProject().getCache().clearAll(new JIPipeProgressInfo()));
             menu.add(clearAll);
         }
     }
@@ -89,7 +90,7 @@ public class JIPipeCacheManagerUI extends JButton implements JIPipeProjectWorkbe
         if (getProject().getCache().isEmpty()) {
             setText("Cache (Empty)");
         } else {
-            int size = getProject().getCache().getCachedRowNumber();
+            int size = getProject().getCache().size();
             setText(size == 1 ? "Cache (1 item)" : "Cache (" + size + " items)");
         }
     }
@@ -100,7 +101,7 @@ public class JIPipeCacheManagerUI extends JButton implements JIPipeProjectWorkbe
      * @param event generated event
      */
     @Subscribe
-    public void onCacheUpdated(JIPipeProjectCache.ModifiedEvent event) {
+    public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
         updateStatus();
     }
 
