@@ -104,7 +104,7 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
         if (!runtimeSettings.isRealTimeRunEnabled()) {
             return;
         }
-        getProject().getCache().clearOutdated( new JIPipeProgressInfo());
+        getProject().getCache().clearOutdated(new JIPipeProgressInfo());
         if (currentRun != null)
             JIPipeRunnerQueue.getInstance().cancel(currentRun);
         currentRun = null;

@@ -16,8 +16,7 @@ package org.hkijena.jipipe.ui.project;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.JIPipeRunnable;
-import org.hkijena.jipipe.api.cache.JIPipeLocalMemoryCache;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.cache.JIPipeLocalProjectMemoryCache;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.ProjectsSettings;
@@ -76,7 +75,7 @@ public class SaveProjectAndCacheToDirectoryRun implements JIPipeRunnable {
         }
         ArrayList<JIPipeGraphNode> nodes = new ArrayList<>(project.getGraph().getGraphNodes());
         progressInfo.setProgress(0, nodes.size());
-        JIPipeLocalMemoryCache cache = project.getCache();
+        JIPipeLocalProjectMemoryCache cache = project.getCache();
         for (int i = 0; i < nodes.size(); i++) {
             if (getProgressInfo().isCancelled())
                 return;

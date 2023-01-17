@@ -23,6 +23,9 @@ import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeFixedThreadPool;
 import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -171,6 +174,30 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
     public boolean functionallyEquals(JIPipeGraphNode other) {
         if(!super.functionallyEquals(other))
             return false;
+
+        // Compare slots and their data type (other properties do not matter)
+        for (JIPipeInputDataSlot inputSlot : getInputSlots()) {
+            JIPipeInputDataSlot otherInputSlot = other.getInputSlot(inputSlot.getName());
+            if(otherInputSlot == null || otherInputSlot.getInfo().getDataClass() != inputSlot.getInfo().getDataClass()) {
+                return false;
+            }
+        }
+        for (JIPipeInputDataSlot inputSlot : other.getInputSlots()) {
+            if(getInputSlot(inputSlot.getName()) == null) {
+                return false;
+            }
+        }
+        for (JIPipeOutputDataSlot outputSlot : getOutputSlots()) {
+            JIPipeDataSlot otherOutputSlot = other.getOutputSlot(outputSlot.getName());
+            if(otherOutputSlot == null || otherOutputSlot.getInfo().getDataClass() != outputSlot.getInfo().getDataClass()) {
+                return false;
+            }
+        }
+        for (JIPipeOutputDataSlot outputSlot : other.getOutputSlots()) {
+            if(getOutputSlot(outputSlot.getName()) == null) {
+                return false;
+            }
+        }
 
         // Compare functional parameters
         JIPipeParameterTree here = new JIPipeParameterTree(this);

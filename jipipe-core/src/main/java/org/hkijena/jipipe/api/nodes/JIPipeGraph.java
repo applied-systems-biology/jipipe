@@ -1152,7 +1152,7 @@ public class JIPipeGraph implements JIPipeValidatable {
     }
 
     /**
-     * Returns all predecessor algorithms of an algorithm. The predecessors are ordered according to the list of traversed algorithms (topological order)
+     * Returns ALL predecessor algorithms of an algorithm. The predecessors are ordered according to the list of traversed algorithms (topological order)
      *
      * @param target    the target algorithm
      * @param traversed list of algorithms to sort by (usually this is in topological order)

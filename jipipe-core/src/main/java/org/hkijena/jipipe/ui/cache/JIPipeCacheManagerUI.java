@@ -73,7 +73,7 @@ public class JIPipeCacheManagerUI extends JButton implements JIPipeProjectWorkbe
             JMenuItem clearOutdated = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("actions/clock.png"));
             clearOutdated.setToolTipText("Removes all cached items that are have no representation in the project graph, anymore. " +
                     "This includes items where the algorithm parameters have been changed.");
-            clearOutdated.addActionListener(e -> getProject().getCache().clearOutdated( new JIPipeProgressInfo()));
+            clearOutdated.addActionListener(e -> getProject().getCache().clearOutdated(new JIPipeProgressInfo()));
             menu.add(clearOutdated);
 
             JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("actions/delete.png"));

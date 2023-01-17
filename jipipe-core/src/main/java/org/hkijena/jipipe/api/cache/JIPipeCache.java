@@ -21,6 +21,7 @@ public interface JIPipeCache {
 
     /**
      * Removes all outdated entries
+     *
      * @param progressInfo the progress
      */
     void clearOutdated(JIPipeProgressInfo progressInfo);
@@ -38,14 +39,62 @@ public interface JIPipeCache {
     int size();
 
     class StoredEvent {
+        private final JIPipeCache cache;
+        private final UUID nodeUUID;
+        private final JIPipeDataTable data;
+        private final String outputName;
 
+        public StoredEvent(JIPipeCache cache, UUID nodeUUID, JIPipeDataTable data, String outputName) {
+            this.cache = cache;
+            this.nodeUUID = nodeUUID;
+            this.data = data;
+            this.outputName = outputName;
+        }
+
+        public JIPipeCache getCache() {
+            return cache;
+        }
+
+        public UUID getNodeUUID() {
+            return nodeUUID;
+        }
+
+        public JIPipeDataTable getData() {
+            return data;
+        }
+
+        public String getOutputName() {
+            return outputName;
+        }
     }
 
     class ClearedEvent {
+        private final JIPipeCache cache;
+        private final UUID nodeUUID;
 
+        public ClearedEvent(JIPipeCache cache, UUID nodeUUID) {
+            this.cache = cache;
+            this.nodeUUID = nodeUUID;
+        }
+
+        public JIPipeCache getCache() {
+            return cache;
+        }
+
+        public UUID getNodeUUID() {
+            return nodeUUID;
+        }
     }
 
     class ModifiedEvent {
+        private final JIPipeCache cache;
 
+        public ModifiedEvent(JIPipeCache cache) {
+            this.cache = cache;
+        }
+
+        public JIPipeCache getCache() {
+            return cache;
+        }
     }
 }
