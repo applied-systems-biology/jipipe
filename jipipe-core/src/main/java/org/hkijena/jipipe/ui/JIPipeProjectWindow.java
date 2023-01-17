@@ -45,6 +45,8 @@ import org.scijava.Context;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -172,8 +174,13 @@ public class JIPipeProjectWindow extends JFrame {
         }
     }
 
+    private void unloadProject() {
+        projectUI.unload();
+    }
+
     @Override
     public void dispose() {
+        unloadProject();
         OPEN_WINDOWS.remove(this);
         WINDOWS_EVENTS.post(new WindowClosedEvent(this));
         super.dispose();
