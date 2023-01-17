@@ -64,6 +64,17 @@ public class SetROIMetadataFromTableAlgorithm extends JIPipeIteratingAlgorithm {
         dataBatch.addOutputData(getFirstOutputSlot(), rois, progressInfo);
     }
 
+    @JIPipeDocumentation(name = "Ignore missing ROI indices", description = "If enabled, missing ROI indices are ignored (a log message is written)")
+    @JIPipeParameter("ignore-missing-roi-indices")
+    public boolean isIgnoreMissingRoiIndices() {
+        return ignoreMissingRoiIndices;
+    }
+
+    @JIPipeParameter("ignore-missing-roi-indices")
+    public void setIgnoreMissingRoiIndices(boolean ignoreMissingRoiIndices) {
+        this.ignoreMissingRoiIndices = ignoreMissingRoiIndices;
+    }
+
     @JIPipeDocumentation(name = "ROI index", description = "Determines how the table column is associated to the index of the ROI (zero-based). Defaults to assuming that the row index is the ROI index.")
     @JIPipeParameter("roi-index-column")
     public TableColumnSourceExpressionParameter getRoiIndexColumn() {

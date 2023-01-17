@@ -22,10 +22,11 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
+import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
@@ -52,7 +53,9 @@ import org.python.util.PythonInterpreter;
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @JIPipeDocumentation(name = "Multi-Template matching", description = "Template matching is an algorithm that can be used for object-detections in grayscale images. " +
@@ -67,11 +70,13 @@ import java.util.stream.Collectors;
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Template", autoCreate = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true, description = "Table containing information about the matched templates. To access the templates directly, enable 'Output matched templates'")
 @JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Assembled templates")
 @JIPipeNode(menuPath = "Analyze", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Plugins\nMulti-Template-Matching")
 public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
+
+    public static final JIPipeDataSlotInfo OUTPUT_SLOT_MATCHED_TEMPLATES = new JIPipeDataSlotInfo(JIPipeDataTable.class, JIPipeSlotType.Output, "Matched templates", "Measurements attached to the matched templates.");
 
     private final static String SCRIPT = loadScriptFromResources();
 
@@ -84,6 +89,8 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     private double multiObjectMaximumBoundingBoxOverlap = 0.3;
     private boolean restrictToROI = false;
     private boolean assembleTemplates = false;
+
+    private boolean outputMatchedTemplates = false;
     private boolean withNonMaximaSuppression = true;
     private OptionalColorParameter assembleTemplatesBackground = new OptionalColorParameter();
     private OptionalDataInfoRefParameter assembleTemplatesOutput = new OptionalDataInfoRefParameter();
@@ -108,6 +115,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         this.assembleTemplatesBackground = new OptionalColorParameter(other.assembleTemplatesBackground);
         this.setRestrictToROI(other.restrictToROI);
         this.withNonMaximaSuppression = other.withNonMaximaSuppression;
+        this.setOutputMatchedTemplates(other.outputMatchedTemplates);
     }
 
     private static String loadScriptFromResources() {
@@ -118,16 +126,18 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         List<ImagePlus> images = new ArrayList<>();
         List<ImagePlus> templates = new ArrayList<>();
+        Map<ImagePlus, Integer> templateSourceRows = new HashMap<>();
         ROIListData mergedSearchRois = new ROIListData();
 
         for (ImagePlusData image : dataBatch.getInputData("Image", ImagePlusData.class, progressInfo)) {
             images.add(image.getImage());
         }
         // Each template has its own index
-        for (ImagePlusData template : dataBatch.getInputData("Template", ImagePlusData.class, progressInfo)) {
-            ImagePlus duplicateImage = template.getDuplicateImage();
+        for (Integer row : dataBatch.getInputRows("Template")) {
+            ImagePlus duplicateImage = getInputSlot("Template").getData(row, ImagePlusData.class, progressInfo).getDuplicateImage();
             duplicateImage.setTitle("" + templates.size());
             templates.add(duplicateImage);
+            templateSourceRows.put(duplicateImage, row);
         }
         if (restrictToROI) {
             for (ROIListData roi : dataBatch.getInputData("ROI", ROIListData.class, progressInfo)) {
@@ -155,6 +165,7 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
             ImagePlus image = images.get(i);
             ROIListData detectedROIs = new ROIListData();
             ResultsTableData measurements = new ResultsTableData();
+
             pythonInterpreter.set("ImpImage", image);
             pythonInterpreter.set("rm", detectedROIs);
             pythonInterpreter.set("Table", measurements.getTable());
@@ -167,6 +178,30 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
             if (assembleTemplates) {
                 ImagePlus assembled = assembleTemplates(image, templates, measurements, progressInfo.resolveAndLog("Assemble templates", i, images.size()));
                 dataBatch.addOutputData("Assembled templates", new ImagePlusData(assembled), progressInfo);
+            }
+            if(outputMatchedTemplates) {
+                JIPipeDataTable matchedTemplates = new JIPipeDataTable(ImagePlus2DData.class);
+                for (int j = 0; j < measurements.getRowCount(); j++) {
+                    String templateName = measurements.getValueAsString(j, "Template");
+                    int templateIndex = Integer.parseInt(templateName.split("_")[0]);
+                    ImagePlus template = templates.get(templateIndex);
+
+                    int sourceRow = templateSourceRows.get(template);
+                    List<JIPipeTextAnnotation> textAnnotations = new ArrayList<>(getInputSlot("Template").getTextAnnotations(sourceRow));
+                    List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>(getInputSlot("Template").getDataAnnotations(sourceRow));
+
+                    for (int k = 0; k < measurements.getColumnCount(); k++) {
+                        textAnnotations.add(new JIPipeTextAnnotation(measurements.getColumnName(k), measurements.getValueAsString(j, k)));
+                    }
+
+                    matchedTemplates.addData(new ImagePlus2DData(template),
+                            textAnnotations,
+                            JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                            dataAnnotations,
+                            JIPipeDataAnnotationMergeMode.OverwriteExisting);
+                }
+
+                dataBatch.addOutputData("Matched templates", matchedTemplates, progressInfo);
             }
         }
 
@@ -253,6 +288,18 @@ public class MultiTemplateMatchingAlgorithm extends JIPipeMergingAlgorithm {
         }
 
         return target;
+    }
+
+    @JIPipeDocumentation(name = "Output matched templates", description = "If enabled, the measurements are also returned as data table containing the actual template images.")
+    @JIPipeParameter("output-matched-templates")
+    public boolean isOutputMatchedTemplates() {
+        return outputMatchedTemplates;
+    }
+
+    @JIPipeParameter("output-matched-templates")
+    public void setOutputMatchedTemplates(boolean outputMatchedTemplates) {
+        this.outputMatchedTemplates = outputMatchedTemplates;
+        toggleSlot(OUTPUT_SLOT_MATCHED_TEMPLATES, outputMatchedTemplates);
     }
 
     @JIPipeDocumentation(name = "Flip template vertically", description = "Performing additional searches with the transformed template allows to maximize the probability to find the object, if the object is expected to have different orientations in the image.\n" +

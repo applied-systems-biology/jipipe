@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejdatatypes.util;
 
+import com.google.common.collect.ImmutableList;
 import gnu.trove.list.TIntList;
 import gnu.trove.list.array.TByteArrayList;
 import gnu.trove.list.array.TFloatArrayList;
@@ -41,6 +42,7 @@ import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
 import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.StringUtils;
+import org.hkijena.jipipe.utils.TriConsumer;
 
 import javax.swing.*;
 import java.awt.*;
@@ -92,6 +94,22 @@ public class ImageJUtils {
     }
 
     /**
+     * Returns the persistent properties of a {@link ImagePlus} as map
+     *
+     * @param imagePlus the image
+     * @return the properties
+     */
+    public static Map<String, String> getImageProperties(ImagePlus imagePlus) {
+        HashMap<String, String> map = new HashMap<>();
+        if(imagePlus.getImageProperties() != null) {
+            for (Map.Entry<Object, Object> entry : imagePlus.getImageProperties().entrySet()) {
+                map.put("" + entry.getKey(), "" + entry.getValue());
+            }
+        }
+        return map;
+    }
+
+    /**
      * Sets the properties of a {@link Roi} from a map
      *
      * @param roi        the roi
@@ -110,6 +128,23 @@ public class ImageJUtils {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    /**
+     * Sets the properties of a {@link ImagePlus} from a map
+     *
+     * @param imagePlus        the image
+     * @param properties the properties
+     */
+    public static void setImageProperties(ImagePlus imagePlus, Map<String, String> properties) {
+        ImmutableList<Map.Entry<String, String>> copyOf = ImmutableList.copyOf(properties.entrySet());
+        String[] props = new String[copyOf.size() * 2];
+        for (int i = 0; i < copyOf.size(); i++) {
+            Map.Entry<String, String> entry = copyOf.get(i);
+            props[2 * i] = StringUtils.nullToEmpty(entry.getKey()).replace(' ', '_').replace('=', '_').replace(':', '_');
+            props[2 * i + 1] = entry.getValue();
+        }
+        imagePlus.setProperties(props);
     }
 
     /**
@@ -936,6 +971,34 @@ public class ImageJUtils {
             function.accept(img.getProcessor(), new ImageSliceIndex(0, 0, 0));
         }
     }
+
+    /**
+     * Runs the function for each Z, C, and T slice.
+     *
+     * @param img          the image
+     * @param function     the function. The indices are ZERO-based
+     * @param progressInfo the progress
+     */
+    public static void forEachIndexedZCTSliceWithProgress(ImagePlus img, TriConsumer<ImageProcessor, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
+        if (img.isStack()) {
+            int iterationIndex = 0;
+            for (int t = 0; t < img.getNFrames(); t++) {
+                for (int z = 0; z < img.getNSlices(); z++) {
+                    for (int c = 0; c < img.getNChannels(); c++) {
+                        if (progressInfo.isCancelled())
+                            return;
+                        int index = img.getStackIndex(c + 1, z + 1, t + 1);
+                        JIPipeProgressInfo stackProgress = progressInfo.resolveAndLog("Slice", iterationIndex++, img.getStackSize()).resolve("z=" + z + ", c=" + c + ", t=" + t);
+                        ImageProcessor processor = img.getImageStack().getProcessor(index);
+                        function.accept(processor, new ImageSliceIndex(c, z, t), stackProgress);
+                    }
+                }
+            }
+        } else {
+            function.accept(img.getProcessor(), new ImageSliceIndex(0, 0, 0), progressInfo);
+        }
+    }
+
 
     /**
      * Sets the slice of an image to the processor based on the index. Handles all configurations of images.
