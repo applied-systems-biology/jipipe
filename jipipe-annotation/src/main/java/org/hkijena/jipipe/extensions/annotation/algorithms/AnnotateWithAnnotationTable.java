@@ -172,7 +172,7 @@ public class AnnotateWithAnnotationTable extends JIPipeParameterSlotAlgorithm {
 
     @Override
     protected void runPassThrough(JIPipeProgressInfo progressInfo) {
-        getFirstOutputSlot().addData(getInputSlot("Data"), progressInfo);
+        getFirstOutputSlot().addDataFromSlot(getInputSlot("Data"), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Replace all existing annotations", description = "If enabled, existing annotations will not be carried over into the output.")

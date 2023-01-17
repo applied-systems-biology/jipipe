@@ -293,7 +293,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
                 for (JIPipeDataSlot sourceSlot : sourceSlots) {
                     if (slot.getNode() instanceof JIPipeAlgorithm) {
                         // Add data from source slot
-                        slot.addData(sourceSlot, subProgress);
+                        slot.addDataFromSlot(sourceSlot, subProgress);
                         gc.markCopyOutputToInput(sourceSlot, slot);
                     }
                 }
@@ -348,7 +348,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
                             // Pass input data from inputs of loop into equivalent input of group
                             for (JIPipeDataSlot inputSlot : loop.getLoopStartNode().getInputSlots()) {
                                 JIPipeDataSlot groupInput = loopGraphSlotMap.get(loopGraph.getEquivalentSlot(inputSlot));
-                                groupInput.addData(inputSlot, subProgress);
+                                groupInput.addDataFromSlot(inputSlot, subProgress);
                             }
 
                             // Execute the loop
@@ -360,7 +360,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
                                 if (entry.getKey().isOutput()) {
                                     JIPipeDataSlot originalSlot = copiedGraph.getEquivalentSlot(entry.getKey());
                                     JIPipeDataSlot sourceSlot = entry.getValue();
-                                    originalSlot.addData(sourceSlot, subProgress);
+                                    originalSlot.addDataFromSlot(sourceSlot, subProgress);
                                 }
                             }
                         }
@@ -513,7 +513,7 @@ public class JIPipeProjectRun implements JIPipeRunnable {
                     return false;
                 }
                 outputSlot.clearData();
-                outputSlot.addData(cachedData.get(outputSlot.getName()), progressInfo);
+                outputSlot.addDataFromTable(cachedData.get(outputSlot.getName()), progressInfo);
             }
             progressInfo.log("Cache data access successful.");
             return true;

@@ -125,7 +125,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     protected void runPassThrough(JIPipeProgressInfo progressInfo) {
-        getFirstOutputSlot().addData(getInputSlot("Image"), progressInfo);
+        getFirstOutputSlot().addDataFromSlot(getInputSlot("Image"), progressInfo);
     }
 
     @Override

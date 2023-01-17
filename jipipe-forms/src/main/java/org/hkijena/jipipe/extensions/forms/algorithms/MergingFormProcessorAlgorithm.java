@@ -70,7 +70,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
 
         if (isPassThrough() || formsSlot.isEmpty()) {
             // Just copy without changes
-            outputDataSlot.addData(dataSlot, progressInfo);
+            outputDataSlot.addDataFromSlot(dataSlot, progressInfo);
         } else if (!dataSlot.isEmpty()) {
             // Generate data batches and show the user interface
             List<JIPipeMergingDataBatch> dataBatchList = generateDataBatchesDryRun(getDataInputSlots(), progressInfo);

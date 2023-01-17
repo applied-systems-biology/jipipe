@@ -113,7 +113,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
                         // We will copy over the values
                         for (Map.Entry<String, JIPipeDataTable> cacheEntry : slotMap.entrySet()) {
                             JIPipeDataSlot outputSlot = predecessorNode.getOutputSlot(cacheEntry.getKey());
-                            outputSlot.addData(cacheEntry.getValue(), progressInfo);
+                            outputSlot.addDataFromTable(cacheEntry.getValue(), progressInfo);
                         }
                     }
                 }

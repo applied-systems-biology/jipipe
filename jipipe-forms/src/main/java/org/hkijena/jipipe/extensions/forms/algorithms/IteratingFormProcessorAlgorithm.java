@@ -120,7 +120,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
             for (String name : getInputSlotMap().keySet()) {
                 JIPipeDataSlot inputSlot = getInputSlot(name);
                 JIPipeDataSlot outputSlot = getOutputSlot(name);
-                outputSlot.addData(inputSlot, progressInfo);
+                outputSlot.addDataFromSlot(inputSlot, progressInfo);
             }
         } else {
             // Generate data batches and show the user interface

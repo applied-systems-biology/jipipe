@@ -28,7 +28,7 @@ public abstract class FormGeneratorAlgorithm extends JIPipeAlgorithm {
 
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
-        getFirstOutputSlot().addData(getFirstInputSlot(), progressInfo);
+        getFirstOutputSlot().addDataFromSlot(getFirstInputSlot(), progressInfo);
         if (!isPassThrough()) {
             run(getFirstOutputSlot(), progressInfo);
         }

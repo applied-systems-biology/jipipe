@@ -814,8 +814,20 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      *
      * @param table        the source table
      * @param progressInfo the progress
+     * @deprecated use addDataFromTable instead
      */
+    @Deprecated
     public synchronized void addFromTable(JIPipeDataTable table, JIPipeProgressInfo progressInfo) {
+        addDataFromTable(table, progressInfo);
+    }
+
+    /**
+     * Merges the data from the source table into the current one
+     *
+     * @param table        the source table
+     * @param progressInfo the progress
+     */
+    public synchronized void addDataFromTable(JIPipeDataTable table, JIPipeProgressInfo progressInfo) {
         for (int row = 0; row < table.getRowCount(); row++) {
             progressInfo.resolveAndLog("Add data from table", row, table.getRowCount());
             addData(table.getVirtualData(row), table.getTextAnnotations(row), JIPipeTextAnnotationMergeMode.OverwriteExisting, table.getDataAnnotations(row), JIPipeDataAnnotationMergeMode.OverwriteExisting);
@@ -945,8 +957,22 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
      *
      * @param sourceSlot   The other slot
      * @param progressInfo the progress
+     * @deprecated  use addDataFromSlot
      */
+    @Deprecated
     public void addData(JIPipeDataSlot sourceSlot, JIPipeProgressInfo progressInfo) {
+        addDataFromSlot(sourceSlot, progressInfo);
+    }
+
+    /**
+     * Copies the source slot into this slot.
+     * This will only add data and not clear it beforehand.
+     * Data is copied without duplication.
+     *
+     * @param sourceSlot   The other slot
+     * @param progressInfo the progress
+     */
+    public synchronized void addDataFromSlot(JIPipeDataSlot sourceSlot, JIPipeProgressInfo progressInfo) {
         String text = "Copying data from " + sourceSlot.getDisplayName() + " to " + getDisplayName();
         for (int row = 0; row < sourceSlot.getRowCount(); ++row) {
             progressInfo.resolveAndLog(text, row, sourceSlot.getRowCount());

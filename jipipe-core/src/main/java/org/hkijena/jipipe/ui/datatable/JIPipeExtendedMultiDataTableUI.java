@@ -332,7 +332,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
             // Merge the data tables
             JIPipeDataTable mergedTable = new JIPipeDataTable(JIPipeData.class);
             for (JIPipeDataTable dataTable : dataTables) {
-                mergedTable.addFromTable(dataTable, new JIPipeProgressInfo());
+                mergedTable.addDataFromTable(dataTable, new JIPipeProgressInfo());
             }
 
             JIPipeDataTableToOutputExporterRun run = new JIPipeDataTableToOutputExporterRun(getWorkbench(),
@@ -348,7 +348,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
         // Merge the data tables
         JIPipeDataTable mergedTable = new JIPipeDataTable(JIPipeData.class);
         for (JIPipeDataTable dataTable : dataTables) {
-            mergedTable.addFromTable(dataTable, new JIPipeProgressInfo());
+            mergedTable.addDataFromTable(dataTable, new JIPipeProgressInfo());
         }
 
         Path outputZipFile = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", UIUtils.EXTENSION_FILTER_ZIP);

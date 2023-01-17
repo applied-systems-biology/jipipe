@@ -38,7 +38,7 @@ public class SleepAlgorithm extends JIPipeParameterSlotAlgorithm {
                 throw new RuntimeException(e);
             }
         }
-        getFirstOutputSlot().addData(getFirstInputSlot(), progressInfo);
+        getFirstOutputSlot().addDataFromSlot(getFirstInputSlot(), progressInfo);
     }
 
     @JIPipeDocumentation(name = "Timeout (ms)", description = "The time the algorithm waits in milliseconds. Zero or negative values disable the sleep.")

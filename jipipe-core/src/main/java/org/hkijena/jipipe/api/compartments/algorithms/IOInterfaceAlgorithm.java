@@ -130,7 +130,7 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
     @Override
     protected void runPassThrough(JIPipeProgressInfo progressInfo) {
         for (JIPipeInputDataSlot inputSlot : getDataInputSlots()) {
-            getOutputSlot(inputSlot.getName()).addData(inputSlot, progressInfo);
+            getOutputSlot(inputSlot.getName()).addDataFromSlot(inputSlot, progressInfo);
         }
     }
 
@@ -138,7 +138,7 @@ public class IOInterfaceAlgorithm extends JIPipeAlgorithm {
     public void run(JIPipeProgressInfo progressInfo) {
         for (JIPipeDataSlot inputSlot : getInputSlots()) {
             JIPipeDataSlot outputSlot = getOutputSlot(inputSlot.getName());
-            outputSlot.addData(inputSlot, progressInfo);
+            outputSlot.addDataFromSlot(inputSlot, progressInfo);
         }
     }
 }

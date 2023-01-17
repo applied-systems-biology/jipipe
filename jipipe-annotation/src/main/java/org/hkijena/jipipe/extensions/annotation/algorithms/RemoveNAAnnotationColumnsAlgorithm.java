@@ -58,7 +58,7 @@ public class RemoveNAAnnotationColumnsAlgorithm extends JIPipeParameterSlotAlgor
             }
             return false;
         }).collect(Collectors.toSet());
-        getFirstOutputSlot().addData(getFirstInputSlot(), progressInfo);
+        getFirstOutputSlot().addDataFromSlot(getFirstInputSlot(), progressInfo);
         for (String name : toRemove) {
             getFirstOutputSlot().removeAllAnnotationsFromData(name);
         }

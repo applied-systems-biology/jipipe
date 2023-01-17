@@ -109,7 +109,7 @@ public abstract class JIPipeAlgorithm extends JIPipeGraphNode {
             return;
         if (getOutputSlots().isEmpty())
             return;
-        getFirstOutputSlot().addData(getFirstInputSlot(), progressInfo);
+        getFirstOutputSlot().addDataFromSlot(getFirstInputSlot(), progressInfo);
     }
 
     /**

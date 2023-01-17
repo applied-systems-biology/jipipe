@@ -103,7 +103,7 @@ public class WekaClassification2DAlgorithm extends JIPipeIteratingAlgorithm {
 
                         // Merge tiles
                         unTileImage2DAlgorithm.clearSlotData();
-                        unTileImage2DAlgorithm.getFirstInputSlot().addFromTable(tileTable, progressInfo);
+                        unTileImage2DAlgorithm.getFirstInputSlot().addDataFromTable(tileTable, progressInfo);
                         unTileImage2DAlgorithm.run(progressInfo.resolve("Merge tiles"));
 
                         classified = unTileImage2DAlgorithm.getFirstOutputSlot().getData(0, ImagePlusData.class, progressInfo).getImage();
