@@ -83,7 +83,6 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
 
         ROIListData finalRoiInput = roiInput;
         ImagePlus finalMaskInput = maskInput;
-        EDM edm = new EDM();
 
         if(image.getBitDepth() == 8) {
             ByteProcessor tempProcessor = new ByteProcessor(image.getWidth(), image.getHeight());
@@ -150,6 +149,7 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
                     mapping.put((byte) targetLabel, (byte) newLabel);
 
                     // Apply edt and calculate the maximum
+                    EDM edm = new EDM();
                     FloatProcessor edtProcessor = edm.makeFloatEDM(tempProcessor, 0, true);
                     if(edtProcessor.getStats().max >= minThickness) {
                         // Increment the label and reset temp
@@ -228,9 +228,10 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
                     }
 
                     // Remap
-                    mapping.put((byte) targetLabel, (byte) newLabel);
+                    mapping.put((short) targetLabel, (short) newLabel);
 
                     // Apply edt and calculate the maximum
+                    EDM edm = new EDM();
                     FloatProcessor edtProcessor = edm.makeFloatEDM(tempProcessor, 0, true);
                     if(edtProcessor.getStats().max >= minThickness) {
                         // Increment the label and reset temp
@@ -309,10 +310,15 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
                     }
 
                     // Remap
-                    mapping.put((byte) targetLabel, (byte) newLabel);
+                    mapping.put(targetLabel, newLabel);
 
                     // Apply edt and calculate the maximum
+                    EDM edm = new EDM();
                     FloatProcessor edtProcessor = edm.makeFloatEDM(tempProcessor, 0, true);
+                    if(edtProcessor == null) {
+                        stackProgress.log("EDT could not be calculated for label ");
+                        continue;
+                    }
                     if(edtProcessor.getStats().max >= minThickness) {
                         // Increment the label and reset temp
                         tempProcessor.setColor(0);
