@@ -34,13 +34,10 @@ public class UpdateCacheShowIntermediateNodeUIContextAction implements NodeUICon
     public boolean matches(Set<JIPipeNodeUI> selection) {
         for (JIPipeNodeUI nodeUI : selection) {
             JIPipeGraphNode node = nodeUI.getNode();
-            if (node.getParentGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.Project)
-                return false;
-        }
-        for (JIPipeNodeUI nodeUI : selection) {
-            JIPipeGraphNode node = nodeUI.getNode();
             if (node instanceof JIPipeProjectCompartment)
                 return true;
+            if (node.getParentGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.Project)
+                continue;
             if (node.getInfo().isRunnable())
                 return true;
             if (node instanceof JIPipeAlgorithm)

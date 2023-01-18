@@ -4,7 +4,10 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeSlotType;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -50,7 +53,9 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
             slotMap = new HashMap<>();
             cachedOutputSlots.put(nodeUUID, slotMap);
         }
-        slotMap.put(outputName, new JIPipeDataTable(data, true, progressInfo));
+        JIPipeDataTable dataTableCopy = new JIPipeOutputDataSlot(new JIPipeDataSlotInfo(data.getAcceptedDataType(), JIPipeSlotType.Output, outputName, ""), projectNode);
+        dataTableCopy.addDataFromTable(data, progressInfo);
+        slotMap.put(outputName, dataTableCopy);
         progressInfo.log("Stored " + data.getRowCount() + " into " + nodeUUID + "/" + outputName);
 
         updateSize();
