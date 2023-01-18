@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.data.JIPipeWeakDataReferenceData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.batchassistant.DataBatchStatusData;
@@ -188,14 +189,14 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
                     status.put("Slot", inputSlot.getName());
                     status.put("Status", "Slot contains no data!");
                 } else if (dataList.size() == 1) {
-                    singletonData = dataList.get(0);
+                    singletonData = new JIPipeWeakDataReferenceData(dataList.get(0));
 
                     status.put("Slot", inputSlot.getName());
                     status.put("Status", "Contains 1 item.");
                 } else {
                     JIPipeDataTable list = new JIPipeDataTable(JIPipeData.class);
                     for (JIPipeData datum : dataList) {
-                        list.addData(datum, progressInfo);
+                        list.addData(new JIPipeWeakDataReferenceData(datum), progressInfo);
                     }
                     singletonData = list;
                     hasMultiple = true;
@@ -313,9 +314,18 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      */
     @Subscribe
     public void onCacheUpdated(JIPipeCache.ModifiedEvent event) {
-        if (!isDisplayable())
+        if (!isDisplayable()) {
+            clearCaches();
             return;
+        }
         updateStatus();
+    }
+
+    private void clearCaches() {
+        currentCache.clear();
+        if(batchesNodeCopy != null) {
+            batchesNodeCopy.clearSlotData();
+        }
     }
 
     /**
@@ -325,8 +335,10 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
      */
     @Subscribe
     public void onSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
-        if (!isDisplayable())
+        if (!isDisplayable()) {
+            clearCaches();
             return;
+        }
         updateStatus();
     }
 

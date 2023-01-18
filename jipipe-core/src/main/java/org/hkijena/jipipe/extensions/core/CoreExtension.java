@@ -11,6 +11,7 @@ import org.hkijena.jipipe.api.compat.*;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeEmptyData;
+import org.hkijena.jipipe.api.data.JIPipeWeakDataReferenceData;
 import org.hkijena.jipipe.api.nodes.JIPipeTextAnnotationMatchingMethod;
 import org.hkijena.jipipe.api.nodes.categories.*;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
@@ -68,6 +69,9 @@ public class CoreExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("jipipe:data-table",
                 JIPipeDataTable.class,
                 ResourceUtils.getPluginResource("icons/data-types/data-table.png"));
+        registerDatatype("jipipe:weak-reference",
+                JIPipeWeakDataReferenceData.class,
+                ResourceUtils.getPluginResource("icons/data-types/data-type.png"));
         registerNodeTypeCategory(new InternalNodeTypeCategory());
         registerNodeTypeCategory(new DataSourceNodeTypeCategory());
         registerNodeTypeCategory(new FileSystemNodeTypeCategory());
