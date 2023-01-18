@@ -312,6 +312,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                 NodeUIContextAction.SEPARATOR,
                 new RunAndShowIntermediateResultsNodeUIContextAction(),
                 new UpdateCacheShowIntermediateNodeUIContextAction(),
+                new ClearCacheNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new ExportNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
