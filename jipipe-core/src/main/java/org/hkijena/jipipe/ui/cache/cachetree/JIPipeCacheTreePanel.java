@@ -15,8 +15,7 @@ package org.hkijena.jipipe.ui.cache.cachetree;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
@@ -56,29 +55,32 @@ public class JIPipeCacheTreePanel extends JIPipeProjectWorkbenchPanel {
     public void refreshTree() {
         int scrollPosition = treeScollPane.getVerticalScrollBar().getValue();
 
-        Map<UUID, Map<JIPipeGraphNode, Map<String, JIPipeDataTable>>> byCompartmentId = new HashMap<>();
+        Map<UUID, Map<JIPipeGraphNode, List<JIPipeDataSlot>>> byCompartmentId = new HashMap<>();
         for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
             if (!(node instanceof JIPipeAlgorithm))
                 continue;
+
             Map<String, JIPipeDataTable> slotMap = getProject().getCache().query(node, node.getUUIDInParentGraph(), new JIPipeProgressInfo());
 
             if (slotMap == null || slotMap.isEmpty())
                 continue;
 
             UUID compartmentId = node.getCompartmentUUIDInParentGraph();
-            Map<JIPipeGraphNode, Map<String, JIPipeDataTable>> algorithmMap = byCompartmentId.getOrDefault(compartmentId, null);
+            Map<JIPipeGraphNode, List<JIPipeDataSlot>> algorithmMap = byCompartmentId.getOrDefault(compartmentId, null);
             if (algorithmMap == null) {
                 algorithmMap = new HashMap<>();
                 byCompartmentId.put(compartmentId, algorithmMap);
             }
 
-            Map<String, JIPipeDataTable> slotMap2 = algorithmMap.getOrDefault(node, null);
-            if (slotMap2 == null) {
-                slotMap2 = new HashMap<>();
-                algorithmMap.put(node, slotMap2);
+            // We need to convert them to slots (required by the renderer)
+            List<JIPipeDataSlot> slots = new ArrayList<>();
+            for (Map.Entry<String, JIPipeDataTable> slotEntry : slotMap.entrySet()) {
+                JIPipeDataSlot slot = new JIPipeOutputDataSlot(new JIPipeDataSlotInfo(slotEntry.getValue().getAcceptedDataType(), JIPipeSlotType.Output, slotEntry.getKey(), ""), null);
+                slot.addDataFromTable(slotEntry.getValue(), new JIPipeProgressInfo());
+                slots.add(slot);
             }
 
-            slotMap2.putAll(slotMap);
+            algorithmMap.put(node, slots);
 
         }
 
@@ -91,7 +93,7 @@ public class JIPipeCacheTreePanel extends JIPipeProjectWorkbenchPanel {
             createCompartmentNode(root, byCompartmentId.getOrDefault(compartment.getProjectCompartmentUUID(), Collections.emptyMap()), compartment.getProjectCompartmentUUID());
             coveredCompartments.add(compartment.getProjectCompartmentUUID());
         }
-        for (Map.Entry<UUID, Map<JIPipeGraphNode, Map<String, JIPipeDataTable>>> entry : byCompartmentId.entrySet()) {
+        for (Map.Entry<UUID, Map<JIPipeGraphNode, List<JIPipeDataSlot>>> entry : byCompartmentId.entrySet()) {
             if (!coveredCompartments.contains(entry.getKey())) {
                 createCompartmentNode(root, byCompartmentId.getOrDefault(entry.getKey(), Collections.emptyMap()), entry.getKey());
             }
@@ -127,7 +129,7 @@ public class JIPipeCacheTreePanel extends JIPipeProjectWorkbenchPanel {
         }
     }
 
-    private void createCompartmentNode(DefaultMutableTreeNode root, Map<JIPipeGraphNode, Map<String, JIPipeDataTable>> algorithms, UUID compartmentUUID) {
+    private void createCompartmentNode(DefaultMutableTreeNode root, Map<JIPipeGraphNode, List<JIPipeDataSlot>> algorithms, UUID compartmentUUID) {
         JIPipeProjectCompartment projectCompartment = getProject().getCompartments().getOrDefault(compartmentUUID, null);
         if (projectCompartment == null)
             return;
@@ -136,16 +138,16 @@ public class JIPipeCacheTreePanel extends JIPipeProjectWorkbenchPanel {
         boolean compartmentMatches = searchTextField.test(projectCompartment.getName());
         boolean compartmentHasMatchingChild = false;
 
-        for (Map.Entry<JIPipeGraphNode, Map<String, JIPipeDataTable>> algorithmEntry : algorithms.entrySet()) {
+        for (Map.Entry<JIPipeGraphNode, List<JIPipeDataSlot>> algorithmEntry : algorithms.entrySet()) {
             DefaultMutableTreeNode algorithmNode = new DefaultMutableTreeNode(algorithmEntry.getKey());
 
             boolean algorithmMatches = compartmentMatches || searchTextField.test(algorithmEntry.getKey().getName());
             compartmentHasMatchingChild |= algorithmMatches;
             boolean algorithmHasMatchingChild = false;
 
-            for (Map.Entry<String, JIPipeDataTable> slotEntry : algorithmEntry.getValue().entrySet()) {
-                DefaultMutableTreeNode slotNode = new DefaultMutableTreeNode(slotEntry.getValue());
-                if (searchTextField.test(slotEntry.getKey())) {
+            for (JIPipeDataSlot dataSlot : algorithmEntry.getValue()) {
+                DefaultMutableTreeNode slotNode = new DefaultMutableTreeNode(dataSlot);
+                if (searchTextField.test(dataSlot.getName())) {
                     algorithmHasMatchingChild = true;
                     compartmentHasMatchingChild = true;
                     algorithmNode.add(slotNode);
