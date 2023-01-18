@@ -151,7 +151,7 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
 
         // Remove the benched algorithm from cache. This is a workaround.
         if (settings.isLoadFromCache()) {
-            getProject().getCache().clearAll(targetNode.getUUIDInParentGraph(), progressInfo);
+            getProject().getCache().softClear(targetNode.getUUIDInParentGraph(), progressInfo);
         }
 
         // Run the internal graph runner

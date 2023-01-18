@@ -225,7 +225,7 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
     }
 
     public static class RunMenuItem extends JMenuItem {
-        private final JIPipeRunWorker worker;
+        private JIPipeRunWorker worker;
         private final JLabel titleLabel = new JLabel("Status");
 
         private final JLabel iconLabel = new JLabel();
@@ -270,6 +270,9 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
         }
 
         private void updateStatus(JIPipeProgressInfo.StatusUpdatedEvent status) {
+            if(worker == null) {
+                return;
+            }
             if(worker.isDone()) {
                 if(worker.isCancelled()) {
                     iconLabel.setIcon(UIUtils.getIconFromResources("emblems/emblem-error.png"));
@@ -283,6 +286,7 @@ public class JIPipeRunnerQueueUI extends JButton implements JIPipeWorkbenchAcces
                 progressBar.setValue(1);
                 progressBar.setIndeterminate(false);
                 cancelButton.setEnabled(false);
+                worker = null;
             }
             else if(JIPipeRunnerQueue.getInstance().getCurrentRunWorker() == worker) {
                 cancelButton.setEnabled(true);

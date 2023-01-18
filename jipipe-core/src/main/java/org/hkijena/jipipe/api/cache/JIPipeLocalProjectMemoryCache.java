@@ -105,6 +105,17 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         for (UUID uuid : ImmutableList.copyOf(currentNodeStates.keySet())) {
             JIPipeGraphNode currentNode = project.getGraph().getNodeByUUID(uuid);
             JIPipeGraphNode cachedNode = currentNodeStates.get(uuid);
+
+            // Check output slots
+            Map<String, JIPipeDataTable> slotMap = cachedOutputSlots.getOrDefault(uuid, null);
+            if(slotMap != null) {
+                if(slotMap.isEmpty()) {
+                    removeNodeCache(uuid);
+                    progressInfo.log("Removed invalid node state for " + uuid + " [empty slot map]");
+                    continue;
+                }
+            }
+
             if(currentNode == null || !currentNode.functionallyEquals(cachedNode)) {
                 removeNodeCache(uuid);
                 progressInfo.log("Removed invalid node state for " + uuid);
@@ -225,6 +236,20 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
             for (JIPipeDataTable dataTable : nodeEntry.getValue().values()) {
                 currentSize += dataTable.getRowCount();
             }
+        }
+    }
+
+    /**
+     * Removes the cached data of a node without modifying the internal structure
+     * Remove outdated will be able to remove these
+     * @param uuid the node UUID
+     * @param progressInfo the progress
+     */
+    public void softClear(UUID uuid, JIPipeProgressInfo progressInfo) {
+        Map<String, JIPipeDataTable> slotMap = cachedOutputSlots.getOrDefault(uuid, null);
+        if(slotMap != null) {
+            progressInfo.log("Soft-clear node " + uuid);
+            slotMap.clear();
         }
     }
 }

@@ -30,27 +30,34 @@ import java.util.Set;
 public class ClearCacheNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
-        if (selection.size() > 0) {
-            JIPipeGraphNode node = selection.iterator().next().getNode();
-            if (node instanceof JIPipeProjectCompartment)
-                return true;
-            if (!node.getInfo().isRunnable())
-                return false;
-            if (!(node instanceof JIPipeAlgorithm))
-                return false;
+        for (JIPipeNodeUI nodeUI : selection) {
+            JIPipeGraphNode node = nodeUI.getNode();
             if (node.getParentGraph().getAttachment(JIPipeGraphType.class) != JIPipeGraphType.Project)
                 return false;
-            return true;
-        } else {
-            return false;
         }
+        for (JIPipeNodeUI nodeUI : selection) {
+            JIPipeGraphNode node = nodeUI.getNode();
+            if (node instanceof JIPipeProjectCompartment)
+                return true;
+            if (node.getInfo().isRunnable())
+                return true;
+            if (node instanceof JIPipeAlgorithm)
+                return true;
+        }
+        return false;
     }
 
     @Override
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         for (JIPipeNodeUI nodeUI : selection) {
+            JIPipeGraphNode node = nodeUI.getNode();
             JIPipeProject project = nodeUI.getGraphUI().getGraph().getProject();
-            project.getCache().clearAll(nodeUI.getNode().getUUIDInParentGraph(), new JIPipeProgressInfo());
+            if(node instanceof JIPipeProjectCompartment) {
+                project.getCache().clearAll(((JIPipeProjectCompartment) node).getOutputNode().getUUIDInParentGraph(), new JIPipeProgressInfo());
+            }
+            else {
+                project.getCache().clearAll(node.getUUIDInParentGraph(), new JIPipeProgressInfo());
+            }
         }
     }
 

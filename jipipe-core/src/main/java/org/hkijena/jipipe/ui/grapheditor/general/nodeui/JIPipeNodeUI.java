@@ -47,10 +47,11 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
     public static final NodeUIContextAction[] RUN_NODE_CONTEXT_MENU_ENTRIES = new NodeUIContextAction[]{
             new UpdateCacheNodeUIContextAction(),
             new UpdateCacheShowIntermediateNodeUIContextAction(),
-            new ClearCacheNodeUIContextAction(),
             NodeUIContextAction.SEPARATOR,
             new RunAndShowResultsNodeUIContextAction(),
-            new RunAndShowIntermediateResultsNodeUIContextAction()
+            new RunAndShowIntermediateResultsNodeUIContextAction(),
+            NodeUIContextAction.SEPARATOR,
+            new ClearCacheNodeUIContextAction()
     };
     private final JIPipeGraphCanvasUI graphUI;
     private final JIPipeGraphNode node;
