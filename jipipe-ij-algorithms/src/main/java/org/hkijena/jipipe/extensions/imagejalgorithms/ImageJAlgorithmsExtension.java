@@ -997,6 +997,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-labels-annotate-with-overlap-statistics", AnnotateWithOverlapMeasureLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/sum.png"));
         registerNodeType("ij1-labels-merge-small-labels", MergeSmallLabelsAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
         registerNodeType("ij1-labels-merge-labels-to-thickness", MergeLabelsToThicknessAlgorithm.class, UIUtils.getIconURLFromResources("actions/insert-math-expression.png"));
+        registerNodeType("ij1-labels-filter-labels-by-thickness", FilterLabelsByThicknessAlgorithm.class, UIUtils.getIconURLFromResources("actions/filter.png"));
     }
 
     private void registerConverterAlgorithms() {

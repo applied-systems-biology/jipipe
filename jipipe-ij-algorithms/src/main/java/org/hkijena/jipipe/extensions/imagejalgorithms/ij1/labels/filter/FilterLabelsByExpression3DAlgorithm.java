@@ -13,6 +13,7 @@
 
 package org.hkijena.jipipe.extensions.imagejalgorithms.ij1.labels.filter;
 
+import com.google.common.primitives.Ints;
 import gnu.trove.list.array.TIntArrayList;
 import ij.ImagePlus;
 import inra.ijpb.label.LabelImages;
@@ -65,6 +66,8 @@ public class FilterLabelsByExpression3DAlgorithm extends JIPipeSimpleIteratingAl
         for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             parameters.set(annotation.getName(), annotation.getValue());
         }
+        parameters.set("all.id", Ints.asList(allLabels));
+        parameters.set("all.num_pixels", Ints.asList(numPixels));
         for (int i = 0; i < allLabels.length; i++) {
             parameters.set("id", allLabels[i]);
             parameters.set("num_pixels", numPixels[i]);
@@ -94,7 +97,9 @@ public class FilterLabelsByExpression3DAlgorithm extends JIPipeSimpleIteratingAl
         public Set<ExpressionParameterVariable> getVariables(JIPipeParameterAccess parameterAccess) {
             Set<ExpressionParameterVariable> result = new HashSet<>();
             result.add(new ExpressionParameterVariable("Label ID", "The ID of the label (number larger than zero)", "id"));
+            result.add(new ExpressionParameterVariable("All Label IDs", "All label IDs as list", "all.id"));
             result.add(new ExpressionParameterVariable("Label size", "The number of pixels associated to this label", "num_pixels"));
+            result.add(new ExpressionParameterVariable("All label sizes", "All number of pixels as list", "all.num_pixels"));
             return result;
         }
     }

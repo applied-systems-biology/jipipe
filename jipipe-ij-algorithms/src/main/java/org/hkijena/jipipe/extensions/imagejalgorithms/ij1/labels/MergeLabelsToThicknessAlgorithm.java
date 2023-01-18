@@ -161,7 +161,9 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
 
                 // Remap
                 for (int i = 0; i < pixels.length; i++) {
-                    pixels[i] = mapping.get(pixels[i]);
+                    if(mapping.containsKey(pixels[i])) {
+                        pixels[i] = mapping.get(pixels[i]);
+                    }
                 }
 
             }, progressInfo.resolve("Processing"));
@@ -243,7 +245,9 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
 
                 // Remap
                 for (int i = 0; i < pixels.length; i++) {
-                    pixels[i] = mapping.get(pixels[i]);
+                    if(mapping.containsKey(pixels[i])) {
+                        pixels[i] = mapping.get(pixels[i]);
+                    }
                 }
 
             }, progressInfo.resolve("Processing"));
@@ -329,7 +333,9 @@ public class MergeLabelsToThicknessAlgorithm extends JIPipeIteratingAlgorithm {
 
                 // Remap
                 for (int i = 0; i < pixels.length; i++) {
-                    pixels[i] = mapping.get(pixels[i]);
+                    if(mapping.containsKey(pixels[i])) {
+                        pixels[i] = mapping.get(pixels[i]);
+                    }
                 }
 
             }, progressInfo.resolve("Processing"));
