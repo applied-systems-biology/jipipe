@@ -157,17 +157,17 @@ public class ImageJAlgorithmUtils {
                 if (label instanceof FloatProcessor) {
                     float[] labelBytes = (float[]) label.getPixels();
                     for (int j = 0; j < maskBytes.length; j++) {
-                        maskBytes[j] = (int) (labelBytes[j]) == id ? Byte.MAX_VALUE : 0;
+                        maskBytes[j] = (labelBytes[j]) == id ? (byte)255 : (byte)0;
                     }
                 } else if (label instanceof ShortProcessor) {
                     short[] labelBytes = (short[]) label.getPixels();
                     for (int j = 0; j < maskBytes.length; j++) {
-                        maskBytes[j] = labelBytes[j] == id ? Byte.MAX_VALUE : 0;
+                        maskBytes[j] = (labelBytes[j]) == id ? (byte)255 : (byte)0;
                     }
                 } else if (label instanceof ByteProcessor) {
                     byte[] labelBytes = (byte[]) label.getPixels();
                     for (int j = 0; j < maskBytes.length; j++) {
-                        maskBytes[j] = Byte.toUnsignedInt(labelBytes[j]) == id ? Byte.MAX_VALUE : 0;
+                        maskBytes[j] = Byte.toUnsignedInt(labelBytes[j]) == id ? (byte)255 : (byte)0;
                     }
                 } else {
                     throw new UnsupportedOperationException("Unknown label type!");
