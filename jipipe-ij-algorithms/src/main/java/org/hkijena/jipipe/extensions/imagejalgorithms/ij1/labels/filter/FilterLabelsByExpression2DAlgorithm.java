@@ -61,10 +61,9 @@ public class FilterLabelsByExpression2DAlgorithm extends JIPipeSimpleIteratingAl
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlus inputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
-        ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
+        ImagePlus outputImage = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo).getDuplicateImage();
 
-        ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
+        ImageJUtils.forEachIndexedZCTSlice(outputImage, (ip, index) -> {
             int[] allLabels = LabelImages.findAllLabels(ip);
             int[] numPixels = LabelImages.pixelCount(ip, allLabels);
             TIntArrayList keptLabels = new TIntArrayList();
@@ -84,10 +83,6 @@ public class FilterLabelsByExpression2DAlgorithm extends JIPipeSimpleIteratingAl
             ImageJAlgorithmUtils.removeLabelsExcept(ip, keptLabels.toArray());
         }, progressInfo);
 
-        ImagePlus outputImage = new ImagePlus("Filtered", stack);
-
-        outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
-        outputImage.copyScale(inputImage);
         dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusGreyscaleData(outputImage), progressInfo);
     }
 
