@@ -39,7 +39,7 @@ public class JIPipeSimpleDataBatchTableUI extends JPanel {
     private JXTable table;
     private JScrollPane scrollPane;
     private SearchTextField searchTextField;
-    private JIPipeSimpleDataBatchTableModel dataTable;
+    private JIPipeSimpleDataBatchTableModel dataTableModel;
 
     public JIPipeSimpleDataBatchTableUI(List<JIPipeMergingDataBatch> dataBatchList) {
         this.dataBatchList = dataBatchList;
@@ -60,7 +60,7 @@ public class JIPipeSimpleDataBatchTableUI extends JPanel {
     }
 
     public JIPipeSimpleDataBatchTableModel getDataTable() {
-        return dataTable;
+        return dataTableModel;
     }
 
     private void initialize() {
@@ -102,9 +102,9 @@ public class JIPipeSimpleDataBatchTableUI extends JPanel {
     }
 
     private void reloadTable() {
-        dataTable = new JIPipeSimpleDataBatchTableModel(table, dataBatchList);
-        table.setModel(dataTable);
-        dataTable.setScrollPane(scrollPane);
+        dataTableModel = new JIPipeSimpleDataBatchTableModel(table, dataBatchList);
+        table.setModel(dataTableModel);
+        dataTableModel.setScrollPane(scrollPane);
         if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
             table.setRowHeight(GeneralDataSettings.getInstance().getPreviewSize());
         else
@@ -114,7 +114,7 @@ public class JIPipeSimpleDataBatchTableUI extends JPanel {
         table.setAutoCreateRowSorter(true);
         UIUtils.packDataTable(table);
         columnModel.getColumn(1).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
-        SwingUtilities.invokeLater(dataTable::updateRenderedPreviews);
+        SwingUtilities.invokeLater(dataTableModel::updateRenderedPreviews);
     }
 
     public void resetSearch() {

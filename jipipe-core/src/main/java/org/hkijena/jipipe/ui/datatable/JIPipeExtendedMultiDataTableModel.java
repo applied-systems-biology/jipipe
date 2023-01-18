@@ -18,10 +18,7 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
-import org.hkijena.jipipe.api.data.JIPipeDataInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.data.JIPipeDataTableMetadata;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeEmptyNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
@@ -31,6 +28,7 @@ import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.*;
 
@@ -47,7 +45,7 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
     private final ArrayList<JIPipeGraphNode> nodeList = new ArrayList<>();
     private final List<String> textAnnotationColumns = new ArrayList<>();
     private final List<String> dataAnnotationColumns = new ArrayList<>();
-    private final ArrayList<JIPipeDataTable> slotList = new ArrayList<>();
+    private final ArrayList<WeakReference<JIPipeDataTable>> slotReferencesList = new ArrayList<>();
     private final ArrayList<Integer> rowList = new ArrayList<>();
     private final List<Component> previewCache = new ArrayList<>();
     private final Map<String, List<Component>> dataAnnotationPreviewCache = new HashMap<>();
@@ -61,7 +59,11 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
     }
 
     public List<JIPipeDataTable> getSlotList() {
-        return Collections.unmodifiableList(slotList);
+        List<JIPipeDataTable> dataTables = new ArrayList<>();
+        for (WeakReference<JIPipeDataTable> reference : slotReferencesList) {
+            dataTables.add(reference.get());
+        }
+        return dataTables;
     }
 
     /**
@@ -92,7 +94,7 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
         }
 
         for (int i = 0; i < dataTable.getRowCount(); ++i) {
-            slotList.add(dataTable);
+            slotReferencesList.add(new WeakReference<>(dataTable));
             compartmentList.add(compartment);
             nodeList.add(node);
             rowList.add(i);
@@ -269,44 +271,90 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
         if (withCompartmentAndAlgorithm) {
-            if (columnIndex == 0)
-                return slotList.get(rowIndex).getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");
-            else if (columnIndex == 1)
+            if (columnIndex == 0) {
+                JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
+                if(dataTable != null) {
+                    return dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");
+                }
+                else {
+                    return "NA";
+                }
+            } else if (columnIndex == 1)
                 return compartmentList.get(rowIndex);
             else if (columnIndex == 2)
                 return nodeList.get(rowIndex);
             else if (columnIndex == 3)
                 return rowList.get(rowIndex);
-            else if (columnIndex == 4)
-                return JIPipeDataInfo.getInstance(slotList.get(rowIndex).getDataClass(rowList.get(rowIndex)));
-            else if (columnIndex == 5) {
+            else if (columnIndex == 4) {
+                JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
+                if(dataTable != null) {
+                    return JIPipeDataInfo.getInstance(dataTable.getDataClass(rowList.get(rowIndex)));
+                }
+                else {
+                    return JIPipeDataInfo.getInstance(JIPipeData.class);
+                }
+            } else if (columnIndex == 5) {
                 return getMainDataPreviewComponent(rowIndex);
-            } else if (columnIndex == 6)
-                return "" + slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
-            else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
+            } else if (columnIndex == 6) {
+                JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
+                if(dataTable != null) {
+                    return "" + dataTable.getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
+                }
+                else {
+                    return "NA";
+                }
+            } else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
                 return getDataAnnotationPreviewComponent(rowIndex, columnIndex);
             } else {
-                String annotationColumn = textAnnotationColumns.get(toAnnotationColumnIndex(columnIndex));
-                JIPipeDataTable slot = slotList.get(rowIndex);
-                return slot.getTextAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
+                JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
+                if(dataTable != null) {
+                    String annotationColumn = textAnnotationColumns.get(toAnnotationColumnIndex(columnIndex));
+                    return dataTable.getTextAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
+                }
+                else {
+                    return null;
+                }
             }
         } else {
-            if (columnIndex == 0)
-                return slotList.get(rowIndex).getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");
-            else if (columnIndex == 1)
+            if (columnIndex == 0) {
+                JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
+                if(dataTable != null) {
+                    return dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "");
+                }
+                else {
+                    return "NA";
+                }
+            } else if (columnIndex == 1)
                 return rowList.get(rowIndex);
-            else if (columnIndex == 2)
-                return JIPipeDataInfo.getInstance(slotList.get(rowIndex).getDataClass(rowList.get(rowIndex)));
-            else if (columnIndex == 3) {
+            else if (columnIndex == 2) {
+                JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
+                if(dataTable != null) {
+                    return JIPipeDataInfo.getInstance(dataTable.getDataClass(rowList.get(rowIndex)));
+                }
+                else {
+                    return JIPipeDataInfo.getInstance(JIPipeData.class);
+                }
+            } else if (columnIndex == 3) {
                 return getMainDataPreviewComponent(rowIndex);
-            } else if (columnIndex == 4)
-                return "" + slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
-            else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
+            } else if (columnIndex == 4) {
+                JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
+                if(dataTable != null) {
+                    return "" + dataTable.getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
+                }
+                else {
+                    return "NA";
+                }
+            } else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
                 return getDataAnnotationPreviewComponent(rowIndex, columnIndex);
             } else {
-                String annotationColumn = textAnnotationColumns.get(toAnnotationColumnIndex(columnIndex));
-                JIPipeDataTable slot = slotList.get(rowIndex);
-                return slot.getTextAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
+                JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
+                if(dataTable != null) {
+                    String annotationColumn = textAnnotationColumns.get(toAnnotationColumnIndex(columnIndex));
+                    return dataTable.getTextAnnotationOr(rowList.get(rowIndex), annotationColumn, null);
+                }
+                else {
+                    return null;
+                }
             }
         }
     }
@@ -321,13 +369,19 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
             return new JLabel("N/A");
         }
         if (preview == null) {
-            JIPipeDataAnnotation dataAnnotation = slotList.get(rowIndex).getDataAnnotation(rowList.get(rowIndex), dataAnnotationName);
-            if (dataAnnotation != null && GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                preview = new JIPipeCachedDataPreview(table, dataAnnotation.getVirtualData(), true);
-                dataAnnotationPreviewCache.get(dataAnnotationName).set(rowIndex, preview);
-            } else {
-                preview = new JLabel("N/A");
-                dataAnnotationPreviewCache.get(dataAnnotationName).set(rowIndex, preview);
+            JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
+            if(dataTable != null) {
+                JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(rowList.get(rowIndex), dataAnnotationName);
+                if (dataAnnotation != null && GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
+                    preview = new JIPipeCachedDataPreview(table, dataAnnotation.getVirtualData(), true);
+                    dataAnnotationPreviewCache.get(dataAnnotationName).set(rowIndex, preview);
+                } else {
+                    preview = new JLabel("N/A");
+                    dataAnnotationPreviewCache.get(dataAnnotationName).set(rowIndex, preview);
+                }
+            }
+            else {
+                return new JLabel("N/A");
             }
         }
         return preview;
@@ -337,12 +391,18 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
         revalidatePreviewCache();
         Component preview = previewCache.get(rowIndex);
         if (preview == null) {
-            if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                preview = new JIPipeCachedDataPreview(table, slotList.get(rowIndex).getVirtualData(rowList.get(rowIndex)), true);
-                previewCache.set(rowIndex, preview);
-            } else {
+            JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
+            if(dataTable != null) {
+                if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
+                    preview = new JIPipeCachedDataPreview(table, dataTable.getVirtualData(rowList.get(rowIndex)), true);
+                    previewCache.set(rowIndex, preview);
+                } else {
+                    preview = new JLabel("N/A");
+                    previewCache.set(rowIndex, preview);
+                }
+            }
+            else {
                 preview = new JLabel("N/A");
-                previewCache.set(rowIndex, preview);
             }
         }
         return preview;
@@ -385,7 +445,7 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
      * @return The slot that defined the row
      */
     public JIPipeDataTable getSlot(int row) {
-        return slotList.get(row);
+        return slotReferencesList.get(row).get();
     }
 
     /**

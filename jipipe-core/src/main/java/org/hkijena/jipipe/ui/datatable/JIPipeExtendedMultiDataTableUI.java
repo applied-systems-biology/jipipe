@@ -70,12 +70,11 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -83,7 +82,7 @@ import java.util.stream.Collectors;
  */
 public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
 
-    private final List<? extends JIPipeDataTable> dataTables;
+    private final List<WeakReference<JIPipeDataTable>> dataTableReferences;
     private final boolean withCompartmentAndAlgorithm;
     private final JXTable table;
     private final SearchTextField searchTextField = new SearchTextField();
@@ -97,9 +96,12 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
      * @param dataTables                  The slots
      * @param withCompartmentAndAlgorithm if the compartment and algorithm are included as columns
      */
-    public JIPipeExtendedMultiDataTableUI(JIPipeWorkbench workbenchUI, List<? extends JIPipeDataTable> dataTables, boolean withCompartmentAndAlgorithm) {
+    public JIPipeExtendedMultiDataTableUI(JIPipeWorkbench workbenchUI, List<JIPipeDataTable> dataTables, boolean withCompartmentAndAlgorithm) {
         super(workbenchUI);
-        this.dataTables = dataTables;
+        this.dataTableReferences = new ArrayList<>();
+        for (JIPipeDataTable dataTable : dataTables) {
+            dataTableReferences.add(new WeakReference<>(dataTable));
+        }
         this.withCompartmentAndAlgorithm = withCompartmentAndAlgorithm;
         table = new JXTable();
         this.multiSlotTable = new JIPipeExtendedMultiDataTableModel(table, withCompartmentAndAlgorithm);
@@ -261,7 +263,13 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void openFilteredTableInNewTab() {
-        String name = dataTables.stream().map(slot -> slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "")).distinct().collect(Collectors.joining(", "));
+        String name = dataTableReferences.stream().map(slotReference -> {
+            JIPipeDataTable slot = slotReference.get();
+            if(slot != null)
+                return slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
+            else
+                return "[NA]";
+        }).distinct().collect(Collectors.joining(", "));
         if (searchTextField.getSearchStrings().length > 0) {
             name = "[Filtered] " + name;
         } else {
@@ -289,7 +297,14 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void openTableInNewTab() {
-        String name = "Cache: " + dataTables.stream().map(slot -> slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "")).distinct().collect(Collectors.joining(", "));
+        List<JIPipeDataTable> dataTables = dereferenceDataTables();
+        String name = "Cache: " + dataTableReferences.stream().map(slotReference -> {
+            JIPipeDataTable slot = slotReference.get();
+            if(slot != null)
+                return slot.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
+            else
+                return "[NA]";
+        }).distinct().collect(Collectors.joining(", "));
         getWorkbench().getDocumentTabPane().addTab(name,
                 UIUtils.getIconFromResources("actions/database.png"),
                 new JIPipeExtendedMultiDataTableUI(getWorkbench(), dataTables, withCompartmentAndAlgorithm),
@@ -310,6 +325,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void exportByMetadataExporter() {
+        List<JIPipeDataTable> dataTables = dereferenceDataTables();
         JIPipeDataTableToFilesByMetadataExporterRun run = new JIPipeDataTableToFilesByMetadataExporterRun(getWorkbench(), dataTables, false);
         if (run.setup()) {
             JIPipeRunnerQueue.getInstance().enqueue(run);
@@ -317,6 +333,8 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void exportAsJIPipeSlotDirectory() {
+        List<JIPipeDataTable> dataTables = dereferenceDataTables();
+
         Path directory = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table");
         if (directory != null) {
             try {
@@ -344,10 +362,26 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
         }
     }
 
+    private List<JIPipeDataTable> dereferenceDataTables() {
+        List<JIPipeDataTable> dataTables = new ArrayList<>();
+        for (WeakReference<JIPipeDataTable> dataTableReference : dataTableReferences) {
+            JIPipeDataTable dataTable = dataTableReference.get();
+            if(dataTable == null) {
+                throw new RuntimeException("Data table has been cleared!");
+            }
+            dataTables.add(dataTable);
+        }
+        return dataTables;
+    }
+
     private void exportAsJIPipeSlotZIP() {
         // Merge the data tables
         JIPipeDataTable mergedTable = new JIPipeDataTable(JIPipeData.class);
-        for (JIPipeDataTable dataTable : dataTables) {
+        for (WeakReference<JIPipeDataTable> dataTableReference : dataTableReferences) {
+            JIPipeDataTable dataTable = dataTableReference.get();
+            if(dataTable == null) {
+                throw new RuntimeException("Data table has been cleared!");
+            }
             mergedTable.addDataFromTable(dataTable, new JIPipeProgressInfo());
         }
 
@@ -414,6 +448,15 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
     private void showDataRows(int[] selectedRows) {
         rowUIList.clear();
 
+        List<JIPipeDataTable> dataTables = new ArrayList<>();
+        for (WeakReference<JIPipeDataTable> dataTableReference : dataTableReferences) {
+            JIPipeDataTable dataTable = dataTableReference.get();
+            if(dataTable == null) {
+                return;
+            }
+            dataTables.add(dataTable);
+        }
+
         JLabel infoLabel = new JLabel();
         int rowCount = dataTables.stream().mapToInt(JIPipeDataTable::getRowCount).sum();
         infoLabel.setText(rowCount + " rows" + (dataTables.size() > 1 ? " across " + dataTables.size() + " tables" : "") + (selectedRows.length > 0 ? ", " + selectedRows.length + " selected" : ""));
@@ -445,6 +488,15 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void updateStatus() {
+        List<JIPipeDataTable> dataTables = new ArrayList<>();
+        for (WeakReference<JIPipeDataTable> dataTableReference : dataTableReferences) {
+            JIPipeDataTable dataTable = dataTableReference.get();
+            if(dataTable == null) {
+                return;
+            }
+            dataTables.add(dataTable);
+        }
+
         boolean hasData = false;
         for (JIPipeDataTable slot : dataTables) {
             if (slot.getRowCount() > 0) {
@@ -463,15 +515,15 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
      * Renders the column header
      */
     public static class MultiDataSlotTableColumnRenderer implements TableCellRenderer {
-        private final JIPipeExtendedMultiDataTableModel dataTable;
+        private final JIPipeExtendedMultiDataTableModel multiDataTableModel;
 
         /**
          * Creates a new instance
          *
-         * @param dataTable The table
+         * @param multiDataTableModel The table
          */
-        public MultiDataSlotTableColumnRenderer(JIPipeExtendedMultiDataTableModel dataTable) {
-            this.dataTable = dataTable;
+        public MultiDataSlotTableColumnRenderer(JIPipeExtendedMultiDataTableModel multiDataTableModel) {
+            this.multiDataTableModel = multiDataTableModel;
         }
 
         @Override
@@ -482,14 +534,14 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
             int spacer = model.isWithCompartmentAndAlgorithm() ? 7 : 5;
             if (modelColumn < spacer) {
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
-            } else if (dataTable.toDataAnnotationColumnIndex(modelColumn) != -1) {
-                String info = dataTable.getDataAnnotationColumns().get(dataTable.toDataAnnotationColumnIndex(modelColumn));
+            } else if (multiDataTableModel.toDataAnnotationColumnIndex(modelColumn) != -1) {
+                String info = multiDataTableModel.getDataAnnotationColumns().get(multiDataTableModel.toDataAnnotationColumnIndex(modelColumn));
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                         UIUtils.getIconFromResources("data-types/data-annotation.png"),
                         info);
                 return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
             } else {
-                String info = dataTable.getTextAnnotationColumns().get(dataTable.toAnnotationColumnIndex(modelColumn));
+                String info = multiDataTableModel.getTextAnnotationColumns().get(multiDataTableModel.toAnnotationColumnIndex(modelColumn));
                 String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
                         UIUtils.getIconFromResources("data-types/annotation.png"),
                         info);

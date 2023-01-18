@@ -64,6 +64,7 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -78,7 +79,7 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
     private final boolean updateWithCache;
     private final SearchTextField searchTextField = new SearchTextField();
     private final Ribbon ribbon = new Ribbon(2);
-    private JIPipeDataTable dataTable;
+    private WeakReference<JIPipeDataTable> dataTableReference;
     private JXTable table;
     private FormPanel rowUIList;
     private JIPipeExtendedDataTableModel dataTableModel;
@@ -91,7 +92,7 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
      */
     public JIPipeExtendedDataTableUI(JIPipeWorkbench workbenchUI, JIPipeDataTable dataTable, boolean updateWithCache) {
         super(workbenchUI);
-        this.dataTable = dataTable;
+        this.dataTableReference = new WeakReference<>(dataTable);
         this.updateWithCache = updateWithCache;
 
         initialize();
@@ -112,16 +113,16 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
     }
 
     public JIPipeDataTable getDataTable() {
-        return dataTable;
+        return dataTableReference.get();
     }
 
     public void setDataTable(JIPipeDataTable dataTable) {
-        this.dataTable = dataTable;
+        this.dataTableReference = new WeakReference<>(dataTable);
         reloadTable();
     }
 
     private void reloadTable() {
-        dataTableModel = new JIPipeExtendedDataTableModel(table, dataTable);
+        dataTableModel = new JIPipeExtendedDataTableModel(table, dataTableReference);
         table.setModel(dataTableModel);
         dataTableModel.setScrollPane(scrollPane);
         if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
@@ -132,7 +133,7 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
         TableColumnModel columnModel = table.getColumnModel();
         for (int i = 0; i < columnModel.getColumnCount(); ++i) {
             TableColumn column = columnModel.getColumn(i);
-            column.setHeaderRenderer(new WrapperColumnHeaderRenderer(dataTable));
+            column.setHeaderRenderer(new WrapperColumnHeaderRenderer(dataTableReference));
         }
         table.setAutoCreateRowSorter(true);
         UIUtils.packDataTable(table);
@@ -256,23 +257,26 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
         } else {
             name = "Copy of " + name;
         }
-        JIPipeDataTable copy = new JIPipeDataTable(dataTable.getAcceptedDataType());
-        if (table.getRowFilter() != null) {
-            for (int viewRow = 0; viewRow < table.getRowCount(); viewRow++) {
-                int modelRow = table.convertRowIndexToModel(viewRow);
-                copy.addData(dataTable.getVirtualData(modelRow),
-                        dataTable.getTextAnnotations(modelRow),
-                        JIPipeTextAnnotationMergeMode.OverwriteExisting,
-                        dataTable.getDataAnnotations(modelRow),
-                        JIPipeDataAnnotationMergeMode.OverwriteExisting);
+        JIPipeDataTable dataTable = dataTableReference.get();
+        if (dataTable != null) {
+            JIPipeDataTable copy = new JIPipeDataTable(dataTable.getAcceptedDataType());
+            if (table.getRowFilter() != null) {
+                for (int viewRow = 0; viewRow < table.getRowCount(); viewRow++) {
+                    int modelRow = table.convertRowIndexToModel(viewRow);
+                    copy.addData(dataTable.getVirtualData(modelRow),
+                            dataTable.getTextAnnotations(modelRow),
+                            JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                            dataTable.getDataAnnotations(modelRow),
+                            JIPipeDataAnnotationMergeMode.OverwriteExisting);
+                }
             }
+            getWorkbench().getDocumentTabPane().addTab(name,
+                    UIUtils.getIconFromResources("data-types/data-table.png"),
+                    new JIPipeExtendedDataTableUI(getWorkbench(), copy, true),
+                    DocumentTabPane.CloseMode.withSilentCloseButton,
+                    true);
+            getWorkbench().getDocumentTabPane().switchToLastTab();
         }
-        getWorkbench().getDocumentTabPane().addTab(name,
-                UIUtils.getIconFromResources("data-types/data-table.png"),
-                new JIPipeExtendedDataTableUI(getWorkbench(), copy, true),
-                DocumentTabPane.CloseMode.withSilentCloseButton,
-                true);
-        getWorkbench().getDocumentTabPane().switchToLastTab();
     }
 
     private void openTableInNewTab() {
@@ -297,55 +301,68 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void exportMetadataAsTableEditor() {
-        ResultsTableData tableData = dataTableModel.getDataTable().toAnnotationTable(true);
-        TableEditor.openWindow(getWorkbench(), tableData, dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_DISPLAY_NAME, "")
-                + "/" + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, ""));
+        JIPipeDataTable dataTable = dataTableReference.get();
+        if (dataTable != null) {
+            ResultsTableData tableData = dataTableModel.getDataTable().toAnnotationTable(true);
+            TableEditor.openWindow(getWorkbench(), tableData, dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_DISPLAY_NAME, "")
+                    + "/" + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, ""));
+        }
+
     }
 
     private void exportByMetadataExporter() {
-        JIPipeDataTableToFilesByMetadataExporterRun run = new JIPipeDataTableToFilesByMetadataExporterRun(getWorkbench(), Collections.singletonList(dataTable), false);
-        if (run.setup()) {
-            JIPipeRunnerQueue.getInstance().enqueue(run);
+        JIPipeDataTable dataTable = dataTableReference.get();
+        if (dataTable != null) {
+            JIPipeDataTableToFilesByMetadataExporterRun run = new JIPipeDataTableToFilesByMetadataExporterRun(getWorkbench(), Collections.singletonList(dataTable), false);
+            if (run.setup()) {
+                JIPipeRunnerQueue.getInstance().enqueue(run);
+            }
         }
     }
 
     private void exportAsJIPipeSlotDirectory() {
-        Path directory = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table");
-        if (directory != null) {
-            try {
-                if (Files.isDirectory(directory) && Files.list(directory).findAny().isPresent()) {
-                    if (JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " is not empty. The contents will be deleted before writing the outputs. " +
-                            "Continue anyways?", "Export as JIPipe data table", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
-                        return;
+        JIPipeDataTable dataTable = dataTableReference.get();
+        if (dataTable != null) {
+            Path directory = FileChooserSettings.openDirectory(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table");
+            if (directory != null) {
+                try {
+                    if (Files.isDirectory(directory) && Files.list(directory).findAny().isPresent()) {
+                        if (JOptionPane.showConfirmDialog(this, "The selected directory " + directory + " is not empty. The contents will be deleted before writing the outputs. " +
+                                "Continue anyways?", "Export as JIPipe data table", JOptionPane.YES_NO_OPTION) == JOptionPane.NO_OPTION)
+                            return;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
+                JIPipeDataTableToOutputExporterRun run = new JIPipeDataTableToOutputExporterRun(getWorkbench(),
+                        directory,
+                        Collections.singletonList(dataTable),
+                        false,
+                        true);
+                JIPipeRunnerQueue.getInstance().enqueue(run);
             }
-            JIPipeDataTableToOutputExporterRun run = new JIPipeDataTableToOutputExporterRun(getWorkbench(),
-                    directory,
-                    Collections.singletonList(dataTable),
-                    false,
-                    true);
-            JIPipeRunnerQueue.getInstance().enqueue(run);
         }
     }
 
     private void exportAsJIPipeSlotZIP() {
-        Path outputZipFile = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", UIUtils.EXTENSION_FILTER_ZIP);
-        if (outputZipFile != null) {
-            outputZipFile = PathUtils.ensureExtension(outputZipFile, ".zip");
-            if (Files.isRegularFile(outputZipFile)) {
-                if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
-                        "The file '" + outputZipFile + "' already exists. Do you want to overwrite the file?",
-                        "Export *.zip",
-                        JOptionPane.YES_NO_OPTION,
-                        JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION)
-                    return;
+        JIPipeDataTable dataTable = dataTableReference.get();
+        if (dataTable != null) {
+            Path outputZipFile = FileChooserSettings.saveFile(this, FileChooserSettings.LastDirectoryKey.Data, "Export as JIPipe data table (*.zip)", UIUtils.EXTENSION_FILTER_ZIP);
+            if (outputZipFile != null) {
+                outputZipFile = PathUtils.ensureExtension(outputZipFile, ".zip");
+                if (Files.isRegularFile(outputZipFile)) {
+                    if (JOptionPane.showConfirmDialog(getWorkbench().getWindow(),
+                            "The file '" + outputZipFile + "' already exists. Do you want to overwrite the file?",
+                            "Export *.zip",
+                            JOptionPane.YES_NO_OPTION,
+                            JOptionPane.QUESTION_MESSAGE) == JOptionPane.NO_OPTION)
+                        return;
+                }
+                JIPipeDataTableToZIPExporterRun run = new JIPipeDataTableToZIPExporterRun(getWorkbench(),
+                        outputZipFile,
+                        dataTable);
+                JIPipeRunnerQueue.getInstance().enqueue(run);
             }
-            JIPipeDataTableToZIPExporterRun run = new JIPipeDataTableToZIPExporterRun(getWorkbench(),
-                    outputZipFile,
-                    dataTable);
-            JIPipeRunnerQueue.getInstance().enqueue(run);
         }
     }
 
@@ -362,32 +379,41 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void handleSlotRowDefaultAction(int selectedRow, int selectedColumn) {
-        int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
-        int dataAnnotationColumn = selectedColumn >= 0 ? dataTableModel.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(selectedColumn)) : -1;
-        JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), dataTable, row);
-        rowUI.handleDefaultActionOrDisplayDataAnnotation(dataAnnotationColumn);
+        JIPipeDataTable dataTable = dataTableReference.get();
+        if (dataTable != null) {
+            int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
+            int dataAnnotationColumn = selectedColumn >= 0 ? dataTableModel.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(selectedColumn)) : -1;
+            JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), dataTable, row);
+            rowUI.handleDefaultActionOrDisplayDataAnnotation(dataAnnotationColumn);
+        }
     }
 
     private void showDataRows(int[] selectedRows) {
+
         rowUIList.clear();
 
-        JLabel infoLabel = new JLabel();
-        infoLabel.setText(dataTable.getRowCount() + " rows" + (selectedRows.length > 0 ? ", " + selectedRows.length + " selected" : ""));
-        infoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
-        rowUIList.addWideToForm(infoLabel, null);
+        JIPipeDataTable dataTable = dataTableReference.get();
+        if (dataTable != null) {
 
-        for (int viewRow : selectedRows) {
-            int row = table.getRowSorter().convertRowIndexToModel(viewRow);
-            String name;
-            String nodeName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
-            if (!StringUtils.isNullOrEmpty(nodeName))
-                name = nodeName + "/" + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row;
-            else
-                name = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row;
-            JLabel nameLabel = new JLabel(name, JIPipe.getDataTypes().getIconFor(dataTable.getAcceptedDataType()), JLabel.LEFT);
-            nameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(dataTable));
-            JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), dataTable, row);
-            rowUIList.addToForm(rowUI, nameLabel, null);
+            JLabel infoLabel = new JLabel();
+            infoLabel.setText(dataTable.getRowCount() + " rows" + (selectedRows.length > 0 ? ", " + selectedRows.length + " selected" : ""));
+            infoLabel.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+            rowUIList.addWideToForm(infoLabel, null);
+
+            for (int viewRow : selectedRows) {
+                int row = table.getRowSorter().convertRowIndexToModel(viewRow);
+                String name;
+                String nodeName = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_NODE_NAME, "");
+                if (!StringUtils.isNullOrEmpty(nodeName))
+                    name = nodeName + "/" + dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row;
+                else
+                    name = dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "") + "/" + row;
+                JLabel nameLabel = new JLabel(name, JIPipe.getDataTypes().getIconFor(dataTable.getAcceptedDataType()), JLabel.LEFT);
+                nameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(dataTable));
+                JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), dataTable, row);
+                rowUIList.addToForm(rowUI, nameLabel, null);
+            }
+
         }
     }
 
@@ -402,9 +428,12 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
     }
 
     private void updateStatus() {
-        if (updateWithCache && dataTable.getRowCount() == 0) {
-            if (getWorkbench() instanceof JIPipeProjectWorkbench) {
-                ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().unregister(this);
+        JIPipeDataTable dataTable = dataTableReference.get();
+        if (dataTable != null) {
+            if (updateWithCache && dataTable.getRowCount() == 0) {
+                if (getWorkbench() instanceof JIPipeProjectWorkbench) {
+                    ((JIPipeProjectWorkbench) getWorkbench()).getProject().getCache().getEventBus().unregister(this);
+                }
             }
         }
     }
@@ -414,15 +443,15 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
      * Renders the column header of {@link JIPipeExtendedDataTableModel}
      */
     public static class WrapperColumnHeaderRenderer implements TableCellRenderer {
-        private final JIPipeDataTable dataTable;
+        private final WeakReference<JIPipeDataTable> dataTableReference;
 
         /**
          * Creates a new instance
          *
-         * @param dataTable The table
+         * @param dataTableReference The table reference
          */
-        public WrapperColumnHeaderRenderer(JIPipeDataTable dataTable) {
-            this.dataTable = dataTable;
+        public WrapperColumnHeaderRenderer(WeakReference<JIPipeDataTable> dataTableReference) {
+            this.dataTableReference = dataTableReference;
         }
 
         /**
@@ -432,10 +461,15 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
          * @return relative annotation column index, or -1
          */
         public int toAnnotationColumnIndex(int columnIndex) {
-            if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 4)
-                return columnIndex - dataTable.getDataAnnotationColumns().size() - 4;
-            else
+            JIPipeDataTable dataTable = dataTableReference.get();
+            if (dataTable != null) {
+                if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 4)
+                    return columnIndex - dataTable.getDataAnnotationColumns().size() - 4;
+                else
+                    return -1;
+            } else {
                 return -1;
+            }
         }
 
         /**
@@ -445,8 +479,13 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
          * @return relative data annotation column index, or -1
          */
         public int toDataAnnotationColumnIndex(int columnIndex) {
-            if (columnIndex < dataTable.getDataAnnotationColumns().size() + 4 && (columnIndex - 4) < dataTable.getDataAnnotationColumns().size()) {
-                return columnIndex - 4;
+            JIPipeDataTable dataTable = dataTableReference.get();
+            if (dataTable != null) {
+                if (columnIndex < dataTable.getDataAnnotationColumns().size() + 4 && (columnIndex - 4) < dataTable.getDataAnnotationColumns().size()) {
+                    return columnIndex - 4;
+                } else {
+                    return -1;
+                }
             } else {
                 return -1;
             }
@@ -455,25 +494,34 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             TableCellRenderer defaultRenderer = table.getTableHeader().getDefaultRenderer();
+            JIPipeDataTable dataTable = dataTableReference.get();
             int modelColumn = table.convertColumnIndexToModel(column);
             if (modelColumn < 4) {
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             } else if (toDataAnnotationColumnIndex(modelColumn) != -1) {
-                String info = dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(modelColumn));
-                String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
-                        UIUtils.getIconFromResources("data-types/data-annotation.png"),
-                        info);
-                return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
-            } else {
-                int annotationColumnIndex = toAnnotationColumnIndex(modelColumn);
-                if (annotationColumnIndex < dataTable.getTextAnnotationColumns().size()) {
-                    String info = dataTable.getTextAnnotationColumns().get(annotationColumnIndex);
+                if (dataTable != null) {
+                    String info = dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(modelColumn));
                     String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
-                            UIUtils.getIconFromResources("data-types/annotation.png"),
+                            UIUtils.getIconFromResources("data-types/data-annotation.png"),
                             info);
                     return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
                 } else {
-                    return defaultRenderer.getTableCellRendererComponent(table, "Annotation", isSelected, hasFocus, row, column);
+                    return new JLabel("NA");
+                }
+            } else {
+                if (dataTable != null) {
+                    int annotationColumnIndex = toAnnotationColumnIndex(modelColumn);
+                    if (annotationColumnIndex < dataTable.getTextAnnotationColumns().size()) {
+                        String info = dataTable.getTextAnnotationColumns().get(annotationColumnIndex);
+                        String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
+                                UIUtils.getIconFromResources("data-types/annotation.png"),
+                                info);
+                        return defaultRenderer.getTableCellRendererComponent(table, html, isSelected, hasFocus, row, column);
+                    } else {
+                        return defaultRenderer.getTableCellRendererComponent(table, "Annotation", isSelected, hasFocus, row, column);
+                    }
+                } else {
+                    return new JLabel("NA");
                 }
             }
         }

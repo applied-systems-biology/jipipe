@@ -25,6 +25,7 @@ import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.awt.*;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -37,36 +38,40 @@ import java.util.Map;
 public class JIPipeExtendedDataTableModel implements TableModel {
 
     private final JTable table;
-    private final JIPipeDataTable dataTable;
+    private final WeakReference<JIPipeDataTable> dataTableReference;
     private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
-    private List<Component> previewCache = new ArrayList<>();
-    private Map<String, List<Component>> dataAnnotationPreviewCache = new HashMap<>();
+    private final List<Component> previewCache = new ArrayList<>();
+    private final Map<String, List<Component>> dataAnnotationPreviewCache = new HashMap<>();
     private int previewCacheSize = GeneralDataSettings.getInstance().getPreviewSize();
     private JScrollPane scrollPane;
 
     /**
      * Creates a new instance
      *
-     * @param table     the table
-     * @param dataTable the wrapped slot
+     * @param table              the table
+     * @param dataTableReference the wrapped slot
      */
-    public JIPipeExtendedDataTableModel(JTable table, JIPipeDataTable dataTable) {
+    public JIPipeExtendedDataTableModel(JTable table, WeakReference<JIPipeDataTable> dataTableReference) {
         this.table = table;
-        this.dataTable = dataTable;
-        for (int i = 0; i < dataTable.getRowCount(); i++) {
-            previewCache.add(null);
-        }
-        for (String annotationColumn : dataTable.getDataAnnotationColumns()) {
-            List<Component> componentList = new ArrayList<>();
+        this.dataTableReference = dataTableReference;
+
+        JIPipeDataTable dataTable = dataTableReference.get();
+        if (dataTable != null) {
             for (int i = 0; i < dataTable.getRowCount(); i++) {
-                componentList.add(null);
+                previewCache.add(null);
             }
-            dataAnnotationPreviewCache.put(annotationColumn, componentList);
+            for (String annotationColumn : dataTable.getDataAnnotationColumns()) {
+                List<Component> componentList = new ArrayList<>();
+                for (int i = 0; i < dataTable.getRowCount(); i++) {
+                    componentList.add(null);
+                }
+                dataAnnotationPreviewCache.put(annotationColumn, componentList);
+            }
         }
     }
 
     public JIPipeDataTable getDataTable() {
-        return dataTable;
+        return dataTableReference.get();
     }
 
     private void revalidatePreviewCache() {
@@ -90,10 +95,16 @@ public class JIPipeExtendedDataTableModel implements TableModel {
      * @return relative annotation column index, or -1
      */
     public int toAnnotationColumnIndex(int columnIndex) {
-        if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 4)
-            return columnIndex - dataTable.getDataAnnotationColumns().size() - 4;
-        else
+        JIPipeDataTable dataTable = dataTableReference.get();
+        if(dataTable != null) {
+            if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 4)
+                return columnIndex - dataTable.getDataAnnotationColumns().size() - 4;
+            else
+                return -1;
+        }
+        else {
             return -1;
+        }
     }
 
     /**
@@ -103,25 +114,44 @@ public class JIPipeExtendedDataTableModel implements TableModel {
      * @return relative data annotation column index, or -1
      */
     public int toDataAnnotationColumnIndex(int columnIndex) {
-        if (columnIndex < dataTable.getDataAnnotationColumns().size() + 4 && (columnIndex - 4) < dataTable.getDataAnnotationColumns().size()) {
-            return columnIndex - 4;
-        } else {
+        JIPipeDataTable dataTable = dataTableReference.get();
+        if(dataTable != null) {
+            if (columnIndex < dataTable.getDataAnnotationColumns().size() + 4 && (columnIndex - 4) < dataTable.getDataAnnotationColumns().size()) {
+                return columnIndex - 4;
+            } else {
+                return -1;
+            }
+        }
+        else {
             return -1;
         }
     }
 
     @Override
     public int getRowCount() {
-        return dataTable.getRowCount();
+        JIPipeDataTable dataTable = dataTableReference.get();
+        if(dataTable != null) {
+            return dataTable.getRowCount();
+        }
+        else {
+            return 0;
+        }
     }
 
     @Override
     public int getColumnCount() {
-        return dataTable.getTextAnnotationColumns().size() + dataTable.getDataAnnotationColumns().size() + 4;
+        JIPipeDataTable dataTable = dataTableReference.get();
+        if(dataTable != null) {
+            return dataTable.getTextAnnotationColumns().size() + dataTable.getDataAnnotationColumns().size() + 4;
+        }
+        else {
+            return 4;
+        }
     }
 
     @Override
     public String getColumnName(int columnIndex) {
+        JIPipeDataTable dataTable = dataTableReference.get();
         if (columnIndex == 0)
             return "Index";
         else if (columnIndex == 1)
@@ -130,10 +160,13 @@ public class JIPipeExtendedDataTableModel implements TableModel {
             return "Preview";
         else if (columnIndex == 3)
             return "String representation";
-        else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
+        else if (toDataAnnotationColumnIndex(columnIndex) != -1 && dataTable != null) {
             return "$" + dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
-        } else {
+        } else if(dataTable != null) {
             return dataTable.getTextAnnotationColumns().get(toAnnotationColumnIndex(columnIndex));
+        }
+        else {
+            return "NA";
         }
     }
 
@@ -161,54 +194,60 @@ public class JIPipeExtendedDataTableModel implements TableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        if (columnIndex == 0) {
-            return rowIndex;
-        } else if (columnIndex == 1) {
-            try {
-                return JIPipeDataInfo.getInstance(dataTable.getDataClass(rowIndex));
-            } catch (IndexOutOfBoundsException e) {
-                return null;
-            }
-        } else if (columnIndex == 2) {
-            revalidatePreviewCache();
-            Component preview = previewCache.get(rowIndex);
-            if (preview == null) {
-                if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                    preview = new JIPipeCachedDataPreview(table, dataTable.getVirtualData(rowIndex), true);
-                    previewCache.set(rowIndex, preview);
-                } else {
-                    preview = new JLabel("N/A");
-                    previewCache.set(rowIndex, preview);
+        JIPipeDataTable dataTable = dataTableReference.get();
+        if(dataTable != null) {
+            if (columnIndex == 0) {
+                return rowIndex;
+            } else if (columnIndex == 1) {
+                try {
+                    return JIPipeDataInfo.getInstance(dataTable.getDataClass(rowIndex));
+                } catch (IndexOutOfBoundsException e) {
+                    return null;
+                }
+            } else if (columnIndex == 2) {
+                revalidatePreviewCache();
+                Component preview = previewCache.get(rowIndex);
+                if (preview == null) {
+                    if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
+                        preview = new JIPipeCachedDataPreview(table, dataTable.getVirtualData(rowIndex), true);
+                        previewCache.set(rowIndex, preview);
+                    } else {
+                        preview = new JLabel("N/A");
+                        previewCache.set(rowIndex, preview);
+                    }
+                }
+                return preview;
+            } else if (columnIndex == 3)
+                try {
+                    return "" + dataTable.getVirtualData(rowIndex).getStringRepresentation();
+                } catch (IndexOutOfBoundsException e) {
+                    return "<Invalid>";
+                }
+            else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
+                revalidatePreviewCache();
+                String dataAnnotationName = dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
+                Component preview = dataAnnotationPreviewCache.get(dataAnnotationName).get(rowIndex);
+                if (preview == null) {
+                    JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(rowIndex, dataAnnotationName);
+                    if (dataAnnotation != null && GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
+                        preview = new JIPipeCachedDataPreview(table, dataAnnotation.getVirtualData(), true);
+                        dataAnnotationPreviewCache.get(dataAnnotationName).set(rowIndex, preview);
+                    } else {
+                        preview = new JLabel("N/A");
+                        dataAnnotationPreviewCache.get(dataAnnotationName).set(rowIndex, preview);
+                    }
+                }
+                return preview;
+            } else {
+                try {
+                    return dataTable.getTextAnnotation(rowIndex, toAnnotationColumnIndex(columnIndex));
+                } catch (IndexOutOfBoundsException e) {
+                    return null;
                 }
             }
-            return preview;
-        } else if (columnIndex == 3)
-            try {
-                return "" + dataTable.getVirtualData(rowIndex).getStringRepresentation();
-            } catch (IndexOutOfBoundsException e) {
-                return "<Invalid>";
-            }
-        else if (toDataAnnotationColumnIndex(columnIndex) != -1) {
-            revalidatePreviewCache();
-            String dataAnnotationName = dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(columnIndex));
-            Component preview = dataAnnotationPreviewCache.get(dataAnnotationName).get(rowIndex);
-            if (preview == null) {
-                JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(rowIndex, dataAnnotationName);
-                if (dataAnnotation != null && GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                    preview = new JIPipeCachedDataPreview(table, dataAnnotation.getVirtualData(), true);
-                    dataAnnotationPreviewCache.get(dataAnnotationName).set(rowIndex, preview);
-                } else {
-                    preview = new JLabel("N/A");
-                    dataAnnotationPreviewCache.get(dataAnnotationName).set(rowIndex, preview);
-                }
-            }
-            return preview;
-        } else {
-            try {
-                return dataTable.getTextAnnotation(rowIndex, toAnnotationColumnIndex(columnIndex));
-            } catch (IndexOutOfBoundsException e) {
-                return null;
-            }
+        }
+        else {
+            return null;
         }
     }
 
