@@ -16,7 +16,10 @@ package org.hkijena.jipipe.ui.cache;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
+import org.hkijena.jipipe.api.cache.JIPipeCacheClearAllRun;
+import org.hkijena.jipipe.api.cache.JIPipeCacheClearOutdatedRun;
 import org.hkijena.jipipe.ui.*;
+import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -73,12 +76,12 @@ public class JIPipeCacheManagerUI extends JButton implements JIPipeProjectWorkbe
             JMenuItem clearOutdated = new JMenuItem("Clear outdated", UIUtils.getIconFromResources("actions/clock.png"));
             clearOutdated.setToolTipText("Removes all cached items that are have no representation in the project graph, anymore. " +
                     "This includes items where the algorithm parameters have been changed.");
-            clearOutdated.addActionListener(e -> getProject().getCache().clearOutdated(new JIPipeProgressInfo()));
+            clearOutdated.addActionListener(e -> JIPipeRunnerQueue.getInstance().enqueue(new JIPipeCacheClearOutdatedRun(getProject().getCache())));
             menu.add(clearOutdated);
 
             JMenuItem clearAll = new JMenuItem("Clear all", UIUtils.getIconFromResources("actions/delete.png"));
             clearAll.setToolTipText("Removes all cached items.");
-            clearAll.addActionListener(e -> getProject().getCache().clearAll(new JIPipeProgressInfo()));
+            clearAll.addActionListener(e -> JIPipeRunnerQueue.getInstance().enqueue(new JIPipeCacheClearAllRun(getProject().getCache())));
             menu.add(clearAll);
         }
     }

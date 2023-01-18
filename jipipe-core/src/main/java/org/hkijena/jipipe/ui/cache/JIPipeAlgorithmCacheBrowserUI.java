@@ -16,6 +16,8 @@ package org.hkijena.jipipe.ui.cache;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
+import org.hkijena.jipipe.api.cache.JIPipeCacheClearAllRun;
+import org.hkijena.jipipe.api.cache.JIPipeCacheClearOutdatedRun;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
@@ -153,7 +155,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
 
         Ribbon.Band cacheManageBand = cacheTask.addBand("Data");
         cacheManageBand.add(new SmallButtonAction("Clear all", "Clears all cached data of this node", UIUtils.getIconFromResources("actions/clear-brush.png"), () -> getProject().getCache().clearAll(this.graphNode.getUUIDInParentGraph(), new JIPipeProgressInfo())));
-        cacheManageBand.add(new SmallButtonAction("Clear outdated", "Clears all cached data of this node that was not generated with the current parameters", UIUtils.getIconFromResources("actions/document-open-recent.png"), () -> getProject().getCache().clearOutdated(new JIPipeProgressInfo())));
+        cacheManageBand.add(new SmallButtonAction("Clear outdated", "Clears all cached data of this node that was not generated with the current parameters", UIUtils.getIconFromResources("actions/document-open-recent.png"), () -> JIPipeRunnerQueue.getInstance().enqueue(new JIPipeCacheClearOutdatedRun(getProject().getCache()))));
 
         // Export task
         Ribbon.Band exportCacheBand = exportTask.addBand("Cache");

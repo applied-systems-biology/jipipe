@@ -35,7 +35,7 @@ public class RealTimeProjectRunner extends JIPipeProjectWorkbenchPanel {
 
     private final RuntimeSettings runtimeSettings = RuntimeSettings.getInstance();
     private JIPipeProjectRun currentRun;
-    private Timer timer = new Timer(RuntimeSettings.getInstance().getRealTimeRunDelay(), e -> scheduleRun());
+    private final Timer timer = new Timer(RuntimeSettings.getInstance().getRealTimeRunDelay(), e -> scheduleRun());
 
     /**
      * @param workbenchUI The workbench UI
