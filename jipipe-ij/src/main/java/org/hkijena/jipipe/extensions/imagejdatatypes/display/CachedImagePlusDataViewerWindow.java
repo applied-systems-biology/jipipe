@@ -183,6 +183,12 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
 
     }
 
+    @Override
+    public void dispose() {
+        super.dispose();
+        imageViewerPanel.dispose();
+    }
+
     /**
      * Used to override the data loading behavior
      */

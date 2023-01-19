@@ -157,6 +157,12 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         }
     }
 
+    @Override
+    public void dispose() {
+        dataSource = null;
+        super.dispose();
+    }
+
     /**
      * Returns a standard error label that simplifies the creation of cache windows.
      * It must be included into the UI manually

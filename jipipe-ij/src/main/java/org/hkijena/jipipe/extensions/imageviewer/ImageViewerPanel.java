@@ -201,6 +201,11 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         } catch (Exception | Error e) {
             e.printStackTrace();
         }
+        try {
+            uploadSliceToCanvas();
+        } catch (Exception | Error e) {
+            e.printStackTrace();
+        }
     }
 
     private void initialize() {
