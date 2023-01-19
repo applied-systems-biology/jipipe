@@ -104,4 +104,10 @@ public class CachedTableViewerWindow extends JIPipeCacheDataViewerWindow {
         ResultsTableData duplicate = (ResultsTableData) data.duplicate(progressInfo);
         tableEditor.setTableModel(duplicate);
     }
+
+    @Override
+    public void dispose() {
+        super.dispose();
+        tableEditor.setTableModel(new ResultsTableData());
+    }
 }
