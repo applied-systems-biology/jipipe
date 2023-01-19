@@ -186,11 +186,11 @@ public class JIPipeProjectRun implements JIPipeRunnable {
                 threadPool.shutdown();
             }
             threadPool = null;
-        }
 
-        // Clear all slots
-        for (JIPipeGraphNode node : copiedGraph.getGraphNodes()) {
-            node.clearSlotData();
+            // Clear all slots
+            for (JIPipeGraphNode node : copiedGraph.getGraphNodes()) {
+                node.clearSlotData();
+            }
         }
 
         // Postprocessing
