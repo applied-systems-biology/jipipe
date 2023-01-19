@@ -127,6 +127,11 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
     @Override
     public void run() {
 
+        // Remove outdated cache if needed
+        if (GeneralDataSettings.getInstance().isAutoRemoveOutdatedCachedData()) {
+            project.getCache().clearOutdated(getProgressInfo().resolveAndLog("Remove outdated cache"));
+        }
+
         // Disable all algorithms that are not dependencies of the benched algorithm
         Set<JIPipeGraphNode> predecessorAlgorithms = findPredecessorsWithoutCache();
         if (!settings.isExcludeSelected())
@@ -166,12 +171,6 @@ public class QuickRun implements JIPipeRunnable, JIPipeValidatable {
                 outputSlot.clearData();
             }
         }
-
-        // Remove outdated cache if needed
-        if (GeneralDataSettings.getInstance().isAutoRemoveOutdatedCachedData()) {
-            project.getCache().clearOutdated(getProgressInfo().resolveAndLog("Remove outdated cache"));
-        }
-
     }
 
     /**
