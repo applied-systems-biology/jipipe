@@ -55,7 +55,7 @@ In the expression editor window (red arrow 2) look for a number conversion funct
       <description>Enter the same filtering formula for the 1-channel slot (red arrow 1).
 Easiest is to copy-paste the content of the Three-channel slot expression (red arrow 2) and change the channel number to 1 (red arrow 3).
 The formulas now should be:
-Three channels: TO_NUMBER($&amp;quot;Image composite channel count&amp;quot;) == 3 1-channel: TO_NUMBER($&amp;quot;Image composite channel count&amp;quot;) == 1 </description>
+ Three channels: TO_NUMBER($&amp;quot;Image composite channel count&amp;quot;) == 3 1-channel: TO_NUMBER($&amp;quot;Image composite channel count&amp;quot;) == 1  </description>
     </item>
     
     <item>

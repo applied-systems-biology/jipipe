@@ -13,7 +13,7 @@
       
       <guid>https://www.jipipe.org/tutorials/basic/cache-2/step1/</guid>
       <description>We assume that you have followed the previous tutorial
-Load the example pipeline.
+Load the example pipeline.
 Go to the Compartments tab and update the cache directly from there. This can be achieved with the compartment nodes the same way as with regular nodes. Use the green arrow on the Processing compartment (red arrow 1) and choose the Cache intermediate results option to save the cache for all nodes (red arrow 2).</description>
     </item>
     
@@ -84,7 +84,8 @@ While the format can be browsed by humans, it is mainly designed for reading via
       
       <guid>https://www.jipipe.org/tutorials/basic/cache-2/step8/</guid>
       <description>The Import/Export menu (red arrow 1) also allows the importing/exporting of the entire cache of the selected node (red arrow 2) to a selected/created directory (red arrow 3).
-The difference between exporting the current table (as indicated by the Table label) and the whole node cache is that the full-cache options store all outputs of the node, while the Table-functions exclude all non-selected outputs.</description>
+The difference between exporting the current table (as indicated by the Table label) and the whole node cache is that the full-cache options store all outputs of the node, while the Table-functions exclude all non-selected outputs.
+</description>
     </item>
     
     <item>
@@ -103,7 +104,8 @@ The difference between exporting the current table (as indicated by the Table la
       
       <guid>https://www.jipipe.org/tutorials/basic/cache-2/step10/</guid>
       <description>Under the folder name (red arrow 1), the groups of results are listed (red arrow 2-4), as they appeared in the cache. Inside each of the entries, data-table.csv and data-table.json files (red arrow 5) explains the content of the data subfolders, and contains the metadata.
-Only the data-table.json file is relevant for importing metadata. The data-table.csv table is generated for the sake of convenience.</description>
+Only the data-table.json file is relevant for importing metadata. The data-table.csv table is generated for the sake of convenience.
+</description>
     </item>
     
     <item>
@@ -113,7 +115,8 @@ Only the data-table.json file is relevant for importing metadata. The data-table
       
       <guid>https://www.jipipe.org/tutorials/basic/cache-2/step11/</guid>
       <description>The numbered subfolder will contain the actual cached data of the 1-channel measurements output (red arrow 1) in a *.csv file (red arrow 2).
-The numeric folders are standardized. In JIPipe, navigate to Help &amp;gt; Data type compendium to review the exact specifications of the directory contents.</description>
+The numeric folders are standardized. In JIPipe, navigate to Help &amp;gt; Data type compendium to review the exact specifications of the directory contents.
+</description>
     </item>
     
     <item>

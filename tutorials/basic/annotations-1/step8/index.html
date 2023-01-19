@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-12T13:08:14 CET">
+<meta name="revised" content="2023-01-19T20:28:46 CET">
 <title>Step 8 :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../../css/font-awesome.min.css" rel="stylesheet">
@@ -1380,7 +1380,7 @@
     
     <p>Go to the <code>Parameters</code> tab and examine the filter expression in the category <code>Filters</code> (red arrow 1).</p>
 <p>The figure shows an expression (by default the expression is empty)</p>
-<pre tabindex="0"><code>TO_NUMBER($&#34;Image composite channel count&#34;) == 3
+<pre><code>TO_NUMBER($&quot;Image composite channel count&quot;) == 3
 </code></pre><p>This text is called an <a href="../../../../documentation/create-pipelines/expressions/">expression</a> and determines the filter conditions that determine wether an input data item is pass through the output.</p>
 <p><em>In the following steps, we will briefly explain the functionality behind the expression.</em></p>
 

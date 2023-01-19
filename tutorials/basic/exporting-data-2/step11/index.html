@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-12T13:08:15 CET">
+<meta name="revised" content="2023-01-19T20:28:47 CET">
 <title>Step 11 :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../../css/font-awesome.min.css" rel="stylesheet">
@@ -1381,7 +1381,7 @@
     <p>Finally, edit the parameters of <code>Export ROI</code> node. <code>Export data</code> will export a *.roi file if only one ROI is present and otherwise compress all ROIs into a *.zip file. This node can optionally turn off this export behavior and export all ROIs into an individual *.roi file.</p>
 <p>Again, set the <code>Output directory</code> to <code>ExampleExports/ViaNodes</code> with <code>Output relative to project directory</code> enabled.</p>
 <p>The filename expression set to</p>
-<pre tabindex="0"><code>&#34;rois_&#34; + #Filename
+<pre><code>&quot;rois_&quot; + #Filename
 </code></pre><p>This would yield a file that is for example named <code>rois_blobs.zip</code> or <code>rois_blobs.roi</code> depending on whether one or multiple ROIs are present.</p>
 
 

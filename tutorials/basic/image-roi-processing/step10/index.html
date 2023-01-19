@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-12T13:08:15 CET">
+<meta name="revised" content="2023-01-19T20:28:47 CET">
 <title>Step 10 :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../../css/font-awesome.min.css" rel="stylesheet">
@@ -1379,9 +1379,9 @@
     
     
     <p>Go to the Parameters tab of the <code>Filter ROI by statistics</code> node (red arrow 1) and use the expression editor (red arrow 2) as shown before to create the filtering formula (red arrow 3):</p>
-<pre tabindex="0"><code>Area &gt; 150 AND Area &lt; 700
+<pre><code>Area &gt; 150 AND Area &lt; 700
 </code></pre>
-<div class="notices tip" ><p><p>Here you do not need to write <code>TO_NUMBER(Area)</code>, as the values are already numeric to begin with.
+<div class="notices tip" ><p><p>Here you do not need to write <code>TO_NUMBER(Area)</code>, as the values are already numeric to begin with. 
 Unlike text-based annotations that come from JIPipe&rsquo;s data management functions, <code>Filter ROI by statistics</code> extracts its values from ImageJ tables that support numbers.</p>
 <p>If you incorporate annotations into your formula, you then should use <code>TO_NUMBER</code>, e.g., <code>TO_NUMBER(numChannels)</code>.</p>
 </p></div>

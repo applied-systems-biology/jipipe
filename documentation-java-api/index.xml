@@ -21,8 +21,8 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/documentation-java-api/create-extension/</guid>
-      <description>1.74.x&amp;#43; This guide was written for JIPipe version 1.74.0 or newer Prerequisities Java 8 (Java 9+ are not working) If you are using Windows or a Linux distribution without Java 8, we recommend AdoptOpenJDK (Please choose OpenJDK 8) Maven Creating the project The project should have following structure:
-Project root└── pom.xml└── src└── main├── java└── resources Both the java and resources folder should contain a folder structure that is equivalent the groupId and artifactId of the project.</description>
+      <description>1.74.x&amp;#43;This guide was written for JIPipe version 1.74.0 or newer Prerequisities  Java 8 (Java 9+ are not working)  If you are using Windows or a Linux distribution without Java 8, we recommend AdoptOpenJDK (Please choose OpenJDK 8)   Maven  Creating the project The project should have following structure:
+Project root└── pom.xml└── src└── main├── java└── resourcesBoth the java and resources folder should contain a folder structure that is equivalent the groupId and artifactId of the project.</description>
     </item>
     
     <item>

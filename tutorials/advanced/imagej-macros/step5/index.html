@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-12T13:08:14 CET">
+<meta name="revised" content="2023-01-19T20:28:46 CET">
 <title>Step 5 :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../../css/font-awesome.min.css" rel="stylesheet">
@@ -1319,8 +1319,8 @@
     
     
     <p>Now we build-in another macro node, this time we will only use the <em>Phansalkar</em> method, as this is judged to be the most successful thresholding method after examining the output of the first macro node. The new node (red arrow 1) was set up as the first one, the macro code (red arrow 2) will run this specific method only (red arrow 3).</p>
-<pre tabindex="0"><code>run(&#34;Auto Local Threshold&#34;, 
-&#34;method=Phansalkar radius=5 parameter_1=0 parameter_2=0 white&#34;)
+<pre><code>run(&quot;Auto Local Threshold&quot;, 
+&quot;method=Phansalkar radius=5 parameter_1=0 parameter_2=0 white&quot;)
 </code></pre>
 
     

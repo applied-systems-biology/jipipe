@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-12T13:08:15 CET">
+<meta name="revised" content="2023-01-19T20:28:48 CET">
 <title>Annotations II: Branching :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -320,7 +320,7 @@
         <ul>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/tutorials/basic/annotations-2/" class="dd-item active haschildren
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/annotations-2/" class="dd-item parent active haschildren
         ">
       <div>
       <a href="../../../tutorials/basic/annotations-2/">Annotations II: Branching</a><i class="fa fa-circle-thin read-icon"></i>
@@ -1244,6 +1244,98 @@
    Examples</option>
     <option value="/tutorials/" >
    Tutorials</option> 
+    <option value="/tutorials/basic/" >
+  - 
+   Basic</option> 
+    <option value="/tutorials/basic/adding-nodes-saving/" >
+  -- 
+   Adding and running nodes</option>
+    <option value="/tutorials/basic/finding-connecting-nodes-1/" >
+  -- 
+   Importing an image I</option>
+    <option value="/tutorials/basic/finding-connecting-nodes-2/" >
+  -- 
+   Importing an image II</option>
+    <option value="/tutorials/basic/finding-connecting-nodes-3/" >
+  -- 
+   Importing an image III</option>
+    <option value="/tutorials/basic/node-parameters/" >
+  -- 
+   Changing node parameters</option>
+    <option value="/tutorials/basic/importing-multiple-images-1/" >
+  -- 
+   Importing a directory of images I</option>
+    <option value="/tutorials/basic/importing-multiple-images-2/" >
+  -- 
+   Importing a directory of images II</option>
+    <option value="/tutorials/basic/multi-channel-images-1/" >
+  -- 
+   Handling multi-channel images I</option>
+    <option value="/tutorials/basic/comment-nodes/" >
+  -- 
+   Comment nodes</option>
+    <option value="/tutorials/basic/annotations-1/" >
+  -- 
+   Annotations I: Filtering</option>
+    <option value="/tutorials/basic/annotations-2/"  selected>
+  -- 
+   Annotations II: Branching</option> 
+  
+    <option value="/tutorials/basic/annotations-3/" >
+  -- 
+   Annotations III: Modifying and merging</option>
+    <option value="/tutorials/basic/compartments-1/" >
+  -- 
+   Compartments I: Creating and connecting</option>
+    <option value="/tutorials/basic/compartments-2/" >
+  -- 
+   Compartments II: Basic image segmentation</option>
+    <option value="/tutorials/basic/quantification-plotting/" >
+  -- 
+   Quantification and plotting</option>
+    <option value="/tutorials/basic/cache-1/" >
+  -- 
+   Cache I: Generating and viewing</option>
+    <option value="/tutorials/basic/cache-2/" >
+  -- 
+   Cache II: Managing and exporting</option>
+    <option value="/tutorials/basic/image-physical-dimensions/" >
+  -- 
+   Image properties and LUT</option>
+    <option value="/tutorials/basic/image-roi-processing/" >
+  -- 
+   ROI processing</option>
+    <option value="/tutorials/basic/table-processing/" >
+  -- 
+   Table processing</option>
+    <option value="/tutorials/basic/annotating-data-with-measurements/" >
+  -- 
+   Annotating data with measurements</option>
+    <option value="/tutorials/basic/exporting-data-1/" >
+  -- 
+   Exporting data I: Machine-readable</option>
+    <option value="/tutorials/basic/exporting-data-2/" >
+  -- 
+   Exporting data II: Human-readable</option>
+  
+    <option value="/tutorials/features/" >
+  - 
+   Features</option>
+    <option value="/tutorials/intermediate/" >
+  - 
+   Intermediate</option>
+    <option value="/tutorials/advanced/" >
+  - 
+   Advanced</option>
+    <option value="/tutorials/ui/" >
+  - 
+   UI</option>
+    <option value="/tutorials/videos/" >
+  - 
+   Videos</option>
+    <option value="/tutorials/old/" >
+  - 
+   Old tutorials</option>
   
     <option value="/faq/" >
    Frequently asked questions</option>
@@ -1291,11 +1383,11 @@
     <div class="link-box">
     
     <div class="link">
-        <a href="../../../tutorials/basic/annotations-1/">👉 Related tutorial: Annotations I (Filtering)</a>
-        <div class="link-description">
-            This guide is a followup of other tutorials.
-        </div>
+    <a href="../../../tutorials/basic/annotations-1/">👉 Related tutorial: Annotations I (Filtering)</a>
+    <div class="link-description">
+        This guide is a followup of other tutorials.
     </div>
+</div>
 
 </div>
 <div class="examples">
@@ -1449,9 +1541,9 @@
 <p>In the expression editor window (red arrow 2) look for a number conversion function (red arrow 3) and select the <code>TO_NUMBER</code> function (red arrow 4). Choose the <code>Variable</code> value type (red arrow 5) and paste in the name of the variable based on which the filtering will be done (here: <code>Image composite channel count</code> as seen in the previous tutorial, red arrow 6).</p>
 <p>Insert the new expression (red arrow 7)
 The editor field will now read:</p>
-<pre tabindex="0"><code>TO_NUMBER($&#34;Image composite channel count&#34;)
+<pre><code>TO_NUMBER($&quot;Image composite channel count&quot;)
 </code></pre><p>Adapt the expression further to test for <code>3</code> channels via the comparison operator (red arrow 8):</p>
-<pre tabindex="0"><code>TO_NUMBER($&#34;Image composite channel count&#34;) == 3
+<pre><code>TO_NUMBER($&quot;Image composite channel count&quot;) == 3
 </code></pre><p>Accept the changes (red arrow 9).</p>
 
             </div>

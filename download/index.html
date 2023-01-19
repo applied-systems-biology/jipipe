@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-12T13:08:15 CET">
+<meta name="revised" content="2023-01-19T20:28:48 CET">
 <title>Download :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
 <link href="../css/font-awesome.min.css" rel="stylesheet">
@@ -64,10 +64,11 @@
             <i class="fa fa-fw fa-home"></i>
           </a>
           </li>
-    <li data-nav-id="https://www.jipipe.org/download/" class="dd-item active haschildren
+    <li data-nav-id="https://www.jipipe.org/download/" class="dd-item parent active haschildren
         ">
       <div>
-      <a href="../download/">Download</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../download/">Download</a>
+            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
     <li data-nav-id="https://www.jipipe.org/download/changelog/" class="dd-item haschildren
@@ -1235,7 +1236,11 @@
         <select onchange="javascript:location.href = this.value;">
           
     <option value="/download/"  selected>
-   Download</option>
+   Download</option> 
+    <option value="/download/changelog/" >
+  - 
+   Changelog</option>
+  
     <option value="/installation/" >
    Installation</option>
     <option value="/examples/" >
@@ -1307,6 +1312,7 @@ Please choose how you want to install JIPipe
       <li><a href="https://fiji.sc/" target="_blank">Download</a> ImageJ or open your existing ImageJ installation</li>
       <li>Go to <i>Help &gt; Update ...</i> and activate the <code>JIPipe</code> update site. Then let ImageJ download all necessary files.</li>
       <li>Click <i>Manage update sites</i> and select <code>JIPipe</code>. <strong>If JIPipe is not available, click <i>Add update site</i> and add a new site with the name <code>JIPipe</code> and the URL <code>https://sites.imagej.net/JIPipe/</code></strong></li>
+      <li>Optional: it is recommended to also select the <code>ImageScience</code> and <code>IJPB-plugins</code> update sites. Otherwise, JIPipe will later prompt you to install them.</li>
       <li>Click <i>Apply changes</i> and wait until all downloads have been finished
       <li>Restart ImageJ and go to Plugins/JIPipe/JIPipe GUI</li>
       <li>On the first start, JIPipe will most likely detect missing dependencies. You can find information about this feature <a href="../installation/dependencies/">here</a></li>

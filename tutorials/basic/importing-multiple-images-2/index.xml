@@ -32,7 +32,8 @@ The node List files consumes JIPipe-managed Folder data and produces the corresp
       
       <guid>https://www.jipipe.org/tutorials/basic/importing-multiple-images-2/step3/</guid>
       <description>Go to Parameters of the new node (red arrow 1)and check Recursive (red arrow 2). Run the node (red arrow 3) with Update cache.
-By default, the node will only list the direct children of the current path. Recursive ensures that also the N-th children are detected.</description>
+By default, the node will only list the direct children of the current path. Recursive ensures that also the N-th children are detected.
+</description>
     </item>
     
     <item>

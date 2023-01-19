@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-12T13:08:14 CET">
+<meta name="revised" content="2023-01-19T20:28:46 CET">
 <title>Extension :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -1409,146 +1409,146 @@ the document in <a href="https://json-schema.org/">JSON Schema</a> format: <a hr
  </section>
 </div>
 <h1 id="example">Example</h1>
-<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-json" data-lang="json"><span style="display:flex;"><span><span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;org.hkijena.jipipe:example-list-tiff&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;version&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;1.0.0&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Example extension&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;An example extension&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;authors&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Ruman Gerst&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;website&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;license&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;BSD-2&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;citation&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;algorithms&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;folder-list-tif&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;List TIFF files&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Lists all TIFF files in a folder&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;authors&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Ruman Gerst&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;website&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;license&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;BSD-2&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;citation&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;category&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Converter&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;graph&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;nodes&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;default-preprocessing-filter-files&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Files&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;file&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Files&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Filtered files&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;file&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Filtered files&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#111">}</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;{Vertical}&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">25</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">250</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#111">}</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;jipipe:algorithm-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;file-filter&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;DEFAULT&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Filter *.tif&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;filters&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;mode&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Glob&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;filterString&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;*.tif&#34;</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#111">}</span> <span style="color:#111">],</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;jipipe:trait-generation&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;modification&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;per-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;global&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;transfer&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;transfers&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">],</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;transfer-all-to-all&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#111">}</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;jipipe:dynamic-parameters&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;default-preprocessing-list-files&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Folders&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;folder&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Folders&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;Files&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;file&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Files&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#111">}</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;{Vertical}&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">25</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">50</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#111">}</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;jipipe:algorithm-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;folder-list-files&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;DEFAULT&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;List files&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;jipipe:trait-generation&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;modification&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;per-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;global&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#f92672">&#34;transfer&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;transfers&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">],</span>
-</span></span><span style="display:flex;"><span>              <span style="color:#f92672">&#34;transfer-all-to-all&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#111">}</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#f92672">&#34;jipipe:dynamic-parameters&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#111">}</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;edges&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;source-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;default-preprocessing-list-files&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;target-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;default-preprocessing-filter-files&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;source-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Files&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#f92672">&#34;target-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Files&#34;</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#111">}</span> <span style="color:#111">]</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;menu-path&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;jipipe:project-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;graph-wrapper-algorithm&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;preferred-traits&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">],</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;unwanted-traits&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">],</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;added-traits&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">],</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;removed-traits&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">]</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#111">}</span> <span style="color:#111">],</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;dependencies&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Filesystem types and algorithms&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Data types and algorithms for interacting with files and folders&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;authors&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Zoltán Cseresnyés, Ruman Gerst&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;website&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;https://jipipe.org/&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;license&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;BSD-2&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>      <span style="color:#f92672">&#34;citation&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#111">},</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;org.hkijena.jipipe:filesystem&#34;</span><span style="color:#111">,</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">&#34;version&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;1.0.0&#34;</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#111">}</span> <span style="color:#111">],</span>
-</span></span><span style="display:flex;"><span>  <span style="color:#f92672">&#34;jipipe:project-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;json-extension&#34;</span>
-</span></span><span style="display:flex;"><span><span style="color:#111">}</span>
-</span></span></code></pre></div>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-json" data-lang="json"><span style="color:#111">{</span>
+  <span style="color:#f92672">&#34;id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;org.hkijena.jipipe:example-list-tiff&#34;</span><span style="color:#111">,</span>
+  <span style="color:#f92672">&#34;version&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;1.0.0&#34;</span><span style="color:#111">,</span>
+  <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+    <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Example extension&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;An example extension&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;authors&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Ruman Gerst&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;website&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;license&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;BSD-2&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;citation&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span>
+  <span style="color:#111">},</span>
+  <span style="color:#f92672">&#34;algorithms&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
+    <span style="color:#f92672">&#34;id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;folder-list-tif&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;List TIFF files&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Lists all TIFF files in a folder&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;authors&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Ruman Gerst&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;website&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;license&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;BSD-2&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;citation&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span>
+    <span style="color:#111">},</span>
+    <span style="color:#f92672">&#34;category&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Converter&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;graph&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;nodes&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;default-preprocessing-filter-files&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Files&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;file&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Files&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+            <span style="color:#111">},</span>
+            <span style="color:#f92672">&#34;Filtered files&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;file&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Filtered files&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;{Vertical}&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">25</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">250</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;jipipe:algorithm-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;file-filter&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;DEFAULT&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Filter *.tif&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;filters&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;mode&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Glob&#34;</span><span style="color:#111">,</span>
+            <span style="color:#f92672">&#34;filterString&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;*.tif&#34;</span>
+          <span style="color:#111">}</span> <span style="color:#111">],</span>
+          <span style="color:#f92672">&#34;jipipe:trait-generation&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;modification&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;per-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">},</span>
+              <span style="color:#f92672">&#34;global&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+            <span style="color:#111">},</span>
+            <span style="color:#f92672">&#34;transfer&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;transfers&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">],</span>
+              <span style="color:#f92672">&#34;transfer-all-to-all&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;jipipe:dynamic-parameters&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+        <span style="color:#111">},</span>
+        <span style="color:#f92672">&#34;default-preprocessing-list-files&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+          <span style="color:#f92672">&#34;jipipe:slot-configuration&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;Folders&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;folder&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Input&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Folders&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+            <span style="color:#111">},</span>
+            <span style="color:#f92672">&#34;Files&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;slot-data-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;file&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;slot-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Output&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inherited-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Files&#34;</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;custom-name&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;inheritance-conversions&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;jipipe:algorithm-ui-location&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;{Vertical}&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;x&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">25</span><span style="color:#111">,</span>
+              <span style="color:#f92672">&#34;y&#34;</span> <span style="color:#111">:</span> <span style="color:#ae81ff">50</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;jipipe:algorithm-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;folder-list-files&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;jipipe:algorithm-compartment&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;DEFAULT&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;List files&#34;</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">null</span><span style="color:#111">,</span>
+          <span style="color:#f92672">&#34;jipipe:trait-generation&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+            <span style="color:#f92672">&#34;modification&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;per-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">},</span>
+              <span style="color:#f92672">&#34;global&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+            <span style="color:#111">},</span>
+            <span style="color:#f92672">&#34;transfer&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+              <span style="color:#f92672">&#34;transfers&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">],</span>
+              <span style="color:#f92672">&#34;transfer-all-to-all&#34;</span> <span style="color:#111">:</span> <span style="color:#00a8c8">true</span>
+            <span style="color:#111">}</span>
+          <span style="color:#111">},</span>
+          <span style="color:#f92672">&#34;jipipe:dynamic-parameters&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span> <span style="color:#111">}</span>
+        <span style="color:#111">}</span>
+      <span style="color:#111">},</span>
+      <span style="color:#f92672">&#34;edges&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
+        <span style="color:#f92672">&#34;source-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;default-preprocessing-list-files&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;target-algorithm&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;default-preprocessing-filter-files&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;source-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Files&#34;</span><span style="color:#111">,</span>
+        <span style="color:#f92672">&#34;target-slot&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Files&#34;</span>
+      <span style="color:#111">}</span> <span style="color:#111">]</span>
+    <span style="color:#111">},</span>
+    <span style="color:#f92672">&#34;menu-path&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;jipipe:project-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;graph-wrapper-algorithm&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;preferred-traits&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">],</span>
+    <span style="color:#f92672">&#34;unwanted-traits&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">],</span>
+    <span style="color:#f92672">&#34;added-traits&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">],</span>
+    <span style="color:#f92672">&#34;removed-traits&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">]</span>
+  <span style="color:#111">}</span> <span style="color:#111">],</span>
+  <span style="color:#f92672">&#34;dependencies&#34;</span> <span style="color:#111">:</span> <span style="color:#111">[</span> <span style="color:#111">{</span>
+    <span style="color:#f92672">&#34;metadata&#34;</span> <span style="color:#111">:</span> <span style="color:#111">{</span>
+      <span style="color:#f92672">&#34;name&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Filesystem types and algorithms&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;description&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Data types and algorithms for interacting with files and folders&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;authors&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;Zoltán Cseresnyés, Ruman Gerst&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;website&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;https://jipipe.org/&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;license&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;BSD-2&#34;</span><span style="color:#111">,</span>
+      <span style="color:#f92672">&#34;citation&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;&#34;</span>
+    <span style="color:#111">},</span>
+    <span style="color:#f92672">&#34;id&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;org.hkijena.jipipe:filesystem&#34;</span><span style="color:#111">,</span>
+    <span style="color:#f92672">&#34;version&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;1.0.0&#34;</span>
+  <span style="color:#111">}</span> <span style="color:#111">],</span>
+  <span style="color:#f92672">&#34;jipipe:project-type&#34;</span> <span style="color:#111">:</span> <span style="color:#d88200">&#34;json-extension&#34;</span>
+<span style="color:#111">}</span>
+</code></pre></div>
 
     
     

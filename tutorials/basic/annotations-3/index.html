@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-12T13:08:15 CET">
+<meta name="revised" content="2023-01-19T20:28:48 CET">
 <title>Annotations III: Modifying and merging :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -328,7 +328,7 @@
         <ul>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/tutorials/basic/annotations-3/" class="dd-item active haschildren
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/annotations-3/" class="dd-item parent active haschildren
         ">
       <div>
       <a href="../../../tutorials/basic/annotations-3/">Annotations III: Modifying and merging</a><i class="fa fa-circle-thin read-icon"></i>
@@ -1282,7 +1282,8 @@
    Annotations II: Branching</option>
     <option value="/tutorials/basic/annotations-3/"  selected>
   -- 
-   Annotations III: Modifying and merging</option>
+   Annotations III: Modifying and merging</option> 
+  
     <option value="/tutorials/basic/compartments-1/" >
   -- 
    Compartments I: Creating and connecting</option>
@@ -1382,11 +1383,11 @@
     <div class="link-box">
     
     <div class="link">
-        <a href="../../../tutorials/basic/annotations-2/">👉 Related tutorial: Annotations II (Branching)</a>
-        <div class="link-description">
-            This guide is a followup of other tutorials.
-        </div>
+    <a href="../../../tutorials/basic/annotations-2/">👉 Related tutorial: Annotations II (Branching)</a>
+    <div class="link-description">
+        This guide is a followup of other tutorials.
     </div>
+</div>
 
 </div>
 <div class="examples">
@@ -1586,7 +1587,7 @@
             <h2 id="step-8">Step 8</h2>
             <p>Now let&rsquo;s assume that we do not need <code>Threshold</code> and <code>MeanIntensity</code> again. These can be removed via dedicated nodes.</p>
 <p>Add a node <code>Remove annotation</code> and configure its <code>Removed annotations</code> parameter as following:</p>
-<pre tabindex="0"><code>key == &#34;Threshold&#34; OR key == &#34;MeanIntensity&#34;
+<pre><code>key == &quot;Threshold&quot; OR key == &quot;MeanIntensity&quot;
 </code></pre><p>This will remove all annotations that either have the name/key <code>Threshold</code> or <code>MeanIntensity</code>.</p>
 <p>
 <div class="notices info" ><p><code>Remove annotation</code> executes the expression for each annotation to determine if it should be deleted.</p></div>

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-12T13:08:15 CET">
+<meta name="revised" content="2023-01-19T20:28:48 CET">
 <title>Installation :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
 <link href="../css/font-awesome.min.css" rel="stylesheet">
@@ -129,10 +129,11 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/installation/" class="dd-item active haschildren
+    <li data-nav-id="https://www.jipipe.org/installation/" class="dd-item parent active haschildren
         ">
       <div>
-      <a href="../installation/">Installation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../installation/">Installation</a>
+            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
       <li data-nav-id="https://www.jipipe.org/installation/dependencies/" class="dd-item">
@@ -1237,7 +1238,14 @@
     <option value="/download/" >
    Download</option>
     <option value="/installation/"  selected>
-   Installation</option>
+   Installation</option> 
+      <option value="/installation/dependencies/" >- ImageJ Dependencies</option>
+      <option value="/installation/omero/" >- Regarding OMERO</option>
+    <option value="/installation/third-party/" >
+  - 
+   Third party software</option>
+      <option value="/installation/extensions/" >- JIPipe extensions</option>
+  
     <option value="/examples/" >
    Examples</option>
     <option value="/tutorials/" >
@@ -1326,7 +1334,7 @@
 <div class="notices info" ><p>We currently have only limited capabilities of testing the MacOS version and appreciate any help of creating a smooth experience. Feel free to contact us!</p></div>
 
 <h1 id="manual-installation">Manual installation</h1>
-<p>This requires an existing Fiji installation. Please download the appropriate package from <a href="https://fiji.sc">https://fiji.sc</a> to get ImageJ.
+<p>This requires an existing Fiji installation. Please download the appropriate package from <a href="https://fiji.sc">https://fiji.sc</a> to get ImageJ. 
 We <strong>strongly</strong> recommend to update ImageJ (via <code>Help &gt; Update...</code>) before installing JIPipe.</p>
 <ol>
 <li><a href="../download">Download</a> the JAR files</li>

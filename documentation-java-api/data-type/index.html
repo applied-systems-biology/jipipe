@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-12T13:08:15 CET">
+<meta name="revised" content="2023-01-19T20:28:48 CET">
 <title>Creating a data type :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -1037,10 +1037,11 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/documentation-java-api/data-type/" class="dd-item active haschildren
+    <li data-nav-id="https://www.jipipe.org/documentation-java-api/data-type/" class="dd-item parent active haschildren
         ">
       <div>
-      <a href="../../documentation-java-api/data-type/">Creating a data type</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../../documentation-java-api/data-type/">Creating a data type</a>
+            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
       <li data-nav-id="https://www.jipipe.org/documentation-java-api/data-type/result-ui/" class="dd-item">
@@ -1256,7 +1257,10 @@
    Creating an algorithm</option>
     <option value="/documentation-java-api/data-type/"  selected>
   - 
-   Creating a data type</option>
+   Creating a data type</option> 
+      <option value="/documentation-java-api/data-type/result-ui/" >-- Displaying data</option>
+      <option value="/documentation-java-api/data-type/result-preview/" >-- Preview from results folder</option>
+  
     <option value="/documentation-java-api/parameter-type/" >
   - 
    Creating a parameter type</option>
@@ -1350,102 +1354,102 @@
 </ul>
 <h2 id="registering-the-data-type">Registering the data type</h2>
 <p>To register the data type and provide it with an id, and icon, use <a href="../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a>:</p>
-<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ... See previous tutorial for other methods
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">register</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// The two null parameters will be handled in the next tutorials
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// You can leave them null if you want. This is valid.
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#111">registerDataType</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-data&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">MyData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">ResourceUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">getPluginResource</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/icons/data-types/data-type.png&#34;</span><span style="color:#f92672">));</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
-</span></span></code></pre></div><h1 id="example">Example</h1>
-<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Documentation for this data type (for the GUI)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;My data&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;This is some data&#34;</span><span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// Human-readable description plus a JSON Schema that describe the structure of a storage folder 
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeStorageDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">humanReadableDescription</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Contains exactly one *.json file that stores the string value.&#34;</span><span style="color:#f92672">,</span> 
-</span></span><span style="display:flex;"><span><span style="color:#111">jsonSchemaURL</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json&#34;</span><span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span><span style="color:#75715e">// You can use @JIPipeHidden to hide this data from data type list UIs
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyData</span> <span style="color:#00a8c8">implements</span> <span style="color:#111">JIPipeData</span> <span style="color:#f92672">{</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#111">String</span> <span style="color:#111">value</span><span style="color:#f92672">;</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#75af00">MyData</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Constructor that initializes the data
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#00a8c8">public</span> <span style="color:#75af00">MyData</span><span style="color:#f92672">(</span><span style="color:#111">String</span> <span style="color:#111">value</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-</span></span><span style="display:flex;"><span>          <span style="color:#00a8c8">this</span><span style="color:#f92672">.</span><span style="color:#75af00">value</span> <span style="color:#f92672">=</span> <span style="color:#111">value</span><span style="color:#f92672">;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75af00">@JsonGetter</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;value&#34;</span><span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getValue</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">return</span> <span style="color:#111">value</span><span style="color:#f92672">;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75af00">@JsonSetter</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;value&#34;</span><span style="color:#f92672">)</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">setValue</span><span style="color:#f92672">(</span><span style="color:#111">String</span> <span style="color:#111">value</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">this</span><span style="color:#f92672">.</span><span style="color:#75af00">value</span> <span style="color:#f92672">=</span> <span style="color:#111">value</span><span style="color:#f92672">;</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// This should return a deep copy
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#111">JIPipeData</span> <span style="color:#75af00">duplicate</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">new</span> <span style="color:#111">MyData</span><span style="color:#f92672">(</span><span style="color:#111">value</span><span style="color:#f92672">);</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// The display method is optional, but recommended
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">display</span><span style="color:#f92672">(</span><span style="color:#111">String</span> <span style="color:#111">displayName</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeWorkbench</span> <span style="color:#111">workbench</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#111">JIPipeTextEditor</span> <span style="color:#111">editor</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeTextEditor</span><span style="color:#f92672">.</span><span style="color:#75af00">openInNewTab</span><span style="color:#f92672">(</span><span style="color:#111">workbench</span><span style="color:#f92672">,</span> <span style="color:#111">displayName</span><span style="color:#f92672">);</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#111">editor</span><span style="color:#f92672">.</span><span style="color:#75af00">setMimeType</span><span style="color:#f92672">(</span><span style="color:#111">getMimeType</span><span style="color:#f92672">());</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#111">editor</span><span style="color:#f92672">.</span><span style="color:#75af00">setText</span><span style="color:#f92672">(</span><span style="color:#111">data</span><span style="color:#f92672">);</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// The preview method is optional, but recommended for many cases
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// The width and height are guidelines you should adhere to (especially the height)
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#111">Component</span> <span style="color:#75af00">preview</span><span style="color:#f92672">(</span><span style="color:#00a8c8">int</span> <span style="color:#111">width</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">int</span> <span style="color:#111">height</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// This example would overlap with toString()
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JLabel</span><span style="color:#f92672">(</span><span style="color:#111">value</span><span style="color:#f92672">);</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Do not forget to override this
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
-</span></span><span style="display:flex;"><span>   <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">toString</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-</span></span><span style="display:flex;"><span>       <span style="color:#00a8c8">return</span> <span style="color:#111">StringUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">orElse</span><span style="color:#f92672">(</span><span style="color:#111">value</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#f92672">);</span>
-</span></span><span style="display:flex;"><span>   <span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75af00">@Override</span>
-</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">exportData</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeWriteDataStorage</span> <span style="color:#111">storage</span><span style="color:#f92672">,</span> <span style="color:#111">String</span> <span style="color:#111">name</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">boolean</span> <span style="color:#111">forceName</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// This uses the helper function of JIPipeWriteDataStorage
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#111">storage</span><span style="color:#f92672">.</span><span style="color:#75af00">writeJSON</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">+</span> <span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">this</span><span style="color:#f92672">);</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Alternative 1: If you require an OutputStream
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#00a8c8">try</span><span style="color:#f92672">(</span><span style="color:#111">OutputStream</span> <span style="color:#111">stream</span> <span style="color:#f92672">=</span> <span style="color:#111">storage</span><span style="color:#f92672">.</span><span style="color:#75af00">write</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">+</span> <span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
-</span></span><span style="display:flex;"><span>            <span style="color:#75715e">// Write to OutputStream [...]
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Alternative 2: You can generate an absolute file path that can be used if no stream-based writing is available:
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#111">Path</span> <span style="color:#111">outputPath</span> <span style="color:#f92672">=</span> <span style="color:#111">storage</span><span style="color:#f92672">.</span><span style="color:#75af00">getFileSystemPath</span><span style="color:#f92672">().</span><span style="color:#75af00">resolve</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">+</span> <span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">);</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// write to output path [...]
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// The storage backend will automatically ensure that the file is included
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Do not forget to add this method or JIPipe will refuse to start
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#111">MyData</span> <span style="color:#75af00">importData</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeReadDataStorage</span> <span style="color:#111">storage</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#111">Path</span> <span style="color:#111">path</span> <span style="color:#f92672">=</span> <span style="color:#111">storage</span><span style="color:#f92672">.</span><span style="color:#75af00">findFileByExtension</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">).</span><span style="color:#75af00">get</span><span style="color:#f92672">();</span>
-</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">return</span> <span style="color:#111">storage</span><span style="color:#f92672">.</span><span style="color:#75af00">readJSON</span><span style="color:#f92672">(</span><span style="color:#111">path</span><span style="color:#f92672">,</span> <span style="color:#111">MyData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
-</span></span><span style="display:flex;"><span>
-</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Alternative options are equivalent to exportData()
-</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
-</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
-</span></span></code></pre></div>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
+<span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#75715e">// ... See previous tutorial for other methods
+</span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">register</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// The two null parameters will be handled in the next tutorials
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// You can leave them null if you want. This is valid.
+</span><span style="color:#75715e"></span>        <span style="color:#111">registerDataType</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-data&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">MyData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">ResourceUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">getPluginResource</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/icons/data-types/data-type.png&#34;</span><span style="color:#f92672">));</span>
+    <span style="color:#f92672">}</span>
+
+<span style="color:#f92672">}</span>
+</code></pre></div><h1 id="example">Example</h1>
+<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// Documentation for this data type (for the GUI)
+</span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;My data&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;This is some data&#34;</span><span style="color:#f92672">)</span>
+
+<span style="color:#75715e">// Human-readable description plus a JSON Schema that describe the structure of a storage folder 
+</span><span style="color:#75715e"></span><span style="color:#75af00">@JIPipeStorageDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">humanReadableDescription</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Contains exactly one *.json file that stores the string value.&#34;</span><span style="color:#f92672">,</span> 
+<span style="color:#111">jsonSchemaURL</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;https://jipipe.org/schemas/datatypes/jipipe-json-data.schema.json&#34;</span><span style="color:#f92672">)</span>
+
+<span style="color:#75715e">// You can use @JIPipeHidden to hide this data from data type list UIs
+</span><span style="color:#75715e"></span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyData</span> <span style="color:#00a8c8">implements</span> <span style="color:#111">JIPipeData</span> <span style="color:#f92672">{</span>
+
+    <span style="color:#111">String</span> <span style="color:#111">value</span><span style="color:#f92672">;</span>
+
+    <span style="color:#00a8c8">public</span> <span style="color:#75af00">MyData</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">// Constructor that initializes the data
+</span><span style="color:#75715e"></span>    <span style="color:#00a8c8">public</span> <span style="color:#75af00">MyData</span><span style="color:#f92672">(</span><span style="color:#111">String</span> <span style="color:#111">value</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+          <span style="color:#00a8c8">this</span><span style="color:#f92672">.</span><span style="color:#75af00">value</span> <span style="color:#f92672">=</span> <span style="color:#111">value</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@JsonGetter</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;value&#34;</span><span style="color:#f92672">)</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getValue</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#111">value</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@JsonSetter</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;value&#34;</span><span style="color:#f92672">)</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">setValue</span><span style="color:#f92672">(</span><span style="color:#111">String</span> <span style="color:#111">value</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">this</span><span style="color:#f92672">.</span><span style="color:#75af00">value</span> <span style="color:#f92672">=</span> <span style="color:#111">value</span><span style="color:#f92672">;</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">// This should return a deep copy
+</span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">JIPipeData</span> <span style="color:#75af00">duplicate</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">new</span> <span style="color:#111">MyData</span><span style="color:#f92672">(</span><span style="color:#111">value</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">// The display method is optional, but recommended
+</span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">display</span><span style="color:#f92672">(</span><span style="color:#111">String</span> <span style="color:#111">displayName</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeWorkbench</span> <span style="color:#111">workbench</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#111">JIPipeTextEditor</span> <span style="color:#111">editor</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeTextEditor</span><span style="color:#f92672">.</span><span style="color:#75af00">openInNewTab</span><span style="color:#f92672">(</span><span style="color:#111">workbench</span><span style="color:#f92672">,</span> <span style="color:#111">displayName</span><span style="color:#f92672">);</span>
+        <span style="color:#111">editor</span><span style="color:#f92672">.</span><span style="color:#75af00">setMimeType</span><span style="color:#f92672">(</span><span style="color:#111">getMimeType</span><span style="color:#f92672">());</span>
+        <span style="color:#111">editor</span><span style="color:#f92672">.</span><span style="color:#75af00">setText</span><span style="color:#f92672">(</span><span style="color:#111">data</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">// The preview method is optional, but recommended for many cases
+</span><span style="color:#75715e"></span>    <span style="color:#75715e">// The width and height are guidelines you should adhere to (especially the height)
+</span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#111">Component</span> <span style="color:#75af00">preview</span><span style="color:#f92672">(</span><span style="color:#00a8c8">int</span> <span style="color:#111">width</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">int</span> <span style="color:#111">height</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// This example would overlap with toString()
+</span><span style="color:#75715e"></span>        <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JLabel</span><span style="color:#f92672">(</span><span style="color:#111">value</span><span style="color:#f92672">);</span>
+    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">// Do not forget to override this
+</span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
+   <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">toString</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+       <span style="color:#00a8c8">return</span> <span style="color:#111">StringUtils</span><span style="color:#f92672">.</span><span style="color:#75af00">orElse</span><span style="color:#f92672">(</span><span style="color:#111">value</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#f92672">);</span>
+   <span style="color:#f92672">}</span>
+
+    <span style="color:#75af00">@Override</span>
+    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">exportData</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeWriteDataStorage</span> <span style="color:#111">storage</span><span style="color:#f92672">,</span> <span style="color:#111">String</span> <span style="color:#111">name</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">boolean</span> <span style="color:#111">forceName</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#75715e">// This uses the helper function of JIPipeWriteDataStorage
+</span><span style="color:#75715e"></span>        <span style="color:#111">storage</span><span style="color:#f92672">.</span><span style="color:#75af00">writeJSON</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">+</span> <span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">this</span><span style="color:#f92672">);</span>
+
+        <span style="color:#75715e">// Alternative 1: If you require an OutputStream
+</span><span style="color:#75715e"></span>        <span style="color:#00a8c8">try</span><span style="color:#f92672">(</span><span style="color:#111">OutputStream</span> <span style="color:#111">stream</span> <span style="color:#f92672">=</span> <span style="color:#111">storage</span><span style="color:#f92672">.</span><span style="color:#75af00">write</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">+</span> <span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">))</span> <span style="color:#f92672">{</span>
+            <span style="color:#75715e">// Write to OutputStream [...]
+</span><span style="color:#75715e"></span>        <span style="color:#f92672">}</span>
+
+        <span style="color:#75715e">// Alternative 2: You can generate an absolute file path that can be used if no stream-based writing is available:
+</span><span style="color:#75715e"></span>        <span style="color:#111">Path</span> <span style="color:#111">outputPath</span> <span style="color:#f92672">=</span> <span style="color:#111">storage</span><span style="color:#f92672">.</span><span style="color:#75af00">getFileSystemPath</span><span style="color:#f92672">().</span><span style="color:#75af00">resolve</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">+</span> <span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">);</span>
+        <span style="color:#75715e">// write to output path [...]
+</span><span style="color:#75715e"></span>        <span style="color:#75715e">// The storage backend will automatically ensure that the file is included
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
+
+    <span style="color:#75715e">// Do not forget to add this method or JIPipe will refuse to start
+</span><span style="color:#75715e"></span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#111">MyData</span> <span style="color:#75af00">importData</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeReadDataStorage</span> <span style="color:#111">storage</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+        <span style="color:#111">Path</span> <span style="color:#111">path</span> <span style="color:#f92672">=</span> <span style="color:#111">storage</span><span style="color:#f92672">.</span><span style="color:#75af00">findFileByExtension</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;.json&#34;</span><span style="color:#f92672">).</span><span style="color:#75af00">get</span><span style="color:#f92672">();</span>
+        <span style="color:#00a8c8">return</span> <span style="color:#111">storage</span><span style="color:#f92672">.</span><span style="color:#75af00">readJSON</span><span style="color:#f92672">(</span><span style="color:#111">path</span><span style="color:#f92672">,</span> <span style="color:#111">MyData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
+
+        <span style="color:#75715e">// Alternative options are equivalent to exportData()
+</span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
+<span style="color:#f92672">}</span>
+</code></pre></div>
 <div class="notices tip" ><p>You can use JIPipe&rsquo;s JsonUtils class to get access to a Jackson JSON ObjectMapper.</p></div>
 
 

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-12T13:08:15 CET">
+<meta name="revised" content="2023-01-19T20:28:48 CET">
 <title>Cellpose I: Segmentation :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -440,7 +440,7 @@
         <ul>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/tutorials/features/cellpose-1/" class="dd-item active haschildren
+    <li data-nav-id="https://www.jipipe.org/tutorials/features/cellpose-1/" class="dd-item parent active haschildren
         ">
       <div>
       <a href="../../../tutorials/features/cellpose-1/">Cellpose I: Segmentation</a><i class="fa fa-circle-thin read-icon"></i>
@@ -1255,7 +1255,8 @@
    JIPipe for teaching</option>
     <option value="/tutorials/features/cellpose-1/"  selected>
   -- 
-   Cellpose I: Segmentation</option>
+   Cellpose I: Segmentation</option> 
+  
     <option value="/tutorials/features/cellpose-2/" >
   -- 
    Cellpose II: Training</option>
@@ -1322,11 +1323,11 @@
     <div class="link-box">
     
     <div class="link">
-        <a href="../../../tutorials/basic/image-roi-processing/">👉 Related tutorial: ROI processing</a>
-        <div class="link-description">
-            This guide is a followup of other tutorials.
-        </div>
+    <a href="../../../tutorials/basic/image-roi-processing/">👉 Related tutorial: ROI processing</a>
+    <div class="link-description">
+        This guide is a followup of other tutorials.
     </div>
+</div>
 
 </div>
 <div class="examples">
@@ -1505,7 +1506,7 @@
             <div class="tutorial-item-content">
             <h2 id="step-7">Step 7</h2>
             <p>This task will be carried out by adding a <code>Filter ROI by statistics</code> node (red arrow 1), connecting it to the <code>ROI</code> output of the <code>Cellpose (2.x)</code> node (red arrow 2), and setting the roundness threshold to 0.7 (red arrow 3):</p>
-<pre tabindex="0"><code>Round &gt; 0.7
+<pre><code>Round &gt; 0.7
 </code></pre>
             </div>
           </div>

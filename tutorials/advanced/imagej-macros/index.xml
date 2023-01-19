@@ -14,7 +14,7 @@
       <guid>https://www.jipipe.org/tutorials/advanced/imagej-macros/step1/</guid>
       <description>👉 This tutorial requires that you have installed node template Import images.
 If you do not have the template, you can download it via Manage &amp;gt; Download more templates or by importing the Templates.json file that is provided in the data package. If you do not know how to download or import node templates, please check out our tutorial.
-Create a new project with one compartment.
+Create a new project with one compartment.
 Drag the data folder of the tutorial to the UI.</description>
     </item>
     
@@ -35,7 +35,7 @@ It will auto-configure the node with one image input and one image output, as we
       
       <guid>https://www.jipipe.org/tutorials/advanced/imagej-macros/step3/</guid>
       <description>Go back to Parameters (red arrow 1) and add the following macro code to the indicated place (red arrow 2) that needs to be executed here (red arrow 3):
-run(&amp;#34;Auto Local Threshold&amp;#34;, &amp;#34;method=[Try all] radius=5 parameter_1=0 parameter_2=0 white&amp;#34;) This example macro executes the 15 local thresholding methods of ImageJ on the blob image, using a radius of 5.</description>
+run(&amp;quot;Auto Local Threshold&amp;quot;, &amp;quot;method=[Try all] radius=5 parameter_1=0 parameter_2=0 white&amp;quot;)This example macro executes the 15 local thresholding methods of ImageJ on the blob image, using a radius of 5.</description>
     </item>
     
     <item>
@@ -45,7 +45,7 @@ run(&amp;#34;Auto Local Threshold&amp;#34;, &amp;#34;method=[Try all] radius=5 p
       
       <guid>https://www.jipipe.org/tutorials/advanced/imagej-macros/step4/</guid>
       <description>Go back to Parameters (red arrow 1) and add the following macro code to the indicated place (red arrow 2) that needs to be executed here (red arrow 3):
-run(&amp;#34;Auto Local Threshold&amp;#34;, &amp;#34;method=[Try all] radius=5 parameter_1=0 parameter_2=0 white&amp;#34;) This example macro executes the 15 local thresholding methods of ImageJ on the blob image, using a radius of 5.</description>
+run(&amp;quot;Auto Local Threshold&amp;quot;, &amp;quot;method=[Try all] radius=5 parameter_1=0 parameter_2=0 white&amp;quot;)This example macro executes the 15 local thresholding methods of ImageJ on the blob image, using a radius of 5.</description>
     </item>
     
     <item>
@@ -55,7 +55,7 @@ run(&amp;#34;Auto Local Threshold&amp;#34;, &amp;#34;method=[Try all] radius=5 p
       
       <guid>https://www.jipipe.org/tutorials/advanced/imagej-macros/step5/</guid>
       <description>Now we build-in another macro node, this time we will only use the Phansalkar method, as this is judged to be the most successful thresholding method after examining the output of the first macro node. The new node (red arrow 1) was set up as the first one, the macro code (red arrow 2) will run this specific method only (red arrow 3).
-run(&amp;#34;Auto Local Threshold&amp;#34;, &amp;#34;method=Phansalkar radius=5 parameter_1=0 parameter_2=0 white&amp;#34;) </description>
+run(&amp;quot;Auto Local Threshold&amp;quot;, &amp;quot;method=Phansalkar radius=5 parameter_1=0 parameter_2=0 white&amp;quot;)</description>
     </item>
     
     <item>

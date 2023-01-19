@@ -31,7 +31,8 @@
       
       <guid>https://www.jipipe.org/tutorials/ui/project-open/step3/</guid>
       <description>Now the saved project will reopen, showing the compartment structure(s).
-JIPipe will always attempt to restore the UI configuration (tabs etc.) that was present during the saving of the project.</description>
+JIPipe will always attempt to restore the UI configuration (tabs etc.) that was present during the saving of the project.
+</description>
     </item>
     
   </channel>

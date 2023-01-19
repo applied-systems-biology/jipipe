@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-12T13:08:14 CET">
+<meta name="revised" content="2023-01-19T20:28:46 CET">
 <title>Step 8 :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../../css/font-awesome.min.css" rel="stylesheet">
@@ -1380,7 +1380,7 @@
     
     <p>Now let&rsquo;s assume that we do not need <code>Threshold</code> and <code>MeanIntensity</code> again. These can be removed via dedicated nodes.</p>
 <p>Add a node <code>Remove annotation</code> and configure its <code>Removed annotations</code> parameter as following:</p>
-<pre tabindex="0"><code>key == &#34;Threshold&#34; OR key == &#34;MeanIntensity&#34;
+<pre><code>key == &quot;Threshold&quot; OR key == &quot;MeanIntensity&quot;
 </code></pre><p>This will remove all annotations that either have the name/key <code>Threshold</code> or <code>MeanIntensity</code>.</p>
 <p>
 <div class="notices info" ><p><code>Remove annotation</code> executes the expression for each annotation to determine if it should be deleted.</p></div>

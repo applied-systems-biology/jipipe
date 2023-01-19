@@ -31,7 +31,8 @@
       
       <guid>https://www.jipipe.org/tutorials/basic/image-roi-processing/step3/</guid>
       <description>Look for nodes with the name extract (red arrow 1) and choose the Extract image statistics node (red arrow 2).
-Extract image statistics measures statistics on the whole image or an optional ROI. It is related to the node Extract ROI statistics that requires a ROI and optionally requires an image. Both nodes apply the same ImageJ measurement algorithm.</description>
+Extract image statistics measures statistics on the whole image or an optional ROI. It is related to the node Extract ROI statistics that requires a ROI and optionally requires an image. Both nodes apply the same ImageJ measurement algorithm.
+</description>
     </item>
     
     <item>
@@ -41,7 +42,8 @@ Extract image statistics measures statistics on the whole image or an optional R
       
       <guid>https://www.jipipe.org/tutorials/basic/image-roi-processing/step4/</guid>
       <description>Drag the new node to the UI and position it below the Find particles 2D node (red arrow 1). For convenience, rearrange to input slots of the new node by moving its right-side node to the left (red arrow 2) by clicking the ▼ button on the ROI slot and selecting Move to the left.
-You can also right-click a slot to open the slot settings menu.</description>
+You can also right-click a slot to open the slot settings menu.
+</description>
     </item>
     
     <item>
@@ -100,7 +102,7 @@ Filter ROI by statistics allows to filter a ROI list via custom mathematical exp
       
       <guid>https://www.jipipe.org/tutorials/basic/image-roi-processing/step10/</guid>
       <description>Go to the Parameters tab of the Filter ROI by statistics node (red arrow 1) and use the expression editor (red arrow 2) as shown before to create the filtering formula (red arrow 3):
-Area &amp;gt; 150 AND Area &amp;lt; 700 Here you do not need to write TO_NUMBER(Area), as the values are already numeric to begin with. Unlike text-based annotations that come from JIPipe&amp;rsquo;s data management functions, Filter ROI by statistics extracts its values from ImageJ tables that support numbers.</description>
+Area &amp;gt; 150 AND Area &amp;lt; 700Here you do not need to write TO_NUMBER(Area), as the values are already numeric to begin with. Unlike text-based annotations that come from JIPipe&amp;rsquo;s data management functions, Filter ROI by statistics extracts its values from ImageJ tables that support numbers.</description>
     </item>
     
     <item>
@@ -119,7 +121,8 @@ Area &amp;gt; 150 AND Area &amp;lt; 700 Here you do not need to write TO_NUMBER(
       
       <guid>https://www.jipipe.org/tutorials/basic/image-roi-processing/step12/</guid>
       <description>We now plot the selected ROIs in an overlay image with the original 1-channel data. Browse the ROI menu (red arrow 1) to look for Convert functions (red arrow 2), and select the Convert ROI to RGB function (red arrow 3).
-Convert ROI to RGB visualizes ROI on top of an image. It is JIPipe&amp;rsquo;s equivalent of the ImageJ ROI Manager&amp;rsquo;s visualization feature.</description>
+Convert ROI to RGB visualizes ROI on top of an image. It is JIPipe&amp;rsquo;s equivalent of the ImageJ ROI Manager&amp;rsquo;s visualization feature.
+</description>
     </item>
     
     <item>

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-12T13:08:15 CET">
+<meta name="revised" content="2023-01-19T20:28:47 CET">
 <title>Step 7 :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../../css/font-awesome.min.css" rel="stylesheet">
@@ -1388,7 +1388,7 @@
 <div class="notices warning" ><p><code>Output relative to project directory</code> only works if you loaded the project from a *.jip file or have saved it at least once.</p></div>
 
 <p>It is common that the type of the output is stored within the filename. To to this in JIPipe, modify the <code>File name</code> property as follows:</p>
-<pre tabindex="0"><code>&#34;density_&#34; + #Filename
+<pre><code>&quot;density_&quot; + #Filename
 </code></pre><p>The exporter will use the expression to determine the filename of each exported data item. As the images are annotated with a <code>#Filename</code> annotation, we can combine it with a custom text <code>&quot;density_&quot;</code> to generate files with that pattern.</p>
 
 

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-12T13:08:15 CET">
+<meta name="revised" content="2023-01-19T20:28:48 CET">
 <title>Integrating ImageJ macros :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -504,7 +504,7 @@
             <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-    <li data-nav-id="https://www.jipipe.org/tutorials/advanced/imagej-macros/" class="dd-item active haschildren
+    <li data-nav-id="https://www.jipipe.org/tutorials/advanced/imagej-macros/" class="dd-item parent active haschildren
         ">
       <div>
       <a href="../../../tutorials/advanced/imagej-macros/">Integrating ImageJ macros</a><i class="fa fa-circle-thin read-icon"></i>
@@ -1258,7 +1258,8 @@
    Advanced</option> 
     <option value="/tutorials/advanced/imagej-macros/"  selected>
   -- 
-   Integrating ImageJ macros</option>
+   Integrating ImageJ macros</option> 
+  
     <option value="/tutorials/advanced/loops/" >
   -- 
    Loops</option>
@@ -1322,11 +1323,11 @@
     <div class="link-box">
     
     <div class="link">
-        <a href="../../../tutorials/basic/quantification-plotting/">👉 Related tutorial: Quantification and plotting</a>
-        <div class="link-description">
-            This guide is a followup of another tutorial
-        </div>
+    <a href="../../../tutorials/basic/quantification-plotting/">👉 Related tutorial: Quantification and plotting</a>
+    <div class="link-description">
+        This guide is a followup of another tutorial
     </div>
+</div>
 
 </div>
 <div class="examples">
@@ -1472,8 +1473,8 @@
             <div class="tutorial-item-content">
             <h2 id="step-3">Step 3</h2>
             <p>Go back to Parameters (red arrow 1) and add the following macro code to the indicated place (red arrow 2) that needs to be executed here (red arrow 3):</p>
-<pre tabindex="0"><code>run(&#34;Auto Local Threshold&#34;, 
-&#34;method=[Try all] radius=5 parameter_1=0 parameter_2=0 white&#34;)
+<pre><code>run(&quot;Auto Local Threshold&quot;, 
+&quot;method=[Try all] radius=5 parameter_1=0 parameter_2=0 white&quot;)
 </code></pre><p>This example macro executes the 15 local thresholding methods of ImageJ on the blob image, using a radius of 5.</p>
 
             </div>
@@ -1483,8 +1484,8 @@
             <div class="tutorial-item-content">
             <h2 id="step-4">Step 4</h2>
             <p>Go back to Parameters (red arrow 1) and add the following macro code to the indicated place (red arrow 2) that needs to be executed here (red arrow 3):</p>
-<pre tabindex="0"><code>run(&#34;Auto Local Threshold&#34;, 
-&#34;method=[Try all] radius=5 parameter_1=0 parameter_2=0 white&#34;)
+<pre><code>run(&quot;Auto Local Threshold&quot;, 
+&quot;method=[Try all] radius=5 parameter_1=0 parameter_2=0 white&quot;)
 </code></pre><p>This example macro executes the 15 local thresholding methods of ImageJ on the blob image, using a radius of 5.</p>
 
             </div>
@@ -1494,8 +1495,8 @@
             <div class="tutorial-item-content">
             <h2 id="step-5">Step 5</h2>
             <p>Now we build-in another macro node, this time we will only use the <em>Phansalkar</em> method, as this is judged to be the most successful thresholding method after examining the output of the first macro node. The new node (red arrow 1) was set up as the first one, the macro code (red arrow 2) will run this specific method only (red arrow 3).</p>
-<pre tabindex="0"><code>run(&#34;Auto Local Threshold&#34;, 
-&#34;method=Phansalkar radius=5 parameter_1=0 parameter_2=0 white&#34;)
+<pre><code>run(&quot;Auto Local Threshold&quot;, 
+&quot;method=Phansalkar radius=5 parameter_1=0 parameter_2=0 white&quot;)
 </code></pre>
             </div>
           </div>

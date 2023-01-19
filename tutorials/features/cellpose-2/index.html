@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-12T13:08:15 CET">
+<meta name="revised" content="2023-01-19T20:28:48 CET">
 <title>Cellpose II: Training :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -448,7 +448,7 @@
         <ul>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/tutorials/features/cellpose-2/" class="dd-item active haschildren
+    <li data-nav-id="https://www.jipipe.org/tutorials/features/cellpose-2/" class="dd-item parent active haschildren
         ">
       <div>
       <a href="../../../tutorials/features/cellpose-2/">Cellpose II: Training</a><i class="fa fa-circle-thin read-icon"></i>
@@ -1258,7 +1258,8 @@
    Cellpose I: Segmentation</option>
     <option value="/tutorials/features/cellpose-2/"  selected>
   -- 
-   Cellpose II: Training</option>
+   Cellpose II: Training</option> 
+  
   
     <option value="/tutorials/intermediate/" >
   - 
@@ -1322,11 +1323,11 @@
     <div class="link-box">
     
     <div class="link">
-        <a href="../../../tutorials/features/cellpose-1/">👉 Related tutorial: Cellpose I (Segmentation)</a>
-        <div class="link-description">
-            This guide is a followup of other tutorials.
-        </div>
+    <a href="../../../tutorials/features/cellpose-1/">👉 Related tutorial: Cellpose I (Segmentation)</a>
+    <div class="link-description">
+        This guide is a followup of other tutorials.
     </div>
+</div>
 
 </div>
 <div class="examples">
@@ -1475,9 +1476,9 @@
             <p>Accordingly, we need to read the TIFF and ZIP files separately.</p>
 <p>This can be achieved by establishing two branches, one each for the two file types by the introduction of two <code>List files</code> nodes that we renamed to <code>List TIFF</code> and <code>List ZIP</code> in our figure (red rectangle 1).</p>
 <p>The <code>List files</code> node can be configured with a filter expression to only detect specific files. In the case of the the <code>List ZIP</code> node, set the expression to</p>
-<pre tabindex="0"><code>STRING_MATCHES_GLOB(name, &#34;*.zip&#34;)
+<pre><code>STRING_MATCHES_GLOB(name, &quot;*.zip&quot;)
 </code></pre><p>For <code>List TIFF</code>, set the expression to</p>
-<pre tabindex="0"><code>STRING_MATCHES_GLOB(name, &#34;*.tif&#34;)
+<pre><code>STRING_MATCHES_GLOB(name, &quot;*.tif&quot;)
 </code></pre><p>After the <code>List TIFF</code> node, add another <code>Add path to annotations</code> to also save the image file name.</p>
 
             </div>
