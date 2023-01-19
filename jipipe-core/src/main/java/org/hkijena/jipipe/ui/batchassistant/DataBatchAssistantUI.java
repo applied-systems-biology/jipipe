@@ -38,6 +38,7 @@ import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
+import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
@@ -51,7 +52,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private final JIPipeAlgorithm algorithm;
     private final Runnable runTestBench;
     private final JIPipeParameterCollection batchSettings;
-    private final Multimap<String, JIPipeDataTable> currentCache = HashMultimap.create();
+    private final Multimap<String, WeakReference<JIPipeDataTable>> currentCache = HashMultimap.create();
     AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, AutoResizeSplitPane.RATIO_1_TO_3);
     private JPanel batchPanel;
     private JPanel errorPanel;
@@ -101,7 +102,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
                     }
                     JIPipeDataTable cache = sourceCache.getOrDefault(sourceSlot.getName(), null);
                     if (cache != null) {
-                        currentCache.put(inputSlot.getName(), cache);
+                        currentCache.put(inputSlot.getName(), new WeakReference<>(cache));
                     } else {
                         currentCache.clear();
                         errorLabel.setText("No up-to-date cached data available");
@@ -149,7 +150,12 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         batchesNodeCopy = algorithm.getInfo().duplicate(algorithm);
         // Pass cache as input slots
         for (JIPipeDataSlot inputSlot : batchesNodeCopy.getDataInputSlots()) {
-            for (JIPipeDataTable cacheSlot : currentCache.get(inputSlot.getName())) {
+            for (WeakReference<JIPipeDataTable> cacheSlotReference : currentCache.get(inputSlot.getName())) {
+                JIPipeDataTable cacheSlot = cacheSlotReference.get();
+                if(cacheSlot == null) {
+                    batchPreviewNumberLabel.setText("Cache was cleared! Aborted.");
+                    return;
+                }
                 inputSlot.addDataFromTable(cacheSlot, new JIPipeProgressInfo());
             }
         }
@@ -326,6 +332,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         if(batchesNodeCopy != null) {
             batchesNodeCopy.clearSlotData();
         }
+        batchTable.setDataTable(new JIPipeDataTable(JIPipeData.class));
     }
 
     /**

@@ -113,6 +113,39 @@ public class JIPipeDataTable implements JIPipeData, TableModel {
         return slot;
     }
 
+    /**
+     * Creates a copy of this data table that contains only {@link JIPipeWeakDataReferenceData} data and data annotations
+     * (If any data is already weak, it is left as-is)
+     * @return weakly referencing shallow copy of the data as table
+     */
+    public JIPipeDataTable toWeakCopy() {
+        JIPipeDataTable result = new JIPipeDataTable(JIPipeData.class);
+        JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
+        for (int row = 0; row < data.size(); row++) {
+            JIPipeProgressInfo rowProgress = progressInfo.resolveAndLog("Row", row, data.size());
+            JIPipeVirtualData virtualData = getVirtualData(row);
+            JIPipeData data_ = virtualData.getData(rowProgress);
+            if (!(data_ instanceof JIPipeWeakDataReferenceData)) {
+                // Copy the main data
+                virtualData = new JIPipeVirtualData(new JIPipeWeakDataReferenceData(data_));
+            }
+            List<JIPipeDataAnnotation> dataAnnotations = new ArrayList<>();
+            for (JIPipeDataAnnotation dataAnnotation : getDataAnnotations(row)) {
+                JIPipeData dataAnnotation_ = dataAnnotation.getData(JIPipeData.class, rowProgress);
+                if (!(dataAnnotation_ instanceof JIPipeWeakDataReferenceData)) {
+                    dataAnnotation_ = new JIPipeWeakDataReferenceData(dataAnnotation_);
+                }
+                dataAnnotations.add(new JIPipeDataAnnotation(dataAnnotation.getName(), dataAnnotation_));
+            }
+            result.addData(virtualData,
+                    getTextAnnotations(row),
+                    JIPipeTextAnnotationMergeMode.OverwriteExisting,
+                    dataAnnotations,
+                    JIPipeDataAnnotationMergeMode.OverwriteExisting);
+        }
+        return result;
+    }
+
     @Override
     public void addTableModelListener(TableModelListener l) {
         listeners.add(l);
