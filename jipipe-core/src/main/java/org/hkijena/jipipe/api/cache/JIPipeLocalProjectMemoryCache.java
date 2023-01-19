@@ -37,7 +37,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
     @Override
     public void store(JIPipeGraphNode graphNode, UUID nodeUUID, JIPipeDataTable data, String outputName, JIPipeProgressInfo progressInfo) {
         JIPipeGraphNode projectNode = project.getGraph().getNodeByUUID(nodeUUID);
-        if(projectNode == null) {
+        if (projectNode == null) {
             progressInfo.log("Refusing to cache node " + nodeUUID + " (" + graphNode.getDisplayName() + ") --> Not in project anymore!");
             return;
         }
@@ -49,7 +49,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
 
         // Store the data
         Map<String, JIPipeDataTable> slotMap = cachedOutputSlots.getOrDefault(nodeUUID, null);
-        if(slotMap == null) {
+        if (slotMap == null) {
             slotMap = new HashMap<>();
             cachedOutputSlots.put(nodeUUID, slotMap);
         }
@@ -81,7 +81,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
             UUID predecessorUUID = predecessorAlgorithm.getUUIDInParentGraph();
 
             // Add if necessary
-            if(!currentNodeStatePredecessorGraph.containsVertex(predecessorUUID)) {
+            if (!currentNodeStatePredecessorGraph.containsVertex(predecessorUUID)) {
                 progressInfo.log("Register predecessor " + predecessorUUID + " of " + uuid);
                 currentNodeStatePredecessorGraph.addVertex(predecessorUUID);
                 putNodeIntoGraph(project.getGraph().getNodeByUUID(predecessorUUID), progressInfo);
@@ -95,7 +95,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
 
         // Remove old predecessors
         for (UUID existingPredecessor : existingPredecessors) {
-            if(!expectedPredecessors.contains(existingPredecessor)) {
+            if (!expectedPredecessors.contains(existingPredecessor)) {
                 currentNodeStatePredecessorGraph.removeEdge(existingPredecessor, uuid);
             }
         }
@@ -105,33 +105,41 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
 
     /**
      * Iterates through all cached node states and remove all that are not existing within the project graph or where the project graph was changed
+     *
+     * @return if nodes were removed
      */
-    private void removeInvalidNodeStates(JIPipeProgressInfo progressInfo) {
+    private boolean removeInvalidNodeStates(JIPipeProgressInfo progressInfo) {
+        boolean updated = false;
         for (UUID uuid : ImmutableList.copyOf(currentNodeStates.keySet())) {
             JIPipeGraphNode currentNode = project.getGraph().getNodeByUUID(uuid);
             JIPipeGraphNode cachedNode = currentNodeStates.get(uuid);
 
             // Check output slots
             Map<String, JIPipeDataTable> slotMap = cachedOutputSlots.getOrDefault(uuid, null);
-            if(slotMap != null) {
-                if(slotMap.isEmpty()) {
+            if (slotMap != null) {
+                if (slotMap.isEmpty()) {
+                    updated = true;
                     removeNodeCache(uuid, progressInfo);
                     progressInfo.log("Removed invalid node state for " + uuid + " [empty slot map]");
                     continue;
                 }
             }
 
-            if(currentNode == null || !currentNode.functionallyEquals(cachedNode)) {
+            if (currentNode == null || !currentNode.functionallyEquals(cachedNode)) {
+                updated = true;
                 removeNodeCache(uuid, progressInfo);
                 progressInfo.log("Removed invalid node state for " + uuid);
             }
         }
+        return updated;
     }
 
     /**
      * Removes all vertices that have missing inputs
+     *
+     * @return if nodes were removed
      */
-    private void pruneGraph(JIPipeProgressInfo progressInfo) {
+    private boolean pruneGraph(JIPipeProgressInfo progressInfo) {
         boolean modified;
         boolean updated = false;
         Set<UUID> availablePredecessors = new HashSet<>();
@@ -146,7 +154,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
                     availablePredecessors.add(currentNodeStatePredecessorGraph.getEdgeSource(defaultEdge));
                 }
                 Set<UUID> expectedPredecessors = expectedNodePredecessors.getOrDefault(uuid, null);
-                if(!expectedPredecessors.equals(availablePredecessors)) {
+                if (!expectedPredecessors.equals(availablePredecessors)) {
                     removeNodeCache(uuid, progressInfo);
 
                     modified = true;
@@ -158,16 +166,12 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         }
         while (modified);
 
-        if(updated) {
-            updateSize();
-            getEventBus().post(new ClearedEvent(this, null));
-            getEventBus().post(new ModifiedEvent(this));
-        }
+        return updated;
     }
 
     private void removeNodeCache(UUID uuid, JIPipeProgressInfo progressInfo) {
         Map<String, JIPipeDataTable> dataTableMap = cachedOutputSlots.getOrDefault(uuid, null);
-        if(dataTableMap != null && !dataTableMap.isEmpty()) {
+        if (dataTableMap != null && !dataTableMap.isEmpty()) {
             int items = 0;
             for (Map.Entry<String, JIPipeDataTable> entry : dataTableMap.entrySet()) {
                 items += entry.getValue().getRowCount();
@@ -187,9 +191,14 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
 
     @Override
     public void clearOutdated(JIPipeProgressInfo progressInfo) {
-       removeInvalidNodeStates(progressInfo);
-       pruneGraph(progressInfo);
-       updateSize();
+        boolean updated;
+        updated = removeInvalidNodeStates(progressInfo);
+        updated |= pruneGraph(progressInfo);
+        if (updated) {
+            updateSize();
+            getEventBus().post(new ClearedEvent(this, null));
+            getEventBus().post(new ModifiedEvent(this));
+        }
     }
 
     @Override
@@ -256,12 +265,13 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
     /**
      * Removes the cached data of a node without modifying the internal structure
      * Remove outdated will be able to remove these
-     * @param uuid the node UUID
+     *
+     * @param uuid         the node UUID
      * @param progressInfo the progress
      */
     public void softClear(UUID uuid, JIPipeProgressInfo progressInfo) {
         Map<String, JIPipeDataTable> slotMap = cachedOutputSlots.getOrDefault(uuid, null);
-        if(slotMap != null) {
+        if (slotMap != null) {
             progressInfo.log("Soft-clear node " + uuid);
             slotMap.clear();
         }
