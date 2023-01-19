@@ -39,7 +39,6 @@ import java.util.UUID;
  * Slot UI with horizontal direction
  */
 public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
-    private final boolean compact;
     private JButton assignButton;
     private JLabel nameLabel;
     private JLabel noSaveLabel;
@@ -55,11 +54,9 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
      * @param algorithmUI The parent algorithm UI
      * @param compartment The compartment ID
      * @param slot        The slot instance
-     * @param compact     if the UI should be compact
      */
-    public JIPipeVerticalDataSlotUI(JIPipeWorkbench workbench, JIPipeNodeUI algorithmUI, UUID compartment, JIPipeDataSlot slot, boolean compact) {
+    public JIPipeVerticalDataSlotUI(JIPipeWorkbench workbench, JIPipeNodeUI algorithmUI, UUID compartment, JIPipeDataSlot slot) {
         super(workbench, algorithmUI, compartment, slot);
-        this.compact = compact;
         initialize();
         reloadButtonStatus();
     }
@@ -127,10 +124,8 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
         centerPanel.setOpaque(false);
 
-        if (compact) {
-            assignButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-            centerPanel.add(assignButton);
-        }
+        assignButton.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+        centerPanel.add(assignButton);
 
         nameLabel = new ZoomLabel("", null, getGraphUI());
         UIUtils.redirectDragEvents(nameLabel, getGraphUI());
@@ -165,12 +160,6 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         }
 
         add(centerPanel, BorderLayout.CENTER);
-        if (!compact) {
-            if (getSlot().isInput())
-                add(assignButton, BorderLayout.NORTH);
-            else
-                add(assignButton, BorderLayout.SOUTH);
-        }
 
 //        new JIPipeConnectionDragAndDropBehavior(this, assignButton, nameLabel);
     }
@@ -198,10 +187,10 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
             FontRenderContext frc = new FontRenderContext(null, false, false);
             TextLayout layout = new TextLayout(getDisplayedName(), getFont(), frc);
             double w = layout.getBounds().getWidth();
-            int labelWidth = (int) Math.ceil(w / JIPipeGraphViewMode.Vertical.getGridWidth())
-                    * JIPipeGraphViewMode.Vertical.getGridWidth();
+            int labelWidth = (int) Math.ceil(w / JIPipeGraphViewMode.VerticalCompact.getGridWidth())
+                    * JIPipeGraphViewMode.VerticalCompact.getGridWidth();
             int width = labelWidth + 75;
-            Point inGrid = JIPipeGraphViewMode.Vertical.realLocationToGrid(new Point(width, JIPipeGraphViewMode.Vertical.getGridHeight()), 1.0);
+            Point inGrid = JIPipeGraphViewMode.VerticalCompact.realLocationToGrid(new Point(width, JIPipeGraphViewMode.VerticalCompact.getGridHeight()), 1.0);
 
             cachedGridSize = new Dimension(inGrid.x, inGrid.y);
             cachedGridSizeDisplayName = getDisplayedName();
@@ -209,7 +198,4 @@ public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
         return cachedGridSize;
     }
 
-    public boolean isCompact() {
-        return compact;
-    }
 }

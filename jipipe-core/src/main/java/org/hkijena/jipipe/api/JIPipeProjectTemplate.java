@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
+import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -57,8 +58,8 @@ public class JIPipeProjectTemplate {
         JIPipeProject project = new JIPipeProject();
         project.fromJson(node, issueReport, inbox);
         // Apply selected default style
-        project.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", GraphEditorUISettings.getInstance().getDefaultViewMode());
-        project.getCompartmentGraph().attachAdditionalMetadata("jipipe:graph:view-mode", GraphEditorUISettings.getInstance().getDefaultViewMode());
+        project.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
+        project.getCompartmentGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
         return project;
     }
 

@@ -56,11 +56,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
 //            e.printStackTrace();
 //        }
 
-        if (canvasUI.getViewMode() == JIPipeGraphViewMode.Vertical || canvasUI.getViewMode() == JIPipeGraphViewMode.VerticalCompact) {
-            autoLayoutVertical(graph, canvasUI.getZoom(), canvasUI.getViewMode());
-        } else {
-            autoLayoutHorizontal(graph, canvasUI.getZoom());
-        }
+        autoLayoutVertical(graph, canvasUI.getZoom(), canvasUI.getViewMode());
     }
 
     private int generateTracks(JIPipeGraph projectGraph, DefaultDirectedGraph<Node, Edge> graph) {
@@ -142,44 +138,6 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         }
         for (Node node : graph.vertexSet()) {
             node.track = trackRenaming.get(node.track);
-        }
-    }
-
-    private void autoLayoutHorizontal(DefaultDirectedGraph<Node, Edge> graph, double zoom) {
-        Map<Integer, Integer> trackHeights = new HashMap<>();
-        Map<Integer, Integer> depthWidths = new HashMap<>();
-        Map<Integer, Integer> cumulativeDepthWidths = new HashMap<>();
-        JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.Horizontal;
-        int minTrack = Integer.MAX_VALUE;
-        int maxTrack = Integer.MIN_VALUE;
-        int maxDepth = 0;
-        for (Node node : graph.vertexSet()) {
-            minTrack = Math.min(minTrack, node.track);
-            maxTrack = Math.max(maxTrack, node.track);
-            maxDepth = Math.max(maxDepth, node.depth);
-            trackHeights.put(node.track, Math.max(trackHeights.getOrDefault(node.track, 0), node.ui.getHeight()));
-            depthWidths.put(node.depth, Math.max(depthWidths.getOrDefault(node.depth, 0), node.ui.getWidth()));
-        }
-        cumulativeDepthWidths.put(0, depthWidths.getOrDefault(0, 0));
-        int spacer = viewMode.getGridWidth() * 4;
-        spacer = (int) Math.round(spacer * zoom);
-        for (int depth = 1; depth <= maxDepth; depth++) {
-            cumulativeDepthWidths.put(depth, cumulativeDepthWidths.get(depth - 1) + depthWidths.get(depth) + spacer);
-        }
-        int maxCumulativeDepthWidth = 0;
-        for (Integer value : cumulativeDepthWidths.values()) {
-            maxCumulativeDepthWidth = Math.max(value, maxCumulativeDepthWidth);
-        }
-
-
-        int y = viewMode.getGridHeight();
-        for (int track = minTrack; track <= maxTrack; track++) {
-            int finalTrack = track;
-            for (Node node : graph.vertexSet().stream().filter(node -> node.track == finalTrack).collect(Collectors.toList())) {
-                int x = maxCumulativeDepthWidth - cumulativeDepthWidths.get(node.depth);
-                node.getUi().moveToClosestGridPoint(new Point(x, y), true, true);
-            }
-            y += trackHeights.get(track) + viewMode.getGridHeight();
         }
     }
 

@@ -40,7 +40,6 @@ import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction
 import org.hkijena.jipipe.ui.grapheditor.general.layout.MSTGraphAutoLayoutMethod;
 import org.hkijena.jipipe.ui.grapheditor.general.layout.SugiyamaGraphAutoLayoutMethod;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeDataSlotUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeHorizontalNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeVerticalNodeUI;
 import org.hkijena.jipipe.utils.PointRange;
@@ -109,8 +108,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private final Map<JIPipeNodeUI, Point> currentlyDraggedOffsets = new HashMap<>();
     private final NodeHotKeyStorage nodeHotKeyStorage;
     private final Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");
-    private boolean layoutHelperEnabled;
-    private JIPipeGraphViewMode viewMode;
+    private final JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.VerticalCompact;
     private JIPipeGraphDragAndDropBehavior dragAndDropBehavior;
     private Point graphEditCursor;
     private Point selectionFirst;
@@ -153,13 +151,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         this.nodeHotKeyStorage = NodeHotKeyStorage.getInstance(graph);
         this.compartment = compartment;
         this.settings = GraphEditorUISettings.getInstance();
-        JIPipeGraphViewMode restoredViewMode = graph.getAdditionalMetadata(JIPipeGraphViewMode.class, "jipipe:graph:view-mode");
-        if (restoredViewMode != null) {
-            this.viewMode = restoredViewMode;
-        } else {
-            this.viewMode = settings.getDefaultViewMode();
-        }
-        graph.attachAdditionalMetadata("jipipe:graph:view-mode", this.viewMode);
+        graph.attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
         initialize();
         addNewNodes(false);
         graph.getEventBus().register(this);
@@ -303,20 +295,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             if (nodeUIs.containsKey(algorithm))
                 continue;
 
-            switch (viewMode) {
-                case Horizontal:
-                    ui = new JIPipeHorizontalNodeUI(getWorkbench(), this, algorithm);
-                    break;
-                case Vertical:
-                    ui = new JIPipeVerticalNodeUI(getWorkbench(), this, algorithm, false);
-                    break;
-                case VerticalCompact:
-                    ui = new JIPipeVerticalNodeUI(getWorkbench(), this, algorithm, true);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Unknown view mode!");
-            }
-
+            ui = new JIPipeVerticalNodeUI(getWorkbench(), this, algorithm);
             ui.getEventBus().register(this);
             add(ui, new Integer(currentNodeLayer++)); // Layered pane
             nodeUIs.put(algorithm, ui);
@@ -324,12 +303,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 autoPlaceCloseToCursor(ui, force);
                 ++newlyPlacedAlgorithms;
             }
-//            ui.addComponentListener(new ComponentAdapter() {
-//                @Override
-//                public void componentResized(ComponentEvent e) {
-//                    removeComponentOverlaps();
-//                }
-//            });
         }
         revalidate();
         repaint();
@@ -460,11 +433,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 }
             }
             if (!found) {
-                if (viewMode == JIPipeGraphViewMode.Horizontal) {
-                    currentShape.y += viewMode.getGridHeight();
-                } else {
-                    currentShape.x += viewMode.getGridWidth();
-                }
+                currentShape.x += viewMode.getGridWidth();
             }
             /*
              * Check if we are still within the visible rectangle.
@@ -524,16 +493,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     public Set<JIPipeNodeUI> getNodesAfter(int x, int y) {
         Set<JIPipeNodeUI> result = new HashSet<>();
-        if (viewMode == JIPipeGraphViewMode.Vertical) {
-            for (JIPipeNodeUI ui : nodeUIs.values()) {
-                if (ui.getY() >= y)
-                    result.add(ui);
-            }
-        } else {
-            for (JIPipeNodeUI ui : nodeUIs.values()) {
-                if (ui.getX() >= x)
-                    result.add(ui);
-            }
+        for (JIPipeNodeUI ui : nodeUIs.values()) {
+            if (ui.getY() >= y)
+                result.add(ui);
         }
         return result;
     }
@@ -547,69 +509,33 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
 
         Set<JIPipeNodeUI> nodesAfter = getNodesAfter(sourceAlgorithmUI.getRightX(), sourceAlgorithmUI.getBottomY());
-        if (viewMode == JIPipeGraphViewMode.Horizontal) {
-            int sourceSlotInternalY = sourceSlotIndex * viewMode.getGridHeight();
-            int targetSlotInternalY = targetSlotIndex * viewMode.getGridHeight();
-
-            int minX = (int) Math.round(sourceAlgorithmUI.getWidth() + sourceAlgorithmUI.getX() + viewMode.getGridWidth() * zoom * 2);
-            int targetY = sourceAlgorithmUI.getY() + sourceSlotInternalY - targetSlotInternalY;
-
-            Point targetPoint = new Point(minX, targetY);
-
-            if (GraphEditorUISettings.getInstance().isAutoLayoutMovesOtherNodes()) {
-                if (!targetAlgorithmUI.moveToClosestGridPoint(targetPoint, false, true)) {
-                    if (nodesAfter.isEmpty())
-                        return;
-                    // Move all other algorithms
-                    int minDistance = Integer.MAX_VALUE;
-                    for (JIPipeNodeUI ui : nodesAfter) {
-                        if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
-                            continue;
-                        minDistance = Math.min(minDistance, ui.getX() - sourceAlgorithmUI.getRightX());
-                    }
-                    int translateX = (int) Math.round(targetAlgorithmUI.getWidth() + viewMode.getGridWidth() * zoom * 4 - minDistance);
-                    for (JIPipeNodeUI ui : nodesAfter) {
-                        if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
-                            continue;
-                        ui.moveToClosestGridPoint(new Point(ui.getX() + translateX, ui.getY()), true, true);
-                    }
-                    if (!targetAlgorithmUI.moveToClosestGridPoint(targetPoint, false, true)) {
-                        autoPlaceCloseToCursor(targetAlgorithmUI, true);
-                    }
+        int x = sourceAlgorithmUI.getSlotLocation(source).center.x + sourceAlgorithmUI.getX();
+        x -= targetAlgorithmUI.getSlotLocation(target).center.x;
+        int y = (int) Math.round(sourceAlgorithmUI.getBottomY() + viewMode.getGridHeight() * zoom);
+        Point targetPoint = new Point(x, y);
+        if (GraphEditorUISettings.getInstance().isAutoLayoutMovesOtherNodes()) {
+            if (!targetAlgorithmUI.moveToClosestGridPoint(targetPoint, false, true)) {
+                if (nodesAfter.isEmpty())
+                    return;
+                // Move all other algorithms
+                int minDistance = Integer.MAX_VALUE;
+                for (JIPipeNodeUI ui : nodesAfter) {
+                    if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
+                        continue;
+                    minDistance = Math.min(minDistance, ui.getY() - sourceAlgorithmUI.getBottomY());
                 }
-            } else {
-                autoPlaceCloseToLocation(targetAlgorithmUI, targetPoint);
+                int translateY = (int) Math.round(targetAlgorithmUI.getHeight() + viewMode.getGridHeight() * zoom * 2 - minDistance);
+                for (JIPipeNodeUI ui : nodesAfter) {
+                    if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
+                        continue;
+                    ui.moveToClosestGridPoint(new Point(ui.getX(), ui.getY() + translateY), true, true);
+                }
+                if (!targetAlgorithmUI.moveToClosestGridPoint(targetPoint, false, true)) {
+                    autoPlaceCloseToCursor(targetAlgorithmUI, true);
+                }
             }
-
         } else {
-            int x = sourceAlgorithmUI.getSlotLocation(source).center.x + sourceAlgorithmUI.getX();
-            x -= targetAlgorithmUI.getSlotLocation(target).center.x;
-            int y = (int) Math.round(sourceAlgorithmUI.getBottomY() + viewMode.getGridHeight() * zoom);
-            Point targetPoint = new Point(x, y);
-            if (GraphEditorUISettings.getInstance().isAutoLayoutMovesOtherNodes()) {
-                if (!targetAlgorithmUI.moveToClosestGridPoint(targetPoint, false, true)) {
-                    if (nodesAfter.isEmpty())
-                        return;
-                    // Move all other algorithms
-                    int minDistance = Integer.MAX_VALUE;
-                    for (JIPipeNodeUI ui : nodesAfter) {
-                        if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
-                            continue;
-                        minDistance = Math.min(minDistance, ui.getY() - sourceAlgorithmUI.getBottomY());
-                    }
-                    int translateY = (int) Math.round(targetAlgorithmUI.getHeight() + viewMode.getGridHeight() * zoom * 2 - minDistance);
-                    for (JIPipeNodeUI ui : nodesAfter) {
-                        if (ui == targetAlgorithmUI || ui == sourceAlgorithmUI)
-                            continue;
-                        ui.moveToClosestGridPoint(new Point(ui.getX(), ui.getY() + translateY), true, true);
-                    }
-                    if (!targetAlgorithmUI.moveToClosestGridPoint(targetPoint, false, true)) {
-                        autoPlaceCloseToCursor(targetAlgorithmUI, true);
-                    }
-                }
-            } else {
-                autoPlaceCloseToLocation(targetAlgorithmUI, targetPoint);
-            }
+            autoPlaceCloseToLocation(targetAlgorithmUI, targetPoint);
         }
     }
 
@@ -1152,14 +1078,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         JIPipeNodeUI targetNode = nodeUIs.getOrDefault(event.getTarget().getNode(), null);
 
         // Check if we actually need to auto-place
-        if (viewMode == JIPipeGraphViewMode.Horizontal) {
-            if (sourceNode != null && targetNode != null && targetNode.getX() >= sourceNode.getRightX() + viewMode.getGridWidth()) {
-                return;
-            }
-        } else if (viewMode == JIPipeGraphViewMode.Vertical || viewMode == JIPipeGraphViewMode.VerticalCompact) {
-            if (sourceNode != null && targetNode != null && targetNode.getY() >= sourceNode.getBottomY() + viewMode.getGridHeight()) {
-                return;
-            }
+        if (sourceNode != null && targetNode != null && targetNode.getY() >= sourceNode.getBottomY() + viewMode.getGridHeight()) {
+            return;
         }
 
         boolean layoutHelperEnabled = settings != null && settings.isLayoutAfterConnect();
@@ -1172,11 +1092,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
             Point cursorBackup = graphEditCursor;
             try {
-                if (viewMode == JIPipeGraphViewMode.Horizontal)
-                    setGraphEditCursor(new Point(targetNode.getRightX() + 4 * viewMode.getGridWidth(),
-                            targetNode.getY()));
-                else
-                    setGraphEditCursor(new Point(targetNode.getX(), targetNode.getBottomY() + 4 * viewMode.getGridHeight()));
+                setGraphEditCursor(new Point(targetNode.getX(), targetNode.getBottomY() + 4 * viewMode.getGridHeight()));
                 autoPlaceTargetAdjacent(sourceNode, event.getSource(), targetNode, event.getTarget());
                 autoExpandLeftTop();
             } finally {
@@ -1514,46 +1430,24 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         // Tighten the point ranges: Bringing the centers together
         PointRange.tighten(sourcePoint, targetPoint);
 
-        if (viewMode == JIPipeGraphViewMode.Vertical || viewMode == JIPipeGraphViewMode.VerticalCompact) {
-            // From source to target
-            {
-                int x = sourcePoint.center.x;
-                int y = sourcePoint.center.y;
-                int h = viewMode.getGridHeight() / 3;
-                int d = 6;
-                g.drawLine(x, y, x, y + h);
-                g.drawOval(x - d / 2, y + h, d, d);
-            }
+        // From source to target
+        {
+            int x = sourcePoint.center.x;
+            int y = sourcePoint.center.y;
+            int h = viewMode.getGridHeight() / 3;
+            int d = 6;
+            g.drawLine(x, y, x, y + h);
+            g.drawOval(x - d / 2, y + h, d, d);
+        }
 
-            // At target
-            {
-                int x = targetPoint.center.x;
-                int y = targetPoint.center.y;
-                int h = viewMode.getGridHeight() / 3;
-                int d = 6;
-                g.drawLine(x, y, x, y - h);
-                g.drawOval(x - d / 2, y - h - d, d, d);
-            }
-        } else {
-            // From source to target
-            {
-                int x = sourcePoint.center.x;
-                int y = sourcePoint.center.y;
-                int w = viewMode.getGridWidth() / 2;
-                int d = 7;
-                g.drawLine(x, y, x + w, y);
-                g.fillOval(x + w, y - d / 2, d, d);
-            }
-
-            // At target
-            {
-                int x = targetPoint.center.x;
-                int y = targetPoint.center.y;
-                int w = viewMode.getGridWidth() / 2;
-                int d = 7;
-                g.drawLine(x, y, x - w, y);
-                g.fillOval(x - w - d, y - d / 2, d, d);
-            }
+        // At target
+        {
+            int x = targetPoint.center.x;
+            int y = targetPoint.center.y;
+            int h = viewMode.getGridHeight() / 3;
+            int d = 6;
+            g.drawLine(x, y, x, y - h);
+            g.drawOval(x - d / 2, y - h - d, d, d);
         }
     }
 
@@ -1647,34 +1541,18 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 Point sourcePoint = new Point();
                 Point targetPoint = new Point();
                 boolean uiIsOutput = getCompartment() == null || getCompartment().equals(ui.getNode().getCompartmentUUIDInParentGraph());
-                if (viewMode == JIPipeGraphViewMode.Horizontal) {
-                    if (uiIsOutput) {
-                        // This is an output -> line goes outside
-                        sourcePoint.x = ui.getX() + ui.getWidth();
-                        sourcePoint.y = ui.getY() + viewMode.getGridHeight() / 2;
-                        targetPoint.x = getWidth();
-                        targetPoint.y = sourcePoint.y;
-                    } else {
-                        // This is an input
-                        sourcePoint.x = 0;
-                        sourcePoint.y = ui.getY() + viewMode.getGridHeight() / 2;
-                        targetPoint.x = ui.getX();
-                        targetPoint.y = sourcePoint.y;
-                    }
+                if (uiIsOutput) {
+                    // This is an output -> line goes outside
+                    targetPoint.x = ui.getX() + ui.getWidth() / 2;
+                    targetPoint.y = ui.getY() + ui.getHeight();
+                    sourcePoint.x = targetPoint.x;
+                    sourcePoint.y = getHeight();
                 } else {
-                    if (uiIsOutput) {
-                        // This is an output -> line goes outside
-                        targetPoint.x = ui.getX() + ui.getWidth() / 2;
-                        targetPoint.y = ui.getY() + ui.getHeight();
-                        sourcePoint.x = targetPoint.x;
-                        sourcePoint.y = getHeight();
-                    } else {
-                        // This is an input
-                        targetPoint.x = ui.getX() + ui.getWidth() / 2;
-                        targetPoint.y = ui.getY();
-                        sourcePoint.x = targetPoint.x;
-                        sourcePoint.y = 0;
-                    }
+                    // This is an input
+                    targetPoint.x = ui.getX() + ui.getWidth() / 2;
+                    targetPoint.y = ui.getY();
+                    sourcePoint.x = targetPoint.x;
+                    sourcePoint.y = 0;
                 }
                 if (settings.isDrawImprovedEdges() && borderStroke != null) {
                     g.setStroke(borderStroke);
@@ -1714,13 +1592,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         int dx;
         int dy;
         if (drawArrowHead) {
-            if (viewMode == JIPipeGraphViewMode.Horizontal) {
-                dx = arrowHeadShift;
-                dy = 0;
-            } else {
-                dx = 0;
-                dy = arrowHeadShift;
-            }
+            dx = 0;
+            dy = arrowHeadShift;
         } else {
             dx = 0;
             dy = 0;
@@ -1754,13 +1627,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 int arrowHeadShift = getArrowHeadShift();
                 int dx;
                 int dy;
-                if (viewMode == JIPipeGraphViewMode.Horizontal) {
-                    dx = arrowHeadShift;
-                    dy = 0;
-                } else {
-                    dx = 0;
-                    dy = arrowHeadShift;
-                }
+                dx = 0;
+                dy = arrowHeadShift;
                 g.drawLine((int) (scale * sourcePoint.x) + viewX,
                         (int) (scale * sourcePoint.y) + viewY,
                         (int) (scale * targetPoint.x) + viewX + dx,
@@ -1783,15 +1651,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     }
 
     private void drawArrowHead(Graphics2D g, int x, int y) {
-        if (viewMode == JIPipeGraphViewMode.Horizontal) {
-            int sz = 1;
-            int dx = -2 * sz - 4;
-            g.drawPolygon(new int[]{x + dx, x + sz + dx, x + dx}, new int[]{y - sz, y, y + sz}, 3);
-        } else {
-            int sz = 1;
-            int dy = -2 * sz - 4;
-            g.drawPolygon(new int[]{x - sz, x + sz, x}, new int[]{y - sz + dy, y - sz + dy, y + dy}, 3);
-        }
+        int sz = 1;
+        int dy = -2 * sz - 4;
+        g.drawPolygon(new int[]{x - sz, x + sz, x}, new int[]{y - sz + dy, y - sz + dy, y + dy}, 3);
     }
 
     private void drawElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, double scale, int viewX, int viewY) {
@@ -1803,23 +1665,13 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         int componentStartB;
         int componentEndB;
 
-        if (viewMode == JIPipeGraphViewMode.Horizontal) {
-            buffer = viewMode.getGridWidth();
-            sourceA = sourcePoint.x;
-            targetA = targetPoint.x + getArrowHeadShift();
-            sourceB = sourcePoint.y;
-            targetB = targetPoint.y;
-            componentStartB = sourceBounds.y;
-            componentEndB = sourceBounds.y + sourceBounds.height;
-        } else {
-            buffer = viewMode.getGridHeight() / 2;
-            sourceA = sourcePoint.y;
-            targetA = targetPoint.y + getArrowHeadShift();
-            sourceB = sourcePoint.x;
-            targetB = targetPoint.x;
-            componentStartB = sourceBounds.x;
-            componentEndB = sourceBounds.x + sourceBounds.width;
-        }
+        buffer = viewMode.getGridHeight() / 2;
+        sourceA = sourcePoint.y;
+        targetA = targetPoint.y + getArrowHeadShift();
+        sourceB = sourcePoint.x;
+        targetB = targetPoint.x;
+        componentStartB = sourceBounds.x;
+        componentEndB = sourceBounds.x + sourceBounds.width;
 
         int a0 = sourceA;
         int b0 = sourceB;
@@ -1871,13 +1723,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     private void addElbowPolygonCoordinate(int a1, int b1, double scale, int viewX, int viewY, TIntList xCoords, TIntList yCoords) {
         int x2, y2;
-        if (viewMode == JIPipeGraphViewMode.Horizontal) {
-            x2 = (int) (a1 * scale) + viewX;
-            y2 = (int) (b1 * scale) + viewY;
-        } else {
-            x2 = (int) (b1 * scale) + viewX;
-            y2 = (int) (a1 * scale) + viewY;
-        }
+        x2 = (int) (b1 * scale) + viewX;
+        y2 = (int) (a1 * scale) + viewY;
         xCoords.add(x2);
         yCoords.add(y2);
     }
@@ -1909,15 +1756,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     public JIPipeGraphViewMode getViewMode() {
         return viewMode;
-    }
-
-    public void setViewMode(JIPipeGraphViewMode viewMode) {
-        if (viewMode != this.viewMode) {
-            this.viewMode = viewMode;
-            removeAllNodes();
-            addNewNodes(true);
-            crop(true);
-        }
     }
 
     public BiMap<JIPipeGraphNode, JIPipeNodeUI> getNodeUIs() {

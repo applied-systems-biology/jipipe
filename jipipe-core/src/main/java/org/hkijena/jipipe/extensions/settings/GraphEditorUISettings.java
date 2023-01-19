@@ -32,7 +32,6 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private final EventBus eventBus = new EventBus();
     private final SearchSettings searchSettings = new SearchSettings();
     private final AlgorithmFinderSettings algorithmFinderSettings = new AlgorithmFinderSettings();
-    private JIPipeGraphViewMode defaultViewMode = JIPipeGraphViewMode.VerticalCompact;
     private GraphAutoLayout autoLayout = GraphAutoLayout.MST;
     private boolean switchPanningDirection = false;
     private boolean askOnDeleteNode = true;
@@ -119,18 +118,6 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     @Override
     public EventBus getEventBus() {
         return eventBus;
-    }
-
-    @JIPipeDocumentation(name = "Default view mode", description = "Determines how the graph is displayed.")
-    @JIPipeParameter("default-view-mode")
-    public JIPipeGraphViewMode getDefaultViewMode() {
-        return defaultViewMode;
-    }
-
-    @JIPipeParameter("default-view-mode")
-    public void setDefaultViewMode(JIPipeGraphViewMode defaultViewMode) {
-        this.defaultViewMode = defaultViewMode;
-
     }
 
     @JIPipeDocumentation(name = "Switch panning direction",

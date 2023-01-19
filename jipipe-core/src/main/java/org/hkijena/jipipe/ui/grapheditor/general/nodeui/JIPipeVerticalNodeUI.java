@@ -48,7 +48,6 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
 
-    private final boolean compact;
     private List<JIPipeDataSlotUI> slotUIList = new ArrayList<>();
     private BiMap<String, JIPipeDataSlotUI> inputSlotUIs = HashBiMap.create();
     private BiMap<String, JIPipeDataSlotUI> outputSlotUIs = HashBiMap.create();
@@ -68,11 +67,9 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
      * @param workbench the workbench
      * @param graphUI   The graph UI that contains this UI
      * @param algorithm The algorithm
-     * @param compact   if the vertical view should be compact
      */
-    public JIPipeVerticalNodeUI(JIPipeWorkbench workbench, JIPipeGraphCanvasUI graphUI, JIPipeGraphNode algorithm, boolean compact) {
-        super(workbench, graphUI, algorithm, JIPipeGraphViewMode.Vertical);
-        this.compact = compact;
+    public JIPipeVerticalNodeUI(JIPipeWorkbench workbench, JIPipeGraphCanvasUI graphUI, JIPipeGraphNode algorithm) {
+        super(workbench, graphUI, algorithm, JIPipeGraphViewMode.VerticalCompact);
         initialize();
         updateAlgorithmSlotUIs();
         updateActivationStatus();
@@ -239,7 +236,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
     @Override
     public Dimension calculateGridSize() {
         if (needsRecalculateGridSize()) {
-            JIPipeGraphViewMode graphViewMode = compact ? JIPipeGraphViewMode.VerticalCompact : JIPipeGraphViewMode.Vertical;
+            JIPipeGraphViewMode graphViewMode = JIPipeGraphViewMode.VerticalCompact;
             FontRenderContext frc = new FontRenderContext(null, false, false);
             double width = 0;
 
@@ -369,7 +366,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
                     rightBorder = 1;
 
                 JIPipeDataSlot slot = slots.get(i);
-                JIPipeDataSlotUI ui = new JIPipeVerticalDataSlotUI(getWorkbench(), this, getGraphUI().getCompartment(), slot, compact);
+                JIPipeDataSlotUI ui = new JIPipeVerticalDataSlotUI(getWorkbench(), this, getGraphUI().getCompartment(), slot);
                 ui.setBorder(BorderFactory.createMatteBorder(0, 0, 1, rightBorder, getBorderColor()));
                 slotUIList.add(ui);
                 inputSlotPanel.add(ui);
@@ -384,7 +381,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
                 if (i < displayedOutputColumns - 1)
                     rightBorder = 1;
                 JIPipeDataSlot slot = slots.get(i);
-                JIPipeDataSlotUI ui = new JIPipeVerticalDataSlotUI(getWorkbench(), this, getGraphUI().getCompartment(), slot, compact);
+                JIPipeDataSlotUI ui = new JIPipeVerticalDataSlotUI(getWorkbench(), this, getGraphUI().getCompartment(), slot);
                 ui.setBorder(BorderFactory.createMatteBorder(1, 0, 0, rightBorder, getBorderColor()));
                 slotUIList.add(ui);
                 outputSlotPanel.add(ui);
@@ -455,13 +452,11 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
     @Override
     public void updateSize() {
         Dimension gridSize = calculateGridSize();
-        JIPipeGraphViewMode viewMode = compact ? JIPipeGraphViewMode.VerticalCompact : JIPipeGraphViewMode.Vertical;
+        JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.VerticalCompact;
         Dimension realSize = new Dimension((int) Math.round(gridSize.width * viewMode.getGridWidth() * getGraphUI().getZoom()),
                 (int) Math.round(gridSize.height * viewMode.getGridHeight() * getGraphUI().getZoom()));
         Dimension slotSize = viewMode.gridToRealSize(new Dimension(1, 1), getGraphUI().getZoom());
-        if (compact) {
-            slotSize.height = 24;
-        }
+        slotSize.height = 24;
         slotSize.width = realSize.width;
         if (inputSlotPanel.getComponentCount() > 0) {
             inputSlotPanel.setMinimumSize(slotSize);
@@ -490,7 +485,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
 
     @Override
     public PointRange getSlotLocation(JIPipeDataSlot slot) {
-        JIPipeGraphViewMode graphViewMode = compact ? JIPipeGraphViewMode.VerticalCompact : JIPipeGraphViewMode.Vertical;
+        JIPipeGraphViewMode graphViewMode = JIPipeGraphViewMode.VerticalCompact;
         Dimension unzoomedSize = graphViewMode.gridToRealSize(calculateGridSize(), 1.0);
         if (slot.isInput()) {
             int nColumns = getDisplayedInputColumns();
@@ -543,7 +538,4 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         }
     }
 
-    public boolean isCompact() {
-        return compact;
-    }
 }

@@ -27,7 +27,6 @@ import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.search.SearchBox;
 import org.hkijena.jipipe.ui.extension.GraphEditorToolBarButtonExtension;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
@@ -411,7 +410,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         initializeCenterViewCommand(graphMenu);
         initializeExportMenu(graphMenu);
-        initializeViewModeMenu(graphMenu);
         initializeLayoutMenu(graphMenu);
         initializeSearchMenu(graphMenu);
 
@@ -573,58 +571,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         CopyImageToClipboard copyImageToClipboard = new CopyImageToClipboard();
         copyImageToClipboard.copyImage(screenshot);
         getWorkbench().sendStatusBarText("Copied screenshot to clipboard");
-    }
-
-    private void initializeViewModeMenu(JMenu menu) {
-        JMenu viewModeMenu = new JMenu("Display mode");
-        updateViewModeMenuIcon(viewModeMenu);
-        menu.add(viewModeMenu);
-
-        ButtonGroup viewModeGroup = new ButtonGroup();
-
-        JMenuItem viewModeHorizontalItem = new JCheckBoxMenuItem("Display nodes horizontally");
-        viewModeHorizontalItem.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Horizontal);
-        viewModeHorizontalItem.addActionListener(e -> {
-            canvasUI.setViewMode(JIPipeGraphViewMode.Horizontal);
-            canvasUI.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.Horizontal);
-            updateViewModeMenuIcon(viewModeMenu);
-        });
-        viewModeGroup.add(viewModeHorizontalItem);
-        viewModeMenu.add(viewModeHorizontalItem);
-
-        JMenuItem viewModeVerticalItem = new JCheckBoxMenuItem("Display nodes vertically");
-        viewModeVerticalItem.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.Vertical);
-        viewModeVerticalItem.addActionListener(e -> {
-            canvasUI.setViewMode(JIPipeGraphViewMode.Vertical);
-            canvasUI.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.Vertical);
-            updateViewModeMenuIcon(viewModeMenu);
-        });
-        viewModeGroup.add(viewModeVerticalItem);
-        viewModeMenu.add(viewModeVerticalItem);
-
-        JMenuItem viewModeVerticalCompactItem = new JCheckBoxMenuItem("Display nodes vertically (compact)");
-        viewModeVerticalCompactItem.setSelected(canvasUI.getViewMode() == JIPipeGraphViewMode.VerticalCompact);
-        viewModeVerticalCompactItem.addActionListener(e -> {
-            canvasUI.setViewMode(JIPipeGraphViewMode.VerticalCompact);
-            canvasUI.getGraph().attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
-            updateViewModeMenuIcon(viewModeMenu);
-        });
-        viewModeGroup.add(viewModeVerticalCompactItem);
-        viewModeMenu.add(viewModeVerticalCompactItem);
-    }
-
-    private void updateViewModeMenuIcon(JMenu viewModeButton) {
-        switch (canvasUI.getViewMode()) {
-            case Horizontal:
-                viewModeButton.setIcon(UIUtils.getIconFromResources("actions/view-mode-horizontal.png"));
-                break;
-            case Vertical:
-                viewModeButton.setIcon(UIUtils.getIconFromResources("actions/view-mode-vertical.png"));
-                break;
-            case VerticalCompact:
-                viewModeButton.setIcon(UIUtils.getIconFromResources("actions/view-mode-vertical-compact.png"));
-                break;
-        }
     }
 
     private void redo() {

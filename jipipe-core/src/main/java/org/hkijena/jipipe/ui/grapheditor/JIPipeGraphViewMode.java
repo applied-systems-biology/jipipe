@@ -6,7 +6,9 @@ import java.awt.*;
  * The direction how a canvas renders the nodes
  */
 public enum JIPipeGraphViewMode {
+    @Deprecated
     Horizontal(25, 50),
+    @Deprecated
     Vertical(25, 50),
     VerticalCompact(25, 25);
     private final int gridWidth;

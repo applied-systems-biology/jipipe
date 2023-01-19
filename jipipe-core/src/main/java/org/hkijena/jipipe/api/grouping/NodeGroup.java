@@ -144,13 +144,8 @@ public class NodeGroup extends GraphWrapperAlgorithm implements JIPipeCustomPara
 
                 // Set group input/output
                 if (minX != Integer.MAX_VALUE && minY != Integer.MAX_VALUE && maxX != Integer.MIN_VALUE && maxY != Integer.MIN_VALUE) {
-                    if (viewMode == JIPipeGraphViewMode.Horizontal) {
-                        getGroupInput().setLocationWithin("", new Point(minX - 3, minY - 3), viewMode.name());
-                        getGroupOutput().setLocationWithin("", new Point(maxX + 3, maxY), viewMode.name());
-                    } else {
-                        getGroupInput().setLocationWithin("", new Point(minX, minY - 5), viewMode.name());
-                        getGroupOutput().setLocationWithin("", new Point(maxX, maxY + 5), viewMode.name());
-                    }
+                    getGroupInput().setLocationWithin("", new Point(minX, minY - 5), viewMode.name());
+                    getGroupOutput().setLocationWithin("", new Point(maxX, maxY + 5), viewMode.name());
                 }
             }
         }

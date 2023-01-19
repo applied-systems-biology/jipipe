@@ -270,15 +270,12 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
      * @param force if false, no overlap check is applied
      * @return either the location was not set or no stored location is available
      */
+    @SuppressWarnings("deprecation")
     public boolean moveToStoredGridLocation(boolean force) {
         Point point = node.getLocationWithin(StringUtils.nullToEmpty(graphUI.getCompartment()), graphUI.getViewMode().name());
-        if (point == null && graphUI.getViewMode() == JIPipeGraphViewMode.VerticalCompact) {
-            // Try to get the point from vertical layout
+        if (point == null) {
+            // Try to get the point from vertical layout (migrate to compact)
             point = node.getLocationWithin(StringUtils.nullToEmpty(graphUI.getCompartment()), JIPipeGraphViewMode.Vertical.name());
-        }
-        if (point == null && graphUI.getViewMode() == JIPipeGraphViewMode.Vertical) {
-            // Try to get the point from vertical compact layout
-            point = node.getLocationWithin(StringUtils.nullToEmpty(graphUI.getCompartment()), JIPipeGraphViewMode.VerticalCompact.name());
         }
         if (point != null) {
             return moveToGridLocation(point, force, false);

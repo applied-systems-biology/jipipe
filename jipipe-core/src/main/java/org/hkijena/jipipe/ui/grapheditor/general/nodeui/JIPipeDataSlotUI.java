@@ -285,14 +285,14 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         assignButtonMenu.add(relabelButton);
 
         if ((slot.isInput() && nodeUI.getNode().getInputSlots().size() > 1) || (slot.isOutput() && nodeUI.getNode().getOutputSlots().size() > 1)) {
-            JMenuItem moveUpButton = new JMenuItem(getGraphUI().getViewMode() == JIPipeGraphViewMode.Horizontal ? "Move up" : "Move to the left",
-                    getGraphUI().getViewMode() == JIPipeGraphViewMode.Horizontal ? UIUtils.getIconFromResources("actions/up.png") : UIUtils.getIconFromResources("actions/go-left.png"));
+            JMenuItem moveUpButton = new JMenuItem("Move to the left",
+                    UIUtils.getIconFromResources("actions/go-left.png"));
             moveUpButton.setToolTipText("Reorders the slots");
             moveUpButton.addActionListener(e -> moveSlotUp());
             assignButtonMenu.add(moveUpButton);
 
-            JMenuItem moveDownButton = new JMenuItem(getGraphUI().getViewMode() == JIPipeGraphViewMode.Horizontal ? "Move down" : "Move to the right",
-                    getGraphUI().getViewMode() == JIPipeGraphViewMode.Horizontal ? UIUtils.getIconFromResources("actions/down.png") : UIUtils.getIconFromResources("actions/go-right.png"));
+            JMenuItem moveDownButton = new JMenuItem("Move to the right",
+                    UIUtils.getIconFromResources("actions/go-right.png"));
             moveDownButton.setToolTipText("Reorders the slots");
             moveDownButton.addActionListener(e -> moveSlotDown());
             assignButtonMenu.add(moveDownButton);
@@ -580,13 +580,8 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         if (layoutHelperEnabled) {
             Point cursorLocation = new Point();
             Point slotLocation = getLocation();
-            if (getNodeUI().getGraphUI().getViewMode() == JIPipeGraphViewMode.Horizontal) {
-                cursorLocation.x = getNodeUI().getX() - getNodeUI().getGraphUI().getViewMode().getGridWidth() * 6;
-                cursorLocation.y = getNodeUI().getY() + slotLocation.y;
-            } else {
-                cursorLocation.x = getNodeUI().getX() + slotLocation.x;
-                cursorLocation.y = getNodeUI().getY() - getNodeUI().getGraphUI().getViewMode().getGridHeight() * 4;
-            }
+            cursorLocation.x = getNodeUI().getX() + slotLocation.x;
+            cursorLocation.y = getNodeUI().getY() - getNodeUI().getGraphUI().getViewMode().getGridHeight() * 4;
             getNodeUI().getGraphUI().setGraphEditCursor(cursorLocation);
             getNodeUI().getGraphUI().repaint(50);
         }
@@ -710,13 +705,8 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
         if (layoutHelperEnabled) {
             Point cursorLocation = new Point();
             Point slotLocation = getLocation();
-            if (getNodeUI().getGraphUI().getViewMode() == JIPipeGraphViewMode.Horizontal) {
-                cursorLocation.x = getNodeUI().getRightX() + getNodeUI().getGraphUI().getViewMode().getGridWidth();
-                cursorLocation.y = getNodeUI().getY() + slotLocation.y;
-            } else {
-                cursorLocation.x = getNodeUI().getX() + slotLocation.x;
-                cursorLocation.y = getNodeUI().getBottomY() + getNodeUI().getGraphUI().getViewMode().getGridHeight();
-            }
+            cursorLocation.x = getNodeUI().getX() + slotLocation.x;
+            cursorLocation.y = getNodeUI().getBottomY() + getNodeUI().getGraphUI().getViewMode().getGridHeight();
             getNodeUI().getGraphUI().setGraphEditCursor(cursorLocation);
             getNodeUI().getGraphUI().repaint(50);
         }

@@ -138,47 +138,21 @@ public class SugiyamaGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
             }
         }
 
-        switch (canvasUI.getViewMode()) {
-            case Horizontal:
-                rearrangeSugiyamaHorizontal(canvasUI, sugiyamaGraph, maxLayer, maxIndex);
-                break;
-            case Vertical:
-                rearrangeSugiyamaVertical(canvasUI, sugiyamaGraph, maxLayer, maxIndex);
-                break;
-            case VerticalCompact:
-                rearrangeSugiyamaVertical(canvasUI, sugiyamaGraph, maxLayer, maxIndex);
-                break;
-        }
+        rearrangeSugiyamaVertical(canvasUI, sugiyamaGraph, maxLayer, maxIndex);
 
         // Add free-floating algorithms back into the graph
         if (!freeFloating.isEmpty()) {
-            if (canvasUI.getViewMode() == JIPipeGraphViewMode.Horizontal) {
-                // Put them below
-                int minY = canvasUI.getViewMode().getGridHeight();
-                for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values()) {
-                    if (!freeFloating.contains(ui)) {
-                        minY = Math.max(ui.getBottomY(), minY);
-                    }
-                }
-                int x = canvasUI.getViewMode().getGridWidth() * 4;
-                for (JIPipeNodeUI ui : freeFloating) {
-                    ui.moveToClosestGridPoint(new Point(x, minY), true, true);
-                    x += ui.getWidth() + canvasUI.getViewMode().getGridWidth() * 2;
-                }
-            } else {
-                int minX = canvasUI.getViewMode().getGridWidth() * 4;
-                for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values()) {
-                    if (!freeFloating.contains(ui)) {
-                        minX = Math.max(ui.getRightX(), minX);
-                    }
-                }
-                int y = canvasUI.getViewMode().getGridHeight();
-                for (JIPipeNodeUI ui : freeFloating) {
-                    ui.moveToClosestGridPoint(new Point(minX, y), true, true);
-                    y += ui.getHeight() + canvasUI.getViewMode().getGridHeight();
+            int minX = canvasUI.getViewMode().getGridWidth() * 4;
+            for (JIPipeNodeUI ui : canvasUI.getNodeUIs().values()) {
+                if (!freeFloating.contains(ui)) {
+                    minX = Math.max(ui.getRightX(), minX);
                 }
             }
-
+            int y = canvasUI.getViewMode().getGridHeight();
+            for (JIPipeNodeUI ui : freeFloating) {
+                ui.moveToClosestGridPoint(new Point(minX, y), true, true);
+                y += ui.getHeight() + canvasUI.getViewMode().getGridHeight();
+            }
         }
     }
 
