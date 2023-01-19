@@ -33,7 +33,7 @@ import java.nio.file.Path;
 public class JIPipeDataTableToZIPExporterRun extends JIPipeWorkbenchPanel implements JIPipeRunnable {
 
     private final Path outputZipFile;
-    private final JIPipeDataTable dataTable;
+    private JIPipeDataTable dataTable;
     private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
     /**
@@ -50,17 +50,22 @@ public class JIPipeDataTableToZIPExporterRun extends JIPipeWorkbenchPanel implem
 
     @Override
     public void run() {
-        progressInfo.setMaxProgress(1);
+        try {
+            progressInfo.setMaxProgress(1);
 
-        try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, outputZipFile)) {
-            dataTable.exportData(storage, progressInfo);
-        } catch (Exception e) {
-            IJ.handleException(e);
-            progressInfo.log(ExceptionUtils.getStackTrace(e));
-            throw new RuntimeException(e);
+            try (JIPipeZIPWriteDataStorage storage = new JIPipeZIPWriteDataStorage(progressInfo, outputZipFile)) {
+                dataTable.exportData(storage, progressInfo);
+            } catch (Exception e) {
+                IJ.handleException(e);
+                progressInfo.log(ExceptionUtils.getStackTrace(e));
+                throw new RuntimeException(e);
+            }
+
+            progressInfo.incrementProgress();
         }
-
-        progressInfo.incrementProgress();
+        finally {
+            dataTable = null;
+        }
     }
 
     @Subscribe

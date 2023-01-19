@@ -67,7 +67,7 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImport
         private final Path rowStorageFolder;
         private final Class<? extends JIPipeData> dataType;
         private final JIPipeDataTableMetadataRow metadataRow;
-        private final JIPipeDataTable outputTable;
+        private JIPipeDataTable outputTable;
         private JIPipeProgressInfo progressInfo = new JIPipeProgressInfo();
 
         public ImportDataRun(Path rowStorageFolder, Class<? extends JIPipeData> dataType, JIPipeDataTableMetadataRow metadataRow) {
@@ -94,8 +94,13 @@ public class JIPipeDataDisplayWrapperImportOperation implements JIPipeDataImport
 
         @Override
         public void run() {
-            JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), dataType, progressInfo);
-            outputTable.addData(data, metadataRow.getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+            try {
+                JIPipeData data = JIPipe.importData(new JIPipeFileSystemReadDataStorage(progressInfo, rowStorageFolder), dataType, progressInfo);
+                outputTable.addData(data, metadataRow.getTextAnnotations(), JIPipeTextAnnotationMergeMode.OverwriteExisting, progressInfo);
+            }
+            finally {
+                outputTable = null;
+            }
         }
 
         public JIPipeDataTable getOutputTable() {
