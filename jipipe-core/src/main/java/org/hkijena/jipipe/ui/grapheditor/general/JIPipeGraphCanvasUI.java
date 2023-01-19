@@ -41,7 +41,6 @@ import org.hkijena.jipipe.ui.grapheditor.general.layout.MSTGraphAutoLayoutMethod
 import org.hkijena.jipipe.ui.grapheditor.general.layout.SugiyamaGraphAutoLayoutMethod;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeDataSlotUI;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeVerticalNodeUI;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
@@ -132,6 +131,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      * Used to store the minimum dimensions of the canvas to reduce user disruption
      */
     private Dimension minDimensions = null;
+
+    private JIPipeNodeUI currentlyMouseEnteredNode;
 
     /**
      * Creates a new UI
@@ -295,7 +296,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             if (nodeUIs.containsKey(algorithm))
                 continue;
 
-            ui = new JIPipeVerticalNodeUI(getWorkbench(), this, algorithm);
+            ui = new JIPipeNodeUI(getWorkbench(), this, algorithm);
             ui.getEventBus().register(this);
             add(ui, new Integer(currentNodeLayer++)); // Layered pane
             nodeUIs.put(algorithm, ui);
@@ -562,25 +563,30 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 /*
                 Auto snap to input/output if there is only one
                  */
-                if (currentConnectionDragSource.getSlot().isInput()) {
-                    if (nodeUI.getNode().getOutputSlots().size() == 1) {
-                        if (!nodeUI.getOutputSlotUIs().values().isEmpty()) {
-                            // Auto snap to output
-                            JIPipeDataSlotUI slotUI = nodeUI.getOutputSlotUIs().values().iterator().next();
-                            setCurrentConnectionDragTarget(slotUI);
-                            snapped = true;
-                        }
-                    }
-                } else {
-                    if (nodeUI.getNode().getInputSlots().size() == 1) {
-                        // Auto snap to input
-                        if (!nodeUI.getInputSlotUIs().values().isEmpty()) {
-                            JIPipeDataSlotUI slotUI = nodeUI.getInputSlotUIs().values().iterator().next();
-                            setCurrentConnectionDragTarget(slotUI);
-                            snapped = true;
-                        }
-                    }
-                }
+                System.err.println("TODO AUTOSNAP");
+                System.err.println("TODO AUTOSNAP");
+                System.err.println("TODO AUTOSNAP");
+                System.err.println("TODO AUTOSNAP");
+                System.err.println("TODO AUTOSNAP");
+//                if (currentConnectionDragSource.getSlot().isInput()) {
+//                    if (nodeUI.getNode().getOutputSlots().size() == 1) {
+//                        if (!nodeUI.getOutputSlotUIs().values().isEmpty()) {
+//                            // Auto snap to output
+//                            JIPipeDataSlotUI slotUI = nodeUI.getOutputSlotUIs().values().iterator().next();
+//                            setCurrentConnectionDragTarget(slotUI);
+//                            snapped = true;
+//                        }
+//                    }
+//                } else {
+//                    if (nodeUI.getNode().getInputSlots().size() == 1) {
+//                        // Auto snap to input
+//                        if (!nodeUI.getInputSlotUIs().values().isEmpty()) {
+//                            JIPipeDataSlotUI slotUI = nodeUI.getInputSlotUIs().values().iterator().next();
+//                            setCurrentConnectionDragTarget(slotUI);
+//                            snapped = true;
+//                        }
+//                    }
+//                }
 
                 /*
                 Sticky snap: Stay in last snapped position if we were in it before
@@ -797,7 +803,23 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseMoved(MouseEvent mouseEvent) {
-
+        JIPipeNodeUI nodeUI = pickComponent(mouseEvent);
+        if(nodeUI != null) {
+            if(nodeUI != currentlyMouseEnteredNode) {
+                if(currentlyMouseEnteredNode != null) {
+                    currentlyMouseEnteredNode.mouseExited(mouseEvent);
+                }
+                currentlyMouseEnteredNode = nodeUI;
+                currentlyMouseEnteredNode.mouseEntered(mouseEvent);
+            }
+        }
+        else if(currentlyMouseEnteredNode != null) {
+            currentlyMouseEnteredNode.mouseExited(mouseEvent);
+            currentlyMouseEnteredNode = null;
+        }
+        if(currentlyMouseEnteredNode != null) {
+            currentlyMouseEnteredNode.mouseMoved(mouseEvent);
+        }
     }
 
     @Override
@@ -1966,7 +1988,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         eventBus.post(new ZoomChangedEvent(this));
         for (JIPipeNodeUI ui : nodeUIs.values()) {
             ui.moveToStoredGridLocation(true);
-            ui.updateSize();
+            ui.setZoom(zoom);
         }
         eventBus.post(new GraphCanvasUpdatedEvent(this));
     }

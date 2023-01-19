@@ -45,7 +45,7 @@ public class DisableSaveOutputsNodeUIContextAction implements NodeUIContextActio
                 for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
                     outputSlot.getInfo().setSaveOutputs(false);
                 }
-                ui.refreshSlots();
+                ui.updateView(false, true, false);
             }
         }
     }

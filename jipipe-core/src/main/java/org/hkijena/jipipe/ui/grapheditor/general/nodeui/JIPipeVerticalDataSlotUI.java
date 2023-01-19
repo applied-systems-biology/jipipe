@@ -38,6 +38,7 @@ import java.util.UUID;
 /**
  * Slot UI with horizontal direction
  */
+@Deprecated
 public class JIPipeVerticalDataSlotUI extends JIPipeDataSlotUI {
     private JButton assignButton;
     private JLabel nameLabel;

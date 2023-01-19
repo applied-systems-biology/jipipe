@@ -49,6 +49,7 @@ import java.util.stream.Collectors;
 /**
  * UI around an {@link JIPipeDataSlot}
  */
+@Deprecated
 public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     protected JPopupMenu assignButtonMenu;
     private JIPipeNodeUI nodeUI;
@@ -382,29 +383,29 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                     JIPipe.getDataTypes().getIconFor(target.getAcceptedDataType()));
             connectButton.addActionListener(e -> connectSlot(slot, target));
             connectButton.setToolTipText(TooltipUtils.getAlgorithmTooltip(target.getNode().getInfo()));
-            connectButton.addMouseListener(new MouseAdapter() {
-                @Override
-                public void mouseEntered(MouseEvent e) {
-                    JIPipeNodeUI targetNodeUI = getGraphUI().getNodeUIs().getOrDefault(target.getNode(), null);
-                    if (targetNodeUI != null) {
-                        if (target.isInput()) {
-                            JIPipeDataSlotUI targetUI = targetNodeUI.getInputSlotUIs().getOrDefault(target.getName(), null);
-                            if (targetUI != null) {
-                                getGraphUI().setCurrentConnectionDragTarget(targetUI);
-                                getGraphUI().setCurrentConnectionDragSource(JIPipeDataSlotUI.this);
-                            }
-                        }
-                    }
-                    getGraphUI().repaint(50);
-                }
-
-                @Override
-                public void mouseExited(MouseEvent e) {
-                    getGraphUI().setCurrentConnectionDragSource(null);
-                    getGraphUI().setCurrentConnectionDragTarget(null);
-                    getGraphUI().repaint(50);
-                }
-            });
+//            connectButton.addMouseListener(new MouseAdapter() {
+//                @Override
+//                public void mouseEntered(MouseEvent e) {
+//                    JIPipeNodeUI targetNodeUI = getGraphUI().getNodeUIs().getOrDefault(target.getNode(), null);
+//                    if (targetNodeUI != null) {
+//                        if (target.isInput()) {
+//                            JIPipeDataSlotUI targetUI = targetNodeUI.getInputSlotUIs().getOrDefault(target.getName(), null);
+//                            if (targetUI != null) {
+//                                getGraphUI().setCurrentConnectionDragTarget(targetUI);
+//                                getGraphUI().setCurrentConnectionDragSource(JIPipeDataSlotUI.this);
+//                            }
+//                        }
+//                    }
+//                    getGraphUI().repaint(50);
+//                }
+//
+//                @Override
+//                public void mouseExited(MouseEvent e) {
+//                    getGraphUI().setCurrentConnectionDragSource(null);
+//                    getGraphUI().setCurrentConnectionDragTarget(null);
+//                    getGraphUI().repaint(50);
+//                }
+//            });
             if (currentMenu instanceof JMenu)
                 ((JMenu) currentMenu).add(connectButton);
             else
@@ -590,29 +591,29 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     }
 
     private void installHighlightForConnect(JIPipeDataSlot source, JMenuItem connectButton) {
-        connectButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                JIPipeNodeUI sourceNodeUI = getGraphUI().getNodeUIs().getOrDefault(source.getNode(), null);
-                if (sourceNodeUI != null) {
-                    if (source.isOutput()) {
-                        JIPipeDataSlotUI sourceUI = sourceNodeUI.getOutputSlotUIs().getOrDefault(source.getName(), null);
-                        if (sourceUI != null) {
-                            getGraphUI().setCurrentConnectionDragTarget(JIPipeDataSlotUI.this);
-                            getGraphUI().setCurrentConnectionDragSource(sourceUI);
-                        }
-                    }
-                }
-                getGraphUI().repaint(50);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                getGraphUI().setCurrentConnectionDragSource(null);
-                getGraphUI().setCurrentConnectionDragTarget(null);
-                getGraphUI().repaint(50);
-            }
-        });
+//        connectButton.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseEntered(MouseEvent e) {
+//                JIPipeNodeUI sourceNodeUI = getGraphUI().getNodeUIs().getOrDefault(source.getNode(), null);
+//                if (sourceNodeUI != null) {
+//                    if (source.isOutput()) {
+//                        JIPipeDataSlotUI sourceUI = sourceNodeUI.getOutputSlotUIs().getOrDefault(source.getName(), null);
+//                        if (sourceUI != null) {
+//                            getGraphUI().setCurrentConnectionDragTarget(JIPipeDataSlotUI.this);
+//                            getGraphUI().setCurrentConnectionDragSource(sourceUI);
+//                        }
+//                    }
+//                }
+//                getGraphUI().repaint(50);
+//            }
+//
+//            @Override
+//            public void mouseExited(MouseEvent e) {
+//                getGraphUI().setCurrentConnectionDragSource(null);
+//                getGraphUI().setCurrentConnectionDragTarget(null);
+//                getGraphUI().repaint(50);
+//            }
+//        });
     }
 
     private void installHighlightForDisconnect(JMenuItem disconnectButton, Set<JIPipeDataSlot> sourceSlots) {
@@ -836,7 +837,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     public void onSlotNameChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if ("custom-name".equals(event.getKey())) {
             reloadName();
-            nodeUI.updateSize();
+            nodeUI.updateView(false,false,true);
         }
     }
 

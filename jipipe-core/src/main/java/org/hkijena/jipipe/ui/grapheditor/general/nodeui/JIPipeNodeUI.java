@@ -16,8 +16,8 @@ package org.hkijena.jipipe.ui.grapheditor.general.nodeui;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
-import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
@@ -37,12 +37,27 @@ import org.hkijena.jipipe.utils.UIUtils;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * UI around an {@link JIPipeGraphNode} instance
  */
-public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
+public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener {
+
+    public static final Stroke STROKE_SLOT_INDICATOR = new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND);
+
+    public static final Stroke STROKE_MOUSE_OVER = new BasicStroke(2);
+
+    public static final Color COLOR_DISABLED_1 = new Color(227, 86, 86);
+    public static final Color COLOR_DISABLED_2 = new Color(0xc36262);
+
+    public static final Color COLOR_SLOT_CACHED = new Color(0x95c2a8);
+
+    public static final Color COLOR_SLOT_DISCONNECTED = new Color(0xc36262);
 
     public static final NodeUIContextAction[] RUN_NODE_CONTEXT_MENU_ENTRIES = new NodeUIContextAction[]{
             new UpdateCacheNodeUIContextAction(),
@@ -53,13 +68,32 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
             NodeUIContextAction.SEPARATOR,
             new ClearCacheNodeUIContextAction()
     };
+
+    private final JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.VerticalCompact;
+
     private final JIPipeGraphCanvasUI graphUI;
     private final JIPipeGraphNode node;
     private final EventBus eventBus = new EventBus();
-    private final Color fillColor;
-    private final Color borderColor;
-    private final LinearGradientPaint disabledPaint;
-    private final LinearGradientPaint passThroughPaint;
+    private final Color nodeFillColor;
+    private final Color nodeBorderColor;
+    private final LinearGradientPaint nodeDisabledPaint;
+    private final LinearGradientPaint nodePassThroughPaint;
+    private final Color slotFillColor;
+    private final boolean slotsInputsEditable;
+    private final boolean slotsOutputsEditable;
+    private final Map<String, SlotState> inputSlotStatusMap = new HashMap<>();
+    private final Map<String, SlotState> outputSlotStatusMap = new HashMap<>();
+    private boolean mouseIsEntered = false;
+
+    private double zoom = 1;
+
+    private final Font unzoomedMainFont = new Font(Font.DIALOG, Font.PLAIN, 12);
+
+    private final Font unzoomedSecondaryFont = new Font(Font.DIALOG, Font.PLAIN, 11);
+
+    private Font zoomedMainFont;
+
+    private Font zoomedSecondaryFont;
 
     /**
      * Creates a new UI
@@ -67,25 +101,46 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
      * @param workbench thr workbench
      * @param graphUI   The graph UI that contains this UI
      * @param node      The algorithm
-     * @param viewMode  Directionality of the canvas UI
      */
-    public JIPipeNodeUI(JIPipeWorkbench workbench, JIPipeGraphCanvasUI graphUI, JIPipeGraphNode node, JIPipeGraphViewMode viewMode) {
+    public JIPipeNodeUI(JIPipeWorkbench workbench, JIPipeGraphCanvasUI graphUI, JIPipeGraphNode node) {
         super(workbench);
         this.graphUI = graphUI;
         this.node = node;
         this.node.getEventBus().register(this);
-        this.fillColor = UIUtils.getFillColorFor(node.getInfo());
-        this.borderColor = UIUtils.getBorderColorFor(node.getInfo());
-        Color disabledRed1 = new Color(227, 86, 86);
-        Color disabledRed2 = new Color(0xc36262);
-        this.disabledPaint = new LinearGradientPaint(
+
+        // Slot information
+        if(node.getSlotConfiguration() instanceof JIPipeMutableSlotConfiguration) {
+            slotsInputsEditable = ((JIPipeMutableSlotConfiguration) node.getSlotConfiguration()).canModifyInputSlots();
+            slotsOutputsEditable = ((JIPipeMutableSlotConfiguration) node.getSlotConfiguration()).canModifyOutputSlots();
+        }
+        else {
+            slotsInputsEditable = false;
+            slotsOutputsEditable = false;
+        }
+
+        // Generate colors
+        this.nodeFillColor = UIUtils.getFillColorFor(node.getInfo());
+        this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
+        this.slotFillColor = UIManager.getColor("Panel.background");
+        this.nodeDisabledPaint = new LinearGradientPaint(
                 (float) 0, (float) 0, (float) (8), (float) (8),
-                new float[]{0, 0.5f, 0.5001f, 1}, new Color[]{disabledRed1, disabledRed1, disabledRed2, disabledRed2}, MultipleGradientPaint.CycleMethod.REPEAT);
-        float[] hsb = Color.RGBtoHSB(fillColor.getRed(), fillColor.getGreen(), fillColor.getBlue(), null);
+                new float[]{0, 0.5f, 0.5001f, 1}, new Color[]{COLOR_DISABLED_1, COLOR_DISABLED_1, COLOR_DISABLED_2, COLOR_DISABLED_2}, MultipleGradientPaint.CycleMethod.REPEAT);
+        float[] hsb = Color.RGBtoHSB(nodeFillColor.getRed(), nodeFillColor.getGreen(), nodeFillColor.getBlue(), null);
         Color desaturatedFillColor = Color.getHSBColor(hsb[0], hsb[1] / 4, hsb[2] * 0.8f);
-        this.passThroughPaint = new LinearGradientPaint(
+        this.nodePassThroughPaint = new LinearGradientPaint(
                 (float) 0, (float) 0, (float) (8), (float) (8),
-                new float[]{0, 0.5f, 0.5001f, 1}, new Color[]{desaturatedFillColor, desaturatedFillColor, fillColor, fillColor}, MultipleGradientPaint.CycleMethod.REPEAT);
+                new float[]{0, 0.5f, 0.5001f, 1}, new Color[]{desaturatedFillColor, desaturatedFillColor, nodeFillColor, nodeFillColor}, MultipleGradientPaint.CycleMethod.REPEAT);
+
+        // Initialization
+        initialize();
+        updateView(true, true, true);
+    }
+
+    private void initialize() {
+        setBackground(getFillColor());
+        setBorder(BorderFactory.createLineBorder(getBorderColor()));
+        setLayout(new GridBagLayout());
+        setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
 
     public boolean isNodeRunnable() {
@@ -94,6 +149,34 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         if (!(node instanceof JIPipeAlgorithm))
             return false;
         return node.getParentGraph().getAttachment(JIPipeGraphType.class) == JIPipeGraphType.Project;
+    }
+
+    public double getZoom() {
+        return zoom;
+    }
+
+    public void setZoom(double zoom) {
+        this.zoom = zoom;
+        updateView(true, false, false);
+    }
+
+    public void updateView(boolean fonts, boolean slots, boolean size) {
+        if(fonts) {
+            updateFonts();
+        }
+        if(fonts || slots) {
+            updateSlots();
+        }
+        if(fonts || slots || size) {
+            updateSize();
+            getGraphUI().repaint(50);
+        }
+    }
+
+    private void updateFonts() {
+        // Update fonts
+        zoomedMainFont = new Font(Font.DIALOG, Font.PLAIN, (int) Math.round(12 * zoom));
+        zoomedSecondaryFont = new Font(Font.DIALOG, Font.PLAIN, (int) Math.round(11 * zoom));
     }
 
     /**
@@ -121,12 +204,16 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         return addSlotButton;
     }
 
-    public abstract void updateHotkeyInfo();
+    public void updateHotkeyInfo() {
+        // TODO
+    }
 
     /**
      * Updates the slots
      */
-    public abstract void updateAlgorithmSlotUIs();
+    public void updateAlgorithmSlotUIs() {
+        // TODO
+    }
 
     /**
      * Returns true if this component overlaps with another component
@@ -146,19 +233,6 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
             }
         }
         return false;
-    }
-
-    @Override
-    public void paint(Graphics g) {
-        super.paint(g);
-
-        // Draw additional border if zoom < 1
-        if (graphUI.getZoom() < 1) {
-            Graphics2D graphics2D = (Graphics2D) g;
-            graphics2D.setStroke(JIPipeGraphCanvasUI.STROKE_UNIT);
-            graphics2D.setColor(borderColor);
-            graphics2D.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
-        }
     }
 
     /**
@@ -190,9 +264,7 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
     public void onAlgorithmParametersChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getSource() == node && "jipipe:node:name".equals(event.getKey())) {
             updateSize();
-            updateName();
-            revalidate();
-            repaint();
+            repaint(50);
         } else if (event.getSource() == node && "jipipe:algorithm:enabled".equals(event.getKey())) {
             updateActivationStatus();
         } else if (event.getSource() == node && "jipipe:algorithm:pass-through".equals(event.getKey())) {
@@ -202,29 +274,74 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         }
     }
 
-    public abstract boolean needsRecalculateGridSize();
+    public boolean needsRecalculateGridSize() {
+        return false; //TODO
+    }
 
     /**
      * Calculates the size in grid coordinates
      *
      * @return the size
      */
-    public abstract Dimension calculateGridSize();
+    public Dimension getSizeInGridCoordinates() {
+        FontMetrics mainFontMetrics;
+        FontMetrics secondaryFontMetrics;
 
-    /**
-     * Called when the algorithm name was updated
-     */
-    protected abstract void updateName();
+        if(getGraphics() != null) {
+            mainFontMetrics = getGraphics().getFontMetrics(unzoomedMainFont);
+            secondaryFontMetrics = getGraphics().getFontMetrics(unzoomedSecondaryFont);
+        }
+        else {
+            Canvas c = new Canvas();
+            mainFontMetrics = c.getFontMetrics(unzoomedMainFont);
+            secondaryFontMetrics = c.getFontMetrics(unzoomedSecondaryFont);
+        }
+
+        double mainWidth = 22 + 22 + mainFontMetrics.stringWidth(node.getName()) + 16;
+        double inputSlotWidth = 0;
+        double outputSlotWidth = 0;
+
+        if(slotsInputsEditable) {
+            inputSlotWidth += 22;
+        }
+        for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
+            SlotState slotState = inputSlotStatusMap.get(inputSlot.getName());
+            inputSlotWidth += secondaryFontMetrics.stringWidth(slotState.getSlotLabel());
+            inputSlotWidth += 22 + 8;
+        }
+
+        if(slotsOutputsEditable) {
+            outputSlotWidth += 22;
+        }
+        for (JIPipeDataSlot outputSlots : node.getOpenInputSlots()) {
+            SlotState slotState = inputSlotStatusMap.get(outputSlots.getName());
+            outputSlotWidth += secondaryFontMetrics.stringWidth(slotState.getSlotLabel());
+            outputSlotWidth += 22 + 8;
+        }
+
+        double maxWidth = Math.max(mainWidth, Math.max(inputSlotWidth, outputSlotWidth));
+        int gridWidth = (int) Math.ceil(maxWidth / viewMode.getGridWidth());
+        return new Dimension(gridWidth,3);
+    }
 
     /**
      * Called when the algorithm was enabled/disabled
      */
-    protected abstract void updateActivationStatus();
+    protected void updateActivationStatus() {
+        getGraphUI().repaint(50);
+    }
 
     /**
      * Recalculates the UI size
      */
-    public abstract void updateSize();
+    private void updateSize() {
+        Dimension gridSize = getSizeInGridCoordinates();
+        Dimension realSize = viewMode.gridToRealSize(gridSize, zoom);
+        if (!Objects.equals(getSize(), realSize)) {
+            setSize(realSize);
+            revalidate();
+        }
+    }
 
     /**
      * Moves the node to a grid location
@@ -297,14 +414,17 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
      * @param slot the slot
      * @return coordinates relative to this algorithm UI
      */
-    public abstract PointRange getSlotLocation(JIPipeDataSlot slot);
+    public PointRange getSlotLocation(JIPipeDataSlot slot) {
+        // TODO
+        return new PointRange(0,0);
+    }
 
     public Color getFillColor() {
-        return fillColor;
+        return nodeFillColor;
     }
 
     public Color getBorderColor() {
-        return borderColor;
+        return nodeBorderColor;
     }
 
     public JIPipeGraphCanvasUI getGraphUI() {
@@ -315,25 +435,103 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         return getX() + getWidth();
     }
 
-    public abstract Map<String, JIPipeDataSlotUI> getInputSlotUIs();
-
-    public abstract Map<String, JIPipeDataSlotUI> getOutputSlotUIs();
-
     @Override
     protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         super.paintComponent(g);
+
+        // Paint disabled/pass-through
         if (node instanceof JIPipeAlgorithm) {
             JIPipeAlgorithm algorithm = (JIPipeAlgorithm) node;
             if (!algorithm.isEnabled()) {
-                Graphics2D g2 = (Graphics2D) g;
-                g2.setPaint(disabledPaint);
+                g2.setPaint(nodeDisabledPaint);
                 g2.fillRect(0, 0, getWidth(), getHeight());
             } else if (algorithm.isPassThrough()) {
-                Graphics2D g2 = (Graphics2D) g;
-                g2.setPaint(passThroughPaint);
+                g2.setPaint(nodePassThroughPaint);
                 g2.fillRect(0, 0, getWidth(), getHeight());
             }
         }
+
+        g2.setFont(zoomedMainFont);
+        FontMetrics fontMetrics = g2.getFontMetrics();
+
+        int realSlotHeight = viewMode.gridToRealSize(new Dimension(1,1), zoom).height;
+        boolean hasInputs = node.getInputSlots().size() > 0 || slotsInputsEditable;
+        boolean hasOutputs = node.getOutputSlots().size() > 0 || slotsOutputsEditable;
+
+        // Paint controls
+        int centerY;
+        if(hasInputs && !hasOutputs) {
+            centerY = (getHeight() - realSlotHeight) / 2 + realSlotHeight;
+        }
+        else if(!hasInputs && hasOutputs) {
+            centerY = (getHeight() - realSlotHeight) / 2;
+        }
+        else {
+            centerY = getHeight() / 2;
+        }
+        {
+            int metricHeight = fontMetrics.getAscent() -  fontMetrics.getLeading();
+            String nameLabel = node.getName();
+            g2.drawString(nameLabel, 5, centerY + metricHeight / 2);
+        }
+
+        // Paint slots
+        g2.setStroke(JIPipeGraphCanvasUI.STROKE_UNIT);
+
+        if(hasInputs) {
+            g2.setPaint(slotFillColor);
+            g2.fillRect(0, 0, getWidth(), realSlotHeight);
+
+            g2.setPaint(COLOR_SLOT_DISCONNECTED);
+            if(zoom > 0.85)
+                g2.setStroke(STROKE_SLOT_INDICATOR);
+            else
+                g2.setStroke(JIPipeGraphCanvasUI.STROKE_UNIT);
+            g2.drawLine((int) (5 * zoom), (int) (5 * zoom), (int) (getWidth() - 6 * zoom), (int) (5 * zoom));
+
+            g2.setStroke(JIPipeGraphCanvasUI.STROKE_UNIT);
+            g2.setPaint(nodeBorderColor);
+            g2.drawLine(0,realSlotHeight,getWidth(), realSlotHeight);
+
+            g2.setFont(zoomedSecondaryFont);
+            fontMetrics = g2.getFontMetrics();
+            {
+                int metricHeight = fontMetrics.getAscent() -  fontMetrics.getLeading();
+                g2.drawString("Input", 5, realSlotHeight / 2 + metricHeight / 2);
+            }
+        }
+        if(hasOutputs) {
+            g2.setPaint(slotFillColor);
+            g2.fillRect(0, getHeight() - realSlotHeight, getWidth(), realSlotHeight);
+
+            g2.setPaint(COLOR_SLOT_CACHED);
+            if(zoom > 0.85)
+                g2.setStroke(STROKE_SLOT_INDICATOR);
+            else
+                g2.setStroke(JIPipeGraphCanvasUI.STROKE_UNIT);
+            g2.drawLine((int) (5 * zoom), (int) (getHeight() - 5 * zoom), (int) (getWidth() - 6 * zoom), (int) (getHeight() - 5 * zoom));
+            //            g2.drawLine(0,getHeight() - 3,getWidth(), getHeight() - 3);
+
+            g2.setStroke(JIPipeGraphCanvasUI.STROKE_UNIT);
+            g2.setPaint(nodeBorderColor);
+            g2.drawLine(0,getHeight() - realSlotHeight,getWidth(), getHeight() - realSlotHeight);
+        }
+
+        // Paint outside border
+        if(mouseIsEntered) {
+            g2.setStroke(STROKE_MOUSE_OVER);
+            g2.setColor(nodeBorderColor);
+            g2.drawRect(1, 1, getWidth() - 3, getHeight() - 3);
+        }
+        else {
+            g2.setStroke(JIPipeGraphCanvasUI.STROKE_UNIT);
+            g2.setColor(nodeBorderColor);
+            g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
+        }
+
+
     }
 
     /**
@@ -349,30 +547,168 @@ public abstract class JIPipeNodeUI extends JIPipeWorkbenchPanel {
         return moveToGridLocation(gridPoint, force, save);
     }
 
-    /**
-     * Updates the UIs for slots
-     */
-    public abstract void refreshSlots();
-
+    @Deprecated
     public JIPipeDataSlotUI pickSlotComponent(MouseEvent mouseEvent) {
-        for (JIPipeDataSlotUI ui : getInputSlotUIs().values()) {
-            MouseEvent converted = SwingUtilities.convertMouseEvent(getGraphUI(), mouseEvent, ui);
-            if (ui.contains(converted.getX(), converted.getY()))
-                return ui;
-        }
-        for (JIPipeDataSlotUI ui : getOutputSlotUIs().values()) {
-            MouseEvent converted = SwingUtilities.convertMouseEvent(getGraphUI(), mouseEvent, ui);
-            if (ui.contains(converted.getX(), converted.getY()))
-                return ui;
-        }
+//        for (JIPipeDataSlotUI ui : getInputSlotUIs().values()) {
+//            MouseEvent converted = SwingUtilities.convertMouseEvent(getGraphUI(), mouseEvent, ui);
+//            if (ui.contains(converted.getX(), converted.getY()))
+//                return ui;
+//        }
+//        for (JIPipeDataSlotUI ui : getOutputSlotUIs().values()) {
+//            MouseEvent converted = SwingUtilities.convertMouseEvent(getGraphUI(), mouseEvent, ui);
+//            if (ui.contains(converted.getX(), converted.getY()))
+//                return ui;
+//        }
+        // TODO
         return null;
+    }
+
+    private void updateSlots() {
+        JIPipeGraph graph = node.getParentGraph();
+
+        for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
+            SlotState slotState = inputSlotStatusMap.getOrDefault(inputSlot.getName(), null);
+            if(slotState == null) {
+                slotState = new SlotState(inputSlot.getName());
+                inputSlotStatusMap.put(inputSlot.getName(), slotState);
+            }
+            if(StringUtils.isNullOrEmpty(inputSlot.getInfo().getCustomName())) {
+               slotState.setSlotLabel(inputSlot.getName());
+               slotState.setSlotLabelIsCustom(false);
+            }
+            else {
+                slotState.setSlotLabel(inputSlot.getInfo().getCustomName());
+                slotState.setSlotLabelIsCustom(true);
+            }
+            if(graph != null) {
+                if(!inputSlot.getInfo().isOptional() && graph.getGraph().inDegreeOf(inputSlot) <= 0) {
+                    slotState.setSlotStatus(SlotStatus.Unconnected);
+                }
+                else {
+                    slotState.setSlotStatus(SlotStatus.Default);
+                }
+            }
+        }
+
+        Map<String, JIPipeDataTable> cachedData = null;
+        if(graph != null && graph.getProject() != null) {
+            cachedData = graph.getProject().getCache().query(node, node.getUUIDInParentGraph(), new JIPipeProgressInfo());
+        }
+        for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
+            SlotState slotState = outputSlotStatusMap.getOrDefault(outputSlot.getName(), null);
+            if(slotState == null) {
+                slotState = new SlotState(outputSlot.getName());
+                outputSlotStatusMap.put(outputSlot.getName(), slotState);
+            }
+            if(StringUtils.isNullOrEmpty(outputSlot.getInfo().getCustomName())) {
+                slotState.setSlotLabel(outputSlot.getName());
+                slotState.setSlotLabelIsCustom(false);
+            }
+            else {
+                slotState.setSlotLabel(outputSlot.getInfo().getCustomName());
+                slotState.setSlotLabelIsCustom(true);
+            }
+
+            if(cachedData != null && cachedData.containsKey(outputSlot.getName())) {
+                slotState.setSlotStatus(SlotStatus.Cached);
+            }
+            else {
+                slotState.setSlotStatus(SlotStatus.Default);
+            }
+        }
+
+        updateSize();
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+        mouseIsEntered = true;
+        repaint(50);
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+        mouseIsEntered = false;
+        repaint(50);
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+
+    }
+
+    public static class SlotState {
+        private final String slotName;
+
+        private String slotLabel;
+
+        private boolean slotLabelIsCustom;
+        private SlotStatus slotStatus = SlotStatus.Default;
+
+        public SlotState(String slotName) {
+            this.slotName = slotName;
+        }
+
+        public String getSlotLabel() {
+            return slotLabel;
+        }
+
+        public void setSlotLabel(String slotLabel) {
+            this.slotLabel = slotLabel;
+        }
+
+        public String getSlotName() {
+            return slotName;
+        }
+
+        public SlotStatus getSlotStatus() {
+            return slotStatus;
+        }
+
+        public void setSlotStatus(SlotStatus slotStatus) {
+            this.slotStatus = slotStatus;
+        }
+
+        public boolean isSlotLabelIsCustom() {
+            return slotLabelIsCustom;
+        }
+
+        public void setSlotLabelIsCustom(boolean slotLabelIsCustom) {
+            this.slotLabelIsCustom = slotLabelIsCustom;
+        }
+    }
+
+    public enum SlotStatus {
+        Default,
+        Unconnected,
+        Cached
     }
 
     /**
      * An event around {@link JIPipeNodeUI}
      */
     public static class AlgorithmEvent {
-        private JIPipeNodeUI ui;
+        private final JIPipeNodeUI ui;
 
         /**
          * Creates a new event

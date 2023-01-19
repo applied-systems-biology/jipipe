@@ -45,7 +45,7 @@ public class DisableVirtualOutputNodeUIContextAction implements NodeUIContextAct
                 for (JIPipeDataSlot outputSlot : algorithm.getOutputSlots()) {
                     outputSlot.getInfo().setVirtual(false);
                 }
-                ui.refreshSlots();
+                ui.updateView(false, true, false);
             }
         }
     }
