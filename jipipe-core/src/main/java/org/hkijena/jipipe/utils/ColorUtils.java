@@ -283,6 +283,11 @@ public class ColorUtils {
         return result;
     }
 
+    public static Color multiplyHSB(Color color, float factorH, float factorS, float factorB) {
+        float[] hsb = Color.RGBtoHSB(color.getRed(), color.getGreen(), color.getBlue(), null);
+        return Color.getHSBColor(hsb[0] * factorH, hsb[1] * factorS, hsb[2] * factorB);
+    }
+
     public static class GradientStop implements Comparable<GradientStop> {
         private Color color;
         private float position;
