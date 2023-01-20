@@ -210,53 +210,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         return node;
     }
 
-    /**
-     * Function that creates the "Add slot" button
-     *
-     * @param slotType slot type
-     * @return the button
-     */
-    protected JButton createAddSlotButton(JIPipeSlotType slotType) {
-        JButton addSlotButton = new JButton(new ZoomIcon(UIUtils.getIconFromResources("actions/list-add.png"), graphUI));
-        UIUtils.makeFlat(addSlotButton, Color.GRAY, 0, 0, 0, 0);
-        addSlotButton.addActionListener(e -> {
-            if (!JIPipeProjectWorkbench.canModifySlots(getWorkbench()))
-                return;
-            AddAlgorithmSlotPanel.showDialog(this, graphUI.getHistoryJournal(), node, slotType);
-        });
-
-        return addSlotButton;
-    }
-
     public void updateHotkeyInfo() {
         // TODO
-    }
-
-    /**
-     * Updates the slots
-     */
-    public void updateAlgorithmSlotUIs() {
-        // TODO
-    }
-
-    /**
-     * Returns true if this component overlaps with another component
-     *
-     * @return True if an overlap was found
-     */
-    public boolean isOverlapping() {
-        for (int i = 0; i < graphUI.getComponentCount(); ++i) {
-            Component component = graphUI.getComponent(i);
-            if (component instanceof JIPipeNodeUI) {
-                JIPipeNodeUI ui = (JIPipeNodeUI) component;
-                if (ui != this) {
-                    if (ui.getBounds().intersects(getBounds())) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
     }
 
     /**
@@ -321,30 +276,32 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         double sumInputSlotWidths = 0;
         double sumOutputSlotWidths = 0;
 
+        for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
+            SlotState slotState = inputSlotStatusMap.get(inputSlot.getName());
+            double nativeWidth = secondaryFontMetrics.stringWidth(slotState.getSlotLabel()) + 22 * 2 + 16;
+            slotState.setNativeWidth(nativeWidth);
+            slotState.setNativeLocation(new Point((int) sumInputSlotWidths, 0));
+            sumInputSlotWidths += nativeWidth;
+        }
         if(slotsInputsEditable) {
             SlotState slotState = inputSlotStatusMap.get(ADD_SLOT_BUTTON_NAME);
             double nativeWidth = 22;
             sumInputSlotWidths += nativeWidth;
             slotState.setNativeWidth(nativeWidth);
         }
-        for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
-            SlotState slotState = inputSlotStatusMap.get(inputSlot.getName());
+
+        for (JIPipeDataSlot outputSlots : node.getOutputSlots()) {
+            SlotState slotState = outputSlotStatusMap.get(outputSlots.getName());
             double nativeWidth = secondaryFontMetrics.stringWidth(slotState.getSlotLabel()) + 22 * 2 + 16;
             slotState.setNativeWidth(nativeWidth);
-            sumInputSlotWidths += nativeWidth;
+            slotState.setNativeLocation(new Point((int) sumOutputSlotWidths, viewMode.getGridHeight() * 2));
+            sumOutputSlotWidths += nativeWidth;
         }
-
         if(slotsOutputsEditable) {
             SlotState slotState = outputSlotStatusMap.get(ADD_SLOT_BUTTON_NAME);
             double nativeWidth = 22;
             sumOutputSlotWidths += nativeWidth;
             slotState.setNativeWidth(nativeWidth);
-        }
-        for (JIPipeDataSlot outputSlots : node.getOutputSlots()) {
-            SlotState slotState = outputSlotStatusMap.get(outputSlots.getName());
-            double nativeWidth = secondaryFontMetrics.stringWidth(slotState.getSlotLabel()) + 22 * 2 + 16;
-            slotState.setNativeWidth(nativeWidth);
-            sumOutputSlotWidths += nativeWidth;
         }
 
         // Calculate the grid width
@@ -454,8 +411,31 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
      * @return coordinates relative to this algorithm UI
      */
     public PointRange getSlotLocation(JIPipeDataSlot slot) {
-        // TODO
-        return new PointRange(0,0);
+        SlotState slotState;
+        if(slot.isInput()) {
+            slotState = inputSlotStatusMap.get(slot.getName());
+        }
+        else if(slot.isOutput()) {
+            slotState = outputSlotStatusMap.get(slot.getName());
+        }
+        else {
+            return new PointRange(0,0);
+        }
+        if(slotState == null || slotState.nativeLocation == null) {
+            return new PointRange(0,0);
+        }
+        if(slot.isInput()) {
+            int y = (int) (zoom * slotState.nativeLocation.y);
+            return new PointRange(new Point((int) (zoom * (slotState.nativeLocation.x + slotState.nativeWidth / 2)), y),
+                    new Point((int) (zoom * slotState.nativeLocation.x) + 8, y),
+                    new Point((int) (zoom * (slotState.nativeLocation.x + slotState.nativeWidth)) - 8, y));
+        }
+        else {
+            int y = (int) (zoom * (slotState.nativeLocation.y + viewMode.getGridHeight()));
+            return new PointRange(new Point((int) (zoom * (slotState.nativeLocation.x + slotState.nativeWidth / 2)), y),
+                    new Point((int) (zoom * slotState.nativeLocation.x) + 8, y),
+                    new Point((int) (zoom *  (slotState.nativeLocation.x + slotState.nativeWidth)) - 8, y));
+        }
     }
 
     public Color getFillColor() {
@@ -911,6 +891,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         private boolean slotLabelIsCustom;
         private SlotStatus slotStatus = SlotStatus.Default;
 
+        private Point nativeLocation;
+
         private double nativeWidth;
 
         private Image icon;
@@ -967,6 +949,14 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
         public void setIcon(Image icon) {
             this.icon = icon;
+        }
+
+        public Point getNativeLocation() {
+            return nativeLocation;
+        }
+
+        public void setNativeLocation(Point nativeLocation) {
+            this.nativeLocation = nativeLocation;
         }
     }
 
