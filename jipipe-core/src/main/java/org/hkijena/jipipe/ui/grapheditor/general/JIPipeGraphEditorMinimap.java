@@ -21,7 +21,6 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
 
     private static final Color AREA_FILL_COLOR = new Color(0x3365a4e3, true);
     private final JIPipeGraphEditorUI graphEditorUI;
-    private final boolean accurate;
     private BufferedImage graphImage;
     private double scaleFactor;
     private int viewBaseWidth;
@@ -43,7 +42,6 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
     public JIPipeGraphEditorMinimap(JIPipeGraphEditorUI graphEditorUI) {
         super(graphEditorUI.getWorkbench());
         this.graphEditorUI = graphEditorUI;
-        this.accurate = graphEditorUI.getCanvasUI().getSettings().isAccurateMiniMap();
         if (GeneralUISettings.getInstance().getTheme().isDark())
             minimapBackground = Color.BLACK;
         else
@@ -82,7 +80,7 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
      * @param y y
      */
     private void scrollTo(int x, int y) {
-        if (scaleFactor != 0 && (graphImage != null || !accurate)) {
+        if (scaleFactor != 0) {
             x -= viewX;
             y -= viewY;
 
@@ -104,17 +102,6 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
     }
 
     private void refreshGraphImage() {
-        if (accurate) {
-            if (graphEditorUI.getCanvasUI().getWidth() > 0 && graphEditorUI.getCanvasUI().getHeight() > 0) {
-                try {
-                    graphImage = ScreenImage.createImage(graphEditorUI.getCanvasUI());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    graphImage = null;
-                }
-
-            }
-        }
         refreshView();
     }
 
@@ -153,44 +140,22 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
     public void paint(Graphics g) {
         g.setColor(UIManager.getColor("Panel.background"));
         g.fillRect(0, 0, getWidth(), getHeight());
-        if (accurate) {
-            if (graphImage != null) {
-                if (viewBaseWidth != getWidth() || viewBaseHeight != getHeight()) {
-                    refreshView();
-                }
-
-                Graphics2D graphics2D = (Graphics2D) g;
-                AffineTransform transform = new AffineTransform();
-                transform.scale(scaleFactor, scaleFactor);
-
-                BufferedImageOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_BILINEAR);
-                graphics2D.drawImage(graphImage, op, viewX, viewY);
-
-                // Draw current scroll position
-                g.setColor(AREA_FILL_COLOR);
-                g.fillRect(viewX + scrollX, viewY + scrollY, scrollWidth, scrollHeight);
-                g.setColor(ModernMetalTheme.PRIMARY5);
-                ((Graphics2D) g).setStroke(new BasicStroke(2));
-                g.drawRect(viewX + scrollX, viewY + scrollY, scrollWidth, scrollHeight);
-            }
-        } else {
-            if (viewBaseWidth != getWidth() || viewBaseHeight != getHeight()) {
-                refreshView();
-            }
-
-            Graphics2D graphics2D = (Graphics2D) g;
-
-            graphics2D.setColor(minimapBackground);
-            graphics2D.fillRect(viewX, viewY, viewWidth, viewHeight);
-            graphEditorUI.getCanvasUI().paintMiniMap(graphics2D, scaleFactor, viewX, viewY);
-
-            // Draw current scroll position
-            g.setColor(AREA_FILL_COLOR);
-            g.fillRect(viewX + scrollX, viewY + scrollY, scrollWidth, scrollHeight);
-            g.setColor(ModernMetalTheme.PRIMARY5);
-            ((Graphics2D) g).setStroke(new BasicStroke(2));
-            g.drawRect(viewX + scrollX, viewY + scrollY, scrollWidth, scrollHeight);
+        if (viewBaseWidth != getWidth() || viewBaseHeight != getHeight()) {
+            refreshView();
         }
+
+        Graphics2D graphics2D = (Graphics2D) g;
+
+        graphics2D.setColor(minimapBackground);
+        graphics2D.fillRect(viewX, viewY, viewWidth, viewHeight);
+        graphEditorUI.getCanvasUI().paintMiniMap(graphics2D, scaleFactor, viewX, viewY);
+
+        // Draw current scroll position
+        g.setColor(AREA_FILL_COLOR);
+        g.fillRect(viewX + scrollX, viewY + scrollY, scrollWidth, scrollHeight);
+        g.setColor(ModernMetalTheme.PRIMARY5);
+        ((Graphics2D) g).setStroke(new BasicStroke(2));
+        g.drawRect(viewX + scrollX, viewY + scrollY, scrollWidth, scrollHeight);
 
         super.paintComponent(g);
     }

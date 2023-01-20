@@ -103,18 +103,6 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
         this.drawArrowHeads = drawArrowHeads;
     }
 
-    @JIPipeDocumentation(name = "Accurate minimap", description = "If enabled, the minimap shows a screenshot of the whole graph. " +
-            "Please note that this is slower than the standard overview map. To apply this setting, you must re-open the graph or reload the project.")
-    @JIPipeParameter("accurate-mini-map")
-    public boolean isAccurateMiniMap() {
-        return accurateMiniMap;
-    }
-
-    @JIPipeParameter("accurate-mini-map")
-    public void setAccurateMiniMap(boolean accurateMiniMap) {
-        this.accurateMiniMap = accurateMiniMap;
-    }
-
     @Override
     public EventBus getEventBus() {
         return eventBus;

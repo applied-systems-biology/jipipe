@@ -596,7 +596,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
         int zoomedSize = (int) Math.round(16 * zoom);
 
-        g2.drawImage(UIUtils.getIconFromResources("actions/add.png").getImage(), startX + slotWidth / 2 - zoomedSize / 2, y+ (int)Math.round(3 * zoom), zoomedSize, zoomedSize, null);
+        g2.drawImage(UIUtils.getIconFromResources("actions/add.png").getImage(), startX + slotWidth / 2 - zoomedSize / 2, y + realSlotHeight / 2 - zoomedSize / 2, zoomedSize, zoomedSize, null);
     }
 
     private void paintInputSlots(Graphics2D g2, int realSlotHeight) {
