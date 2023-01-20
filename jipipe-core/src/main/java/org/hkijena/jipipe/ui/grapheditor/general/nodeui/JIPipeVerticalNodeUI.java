@@ -19,7 +19,6 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.extensions.core.nodes.JIPipeCommentNode;
@@ -27,18 +26,14 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.ZoomFlatIconButton;
 import org.hkijena.jipipe.ui.components.ZoomLabel;
 import org.hkijena.jipipe.ui.components.icons.ZoomIcon;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.NodeHotKeyStorage;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.actions.OpenContextMenuAction;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
-import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
 import java.util.List;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -72,9 +67,6 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
     public JIPipeVerticalNodeUI(JIPipeWorkbench workbench, JIPipeGraphCanvasUI graphUI, JIPipeGraphNode algorithm) {
         super(workbench, graphUI, algorithm);
         initialize();
-        updateAlgorithmSlotUIs();
-        updateActivationStatus();
-        updateHotkeyInfo();
         if (getNode() instanceof JIPipeCommentNode) {
             updateCommentNodeDesign();
         }
@@ -221,49 +213,36 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         g.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
     }
 
-    @Override
-    public boolean needsRecalculateGridSize() {
-        if (cachedGridSize == null)
-            return true;
-        if (!Objects.equals(cachedGridSizeNodeName, getNode().getName()))
-            return true;
-        for (JIPipeDataSlotUI ui : slotUIList) {
-            if (ui.needsRecalculateGridSize())
-                return true;
-        }
-        return false;
-    }
-
-    @Override
-    public Dimension getSizeInGridCoordinates() {
-        if (needsRecalculateGridSize()) {
-            JIPipeGraphViewMode graphViewMode = JIPipeGraphViewMode.VerticalCompact;
-            FontRenderContext frc = new FontRenderContext(null, false, false);
-            double width = 0;
-
-            // Measure width of center
-            {
-                TextLayout layout = new TextLayout(getNode().getName(), getFont(), frc);
-                width += layout.getBounds().getWidth();
-            }
-
-            // Measure slot widths
-            {
-                double maxWidth = 0;
-                for (JIPipeDataSlotUI ui : slotUIList) {
-                    Dimension realSize = graphViewMode.gridToRealSize(ui.calculateGridSize(), 1.0);
-                    maxWidth = Math.max(maxWidth, realSize.width);
-                }
-
-                width = Math.max(width, maxWidth * Math.max(getDisplayedInputColumns(), getDisplayedOutputColumns()));
-            }
-            width += 100;
-            Point inGrid = graphViewMode.realLocationToGrid(new Point((int) width, graphViewMode.getGridHeight() * 3), 1.0);
-            cachedGridSize = new Dimension(inGrid.x, 3);
-            cachedGridSizeNodeName = getNode().getName();
-        }
-        return cachedGridSize;
-    }
+    //    @Override
+//    public Dimension getSizeInGridCoordinates() {
+//        if (needsRecalculateGridSize()) {
+//            JIPipeGraphViewMode graphViewMode = JIPipeGraphViewMode.VerticalCompact;
+//            FontRenderContext frc = new FontRenderContext(null, false, false);
+//            double width = 0;
+//
+//            // Measure width of center
+//            {
+//                TextLayout layout = new TextLayout(getNode().getName(), getFont(), frc);
+//                width += layout.getBounds().getWidth();
+//            }
+//
+//            // Measure slot widths
+//            {
+//                double maxWidth = 0;
+//                for (JIPipeDataSlotUI ui : slotUIList) {
+//                    Dimension realSize = graphViewMode.gridToRealSize(ui.calculateGridSize(), 1.0);
+//                    maxWidth = Math.max(maxWidth, realSize.width);
+//                }
+//
+//                width = Math.max(width, maxWidth * Math.max(getDisplayedInputColumns(), getDisplayedOutputColumns()));
+//            }
+//            width += 100;
+//            Point inGrid = graphViewMode.realLocationToGrid(new Point((int) width, graphViewMode.getGridHeight() * 3), 1.0);
+//            cachedGridSize = new Dimension(inGrid.x, 3);
+//            cachedGridSizeNodeName = getNode().getName();
+//        }
+//        return cachedGridSize;
+//    }
 
     private void addVerticalGlue(int row) {
         add(new JPanel() {
@@ -418,34 +397,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         repaint();
     }
 
-    @Override
-    protected void updateActivationStatus() {
-        if (getNode() instanceof JIPipeAlgorithm) {
-            JIPipeAlgorithm algorithm = (JIPipeAlgorithm) getNode();
-            if (algorithm.isEnabled()) {
-                if (!algorithm.isPassThrough()) {
-                    setBackground(getFillColor());
-                    nameLabel.setForeground(UIManager.getColor("Label.foreground"));
-                    openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/wrench.png"));
-                } else {
-//                    setBackground(UIManager.getColor("TextArea.background"));
-                    nameLabel.setForeground(UIManager.getColor("Label.foreground"));
-                    openSettingsButton.setIcon(UIUtils.getIconFromResources("emblems/pass-through.png"));
-                }
-            } else {
-//                setBackground(new Color(227, 86, 86));
-                nameLabel.setForeground(Color.WHITE);
-                openSettingsButton.setIcon(UIUtils.getIconFromResources("emblems/block.png"));
-            }
-        } else {
-//            setBackground(getFillColor());
-            nameLabel.setForeground(UIManager.getColor("Label.foreground"));
-            openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/wrench.png"));
-        }
-        repaint();
-    }
-
-//    @Override
+    //    @Override
 //    public void updateSize() {
 //        Dimension gridSize = getSizeInGridCoordinates();
 //        JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.VerticalCompact;
@@ -479,28 +431,28 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
 //        }
 //    }
 
-    @Override
-    public PointRange getSlotLocation(JIPipeDataSlot slot) {
-        JIPipeGraphViewMode graphViewMode = JIPipeGraphViewMode.VerticalCompact;
-        Dimension unzoomedSize = graphViewMode.gridToRealSize(getSizeInGridCoordinates(), 1.0);
-        if (slot.isInput()) {
-            int nColumns = getDisplayedInputColumns();
-            int columnWidth = unzoomedSize.width / nColumns;
-            int minX = getNode().getInputSlots().indexOf(slot) * columnWidth;
-            return new PointRange(new Point(minX + columnWidth / 2, 3),
-                    new Point(minX + 20, 3),
-                    new Point(minX + columnWidth - 20, 3)).zoom(getGraphUI().getZoom());
-        } else if (slot.isOutput()) {
-            int nColumns = getDisplayedOutputColumns();
-            int columnWidth = unzoomedSize.width / nColumns;
-            int minX = getNode().getOutputSlots().indexOf(slot) * columnWidth;
-            return new PointRange(new Point(minX + columnWidth / 2, unzoomedSize.height - 3),
-                    new Point(minX + 20, unzoomedSize.height - 3),
-                    new Point(minX + columnWidth - 20, unzoomedSize.height - 3)).zoom(getGraphUI().getZoom());
-        } else {
-            throw new UnsupportedOperationException("Unknown slot type!");
-        }
-    }
+//    @Override
+//    public PointRange getSlotLocation(JIPipeDataSlot slot) {
+//        JIPipeGraphViewMode graphViewMode = JIPipeGraphViewMode.VerticalCompact;
+//        Dimension unzoomedSize = graphViewMode.gridToRealSize(getSizeInGridCoordinates(), 1.0);
+//        if (slot.isInput()) {
+//            int nColumns = getDisplayedInputColumns();
+//            int columnWidth = unzoomedSize.width / nColumns;
+//            int minX = getNode().getInputSlots().indexOf(slot) * columnWidth;
+//            return new PointRange(new Point(minX + columnWidth / 2, 3),
+//                    new Point(minX + 20, 3),
+//                    new Point(minX + columnWidth - 20, 3)).zoom(getGraphUI().getZoom());
+//        } else if (slot.isOutput()) {
+//            int nColumns = getDisplayedOutputColumns();
+//            int columnWidth = unzoomedSize.width / nColumns;
+//            int minX = getNode().getOutputSlots().indexOf(slot) * columnWidth;
+//            return new PointRange(new Point(minX + columnWidth / 2, unzoomedSize.height - 3),
+//                    new Point(minX + 20, unzoomedSize.height - 3),
+//                    new Point(minX + columnWidth - 20, unzoomedSize.height - 3)).zoom(getGraphUI().getZoom());
+//        } else {
+//            throw new UnsupportedOperationException("Unknown slot type!");
+//        }
+//    }
 
     @Override
     public void onAlgorithmParametersChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
