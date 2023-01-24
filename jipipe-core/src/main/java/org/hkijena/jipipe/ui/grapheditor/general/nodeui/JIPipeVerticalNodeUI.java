@@ -348,8 +348,8 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
 //    }
 
     @Override
-    public void onAlgorithmParametersChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
-        super.onAlgorithmParametersChanged(event);
+    public void onNodeParametersChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+        super.onNodeParametersChanged(event);
         if (event.getSource() == getNode() && getNode() instanceof JIPipeCommentNode) {
             updateCommentNodeDesign();
         }

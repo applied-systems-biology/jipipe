@@ -24,11 +24,8 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
-import org.hkijena.jipipe.ui.components.icons.ZoomIcon;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
@@ -51,7 +48,6 @@ import java.util.List;
 public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener {
 
     private static final String ADD_SLOT_BUTTON_NAME = "{{+}}";
-    public static final Stroke STROKE_MOUSE_OVER = new BasicStroke(2);
     public static final Color COLOR_DISABLED_1 = new Color(227, 86, 86);
     public static final Color COLOR_DISABLED_2 = new Color(0xc36262);
 
@@ -78,6 +74,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     private final EventBus eventBus = new EventBus();
     private final Color nodeFillColor;
     private final Color nodeBorderColor;
+    private final Color highlightedNodeBorderColor;
     private final LinearGradientPaint nodeDisabledPaint;
     private final LinearGradientPaint nodePassThroughPaint;
     private final Color slotFillColor;
@@ -105,7 +102,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
     private boolean nodeIsRunnable;
 
-    private final Set<ActiveArea> activeAreaSet = new TreeSet<>();
+    private final List<ActiveArea> activeAreas = new ArrayList<>();
+    private ActiveArea currentActiveArea;
 
     /**
      * Creates a new UI
@@ -119,6 +117,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         this.graphUI = graphUI;
         this.node = node;
         this.node.getEventBus().register(this);
+        this.graphUI.getGraph().getEventBus().register(this);
 
         // Node information
         nodeIsRunnable = node.getInfo().isRunnable() || node instanceof JIPipeAlgorithm || node instanceof JIPipeProjectCompartment;
@@ -137,6 +136,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         this.nodeIcon = JIPipe.getNodes().getIconFor(node.getInfo()).getImage();
         this.nodeFillColor = UIUtils.getFillColorFor(node.getInfo());
         this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
+        this.highlightedNodeBorderColor = COLOR_DISABLED_2;
         this.slotFillColor = UIManager.getColor("Panel.background");
         this.mainTextColor = UIManager.getColor("Label.foreground");
         this.secondaryTextColor = nodeBorderColor;
@@ -156,7 +156,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
     private void initialize() {
         setBackground(getFillColor());
-        setBorder(BorderFactory.createLineBorder(getBorderColor()));
+        setBorder(null);
+//        setBorder(BorderFactory.createLineBorder(getBorderColor()));
         setLayout(new GridBagLayout());
         setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
     }
@@ -189,12 +190,41 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             updateSize();
             getGraphUI().repaint(50);
         }
-        updateActivateAreas();
+        updateActiveAreas();
     }
 
-    private void updateActivateAreas() {
-        activeAreaSet.clear();
+    private void updateActiveAreas() {
+        activeAreas.clear();
 
+        // Add whole node
+        WholeNodeActiveArea wholeNodeActiveArea = new WholeNodeActiveArea();
+        wholeNodeActiveArea.setZoomedHitArea(new Rectangle(0,0,getWidth(),getHeight()));
+        activeAreas.add(wholeNodeActiveArea);
+
+        // Add slots
+        for (JIPipeInputDataSlot slot : node.getInputSlots()) {
+            SlotState slotState = inputSlotStatusMap.get(slot.getName());
+            if(slotState != null) {
+                slotState.setZoomedHitArea(new Rectangle((int) Math.round(slotState.nativeLocation.x * zoom),
+                        (int) Math.round(slotState.nativeLocation.y * zoom),
+                        (int) Math.round(slotState.nativeWidth * zoom),
+                        (int) Math.round(viewMode.getGridHeight() * zoom)));
+                activeAreas.add(slotState);
+            }
+        }
+        for (JIPipeDataSlot slot : node.getOutputSlots()) {
+            SlotState slotState = outputSlotStatusMap.get(slot.getName());
+            if(slotState != null) {
+                slotState.setZoomedHitArea(new Rectangle((int) Math.round(slotState.nativeLocation.x * zoom),
+                        (int) Math.round(slotState.nativeLocation.y * zoom),
+                        (int) Math.round(slotState.nativeWidth * zoom),
+                        (int) Math.round(viewMode.getGridHeight() * zoom)));
+                activeAreas.add(slotState);
+            }
+        }
+
+        // Sort
+        activeAreas.sort(Comparator.naturalOrder());
     }
 
     private void updateAssets() {
@@ -223,14 +253,30 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         return getY() + getHeight();
     }
 
-    /**
-     * Should be triggered when the algorithm's slots are changed.
-     * Triggers slot UI updates
-     *
-     * @param event Generated event
-     */
+
     @Subscribe
     public void onNodeSlotsChanged(JIPipeGraph.NodeSlotsChangedEvent event) {
+        if(event.getNode() == node) {
+            updateView(false, true, true);
+        }
+    }
+
+    @Subscribe
+    public void onNodeConnected(JIPipeGraph.NodeConnectedEvent event) {
+        if(event.getSource().getNode() == node || event.getTarget().getNode() == node) {
+            updateView(false, true, true);
+        }
+    }
+
+    @Subscribe
+    public void onNodeDisconnected(JIPipeGraph.NodeDisconnectedEvent event) {
+        if(event.getSource().getNode() == node || event.getTarget().getNode() == node) {
+            updateView(false, true, true);
+        }
+    }
+
+    @Subscribe
+    public void onSlotNameChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         updateView(false, true, true);
     }
 
@@ -240,7 +286,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
      * @param event The generated event
      */
     @Subscribe
-    public void onAlgorithmParametersChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
+    public void onNodeParametersChanged(JIPipeParameterCollection.ParameterChangedEvent event) {
         if (event.getSource() == node && "jipipe:node:name".equals(event.getKey())) {
             updateView(false, false, true);
         } else if (event.getSource() == node && "jipipe:algorithm:enabled".equals(event.getKey())) {
@@ -319,6 +365,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         Dimension realSize = viewMode.gridToRealSize(gridSize, zoom);
         setSize(realSize);
         revalidate();
+
+        // Update the active areas
+        updateActiveAreas();
     }
 
     private void scaleSlotsNativeWidth(Map<String, SlotState> slotStateMap, double nodeWidth, double sumWidth, boolean hasButton) {
@@ -336,6 +385,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             if(excludeButton && ADD_SLOT_BUTTON_NAME.equals(slotState.slotName))
                 continue;
             slotState.nativeWidth *= factor;
+            if(slotState.nativeLocation != null)
+                slotState.nativeLocation.x = (int) Math.round(slotState.nativeLocation.x * factor);
         }
     }
 
@@ -494,16 +545,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         }
 
         // Paint outside border
-        if(mouseIsEntered) {
-            g2.setStroke(STROKE_MOUSE_OVER);
-            g2.setColor(nodeBorderColor);
-            g2.drawRect(1, 1, getWidth() - 3, getHeight() - 3);
-        }
-        else {
-            g2.setStroke(JIPipeGraphCanvasUI.STROKE_UNIT);
-            g2.setColor(nodeBorderColor);
-            g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
-        }
+        g2.setStroke(JIPipeGraphCanvasUI.STROKE_UNIT);
+        g2.setColor(currentActiveArea instanceof WholeNodeActiveArea ? highlightedNodeBorderColor : nodeBorderColor);
+        g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
     }
 
     private void paintOutputSlots(Graphics2D g2, int realSlotHeight) {
@@ -523,6 +567,12 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 continue;
 
             int slotWidth = (int) Math.round(slotState.nativeWidth * zoom);
+
+            // Draw highlight
+            if(slotState == currentActiveArea) {
+                g2.setPaint(buttonFillColor);
+                g2.fillRect(startX, getHeight() - realSlotHeight, slotWidth, realSlotHeight);
+            }
 
             // Draw separator
             if(i > 0) {
@@ -597,6 +647,12 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
             int slotWidth = (int) Math.round(slotState.nativeWidth * zoom);
 
+            // Draw highlight
+            if(slotState == currentActiveArea) {
+                g2.setPaint(buttonFillColor);
+                g2.fillRect(startX, 0, slotWidth, realSlotHeight);
+            }
+
             // Draw separator
             if(i > 0) {
                 g2.setStroke(JIPipeGraphCanvasUI.STROKE_UNIT);
@@ -642,12 +698,14 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
     private void paintSlot(Graphics2D g2, SlotState slotState, int realSlotHeight, double startX, int slotWidth, Color indicatorColor, int slotY, int indicatorY, int centerY) {
 
+        boolean hasMouseOver = currentActiveArea == slotState;
+
         // Draw selection
 //        g2.setStroke(STROKE_MOUSE_OVER);
 //        g2.setPaint(nodeBorderColor);
 //        g2.drawRect((int) Math.round(startX) + 1, slotY + 1,slotWidth - 3, realSlotHeight - 3);
 
-        if(indicatorColor != null) {
+        if(indicatorColor != null && !hasMouseOver) {
             g2.setPaint(indicatorColor);
             int x = (int) Math.round(startX + 2 * zoom);
             int width = slotWidth - (int) Math.round(2 * 2 * zoom);
@@ -656,7 +714,20 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             g2.fillRoundRect(x, indicatorY,width, height, arc, arc);
         }
         startX += 8 * zoom;
-        g2.drawImage(slotState.icon, (int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 8 * zoom), (int) Math.round(16 * zoom), (int) Math.round(16 * zoom), null);
+        Image icon;
+
+        if(hasMouseOver) {
+            icon = UIUtils.getIconFromResources("actions/configure.png").getImage();
+        }
+        else {
+            icon = slotState.icon;
+        }
+        g2.drawImage(icon, (int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 8 * zoom), (int) Math.round(16 * zoom), (int) Math.round(16 * zoom), null);
+        if(hasMouseOver) {
+            g2.setPaint(nodeBorderColor);
+            g2.drawRoundRect((int) Math.round(startX + 2 * zoom), (int) Math.round(centerY - 9 * zoom), (int) Math.round(18 * zoom), (int) Math.round(18 * zoom), 1, 1);
+        }
+
         startX += 22 * zoom;
 
         // Draw name
@@ -667,7 +738,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             g2.setPaint(mainTextColor);
         }
         FontMetrics fontMetrics = g2.getFontMetrics();
-        drawStringVerticallyCentered(g2, slotState.slotName, (int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 1 * zoom), fontMetrics);
+        drawStringVerticallyCentered(g2, slotState.slotLabel, (int) Math.round(startX + 3 * zoom) , (int) Math.round(centerY - 1 * zoom), fontMetrics);
     }
 
     private void paintNodeControls(Graphics2D g2, FontMetrics fontMetrics, int realSlotHeight, boolean hasInputs, boolean hasOutputs) {
@@ -764,6 +835,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         }
 
         for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
+
+            inputSlot.getInfo().getEventBus().register(this);
+
             SlotState slotState = new SlotState(JIPipeSlotType.Input, inputSlot.getName());
             slotState.setIcon(JIPipe.getDataTypes().getIconFor(inputSlot.getAcceptedDataType()).getImage());
             inputSlotStatusMap.put(inputSlot.getName(), slotState);
@@ -790,6 +864,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             cachedData = graph.getProject().getCache().query(node, node.getUUIDInParentGraph(), new JIPipeProgressInfo());
         }
         for (JIPipeDataSlot outputSlot : node.getOutputSlots()) {
+
+            outputSlot.getInfo().getEventBus().register(this);
+
             SlotState slotState = new SlotState(JIPipeSlotType.Output, outputSlot.getName());
             slotState.setIcon(JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()).getImage());
             outputSlotStatusMap.put(outputSlot.getName(), slotState);
@@ -831,12 +908,14 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     @Override
     public void mouseEntered(MouseEvent e) {
         mouseIsEntered = true;
+        updateCurrentActiveArea();
         repaint(50);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
         mouseIsEntered = false;
+        updateCurrentActiveArea();
         repaint(50);
     }
 
@@ -847,7 +926,30 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
     @Override
     public void mouseMoved(MouseEvent e) {
+        updateCurrentActiveArea();
+    }
 
+    private void updateCurrentActiveArea() {
+        if(mouseIsEntered) {
+            Point mousePosition = getMousePosition(true);
+            if(mousePosition != null) {
+                for (ActiveArea activeArea : activeAreas) {
+                    if(activeArea.zoomedHitArea != null && activeArea.zoomedHitArea.contains(mousePosition)) {
+                        if(currentActiveArea != activeArea) {
+                            currentActiveArea = activeArea;
+                            repaint(50);
+                        }
+                        break;
+                    }
+                }
+            }
+        }
+        else {
+            if(currentActiveArea != null) {
+                currentActiveArea = null;
+                repaint(50);
+            }
+        }
     }
 
     public static class ActiveArea implements Comparable<ActiveArea> {
@@ -875,6 +977,12 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
         public void setZoomedHitArea(Rectangle zoomedHitArea) {
             this.zoomedHitArea = zoomedHitArea;
+        }
+    }
+
+    public static class WholeNodeActiveArea extends ActiveArea {
+        public WholeNodeActiveArea() {
+            super(999);
         }
     }
 
@@ -957,6 +1065,11 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
         public void setNativeLocation(Point nativeLocation) {
             this.nativeLocation = nativeLocation;
+        }
+
+        @Override
+        public String toString() {
+            return "Slot State: " + slotName;
         }
     }
 
