@@ -18,6 +18,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
+import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -31,6 +32,7 @@ import org.hkijena.jipipe.ui.algorithmfinder.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.algorithmfinder.JIPipeAlgorithmSourceFinderUI;
 import org.hkijena.jipipe.ui.algorithmfinder.JIPipeAlgorithmTargetFinderUI;
 import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
+import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
@@ -128,6 +130,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         this.node = node;
         this.node.getEventBus().register(this);
         this.graphCanvasUI.getGraph().getEventBus().register(this);
+        if(workbench instanceof JIPipeProjectWorkbench) {
+            ((JIPipeProjectWorkbench) workbench).getProject().getCache().getEventBus().register(this);
+        }
 
         // Node information
         nodeIsRunnable = node.getInfo().isRunnable() || node instanceof JIPipeAlgorithm || node instanceof JIPipeProjectCompartment;
@@ -690,8 +695,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     startX,
                     slotWidth,
                     slotState.getSlotStatus() == SlotStatus.Cached ? COLOR_SLOT_CACHED : null,
+                    null,
                     getHeight() - realSlotHeight,
-                    (int) Math.round(getHeight() - 2 * zoom),
+                    (int) Math.round(getHeight() - 4 * zoom),
                     (int) Math.round(getHeight() - realSlotHeight / 2.0));
 
             startX += slotWidth;
@@ -771,6 +777,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     startX,
                     slotWidth,
                     slotState.getSlotStatus() == SlotStatus.Unconnected ? COLOR_SLOT_DISCONNECTED : null,
+                    slotState.getSlotStatus() == SlotStatus.Unconnected ? COLOR_SLOT_DISCONNECTED : null,
                     0,
                     (int) Math.round(2 * zoom),
                     (int) Math.round(realSlotHeight / 2.0));
@@ -799,7 +806,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         g2.drawLine(0, realSlotHeight, getWidth(), realSlotHeight);
     }
 
-    private void paintSlot(Graphics2D g2, JIPipeNodeUISlotActiveArea slotState, int realSlotHeight, double startX, int slotWidth, Color indicatorColor, int slotY, int indicatorY, int centerY) {
+    private void paintSlot(Graphics2D g2, JIPipeNodeUISlotActiveArea slotState, int realSlotHeight, double startX, int slotWidth, Color indicatorColor, Color indicatorTextColor, int slotY, int indicatorY, int centerY) {
 
         boolean hasMouseOver = currentActiveArea == slotState || (currentActiveArea instanceof JIPipeNodeUISlotButtonActiveArea && ((JIPipeNodeUISlotButtonActiveArea) currentActiveArea).getUISlot() == slotState);
         boolean hasButtonHover = (currentActiveArea instanceof JIPipeNodeUISlotButtonActiveArea && ((JIPipeNodeUISlotButtonActiveArea) currentActiveArea).getUISlot() == slotState);
@@ -838,8 +845,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         startX += 22 * zoom;
 
         // Draw name
-        if (indicatorColor != null) {
-            g2.setPaint(indicatorColor);
+        if (indicatorTextColor != null) {
+            g2.setPaint(indicatorTextColor);
         } else {
             g2.setPaint(mainTextColor);
         }
@@ -1057,8 +1064,88 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             menu.add(findAlgorithmButton);
         }
 
+        // Customization
+
+        menu.addSeparator();
+
+        // Global actions at the end
+        JMenuItem relabelButton = new JMenuItem("Label this slot", UIUtils.getIconFromResources("actions/tag.png"));
+        relabelButton.setToolTipText("Sets a custom name for this slot without deleting it");
+        relabelButton.addActionListener(e -> relabelSlot(slotState));
+        menu.add(relabelButton);
+
+        if ((slot.isInput() && getNode().getInputSlots().size() > 1) || (slot.isOutput() && getNode().getOutputSlots().size() > 1)) {
+            JMenuItem moveUpButton = new JMenuItem("Move to the left",
+                    UIUtils.getIconFromResources("actions/go-left.png"));
+            moveUpButton.setToolTipText("Reorders the slots");
+            moveUpButton.addActionListener(e -> moveSlotUp(slotState));
+            menu.add(moveUpButton);
+
+            JMenuItem moveDownButton = new JMenuItem("Move to the right",
+                    UIUtils.getIconFromResources("actions/go-right.png"));
+            moveDownButton.setToolTipText("Reorders the slots");
+            moveDownButton.addActionListener(e -> moveSlotDown(slotState));
+            menu.add(moveDownButton);
+        }
+
         Point mousePosition = getMousePosition(true);
         menu.show(this, mousePosition.x, mousePosition.y);
+    }
+
+    private void editSlot(JIPipeNodeUISlotActiveArea activeArea) {
+        if (!JIPipeProjectWorkbench.canModifySlots(getWorkbench()))
+            return;
+        EditAlgorithmSlotPanel.showDialog(this, getGraphCanvasUI().getHistoryJournal(), activeArea.getSlot());
+    }
+
+    private void relabelSlot(JIPipeNodeUISlotActiveArea activeArea) {
+        JIPipeDataSlot slot = activeArea.getSlot();
+        String newLabel = JOptionPane.showInputDialog(this,
+                "Please enter a new label for the slot.\nLeave the text empty to remove an existing label.",
+                slot.getInfo().getCustomName());
+        if (newLabel == null)
+            return;
+        if (getGraphCanvasUI().getHistoryJournal() != null) {
+            getGraphCanvasUI().getHistoryJournal().snapshotBeforeLabelSlot(slot, slot.getNode().getCompartmentUUIDInParentGraph());
+        }
+        slot.getInfo().setCustomName(newLabel);
+        getGraphCanvasUI().getWorkbench().setProjectModified(true);
+    }
+
+    private void deleteSlot(JIPipeNodeUISlotActiveArea activeArea) {
+        JIPipeDataSlot slot = activeArea.getSlot();
+        if (!JIPipeProjectWorkbench.canModifySlots(getWorkbench()))
+            return;
+        JIPipeMutableSlotConfiguration slotConfiguration = (JIPipeMutableSlotConfiguration) slot.getNode().getSlotConfiguration();
+        if (getGraphCanvasUI().getHistoryJournal() != null) {
+            getGraphCanvasUI().getHistoryJournal().snapshotBeforeRemoveSlot(slot.getNode(), slot.getInfo(), slot.getNode().getCompartmentUUIDInParentGraph());
+        }
+        if (slot.isInput())
+            slotConfiguration.removeInputSlot(slot.getName(), true);
+        else if (slot.isOutput())
+            slotConfiguration.removeOutputSlot(slot.getName(), true);
+    }
+
+    private void moveSlotDown(JIPipeNodeUISlotActiveArea activeArea) {
+        JIPipeDataSlot slot = activeArea.getSlot();
+        if (slot != null) {
+            if (getGraphCanvasUI().getHistoryJournal() != null) {
+                getGraphCanvasUI().getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInParentGraph());
+            }
+            ((JIPipeMutableSlotConfiguration) getNode().getSlotConfiguration()).moveDown(slot.getName(), slot.getSlotType());
+            getGraphCanvasUI().repaint(50);
+        }
+    }
+
+    private void moveSlotUp(JIPipeNodeUISlotActiveArea activeArea) {
+        JIPipeDataSlot slot = activeArea.getSlot();
+        if (slot != null) {
+            if (getGraphCanvasUI().getHistoryJournal() != null) {
+                getGraphCanvasUI().getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInParentGraph());
+            }
+            ((JIPipeMutableSlotConfiguration) getNode().getSlotConfiguration()).moveUp(slot.getName(), slot.getSlotType());
+            getGraphCanvasUI().repaint(50);
+        }
     }
 
     private void openOutputAlgorithmFinder(JIPipeDataSlot slot) {
@@ -1163,6 +1250,11 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     @Override
     public void mouseMoved(MouseEvent e) {
         updateCurrentActiveArea(e);
+    }
+
+    @Subscribe
+    public void onCacheModified(JIPipeCache.ModifiedEvent event) {
+        updateView(false, true, false);
     }
 
     private void updateCurrentActiveArea(MouseEvent e) {
