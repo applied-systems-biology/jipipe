@@ -176,7 +176,7 @@ public class MSTGraphAutoLayoutMethod implements GraphAutoLayoutMethod {
         }
         for (JIPipeNodeUI ui : uis) {
             for (JIPipeDataSlot outputSlot : ui.getNode().getOutputSlots()) {
-                for (JIPipeDataSlot targetSlot : ui.getGraphUI().getGraph().getOutputOutgoingTargetSlots(outputSlot)) {
+                for (JIPipeDataSlot targetSlot : ui.getGraphCanvasUI().getGraph().getOutputOutgoingTargetSlots(outputSlot)) {
                     JIPipeNodeUI targetUI = canvasUI.getNodeUIs().getOrDefault(targetSlot.getNode(), null);
                     if (targetUI != null) {
                         Node targetNode = nodeMap.get(targetUI);

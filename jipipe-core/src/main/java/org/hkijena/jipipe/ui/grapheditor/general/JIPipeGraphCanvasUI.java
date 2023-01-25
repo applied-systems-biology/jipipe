@@ -39,8 +39,8 @@ import org.hkijena.jipipe.ui.grapheditor.general.actions.OpenContextMenuAction;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.general.layout.MSTGraphAutoLayoutMethod;
 import org.hkijena.jipipe.ui.grapheditor.general.layout.SugiyamaGraphAutoLayoutMethod;
-import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeDataSlotUI;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUISlotActiveArea;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
@@ -114,11 +114,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private Point selectionSecond;
     private long lastTimeExpandedNegative = 0;
     private List<NodeUIContextAction> contextActions = new ArrayList<>();
-    private JIPipeDataSlotUI currentConnectionDragSource;
+    private JIPipeNodeUISlotActiveArea currentConnectionDragSource;
 
     private boolean currentConnectionDragSourceDragged;
-    private JIPipeDataSlotUI currentConnectionDragTarget;
-    private JIPipeDataSlotUI currentHighlightedForDisconnect;
+    private JIPipeNodeUISlotActiveArea currentConnectionDragTarget;
+    private JIPipeNodeUISlotActiveArea currentHighlightedForDisconnect;
     private Set<JIPipeDataSlot> currentHighlightedForDisconnectSourceSlots;
     private double zoom = 1.0;
     private Set<JIPipeGraphNode> scheduledSelection = new HashSet<>();
@@ -563,38 +563,33 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 /*
                 Auto snap to input/output if there is only one
                  */
-                System.err.println("TODO AUTOSNAP");
-                System.err.println("TODO AUTOSNAP");
-                System.err.println("TODO AUTOSNAP");
-                System.err.println("TODO AUTOSNAP");
-                System.err.println("TODO AUTOSNAP");
-//                if (currentConnectionDragSource.getSlot().isInput()) {
-//                    if (nodeUI.getNode().getOutputSlots().size() == 1) {
-//                        if (!nodeUI.getOutputSlotUIs().values().isEmpty()) {
-//                            // Auto snap to output
-//                            JIPipeDataSlotUI slotUI = nodeUI.getOutputSlotUIs().values().iterator().next();
-//                            setCurrentConnectionDragTarget(slotUI);
-//                            snapped = true;
-//                        }
-//                    }
-//                } else {
-//                    if (nodeUI.getNode().getInputSlots().size() == 1) {
-//                        // Auto snap to input
-//                        if (!nodeUI.getInputSlotUIs().values().isEmpty()) {
-//                            JIPipeDataSlotUI slotUI = nodeUI.getInputSlotUIs().values().iterator().next();
-//                            setCurrentConnectionDragTarget(slotUI);
-//                            snapped = true;
-//                        }
-//                    }
-//                }
+                if (currentConnectionDragSource.getSlot().isInput()) {
+                    if (nodeUI.getNode().getOutputSlots().size() == 1) {
+                        if (!nodeUI.getOutputSlotMap().values().isEmpty()) {
+                            // Auto snap to output
+                            JIPipeNodeUISlotActiveArea slotUI = nodeUI.getOutputSlotMap().values().iterator().next();
+                            setCurrentConnectionDragTarget(slotUI);
+                            snapped = true;
+                        }
+                    }
+                } else {
+                    if (nodeUI.getNode().getInputSlots().size() == 1) {
+                        // Auto snap to input
+                        if (!nodeUI.getInputSlotMap().values().isEmpty()) {
+                            JIPipeNodeUISlotActiveArea slotUI = nodeUI.getInputSlotMap().values().iterator().next();
+                            setCurrentConnectionDragTarget(slotUI);
+                            snapped = true;
+                        }
+                    }
+                }
 
                 /*
                 Sticky snap: Stay in last snapped position if we were in it before
                  */
                 if (currentConnectionDragTarget != null && currentConnectionDragTarget.getNodeUI() == nodeUI) {
-                    JIPipeDataSlotUI slotUI = nodeUI.pickSlotComponent(mouseEvent);
-                    if (slotUI != null && slotUI.getSlot().isInput() != currentConnectionDragSource.getSlot().isInput()) {
-                        setCurrentConnectionDragTarget(slotUI);
+                    JIPipeNodeUISlotActiveArea slotState = nodeUI.pickSlotAtMousePosition(mouseEvent);
+                    if (slotState != null && slotState.getSlot().isInput() != currentConnectionDragSource.getSlot().isInput()) {
+                        setCurrentConnectionDragTarget(slotState);
                     }
                     snapped = true;
                 }
@@ -603,9 +598,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 Default: Snap exactly to input/output
                  */
                 if (!snapped) {
-                    JIPipeDataSlotUI slotUI = nodeUI.pickSlotComponent(mouseEvent);
-                    if (slotUI != null && slotUI.getSlot().isInput() != currentConnectionDragSource.getSlot().isInput()) {
-                        setCurrentConnectionDragTarget(slotUI);
+                    JIPipeNodeUISlotActiveArea slotState = nodeUI.pickSlotAtMousePosition(mouseEvent);
+                    if (slotState != null && slotState.getSlot().isInput() != currentConnectionDragSource.getSlot().isInput()) {
+                        setCurrentConnectionDragTarget(slotState);
                     } else {
                         setCurrentConnectionDragTarget(null);
                     }
@@ -824,8 +819,15 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
+        JIPipeNodeUI ui = pickComponent(mouseEvent);
+
+        if(ui != null) {
+            ui.mouseClicked(mouseEvent);
+            if(mouseEvent.isConsumed())
+                return;
+        }
+
         if (SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2) {
-            JIPipeNodeUI ui = pickComponent(mouseEvent);
             if (ui != null)
                 eventBus.post(new DefaultAlgorithmUIActionRequestedEvent(ui));
         } else if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
@@ -834,17 +836,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             repaint();
         } else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
             if (selection.size() <= 1) {
-                JIPipeNodeUI ui = pickComponent(mouseEvent);
                 selectOnly(ui);
-
-                if (ui != null) {
-                    JIPipeDataSlotUI slotUI = ui.pickSlotComponent(mouseEvent);
-                    if (slotUI != null) {
-                        slotUI.reloadPopupMenu();
-                        slotUI.getAssignButtonMenu().show(this, mouseEvent.getX(), mouseEvent.getY());
-                        return;
-                    }
-                }
             }
             openContextMenu(new Point(mouseEvent.getX(), mouseEvent.getY()));
         }
@@ -917,9 +909,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                         }
                     }
                     this.hasDragSnapshot = false;
-                    JIPipeDataSlotUI slotUI = ui.pickSlotComponent(mouseEvent);
-                    if (slotUI != null) {
-                        startDragSlot(slotUI);
+                    JIPipeNodeUISlotActiveArea slotState = ui.pickSlotAtMousePosition(mouseEvent);
+                    if (slotState != null) {
+                        startDragSlot(slotState);
                     } else {
                         startDragCurrentNodeSelection(mouseEvent);
                     }
@@ -930,7 +922,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
     }
 
-    private void startDragSlot(JIPipeDataSlotUI startSlot) {
+    private void startDragSlot(JIPipeNodeUISlotActiveArea startSlot) {
         this.currentConnectionDragSourceDragged = false;
         setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
         setCurrentConnectionDragSource(startSlot);
@@ -964,7 +956,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         if (mouseEvent.getButton() != MouseEvent.BUTTON1) {
             stopAllDragging();
-            return;
         } else {
             if (currentConnectionDragSource != null && currentConnectionDragTarget != null) {
                 connectOrDisconnectSlots(currentConnectionDragSource, currentConnectionDragTarget);
@@ -1008,26 +999,77 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
     }
 
-    private void connectOrDisconnectSlots(JIPipeDataSlotUI firstSlot, JIPipeDataSlotUI secondSlot) {
+    private void connectOrDisconnectSlots(JIPipeNodeUISlotActiveArea firstSlot, JIPipeNodeUISlotActiveArea secondSlot) {
         JIPipeGraph graph = getGraph();
         if (graph != secondSlot.getSlot().getNode().getParentGraph())
             return;
         if (firstSlot.getSlot().isInput() != secondSlot.getSlot().isInput()) {
             if (firstSlot.getSlot().isInput()) {
                 if (!graph.getGraph().containsEdge(secondSlot.getSlot(), firstSlot.getSlot())) {
-                    firstSlot.connectSlot(secondSlot.getSlot(), firstSlot.getSlot());
+                    connectSlot(secondSlot, firstSlot);
                 } else {
-                    firstSlot.disconnectSlot(secondSlot.getSlot(), firstSlot.getSlot());
+                    disconnectSlot(secondSlot, firstSlot);
                 }
             } else {
                 if (!graph.getGraph().containsEdge(firstSlot.getSlot(), secondSlot.getSlot())) {
-                    secondSlot.connectSlot(firstSlot.getSlot(), secondSlot.getSlot());
+                    connectSlot(firstSlot, secondSlot);
                 } else {
-                    secondSlot.disconnectSlot(firstSlot.getSlot(), secondSlot.getSlot());
+                    disconnectSlot(firstSlot, secondSlot);
                 }
             }
         }
     }
+
+    /**
+     * Connects the two slots
+     *
+     * @param source source slot
+     * @param target target slot
+     */
+    public void connectSlot(JIPipeNodeUISlotActiveArea source, JIPipeNodeUISlotActiveArea target) {
+        if (getGraph().canConnect(source.getSlot(), target.getSlot(), true)) {
+            JIPipeGraph graph = source.getSlot().getNode().getParentGraph();
+            if (graph.getGraph().containsEdge(source.getSlot(), target.getSlot()))
+                return;
+            if (getHistoryJournal() != null) {
+                getHistoryJournal().snapshotBeforeConnect(source.getSlot(), target.getSlot(), source.getSlot().getNode().getCompartmentUUIDInParentGraph());
+            }
+            getGraph().connect(source.getSlot(), target.getSlot());
+        } else {
+            UIUtils.showConnectionErrorMessage(this, source.getSlot(), target.getSlot());
+        }
+    }
+
+    /**
+     * Disconnects two slots
+     *
+     * @param source the source
+     * @param target the target
+     */
+    public void disconnectSlot(JIPipeNodeUISlotActiveArea source, JIPipeNodeUISlotActiveArea target) {
+        if (getGraph().getGraph().containsEdge(source.getSlot(), target.getSlot())) {
+            if (getHistoryJournal() != null) {
+                getHistoryJournal().snapshotBeforeDisconnect(source.getSlot(), target.getSlot(), source.getNodeUI().getNode().getCompartmentUUIDInParentGraph());
+            }
+            getGraph().disconnect(source.getSlot(), target.getSlot(), true);
+        }
+    }
+
+//    private void disconnectAll(Set<JIPipeDataSlot> otherSlots) {
+//        JIPipeGraph graph = slot.getNode().getParentGraph();
+//        if (getHistoryJournal() != null) {
+//            getGraphUI().getHistoryJournal().snapshotBeforeDisconnectAll(slot, slot.getNode().getCompartmentUUIDInParentGraph());
+//        }
+//        if (slot.isInput()) {
+//            for (JIPipeDataSlot sourceSlot : otherSlots) {
+//                getGraph().disconnect(sourceSlot, slot, true);
+//            }
+//        } else {
+//            for (JIPipeDataSlot targetSlot : otherSlots) {
+//                getGraph().disconnect(slot, targetSlot, true);
+//            }
+//        }
+//    }
 
     private void stopAllDragging() {
         // Slot dragging
@@ -1927,27 +1969,27 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         return uis;
     }
 
-    public JIPipeDataSlotUI getCurrentConnectionDragSource() {
+    public JIPipeNodeUISlotActiveArea getCurrentConnectionDragSource() {
         return currentConnectionDragSource;
     }
 
-    public void setCurrentConnectionDragSource(JIPipeDataSlotUI currentConnectionDragSource) {
+    public void setCurrentConnectionDragSource(JIPipeNodeUISlotActiveArea currentConnectionDragSource) {
         this.currentConnectionDragSource = currentConnectionDragSource;
     }
 
-    public JIPipeDataSlotUI getCurrentConnectionDragTarget() {
+    public JIPipeNodeUISlotActiveArea getCurrentConnectionDragTarget() {
         return currentConnectionDragTarget;
     }
 
-    public void setCurrentConnectionDragTarget(JIPipeDataSlotUI currentConnectionDragTarget) {
+    public void setCurrentConnectionDragTarget(JIPipeNodeUISlotActiveArea currentConnectionDragTarget) {
         this.currentConnectionDragTarget = currentConnectionDragTarget;
     }
 
-    public JIPipeDataSlotUI getCurrentHighlightedForDisconnect() {
+    public JIPipeNodeUISlotActiveArea getCurrentHighlightedForDisconnect() {
         return currentHighlightedForDisconnect;
     }
 
-    public void setCurrentHighlightedForDisconnect(JIPipeDataSlotUI currentHighlightedForDisconnect, Set<JIPipeDataSlot> sourceSlots) {
+    public void setCurrentHighlightedForDisconnect(JIPipeNodeUISlotActiveArea currentHighlightedForDisconnect, Set<JIPipeDataSlot> sourceSlots) {
         this.currentHighlightedForDisconnect = currentHighlightedForDisconnect;
         currentHighlightedForDisconnectSourceSlots = sourceSlots;
     }

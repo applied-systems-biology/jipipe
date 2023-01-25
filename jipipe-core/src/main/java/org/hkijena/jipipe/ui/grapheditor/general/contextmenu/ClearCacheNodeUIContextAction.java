@@ -19,7 +19,6 @@ import org.hkijena.jipipe.api.JIPipeProject;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.actions.UpdateCacheAction;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -51,7 +50,7 @@ public class ClearCacheNodeUIContextAction implements NodeUIContextAction {
     public void run(JIPipeGraphCanvasUI canvasUI, Set<JIPipeNodeUI> selection) {
         for (JIPipeNodeUI nodeUI : selection) {
             JIPipeGraphNode node = nodeUI.getNode();
-            JIPipeProject project = nodeUI.getGraphUI().getGraph().getProject();
+            JIPipeProject project = nodeUI.getGraphCanvasUI().getGraph().getProject();
             if(node instanceof JIPipeProjectCompartment) {
                 project.getCache().clearAll(((JIPipeProjectCompartment) node).getOutputNode().getUUIDInParentGraph(), new JIPipeProgressInfo());
             }

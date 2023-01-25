@@ -43,9 +43,9 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Deprecated
 public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
 
-    private List<JIPipeDataSlotUI> slotUIList = new ArrayList<>();
-    private BiMap<String, JIPipeDataSlotUI> inputSlotUIs = HashBiMap.create();
-    private BiMap<String, JIPipeDataSlotUI> outputSlotUIs = HashBiMap.create();
+    private List<JIPipeDataSlotUI_old> slotUIList = new ArrayList<>();
+    private BiMap<String, JIPipeDataSlotUI_old> inputSlotUIs = HashBiMap.create();
+    private BiMap<String, JIPipeDataSlotUI_old> outputSlotUIs = HashBiMap.create();
     private JPanel inputSlotPanel;
     private JPanel outputSlotPanel;
     private JLabel nameLabel;
@@ -82,19 +82,19 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
         outputSlotPanel = new JPanel();
         outputSlotPanel.setOpaque(false);
 
-        nameLabel = new ZoomLabel(getNode().getName(), null, getGraphUI());
-        nameLabel.setIcon(new ZoomIcon(JIPipe.getNodes().getIconFor(getNode().getInfo()), getGraphUI()));
+        nameLabel = new ZoomLabel(getNode().getName(), null, getGraphCanvasUI());
+        nameLabel.setIcon(new ZoomIcon(JIPipe.getNodes().getIconFor(getNode().getInfo()), getGraphCanvasUI()));
 
         // Create open settings button
-        openSettingsButton = new ZoomFlatIconButton(UIUtils.getIconFromResources("actions/wrench.png"), getGraphUI());
+        openSettingsButton = new ZoomFlatIconButton(UIUtils.getIconFromResources("actions/wrench.png"), getGraphCanvasUI());
         openSettingsButton.setBorder(null);
         openSettingsButton.addActionListener(e -> {
-            getGraphUI().selectOnly(this);
+            getGraphCanvasUI().selectOnly(this);
             getEventBus().post(new JIPipeGraphCanvasUI.NodeUIActionRequestedEvent(this, new OpenContextMenuAction()));
         });
 
         // Create run button
-        JButton runButton = new ZoomFlatIconButton(UIUtils.getIconFromResources("actions/run-play.png"), getGraphUI());
+        JButton runButton = new ZoomFlatIconButton(UIUtils.getIconFromResources("actions/run-play.png"), getGraphCanvasUI());
         runButton.setBorder(null);
         JPopupMenu runContextMenu = UIUtils.addPopupMenuToComponent(runButton);
         for (NodeUIContextAction entry : RUN_NODE_CONTEXT_MENU_ENTRIES) {
@@ -106,7 +106,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
                 item.setAccelerator(entry.getKeyboardShortcut());
                 item.addActionListener(e -> {
                     if (entry.matches(Collections.singleton(this))) {
-                        entry.run(getGraphUI(), Collections.singleton(this));
+                        entry.run(getGraphCanvasUI(), Collections.singleton(this));
                     } else {
                         JOptionPane.showMessageDialog(getWorkbench().getWindow(),
                                 "Could not run this operation",
@@ -128,7 +128,7 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
             }
         });
         addVerticalGlue(1);
-        if (getGraphUI().getSettings().isShowRunNodeButton() && (isNodeRunnable() || getNode() instanceof JIPipeProjectCompartment)) {
+        if (getGraphCanvasUI().getSettings().isShowRunNodeButton() && (isNodeRunnable() || getNode() instanceof JIPipeProjectCompartment)) {
             add(runButton, new GridBagConstraints() {
                 {
                     gridx = row.getAndIncrement();
@@ -166,8 +166,8 @@ public class JIPipeVerticalNodeUI extends JIPipeNodeUI {
 
     @Override
     public void updateHotkeyInfo() {
-        NodeHotKeyStorage.Hotkey hotkey = getGraphUI().getNodeHotKeyStorage().getHotkeyFor(getGraphUI().getCompartment(), getNode().getUUIDInParentGraph());
-        openSettingsButton.setVisible(hotkey != NodeHotKeyStorage.Hotkey.None || getGraphUI().getSettings().isShowSettingsNodeButton());
+        NodeHotKeyStorage.Hotkey hotkey = getGraphCanvasUI().getNodeHotKeyStorage().getHotkeyFor(getGraphCanvasUI().getCompartment(), getNode().getUUIDInParentGraph());
+        openSettingsButton.setVisible(hotkey != NodeHotKeyStorage.Hotkey.None || getGraphCanvasUI().getSettings().isShowSettingsNodeButton());
         switch (hotkey) {
             case None:
                 openSettingsButton.setIcon(UIUtils.getIconFromResources("actions/wrench.png"));

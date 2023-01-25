@@ -24,8 +24,13 @@ import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
+import org.hkijena.jipipe.ui.algorithmfinder.AlgorithmFinderSuccessEvent;
+import org.hkijena.jipipe.ui.algorithmfinder.JIPipeAlgorithmSourceFinderUI;
+import org.hkijena.jipipe.ui.algorithmfinder.JIPipeAlgorithmTargetFinderUI;
+import org.hkijena.jipipe.ui.components.AddAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
@@ -33,6 +38,7 @@ import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.PointRange;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
 import javax.swing.*;
 import java.awt.*;
@@ -41,13 +47,12 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.util.List;
 import java.util.*;
+import java.util.function.Consumer;
 
 /**
  * UI around an {@link JIPipeGraphNode} instance
  */
 public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener, MouseMotionListener {
-
-    private static final String ADD_SLOT_BUTTON_NAME = "{{+}}";
     public static final Color COLOR_DISABLED_1 = new Color(227, 86, 86);
     public static final Color COLOR_DISABLED_2 = new Color(0xc36262);
 
@@ -69,7 +74,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
     private final JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.VerticalCompact;
 
-    private final JIPipeGraphCanvasUI graphUI;
+    private final JIPipeGraphCanvasUI graphCanvasUI;
     private final JIPipeGraphNode node;
     private final EventBus eventBus = new EventBus();
     private final Color nodeFillColor;
@@ -83,8 +88,11 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     private final Color buttonFillColorDarker;
     private final boolean slotsInputsEditable;
     private final boolean slotsOutputsEditable;
-    private final Map<String, SlotState> inputSlotStatusMap = new HashMap<>();
-    private final Map<String, SlotState> outputSlotStatusMap = new HashMap<>();
+    private final Map<String, JIPipeNodeUISlotActiveArea> inputSlotMap = new HashMap<>();
+    private final Map<String, JIPipeNodeUISlotActiveArea> outputSlotMap = new HashMap<>();
+    private JIPipeNodeUIAddSlotButtonActiveArea addInputSlotArea;
+    private JIPipeNodeUIAddSlotButtonActiveArea addOutputSlotArea;
+
     private final Image nodeIcon;
     private boolean mouseIsEntered = false;
 
@@ -104,22 +112,22 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
     private boolean nodeIsRunnable;
 
-    private final List<ActiveArea> activeAreas = new ArrayList<>();
-    private ActiveArea currentActiveArea;
+    private final List<JIPipeNodeUIActiveArea> activeAreas = new ArrayList<>();
+    private JIPipeNodeUIActiveArea currentActiveArea;
 
     /**
      * Creates a new UI
      *
      * @param workbench thr workbench
-     * @param graphUI   The graph UI that contains this UI
+     * @param graphCanvasUI   The graph UI that contains this UI
      * @param node      The algorithm
      */
-    public JIPipeNodeUI(JIPipeWorkbench workbench, JIPipeGraphCanvasUI graphUI, JIPipeGraphNode node) {
+    public JIPipeNodeUI(JIPipeWorkbench workbench, JIPipeGraphCanvasUI graphCanvasUI, JIPipeGraphNode node) {
         super(workbench);
-        this.graphUI = graphUI;
+        this.graphCanvasUI = graphCanvasUI;
         this.node = node;
         this.node.getEventBus().register(this);
-        this.graphUI.getGraph().getEventBus().register(this);
+        this.graphCanvasUI.getGraph().getEventBus().register(this);
 
         // Node information
         nodeIsRunnable = node.getInfo().isRunnable() || node instanceof JIPipeAlgorithm || node instanceof JIPipeProjectCompartment;
@@ -190,7 +198,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         }
         if (slots || size) {
             updateSize();
-            getGraphUI().repaint(50);
+            getGraphCanvasUI().repaint(50);
         }
         updateActiveAreas();
     }
@@ -208,56 +216,66 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         activeAreas.sort(Comparator.naturalOrder());
     }
 
-    private void updateSlotActiveAreas() {
-        for (SlotState slotState : inputSlotStatusMap.values()) {
-            Rectangle slotArea = new Rectangle((int) Math.round(slotState.nativeLocation.x * zoom),
-                    (int) Math.round(slotState.nativeLocation.y * zoom),
-                    (int) Math.round(slotState.nativeWidth * zoom),
-                    (int) Math.round(viewMode.getGridHeight() * zoom));
-            if(!slotState.slotName.equals(ADD_SLOT_BUTTON_NAME)) {
-                slotState.setZoomedHitArea(slotArea);
-                activeAreas.add(slotState);
+    public Map<String, JIPipeNodeUISlotActiveArea> getInputSlotMap() {
+        return inputSlotMap;
+    }
 
-                // Slot button
-                double centerY = slotState.getZoomedHitArea().y + slotState.getZoomedHitArea().height / 2.0;
-                Rectangle slotButtonArea = new Rectangle((int) Math.round(slotState.nativeLocation.x * zoom + 8 * zoom),
-                        (int) Math.round(centerY - 11 * zoom),
-                        (int) Math.round(22 * zoom),
-                        (int) Math.round(22 * zoom));
-                SlotButtonActiveArea slotButtonActiveArea = new SlotButtonActiveArea(slotState);
-                slotButtonActiveArea.setZoomedHitArea(slotButtonArea);
-                activeAreas.add(slotButtonActiveArea);
-            }
-            else {
-                AddSlotButtonActiveArea activeArea = new AddSlotButtonActiveArea(JIPipeSlotType.Input);
-                activeArea.setZoomedHitArea(slotArea);
-                activeAreas.add(activeArea);
-            }
-        }
-        for (SlotState slotState : outputSlotStatusMap.values()) {
-            Rectangle slotArea = new Rectangle((int) Math.round(slotState.nativeLocation.x * zoom),
-                    (int) Math.round(slotState.nativeLocation.y * zoom),
-                    (int) Math.round(slotState.nativeWidth * zoom),
+    public Map<String, JIPipeNodeUISlotActiveArea> getOutputSlotMap() {
+        return outputSlotMap;
+    }
+
+    private void updateSlotActiveAreas() {
+        for (JIPipeNodeUISlotActiveArea slotState : inputSlotMap.values()) {
+            Rectangle slotArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom),
+                    (int) Math.round(slotState.getNativeLocation().y * zoom),
+                    (int) Math.round(slotState.getNativeWidth() * zoom),
                     (int) Math.round(viewMode.getGridHeight() * zoom));
             slotState.setZoomedHitArea(slotArea);
-            if(!slotState.slotName.equals(ADD_SLOT_BUTTON_NAME)) {
-                activeAreas.add(slotState);
+            activeAreas.add(slotState);
 
-                // Slot button
-                double centerY = slotState.getZoomedHitArea().y + slotState.getZoomedHitArea().height / 2.0;
-                Rectangle slotButtonArea = new Rectangle((int) Math.round(slotState.nativeLocation.x * zoom + 8 * zoom),
-                        (int) Math.round(centerY - 11 * zoom),
-                        (int) Math.round(22 * zoom),
-                        (int) Math.round(22 * zoom));
-                SlotButtonActiveArea slotButtonActiveArea = new SlotButtonActiveArea(slotState);
-                slotButtonActiveArea.setZoomedHitArea(slotButtonArea);
-                activeAreas.add(slotButtonActiveArea);
-            }
-            else {
-                AddSlotButtonActiveArea activeArea = new AddSlotButtonActiveArea(JIPipeSlotType.Output);
-                activeArea.setZoomedHitArea(slotArea);
-                activeAreas.add(activeArea);
-            }
+            // Slot button
+            double centerY = slotState.getZoomedHitArea().y + slotState.getZoomedHitArea().height / 2.0;
+            Rectangle slotButtonArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom + 8 * zoom),
+                    (int) Math.round(centerY - 11 * zoom),
+                    (int) Math.round(22 * zoom),
+                    (int) Math.round(22 * zoom));
+            JIPipeNodeUISlotButtonActiveArea slotButtonActiveArea = new JIPipeNodeUISlotButtonActiveArea(slotState);
+            slotButtonActiveArea.setZoomedHitArea(slotButtonArea);
+            activeAreas.add(slotButtonActiveArea);
+        }
+        if(addInputSlotArea != null) {
+            Rectangle slotArea = new Rectangle((int) Math.round(addInputSlotArea.getNativeLocation().x * zoom),
+                    (int) Math.round(addInputSlotArea.getNativeLocation().y * zoom),
+                    (int) Math.round(addInputSlotArea.getNativeWidth() * zoom),
+                    (int) Math.round(viewMode.getGridHeight() * zoom));
+            addInputSlotArea.setZoomedHitArea(slotArea);
+            activeAreas.add(addInputSlotArea);
+        }
+        for (JIPipeNodeUISlotActiveArea slotState : outputSlotMap.values()) {
+            Rectangle slotArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom),
+                    (int) Math.round(slotState.getNativeLocation().y * zoom),
+                    (int) Math.round(slotState.getNativeWidth() * zoom),
+                    (int) Math.round(viewMode.getGridHeight() * zoom));
+            slotState.setZoomedHitArea(slotArea);
+            activeAreas.add(slotState);
+
+            // Slot button
+            double centerY = slotState.getZoomedHitArea().y + slotState.getZoomedHitArea().height / 2.0;
+            Rectangle slotButtonArea = new Rectangle((int) Math.round(slotState.getNativeLocation().x * zoom + 8 * zoom),
+                    (int) Math.round(centerY - 11 * zoom),
+                    (int) Math.round(22 * zoom),
+                    (int) Math.round(22 * zoom));
+            JIPipeNodeUISlotButtonActiveArea slotButtonActiveArea = new JIPipeNodeUISlotButtonActiveArea(slotState);
+            slotButtonActiveArea.setZoomedHitArea(slotButtonArea);
+            activeAreas.add(slotButtonActiveArea);
+        }
+        if(addOutputSlotArea != null) {
+            Rectangle slotArea = new Rectangle((int) Math.round(addOutputSlotArea.getNativeLocation().x * zoom),
+                    (int) Math.round(addOutputSlotArea.getNativeLocation().y * zoom),
+                    (int) Math.round(addOutputSlotArea.getNativeWidth() * zoom),
+                    (int) Math.round(viewMode.getGridHeight() * zoom));
+            addOutputSlotArea.setZoomedHitArea(slotArea);
+            activeAreas.add(addOutputSlotArea);
         }
     }
 
@@ -272,7 +290,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         }
 
         // Whole node
-        WholeNodeActiveArea wholeNodeActiveArea = new WholeNodeActiveArea();
+        JIPipeNodeUIWholeNodeActiveArea wholeNodeActiveArea = new JIPipeNodeUIWholeNodeActiveArea();
         wholeNodeActiveArea.setZoomedHitArea(new Rectangle(0, 0, getWidth(), getHeight()));
         activeAreas.add(wholeNodeActiveArea);
 
@@ -295,7 +313,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             int centerNativeWidth = (int) Math.round((nodeIsRunnable ? 22 : 0) * zoom + 22 * zoom + mainFontMetrics.stringWidth(nameLabel));
             double startX = getWidth() / 2.0 - centerNativeWidth / 2.0;
 
-            NodeButtonActiveArea activeArea = new NodeButtonActiveArea();
+            JIPipeNodeUIRunNodeActiveArea activeArea = new JIPipeNodeUIRunNodeActiveArea();
             activeArea.setZoomedHitArea(new Rectangle((int)Math.round(startX), (int)Math.round(centerY - 11 * zoom), (int)Math.round(22 * zoom), (int)Math.round(22 * zoom)));
 
             activeAreas.add(activeArea);
@@ -365,11 +383,11 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         if (event.getSource() == node && "jipipe:node:name".equals(event.getKey())) {
             updateView(false, false, true);
         } else if (event.getSource() == node && "jipipe:algorithm:enabled".equals(event.getKey())) {
-            getGraphUI().repaint(50);
+            getGraphCanvasUI().repaint(50);
         } else if (event.getSource() == node && "jipipe:algorithm:pass-through".equals(event.getKey())) {
-            getGraphUI().repaint(50);
+            getGraphCanvasUI().repaint(50);
         } else if (event.getSource() == node && "jipipe:node:bookmarked".equals(event.getKey())) {
-            getGraphUI().repaint(50);
+            getGraphCanvasUI().repaint(50);
         }
     }
 
@@ -397,33 +415,39 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         double sumOutputSlotWidths = 0;
 
         for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
-            SlotState slotState = inputSlotStatusMap.get(inputSlot.getName());
+            JIPipeNodeUISlotActiveArea slotState = inputSlotMap.get(inputSlot.getName());
             double nativeWidth = secondaryFontMetrics.stringWidth(slotState.getSlotLabel()) + 22 * 2 + 16;
             slotState.setNativeWidth(nativeWidth);
             slotState.setNativeLocation(new Point((int) sumInputSlotWidths, 0));
             sumInputSlotWidths += nativeWidth;
         }
         if (slotsInputsEditable) {
-            SlotState slotState = inputSlotStatusMap.get(ADD_SLOT_BUTTON_NAME);
+            addInputSlotArea = new JIPipeNodeUIAddSlotButtonActiveArea(JIPipeSlotType.Input);
             double nativeWidth = 22;
-            slotState.setNativeWidth(nativeWidth);
-            slotState.setNativeLocation(new Point((int) sumInputSlotWidths, 0));
+            addInputSlotArea.setNativeWidth(nativeWidth);
+            addInputSlotArea.setNativeLocation(new Point((int) sumInputSlotWidths, 0));
             sumInputSlotWidths += nativeWidth;
+        }
+        else {
+            addInputSlotArea = null;
         }
 
         for (JIPipeDataSlot outputSlots : node.getOutputSlots()) {
-            SlotState slotState = outputSlotStatusMap.get(outputSlots.getName());
+            JIPipeNodeUISlotActiveArea slotState = outputSlotMap.get(outputSlots.getName());
             double nativeWidth = secondaryFontMetrics.stringWidth(slotState.getSlotLabel()) + 22 * 2 + 16;
             slotState.setNativeWidth(nativeWidth);
             slotState.setNativeLocation(new Point((int) sumOutputSlotWidths, viewMode.getGridHeight() * 2));
             sumOutputSlotWidths += nativeWidth;
         }
         if (slotsOutputsEditable) {
-            SlotState slotState = outputSlotStatusMap.get(ADD_SLOT_BUTTON_NAME);
+            addOutputSlotArea = new JIPipeNodeUIAddSlotButtonActiveArea(JIPipeSlotType.Output);
             double nativeWidth = 22;
-            slotState.setNativeWidth(nativeWidth);
-            slotState.setNativeLocation(new Point((int) sumOutputSlotWidths, viewMode.getGridHeight() * 2));
+            addOutputSlotArea.setNativeWidth(nativeWidth);
+            addOutputSlotArea.setNativeLocation(new Point((int) sumOutputSlotWidths, viewMode.getGridHeight() * 2));
             sumOutputSlotWidths += nativeWidth;
+        }
+        else {
+            addOutputSlotArea = null;
         }
 
         // Calculate the grid width
@@ -433,8 +457,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         // Correct the slot width to fit the actual native width of the control
         int nativeWidth = viewMode.getGridWidth() * gridWidth;
 
-        scaleSlotsNativeWidth(inputSlotStatusMap, nativeWidth, sumInputSlotWidths, slotsInputsEditable);
-        scaleSlotsNativeWidth(outputSlotStatusMap, nativeWidth, sumOutputSlotWidths, slotsOutputsEditable);
+        scaleSlotsNativeWidth(inputSlotMap, addInputSlotArea, nativeWidth, sumInputSlotWidths, slotsInputsEditable);
+        scaleSlotsNativeWidth(outputSlotMap, addOutputSlotArea, nativeWidth, sumOutputSlotWidths, slotsOutputsEditable);
 
         // Update the real size of the control
         Dimension gridSize = new Dimension(gridWidth, 3);
@@ -446,7 +470,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         updateActiveAreas();
     }
 
-    private void scaleSlotsNativeWidth(Map<String, SlotState> slotStateMap, double nodeWidth, double sumWidth, boolean hasButton) {
+    private void scaleSlotsNativeWidth(Map<String, JIPipeNodeUISlotActiveArea> slotStateMap, JIPipeNodeUIAddSlotButtonActiveArea addSlotActiveArea, double nodeWidth, double sumWidth, boolean hasButton) {
 //        if(slotStateMap.size() == 1 && hasButton) {
 //            return;
 //        }
@@ -457,11 +481,12 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             excludeButton = true;
         }
         double factor = nodeWidth / sumWidth;
-        for (SlotState slotState : slotStateMap.values()) {
-            slotState.nativeLocation.x = (int) Math.round(slotState.nativeLocation.x * factor);
-            if (excludeButton && ADD_SLOT_BUTTON_NAME.equals(slotState.slotName))
-                continue;
-            slotState.nativeWidth *= factor;
+        for (JIPipeNodeUISlotActiveArea slotState : slotStateMap.values()) {
+            slotState.getNativeLocation().x = (int) Math.round(slotState.getNativeLocation().x * factor);
+            slotState.setNativeWidth(slotState.getNativeWidth() * factor);
+        }
+        if(!excludeButton && addSlotActiveArea != null) {
+            addSlotActiveArea.setNativeWidth(addSlotActiveArea.getNativeWidth() * factor);
         }
     }
 
@@ -474,11 +499,11 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
      * @return if setting the location was successful
      */
     public boolean moveToGridLocation(Point gridLocation, boolean force, boolean save) {
-        Point location = graphUI.getViewMode().gridToRealLocation(gridLocation, graphUI.getZoom());
+        Point location = graphCanvasUI.getViewMode().gridToRealLocation(gridLocation, graphCanvasUI.getZoom());
         if (!force) {
             Rectangle futureBounds = new Rectangle(location.x, location.y, getWidth(), getHeight());
-            for (int i = 0; i < graphUI.getComponentCount(); ++i) {
-                Component component = graphUI.getComponent(i);
+            for (int i = 0; i < graphCanvasUI.getComponentCount(); ++i) {
+                Component component = graphCanvasUI.getComponent(i);
                 if (component instanceof JIPipeNodeUI) {
                     JIPipeNodeUI ui = (JIPipeNodeUI) component;
                     if (ui != this) {
@@ -493,14 +518,14 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             setLocation(location);
         }
         if (save) {
-            node.setLocationWithin(graphUI.getCompartment(), gridLocation, graphUI.getViewMode().name());
-            getGraphUI().getWorkbench().setProjectModified(true);
+            node.setLocationWithin(graphCanvasUI.getCompartment(), gridLocation, graphCanvasUI.getViewMode().name());
+            getGraphCanvasUI().getWorkbench().setProjectModified(true);
         }
         return true;
     }
 
     public Point getStoredGridLocation() {
-        return node.getLocationWithin(StringUtils.nullToEmpty(graphUI.getCompartment()), graphUI.getViewMode().name());
+        return node.getLocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartment()), graphCanvasUI.getViewMode().name());
     }
 
     /**
@@ -511,10 +536,10 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
      */
     @SuppressWarnings("deprecation")
     public boolean moveToStoredGridLocation(boolean force) {
-        Point point = node.getLocationWithin(StringUtils.nullToEmpty(graphUI.getCompartment()), graphUI.getViewMode().name());
+        Point point = node.getLocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartment()), graphCanvasUI.getViewMode().name());
         if (point == null) {
             // Try to get the point from vertical layout (migrate to compact)
-            point = node.getLocationWithin(StringUtils.nullToEmpty(graphUI.getCompartment()), JIPipeGraphViewMode.Vertical.name());
+            point = node.getLocationWithin(StringUtils.nullToEmpty(graphCanvasUI.getCompartment()), JIPipeGraphViewMode.Vertical.name());
         }
         if (point != null) {
             return moveToGridLocation(point, force, false);
@@ -537,27 +562,27 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
      * @return coordinates relative to this algorithm UI
      */
     public PointRange getSlotLocation(JIPipeDataSlot slot) {
-        SlotState slotState;
+        JIPipeNodeUISlotActiveArea slotState;
         if (slot.isInput()) {
-            slotState = inputSlotStatusMap.get(slot.getName());
+            slotState = inputSlotMap.get(slot.getName());
         } else if (slot.isOutput()) {
-            slotState = outputSlotStatusMap.get(slot.getName());
+            slotState = outputSlotMap.get(slot.getName());
         } else {
             return new PointRange(0, 0);
         }
-        if (slotState == null || slotState.nativeLocation == null) {
+        if (slotState == null || slotState.getNativeLocation() == null) {
             return new PointRange(0, 0);
         }
         if (slot.isInput()) {
-            int y = (int) (zoom * slotState.nativeLocation.y);
-            return new PointRange(new Point((int) (zoom * (slotState.nativeLocation.x + slotState.nativeWidth / 2)), y),
-                    new Point((int) (zoom * slotState.nativeLocation.x) + 8, y),
-                    new Point((int) (zoom * (slotState.nativeLocation.x + slotState.nativeWidth)) - 8, y));
+            int y = (int) (zoom * slotState.getNativeLocation().y);
+            return new PointRange(new Point((int) (zoom * (slotState.getNativeLocation().x + slotState.getNativeWidth() / 2)), y),
+                    new Point((int) (zoom * slotState.getNativeLocation().x) + 8, y),
+                    new Point((int) (zoom * (slotState.getNativeLocation().x + slotState.getNativeWidth())) - 8, y));
         } else {
-            int y = (int) (zoom * (slotState.nativeLocation.y + viewMode.getGridHeight()));
-            return new PointRange(new Point((int) (zoom * (slotState.nativeLocation.x + slotState.nativeWidth / 2)), y),
-                    new Point((int) (zoom * slotState.nativeLocation.x) + 8, y),
-                    new Point((int) (zoom * (slotState.nativeLocation.x + slotState.nativeWidth)) - 8, y));
+            int y = (int) (zoom * (slotState.getNativeLocation().y + viewMode.getGridHeight()));
+            return new PointRange(new Point((int) (zoom * (slotState.getNativeLocation().x + slotState.getNativeWidth() / 2)), y),
+                    new Point((int) (zoom * slotState.getNativeLocation().x) + 8, y),
+                    new Point((int) (zoom * (slotState.getNativeLocation().x + slotState.getNativeWidth())) - 8, y));
         }
     }
 
@@ -569,8 +594,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         return nodeBorderColor;
     }
 
-    public JIPipeGraphCanvasUI getGraphUI() {
-        return graphUI;
+    public JIPipeGraphCanvasUI getGraphCanvasUI() {
+        return graphCanvasUI;
     }
 
     public int getRightX() {
@@ -618,7 +643,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
         // Paint outside border
         g2.setStroke(JIPipeGraphCanvasUI.STROKE_UNIT);
-        g2.setColor(currentActiveArea instanceof WholeNodeActiveArea ? highlightedNodeBorderColor : nodeBorderColor);
+        g2.setColor(currentActiveArea instanceof JIPipeNodeUIWholeNodeActiveArea ? highlightedNodeBorderColor : nodeBorderColor);
         g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
 
 //        for (ActiveArea activeArea : activeAreas) {
@@ -638,12 +663,12 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
         for (int i = 0; i < outputSlots.size(); i++) {
             JIPipeDataSlot outputSlot = outputSlots.get(i);
-            SlotState slotState = outputSlotStatusMap.get(outputSlot.getName());
+            JIPipeNodeUISlotActiveArea slotState = outputSlotMap.get(outputSlot.getName());
 
             if (slotState == null)
                 continue;
 
-            int slotWidth = (int) Math.round(slotState.nativeWidth * zoom);
+            int slotWidth = (int) Math.round(slotState.getNativeWidth() * zoom);
 
             // Draw highlight
             if (slotState == currentActiveArea) {
@@ -664,7 +689,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     realSlotHeight,
                     startX,
                     slotWidth,
-                    slotState.slotStatus == SlotStatus.Cached ? COLOR_SLOT_CACHED : null,
+                    slotState.getSlotStatus() == SlotStatus.Cached ? COLOR_SLOT_CACHED : null,
                     getHeight() - realSlotHeight,
                     (int) Math.round(getHeight() - 2 * zoom),
                     (int) Math.round(getHeight() - realSlotHeight / 2.0));
@@ -681,10 +706,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             }
 
             // Draw button
-            SlotState slotState = outputSlotStatusMap.get(ADD_SLOT_BUTTON_NAME);
-            if (slotState != null) {
-                int slotWidth = (int) Math.round(slotState.nativeWidth * zoom);
-                paintAddSlotButton(g2, slotState, slotWidth, realSlotHeight, startX, getHeight() - realSlotHeight);
+            if (addOutputSlotArea != null) {
+                int slotWidth = (int) Math.round(addOutputSlotArea.getNativeWidth() * zoom);
+                paintAddSlotButton(g2, addOutputSlotArea, slotWidth, realSlotHeight, startX, getHeight() - realSlotHeight);
             }
         }
 
@@ -694,9 +718,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         g2.drawLine(0, getHeight() - realSlotHeight, getWidth(), getHeight() - realSlotHeight);
     }
 
-    private void paintAddSlotButton(Graphics2D g2, SlotState slotState, int slotWidth, int realSlotHeight, int startX, int y) {
+    private void paintAddSlotButton(Graphics2D g2, JIPipeNodeUIAddSlotButtonActiveArea activeArea, int slotWidth, int realSlotHeight, int startX, int y) {
 
-        boolean isHighlighted = currentActiveArea instanceof AddSlotButtonActiveArea && ((AddSlotButtonActiveArea) currentActiveArea).slotType == slotState.slotType;
+        boolean isHighlighted = currentActiveArea instanceof JIPipeNodeUIAddSlotButtonActiveArea && ((JIPipeNodeUIAddSlotButtonActiveArea) currentActiveArea).getSlotType() == activeArea.getSlotType();
 
         g2.setStroke(JIPipeGraphCanvasUI.STROKE_UNIT);
         g2.setPaint(isHighlighted ? buttonFillColorDarker : buttonFillColor);
@@ -720,12 +744,12 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
         for (int i = 0; i < inputSlots.size(); i++) {
             JIPipeInputDataSlot inputSlot = inputSlots.get(i);
-            SlotState slotState = inputSlotStatusMap.get(inputSlot.getName());
+            JIPipeNodeUISlotActiveArea slotState = inputSlotMap.get(inputSlot.getName());
 
             if (slotState == null)
                 continue;
 
-            int slotWidth = (int) Math.round(slotState.nativeWidth * zoom);
+            int slotWidth = (int) Math.round(slotState.getNativeWidth() * zoom);
 
             // Draw highlight
             if (slotState == currentActiveArea) {
@@ -746,7 +770,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     realSlotHeight,
                     startX,
                     slotWidth,
-                    slotState.slotStatus == SlotStatus.Unconnected ? COLOR_SLOT_DISCONNECTED : null,
+                    slotState.getSlotStatus() == SlotStatus.Unconnected ? COLOR_SLOT_DISCONNECTED : null,
                     0,
                     (int) Math.round(2 * zoom),
                     (int) Math.round(realSlotHeight / 2.0));
@@ -763,10 +787,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             }
 
             // Draw button
-            SlotState slotState = inputSlotStatusMap.get(ADD_SLOT_BUTTON_NAME);
-            if (slotState != null) {
-                int slotWidth = (int) Math.round(slotState.nativeWidth * zoom);
-                paintAddSlotButton(g2, slotState, slotWidth, realSlotHeight, startX, 0);
+            if (addInputSlotArea != null) {
+                int slotWidth = (int) Math.round(addInputSlotArea.getNativeWidth() * zoom);
+                paintAddSlotButton(g2, addInputSlotArea, slotWidth, realSlotHeight, startX, 0);
             }
         }
 
@@ -776,10 +799,10 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         g2.drawLine(0, realSlotHeight, getWidth(), realSlotHeight);
     }
 
-    private void paintSlot(Graphics2D g2, SlotState slotState, int realSlotHeight, double startX, int slotWidth, Color indicatorColor, int slotY, int indicatorY, int centerY) {
+    private void paintSlot(Graphics2D g2, JIPipeNodeUISlotActiveArea slotState, int realSlotHeight, double startX, int slotWidth, Color indicatorColor, int slotY, int indicatorY, int centerY) {
 
-        boolean hasMouseOver = currentActiveArea == slotState || (currentActiveArea instanceof SlotButtonActiveArea && ((SlotButtonActiveArea) currentActiveArea).slotState == slotState);
-        boolean hasButtonHover = (currentActiveArea instanceof SlotButtonActiveArea && ((SlotButtonActiveArea) currentActiveArea).slotState == slotState);
+        boolean hasMouseOver = currentActiveArea == slotState || (currentActiveArea instanceof JIPipeNodeUISlotButtonActiveArea && ((JIPipeNodeUISlotButtonActiveArea) currentActiveArea).getUISlot() == slotState);
+        boolean hasButtonHover = (currentActiveArea instanceof JIPipeNodeUISlotButtonActiveArea && ((JIPipeNodeUISlotButtonActiveArea) currentActiveArea).getUISlot() == slotState);
 
         // Draw selection
 //        g2.setStroke(STROKE_MOUSE_OVER);
@@ -800,7 +823,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         if (hasMouseOver) {
             icon = UIUtils.getIconFromResources("actions/configure.png").getImage();
         } else {
-            icon = slotState.icon;
+            icon = slotState.getIcon();
         }
         if (hasButtonHover) {
             g2.setPaint(buttonFillColorDarker);
@@ -821,7 +844,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             g2.setPaint(mainTextColor);
         }
         FontMetrics fontMetrics = g2.getFontMetrics();
-        drawStringVerticallyCentered(g2, slotState.slotLabel, (int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 1 * zoom), fontMetrics);
+        drawStringVerticallyCentered(g2, slotState.getSlotLabel(), (int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 1 * zoom), fontMetrics);
     }
 
     private void paintNodeControls(Graphics2D g2, FontMetrics fontMetrics, int realSlotHeight, boolean hasInputs, boolean hasOutputs) {
@@ -839,7 +862,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             double startX = getWidth() / 2.0 - centerNativeWidth / 2.0;
 
             if (nodeIsRunnable) {
-                boolean isButtonHighlighted = currentActiveArea instanceof NodeButtonActiveArea;
+                boolean isButtonHighlighted = currentActiveArea instanceof JIPipeNodeUIRunNodeActiveArea;
 
                 // Draw button
                 g2.setPaint(isButtonHighlighted ? buttonFillColorDarker : buttonFillColor);
@@ -880,50 +903,36 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
      * @return if setting the location was successful
      */
     public boolean moveToClosestGridPoint(Point location, boolean force, boolean save) {
-        Point gridPoint = graphUI.getViewMode().realLocationToGrid(location, graphUI.getZoom());
+        Point gridPoint = graphCanvasUI.getViewMode().realLocationToGrid(location, graphCanvasUI.getZoom());
         return moveToGridLocation(gridPoint, force, save);
     }
 
-    @Deprecated
-    public JIPipeDataSlotUI pickSlotComponent(MouseEvent mouseEvent) {
-//        for (JIPipeDataSlotUI ui : getInputSlotUIs().values()) {
-//            MouseEvent converted = SwingUtilities.convertMouseEvent(getGraphUI(), mouseEvent, ui);
-//            if (ui.contains(converted.getX(), converted.getY()))
-//                return ui;
-//        }
-//        for (JIPipeDataSlotUI ui : getOutputSlotUIs().values()) {
-//            MouseEvent converted = SwingUtilities.convertMouseEvent(getGraphUI(), mouseEvent, ui);
-//            if (ui.contains(converted.getX(), converted.getY()))
-//                return ui;
-//        }
-        // TODO
+    public JIPipeNodeUISlotActiveArea pickSlotAtMousePosition(MouseEvent event) {
+        MouseEvent converted = SwingUtilities.convertMouseEvent(getGraphCanvasUI(), event, this);
+        Point mousePosition = converted.getPoint();
+        for (JIPipeNodeUIActiveArea activeArea : activeAreas) {
+            if (activeArea instanceof JIPipeNodeUISlotActiveArea) {
+                if (activeArea.getZoomedHitArea().contains(mousePosition)) {
+                    return (JIPipeNodeUISlotActiveArea) activeArea;
+                }
+            }
+        }
         return null;
     }
 
     private void updateSlots() {
         JIPipeGraph graph = node.getParentGraph();
 
-        inputSlotStatusMap.clear();
-        outputSlotStatusMap.clear();
-
-        if (slotsInputsEditable) {
-            // Use a dummy slot for this
-            SlotState slotState = new SlotState(JIPipeSlotType.Input, ADD_SLOT_BUTTON_NAME);
-            inputSlotStatusMap.put(ADD_SLOT_BUTTON_NAME, slotState);
-        }
-        if (slotsOutputsEditable) {
-            // Use a dummy slot for this
-            SlotState slotState = new SlotState(JIPipeSlotType.Output, ADD_SLOT_BUTTON_NAME);
-            outputSlotStatusMap.put(ADD_SLOT_BUTTON_NAME, slotState);
-        }
+        inputSlotMap.clear();
+        outputSlotMap.clear();
 
         for (JIPipeInputDataSlot inputSlot : node.getInputSlots()) {
 
             inputSlot.getInfo().getEventBus().register(this);
 
-            SlotState slotState = new SlotState(JIPipeSlotType.Input, inputSlot.getName());
+            JIPipeNodeUISlotActiveArea slotState = new JIPipeNodeUISlotActiveArea(this, JIPipeSlotType.Input, inputSlot.getName(), inputSlot);
             slotState.setIcon(JIPipe.getDataTypes().getIconFor(inputSlot.getAcceptedDataType()).getImage());
-            inputSlotStatusMap.put(inputSlot.getName(), slotState);
+            inputSlotMap.put(inputSlot.getName(), slotState);
             if (StringUtils.isNullOrEmpty(inputSlot.getInfo().getCustomName())) {
                 slotState.setSlotLabel(inputSlot.getName());
                 slotState.setSlotLabelIsCustom(false);
@@ -948,9 +957,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
             outputSlot.getInfo().getEventBus().register(this);
 
-            SlotState slotState = new SlotState(JIPipeSlotType.Output, outputSlot.getName());
+            JIPipeNodeUISlotActiveArea slotState = new JIPipeNodeUISlotActiveArea(this, JIPipeSlotType.Output, outputSlot.getName(), outputSlot);
             slotState.setIcon(JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()).getImage());
-            outputSlotStatusMap.put(outputSlot.getName(), slotState);
+            outputSlotMap.put(outputSlot.getName(), slotState);
             if (StringUtils.isNullOrEmpty(outputSlot.getInfo().getCustomName())) {
                 slotState.setSlotLabel(outputSlot.getName());
                 slotState.setSlotLabelIsCustom(false);
@@ -971,7 +980,155 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
     @Override
     public void mouseClicked(MouseEvent e) {
+        if(currentActiveArea instanceof JIPipeNodeUISlotButtonActiveArea || currentActiveArea instanceof JIPipeNodeUISlotActiveArea && SwingUtilities.isRightMouseButton(e)) {
+            JIPipeNodeUISlotActiveArea slotState;
+            if(currentActiveArea instanceof JIPipeNodeUISlotButtonActiveArea) {
+                slotState = ((JIPipeNodeUISlotButtonActiveArea) currentActiveArea).getUISlot();
+            }
+            else if(currentActiveArea instanceof JIPipeNodeUISlotActiveArea) {
+                slotState = (JIPipeNodeUISlotActiveArea) currentActiveArea;
+            }
+            else {
+                return;
+            }
+            openSlotMenu(slotState);
+            e.consume();
+        }
+        else if(currentActiveArea instanceof JIPipeNodeUIAddSlotButtonActiveArea) {
+            openAddSlotDialog(((JIPipeNodeUIAddSlotButtonActiveArea) currentActiveArea).getSlotType());
+            e.consume();
+        }
+        else if(currentActiveArea instanceof JIPipeNodeUIRunNodeActiveArea) {
+            openRunNodeMenu();
+            e.consume();
+        }
+    }
 
+    private void openRunNodeMenu() {
+        JPopupMenu menu = new JPopupMenu();
+        for (NodeUIContextAction entry : RUN_NODE_CONTEXT_MENU_ENTRIES) {
+            if (entry == null)
+                menu.addSeparator();
+            else {
+                JMenuItem item = new JMenuItem(entry.getName(), entry.getIcon());
+                item.setToolTipText(entry.getDescription());
+                item.setAccelerator(entry.getKeyboardShortcut());
+                item.addActionListener(e -> {
+                    if (entry.matches(Collections.singleton(this))) {
+                        entry.run(getGraphCanvasUI(), Collections.singleton(this));
+                    } else {
+                        JOptionPane.showMessageDialog(getWorkbench().getWindow(),
+                                "Could not run this operation",
+                                entry.getName(),
+                                JOptionPane.ERROR_MESSAGE);
+                    }
+                });
+                menu.add(item);
+            }
+        }
+        Point mousePosition = getMousePosition(true);
+        menu.show(this, mousePosition.x, mousePosition.y);
+    }
+
+    private void openSlotMenu(JIPipeNodeUISlotActiveArea slotState) {
+        JIPipeDataSlot slot = slotState.getSlot();
+        if(slot == null) {
+            return;
+        }
+        JPopupMenu menu = new JPopupMenu();
+
+        // Information item
+        JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(slot.getAcceptedDataType());
+        ViewOnlyMenuItem infoItem = new ViewOnlyMenuItem("<html>" + dataInfo.getName() + "<br><small>" + dataInfo.getDescription() + "</small></html>", JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
+        menu.add(infoItem);
+        menu.addSeparator();
+
+        // Algorithm finder
+        if(slotState.isInput()) {
+            JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("actions/find.png"));
+            findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
+            findAlgorithmButton.addActionListener(e -> openInputAlgorithmFinder(slot));
+            menu.add(findAlgorithmButton);
+        }
+        else {
+            JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("actions/find.png"));
+            findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
+            findAlgorithmButton.addActionListener(e -> openOutputAlgorithmFinder(slot));
+            menu.add(findAlgorithmButton);
+        }
+
+        Point mousePosition = getMousePosition(true);
+        menu.show(this, mousePosition.x, mousePosition.y);
+    }
+
+    private void openOutputAlgorithmFinder(JIPipeDataSlot slot) {
+        JIPipeAlgorithmTargetFinderUI algorithmFinderUI = new JIPipeAlgorithmTargetFinderUI(getGraphCanvasUI(), slot);
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
+        UIUtils.addEscapeListener(dialog);
+        dialog.setModal(true);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.setContentPane(algorithmFinderUI);
+        dialog.pack();
+        dialog.setSize(640, 480);
+        dialog.setLocationRelativeTo(this);
+
+        algorithmFinderUI.getEventBus().register(new Consumer<AlgorithmFinderSuccessEvent>() {
+            @Override
+            @Subscribe
+            public void accept(AlgorithmFinderSuccessEvent event) {
+                dialog.dispose();
+            }
+        });
+        boolean layoutHelperEnabled = getGraphCanvasUI().getSettings() != null && getGraphCanvasUI().getSettings().isLayoutAfterAlgorithmFinder();
+        if (layoutHelperEnabled) {
+            Point cursorLocation = new Point();
+            Point slotLocation = getSlotLocation(slot).min;
+            cursorLocation.x = getX() + slotLocation.x;
+            cursorLocation.y = getBottomY() + getGraphCanvasUI().getViewMode().getGridHeight();
+            getGraphCanvasUI().setGraphEditCursor(cursorLocation);
+            getGraphCanvasUI().repaint(50);
+        }
+
+        dialog.setVisible(true);
+    }
+
+    private void openInputAlgorithmFinder(JIPipeDataSlot slot) {
+        JIPipeAlgorithmSourceFinderUI algorithmFinderUI = new JIPipeAlgorithmSourceFinderUI(getGraphCanvasUI(), slot);
+        JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
+        UIUtils.addEscapeListener(dialog);
+        dialog.setModal(true);
+        dialog.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        dialog.setContentPane(algorithmFinderUI);
+        dialog.pack();
+        dialog.setSize(640, 480);
+        dialog.setLocationRelativeTo(this);
+
+        algorithmFinderUI.getEventBus().register(new Consumer<AlgorithmFinderSuccessEvent>() {
+            @Override
+            @Subscribe
+            public void accept(AlgorithmFinderSuccessEvent event) {
+                dialog.dispose();
+            }
+        });
+        boolean layoutHelperEnabled = getGraphCanvasUI().getSettings() != null && getGraphCanvasUI().getSettings().isLayoutAfterAlgorithmFinder();
+        if (layoutHelperEnabled) {
+            Point cursorLocation = new Point();
+            Point slotLocation = getSlotLocation(slot).min;
+            cursorLocation.x = getX() + slotLocation.x;
+            cursorLocation.y = getY() - getGraphCanvasUI().getViewMode().getGridHeight() * 4;
+            getGraphCanvasUI().setGraphEditCursor(cursorLocation);
+            getGraphCanvasUI().repaint(50);
+        }
+
+        dialog.setVisible(true);
+    }
+
+    private void openAddSlotDialog(JIPipeSlotType slotType) {
+        if (!JIPipeProjectWorkbench.canModifySlots(getWorkbench())) {
+            JOptionPane.showMessageDialog(graphCanvasUI.getWorkbench().getWindow(), "");
+            return;
+        }
+        AddAlgorithmSlotPanel.showDialog(this, graphCanvasUI.getHistoryJournal(), node, slotType);
     }
 
     @Override
@@ -987,14 +1144,14 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     @Override
     public void mouseEntered(MouseEvent e) {
         mouseIsEntered = true;
-        updateCurrentActiveArea();
+        updateCurrentActiveArea(e);
         repaint(50);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
         mouseIsEntered = false;
-        updateCurrentActiveArea();
+        updateCurrentActiveArea(e);
         repaint(50);
     }
 
@@ -1005,21 +1162,20 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
     @Override
     public void mouseMoved(MouseEvent e) {
-        updateCurrentActiveArea();
+        updateCurrentActiveArea(e);
     }
 
-    private void updateCurrentActiveArea() {
+    private void updateCurrentActiveArea(MouseEvent e) {
         if (mouseIsEntered) {
-            Point mousePosition = getMousePosition(true);
-            if (mousePosition != null) {
-                for (ActiveArea activeArea : activeAreas) {
-                    if (activeArea.zoomedHitArea != null && activeArea.zoomedHitArea.contains(mousePosition)) {
-                        if (currentActiveArea != activeArea) {
-                            currentActiveArea = activeArea;
-                            repaint(50);
-                        }
-                        break;
+            MouseEvent mouseEvent = SwingUtilities.convertMouseEvent(getGraphCanvasUI(), e, this);
+            Point mousePosition = mouseEvent.getPoint();
+            for (JIPipeNodeUIActiveArea activeArea : activeAreas) {
+                if (activeArea.getZoomedHitArea() != null && activeArea.getZoomedHitArea().contains(mousePosition)) {
+                    if (currentActiveArea != activeArea) {
+                        currentActiveArea = activeArea;
+                        repaint(50);
                     }
+                    break;
                 }
             }
         } else {
@@ -1027,160 +1183,6 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 currentActiveArea = null;
                 repaint(50);
             }
-        }
-    }
-
-    public static class ActiveArea implements Comparable<ActiveArea> {
-
-        private final int priority;
-
-        private Rectangle zoomedHitArea;
-
-        public ActiveArea(int priority) {
-            this.priority = priority;
-        }
-
-        public int getPriority() {
-            return priority;
-        }
-
-        @Override
-        public int compareTo(JIPipeNodeUI.ActiveArea o) {
-            return Integer.compare(priority, o.priority);
-        }
-
-        public Rectangle getZoomedHitArea() {
-            return zoomedHitArea;
-        }
-
-        public void setZoomedHitArea(Rectangle zoomedHitArea) {
-            this.zoomedHitArea = zoomedHitArea;
-        }
-    }
-
-    public static class NodeButtonActiveArea extends ActiveArea {
-
-        public NodeButtonActiveArea() {
-            super(200);
-        }
-    }
-
-    public static class AddSlotButtonActiveArea extends ActiveArea {
-        private final JIPipeSlotType slotType;
-
-        public AddSlotButtonActiveArea(JIPipeSlotType slotType) {
-            super(50);
-            this.slotType = slotType;
-        }
-
-        public JIPipeSlotType getSlotType() {
-            return slotType;
-        }
-    }
-
-    public static class SlotButtonActiveArea extends ActiveArea {
-        private final SlotState slotState;
-
-        public SlotButtonActiveArea(SlotState slotState) {
-            super(50);
-            this.slotState = slotState;
-        }
-
-        public SlotState getSlotState() {
-            return slotState;
-        }
-    }
-
-    public static class WholeNodeActiveArea extends ActiveArea {
-        public WholeNodeActiveArea() {
-            super(999);
-        }
-    }
-
-    /**
-     * Active area that stores the state of a slot
-     */
-    public static class SlotState extends ActiveArea {
-
-        private final JIPipeSlotType slotType;
-        private final String slotName;
-
-        private String slotLabel;
-
-        private boolean slotLabelIsCustom;
-        private SlotStatus slotStatus = SlotStatus.Default;
-
-        private Point nativeLocation;
-
-        private double nativeWidth;
-
-        private Image icon;
-
-        public SlotState(JIPipeSlotType slotType, String slotName) {
-            super(100);
-            this.slotType = slotType;
-            this.slotName = slotName;
-        }
-
-        public JIPipeSlotType getSlotType() {
-            return slotType;
-        }
-
-        public String getSlotLabel() {
-            return slotLabel;
-        }
-
-        public void setSlotLabel(String slotLabel) {
-            this.slotLabel = slotLabel;
-        }
-
-        public String getSlotName() {
-            return slotName;
-        }
-
-        public SlotStatus getSlotStatus() {
-            return slotStatus;
-        }
-
-        public void setSlotStatus(SlotStatus slotStatus) {
-            this.slotStatus = slotStatus;
-        }
-
-        public boolean isSlotLabelIsCustom() {
-            return slotLabelIsCustom;
-        }
-
-        public void setSlotLabelIsCustom(boolean slotLabelIsCustom) {
-            this.slotLabelIsCustom = slotLabelIsCustom;
-        }
-
-        public double getNativeWidth() {
-            return nativeWidth;
-        }
-
-        public void setNativeWidth(double nativeWidth) {
-            this.nativeWidth = nativeWidth;
-        }
-
-        public Image getIcon() {
-            return icon;
-        }
-
-        public void setIcon(Image icon) {
-            this.icon = icon;
-        }
-
-        public Point getNativeLocation() {
-            return nativeLocation;
-        }
-
-        public void setNativeLocation(Point nativeLocation) {
-            this.nativeLocation = nativeLocation;
-        }
-
-        @Override
-        public String toString() {
-            return "Slot State: " + slotName;
         }
     }
 

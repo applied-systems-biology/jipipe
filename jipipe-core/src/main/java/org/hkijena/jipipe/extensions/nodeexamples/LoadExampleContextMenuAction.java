@@ -30,8 +30,8 @@ public class LoadExampleContextMenuAction implements NodeUIContextAction {
 
     private List<JIPipeNodeExample> getExamples(JIPipeNodeUI nodeUI) {
         List<JIPipeNodeExample> result;
-        if (nodeUI.getGraphUI().getWorkbench() instanceof JIPipeProjectWorkbench) {
-            result = ((JIPipeProjectWorkbench) nodeUI.getGraphUI().getWorkbench()).getProject().getNodeExamples(nodeUI.getNode().getInfo().getId());
+        if (nodeUI.getGraphCanvasUI().getWorkbench() instanceof JIPipeProjectWorkbench) {
+            result = ((JIPipeProjectWorkbench) nodeUI.getGraphCanvasUI().getWorkbench()).getProject().getNodeExamples(nodeUI.getNode().getInfo().getId());
         } else {
             result = new ArrayList<>(JIPipe.getNodes().getNodeExamples(nodeUI.getNode().getInfo().getId()));
         }

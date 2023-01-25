@@ -29,7 +29,6 @@ import org.hkijena.jipipe.ui.algorithmfinder.AlgorithmFinderSuccessEvent;
 import org.hkijena.jipipe.ui.algorithmfinder.JIPipeAlgorithmSourceFinderUI;
 import org.hkijena.jipipe.ui.algorithmfinder.JIPipeAlgorithmTargetFinderUI;
 import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.TooltipUtils;
@@ -39,8 +38,6 @@ import javax.swing.*;
 import javax.swing.event.PopupMenuEvent;
 import javax.swing.event.PopupMenuListener;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.List;
 import java.util.*;
 import java.util.function.Consumer;
@@ -50,7 +47,7 @@ import java.util.stream.Collectors;
  * UI around an {@link JIPipeDataSlot}
  */
 @Deprecated
-public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
+public abstract class JIPipeDataSlotUI_old extends JIPipeWorkbenchPanel {
     protected JPopupMenu assignButtonMenu;
     private JIPipeNodeUI nodeUI;
     private UUID compartment;
@@ -64,7 +61,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
      * @param compartment The compartment ID
      * @param slot        The slot instance
      */
-    public JIPipeDataSlotUI(JIPipeWorkbench workbench, JIPipeNodeUI nodeUI, UUID compartment, JIPipeDataSlot slot) {
+    public JIPipeDataSlotUI_old(JIPipeWorkbench workbench, JIPipeNodeUI nodeUI, UUID compartment, JIPipeDataSlot slot) {
         super(workbench);
         this.nodeUI = nodeUI;
         this.compartment = compartment;
@@ -83,7 +80,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     }
 
     public JIPipeGraphCanvasUI getGraphUI() {
-        return nodeUI.getGraphUI();
+        return nodeUI.getGraphCanvasUI();
     }
 
     private List<JIPipeDataSlot> sortSlotsByDistance(Set<JIPipeDataSlot> unsorted) {
@@ -206,7 +203,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                         for (JIPipeGraphEdge target : hiddenEdges) {
                             target.setUiHidden(false);
                         }
-                        nodeUI.getGraphUI().repaint(50);
+                        nodeUI.getGraphCanvasUI().repaint(50);
                     });
                     assignButtonMenu.add(showButton);
                 }
@@ -223,7 +220,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                         for (JIPipeGraphEdge target : visibleEdges) {
                             target.setUiHidden(true);
                         }
-                        nodeUI.getGraphUI().repaint(50);
+                        nodeUI.getGraphCanvasUI().repaint(50);
                     });
                     assignButtonMenu.add(showButton);
                 }
@@ -425,7 +422,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             installHighlightForDisconnect(disconnectButton, Collections.singleton(sourceSlot));
             sourceSlotMenu.add(disconnectButton);
 
-            JIPipeGraphEdge edge = nodeUI.getGraphUI().getGraph().getGraph().getEdge(sourceSlot, slot);
+            JIPipeGraphEdge edge = nodeUI.getGraphCanvasUI().getGraph().getGraph().getEdge(sourceSlot, slot);
             if (edge.isUiHidden()) {
                 JMenuItem showButton = new JMenuItem("Show incoming edge", UIUtils.getIconFromResources("actions/eye.png"));
                 showButton.setToolTipText("Un-hides the incoming edge");
@@ -437,7 +434,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                                 UIUtils.getIconFromResources("actions/eye.png"));
                     }
                     edge.setUiHidden(false);
-                    nodeUI.getGraphUI().repaint(50);
+                    nodeUI.getGraphCanvasUI().repaint(50);
                 });
                 installHighlightForConnect(sourceSlot, showButton);
                 sourceSlotMenu.add(showButton);
@@ -452,7 +449,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                                 UIUtils.getIconFromResources("actions/eye-slash.png"));
                     }
                     edge.setUiHidden(true);
-                    nodeUI.getGraphUI().repaint(50);
+                    nodeUI.getGraphCanvasUI().repaint(50);
                 });
                 installHighlightForDisconnect(hideButton, Collections.singleton(sourceSlot));
                 sourceSlotMenu.add(hideButton);
@@ -473,7 +470,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
             installHighlightForDisconnect(disconnectButton, Collections.singleton(targetSlot));
             targetSlotMenu.add(disconnectButton);
 
-            JIPipeGraphEdge edge = nodeUI.getGraphUI().getGraph().getGraph().getEdge(slot, targetSlot);
+            JIPipeGraphEdge edge = nodeUI.getGraphCanvasUI().getGraph().getGraph().getEdge(slot, targetSlot);
             if (edge.isUiHidden()) {
                 JMenuItem showButton = new JMenuItem("Show outgoing edge", UIUtils.getIconFromResources("actions/eye.png"));
                 showButton.setToolTipText("Un-hides the outgoing edge");
@@ -485,7 +482,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                                 UIUtils.getIconFromResources("actions/eye.png"));
                     }
                     edge.setUiHidden(false);
-                    nodeUI.getGraphUI().repaint(50);
+                    nodeUI.getGraphCanvasUI().repaint(50);
                 });
                 installHighlightForConnect(targetSlot, showButton);
                 targetSlotMenu.add(showButton);
@@ -500,7 +497,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                                 UIUtils.getIconFromResources("actions/eye-slash.png"));
                     }
                     edge.setUiHidden(true);
-                    nodeUI.getGraphUI().repaint(50);
+                    nodeUI.getGraphCanvasUI().repaint(50);
                 });
                 installHighlightForDisconnect(hideButton, Collections.singleton(targetSlot));
                 targetSlotMenu.add(hideButton);
@@ -522,7 +519,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                             UIUtils.getIconFromResources("actions/standard-connector.png"));
                 }
                 edge.setUiShape(JIPipeGraphEdge.Shape.Elbow);
-                nodeUI.getGraphUI().repaint(50);
+                nodeUI.getGraphCanvasUI().repaint(50);
             });
             menu.add(setShapeItem);
         }
@@ -536,7 +533,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                             UIUtils.getIconFromResources("actions/draw-line.png"));
                 }
                 edge.setUiShape(JIPipeGraphEdge.Shape.Line);
-                nodeUI.getGraphUI().repaint(50);
+                nodeUI.getGraphCanvasUI().repaint(50);
             });
             menu.add(setShapeItem);
         }
@@ -560,7 +557,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     }
 
     private void findSourceAlgorithm(JIPipeDataSlot slot) {
-        JIPipeAlgorithmSourceFinderUI algorithmFinderUI = new JIPipeAlgorithmSourceFinderUI(nodeUI.getGraphUI(), slot);
+        JIPipeAlgorithmSourceFinderUI algorithmFinderUI = new JIPipeAlgorithmSourceFinderUI(nodeUI.getGraphCanvasUI(), slot);
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
         UIUtils.addEscapeListener(dialog);
         dialog.setModal(true);
@@ -577,14 +574,14 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 dialog.dispose();
             }
         });
-        boolean layoutHelperEnabled = getNodeUI().getGraphUI().getSettings() != null && getNodeUI().getGraphUI().getSettings().isLayoutAfterAlgorithmFinder();
+        boolean layoutHelperEnabled = getNodeUI().getGraphCanvasUI().getSettings() != null && getNodeUI().getGraphCanvasUI().getSettings().isLayoutAfterAlgorithmFinder();
         if (layoutHelperEnabled) {
             Point cursorLocation = new Point();
             Point slotLocation = getLocation();
             cursorLocation.x = getNodeUI().getX() + slotLocation.x;
-            cursorLocation.y = getNodeUI().getY() - getNodeUI().getGraphUI().getViewMode().getGridHeight() * 4;
-            getNodeUI().getGraphUI().setGraphEditCursor(cursorLocation);
-            getNodeUI().getGraphUI().repaint(50);
+            cursorLocation.y = getNodeUI().getY() - getNodeUI().getGraphCanvasUI().getViewMode().getGridHeight() * 4;
+            getNodeUI().getGraphCanvasUI().setGraphEditCursor(cursorLocation);
+            getNodeUI().getGraphCanvasUI().repaint(50);
         }
 
         dialog.setVisible(true);
@@ -617,19 +614,19 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     }
 
     private void installHighlightForDisconnect(JMenuItem disconnectButton, Set<JIPipeDataSlot> sourceSlots) {
-        disconnectButton.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseEntered(MouseEvent e) {
-                getGraphUI().setCurrentHighlightedForDisconnect(JIPipeDataSlotUI.this, sourceSlots);
-                getGraphUI().repaint(50);
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-                getGraphUI().setCurrentHighlightedForDisconnect(null, Collections.emptySet());
-                getGraphUI().repaint(50);
-            }
-        });
+//        disconnectButton.addMouseListener(new MouseAdapter() {
+//            @Override
+//            public void mouseEntered(MouseEvent e) {
+//                getGraphUI().setCurrentHighlightedForDisconnect(JIPipeDataSlotUI_old.this, sourceSlots);
+//                getGraphUI().repaint(50);
+//            }
+//
+//            @Override
+//            public void mouseExited(MouseEvent e) {
+//                getGraphUI().setCurrentHighlightedForDisconnect(null, Collections.emptySet());
+//                getGraphUI().repaint(50);
+//            }
+//        });
     }
 
     private void editSlot() {
@@ -685,7 +682,7 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
     }
 
     private void findTargetAlgorithm(JIPipeDataSlot slot) {
-        JIPipeAlgorithmTargetFinderUI algorithmFinderUI = new JIPipeAlgorithmTargetFinderUI(nodeUI.getGraphUI(), slot);
+        JIPipeAlgorithmTargetFinderUI algorithmFinderUI = new JIPipeAlgorithmTargetFinderUI(nodeUI.getGraphCanvasUI(), slot);
         JDialog dialog = new JDialog(SwingUtilities.getWindowAncestor(this), "Find matching algorithm");
         UIUtils.addEscapeListener(dialog);
         dialog.setModal(true);
@@ -702,14 +699,14 @@ public abstract class JIPipeDataSlotUI extends JIPipeWorkbenchPanel {
                 dialog.dispose();
             }
         });
-        boolean layoutHelperEnabled = getNodeUI().getGraphUI().getSettings() != null && getNodeUI().getGraphUI().getSettings().isLayoutAfterAlgorithmFinder();
+        boolean layoutHelperEnabled = getNodeUI().getGraphCanvasUI().getSettings() != null && getNodeUI().getGraphCanvasUI().getSettings().isLayoutAfterAlgorithmFinder();
         if (layoutHelperEnabled) {
             Point cursorLocation = new Point();
             Point slotLocation = getLocation();
             cursorLocation.x = getNodeUI().getX() + slotLocation.x;
-            cursorLocation.y = getNodeUI().getBottomY() + getNodeUI().getGraphUI().getViewMode().getGridHeight();
-            getNodeUI().getGraphUI().setGraphEditCursor(cursorLocation);
-            getNodeUI().getGraphUI().repaint(50);
+            cursorLocation.y = getNodeUI().getBottomY() + getNodeUI().getGraphCanvasUI().getViewMode().getGridHeight();
+            getNodeUI().getGraphCanvasUI().setGraphEditCursor(cursorLocation);
+            getNodeUI().getGraphCanvasUI().repaint(50);
         }
 
         dialog.setVisible(true);
