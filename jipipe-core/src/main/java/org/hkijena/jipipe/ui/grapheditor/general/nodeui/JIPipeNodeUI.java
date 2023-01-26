@@ -37,6 +37,7 @@ import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
@@ -152,7 +153,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         this.nodeIcon = JIPipe.getNodes().getIconFor(node.getInfo()).getImage();
         this.nodeFillColor = UIUtils.getFillColorFor(node.getInfo());
         this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
-        this.highlightedNodeBorderColor = COLOR_DISABLED_2;
+        this.highlightedNodeBorderColor = UIUtils.DARK_THEME ? new Color(0xBBBBBF) : new Color(0x444444);
         this.slotFillColor = UIManager.getColor("Panel.background");
         this.mainTextColor = UIManager.getColor("Label.foreground");
         this.secondaryTextColor = nodeBorderColor;

@@ -85,7 +85,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     public static final Stroke STROKE_DEFAULT = new BasicStroke(4);
     public static final Stroke STROKE_DEFAULT_BORDER = new BasicStroke(6);
     public static final Stroke STROKE_HIGHLIGHT = new BasicStroke(8);
-    public static final Stroke STROKE_SELECTION = new BasicStroke(3, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{3}, 0);
+    public static final Stroke STROKE_SELECTION = new BasicStroke(3, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_ROUND, 0, new float[]{5}, 0);
     public static final Stroke STROKE_MARQUEE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
     public static final Stroke STROKE_COMMENT = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
     public static final Stroke STROKE_COMMENT_HIGHLIGHT = new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{8}, 0);
