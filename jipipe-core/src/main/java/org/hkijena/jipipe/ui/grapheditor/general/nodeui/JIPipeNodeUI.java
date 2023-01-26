@@ -1614,8 +1614,13 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     private void openSlotMenuGenerateInformationItems(JIPipeNodeUISlotActiveArea slotState, JIPipeDataSlot slot, JPopupMenu menu) {
         // Information item
         JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(slot.getAcceptedDataType());
-        ViewOnlyMenuItem infoItem = new ViewOnlyMenuItem("<html>" + dataInfo.getName() + "<br><small>" + dataInfo.getDescription() + "</small></html>", JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
+        ViewOnlyMenuItem infoItem = new ViewOnlyMenuItem("<html>" + dataInfo.getName() + "<br><small>" + StringUtils.orElse(dataInfo.getDescription(), "No description provided") + "</small></html>", JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
         menu.add(infoItem);
+
+        // Missing input item
+        if(slotState.getSlotStatus() == SlotStatus.Unconnected) {
+            menu.add(new ViewOnlyMenuItem("<html>This slot is not connected to an output!<br/><small>The node will not be able to work with a missing input.</small></html>", UIUtils.getIconFromResources("emblems/warning.png")));
+        }
 
         // Cache info
         if(node.getParentGraph() != null) {
