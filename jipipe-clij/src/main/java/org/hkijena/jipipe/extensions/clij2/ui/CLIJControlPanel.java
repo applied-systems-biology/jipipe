@@ -5,7 +5,7 @@ import net.haesleinhuepf.clij2.CLIJ2;
 import org.hkijena.jipipe.extensions.clij2.CLIJSettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
-import org.hkijena.jipipe.ui.components.BackgroundPanel;
+import org.hkijena.jipipe.ui.components.ImageFrame;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
@@ -66,7 +66,7 @@ public class CLIJControlPanel extends JIPipeWorkbenchPanel {
 
     private void initializeHeaderPanel() {
         JPanel headerPanel;
-        headerPanel = new BackgroundPanel(UIUtils.getHeaderPanelBackground(), false);
+        headerPanel = new ImageFrame(UIUtils.getHeaderPanelBackground(), false, ImageFrame.Mode.FitHeight, false);
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));

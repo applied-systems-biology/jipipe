@@ -17,7 +17,7 @@ import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.bookmarks.BookmarkListPanel;
-import org.hkijena.jipipe.ui.components.BackgroundPanel;
+import org.hkijena.jipipe.ui.components.ImageFrame;
 import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.html.ExtendedHTMLEditorKit;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
@@ -46,7 +46,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
     private JTextField projectName;
     private JTextField projectStats;
     private JPanel projectAuthors;
-    private BackgroundPanel headerPanel;
+    private ImageFrame headerPanel;
     private JButton openWebsiteButton;
     private JButton copyCitationButton;
     private JButton copyDependencyCitationsButton;
@@ -186,7 +186,7 @@ public class JIPipeProjectInfoUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void initializeHeaderPanel() {
-        headerPanel = new BackgroundPanel(null, false);
+        headerPanel = new ImageFrame(null, false, ImageFrame.Mode.FitHeight, false);
         headerPanel.setLayout(new BorderLayout());
         headerPanel.setBorder(BorderFactory.createMatteBorder(0, 0, 1, 0, Color.DARK_GRAY));
         headerPanel.setPreferredSize(new Dimension(headerPanel.getPreferredSize().width, 200));

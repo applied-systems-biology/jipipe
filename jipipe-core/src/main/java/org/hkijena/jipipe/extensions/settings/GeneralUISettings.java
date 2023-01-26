@@ -36,7 +36,6 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     private boolean validateOnSave = false;
     private boolean addContextActionsToContextMenu = true;
     private boolean maximizeWindows = true;
-    private boolean showIntroductionTour = true;
     private boolean openDataWindowsAlwaysOnTop = true;
     private boolean openUtilityWindowsAlwaysOnTop = true;
     private boolean allowDefaultCollapsedParameters = true;
@@ -130,18 +129,6 @@ public class GeneralUISettings implements JIPipeParameterCollection {
     @JIPipeParameter("maximize-windows")
     public void setMaximizeWindows(boolean maximizeWindows) {
         this.maximizeWindows = maximizeWindows;
-    }
-
-    @JIPipeDocumentation(name = "'Getting started' screen shows tutorial", description = "If enabled, there is a tutorial or other information displayed in the 'Getting started' tab. " +
-            "If disabled, only the recent projects are listed. Requires creating a new project or opening an existing one to take effect.")
-    @JIPipeParameter("show-introduction-tour")
-    public boolean isShowIntroductionTour() {
-        return showIntroductionTour;
-    }
-
-    @JIPipeParameter("show-introduction-tour")
-    public void setShowIntroductionTour(boolean showIntroductionTour) {
-        this.showIntroductionTour = showIntroductionTour;
     }
 
     @JIPipeDocumentation(name = "Theme", description = "The theme that is used for the user interface. Requires a restart to take effect.")
