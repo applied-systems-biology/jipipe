@@ -108,28 +108,28 @@ public abstract class JIPipeDataSlotUI_old extends JIPipeWorkbenchPanel {
      */
     public void reloadPopupMenu() {
         assignButtonMenu.removeAll();
-        assignButtonMenu.addPopupMenuListener(new PopupMenuListener() {
-            @Override
-            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
-
-            }
-
-            @Override
-            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
-                getGraphUI().setCurrentConnectionDragSource(null);
-                getGraphUI().setCurrentConnectionDragTarget(null);
-                getGraphUI().setCurrentHighlightedForDisconnect(null, Collections.emptySet());
-                getGraphUI().repaint(50);
-            }
-
-            @Override
-            public void popupMenuCanceled(PopupMenuEvent e) {
-                getGraphUI().setCurrentConnectionDragSource(null);
-                getGraphUI().setCurrentConnectionDragTarget(null);
-                getGraphUI().setCurrentHighlightedForDisconnect(null, Collections.emptySet());
-                getGraphUI().repaint(50);
-            }
-        });
+//        assignButtonMenu.addPopupMenuListener(new PopupMenuListener() {
+//            @Override
+//            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+//
+//            }
+//
+//            @Override
+//            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+//                getGraphUI().setCurrentConnectionDragSource(null);
+//                getGraphUI().setCurrentConnectionDragTarget(null);
+//                getGraphUI().setCurrentHighlightedForDisconnect(null, Collections.emptySet());
+//                getGraphUI().repaint(50);
+//            }
+//
+//            @Override
+//            public void popupMenuCanceled(PopupMenuEvent e) {
+//                getGraphUI().setCurrentConnectionDragSource(null);
+//                getGraphUI().setCurrentConnectionDragTarget(null);
+//                getGraphUI().setCurrentHighlightedForDisconnect(null, Collections.emptySet());
+//                getGraphUI().repaint(50);
+//            }
+//        });
 
         if (slot.isInput()) {
             JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("actions/find.png"));

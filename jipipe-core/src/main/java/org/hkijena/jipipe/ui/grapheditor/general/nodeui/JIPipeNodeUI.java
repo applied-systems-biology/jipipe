@@ -41,7 +41,10 @@ import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
 import javax.swing.*;
+import javax.swing.event.PopupMenuEvent;
+import javax.swing.event.PopupMenuListener;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -1093,7 +1096,37 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
         MouseEvent convertMouseEvent = SwingUtilities.convertMouseEvent(graphCanvasUI, mouseEvent, this);
         Point mousePosition = convertMouseEvent.getPoint();
+
+        menu.addPopupMenuListener(new PopupMenuListener() {
+            @Override
+            public void popupMenuWillBecomeVisible(PopupMenuEvent e) {
+
+            }
+
+            @Override
+            public void popupMenuWillBecomeInvisible(PopupMenuEvent e) {
+                getGraphCanvasUI().setCurrentConnectionDragSource(null);
+                getGraphCanvasUI().setCurrentConnectionDragTarget(null);
+                getGraphCanvasUI().setDisconnectHighlight(null);
+                getGraphCanvasUI().setConnectHighlight(null);
+                getGraphCanvasUI().repaint(50);
+            }
+
+            @Override
+            public void popupMenuCanceled(PopupMenuEvent e) {
+                getGraphCanvasUI().setCurrentConnectionDragSource(null);
+                getGraphCanvasUI().setCurrentConnectionDragTarget(null);
+                getGraphCanvasUI().setDisconnectHighlight(null);
+                getGraphCanvasUI().setConnectHighlight(null);
+                getGraphCanvasUI().repaint(50);
+            }
+        });
+
         menu.show(this, mousePosition.x, mousePosition.y);
+    }
+
+    public JIPipeNodeUISlotActiveArea getSlotActiveArea(JIPipeDataSlot slot) {
+        return slot.isInput() ? inputSlotMap.get(slot.getName()) : outputSlotMap.get(slot.getName());
     }
 
     private void openSlotMenuAddOutputSlotMenuItems(JIPipeDataSlot slot, JPopupMenu menu) {
@@ -1111,7 +1144,10 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             if (allowDisconnect) {
                 JMenuItem disconnectButton = new JMenuItem("Disconnect all", UIUtils.getIconFromResources("actions/cancel.png"));
                 disconnectButton.addActionListener(e -> getGraphCanvasUI().disconnectAll(slot, targetSlots));
-                openSlotMenuInstallHighlightForDisconnect(disconnectButton, targetSlots);
+                JIPipeNodeUISlotActiveArea slotActiveArea = getSlotActiveArea(slot);
+                if(slotActiveArea != null) {
+                    openSlotMenuInstallHighlightForDisconnect(slotActiveArea, disconnectButton, targetSlots);
+                }
                 menu.add(disconnectButton);
 
                 UIUtils.addSeparatorIfNeeded(menu);
@@ -1225,7 +1261,10 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
             JMenuItem disconnectButton = new JMenuItem("Disconnect", UIUtils.getIconFromResources("actions/cancel.png"));
             disconnectButton.addActionListener(e -> getGraphCanvasUI().disconnectAll(slot, Collections.singleton(targetSlot)));
-            openSlotMenuInstallHighlightForDisconnect(disconnectButton, Collections.singleton(targetSlot));
+            JIPipeNodeUISlotActiveArea slotActiveArea = getSlotActiveArea(slot);
+            if(slotActiveArea != null) {
+                openSlotMenuInstallHighlightForDisconnect(slotActiveArea, disconnectButton, Collections.singleton(targetSlot));
+            }
             targetSlotMenu.add(disconnectButton);
 
             JIPipeGraphEdge edge = getGraphCanvasUI().getGraph().getGraph().getEdge(slot, targetSlot);
@@ -1242,7 +1281,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     edge.setUiHidden(false);
                     getGraphCanvasUI().repaint(50);
                 });
-                openSlotMenuInstallHighlightForConnect(targetSlot, showButton);
+                if(slotActiveArea != null) {
+                    openSlotMenuInstallHighlightForConnect(slotActiveArea, targetSlot, showButton);
+                }
                 targetSlotMenu.add(showButton);
             } else {
                 JMenuItem hideButton = new JMenuItem("Hide outgoing edge", UIUtils.getIconFromResources("actions/eye-slash.png"));
@@ -1257,7 +1298,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     edge.setUiHidden(true);
                     getGraphCanvasUI().repaint(50);
                 });
-                openSlotMenuInstallHighlightForDisconnect(hideButton, Collections.singleton(targetSlot));
+                if(slotActiveArea != null) {
+                    openSlotMenuInstallHighlightForDisconnect(slotActiveArea, hideButton, Collections.singleton(targetSlot));
+                }
                 targetSlotMenu.add(hideButton);
             }
             openSlotMenuAddShapeToggle(slot, targetSlotMenu, edge);
@@ -1275,7 +1318,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         Set<JIPipeDataSlot> availableSources = getGraphCanvasUI().getGraph().getAvailableSources(slot, true, false);
         if(!availableSources.isEmpty()) {
             JMenu connectMenu = new JMenu("Connect to ...");
-            openSlotMenuAddInputConnectSourceSloItems(slot, availableSources, connectMenu);
+            openSlotMenuAddInputConnectSourceSlotItems(slot, availableSources, connectMenu);
             menu.add(connectMenu);
         }
 
@@ -1284,7 +1327,10 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         if (!sourceSlots.isEmpty()) {
             JMenuItem disconnectButton = new JMenuItem("Disconnect all", UIUtils.getIconFromResources("actions/cancel.png"));
             disconnectButton.addActionListener(e -> getGraphCanvasUI().disconnectAll(slot, sourceSlots));
-            openSlotMenuInstallHighlightForDisconnect(disconnectButton, sourceSlots);
+            JIPipeNodeUISlotActiveArea slotActiveArea = getSlotActiveArea(slot);
+            if(slotActiveArea != null) {
+                openSlotMenuInstallHighlightForDisconnect(slotActiveArea, disconnectButton, sourceSlots);
+            }
             menu.add(disconnectButton);
         }
 
@@ -1298,6 +1344,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     }
 
     private void openSlotMenuAddOutputConnectTargetSlotItems(JIPipeDataSlot slot, Set<JIPipeDataSlot> availableTargets, JMenu menu) {
+        JIPipeNodeUISlotActiveArea slotActiveArea = getSlotActiveArea(slot);
         Object currentMenu = menu;
         int itemCount = 0;
         for (JIPipeDataSlot target : sortSlotsByDistance(slot, availableTargets)) {
@@ -1314,29 +1361,12 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     JIPipe.getDataTypes().getIconFor(target.getAcceptedDataType()));
             connectButton.addActionListener(e -> getGraphCanvasUI().connectSlot(slot, target));
             connectButton.setToolTipText(TooltipUtils.getAlgorithmTooltip(target.getNode().getInfo()));
-//            connectButton.addMouseListener(new MouseAdapter() {
-//                @Override
-//                public void mouseEntered(MouseEvent e) {
-//                    JIPipeNodeUI targetNodeUI = getGraphUI().getNodeUIs().getOrDefault(target.getNode(), null);
-//                    if (targetNodeUI != null) {
-//                        if (target.isInput()) {
-//                            JIPipeDataSlotUI targetUI = targetNodeUI.getInputSlotUIs().getOrDefault(target.getName(), null);
-//                            if (targetUI != null) {
-//                                getGraphUI().setCurrentConnectionDragTarget(targetUI);
-//                                getGraphUI().setCurrentConnectionDragSource(JIPipeDataSlotUI.this);
-//                            }
-//                        }
-//                    }
-//                    getGraphUI().repaint(50);
-//                }
-//
-//                @Override
-//                public void mouseExited(MouseEvent e) {
-//                    getGraphUI().setCurrentConnectionDragSource(null);
-//                    getGraphUI().setCurrentConnectionDragTarget(null);
-//                    getGraphUI().repaint(50);
-//                }
-//            });
+            JIPipeNodeUI targetNodeUI = getGraphCanvasUI().getNodeUIs().getOrDefault(target.getNode(), null);
+
+            if (targetNodeUI != null) {
+                openSlotMenuInstallHighlightForConnect(slotActiveArea, target, connectButton);
+            }
+
             if (currentMenu instanceof JMenu)
                 ((JMenu) currentMenu).add(connectButton);
             else
@@ -1352,7 +1382,10 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 UIUtils.addSeparatorIfNeeded(menu);
                 JMenuItem deleteButton = new JMenuItem("Delete this slot", UIUtils.getIconFromResources("actions/delete.png"));
                 deleteButton.addActionListener(e -> deleteSlot(slot));
-                openSlotMenuInstallHighlightForDisconnect(deleteButton, sourceSlots);
+                JIPipeNodeUISlotActiveArea slotActiveArea = getSlotActiveArea(slot);
+                if(slotActiveArea != null) {
+                    openSlotMenuInstallHighlightForDisconnect(slotActiveArea, deleteButton, sourceSlots);
+                }
                 menu.add(deleteButton);
 
                 JMenuItem editButton = new JMenuItem("Edit this slot", UIUtils.getIconFromResources("actions/edit.png"));
@@ -1379,14 +1412,16 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     }
 
     private void openSlotMenuAddInputSourceSlotItems(JIPipeDataSlot slot, Set<JIPipeDataSlot> sourceSlots, JPopupMenu menu) {
-        JPopupMenu currentMenu = menu;
+        JIPipeNodeUISlotActiveArea slotActiveArea = getSlotActiveArea(slot);
         for (JIPipeDataSlot sourceSlot : sortSlotsByDistance(slot, sourceSlots)) {
             JMenu sourceSlotMenu = new JMenu(sourceSlot.getDisplayName());
             sourceSlotMenu.setIcon(JIPipe.getDataTypes().getIconFor(sourceSlot.getAcceptedDataType()));
 
             JMenuItem disconnectButton = new JMenuItem("Disconnect", UIUtils.getIconFromResources("actions/cancel.png"));
             disconnectButton.addActionListener(e -> getGraphCanvasUI().disconnectAll(slot, Collections.singleton(sourceSlot)));
-            openSlotMenuInstallHighlightForDisconnect(disconnectButton, Collections.singleton(sourceSlot));
+            if(slotActiveArea != null) {
+                openSlotMenuInstallHighlightForDisconnect(slotActiveArea, disconnectButton, Collections.singleton(sourceSlot));
+            }
             sourceSlotMenu.add(disconnectButton);
 
             JIPipeGraphEdge edge = getGraphCanvasUI().getGraph().getGraph().getEdge(sourceSlot, slot);
@@ -1403,7 +1438,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     edge.setUiHidden(false);
                     getGraphCanvasUI().repaint(50);
                 });
-                openSlotMenuInstallHighlightForConnect(sourceSlot, showButton);
+                if(slotActiveArea != null) {
+                    openSlotMenuInstallHighlightForConnect(slotActiveArea, sourceSlot, showButton);
+                }
                 sourceSlotMenu.add(showButton);
             } else {
                 JMenuItem hideButton = new JMenuItem("Hide incoming edge", UIUtils.getIconFromResources("actions/eye-slash.png"));
@@ -1418,17 +1455,20 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     edge.setUiHidden(true);
                     getGraphCanvasUI().repaint(50);
                 });
-                openSlotMenuInstallHighlightForDisconnect(hideButton, Collections.singleton(sourceSlot));
+                if(slotActiveArea != null) {
+                    openSlotMenuInstallHighlightForDisconnect(slotActiveArea, hideButton, Collections.singleton(sourceSlot));
+                }
                 sourceSlotMenu.add(hideButton);
             }
             openSlotMenuAddShapeToggle(slot, sourceSlotMenu, edge);
-            currentMenu.add(sourceSlotMenu);
+            menu.add(sourceSlotMenu);
         }
     }
 
-    private void openSlotMenuAddInputConnectSourceSloItems(JIPipeDataSlot slot, Set<JIPipeDataSlot> availableSources, JMenu menu) {
+    private void openSlotMenuAddInputConnectSourceSlotItems(JIPipeDataSlot slot, Set<JIPipeDataSlot> availableSources, JMenu menu) {
         UUID compartment = graphCanvasUI.getCompartment();
         availableSources.removeIf(s -> !s.getNode().isVisibleIn(compartment));
+        JIPipeNodeUISlotActiveArea slotActiveArea = getSlotActiveArea(slot);
 
         Object currentMenu = menu;
         int itemCount = 0;
@@ -1447,7 +1487,12 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             JMenuItem connectButton = new JMenuItem("<html>" + source.getNode().getName() + "<br/><small>" + source.getName() + "</html>",
                     JIPipe.getDataTypes().getIconFor(source.getAcceptedDataType()));
             connectButton.addActionListener(e -> getGraphCanvasUI().connectSlot(source, slot));
-            openSlotMenuInstallHighlightForConnect(source, connectButton);
+            if(slotActiveArea != null) {
+                openSlotMenuInstallHighlightForConnect(slotActiveArea, source, connectButton);
+            }
+            else {
+                System.out.println("hy");
+            }
             if (currentMenu instanceof JMenu)
                 ((JMenu) currentMenu).add(connectButton);
             else
@@ -1505,48 +1550,46 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         }
     }
 
-    private void openSlotMenuInstallHighlightForConnect(JIPipeDataSlot source, JMenuItem connectButton) {
-        // TODO
-//        connectButton.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseEntered(MouseEvent e) {
-//                JIPipeNodeUI sourceNodeUI = getGraphUI().getNodeUIs().getOrDefault(source.getNode(), null);
-//                if (sourceNodeUI != null) {
-//                    if (source.isOutput()) {
-//                        JIPipeDataSlotUI sourceUI = sourceNodeUI.getOutputSlotUIs().getOrDefault(source.getName(), null);
-//                        if (sourceUI != null) {
-//                            getGraphUI().setCurrentConnectionDragTarget(JIPipeDataSlotUI.this);
-//                            getGraphUI().setCurrentConnectionDragSource(sourceUI);
-//                        }
-//                    }
-//                }
-//                getGraphUI().repaint(50);
-//            }
-//
-//            @Override
-//            public void mouseExited(MouseEvent e) {
-//                getGraphUI().setCurrentConnectionDragSource(null);
-//                getGraphUI().setCurrentConnectionDragTarget(null);
-//                getGraphUI().repaint(50);
-//            }
-//        });
+    private void openSlotMenuInstallHighlightForConnect(JIPipeNodeUISlotActiveArea current, JIPipeDataSlot source, JMenuItem connectButton) {
+        connectButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                JIPipeNodeUI sourceNodeUI = getGraphCanvasUI().getNodeUIs().getOrDefault(source.getNode(), null);
+                if (sourceNodeUI != null) {
+                    if (source.isOutput()) {
+                        JIPipeNodeUISlotActiveArea sourceUI = sourceNodeUI.getOutputSlotMap().getOrDefault(source.getName(), null);
+                        if (sourceUI != null) {
+                            getGraphCanvasUI().setConnectHighlight(new JIPipeGraphCanvasUI.ConnectHighlight(sourceUI, current));
+                        }
+                    }
+                    else {
+                        JIPipeNodeUISlotActiveArea sourceUI = sourceNodeUI.getInputSlotMap().getOrDefault(source.getName(), null);
+                        if (sourceUI != null) {
+                            getGraphCanvasUI().setConnectHighlight(new JIPipeGraphCanvasUI.ConnectHighlight(current, sourceUI));
+                        }
+                    }
+                }
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                getGraphCanvasUI().setConnectHighlight(null);
+            }
+        });
     }
 
-    private void openSlotMenuInstallHighlightForDisconnect(JMenuItem disconnectButton, Set<JIPipeDataSlot> sourceSlots) {
-        // TODO
-//        disconnectButton.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseEntered(MouseEvent e) {
-//                getGraphUI().setCurrentHighlightedForDisconnect(JIPipeDataSlotUI_old.this, sourceSlots);
-//                getGraphUI().repaint(50);
-//            }
-//
-//            @Override
-//            public void mouseExited(MouseEvent e) {
-//                getGraphUI().setCurrentHighlightedForDisconnect(null, Collections.emptySet());
-//                getGraphUI().repaint(50);
-//            }
-//        });
+    private void openSlotMenuInstallHighlightForDisconnect(JIPipeNodeUISlotActiveArea slotActiveArea, JMenuItem disconnectButton, Set<JIPipeDataSlot> sourceSlots) {
+        disconnectButton.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                getGraphCanvasUI().setDisconnectHighlight(new JIPipeGraphCanvasUI.DisconnectHighlight(slotActiveArea, sourceSlots));
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                getGraphCanvasUI().setDisconnectHighlight(null);
+            }
+        });
     }
 
 

@@ -78,6 +78,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             true,
             true,
             true);
+
+    public static final Color COLOR_HIGHLIGHT_GREEN = new Color(0, 128, 0);
     public static final Stroke STROKE_UNIT = new BasicStroke(1);
     public static final Stroke STROKE_UNIT_COMMENT = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{1}, 0);
     public static final Stroke STROKE_DEFAULT = new BasicStroke(4);
@@ -88,12 +90,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     public static final Stroke STROKE_COMMENT = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
     public static final Stroke STROKE_COMMENT_HIGHLIGHT = new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{8}, 0);
     private static final Color COMMENT_EDGE_COLOR = new Color(194, 141, 0);
-
-//    public static final Color SHADOW_BASE_COLOR = Color.BLACK;
-//    public static final int SHADOW_BASE_OPACITY = 30;
-//    public static final int SHADOW_WIDTH = 5;
-//    public static final int SHADOW_SHIFT = 2;
-
     private final JIPipeWorkbench workbench;
     private final JIPipeGraphEditorUI graphEditorUI;
     private final ImageIcon cursorImage = UIUtils.getIconFromResources("actions/target.png");
@@ -118,8 +114,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     private boolean currentConnectionDragSourceDragged;
     private JIPipeNodeUISlotActiveArea currentConnectionDragTarget;
-    private JIPipeNodeUISlotActiveArea currentHighlightedForDisconnect;
-    private Set<JIPipeDataSlot> currentHighlightedForDisconnectSourceSlots;
+
     private double zoom = 1.0;
     private Set<JIPipeGraphNode> scheduledSelection = new HashSet<>();
     private boolean hasDragSnapshot = false;
@@ -133,6 +128,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private Dimension minDimensions = null;
 
     private JIPipeNodeUI currentlyMouseEnteredNode;
+
+    private DisconnectHighlight disconnectHighlight;
+
+    private ConnectHighlight connectHighlight;
 
     /**
      * Creates a new UI
@@ -1270,65 +1269,22 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if (!selection.isEmpty())
             paintEdges(g, STROKE_HIGHLIGHT, null, STROKE_COMMENT_HIGHLIGHT, true, true, settings.isColorSelectedNodeEdges(), 1, 0, 0, true, false);
 
-        // Draw currently dragged connection
-        if (currentConnectionDragSourceDragged && currentConnectionDragSource != null) {
-            g.setStroke(STROKE_HIGHLIGHT);
-            PointRange sourcePoint;
-            PointRange targetPoint = null;
+        // Draw highlights
+        paintCurrentlyDraggedConnection(g);
+        paintDisconnectHighlight(g);
+        paintConnectHighlight(g);
 
-            sourcePoint = currentConnectionDragSource.getNodeUI().getSlotLocation(currentConnectionDragSource.getSlot());
-            sourcePoint.add(currentConnectionDragSource.getNodeUI().getLocation());
+        g.setStroke(STROKE_UNIT);
+    }
 
-            if (currentConnectionDragTarget != null &&
-                    currentConnectionDragTarget != currentConnectionDragSource &&
-                    currentConnectionDragTarget.getNodeUI().getNode() != currentConnectionDragSource.getNodeUI().getNode()) {
-                JIPipeNodeUI nodeUI = currentConnectionDragTarget.getNodeUI();
-//                Point mousePosition = currentConnectionDragTarget.getMousePosition();
-//                int width = currentConnectionDragTarget.getWidth();
-//                int height = currentConnectionDragTarget.getHeight();
-//                if (getMousePosition() == null || (mousePosition != null && mousePosition.x >= 5 && mousePosition.y >= 5 && mousePosition.x <= (width - 5) && mousePosition.y <= (height - 5))) {
-//                    targetPoint = nodeUI.getSlotLocation(currentConnectionDragTarget.getSlot());
-//                    targetPoint.add(nodeUI.getLocation());
-//                }
-                targetPoint = nodeUI.getSlotLocation(currentConnectionDragTarget.getSlot());
-                targetPoint.add(nodeUI.getLocation());
-            }
-            if (targetPoint != null) {
-                if (currentConnectionDragTarget == null || (!graph.getGraph().containsEdge(currentConnectionDragSource.getSlot(), currentConnectionDragTarget.getSlot())
-                        && !graph.getGraph().containsEdge(currentConnectionDragTarget.getSlot(), currentConnectionDragSource.getSlot()))) {
-                    graphics.setColor(new Color(0, 128, 0));
-                } else {
-                    graphics.setColor(Color.RED);
-                }
-            } else {
-                graphics.setColor(Color.DARK_GRAY);
-            }
-            if (targetPoint == null) {
-                Point mousePosition = getMousePosition();
-                if (mousePosition != null) {
-                    targetPoint = new PointRange(mousePosition.x, mousePosition.y);
-                }
-            }
-
-            if (targetPoint != null) {
-                // Tighten the point ranges: Bringing the centers together
-                PointRange.tighten(sourcePoint, targetPoint);
-
-                // Draw arrow
-                if (currentConnectionDragSource.getSlot().isOutput())
-                    drawEdge(g, sourcePoint.center, currentConnectionDragSource.getNodeUI().getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
-                else
-                    drawEdge(g, targetPoint.center, currentConnectionDragSource.getNodeUI().getBounds(), sourcePoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
-            }
-        }
-
-        if (currentHighlightedForDisconnect != null) {
+    private void paintDisconnectHighlight(Graphics2D g) {
+        if (disconnectHighlight != null) {
             g.setStroke(STROKE_HIGHLIGHT);
             g.setColor(Color.RED);
-            if (currentHighlightedForDisconnect.getSlot().isInput()) {
-                Set<JIPipeDataSlot> sources = currentHighlightedForDisconnectSourceSlots;
+            if (disconnectHighlight.getTarget().getSlot().isInput()) {
+                Set<JIPipeDataSlot> sources = disconnectHighlight.getSources();
                 for (JIPipeDataSlot source : sources) {
-                    JIPipeDataSlot target = currentHighlightedForDisconnect.getSlot();
+                    JIPipeDataSlot target = disconnectHighlight.getTarget().getSlot();
                     JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
                     JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
 
@@ -1348,8 +1304,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                         drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
                     }
                 }
-            } else if (currentHighlightedForDisconnect.getSlot().isOutput()) {
-                JIPipeDataSlot source = currentHighlightedForDisconnect.getSlot();
+            } else if (disconnectHighlight.getTarget().getSlot().isOutput()) {
+                JIPipeDataSlot source = disconnectHighlight.getTarget().getSlot();
                 for (JIPipeDataSlot target : getGraph().getOutputOutgoingTargetSlots(source)) {
                     JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
                     JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
@@ -1372,8 +1328,101 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 }
             }
         }
+    }
 
-        g.setStroke(STROKE_UNIT);
+    private void paintConnectHighlight(Graphics2D g) {
+        if (connectHighlight != null) {
+            g.setStroke(STROKE_HIGHLIGHT);
+            g.setColor(COLOR_HIGHLIGHT_GREEN);
+            if (connectHighlight.getTarget().getSlot().isInput()) {
+                JIPipeDataSlot source = connectHighlight.getSource().getSlot();
+                JIPipeDataSlot target = connectHighlight.getTarget().getSlot();
+                JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
+                JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
+
+                if (sourceUI != null && targetUI != null) {
+                    PointRange sourcePoint;
+                    PointRange targetPoint;
+
+                    sourcePoint = sourceUI.getSlotLocation(source);
+                    sourcePoint.add(sourceUI.getLocation());
+                    targetPoint = targetUI.getSlotLocation(target);
+                    targetPoint.add(targetUI.getLocation());
+
+                    // Tighten the point ranges: Bringing the centers together
+                    PointRange.tighten(sourcePoint, targetPoint);
+
+                    // Draw arrow
+                    drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+                }
+            } else if (disconnectHighlight.getTarget().getSlot().isOutput()) {
+                JIPipeDataSlot target = connectHighlight.getSource().getSlot();
+                JIPipeDataSlot source = connectHighlight.getTarget().getSlot();
+                JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
+                JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
+                if (sourceUI != null && targetUI != null) {
+                    PointRange sourcePoint;
+                    PointRange targetPoint;
+
+                    sourcePoint = sourceUI.getSlotLocation(source);
+                    sourcePoint.add(sourceUI.getLocation());
+                    targetPoint = targetUI.getSlotLocation(target);
+                    targetPoint.add(targetUI.getLocation());
+
+                    // Tighten the point ranges: Bringing the centers together
+                    PointRange.tighten(sourcePoint, targetPoint);
+
+                    // Draw arrow
+                    drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+                }
+            }
+        }
+    }
+
+    private void paintCurrentlyDraggedConnection(Graphics2D g) {
+        if (currentConnectionDragSourceDragged && currentConnectionDragSource != null) {
+            g.setStroke(STROKE_HIGHLIGHT);
+            PointRange sourcePoint;
+            PointRange targetPoint = null;
+
+            sourcePoint = currentConnectionDragSource.getNodeUI().getSlotLocation(currentConnectionDragSource.getSlot());
+            sourcePoint.add(currentConnectionDragSource.getNodeUI().getLocation());
+
+            if (currentConnectionDragTarget != null &&
+                    currentConnectionDragTarget != currentConnectionDragSource &&
+                    currentConnectionDragTarget.getNodeUI().getNode() != currentConnectionDragSource.getNodeUI().getNode()) {
+                JIPipeNodeUI nodeUI = currentConnectionDragTarget.getNodeUI();
+                targetPoint = nodeUI.getSlotLocation(currentConnectionDragTarget.getSlot());
+                targetPoint.add(nodeUI.getLocation());
+            }
+            if (targetPoint != null) {
+                if (currentConnectionDragTarget == null || (!graph.getGraph().containsEdge(currentConnectionDragSource.getSlot(), currentConnectionDragTarget.getSlot())
+                        && !graph.getGraph().containsEdge(currentConnectionDragTarget.getSlot(), currentConnectionDragSource.getSlot()))) {
+                    g.setColor(COLOR_HIGHLIGHT_GREEN);
+                } else {
+                    g.setColor(Color.RED);
+                }
+            } else {
+                g.setColor(Color.DARK_GRAY);
+            }
+            if (targetPoint == null) {
+                Point mousePosition = getMousePosition();
+                if (mousePosition != null) {
+                    targetPoint = new PointRange(mousePosition.x, mousePosition.y);
+                }
+            }
+
+            if (targetPoint != null) {
+                // Tighten the point ranges: Bringing the centers together
+                PointRange.tighten(sourcePoint, targetPoint);
+
+                // Draw arrow
+                if (currentConnectionDragSource.getSlot().isOutput())
+                    drawEdge(g, sourcePoint.center, currentConnectionDragSource.getNodeUI().getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+                else
+                    drawEdge(g, targetPoint.center, currentConnectionDragSource.getNodeUI().getBounds(), sourcePoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+            }
+        }
     }
 
     @Override
@@ -1984,13 +2033,23 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         this.currentConnectionDragTarget = currentConnectionDragTarget;
     }
 
-    public JIPipeNodeUISlotActiveArea getCurrentHighlightedForDisconnect() {
-        return currentHighlightedForDisconnect;
+    public DisconnectHighlight getDisconnectHighlight() {
+        return disconnectHighlight;
     }
 
-    public void setCurrentHighlightedForDisconnect(JIPipeNodeUISlotActiveArea currentHighlightedForDisconnect, Set<JIPipeDataSlot> sourceSlots) {
-        this.currentHighlightedForDisconnect = currentHighlightedForDisconnect;
-        currentHighlightedForDisconnectSourceSlots = sourceSlots;
+    public void setDisconnectHighlight(DisconnectHighlight disconnectHighlight) {
+        this.disconnectHighlight = disconnectHighlight;
+        repaint(50);
+    }
+
+    public ConnectHighlight getConnectHighlight() {
+        return connectHighlight;
+    }
+
+    public void setConnectHighlight(ConnectHighlight connectHighlight) {
+        System.out.println(connectHighlight);
+        this.connectHighlight = connectHighlight;
+        repaint(50);
     }
 
     public synchronized void setGraphEditCursor(Point graphEditCursor) {
@@ -2195,6 +2254,42 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         public JIPipeGraphCanvasUI getGraphCanvasUI() {
             return graphCanvasUI;
+        }
+    }
+
+    public static class DisconnectHighlight {
+        private final JIPipeNodeUISlotActiveArea target;
+        private final Set<JIPipeDataSlot> sources;
+
+        public DisconnectHighlight(JIPipeNodeUISlotActiveArea target, Set<JIPipeDataSlot> sources) {
+            this.target = target;
+            this.sources = sources;
+        }
+
+        public JIPipeNodeUISlotActiveArea getTarget() {
+            return target;
+        }
+
+        public Set<JIPipeDataSlot> getSources() {
+            return sources;
+        }
+    }
+
+    public static class ConnectHighlight {
+        private final JIPipeNodeUISlotActiveArea source;
+        private final JIPipeNodeUISlotActiveArea target;
+
+        public ConnectHighlight(JIPipeNodeUISlotActiveArea source, JIPipeNodeUISlotActiveArea target) {
+            this.source = source;
+            this.target = target;
+        }
+
+        public JIPipeNodeUISlotActiveArea getSource() {
+            return source;
+        }
+
+        public JIPipeNodeUISlotActiveArea getTarget() {
+            return target;
         }
     }
 }
