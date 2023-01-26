@@ -137,31 +137,36 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
     }
 
     private void initializeToolBar() {
-        JToolBar toolBar = new JToolBar();
-        toolBar.setFloatable(false);
+        JPanel toolbarPanel = new JPanel();
+        toolbarPanel.setLayout(new BoxLayout(toolbarPanel, BoxLayout.Y_AXIS));
 
-        toolBar.add(Box.createHorizontalStrut(8));
-
+        // Info toolbar
+        JToolBar infoToolbar = new JToolBar();
+        infoToolbar.setFloatable(false);
+        infoToolbar.add(new JLabel("Selected slot"));
+        infoToolbar.add(Box.createRigidArea(new Dimension(8,32)));
         JLabel algorithmNameLabel = new JLabel(algorithm.getName(), new SolidColorIcon(16, 16, UIUtils.getFillColorFor(algorithm.getInfo())), JLabel.LEFT);
         algorithmNameLabel.setToolTipText(TooltipUtils.getAlgorithmTooltip(algorithm.getInfo()));
-        toolBar.add(algorithmNameLabel);
-        toolBar.add(Box.createHorizontalStrut(5));
+        infoToolbar.add(algorithmNameLabel);
+        infoToolbar.add(Box.createHorizontalStrut(5));
         JLabel slotNameLabel = new JLabel(outputSlot.getName(), JIPipe.getDataTypes().getIconFor(outputSlot.getAcceptedDataType()), JLabel.LEFT);
         slotNameLabel.setToolTipText(TooltipUtils.getDataTableTooltip(outputSlot));
-        toolBar.add(slotNameLabel);
+        infoToolbar.add(slotNameLabel);
+        toolbarPanel.add(infoToolbar);
 
-        toolBar.add(Box.createHorizontalGlue());
-        toolBar.add(Box.createHorizontalStrut(16));
+        // Main toolbar
+        JToolBar mainToolBar = new JToolBar();
+        mainToolBar.setFloatable(false);
+        mainToolBar.add(Box.createHorizontalStrut(8));
+
         searchField = new SearchTextField();
         searchField.addActionListener(e -> reloadAlgorithmList());
-        toolBar.add(searchField);
+        mainToolBar.add(searchField);
 
+        findExistingNodesToggle.setText("Find existing");
         findExistingNodesToggle.setSelected(GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().isSearchFindExistingNodes());
+        createNodesToggle.setText("Create new");
         createNodesToggle.setSelected(GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().isSearchFindNewNodes());
-        UIUtils.makeFlat25x25(findExistingNodesToggle);
-        UIUtils.makeFlat25x25(createNodesToggle);
-        findExistingNodesToggle.setToolTipText("Find existing nodes");
-        createNodesToggle.setToolTipText("Create new nodes");
         findExistingNodesToggle.addActionListener(e -> {
             GraphEditorUISettings.getInstance().getAlgorithmFinderSettings().setSearchFindExistingNodes(findExistingNodesToggle.isSelected());
             JIPipe.getSettings().save();
@@ -172,10 +177,13 @@ public class JIPipeAlgorithmTargetFinderUI extends JPanel {
             JIPipe.getSettings().save();
             reloadAlgorithmList();
         });
-        toolBar.add(findExistingNodesToggle);
-        toolBar.add(createNodesToggle);
+        mainToolBar.add(findExistingNodesToggle);
+        mainToolBar.add(createNodesToggle);
+        mainToolBar.add(Box.createHorizontalStrut(8));
 
-        add(toolBar, BorderLayout.NORTH);
+        toolbarPanel.add(mainToolBar);
+
+        add(toolbarPanel, BorderLayout.NORTH);
     }
 
     private void reloadAlgorithmList() {
