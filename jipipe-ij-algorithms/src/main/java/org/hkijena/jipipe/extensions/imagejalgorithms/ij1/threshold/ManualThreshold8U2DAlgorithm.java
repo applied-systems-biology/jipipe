@@ -98,7 +98,7 @@ public class ManualThreshold8U2DAlgorithm extends JIPipeSimpleIteratingAlgorithm
                 int v = ip.get(i);
                 if (v > maxThreshold)
                     ip.set(i, 0);
-                else if (v <= minThreshold)
+                else if (v < minThreshold)
                     ip.set(i, 0);
                 else
                     ip.set(i, 255);

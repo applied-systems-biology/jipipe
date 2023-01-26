@@ -106,7 +106,7 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
                 float v = ip.getf(i);
                 if (v > maxThreshold)
                     targetProcessor.set(i, 0);
-                else if (v <= minThreshold)
+                else if (v < minThreshold)
                     targetProcessor.set(i, 0);
                 else
                     targetProcessor.set(i, 255);

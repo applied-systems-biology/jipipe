@@ -958,7 +958,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             stopAllDragging();
         } else {
             if (currentConnectionDragSource != null && currentConnectionDragTarget != null) {
-                connectOrDisconnectSlots(currentConnectionDragSource, currentConnectionDragTarget);
+                connectOrDisconnectSlots(currentConnectionDragSource.getSlot(), currentConnectionDragTarget.getSlot());
             }
             stopAllDragging();
             if (selectionFirst != null && selectionSecond != null) {
@@ -999,19 +999,19 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
     }
 
-    private void connectOrDisconnectSlots(JIPipeNodeUISlotActiveArea firstSlot, JIPipeNodeUISlotActiveArea secondSlot) {
+    private void connectOrDisconnectSlots(JIPipeDataSlot firstSlot, JIPipeDataSlot secondSlot) {
         JIPipeGraph graph = getGraph();
-        if (graph != secondSlot.getSlot().getNode().getParentGraph())
+        if (graph != secondSlot.getNode().getParentGraph())
             return;
-        if (firstSlot.getSlot().isInput() != secondSlot.getSlot().isInput()) {
-            if (firstSlot.getSlot().isInput()) {
-                if (!graph.getGraph().containsEdge(secondSlot.getSlot(), firstSlot.getSlot())) {
+        if (firstSlot.isInput() != secondSlot.isInput()) {
+            if (firstSlot.isInput()) {
+                if (!graph.getGraph().containsEdge(secondSlot, firstSlot)) {
                     connectSlot(secondSlot, firstSlot);
                 } else {
                     disconnectSlot(secondSlot, firstSlot);
                 }
             } else {
-                if (!graph.getGraph().containsEdge(firstSlot.getSlot(), secondSlot.getSlot())) {
+                if (!graph.getGraph().containsEdge(firstSlot, secondSlot)) {
                     connectSlot(firstSlot, secondSlot);
                 } else {
                     disconnectSlot(firstSlot, secondSlot);
@@ -1026,17 +1026,17 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      * @param source source slot
      * @param target target slot
      */
-    public void connectSlot(JIPipeNodeUISlotActiveArea source, JIPipeNodeUISlotActiveArea target) {
-        if (getGraph().canConnect(source.getSlot(), target.getSlot(), true)) {
-            JIPipeGraph graph = source.getSlot().getNode().getParentGraph();
-            if (graph.getGraph().containsEdge(source.getSlot(), target.getSlot()))
+    public void connectSlot(JIPipeDataSlot source, JIPipeDataSlot target) {
+        if (getGraph().canConnect(source, target, true)) {
+            JIPipeGraph graph = source.getNode().getParentGraph();
+            if (graph.getGraph().containsEdge(source, target))
                 return;
             if (getHistoryJournal() != null) {
-                getHistoryJournal().snapshotBeforeConnect(source.getSlot(), target.getSlot(), source.getSlot().getNode().getCompartmentUUIDInParentGraph());
+                getHistoryJournal().snapshotBeforeConnect(source, target, source.getNode().getCompartmentUUIDInParentGraph());
             }
-            getGraph().connect(source.getSlot(), target.getSlot());
+            getGraph().connect(source, target);
         } else {
-            UIUtils.showConnectionErrorMessage(this, source.getSlot(), target.getSlot());
+            UIUtils.showConnectionErrorMessage(this, source, target);
         }
     }
 
@@ -1046,30 +1046,29 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      * @param source the source
      * @param target the target
      */
-    public void disconnectSlot(JIPipeNodeUISlotActiveArea source, JIPipeNodeUISlotActiveArea target) {
-        if (getGraph().getGraph().containsEdge(source.getSlot(), target.getSlot())) {
+    public void disconnectSlot(JIPipeDataSlot source, JIPipeDataSlot target) {
+        if (getGraph().getGraph().containsEdge(source, target)) {
             if (getHistoryJournal() != null) {
-                getHistoryJournal().snapshotBeforeDisconnect(source.getSlot(), target.getSlot(), source.getNodeUI().getNode().getCompartmentUUIDInParentGraph());
+                getHistoryJournal().snapshotBeforeDisconnect(source, target, compartment);
             }
-            getGraph().disconnect(source.getSlot(), target.getSlot(), true);
+            getGraph().disconnect(source, target, true);
         }
     }
 
-//    private void disconnectAll(Set<JIPipeDataSlot> otherSlots) {
-//        JIPipeGraph graph = slot.getNode().getParentGraph();
-//        if (getHistoryJournal() != null) {
-//            getGraphUI().getHistoryJournal().snapshotBeforeDisconnectAll(slot, slot.getNode().getCompartmentUUIDInParentGraph());
-//        }
-//        if (slot.isInput()) {
-//            for (JIPipeDataSlot sourceSlot : otherSlots) {
-//                getGraph().disconnect(sourceSlot, slot, true);
-//            }
-//        } else {
-//            for (JIPipeDataSlot targetSlot : otherSlots) {
-//                getGraph().disconnect(slot, targetSlot, true);
-//            }
-//        }
-//    }
+    public void disconnectAll(JIPipeDataSlot slot, Set<JIPipeDataSlot> otherSlots) {
+        if (getHistoryJournal() != null) {
+            getHistoryJournal().snapshotBeforeDisconnectAll(slot, slot.getNode().getCompartmentUUIDInParentGraph());
+        }
+        if (slot.isInput()) {
+            for (JIPipeDataSlot sourceSlot : otherSlots) {
+                getGraph().disconnect(sourceSlot, slot, true);
+            }
+        } else {
+            for (JIPipeDataSlot targetSlot : otherSlots) {
+                getGraph().disconnect(slot, targetSlot, true);
+            }
+        }
+    }
 
     private void stopAllDragging() {
         // Slot dragging

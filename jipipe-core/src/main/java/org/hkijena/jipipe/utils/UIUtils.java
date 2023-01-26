@@ -1763,6 +1763,32 @@ public class UIUtils {
         }
     }
 
+    /**
+     * Adds a separator if there is at least one component in the menu and the last item is not a separator
+     * @param menu the menu
+     */
+    public static void addSeparatorIfNeeded(JPopupMenu menu) {
+        if(menu.getComponentCount() == 0)
+            return;
+        Component lastComponent = menu.getComponent(menu.getComponentCount() - 1);
+        if(lastComponent instanceof JSeparator)
+            return;
+        menu.addSeparator();
+    }
+
+    /**
+     * Adds a separator if there is at least one component in the menu and the last item is not a separator
+     * @param menu the menu
+     */
+    public static void addSeparatorIfNeeded(JMenu menu) {
+        if(menu.getComponentCount() == 0)
+            return;
+        Component lastComponent = menu.getComponent(menu.getComponentCount() - 1);
+        if(lastComponent instanceof JSeparator)
+            return;
+        menu.addSeparator();
+    }
+
     public static boolean confirmResetParameters(JIPipeWorkbench parent, String title) {
         return JOptionPane.showConfirmDialog(parent.getWindow(),
                 "This will reset most of the properties. Continue?",
