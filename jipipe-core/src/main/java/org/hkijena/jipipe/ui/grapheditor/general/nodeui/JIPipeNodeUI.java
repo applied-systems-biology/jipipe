@@ -1212,11 +1212,13 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
         if(!availableTargets.isEmpty()) {
             JMenu connectMenu = new JMenu("Connect to ...");
+            connectMenu.setIcon(UIUtils.getIconFromResources("actions/plug.png"));
             openSlotMenuAddOutputConnectTargetSlotItems(slot, availableTargets, connectMenu);
             menu.add(connectMenu);
         }
         if(!targetSlots.isEmpty()) {
             JMenu manageMenu = new JMenu("Manage existing connections ...");
+            manageMenu.setIcon(UIUtils.getIconFromResources("actions/lines-connector.png"));
             openSlotMenuAddOutputTargetSlotItems(slot, targetSlots, manageMenu);
             menu.add(manageMenu);
         }
@@ -1319,6 +1321,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         Set<JIPipeDataSlot> availableSources = getGraphCanvasUI().getGraph().getAvailableSources(slot, true, false);
         if(!availableSources.isEmpty()) {
             JMenu connectMenu = new JMenu("Connect to ...");
+            connectMenu.setIcon(UIUtils.getIconFromResources("actions/plug.png"));
             openSlotMenuAddInputConnectSourceSlotItems(slot, availableSources, connectMenu);
             menu.add(connectMenu);
         }
