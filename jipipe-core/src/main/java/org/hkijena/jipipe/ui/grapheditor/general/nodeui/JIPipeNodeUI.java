@@ -493,8 +493,12 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             slotState.getNativeLocation().x = (int) Math.round(slotState.getNativeLocation().x * factor);
             slotState.setNativeWidth(slotState.getNativeWidth() * factor);
         }
-        if(!excludeButton && addSlotActiveArea != null) {
-            addSlotActiveArea.setNativeWidth(addSlotActiveArea.getNativeWidth() * factor);
+        if(addSlotActiveArea != null) {
+            if (!excludeButton) {
+                addSlotActiveArea.setNativeWidth(addSlotActiveArea.getNativeWidth() * factor);
+            } else {
+                addSlotActiveArea.getNativeLocation().x = (int) Math.round(addSlotActiveArea.getNativeLocation().x * factor);
+            }
         }
     }
 
@@ -654,9 +658,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         g2.setColor(currentActiveArea instanceof JIPipeNodeUIWholeNodeActiveArea ? highlightedNodeBorderColor : nodeBorderColor);
         g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
 
-//        for (ActiveArea activeArea : activeAreas) {
+//        for (JIPipeNodeUIActiveArea activeArea : activeAreas) {
 //            g2.setPaint(Color.RED);
-//            g2.draw(activeArea.zoomedHitArea);
+//            g2.draw(activeArea.getZoomedHitArea());
 //        }
     }
 
