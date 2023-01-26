@@ -576,6 +576,23 @@ public class UIUtils {
      * @param iconName relative to the icons/ plugin resource
      * @return the icon instance
      */
+    public static ImageIcon getIconInverted12FromResources(String iconName) {
+        String path = "icons-12/" + iconName;
+        ImageIcon icon = ICON_INVERTED_FROM_RESOURCES_CACHE.getOrDefault(path, null);
+        if (icon == null) {
+            icon = new ImageIcon(ResourceUtils.getPluginResourceInverted(path));
+            ICON_INVERTED_FROM_RESOURCES_CACHE.put(path, icon);
+        }
+        return icon;
+    }
+
+    /**
+     * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
     public static ImageIcon getIconFromResources(String iconName) {
         String path = "icons/" + iconName;
         ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(path, null);
@@ -595,6 +612,23 @@ public class UIUtils {
      */
     public static ImageIcon getIcon32FromResources(String iconName) {
         String path = "icons-32/" + iconName;
+        ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(path, null);
+        if (icon == null) {
+            icon = new ImageIcon(ResourceUtils.getPluginResource(path));
+            ICON_FROM_RESOURCES_CACHE.put(path, icon);
+        }
+        return icon;
+    }
+
+    /**
+     * Returns an icon from JIPipe resources
+     * If you want to utilize resources from your Java extension, use {@link JIPipeResourceManager}
+     *
+     * @param iconName relative to the icons/ plugin resource
+     * @return the icon instance
+     */
+    public static ImageIcon getIcon12FromResources(String iconName) {
+        String path = "icons-12/" + iconName;
         ImageIcon icon = ICON_FROM_RESOURCES_CACHE.getOrDefault(path, null);
         if (icon == null) {
             icon = new ImageIcon(ResourceUtils.getPluginResource(path));
