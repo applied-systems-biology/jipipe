@@ -20,6 +20,7 @@ import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataPreview;
+import org.hkijena.jipipe.utils.data.Store;
 
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
@@ -38,7 +39,7 @@ import java.util.Map;
 public class JIPipeExtendedDataTableModel implements TableModel {
 
     private final JTable table;
-    private final WeakReference<JIPipeDataTable> dataTableReference;
+    private final Store<JIPipeDataTable> dataTableStore;
     private final GeneralDataSettings dataSettings = GeneralDataSettings.getInstance();
     private final List<Component> previewCache = new ArrayList<>();
     private final Map<String, List<Component>> dataAnnotationPreviewCache = new HashMap<>();
@@ -49,13 +50,13 @@ public class JIPipeExtendedDataTableModel implements TableModel {
      * Creates a new instance
      *
      * @param table              the table
-     * @param dataTableReference the wrapped slot
+     * @param dataTableStore the wrapped slot
      */
-    public JIPipeExtendedDataTableModel(JTable table, WeakReference<JIPipeDataTable> dataTableReference) {
+    public JIPipeExtendedDataTableModel(JTable table, Store<JIPipeDataTable> dataTableStore) {
         this.table = table;
-        this.dataTableReference = dataTableReference;
+        this.dataTableStore = dataTableStore;
 
-        JIPipeDataTable dataTable = dataTableReference.get();
+        JIPipeDataTable dataTable = dataTableStore.get();
         if (dataTable != null) {
             for (int i = 0; i < dataTable.getRowCount(); i++) {
                 previewCache.add(null);
@@ -71,7 +72,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
     }
 
     public JIPipeDataTable getDataTable() {
-        return dataTableReference.get();
+        return dataTableStore.get();
     }
 
     private void revalidatePreviewCache() {
@@ -95,7 +96,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
      * @return relative annotation column index, or -1
      */
     public int toAnnotationColumnIndex(int columnIndex) {
-        JIPipeDataTable dataTable = dataTableReference.get();
+        JIPipeDataTable dataTable = dataTableStore.get();
         if(dataTable != null) {
             if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 4)
                 return columnIndex - dataTable.getDataAnnotationColumns().size() - 4;
@@ -114,7 +115,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
      * @return relative data annotation column index, or -1
      */
     public int toDataAnnotationColumnIndex(int columnIndex) {
-        JIPipeDataTable dataTable = dataTableReference.get();
+        JIPipeDataTable dataTable = dataTableStore.get();
         if(dataTable != null) {
             if (columnIndex < dataTable.getDataAnnotationColumns().size() + 4 && (columnIndex - 4) < dataTable.getDataAnnotationColumns().size()) {
                 return columnIndex - 4;
@@ -129,7 +130,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
 
     @Override
     public int getRowCount() {
-        JIPipeDataTable dataTable = dataTableReference.get();
+        JIPipeDataTable dataTable = dataTableStore.get();
         if(dataTable != null) {
             return dataTable.getRowCount();
         }
@@ -140,7 +141,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
 
     @Override
     public int getColumnCount() {
-        JIPipeDataTable dataTable = dataTableReference.get();
+        JIPipeDataTable dataTable = dataTableStore.get();
         if(dataTable != null) {
             return dataTable.getTextAnnotationColumns().size() + dataTable.getDataAnnotationColumns().size() + 4;
         }
@@ -151,7 +152,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
 
     @Override
     public String getColumnName(int columnIndex) {
-        JIPipeDataTable dataTable = dataTableReference.get();
+        JIPipeDataTable dataTable = dataTableStore.get();
         if (columnIndex == 0)
             return "Index";
         else if (columnIndex == 1)
@@ -194,7 +195,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
-        JIPipeDataTable dataTable = dataTableReference.get();
+        JIPipeDataTable dataTable = dataTableStore.get();
         if(dataTable != null) {
             if (columnIndex == 0) {
                 return rowIndex;

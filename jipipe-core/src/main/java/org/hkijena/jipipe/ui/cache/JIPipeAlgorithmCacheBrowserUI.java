@@ -43,6 +43,7 @@ import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.running.RunWorkerFinishedEvent;
 import org.hkijena.jipipe.ui.running.RunWorkerInterruptedEvent;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.data.WeakStore;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 
 import javax.swing.*;
@@ -52,6 +53,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * UI around an {@link JIPipeProjectRun} result
@@ -109,7 +111,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         if (currentContent != null) {
             remove(currentContent);
         }
-        JIPipeExtendedMultiDataTableUI ui = new JIPipeExtendedMultiDataTableUI(getProjectWorkbench(), dataTables, false);
+        JIPipeExtendedMultiDataTableUI ui = new JIPipeExtendedMultiDataTableUI(getProjectWorkbench(), dataTables.stream().map(WeakStore::new).collect(Collectors.toList()), false);
         initializeDataTableAdditionalRibbon(ui.getRibbon());
         add(ui, BorderLayout.CENTER);
         currentContent = ui;
@@ -120,7 +122,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         if (currentContent != null) {
             remove(currentContent);
         }
-        JIPipeExtendedDataTableUI ui = new JIPipeExtendedDataTableUI(getProjectWorkbench(), dataTable, true);
+        JIPipeExtendedDataTableUI ui = new JIPipeExtendedDataTableUI(getProjectWorkbench(), new WeakStore<>(dataTable), true);
         initializeDataTableAdditionalRibbon(ui.getRibbon());
 //        initializeTableMenu(ui.getMenuManager());
         add(ui, BorderLayout.CENTER);

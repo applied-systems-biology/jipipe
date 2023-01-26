@@ -30,6 +30,8 @@ import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.window.AlwaysOnTopToggle;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.data.Store;
+import org.hkijena.jipipe.utils.data.WeakStore;
 
 import javax.swing.*;
 import java.awt.*;
@@ -54,7 +56,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     private final JPanel contentPane = new JPanel(new BorderLayout());
     private JIPipeDataTableDataSource dataSource;
     private JIPipeCachedDataDisplayCacheControl cacheAwareToggle;
-    private WeakReference<JIPipeVirtualData> lastVirtualData;
+    private Store<JIPipeVirtualData> lastVirtualData;
     private JButton previousRowButton;
     private JButton nextRowButton;
     private JButton rowInfoLabel;
@@ -382,7 +384,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
             if (dataConverterFunction != null)
                 virtualData = dataConverterFunction.apply(virtualData);
             loadData(virtualData, new JIPipeProgressInfo());
-            lastVirtualData = new WeakReference<>(virtualData);
+            lastVirtualData = new WeakStore<>(virtualData);
         } else {
             JIPipeVirtualData virtualData = dataSource.getDataTable().getVirtualDataAnnotation(dataSource.getRow(), dataSource.getDataAnnotation());
             if (virtualData == null) {
@@ -394,7 +396,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
             if (dataConverterFunction != null)
                 virtualData = dataConverterFunction.apply(virtualData);
             loadData(virtualData, new JIPipeProgressInfo());
-            lastVirtualData = new WeakReference<>(virtualData);
+            lastVirtualData = new WeakStore<>(virtualData);
         }
     }
 

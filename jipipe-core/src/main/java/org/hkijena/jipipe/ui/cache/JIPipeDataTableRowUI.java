@@ -34,6 +34,7 @@ import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.NaturalOrderComparator;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.data.Store;
 import org.hkijena.jipipe.utils.ui.BusyCursor;
 
 import javax.swing.*;
@@ -51,7 +52,7 @@ import java.util.Objects;
  * UI for a row
  */
 public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
-    private final WeakReference<JIPipeDataTable> dataTableReference;
+    private final Store<JIPipeDataTable> dataTableStore;
     private final int row;
     private final List<JIPipeDataAnnotation> dataAnnotations;
     private final List<JIPipeDataDisplayOperation> displayOperations;
@@ -62,18 +63,18 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
      * Creates a new instance
      *
      * @param workbench the workbench
-     * @param dataTable the slot
+     * @param dataTableStore the data table store
      * @param row       the row
      */
-    public JIPipeDataTableRowUI(JIPipeWorkbench workbench, JIPipeDataTable dataTable, int row) {
+    public JIPipeDataTableRowUI(JIPipeWorkbench workbench, Store<JIPipeDataTable> dataTableStore, int row) {
         super(workbench);
-        this.dataTableReference = new WeakReference<>(dataTable);
+        this.dataTableStore = dataTableStore;
         this.row = row;
-        this.dataAnnotations = dataTable.getDataAnnotations(row);
-        Class<? extends JIPipeData> dataClass = dataTable.getDataClass(row);
+        this.dataAnnotations = dataTableStore.get().getDataAnnotations(row);
+        Class<? extends JIPipeData> dataClass = dataTableStore.get().getDataClass(row);
         String datatypeId = JIPipe.getInstance().getDatatypeRegistry().getIdOf(dataClass);
         displayOperations = JIPipe.getInstance().getDatatypeRegistry().getSortedDisplayOperationsFor(datatypeId);
-        this.initialize(dataTable);
+        this.initialize(dataTableStore.get());
     }
 
     public static JIPipeDataDisplayOperation getMainOperation(Class<? extends JIPipeData> dataClass) {
@@ -209,7 +210,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
     }
 
     private void displayAnnotationsAsTable(List<JIPipeTextAnnotation> textAnnotations) {
-        JIPipeDataTable dataTable = dataTableReference.get();
+        JIPipeDataTable dataTable = dataTableStore.get();
         if(dataTable != null) {
             ResultsTableData data = new ResultsTableData();
             data.addStringColumn("Name");
@@ -227,7 +228,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
     }
 
     private void exportAsFolder() {
-        JIPipeDataTable dataTable = dataTableReference.get();
+        JIPipeDataTable dataTable = dataTableStore.get();
         if(dataTable != null) {
             Path path = FileChooserSettings.saveDirectory(getWorkbench().getWindow(),
                     FileChooserSettings.LastDirectoryKey.Data,
@@ -271,7 +272,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
     }
 
     private void exportToFolder() {
-        JIPipeDataTable dataTable = dataTableReference.get();
+        JIPipeDataTable dataTable = dataTableStore.get();
         if(dataTable != null) {
             Path path = FileChooserSettings.saveFile(getWorkbench().getWindow(),
                     FileChooserSettings.LastDirectoryKey.Data,
@@ -310,7 +311,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
     }
 
     private void runDisplayOperation(JIPipeDataDisplayOperation operation, JIPipeDataAnnotation dataAnnotation) {
-        JIPipeDataTable dataTable = dataTableReference.get();
+        JIPipeDataTable dataTable = dataTableStore.get();
         if(dataTable != null) {
             try (BusyCursor cursor = new BusyCursor(this)) {
                 JIPipeData data = dataAnnotation.getData(JIPipeData.class, new JIPipeProgressInfo());
@@ -328,7 +329,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
     }
 
     private void runDisplayOperation(JIPipeDataDisplayOperation operation) {
-        JIPipeDataTable dataTable = dataTableReference.get();
+        JIPipeDataTable dataTable = dataTableStore.get();
         if(dataTable != null) {
             try (BusyCursor cursor = new BusyCursor(this)) {
                 JIPipeData data = dataTable.getData(row, JIPipeData.class, new JIPipeProgressInfo());
@@ -354,7 +355,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
     }
 
     private JIPipeDataDisplayOperation getMainOperation() {
-        JIPipeDataTable dataTable = dataTableReference.get();
+        JIPipeDataTable dataTable = dataTableStore.get();
         if(dataTable != null) {
             if (!displayOperations.isEmpty()) {
                 JIPipeDataDisplayOperation result = displayOperations.get(0);
@@ -387,7 +388,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
     }
 
     public JIPipeDataTable getDataTable() {
-        return dataTableReference.get();
+        return dataTableStore.get();
     }
 
     public int getRow() {
@@ -419,7 +420,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
      * @param dataAnnotationColumn column index of the data column in the data table. if outside the range, silently will run the default data operation instead
      */
     public void handleDefaultActionOrDisplayDataAnnotation(int dataAnnotationColumn) {
-        JIPipeDataTable dataTable = dataTableReference.get();
+        JIPipeDataTable dataTable = dataTableStore.get();
         if(dataTable != null) {
             if (dataAnnotationColumn >= 0 && dataAnnotationColumn < dataTable.getDataAnnotationColumns().size()) {
                 JIPipeDataAnnotation dataAnnotation = dataTable.getDataAnnotation(getRow(), dataTable.getDataAnnotationColumns().get(dataAnnotationColumn));
@@ -432,7 +433,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
     }
 
     private void copyString() {
-        JIPipeDataTable dataTable = dataTableReference.get();
+        JIPipeDataTable dataTable = dataTableStore.get();
         if(dataTable != null) {
             String string = "" + dataTable.getData(row, JIPipeData.class, new JIPipeProgressInfo());
             StringSelection selection = new StringSelection(string);

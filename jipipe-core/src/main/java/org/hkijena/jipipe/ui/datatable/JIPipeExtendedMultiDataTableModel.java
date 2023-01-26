@@ -23,12 +23,12 @@ import org.hkijena.jipipe.api.nodes.JIPipeEmptyNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataPreview;
+import org.hkijena.jipipe.utils.data.Store;
 
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.lang.ref.WeakReference;
 import java.util.List;
 import java.util.*;
 
@@ -45,7 +45,7 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
     private final ArrayList<JIPipeGraphNode> nodeList = new ArrayList<>();
     private final List<String> textAnnotationColumns = new ArrayList<>();
     private final List<String> dataAnnotationColumns = new ArrayList<>();
-    private final ArrayList<WeakReference<JIPipeDataTable>> slotReferencesList = new ArrayList<>();
+    private final ArrayList<Store<JIPipeDataTable>> slotReferencesList = new ArrayList<>();
     private final ArrayList<Integer> rowList = new ArrayList<>();
     private final List<Component> previewCache = new ArrayList<>();
     private final Map<String, List<Component>> dataAnnotationPreviewCache = new HashMap<>();
@@ -60,7 +60,7 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
 
     public List<JIPipeDataTable> getSlotList() {
         List<JIPipeDataTable> dataTables = new ArrayList<>();
-        for (WeakReference<JIPipeDataTable> reference : slotReferencesList) {
+        for (Store<JIPipeDataTable> reference : slotReferencesList) {
             dataTables.add(reference.get());
         }
         return dataTables;
@@ -70,9 +70,10 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
      * Adds an {@link JIPipeDataTableMetadata}
      *
      * @param project   The project
-     * @param dataTable The data slot
+     * @param dataTableStore The data slot
      */
-    public void add(JIPipeProject project, JIPipeDataTable dataTable) {
+    public void add(JIPipeProject project, Store<JIPipeDataTable> dataTableStore) {
+        JIPipeDataTable dataTable = dataTableStore.get();
         for (String annotationColumn : dataTable.getTextAnnotationColumns()) {
             if (!textAnnotationColumns.contains(annotationColumn))
                 textAnnotationColumns.add(annotationColumn);
@@ -82,19 +83,19 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
                 dataAnnotationColumns.add(annotationColumn);
         }
         JIPipeProjectCompartment compartment = null;
-        if (project != null && dataTable instanceof JIPipeDataSlot) {
-            compartment = project.getCompartments().getOrDefault(((JIPipeDataSlot) dataTable).getNode().getCompartmentUUIDInParentGraph(), null);
+        if (project != null && dataTableStore instanceof JIPipeDataSlot) {
+            compartment = project.getCompartments().getOrDefault(((JIPipeDataSlot) dataTableStore).getNode().getCompartmentUUIDInParentGraph(), null);
         }
         if (compartment == null) {
             compartment = new JIPipeProjectCompartment(new JIPipeEmptyNodeInfo());
         }
         JIPipeGraphNode node = null;
-        if (dataTable instanceof JIPipeDataSlot) {
-            node = ((JIPipeDataSlot) dataTable).getNode();
+        if (dataTableStore instanceof JIPipeDataSlot) {
+            node = ((JIPipeDataSlot) dataTableStore).getNode();
         }
 
         for (int i = 0; i < dataTable.getRowCount(); ++i) {
-            slotReferencesList.add(new WeakReference<>(dataTable));
+            slotReferencesList.add(dataTableStore);
             compartmentList.add(compartment);
             nodeList.add(node);
             rowList.add(i);
@@ -444,8 +445,8 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
      * @param row Row index
      * @return The slot that defined the row
      */
-    public JIPipeDataTable getSlot(int row) {
-        return slotReferencesList.get(row).get();
+    public Store<JIPipeDataTable> getSlotStore(int row) {
+        return slotReferencesList.get(row);
     }
 
     /**

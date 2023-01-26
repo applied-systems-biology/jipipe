@@ -43,6 +43,8 @@ import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.ui.tableeditor.TableEditor;
 import org.hkijena.jipipe.utils.MenuManager;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.data.Store;
+import org.hkijena.jipipe.utils.data.WeakStore;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
@@ -52,7 +54,6 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
@@ -114,7 +115,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
         TableColumnModel columnModel = table.getColumnModel();
         for (int i = 0; i < columnModel.getColumnCount(); ++i) {
             TableColumn column = columnModel.getColumn(i);
-            column.setHeaderRenderer(new WrapperColumnHeaderRenderer(dataTable));
+            column.setHeaderRenderer(new WrapperColumnHeaderRenderer(new WeakStore<>(dataTable)));
         }
         table.setAutoCreateRowSorter(true);
         columnModel.getColumn(1).setPreferredWidth(GeneralDataSettings.getInstance().getPreviewSize());
@@ -308,7 +309,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
     private void handleSlotRowDefaultAction(int selectedRow, int selectedColumn) {
         int row = table.getRowSorter().convertRowIndexToModel(selectedRow);
         int dataAnnotationColumn = selectedColumn >= 0 ? dataTableModel.toDataAnnotationColumnIndex(table.convertColumnIndexToModel(selectedColumn)) : -1;
-        JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), dataTable, row);
+        JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), new WeakStore<>(dataTable), row);
         rowUI.handleDefaultActionOrDisplayDataAnnotation(dataAnnotationColumn);
     }
 
@@ -323,7 +324,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
         for (int viewRow : selectedRows) {
             int row = table.getRowSorter().convertRowIndexToModel(viewRow);
             JLabel nameLabel = new JLabel("Data batch " + row);
-            JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), dataTable, row);
+            JIPipeDataTableRowUI rowUI = new JIPipeDataTableRowUI(getWorkbench(), new WeakStore<>(dataTable), row);
             rowUI.getDataAnnotationsButton().setText("Slots ...");
             rowUI.getDataAnnotationsButton().setIcon(UIUtils.getIconFromResources("data-types/slot.png"));
             rowUIList.addToForm(rowUI, nameLabel, null);
@@ -334,15 +335,15 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
      * Renders the column header of {@link DataBatchAssistantTableModel}
      */
     public static class WrapperColumnHeaderRenderer implements TableCellRenderer {
-        private final WeakReference<JIPipeDataTable> dataTableReference;
+        private final Store<JIPipeDataTable> dataTableStore;
 
         /**
          * Creates a new instance
          *
          * @param dataTable The table
          */
-        public WrapperColumnHeaderRenderer(JIPipeDataTable dataTable) {
-            this.dataTableReference = new WeakReference<>(dataTable);
+        public WrapperColumnHeaderRenderer(Store<JIPipeDataTable> dataTable) {
+            this.dataTableStore = dataTable;
         }
 
         /**
@@ -352,7 +353,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
          * @return relative annotation column index, or -1
          */
         public int toAnnotationColumnIndex(int columnIndex) {
-            JIPipeDataTable dataTable = dataTableReference.get();
+            JIPipeDataTable dataTable = dataTableStore.get();
             if(dataTable != null) {
                 if (columnIndex >= dataTable.getDataAnnotationColumns().size() + 2)
                     return columnIndex - dataTable.getDataAnnotationColumns().size() - 2;
@@ -371,7 +372,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
          * @return relative data annotation column index, or -1
          */
         public int toDataAnnotationColumnIndex(int columnIndex) {
-            JIPipeDataTable dataTable = dataTableReference.get();
+            JIPipeDataTable dataTable = dataTableStore.get();
             if(dataTable != null) {
                 if (columnIndex < dataTable.getDataAnnotationColumns().size() + 4 && (columnIndex - 2) < dataTable.getDataAnnotationColumns().size()) {
                     return columnIndex - 2;
@@ -391,7 +392,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
             if (modelColumn < 2) {
                 return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             } else if (toDataAnnotationColumnIndex(modelColumn) != -1) {
-                JIPipeDataTable dataTable = dataTableReference.get();
+                JIPipeDataTable dataTable = dataTableStore.get();
                 if(dataTable != null) {
                     String info = dataTable.getDataAnnotationColumns().get(toDataAnnotationColumnIndex(modelColumn));
                     String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",
@@ -403,7 +404,7 @@ public class DataBatchAssistantDataTableUI extends JIPipeWorkbenchPanel {
                     return defaultRenderer.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
                 }
             } else {
-                JIPipeDataTable dataTable = dataTableReference.get();
+                JIPipeDataTable dataTable = dataTableStore.get();
                 if(dataTable != null) {
                     String info = dataTable.getTextAnnotationColumns().get(toAnnotationColumnIndex(modelColumn));
                     String html = String.format("<html><table><tr><td><img src=\"%s\"/></td><td>%s</tr>",

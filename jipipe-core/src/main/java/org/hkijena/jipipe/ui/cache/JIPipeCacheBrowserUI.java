@@ -31,12 +31,14 @@ import org.hkijena.jipipe.ui.datatable.JIPipeExtendedMultiDataTableUI;
 import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.data.WeakStore;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.util.List;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * UI around an {@link JIPipeProjectRun} result
@@ -117,13 +119,13 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
     }
 
     private void showDataTables(List<JIPipeDataTable> dataTables) {
-        JIPipeExtendedMultiDataTableUI ui = new JIPipeExtendedMultiDataTableUI(getProjectWorkbench(), dataTables, true);
+        JIPipeExtendedMultiDataTableUI ui = new JIPipeExtendedMultiDataTableUI(getProjectWorkbench(), dataTables.stream().map(WeakStore::new).collect(Collectors.toList()), true);
         splitPane.setRightComponent(ui);
         revalidate();
     }
 
     private void showDataTable(JIPipeDataTable dataTable) {
-        JIPipeExtendedDataTableUI ui = new JIPipeExtendedDataTableUI(getProjectWorkbench(), dataTable, true);
+        JIPipeExtendedDataTableUI ui = new JIPipeExtendedDataTableUI(getProjectWorkbench(), new WeakStore<>(dataTable), true);
         splitPane.setRightComponent(ui);
         revalidate();
     }

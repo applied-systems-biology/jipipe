@@ -35,6 +35,8 @@ import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.data.Store;
+import org.hkijena.jipipe.utils.data.WeakStore;
 
 import javax.swing.*;
 import java.awt.*;
@@ -52,7 +54,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
     private final JIPipeAlgorithm algorithm;
     private final Runnable runTestBench;
     private final JIPipeParameterCollection batchSettings;
-    private final Multimap<String, WeakReference<JIPipeDataTable>> currentCache = HashMultimap.create();
+    private final Multimap<String, Store<JIPipeDataTable>> currentCache = HashMultimap.create();
     AutoResizeSplitPane splitPane = new AutoResizeSplitPane(JSplitPane.VERTICAL_SPLIT, AutoResizeSplitPane.RATIO_1_TO_3);
     private JPanel batchPanel;
     private JPanel errorPanel;
@@ -102,7 +104,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
                     }
                     JIPipeDataTable cache = sourceCache.getOrDefault(sourceSlot.getName(), null);
                     if (cache != null) {
-                        currentCache.put(inputSlot.getName(), new WeakReference<>(cache));
+                        currentCache.put(inputSlot.getName(), new WeakStore<>(cache));
                     } else {
                         currentCache.clear();
                         errorLabel.setText("No up-to-date cached data available");
@@ -150,7 +152,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         batchesNodeCopy = algorithm.getInfo().duplicate(algorithm);
         // Pass cache as input slots
         for (JIPipeDataSlot inputSlot : batchesNodeCopy.getDataInputSlots()) {
-            for (WeakReference<JIPipeDataTable> cacheSlotReference : currentCache.get(inputSlot.getName())) {
+            for (Store<JIPipeDataTable> cacheSlotReference : currentCache.get(inputSlot.getName())) {
                 JIPipeDataTable cacheSlot = cacheSlotReference.get();
                 if(cacheSlot == null) {
                     batchPreviewNumberLabel.setText("Cache was cleared! Aborted.");

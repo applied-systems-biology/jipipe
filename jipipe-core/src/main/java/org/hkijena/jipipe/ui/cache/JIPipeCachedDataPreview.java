@@ -17,6 +17,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeVirtualData;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.data.Store;
+import org.hkijena.jipipe.utils.data.WeakStore;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,8 +30,8 @@ import java.util.concurrent.ExecutionException;
  * Preview generation is put into its own thread. On finishing the thread, the parent component's repaint method is called
  */
 public class JIPipeCachedDataPreview extends JPanel {
-    private Component parentComponent;
-    private WeakReference<JIPipeVirtualData> data;
+    private final Component parentComponent;
+    private final Store<JIPipeVirtualData> data;
     private Worker worker;
 
     /**
@@ -41,7 +43,7 @@ public class JIPipeCachedDataPreview extends JPanel {
      */
     public JIPipeCachedDataPreview(Component parentComponent, JIPipeVirtualData data, boolean deferRendering) {
         this.parentComponent = parentComponent;
-        this.data = new WeakReference<>(data);
+        this.data = new WeakStore<>(data);
         initialize();
         if (!deferRendering)
             renderPreview();
