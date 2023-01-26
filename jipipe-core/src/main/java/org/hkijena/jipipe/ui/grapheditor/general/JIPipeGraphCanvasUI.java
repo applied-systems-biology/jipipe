@@ -2047,7 +2047,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     }
 
     public void setConnectHighlight(ConnectHighlight connectHighlight) {
-        System.out.println(connectHighlight);
         this.connectHighlight = connectHighlight;
         repaint(50);
     }
