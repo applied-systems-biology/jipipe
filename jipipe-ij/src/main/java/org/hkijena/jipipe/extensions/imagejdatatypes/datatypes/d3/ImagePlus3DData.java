@@ -30,7 +30,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 /**
  * 3D image
  */
-@JIPipeDocumentation(name = "3D image")
+@JIPipeDocumentation(name = "3D image", description = "A 3D image")
 @JIPipeNode(menuPath = "Images\n3D")
 @JIPipeHeavyData
 @ImageTypeInfo(numDimensions = 3)

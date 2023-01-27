@@ -34,7 +34,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 /**
  * RGB color 4D image
  */
-@JIPipeDocumentation(name = "4D image (RGB)")
+@JIPipeDocumentation(name = "4D image (RGB)", description = "A color image (RGB colors)")
 @JIPipeNode(menuPath = "Images\n4D\nColor")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = RGBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 4)

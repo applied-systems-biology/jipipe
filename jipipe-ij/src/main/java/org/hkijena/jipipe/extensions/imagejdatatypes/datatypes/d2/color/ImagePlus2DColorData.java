@@ -36,7 +36,7 @@ import java.awt.*;
  * It acts as base and intermediate type between colored images. The convertFrom(data) method copies the color space
  * Conversion works through {@link org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
  */
-@JIPipeDocumentation(name = "2D Image (Color)")
+@JIPipeDocumentation(name = "2D Image (Color)", description = "A colored image")
 @JIPipeNode(menuPath = "Images\n2D\nColor")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = RGBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 2)

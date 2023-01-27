@@ -35,7 +35,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
  * These image data types exist to address general processing solely based on bit-depth (e.g. process all 2D image planes).
  * Conversion works through {@link org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ImplicitImageTypeConverter}
  */
-@JIPipeDocumentation(name = "Image (8 bit)")
+@JIPipeDocumentation(name = "Image (8 bit)", description = "An 8-bit greyscale image")
 @JIPipeNode(menuPath = "Images\nGreyscale")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ByteProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Byte.class, bitDepth = 8)

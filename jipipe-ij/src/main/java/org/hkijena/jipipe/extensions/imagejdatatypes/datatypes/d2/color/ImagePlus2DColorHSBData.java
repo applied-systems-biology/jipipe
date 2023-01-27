@@ -36,7 +36,7 @@ import java.awt.*;
 /**
  * RGB colored 2D image
  */
-@JIPipeDocumentation(name = "2D image (HSB)")
+@JIPipeDocumentation(name = "2D image (HSB)", description = "A colored image (HSB colors)")
 @JIPipeNode(menuPath = "Images\n2D\nColor")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = HSBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 2)

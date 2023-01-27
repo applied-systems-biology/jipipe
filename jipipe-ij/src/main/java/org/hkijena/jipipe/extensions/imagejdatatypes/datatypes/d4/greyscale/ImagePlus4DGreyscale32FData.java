@@ -33,7 +33,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 /**
  * 32-bit floating point greyscale 4D image
  */
-@JIPipeDocumentation(name = "4D image (float)")
+@JIPipeDocumentation(name = "4D image (float)", description = "A 32-bit greyscale image")
 @JIPipeNode(menuPath = "Images\n4D\nGreyscale")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = FloatProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Float.class, bitDepth = 32, numDimensions = 4)

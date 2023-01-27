@@ -36,7 +36,7 @@ import java.awt.*;
 /**
  * RGB color 3D image
  */
-@JIPipeDocumentation(name = "3D image (HSB)")
+@JIPipeDocumentation(name = "3D image (HSB)", description = "A color image (HSB colors)")
 @JIPipeNode(menuPath = "Images\n3D\nColor")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = HSBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 3)

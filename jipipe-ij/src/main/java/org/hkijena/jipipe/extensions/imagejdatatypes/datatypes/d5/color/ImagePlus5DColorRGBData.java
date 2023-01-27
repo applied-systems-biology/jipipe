@@ -34,7 +34,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 /**
  * RGB color 5D image
  */
-@JIPipeDocumentation(name = "5D image (RGB)")
+@JIPipeDocumentation(name = "5D image (RGB)", description = "A color image (RGB colors)")
 @JIPipeNode(menuPath = "Images\n5D\nColor")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = RGBColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 5)

@@ -33,7 +33,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 /**
  * Greyscale 2D image
  */
-@JIPipeDocumentation(name = "2D image (greyscale)")
+@JIPipeDocumentation(name = "2D image (greyscale)", description = "A greyscale image")
 @JIPipeNode(menuPath = "Images\n2D\nGreyscale")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = FloatProcessor.class, colorSpace = GreyscaleColorSpace.class, pixelType = Float.class, bitDepth = 32, numDimensions = 2)

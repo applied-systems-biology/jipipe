@@ -36,7 +36,7 @@ import java.awt.*;
 /**
  * RGB color 4D image
  */
-@JIPipeDocumentation(name = "4D image (LAB)")
+@JIPipeDocumentation(name = "4D image (LAB)", description = "A color image (LAB colors)")
 @JIPipeNode(menuPath = "Images\n4D\nColor")
 @JIPipeHeavyData
 @ImageTypeInfo(imageProcessorType = ColorProcessor.class, colorSpace = LABColorSpace.class, pixelType = Integer.class, bitDepth = 24, numDimensions = 4)
