@@ -928,6 +928,10 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         return window;
     }
 
+    public JIPipeProjectWindow getProjectWindow() {
+        return window;
+    }
+
     /**
      * Triggered when a compartment is deleted.
      * Closes corresponding tabs.
