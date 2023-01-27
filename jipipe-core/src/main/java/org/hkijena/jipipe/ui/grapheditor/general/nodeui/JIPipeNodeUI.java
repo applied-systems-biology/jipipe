@@ -483,7 +483,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 //            return;
 //        }
         boolean excludeButton = false;
-        if (slotStateMap.size() > 1 && hasButton) {
+        if (slotStateMap.size() > 0 && hasButton) {
             nodeWidth -= 22;
             sumWidth -= 22;
             excludeButton = true;
