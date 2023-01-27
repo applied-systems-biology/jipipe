@@ -57,7 +57,6 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public TransformScale3DAlgorithm(JIPipeNodeInfo info) {
         super(info);
-        scale2DAlgorithm.setAllSlotsVirtual(false, false, null);
         xAxis.setEnabled(true);
         yAxis.setEnabled(true);
         zAxis.setEnabled(true);
@@ -70,7 +69,6 @@ public class TransformScale3DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      */
     public TransformScale3DAlgorithm(TransformScale3DAlgorithm other) {
         super(other);
-        scale2DAlgorithm.setAllSlotsVirtual(false, false, null);
         this.interpolationMethod = other.interpolationMethod;
         this.xAxis = new OptionalDefaultExpressionParameter(other.xAxis);
         this.yAxis = new OptionalDefaultExpressionParameter(other.yAxis);

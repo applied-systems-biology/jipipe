@@ -91,9 +91,6 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
 
     @Override
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
-        registerEnumParameterType("set-virtual-state:state", SetVirtualStateAlgorithm.VirtualState.class, "Data storage location", "Determines where the data should be stored.");
-        registerNodeType("set-virtual-state", SetVirtualStateAlgorithm.class, UIUtils.getIconURLFromResources("devices/media-memory.png"));
-
         registerDatatype("jipipe-run-output", JIPipeOutputData.class, UIUtils.getIconURLFromResources("apps/jipipe.png"), new OpenPathDataOperation(), new CopyPathDataOperation(), new ImportJIPipeProjectDataOperation());
         registerDatatypeConversion(new PathDataToJIPipeOutputConverter());
 

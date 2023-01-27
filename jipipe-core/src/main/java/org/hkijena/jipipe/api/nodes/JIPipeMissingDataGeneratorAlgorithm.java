@@ -24,7 +24,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
@@ -259,7 +259,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
             } else {
                 if (keepOriginalAnnotations) {
                     for (int row : rows) {
-                        JIPipeVirtualData virtualData = inputSlot.getVirtualData(row);
+                        JIPipeDataItemStore virtualData = inputSlot.getVirtualData(row);
                         List<JIPipeTextAnnotation> annotations = inputSlot.getTextAnnotations(row);
                         outputSlot.addData(virtualData,
                                 annotations,
@@ -269,7 +269,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
                     }
                 } else {
                     for (int row : rows) {
-                        JIPipeVirtualData virtualData = inputSlot.getVirtualData(row);
+                        JIPipeDataItemStore virtualData = inputSlot.getVirtualData(row);
                         dataBatch.addOutputData(outputSlot, virtualData);
                     }
                 }

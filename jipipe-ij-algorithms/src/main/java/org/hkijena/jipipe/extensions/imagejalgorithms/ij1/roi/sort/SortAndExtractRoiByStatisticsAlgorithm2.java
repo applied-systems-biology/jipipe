@@ -65,7 +65,6 @@ public class SortAndExtractRoiByStatisticsAlgorithm2 extends JIPipeIteratingAlgo
      */
     public SortAndExtractRoiByStatisticsAlgorithm2(JIPipeNodeInfo info) {
         super(info);
-        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
         sortOrderList.addNewInstance();
     }
 
@@ -76,7 +75,6 @@ public class SortAndExtractRoiByStatisticsAlgorithm2 extends JIPipeIteratingAlgo
      */
     public SortAndExtractRoiByStatisticsAlgorithm2(SortAndExtractRoiByStatisticsAlgorithm2 other) {
         super(other);
-        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
         this.sortOrderList = new MeasurementColumnSortOrder.List(other.sortOrderList);
         this.selectedIndices = new OptionalIntegerRange(other.selectedIndices);
         this.autoClamp = other.autoClamp;

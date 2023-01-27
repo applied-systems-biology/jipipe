@@ -66,7 +66,6 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
     public FilterAndMergeRoiByStatisticsScriptAlgorithm(JIPipeNodeInfo info) {
         super(info);
         registerSubParameter(scriptParameters);
-        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
     }
 
     /**
@@ -79,7 +78,6 @@ public class FilterAndMergeRoiByStatisticsScriptAlgorithm extends JIPipeIteratin
         this.code = new PythonScript(other.code);
         this.scriptParameters = new JIPipeDynamicParameterCollection(other.scriptParameters);
         registerSubParameter(scriptParameters);
-        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
     }
 
     @Override

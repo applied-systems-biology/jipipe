@@ -73,7 +73,6 @@ public abstract class JIPipeDataSlot extends JIPipeDataTable {
         this.node = node;
         this.name = info.getName();
         this.slotType = info.getSlotType();
-        this.setNewDataVirtual(info.isVirtual());
     }
 
     public JIPipeDataSlot(JIPipeDataSlot other, boolean shallow, JIPipeProgressInfo progressInfo) {
@@ -272,21 +271,6 @@ public abstract class JIPipeDataSlot extends JIPipeDataTable {
     @Override
     public String toString() {
         return String.format("%s: %s (%d rows, %d annotation columns, %d data annotation columns)", getSlotType(), getName(), getRowCount(), getTextAnnotationColumns().size(), getDataAnnotationColumns().size());
-    }
-
-    /**
-     * If virtual, put all data into the virtual storage
-     * If not, fetch all virtual data from storage
-     * This function reacts to the virtual mode setting in {@link VirtualDataSettings} and will refuse to make data virtual
-     *
-     * @param progressInfo the progress
-     */
-    public void applyVirtualState(JIPipeProgressInfo progressInfo) {
-        if (info.isVirtual() && VirtualDataSettings.getInstance().isVirtualMode()) {
-            makeDataVirtual(progressInfo);
-        } else {
-            makeDataNonVirtual(progressInfo, false);
-        }
     }
 
     public String getDescription() {

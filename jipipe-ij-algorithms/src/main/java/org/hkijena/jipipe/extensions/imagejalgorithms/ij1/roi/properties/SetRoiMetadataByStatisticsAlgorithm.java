@@ -77,7 +77,6 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
      */
     public SetRoiMetadataByStatisticsAlgorithm(SetRoiMetadataByStatisticsAlgorithm other) {
         super(other);
-        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
         this.metadataGenerators = new ParameterCollectionList(other.metadataGenerators);
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
         this.customVariables = new CustomExpressionVariablesParameter(other.customVariables, this);
@@ -87,7 +86,6 @@ public class SetRoiMetadataByStatisticsAlgorithm extends JIPipeIteratingAlgorith
 
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
-        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
         // Set parameters of ROI statistics algorithm
         roiStatisticsAlgorithm.setMeasurements(measurements);
         roiStatisticsAlgorithm.setMeasureInPhysicalUnits(measureInPhysicalUnits);

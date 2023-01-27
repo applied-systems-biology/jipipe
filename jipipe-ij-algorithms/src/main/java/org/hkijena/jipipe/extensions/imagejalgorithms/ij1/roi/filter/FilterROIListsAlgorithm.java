@@ -24,7 +24,7 @@ public class FilterROIListsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private DefaultExpressionParameter filter = new DefaultExpressionParameter("count > 0");
     private boolean includeAnnotations = true;
-    private boolean outputEmptyLists = false;
+    private boolean outputEmptyLists = true;
 
     public FilterROIListsAlgorithm(JIPipeNodeInfo info) {
         super(info);

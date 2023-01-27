@@ -16,7 +16,7 @@ package org.hkijena.jipipe.extensions.imagejdatatypes.display;
 import ij.ImagePlus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.OMEImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
@@ -112,7 +112,7 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
     }
 
     @Override
-    protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
+    protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         ImagePlus image;
         ROIListData rois = new ROIListData();
         if (customDataLoader != null) {
@@ -219,6 +219,6 @@ public class CachedImagePlusDataViewerWindow extends JIPipeCacheDataViewerWindow
          * @param virtualData  the virtual data
          * @param progressInfo the progress info
          */
-        public abstract void load(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo);
+        public abstract void load(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo);
     }
 }

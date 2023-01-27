@@ -5,7 +5,7 @@ import com.google.common.collect.Multimap;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 
 import java.util.*;
 
@@ -63,7 +63,7 @@ public enum JIPipeDataAnnotationMergeMode {
 
             List<JIPipeDataAnnotation> result = new ArrayList<>();
             for (String name : dataAnnotationMap.keySet()) {
-                List<JIPipeVirtualData> allData = new ArrayList<>();
+                List<JIPipeDataItemStore> allData = new ArrayList<>();
                 for (JIPipeDataAnnotation dataAnnotation : dataAnnotationMap.get(name)) {
                     if (JIPipeDataTable.class.isAssignableFrom(dataAnnotation.getDataClass())) {
                         JIPipeDataTable table = dataAnnotation.getData(JIPipeDataTable.class, new JIPipeProgressInfo());
@@ -75,7 +75,7 @@ public enum JIPipeDataAnnotationMergeMode {
                     }
                 }
                 JIPipeDataTable mergedDataAnnotationsData = new JIPipeDataTable(JIPipeData.class);
-                for (JIPipeVirtualData virtualData : allData) {
+                for (JIPipeDataItemStore virtualData : allData) {
                     mergedDataAnnotationsData.addData(virtualData, Collections.emptyList(), JIPipeTextAnnotationMergeMode.OverwriteExisting);
                 }
                 result.add(new JIPipeDataAnnotation(name, mergedDataAnnotationsData));

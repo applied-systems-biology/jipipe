@@ -89,12 +89,10 @@ public class IterativeThresholdByROIStatistics2DAlgorithm extends JIPipeIteratin
 
         // Set parameters of find particles
         findParticles2DAlgorithm.clearSlotData();
-        findParticles2DAlgorithm.setAllSlotsVirtual(false, false, progressInfo);
         findParticles2DAlgorithm.setExcludeEdges(excludeEdgeROIs);
 
         // Set parameters of ROI statistics algorithm
         roiStatisticsAlgorithm.clearSlotData();
-        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, progressInfo);
         roiStatisticsAlgorithm.setMeasurements(measurements);
         roiStatisticsAlgorithm.setMeasureInPhysicalUnits(measureInPhysicalUnits);
 

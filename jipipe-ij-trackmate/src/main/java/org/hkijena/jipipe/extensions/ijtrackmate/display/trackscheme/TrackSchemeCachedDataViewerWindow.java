@@ -19,7 +19,7 @@ import fiji.plugin.trackmate.gui.displaysettings.DisplaySettings;
 import fiji.plugin.trackmate.visualization.trackscheme.TrackScheme;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
@@ -71,7 +71,7 @@ public class TrackSchemeCachedDataViewerWindow extends JIPipeCacheDataViewerWind
     }
 
     @Override
-    protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
+    protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         annotationInfoPanel.displayAnnotations(getDataSource());
         TrackCollectionData trackCollectionData = virtualData.getData(TrackCollectionData.class, progressInfo);
         TrackScheme trackScheme = new TrackScheme(trackCollectionData.getModel(), new SelectionModel(trackCollectionData.getModel()), displaySettings);

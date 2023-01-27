@@ -17,7 +17,7 @@ package org.hkijena.jipipe.extensions.ijtrackmate.display.spots;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotsCollectionData;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
 import org.hkijena.jipipe.extensions.imageviewer.plugins.*;
@@ -96,7 +96,7 @@ public class CachedSpotCollectionDataViewerWindow extends JIPipeCacheDataViewerW
     }
 
     @Override
-    protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
+    protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
 //        ROIManagerPlugin plugin = imageViewerPanel.getPlugin(ROIManagerPlugin.class);
 //        SpotsCollectionData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), SpotsCollectionData.class);
 //        imageViewerPanel.getCanvas().setError(null);

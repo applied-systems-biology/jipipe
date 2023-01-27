@@ -237,22 +237,6 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         return String.format("Local memory cache [%d items] { %d vertices, %d edges }", size(), currentNodeStatePredecessorGraph.vertexSet().size(), currentNodeStatePredecessorGraph.edgeSet().size());
     }
 
-    public void makeNonVirtual(JIPipeProgressInfo progressInfo) {
-        for (Map.Entry<UUID, Map<String, JIPipeDataTable>> nodeEntry : cachedOutputSlots.entrySet()) {
-            for (Map.Entry<String, JIPipeDataTable> slotMap : nodeEntry.getValue().entrySet()) {
-                slotMap.getValue().makeDataNonVirtual(progressInfo.resolveAndLog(nodeEntry.getKey() + "/" + slotMap.getKey()), true);
-            }
-        }
-    }
-
-    public void makeVirtual(JIPipeProgressInfo progressInfo) {
-        for (Map.Entry<UUID, Map<String, JIPipeDataTable>> nodeEntry : cachedOutputSlots.entrySet()) {
-            for (Map.Entry<String, JIPipeDataTable> slotMap : nodeEntry.getValue().entrySet()) {
-                slotMap.getValue().makeDataVirtual(progressInfo.resolveAndLog(nodeEntry.getKey() + "/" + slotMap.getKey()));
-            }
-        }
-    }
-
     private void updateSize() {
         currentSize = 0;
         for (Map.Entry<UUID, Map<String, JIPipeDataTable>> nodeEntry : cachedOutputSlots.entrySet()) {

@@ -17,7 +17,7 @@ package org.hkijena.jipipe.extensions.ijtrackmate.display.tracks;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.TrackCollectionData;
 import org.hkijena.jipipe.extensions.ijtrackmate.display.spots.SpotsManagerPlugin;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
@@ -98,7 +98,7 @@ public class CachedTracksCollectionDataViewerWindow extends JIPipeCacheDataViewe
     }
 
     @Override
-    protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
+    protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         SpotsManagerPlugin spotsManagerPlugin = imageViewerPanel.getPlugin(SpotsManagerPlugin.class);
         TracksManagerPlugin tracksManagerPlugin = imageViewerPanel.getPlugin(TracksManagerPlugin.class);
         TrackCollectionData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), TrackCollectionData.class);

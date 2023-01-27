@@ -41,7 +41,7 @@ import java.util.stream.Collectors;
  * The static importData(@link org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage}, JIPipeProgressInfo) method and the {@link JIPipeDataStorageDocumentation} annotation can be omitted for abstract data types or interfaces.
  * {@link JIPipeDataStorageDocumentation} can be inherited from parent classes.
  * <p>
- * Update: 1.74.0: The class is now closable, which is useful for handling external resources. {@link JIPipeDataTable} and {@link JIPipeVirtualData} were adapted to handle the close() automatically.
+ * Update: 1.74.0: The class is now closable, which is useful for handling external resources. {@link JIPipeDataTable} and {@link JIPipeDataItemStore} were adapted to handle the close() automatically.
  */
 @JIPipeDocumentation(name = "Data", description = "Generic data. Can hold any supported JIPipe data.")
 @JIPipeDataStorageDocumentation(humanReadableDescription = "Unknown storage schema (generic data)",

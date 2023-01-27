@@ -21,7 +21,7 @@ import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
@@ -38,7 +38,6 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.lang.ref.WeakReference;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -56,13 +55,13 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
     private final JPanel contentPane = new JPanel(new BorderLayout());
     private JIPipeDataTableDataSource dataSource;
     private JIPipeCachedDataDisplayCacheControl cacheAwareToggle;
-    private Store<JIPipeVirtualData> lastVirtualData;
+    private Store<JIPipeDataItemStore> lastVirtualData;
     private JButton previousRowButton;
     private JButton nextRowButton;
     private JButton rowInfoLabel;
 
     private final JPopupMenu rowInfoLabelMenu = new JPopupMenu();
-    private Function<JIPipeVirtualData, JIPipeVirtualData> dataConverterFunction;
+    private Function<JIPipeDataItemStore, JIPipeDataItemStore> dataConverterFunction;
 
     private JLabel standardErrorLabel;
 
@@ -311,7 +310,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
      * @param virtualData  the data to be loaded
      * @param progressInfo the progress info
      */
-    protected abstract void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo);
+    protected abstract void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo);
 
     private void removeDataControls() {
         if (getToolBar() == null)
@@ -378,7 +377,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
     private void loadFromDataSource() {
         if (dataSource.getDataAnnotation() == null) {
-            JIPipeVirtualData virtualData = dataSource.getDataTable().getVirtualData(dataSource.getRow());
+            JIPipeDataItemStore virtualData = dataSource.getDataTable().getVirtualData(dataSource.getRow());
             if (lastVirtualData != null && virtualData == lastVirtualData.get())
                 return;
             if (dataConverterFunction != null)
@@ -386,7 +385,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
             loadData(virtualData, new JIPipeProgressInfo());
             lastVirtualData = new WeakStore<>(virtualData);
         } else {
-            JIPipeVirtualData virtualData = dataSource.getDataTable().getVirtualDataAnnotation(dataSource.getRow(), dataSource.getDataAnnotation());
+            JIPipeDataItemStore virtualData = dataSource.getDataTable().getVirtualDataAnnotation(dataSource.getRow(), dataSource.getDataAnnotation());
             if (virtualData == null) {
                 showErrorUI();
                 return;
@@ -415,11 +414,11 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
         return displayName;
     }
 
-    public Function<JIPipeVirtualData, JIPipeVirtualData> getDataConverterFunction() {
+    public Function<JIPipeDataItemStore, JIPipeDataItemStore> getDataConverterFunction() {
         return dataConverterFunction;
     }
 
-    public void setDataConverterFunction(Function<JIPipeVirtualData, JIPipeVirtualData> dataConverterFunction) {
+    public void setDataConverterFunction(Function<JIPipeDataItemStore, JIPipeDataItemStore> dataConverterFunction) {
         this.dataConverterFunction = dataConverterFunction;
     }
 }

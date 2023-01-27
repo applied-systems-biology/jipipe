@@ -14,7 +14,7 @@
 package org.hkijena.jipipe.ui.cache;
 
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.data.Store;
@@ -22,7 +22,6 @@ import org.hkijena.jipipe.utils.data.WeakStore;
 
 import javax.swing.*;
 import java.awt.*;
-import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -31,7 +30,7 @@ import java.util.concurrent.ExecutionException;
  */
 public class JIPipeCachedDataPreview extends JPanel {
     private final Component parentComponent;
-    private final Store<JIPipeVirtualData> data;
+    private final Store<JIPipeDataItemStore> data;
     private Worker worker;
 
     /**
@@ -41,7 +40,7 @@ public class JIPipeCachedDataPreview extends JPanel {
      * @param data            the data
      * @param deferRendering  if true, the preview will not be immediately rendered
      */
-    public JIPipeCachedDataPreview(Component parentComponent, JIPipeVirtualData data, boolean deferRendering) {
+    public JIPipeCachedDataPreview(Component parentComponent, JIPipeDataItemStore data, boolean deferRendering) {
         this.parentComponent = parentComponent;
         this.data = new WeakStore<>(data);
         initialize();
@@ -89,7 +88,7 @@ public class JIPipeCachedDataPreview extends JPanel {
      *
      * @return the data
      */
-    public JIPipeVirtualData getData() {
+    public JIPipeDataItemStore getData() {
         return data.get();
     }
 
@@ -107,7 +106,7 @@ public class JIPipeCachedDataPreview extends JPanel {
 
         @Override
         protected Component doInBackground() throws Exception {
-            JIPipeVirtualData virtualData = parent.data.get();
+            JIPipeDataItemStore virtualData = parent.data.get();
             if (virtualData != null && !virtualData.isClosed())
                 return virtualData.getData(new JIPipeProgressInfo()).preview(width, width);
             else

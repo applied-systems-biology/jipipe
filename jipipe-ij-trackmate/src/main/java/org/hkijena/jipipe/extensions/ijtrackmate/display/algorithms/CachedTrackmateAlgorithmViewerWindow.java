@@ -17,7 +17,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotDetectorData;
 import org.hkijena.jipipe.extensions.ijtrackmate.datatypes.SpotTrackerData;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -94,7 +94,7 @@ public class CachedTrackmateAlgorithmViewerWindow extends JIPipeCacheDataViewerW
     }
 
     @Override
-    protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
+    protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         JIPipeData data = virtualData.getData(progressInfo);
         if (data instanceof SpotTrackerData) {
             textArea.setText(((SpotTrackerData) data).toJson());

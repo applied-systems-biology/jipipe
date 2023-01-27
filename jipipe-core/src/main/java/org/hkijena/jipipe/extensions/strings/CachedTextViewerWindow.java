@@ -17,7 +17,7 @@ import org.fife.ui.rtextarea.RTextScrollPane;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.cache.JIPipeCacheDataViewerWindow;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -92,7 +92,7 @@ public class CachedTextViewerWindow extends JIPipeCacheDataViewerWindow {
     }
 
     @Override
-    protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
+    protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         JIPipeData data = virtualData.getData(progressInfo);
         if (data instanceof StringData) {
             textArea.setText(((StringData) data).getData());

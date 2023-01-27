@@ -14,8 +14,6 @@
 package org.hkijena.jipipe.ui;
 
 import com.google.common.eventbus.Subscribe;
-import ij.IJ;
-import ij.Prefs;
 import net.imagej.ui.swing.updater.ImageJUpdater;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeJsonExtension;
@@ -37,8 +35,7 @@ import org.hkijena.jipipe.ui.components.ReloadableValidityChecker;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.components.tabs.DocumentTabPane;
-import org.hkijena.jipipe.ui.data.VirtualDataControl;
-import org.hkijena.jipipe.ui.documentation.DownloadOfflineManualRun;
+import org.hkijena.jipipe.ui.data.MemoryOptionsControl;
 import org.hkijena.jipipe.ui.documentation.JIPipeAlgorithmCompendiumUI;
 import org.hkijena.jipipe.ui.documentation.JIPipeDataTypeCompendiumUI;
 import org.hkijena.jipipe.ui.documentation.WelcomePanel;
@@ -70,7 +67,6 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -96,7 +92,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
     private final JIPipeProject project;
     private final Context context;
     private final RealTimeProjectRunner realTimeProjectRunner;
-    private final VirtualDataControl virtualDataControl;
+    private final MemoryOptionsControl memoryOptionsControl;
     private final JIPipeNotificationInbox notificationInbox = new JIPipeNotificationInbox();
     private final NotificationButton notificationButton = new NotificationButton(this);
     public DocumentTabPane documentTabPane;
@@ -117,7 +113,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         this.project = project;
         this.context = context;
         this.realTimeProjectRunner = new RealTimeProjectRunner(this);
-        this.virtualDataControl = new VirtualDataControl(this);
+        this.memoryOptionsControl = new MemoryOptionsControl(this);
         initialize(showIntroduction, isNewProject);
         project.getEventBus().register(this);
         JIPipe.getInstance().getEventBus().register(this);
@@ -371,7 +367,7 @@ public class JIPipeProjectWorkbench extends JPanel implements JIPipeWorkbench {
         statusBar.add(Box.createHorizontalGlue(), new JXStatusBar.Constraint(JXStatusBar.Constraint.ResizeBehavior.FILL));
 
         // Virtual control
-        JButton optionsButton = virtualDataControl.createOptionsButton();
+        JButton optionsButton = memoryOptionsControl.createOptionsButton();
         UIUtils.makeFlatH25(optionsButton);
         statusBar.add(optionsButton);
         statusBar.add(Box.createHorizontalStrut(4));

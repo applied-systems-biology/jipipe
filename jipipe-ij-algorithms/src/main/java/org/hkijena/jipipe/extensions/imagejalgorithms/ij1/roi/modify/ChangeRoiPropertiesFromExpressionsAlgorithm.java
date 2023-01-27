@@ -105,7 +105,6 @@ public class ChangeRoiPropertiesFromExpressionsAlgorithm extends JIPipeIterating
 
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
-        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
         // Set parameters of ROI statistics algorithm
         roiStatisticsAlgorithm.setMeasurements(measurements);
         roiStatisticsAlgorithm.setMeasureInPhysicalUnits(measureInPhysicalUnits);

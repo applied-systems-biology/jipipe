@@ -76,7 +76,6 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
      */
     public FilterRoiByStatisticsAlgorithm(FilterRoiByStatisticsAlgorithm other) {
         super(other);
-        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
         this.filters = new DefaultExpressionParameter(other.filters);
         this.measurements = new ImageStatisticsSetParameter(other.measurements);
         this.outputEmptyLists = other.outputEmptyLists;
@@ -86,7 +85,6 @@ public class FilterRoiByStatisticsAlgorithm extends JIPipeIteratingAlgorithm {
 
     @Override
     public void run(JIPipeProgressInfo progressInfo) {
-        roiStatisticsAlgorithm.setAllSlotsVirtual(false, false, null);
         // Set parameters of ROI statistics algorithm
         roiStatisticsAlgorithm.setMeasurements(measurements);
         roiStatisticsAlgorithm.setMeasureInPhysicalUnits(measureInPhysicalUnits);

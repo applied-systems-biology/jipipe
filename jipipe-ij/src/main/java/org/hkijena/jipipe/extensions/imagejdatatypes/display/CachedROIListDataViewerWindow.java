@@ -19,7 +19,7 @@ import ij.gui.Roi;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataTableDataSource;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imageviewer.ImageViewerPanel;
@@ -99,7 +99,7 @@ public class CachedROIListDataViewerWindow extends JIPipeCacheDataViewerWindow i
     }
 
     @Override
-    protected void loadData(JIPipeVirtualData virtualData, JIPipeProgressInfo progressInfo) {
+    protected void loadData(JIPipeDataItemStore virtualData, JIPipeProgressInfo progressInfo) {
         ROIManagerPlugin plugin = imageViewerPanel.getPlugin(ROIManagerPlugin.class);
         ROIListData data = JIPipe.getDataTypes().convert(virtualData.getData(progressInfo), ROIListData.class);
         int width;

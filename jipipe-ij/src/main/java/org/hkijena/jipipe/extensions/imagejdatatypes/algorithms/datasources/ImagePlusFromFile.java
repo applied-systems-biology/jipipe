@@ -21,8 +21,7 @@ import org.hkijena.jipipe.api.*;
 import org.hkijena.jipipe.api.annotation.JIPipeDataAnnotationMergeMode;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
-import org.hkijena.jipipe.api.data.JIPipeDefaultMutableSlotConfiguration;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
@@ -99,7 +98,6 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             // Pass to bioformats
             progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
             BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
-            importer.setAllSlotsVirtual(false, false, null);
             importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
             importer.run(progressInfo);
             image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
@@ -113,7 +111,6 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
             // Pass to bioformats
             progressInfo.log("Using BioFormats importer. Please use the Bio-Formats importer node for more settings.");
             BioFormatsImporter importer = JIPipe.createNode(BioFormatsImporter.class);
-            importer.setAllSlotsVirtual(false, false, null);
             importer.getFirstInputSlot().addData(new FileData(fileName), progressInfo);
             importer.run(progressInfo);
             image = importer.getFirstOutputSlot().getData(0, OMEImageData.class, progressInfo).getImage();
@@ -162,36 +159,7 @@ public class ImagePlusFromFile extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         FileData fileData = dataBatch.getInputData(getFirstInputSlot(), FileData.class, progressInfo);
         boolean enableVirtual = VirtualDataSettings.getInstance().isVirtualMode();
-        if (enableVirtual && !removeLut && fileData.getPath().toString().endsWith(".tif") && getFirstOutputSlot().isNewDataVirtual()) {
-            // Alternative path for virtual data to get rid of load-saving-load
-            // Only works for something that is directly compatible to the row storage format (TIFF)
-            List<JIPipeTextAnnotation> annotations = new ArrayList<>(dataBatch.getMergedTextAnnotations().values());
-            if (titleAnnotation.isEnabled()) {
-                annotations.add(new JIPipeTextAnnotation(titleAnnotation.getContent(), fileData.toPath().getFileName().toString()));
-            }
-            Path targetPath = VirtualDataSettings.generateTempDirectory("virtual");
-            if (!SystemUtils.IS_OS_WINDOWS) {
-                // Create a symlink
-                try {
-                    Files.createSymbolicLink(targetPath.resolve("image.tif"), fileData.toPath());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            } else {
-                // Make a copy
-                try {
-                    Files.copy(fileData.toPath(), targetPath.resolve("image.tif"), StandardCopyOption.REPLACE_EXISTING);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            }
-            JIPipeVirtualData virtualData = new JIPipeVirtualData(generatedImageType.getInfo().getDataClass(), targetPath, "VIRTUAL: " + fileData.toPath().getFileName());
-            getFirstOutputSlot().addData(virtualData,
-                    annotations,
-                    JIPipeTextAnnotationMergeMode.Merge,
-                    new ArrayList<>(dataBatch.getMergedDataAnnotations().values()),
-                    JIPipeDataAnnotationMergeMode.OverwriteExisting);
-        } else if (deferLoading) {
+        if (deferLoading) {
             ImagePlusData outputData = (ImagePlusData) JIPipe.createData(generatedImageType.getInfo().getDataClass(),
                     new ImagePlusFromFileImageSource(fileData.toPath(), removeLut, removeOverlay));
             List<JIPipeTextAnnotation> annotations = new ArrayList<>();

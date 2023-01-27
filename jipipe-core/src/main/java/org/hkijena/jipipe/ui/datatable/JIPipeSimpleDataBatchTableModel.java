@@ -16,7 +16,7 @@ package org.hkijena.jipipe.ui.datatable;
 
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataPreview;
 
@@ -36,7 +36,7 @@ public class JIPipeSimpleDataBatchTableModel implements TableModel {
     private final List<String> inputSlotNames = new ArrayList<>();
     private final List<String> annotationColumns = new ArrayList<>();
     private final Map<String, List<Component>> previews = new HashMap<>();
-    private final List<Map<String, JIPipeVirtualData>> previewedData = new ArrayList<>();
+    private final List<Map<String, JIPipeDataItemStore>> previewedData = new ArrayList<>();
     private final JTable table;
     private JScrollPane scrollPane;
 
@@ -48,7 +48,7 @@ public class JIPipeSimpleDataBatchTableModel implements TableModel {
         Set<String> inputSlotNameSet = new HashSet<>();
         Set<String> annotationColumnSet = new HashSet<>();
         for (JIPipeMergingDataBatch dataBatch : dataBatchList) {
-            Map<String, JIPipeVirtualData> previewMap = new HashMap<>();
+            Map<String, JIPipeDataItemStore> previewMap = new HashMap<>();
             for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : dataBatch.getInputSlotRows().entrySet()) {
                 inputSlotNameSet.add(entry.getKey().getName());
                 // We just preview any data available
@@ -118,7 +118,7 @@ public class JIPipeSimpleDataBatchTableModel implements TableModel {
             String slotName = inputSlotNames.get(columnIndex - 1);
             Component preview = previews.get(slotName).get(rowIndex);
             if (preview == null) {
-                JIPipeVirtualData previewed = previewedData.get(rowIndex).getOrDefault(slotName, null);
+                JIPipeDataItemStore previewed = previewedData.get(rowIndex).getOrDefault(slotName, null);
                 if (previewed != null) {
                     preview = new JIPipeCachedDataPreview(table, previewed, true);
                 } else {

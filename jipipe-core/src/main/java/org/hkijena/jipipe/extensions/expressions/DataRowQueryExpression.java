@@ -17,7 +17,7 @@ import org.hkijena.jipipe.api.JIPipeDocumentationDescription;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeVirtualData;
+import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterAccess;
 
 import java.util.ArrayList;
@@ -94,7 +94,7 @@ public class DataRowQueryExpression extends DefaultExpressionParameter {
      * @param annotations the annotations
      * @return if the expression matches
      */
-    private boolean test(JIPipeVirtualData data, java.util.List<JIPipeTextAnnotation> annotations) {
+    private boolean test(JIPipeDataItemStore data, java.util.List<JIPipeTextAnnotation> annotations) {
         ExpressionVariables variables = new ExpressionVariables();
         for (JIPipeTextAnnotation annotation : annotations) {
             variables.set(annotation.getName(), annotation.getValue());
