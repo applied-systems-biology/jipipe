@@ -36,12 +36,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
         description = "Applies a Gaussian filter to the image and extracts the maximum value. Pixel values are then divided by this value." +
                 "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Contrast")
-
-
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
-
-
+@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
 public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private GaussianBlur2DAlgorithm gaussianAlgorithm =
@@ -51,11 +47,7 @@ public class IlluminationCorrection2DAlgorithm extends JIPipeSimpleIteratingAlgo
      * @param info the algorithm info
      */
     public IlluminationCorrection2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale32FData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscale32FData.class, null)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
         gaussianAlgorithm.setAllSlotsVirtual(false, false, null);
         gaussianAlgorithm.setSigmaX(20);
         gaussianAlgorithm.setSigmaY(20);

@@ -36,8 +36,8 @@ import java.awt.*;
 @JIPipeDocumentation(name = "Define rectangular ROI (referenced)", description = "Manually defines a rectangular ROI. This algorithm requires a reference " +
         "image, but also allows more flexibility in defining the rectangles.")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 @Deprecated
 @JIPipeHidden
 public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgorithm {
@@ -51,11 +51,7 @@ public class ReferencedDefineRectangularRoiAlgorithm extends JIPipeIteratingAlgo
      * @param info the info
      */
     public ReferencedDefineRectangularRoiAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Reference", "", ImagePlusData.class)
-                .addOutputSlot("Output", "", ROIListData.class, null)
-                .seal()
-                .build());
+        super(info);
         rectangles.addNewInstance();
     }
 

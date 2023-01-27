@@ -35,8 +35,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
         "that fits into the particle, with the UEP as the center. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Binary", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nBinary", aliasName = "Ultimate Points")
 public class UltimateErodedPoints2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -46,11 +46,7 @@ public class UltimateErodedPoints2DAlgorithm extends JIPipeSimpleIteratingAlgori
      * @param info the info
      */
     public UltimateErodedPoints2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscaleMaskData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscaleMaskData.class, "Input")
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**

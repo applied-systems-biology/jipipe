@@ -35,8 +35,8 @@ import org.hkijena.jipipe.extensions.tables.datatypes.TableColumn;
  */
 @JIPipeDocumentation(name = "Table to circular ROIs", description = "Converts data from a table to circular ROIs. The ROIs are created to be centered at the provided locations. If you require more options, utilize 'Table to rectangular/oval ROIs' instead.")
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
+@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private TableColumnSourceExpressionParameter columnX1 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"X\"");
@@ -57,11 +57,7 @@ public class TableToCircularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm 
      * @param info the info
      */
     public TableToCircularROIAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", "", ResultsTableData.class)
-                .addOutputSlot("Output", "", ROIListData.class, null)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**

@@ -36,8 +36,8 @@ import java.util.Optional;
 @JIPipeDocumentation(name = "Convert only ROI to mask", description = "Converts ROI lists to masks. " +
         "This algorithm does not need a reference image that determines the output size.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private Margin imageArea = new Margin();
@@ -52,10 +52,7 @@ public class UnreferencedRoiToMaskAlgorithm extends JIPipeSimpleIteratingAlgorit
      * @param info the info
      */
     public UnreferencedRoiToMaskAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ROIListData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscaleMaskData.class, null)
-                .seal()
-                .build());
+        super(info);
         imageArea.getWidth().ensureExactValue(false);
         imageArea.getHeight().ensureExactValue(false);
     }

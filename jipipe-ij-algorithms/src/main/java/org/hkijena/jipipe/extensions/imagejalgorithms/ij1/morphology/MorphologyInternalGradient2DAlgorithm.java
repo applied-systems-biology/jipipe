@@ -35,8 +35,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeDocumentation(name = "Internal gradient 2D", description = "Applies an internal gradient filter that subtracts the local minimum (erosion) from the input image. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Morphology", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output", autoCreate = true)
 public class MorphologyInternalGradient2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double radius = 1;
@@ -47,11 +47,7 @@ public class MorphologyInternalGradient2DAlgorithm extends JIPipeSimpleIterating
      * @param info the info
      */
     public MorphologyInternalGradient2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscaleData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscaleData.class, "Input")
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**

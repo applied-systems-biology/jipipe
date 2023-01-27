@@ -25,12 +25,10 @@ public abstract class SimpleImageAndRoiIteratingAlgorithm extends JIPipeIteratin
 
     public SimpleImageAndRoiIteratingAlgorithm(JIPipeNodeInfo info,
                                                Class<? extends ImagePlusData> inputClass,
-                                               Class<? extends ImagePlusData> outputClass,
-                                               String outputInheritance,
-                                               Map<Class<? extends JIPipeData>, Class<? extends JIPipeData>> inheritanceConversions) {
+                                               Class<? extends ImagePlusData> outputClass) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", "", inputClass)
-                .addOutputSlot("Output", "", outputClass, outputInheritance, inheritanceConversions)
+                .addOutputSlot("Output", "", outputClass)
                 .seal()
                 .build());
         ImageJAlgorithmUtils.updateROIOrMaskSlot(targetArea, getSlotConfiguration());

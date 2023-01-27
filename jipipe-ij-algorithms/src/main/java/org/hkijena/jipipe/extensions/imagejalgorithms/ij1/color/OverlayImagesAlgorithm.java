@@ -45,7 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_COLOR_RGB_CONVERSION;
+
 
 /**
  * @deprecated Use {@link BlendImagesAlgorithm} instead
@@ -63,8 +63,7 @@ public class OverlayImagesAlgorithm extends JIPipeIteratingAlgorithm {
 
     public OverlayImagesAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().restrictInputTo(ImagePlusGreyscale8UData.class, ImagePlusColorRGBData.class)
-                .addOutputSlot("Output", "", ImagePlusColorRGBData.class, "Input", TO_COLOR_RGB_CONVERSION)
-                .allowOutputSlotInheritance(true)
+                .addOutputSlot("Output", "", ImagePlusColorRGBData.class)
                 .sealOutput()
                 .build());
         channelColorAssignment = new InputSlotMapParameterCollection(Channel.class, this, this::getNewChannelColor, false);

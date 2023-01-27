@@ -49,7 +49,7 @@ public class WekaTrainingROI3DAlgorithm extends JIPipeIteratingAlgorithm {
                 .addInputSlot("Image", "Image on which the training should be applied", ImagePlus3DData.class, false, false)
                 .addInputSlot("Class 1", "", ROIListData.class)
                 .addInputSlot("Class 2", "", ROIListData.class)
-                .addOutputSlot("Trained model", "The model", WekaModelData.class, null)
+                .addOutputSlot("Trained model", "The model", WekaModelData.class)
                 .sealOutput()
                 .restrictInputTo(ROIListData.class)
                 .build());

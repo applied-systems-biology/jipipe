@@ -107,7 +107,6 @@ public class MacroWrapperAlgorithm extends JIPipeIteratingAlgorithm {
      */
     public MacroWrapperAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .allowOutputSlotInheritance(true)
                 .build());
         this.macroParameters.getEventBus().register(this);
 

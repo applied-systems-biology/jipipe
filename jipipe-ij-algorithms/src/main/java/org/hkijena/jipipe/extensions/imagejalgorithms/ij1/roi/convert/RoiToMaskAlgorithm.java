@@ -35,9 +35,9 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeDocumentation(name = "Convert ROI to mask", description = "Converts ROI lists to masks. " +
         "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Output", autoCreate = true)
 public class RoiToMaskAlgorithm extends JIPipeIteratingAlgorithm {
 
     private boolean drawOutline = false;
@@ -51,11 +51,7 @@ public class RoiToMaskAlgorithm extends JIPipeIteratingAlgorithm {
      * @param info the info
      */
     public RoiToMaskAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("ROI", "", ROIListData.class)
-                .addInputSlot("Image", "", ImagePlusData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscaleMaskData.class, null)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**

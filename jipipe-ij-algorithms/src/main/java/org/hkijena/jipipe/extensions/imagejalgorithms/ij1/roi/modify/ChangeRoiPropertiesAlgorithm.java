@@ -33,8 +33,8 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
  */
 @JIPipeDocumentation(name = "Change ROI properties", description = "Sets properties of all Roi to a user-defined value.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private OptionalStringParameter roiName = new OptionalStringParameter();
@@ -56,10 +56,7 @@ public class ChangeRoiPropertiesAlgorithm extends JIPipeSimpleIteratingAlgorithm
      * @param info the info
      */
     public ChangeRoiPropertiesAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ROIListData.class)
-                .addOutputSlot("Output", "", ROIListData.class, null)
-                .seal()
-                .build());
+        super(info);
         lineWidth.setContent(1.0);
     }
 

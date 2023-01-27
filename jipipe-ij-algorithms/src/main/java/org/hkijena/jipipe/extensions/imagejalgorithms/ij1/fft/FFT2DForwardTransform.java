@@ -30,8 +30,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.fft.ImagePlusFFT2
  */
 @JIPipeDocumentation(name = "2D FFT forward transformation", description = "Converts a real space image into an image in frequency space.")
 @JIPipeNode(menuPath = "FFT", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(ImagePlus2DData.class)
-@JIPipeOutputSlot(ImagePlusFFT2DData.class)
+@JIPipeInputSlot(value = ImagePlus2DData.class, autoCreate = true, slotName = "Input")
+@JIPipeOutputSlot(value = ImagePlusFFT2DData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process\nFFT", aliasName = "FFT")
 public class FFT2DForwardTransform extends JIPipeSimpleIteratingAlgorithm {
 
@@ -41,11 +41,7 @@ public class FFT2DForwardTransform extends JIPipeSimpleIteratingAlgorithm {
      * @param info the algorithm info
      */
     public FFT2DForwardTransform(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlus2DData.class)
-                .addOutputSlot("Output", "", ImagePlusFFT2DData.class, null)
-                .allowOutputSlotInheritance(false)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**

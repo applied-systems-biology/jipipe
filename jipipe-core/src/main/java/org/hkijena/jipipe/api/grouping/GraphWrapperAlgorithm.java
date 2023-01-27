@@ -81,7 +81,6 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
 
         slotConfiguration.setInputSealed(true);
         slotConfiguration.setOutputSealed(true);
-        slotConfiguration.setAllowInheritedOutputSlots(false);
         slotConfiguration.clearInputSlots(false);
         slotConfiguration.clearOutputSlots(false);
         for (Map.Entry<String, JIPipeDataSlotInfo> entry : inputSlotConfiguration.getInputSlots().entrySet()) {

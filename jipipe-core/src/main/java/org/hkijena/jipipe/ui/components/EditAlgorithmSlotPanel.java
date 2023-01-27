@@ -44,16 +44,13 @@ public class EditAlgorithmSlotPanel extends JPanel {
     private JIPipeDataSlot existingSlot;
     private SearchTextField searchField;
     private JList<JIPipeDataInfo> datatypeList;
-    private JComboBox<String> inheritedSlotList;
     private JTextField nameEditor;
     private JTextField descriptionEditor;
     private JIPipeDataInfo selectedInfo;
     private JButton confirmButton;
     private JDialog dialog;
     private Set<JIPipeDataInfo> availableTypes;
-    private Map<JIPipeDataInfo, JIPipeDataInfo> inheritanceConversions = new HashMap<>();
     private JCheckBox optionalInputEditor = new JCheckBox();
-
 
     /**
      * Creates a new instance
@@ -106,7 +103,6 @@ public class EditAlgorithmSlotPanel extends JPanel {
     }
 
     private void initialize() {
-        JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) existingSlot.getNode().getSlotConfiguration();
         setLayout(new BorderLayout());
 
         JPanel listPanel = new JPanel(new BorderLayout());
@@ -158,26 +154,6 @@ public class EditAlgorithmSlotPanel extends JPanel {
             optionalInputEditor.setText("Optional input");
             optionalInputEditor.setToolTipText("If enabled, the input slot does not require an incoming edge. The node then will receive an empty data table.");
             formPanel.addWideToForm(optionalInputEditor, null);
-        }
-        if (existingSlot.getSlotType() == JIPipeSlotType.Output && slotConfiguration.isAllowInheritedOutputSlots()) {
-            formPanel.addGroupHeader("Inheritance", UIUtils.getIconFromResources("actions/configure.png"));
-            inheritedSlotList = new JComboBox<>();
-            inheritedSlotList.setRenderer(new InheritedSlotListCellRenderer(existingSlot.getNode()));
-            DefaultComboBoxModel<String> model = new DefaultComboBoxModel<>();
-            model.addElement("");
-            model.addElement("*");
-            for (String id : existingSlot.getNode().getInputSlotOrder()) {
-                model.addElement(id);
-            }
-            inheritedSlotList.setModel(model);
-            inheritedSlotList.setSelectedIndex(0);
-            formPanel.addToForm(inheritedSlotList, new JLabel("Inherited slot"), null);
-            inheritedSlotList.setToolTipText("Inherits the slot type from an input slot. This will adapt to which data is currently connected.");
-
-            InheritanceConversionEditorUI inheritanceConversionEditorUI
-                    = new InheritanceConversionEditorUI(inheritanceConversions);
-            inheritanceConversionEditorUI.setBorder(BorderFactory.createEtchedBorder());
-            formPanel.addToForm(inheritanceConversionEditorUI, new JLabel("Inheritance conversions"), null);
         }
         formPanel.addVerticalGlue();
         add(formPanel, BorderLayout.CENTER);
@@ -244,20 +220,13 @@ public class EditAlgorithmSlotPanel extends JPanel {
         JIPipeDefaultMutableSlotConfiguration slotConfiguration = (JIPipeDefaultMutableSlotConfiguration) algorithm.getSlotConfiguration();
         JIPipeDataSlotInfo slotDefinition;
         if (slotType == JIPipeSlotType.Input) {
-            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, slotDescription, null);
+            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, slotDescription);
             slotDefinition.setOptional(optionalInputEditor.isSelected());
         } else if (slotType == JIPipeSlotType.Output) {
-            String inheritedSlot = null;
-            if (inheritedSlotList != null && inheritedSlotList.getSelectedItem() != null) {
-                inheritedSlot = inheritedSlotList.getSelectedItem().toString();
-            }
-
-            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, slotDescription, inheritedSlot);
+            slotDefinition = new JIPipeDataSlotInfo(selectedInfo.getDataClass(), slotType, slotName, slotDescription);
         } else {
             throw new UnsupportedOperationException();
         }
-
-        slotDefinition.setInheritanceConversions(inheritanceConversions);
 
         // Remember connections to the existing slot
         // Remember the slot order

@@ -63,6 +63,7 @@ public class DefaultJIPipeOutputSlot implements JIPipeOutputSlot {
     }
 
     @Override
+    @Deprecated
     public String inheritedSlot() {
         return inheritedSlot;
     }

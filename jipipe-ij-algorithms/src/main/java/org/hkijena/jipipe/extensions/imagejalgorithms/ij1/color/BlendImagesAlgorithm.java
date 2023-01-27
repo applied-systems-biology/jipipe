@@ -50,7 +50,7 @@ public class BlendImagesAlgorithm extends JIPipeIteratingAlgorithm {
 
     public BlendImagesAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addOutputSlot("Output", "The output image", ImagePlusColorRGBData.class, null)
+                .addOutputSlot("Output", "The output image", ImagePlusColorRGBData.class)
                 .restrictInputTo(ImagePlusData.class)
                 .sealOutput()
                 .build());

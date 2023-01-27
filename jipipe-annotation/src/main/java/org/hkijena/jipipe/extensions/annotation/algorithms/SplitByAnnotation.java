@@ -54,7 +54,7 @@ public class SplitByAnnotation extends JIPipeAlgorithm {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", "", JIPipeData.class)
                 .sealInput()
-                .addOutputSlot("Output", "", JIPipeData.class, "Input")
+                .addOutputSlot("Output", "", JIPipeData.class)
                 .build());
         this.customVariables = new CustomExpressionVariablesParameter(this);
         this.targetSlots = new OutputSlotMapParameterCollection(AnnotationFilterExpression.class, this, null, true);

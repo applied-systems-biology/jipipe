@@ -43,7 +43,7 @@ import org.hkijena.jipipe.extensions.tables.datatypes.ResultsTableData;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.ADD_MASK_QUALIFIER;
+
 
 /**
  * Segments using a Hough circle transform
@@ -54,10 +54,10 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Threshold", nodeTypeCategory = ImagesNodeTypeCategory.class)
 @JIPipeCitation("https://github.com/closms/detectcircles")
-@JIPipeInputSlot(value = ImagePlusGreyscaleData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Accumulator")
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
+@JIPipeInputSlot(value = ImagePlusGreyscale8UData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Accumulator", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true)
 public class FastCircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private final int minEdgeVal = 1;
@@ -69,13 +69,7 @@ public class FastCircularHoughSegmentation2DAlgorithm extends JIPipeSimpleIterat
      * @param info algorithm info
      */
     public FastCircularHoughSegmentation2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "The input image", ImagePlusGreyscale8UData.class)
-                .addOutputSlot("Mask", "Mask of the detected circles", ImagePlusGreyscaleMaskData.class, "Input", ADD_MASK_QUALIFIER)
-                .addOutputSlot("Accumulator", "Accumulator image (circle parameter space)", ImagePlusGreyscaleData.class, null)
-                .addOutputSlot("Measurements", "Circle measurements", ResultsTableData.class, null)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
     }
 
     public FastCircularHoughSegmentation2DAlgorithm(FastCircularHoughSegmentation2DAlgorithm other) {

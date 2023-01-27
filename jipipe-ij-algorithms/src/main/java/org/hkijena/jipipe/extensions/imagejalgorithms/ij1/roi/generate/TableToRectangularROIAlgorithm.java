@@ -37,8 +37,8 @@ import java.awt.*;
  */
 @JIPipeDocumentation(name = "Table to rectangular/oval ROIs", description = "Converts data from a table to rectangular or oval ROIs. This node provides more options than the 'Table to circular ROIs' node.")
 @JIPipeNode(nodeTypeCategory = TableNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
+@JIPipeInputSlot(value = ResultsTableData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private TableColumnSourceExpressionParameter columnX1 = new TableColumnSourceExpressionParameter(TableColumnSourceExpressionParameter.TableSourceType.ExistingColumn, "\"X1\"");
@@ -64,11 +64,7 @@ public class TableToRectangularROIAlgorithm extends JIPipeSimpleIteratingAlgorit
      * @param info the info
      */
     public TableToRectangularROIAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", "", ResultsTableData.class)
-                .addOutputSlot("Output", "", ROIListData.class, null)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**

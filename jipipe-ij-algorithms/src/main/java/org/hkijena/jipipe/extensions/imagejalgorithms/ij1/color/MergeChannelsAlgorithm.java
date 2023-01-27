@@ -40,8 +40,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_COLOR_RGB_CONVERSION;
-
 /**
  * Wrapper around {@link ImageProcessor}
  */
@@ -53,7 +51,7 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
 
     private static final RGBStackMerge RGB_STACK_MERGE = new RGBStackMerge();
-    private InputSlotMapParameterCollection channelColorAssignment;
+    private final InputSlotMapParameterCollection channelColorAssignment;
     private boolean createComposite = false;
 
     /**
@@ -62,10 +60,9 @@ public class MergeChannelsAlgorithm extends JIPipeIteratingAlgorithm {
      * @param info the info
      */
     public MergeChannelsAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().restrictInputTo(TO_COLOR_RGB_CONVERSION.keySet())
+        super(info, JIPipeDefaultMutableSlotConfiguration.builder().restrictInputTo(ImagePlusGreyscaleData.class)
                 .restrictInputSlotCount(ChannelColor.values().length)
-                .addOutputSlot("Output", "", ImagePlusData.class, "Input", TO_COLOR_RGB_CONVERSION)
-                .allowOutputSlotInheritance(true)
+                .addOutputSlot("Output", "", ImagePlusData.class)
                 .sealOutput()
                 .build());
         channelColorAssignment = new InputSlotMapParameterCollection(ChannelColor.class, this, this::getNewChannelColor, false);

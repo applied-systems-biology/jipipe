@@ -27,16 +27,16 @@ import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.DECREASE_DIMENSION_CONVERSION;
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.REMOVE_MASK_QUALIFIER;
+
+
 
 /**
  * Wrapper around {@link ij.plugin.ZProjector}
  */
 @JIPipeDocumentation(name = "Z-Project (classic)", description = "Performs a Z-Projection. This version of the Z-project algorithm wraps around the native ImageJ function and can only handle 3D images. If you have a hyperstack (4D+), use the other Z-project algorithm.")
 @JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Z Project...")
 public class ZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -51,14 +51,7 @@ public class ZProjectorAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public ZProjectorAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusData.class)
-                .addOutputSlot("Output",
-                        "", ImagePlusData.class,
-                        "Input",
-                        JIPipeDataSlotInfo.composeRawInheritanceConversions(REMOVE_MASK_QUALIFIER, DECREASE_DIMENSION_CONVERSION))
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**

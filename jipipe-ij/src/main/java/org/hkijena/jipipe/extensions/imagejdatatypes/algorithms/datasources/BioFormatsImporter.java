@@ -53,8 +53,8 @@ import java.util.List;
  * BioFormats importer wrapper
  */
 @JIPipeDocumentation(name = "Bio-Formats importer", description = "Imports images via the Bio-Formats plugin")
-@JIPipeInputSlot(value = FileData.class, slotName = "Files")
-@JIPipeOutputSlot(value = OMEImageData.class, slotName = "Image")
+@JIPipeInputSlot(value = FileData.class, slotName = "Input", description = "The image file(s)", autoCreate = true)
+@JIPipeOutputSlot(value = OMEImageData.class, slotName = "Output", description = "The imported data", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
 @JIPipeCitation("Melissa Linkert, Curtis T. Rueden, Chris Allan, Jean-Marie Burel, Will Moore, Andrew Patterson, Brian Loranger, Josh Moore, " +
         "Carlos Neves, Donald MacDonald, Aleksandra Tarkowska, Caitlin Sticco, Emma Hill, Mike Rossner, Kevin W. Eliceiri, " +
@@ -83,11 +83,7 @@ public class BioFormatsImporter extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public BioFormatsImporter(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "The image file", FileData.class)
-                .addOutputSlot("Output", "The imported data", OMEImageData.class, null)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
         seriesToImport.add(0);
     }
 

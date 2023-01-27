@@ -36,8 +36,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.REMOVE_MASK_QUALIFIER;
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_GRAYSCALE32F_CONVERSION;
+
+
 
 /**
  * Wrapper around {@link ij.process.ImageProcessor}
@@ -45,9 +45,9 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeDocumentation(name = "Image calculator 2D", description = "Applies a mathematical operation between two images. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Math", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 1")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 2")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 1", autoCreate = true, description = "The first operand")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input 2", autoCreate = true, description = "The second operand")
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true, description = "The calculation result")
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Process", aliasName = "Image Calculator...")
 public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
 
@@ -61,13 +61,7 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
      * @param info the info
      */
     public ImageCalculator2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input 1", "The first operand", ImagePlusData.class)
-                .addInputSlot("Input 2", "The second operand", ImagePlusData.class)
-                .addOutputSlot("Output", "The calculation result", ImagePlusData.class, "Input 1")
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
         operands = new InputSlotMapParameterCollection(Operand.class, this, this::getNewOperand, false);
         operands.updateSlots();
         registerSubParameter(operands);
@@ -192,17 +186,6 @@ public class ImageCalculator2DAlgorithm extends JIPipeIteratingAlgorithm {
     @JIPipeParameter("floating-point-output")
     public void setFloatingPointOutput(boolean floatingPointOutput) {
         this.floatingPointOutput = floatingPointOutput;
-
-        JIPipeDataSlotInfo definition = getFirstOutputSlot().getInfo();
-        if (floatingPointOutput) {
-            getFirstOutputSlot().setAcceptedDataType(ImagePlusGreyscale32FData.class);
-            definition.setInheritanceConversionsFromRaw(TO_GRAYSCALE32F_CONVERSION);
-        } else {
-            getFirstOutputSlot().setAcceptedDataType(ImagePlusData.class);
-            definition.setInheritanceConversionsFromRaw(REMOVE_MASK_QUALIFIER);
-        }
-        getEventBus().post(new JIPipeGraph.NodeSlotsChangedEvent(this));
-        updateSlotInheritance();
     }
 
     /**

@@ -16,17 +16,13 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 @JIPipeDocumentation(name = "Render to RGB", description = "Converts the incoming image to RGB. This applies the LUT if any is set. " +
         "Compared to the image converter node, this operation renders the image into a representation equivalent to an image viewer, meaning " +
         "that contrast settings are preserved.")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Colors")
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nType", aliasName = "RGB Color")
 public class RenderImageToRGBAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     public RenderImageToRGBAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", "", ImagePlusData.class)
-                .addOutputSlot("Output", "", ImagePlusColorRGBData.class, "Input", ImageJAlgorithmsExtension.TO_COLOR_RGB_CONVERSION)
-                .seal()
-                .build());
+        super(info);
     }
 
     public RenderImageToRGBAlgorithm(RenderImageToRGBAlgorithm other) {

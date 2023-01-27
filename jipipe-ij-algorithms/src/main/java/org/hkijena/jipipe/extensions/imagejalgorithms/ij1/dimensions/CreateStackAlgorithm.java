@@ -36,17 +36,13 @@ import org.hkijena.jipipe.utils.StringUtils;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_3D_CONVERSION;
 
-/**
- * Wrapper around {@link ImageProcessor}
- */
 @JIPipeDocumentation(name = "Create 3D stack", description = "Merges 2D image planes into a 3D stack. Data annotations are used to put " +
         "images into groups. All images in a group are then merged into a 3D stack. The order of the stack slices is determined by the 'Slice index annotation' " +
         "that is ignored while defining the groups.")
 @JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlus2DData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Images to Stack")
 public class CreateStackAlgorithm extends JIPipeMergingAlgorithm {
 
@@ -59,11 +55,7 @@ public class CreateStackAlgorithm extends JIPipeMergingAlgorithm {
      * @param info the info
      */
     public CreateStackAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlus2DData.class)
-                .addOutputSlot("Output", "", ImagePlus3DData.class, "Input", TO_3D_CONVERSION)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**

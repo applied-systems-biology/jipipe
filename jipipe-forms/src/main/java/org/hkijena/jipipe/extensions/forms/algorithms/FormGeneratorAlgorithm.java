@@ -17,7 +17,7 @@ public abstract class FormGeneratorAlgorithm extends JIPipeAlgorithm {
 
     public FormGeneratorAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Existing", "Existing list of forms", FormData.class, true)
-                .addOutputSlot("Combined", "Existing list of forms plus the form defined by this node", FormData.class, null)
+                .addOutputSlot("Combined", "Existing list of forms plus the form defined by this node", FormData.class)
                 .seal()
                 .build());
     }

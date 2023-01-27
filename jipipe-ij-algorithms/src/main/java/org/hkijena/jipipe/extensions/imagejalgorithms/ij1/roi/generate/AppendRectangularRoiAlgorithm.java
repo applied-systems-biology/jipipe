@@ -35,8 +35,8 @@ import java.awt.*;
         "Ths algorithm allows to add rectangles as margins. As no reference image is available, the reference area is defined by the " +
         "bounds of the already existing ROI.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 @Deprecated
 @JIPipeHidden
 public class AppendRectangularRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
@@ -49,11 +49,7 @@ public class AppendRectangularRoiAlgorithm extends JIPipeSimpleIteratingAlgorith
      * @param info the info
      */
     public AppendRectangularRoiAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Input", "", ROIListData.class)
-                .addOutputSlot("Output", "", ROIListData.class, null)
-                .seal()
-                .build());
+        super(info);
         rectangles.addNewInstance();
     }
 

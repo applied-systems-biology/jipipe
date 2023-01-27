@@ -33,15 +33,15 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.optional.Opti
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.TO_2D_CONVERSION;
+
 
 /**
  * Wrapper around {@link ImageProcessor}
  */
 @JIPipeDocumentation(name = "Split stack into 2D", description = "Splits high-dimensional image stacks into 2D planes")
 @JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlus2DData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks", aliasName = "Stacks to Image")
 public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -56,11 +56,7 @@ public class StackTo2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public StackTo2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusData.class)
-                .addOutputSlot("Output", "", ImagePlus2DData.class, "Input", TO_2D_CONVERSION)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**

@@ -569,8 +569,6 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
         graph.addEdge(source, target, new JIPipeGraphEdge(userCanDisconnect));
         postChangedEvent();
         getEventBus().post(new NodeConnectedEvent(this, source, target));
-        source.getNode().onSlotConnected(new NodeConnectedEvent(this, source, target));
-        target.getNode().onSlotConnected(new NodeConnectedEvent(this, source, target));
     }
 
     /**
@@ -759,8 +757,6 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
             graph.removeEdge(source, target);
             getEventBus().post(new NodeDisconnectedEvent(this, source, target));
             postChangedEvent();
-            source.getNode().onSlotDisconnected(new NodeDisconnectedEvent(this, source, target));
-            target.getNode().onSlotDisconnected(new NodeDisconnectedEvent(this, source, target));
             return true;
         }
         return false;

@@ -43,8 +43,8 @@ import java.awt.*;
 @JIPipeDocumentation(name = "Scale 2D image", description = "Scales a 2D image. " +
         "If higher-dimensional data is provided, the filter is applied to each 2D slice.")
 @JIPipeNode(menuPath = "Transform", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image", aliasName = "Scale... (2D)")
 public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -62,11 +62,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public TransformScale2DAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusData.class)
-                .addOutputSlot("Output", "", ImagePlusData.class, "Input")
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
         xAxis.setEnabled(true);
         yAxis.setEnabled(true);
     }

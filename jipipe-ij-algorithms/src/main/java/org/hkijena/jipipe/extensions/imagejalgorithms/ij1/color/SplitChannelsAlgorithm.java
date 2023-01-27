@@ -46,8 +46,8 @@ import java.util.*;
 @JIPipeDocumentation(name = "Split channels (deprecated)", description = "Splits multichannel images into multiple greyscale images. " +
         "This operation is applied for each 2D image slice. <strong>This node is deprecated. Please use the new 'Split channels' node</strong>")
 @JIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscaleData.class)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nColor", aliasName = "Split Channels")
 @JIPipeHidden
 @Deprecated
@@ -69,7 +69,6 @@ public class SplitChannelsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder()
                 .addInputSlot("Input", "", ImagePlusData.class)
                 .restrictOutputTo(JIPipe.getDataTypes().findDataTypesByInterfaces(ImagePlusData.class))
-                .allowOutputSlotInheritance(false)
                 .sealInput()
                 .build());
         channelToSlotAssignment = new OutputSlotMapParameterCollection(Integer.class, this, (slotInfo) -> 0, false);

@@ -52,7 +52,9 @@ public @interface JIPipeOutputSlot {
      * or can be '*' to inherit the type of the first slot
      *
      * @return inherited slot
+     * @deprecated non-functional as of JIPipe version 1.78.0
      */
+    @Deprecated
     String inheritedSlot() default "";
 
     /**

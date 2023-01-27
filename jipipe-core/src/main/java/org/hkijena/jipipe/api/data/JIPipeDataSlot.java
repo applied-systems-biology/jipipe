@@ -90,7 +90,7 @@ public abstract class JIPipeDataSlot extends JIPipeDataTable {
         JIPipeInputDataSlot slot = new JIPipeInputDataSlot(new JIPipeDataSlotInfo(data.getClass(),
                 JIPipeSlotType.Input,
                 "Data",
-                "", null), node);
+                ""), node);
         slot.addData(data, new JIPipeProgressInfo());
         return slot;
     }

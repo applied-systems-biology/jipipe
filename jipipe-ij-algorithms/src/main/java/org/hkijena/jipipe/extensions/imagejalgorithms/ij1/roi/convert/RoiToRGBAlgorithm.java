@@ -50,9 +50,9 @@ import java.util.Collections;
 @JIPipeDocumentation(name = "Convert ROI to RGB", description = "Converts ROI lists to masks. The line and fill color is stored within the ROI themselves. " +
         "This algorithm needs a reference image that provides the output sizes. If you do not have a reference image, you can use the unreferenced variant.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Convert")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image")
-@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "The ROI", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Image", description = "The image where ROI are drawn on", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusColorRGBData.class, slotName = "Output", description = "The ROI visualization (RGB image)", autoCreate = true)
 public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
 
     private ROIElementDrawingMode drawOutlineMode = ROIElementDrawingMode.Always;
@@ -82,11 +82,7 @@ public class RoiToRGBAlgorithm extends JIPipeIteratingAlgorithm {
      * @param info the info
      */
     public RoiToRGBAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("ROI", "The ROI", ROIListData.class)
-                .addInputSlot("Image", "The image where ROI are drawn on", ImagePlusData.class)
-                .addOutputSlot("Output", "The ROI visualization (RGB image)", ImagePlusColorRGBData.class, null)
-                .seal()
-                .build());
+        super(info);
         overrideLineWidth.setContent(1.0);
         overrideFillColor.setContent(Color.RED);
         overrideLineColor.setContent(Color.YELLOW);

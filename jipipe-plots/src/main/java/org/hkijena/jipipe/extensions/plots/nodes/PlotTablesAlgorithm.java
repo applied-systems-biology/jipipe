@@ -62,7 +62,7 @@ public class PlotTablesAlgorithm extends JIPipeMergingAlgorithm {
      */
     public PlotTablesAlgorithm(JIPipeNodeInfo info) {
         super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "Tables that will be plotted", ResultsTableData.class)
-                .addOutputSlot("Output", "Generated plots", PlotData.class, null)
+                .addOutputSlot("Output", "Generated plots", PlotData.class)
                 .seal()
                 .build());
         registerSubParameter(inputColumns);

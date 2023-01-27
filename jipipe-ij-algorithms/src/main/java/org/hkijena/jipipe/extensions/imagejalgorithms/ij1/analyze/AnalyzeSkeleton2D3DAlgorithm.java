@@ -62,8 +62,8 @@ import java.util.Comparator;
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze\nSkeleton", aliasName = "Analyze Skeleton (2D/3D)")
 public class AnalyzeSkeleton2D3DAlgorithm extends JIPipeIteratingAlgorithm {
 
-    public static final JIPipeDataSlotInfo ROI_INPUT_SLOT = new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, "ROI", "ROI to exclude on pruning ends", null, true);
-    public static final JIPipeDataSlotInfo REFERENCE_INPUT_SLOT = new JIPipeDataSlotInfo(ImagePlus3DGreyscale8UData.class, JIPipeSlotType.Input, "Reference", "Original grayscale input image (for lowest pixel intensity pruning mode)", null, true);
+    public static final JIPipeDataSlotInfo ROI_INPUT_SLOT = new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, "ROI", "ROI to exclude on pruning ends", true);
+    public static final JIPipeDataSlotInfo REFERENCE_INPUT_SLOT = new JIPipeDataSlotInfo(ImagePlus3DGreyscale8UData.class, JIPipeSlotType.Input, "Reference", "Original grayscale input image (for lowest pixel intensity pruning mode)", true);
 
     public static final JIPipeDataSlotInfo SKELETONS_TABLE_OUTPUT_SLOT = new JIPipeDataSlotInfo(ResultsTableData.class, JIPipeSlotType.Output, "Skeletons", "Table of all skeletons");
 

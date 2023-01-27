@@ -33,9 +33,9 @@ import java.nio.file.Path;
         "that contain the last path component in their name might be created. " +
         "Duplicate files might be silently overwritten, meaning that the paths should be unique." +
         "Please note that you do not need to explicitly export data, as JIPipe automatically saves all output data.")
-@JIPipeInputSlot(JIPipeData.class)
-@JIPipeInputSlot(PathData.class)
-@JIPipeOutputSlot(PathData.class)
+@JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", description = "The data to be exported", autoCreate = true)
+@JIPipeInputSlot(value = PathData.class, slotName = "Path", description = "The directory where the data will be stored", autoCreate = true)
+@JIPipeOutputSlot(value = PathData.class, slotName = "Path", description = "The directory where the data was stored", autoCreate = true)
 @JIPipeNode(nodeTypeCategory = ExportNodeTypeCategory.class)
 public class ExportData extends JIPipeIteratingAlgorithm {
 
@@ -43,12 +43,7 @@ public class ExportData extends JIPipeIteratingAlgorithm {
     private boolean splitBySlotName;
 
     public ExportData(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("Data", "The data to be exported", JIPipeData.class)
-                .addInputSlot("Path", "The directory where the data will be stored", PathData.class)
-                .addOutputSlot("Path", "The directory where the data was stored", PathData.class, null)
-                .seal()
-                .build());
+        super(info);
         registerSubParameter(exporter);
     }
 

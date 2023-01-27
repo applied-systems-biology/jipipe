@@ -36,9 +36,9 @@ import java.awt.*;
 @JIPipeDocumentation(name = "Append rectangular ROI (referenced)", description = "Appends manually defines rectangular ROI to all input ROI lists. " +
         "Ths algorithm allows to add rectangles as margins to the reference image bounds.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Merge")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI")
-@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
+@JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 @Deprecated
 @JIPipeHidden
 public class ReferencedAppendRectangularRoiAlgorithm extends JIPipeIteratingAlgorithm {
@@ -51,12 +51,7 @@ public class ReferencedAppendRectangularRoiAlgorithm extends JIPipeIteratingAlgo
      * @param info the info
      */
     public ReferencedAppendRectangularRoiAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder()
-                .addInputSlot("ROI", "The ROI", ROIListData.class)
-                .addInputSlot("Reference", "Reference image used for generating the rectangle", ImagePlusData.class)
-                .addOutputSlot("Output", "Output ROI", ROIListData.class, null)
-                .seal()
-                .build());
+        super(info);
         rectangles.addNewInstance();
     }
 

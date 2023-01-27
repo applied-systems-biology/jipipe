@@ -55,9 +55,9 @@ import java.util.List;
         "If higher-dimensional data is provided, the results are generated for each 2D slice.")
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Analyze")
 
-@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI")
-@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements")
+@JIPipeInputSlot(value = ImagePlusGreyscaleMaskData.class, slotName = "Mask", description = "The mask where particles are extracted from. White pixels are foreground.", autoCreate = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "ROI", description = "The extracted ROI", autoCreate = true)
+@JIPipeOutputSlot(value = ResultsTableData.class, slotName = "Measurements", autoCreate = true, description = "The measurements of the ROI")
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Analyze", aliasName = "Analyze Particles...")
 public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
     private double minParticleSize = 0;
@@ -78,12 +78,7 @@ public class FindParticles2D extends JIPipeSimpleIteratingAlgorithm {
      * @param info algorithm info
      */
     public FindParticles2D(JIPipeNodeInfo info) {
-        super(info,
-                JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Mask", "The mask where particles are extracted from. White pixels are foreground.", ImagePlusGreyscaleMaskData.class)
-                        .addOutputSlot("ROI", "The extracted ROI", ROIListData.class, null)
-                        .addOutputSlot("Measurements", "The measurements of the ROI", ResultsTableData.class, null)
-                        .seal()
-                        .build());
+        super(info);
         this.annotationType.setContent("Image index");
     }
 

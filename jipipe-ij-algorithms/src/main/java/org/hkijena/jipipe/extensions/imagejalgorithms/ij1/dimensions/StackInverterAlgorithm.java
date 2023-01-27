@@ -30,8 +30,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.d3.ImagePlus3DDat
  */
 @JIPipeDocumentation(name = "Invert 3D stack Z-order", description = "Inverts the order of a Z-stack.")
 @JIPipeNode(menuPath = "Dimensions", nodeTypeCategory = ImagesNodeTypeCategory.class)
-@JIPipeInputSlot(value = ImagePlus3DData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlus3DData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlus3DData.class, slotName = "Output", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "Image\nStacks\nTools\nReverse")
 public class StackInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
@@ -41,11 +41,7 @@ public class StackInverterAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public StackInverterAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlus3DData.class)
-                .addOutputSlot("Output", "", ImagePlus3DData.class, "Input")
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
     }
 
     /**

@@ -28,7 +28,6 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 
 import java.awt.*;
-import java.util.Collections;
 
 @JIPipeDocumentation(name = "Set to color (RGB)", description = "Sets all pixels of the input image to the specified color. If the image is grayscale, the provided color is converted to its equivalent grayscale value.")
 @JIPipeNode(menuPath = "Colors", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -40,7 +39,7 @@ public class SetToColorAlgorithm extends SimpleImageAndRoiIteratingAlgorithm {
     private Color color = Color.BLACK;
 
     public SetToColorAlgorithm(JIPipeNodeInfo info) {
-        super(info, ImagePlusData.class, ImagePlusData.class, null, Collections.emptyMap());
+        super(info, ImagePlusData.class, ImagePlusData.class);
     }
 
     public SetToColorAlgorithm(SetToColorAlgorithm other) {

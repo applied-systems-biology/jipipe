@@ -38,7 +38,7 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.DoubleLi
 
 import java.util.Vector;
 
-import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension.REMOVE_MASK_QUALIFIER;
+
 
 /**
  * Applies CLAHE image enhancing
@@ -49,8 +49,8 @@ import static org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExt
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "Features")
 
 
-@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output")
+@JIPipeInputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusGreyscale32FData.class, slotName = "Output", autoCreate = true)
 public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorithm {
 
     private DoubleList scales = new DoubleList();
@@ -62,11 +62,7 @@ public class MeijeringVesselness2DFeatures extends JIPipeSimpleIteratingAlgorith
      * @param info the info
      */
     public MeijeringVesselness2DFeatures(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ImagePlusGreyscale32FData.class)
-                .addOutputSlot("Output", "", ImagePlusGreyscale32FData.class, "Input", REMOVE_MASK_QUALIFIER)
-                .allowOutputSlotInheritance(true)
-                .seal()
-                .build());
+        super(info);
 
         // Initialize with a default value
         scales.add(3.0);

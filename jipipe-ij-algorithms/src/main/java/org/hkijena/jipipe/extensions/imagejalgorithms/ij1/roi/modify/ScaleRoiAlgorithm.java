@@ -29,8 +29,8 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
  */
 @JIPipeDocumentation(name = "Scale ROI", description = "Scales all ROI in the ROI list. If you want to have more flexibility, use one of the 'Change ROI properties' nodes.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
-@JIPipeInputSlot(value = ROIListData.class, slotName = "Input")
-@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output")
+@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
+@JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
 public class ScaleRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     private double scaleX = 1.0;
@@ -43,10 +43,7 @@ public class ScaleRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
      * @param info the info
      */
     public ScaleRoiAlgorithm(JIPipeNodeInfo info) {
-        super(info, JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Input", "", ROIListData.class)
-                .addOutputSlot("Output", "", ROIListData.class, null)
-                .seal()
-                .build());
+        super(info);
     }
 
 

@@ -46,10 +46,11 @@ import java.util.stream.Collectors;
 /**
  * Loads an image data from a file via IJ.openFile()
  */
-@JIPipeDocumentation(name = "Import image stack", description = "Loads an image stack via the native ImageJ functions. The current implementation only allows 2D images to be imported and will show an error if higher-dimensional data is provided.")
+@JIPipeDocumentation(name = "Import image stack", description = "Loads an image stack via the native ImageJ functions. " +
+        "The current implementation only allows 2D images to be imported and will show an error if higher-dimensional data is provided.")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-@JIPipeInputSlot(FolderData.class)
-@JIPipeOutputSlot(ImagePlusData.class)
+@JIPipeInputSlot(value = FolderData.class, slotName = "Folder", description = "One or multiple directories", autoCreate = true)
+@JIPipeOutputSlot(value = ImagePlusData.class, slotName = "Image", description = "The imported image(s)", autoCreate = true)
 @JIPipeNodeAlias(nodeTypeCategory = ImageJNodeTypeCategory.class, menuPath = "File\nImport", aliasName = "Image Sequence...")
 public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
 
@@ -65,12 +66,7 @@ public class ImageStackFromFolder extends JIPipeSimpleIteratingAlgorithm {
      * @param info algorithm info
      */
     public ImageStackFromFolder(JIPipeNodeInfo info) {
-        super(info,
-                JIPipeDefaultMutableSlotConfiguration.builder().addInputSlot("Folder", "", FolderData.class)
-                        .addOutputSlot("Image", "", ImagePlusData.class, null)
-                        .sealOutput()
-                        .sealInput()
-                        .build());
+        super(info);
     }
 
     /**
