@@ -162,13 +162,6 @@ public class StandardSettingsExtension extends JIPipePrepackagedDefaultJavaExten
                 "Data",
                 null,
                 new GeneralDataSettings());
-        registerSettingsSheet(VirtualDataSettings.ID,
-                "Reduced memory",
-                "Settings for the 'Reduce memory' mode",
-                UIUtils.getIconFromResources("actions/rabbitvcs-drive.png"),
-                "Data",
-                null,
-                new VirtualDataSettings());
         registerSettingsSheet(DataExporterSettings.ID,
                 "Data export",
                 "Default settings for data exporters",

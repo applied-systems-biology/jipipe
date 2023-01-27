@@ -19,7 +19,6 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
@@ -27,7 +26,6 @@ import org.hkijena.jipipe.api.JIPipeHeavyData;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.io.IOException;
@@ -71,7 +69,6 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         this.name = name;
         this.description = description;
         this.optional = optional;
-        setVirtualByDataType();
     }
 
     /**
@@ -93,7 +90,6 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
         this.name = name;
         this.description = description;
         this.optional = optional;
-        setVirtualByDataType();
     }
 
     /**
@@ -187,15 +183,6 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
             return new JIPipeOutputDataSlot(this, node);
         } else {
             throw new UnsupportedOperationException("Invalid slot info state!");
-        }
-    }
-
-    private void setVirtualByDataType() {
-        if (JIPipe.getInstance() != null && JIPipe.getSettings().getRegisteredSheets().containsKey(VirtualDataSettings.ID)
-                && VirtualDataSettings.getInstance().isLargeVirtualDataTypesByDefault()) {
-            if (dataClass.getAnnotation(JIPipeHeavyData.class) != null) {
-                this.virtual = true;
-            }
         }
     }
 
@@ -492,7 +479,6 @@ public class JIPipeDataSlotInfo implements JIPipeParameterCollection {
                 if (!StringUtils.isFilesystemCompatible(result.getName()) && result.isOutput()) {
                     throw new IllegalArgumentException("The output slot name '" + result.getName() + "' is not compatible to file systems!");
                 }
-                result.setVirtualByDataType();
                 return result;
             }
         }

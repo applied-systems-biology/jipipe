@@ -18,7 +18,6 @@ import org.hkijena.jipipe.api.JIPipeProjectRun;
 import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
-import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.nio.file.Path;

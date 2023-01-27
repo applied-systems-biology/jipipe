@@ -15,16 +15,10 @@ package org.hkijena.jipipe.api.data;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemReadDataStorage;
-import org.hkijena.jipipe.api.data.storage.JIPipeFileSystemWriteDataStorage;
-import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
-import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.data.Store;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.nio.file.Path;
 import java.util.WeakHashMap;
 
 /**

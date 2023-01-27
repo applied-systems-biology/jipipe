@@ -13,13 +13,8 @@
 
 package org.hkijena.jipipe.ui.data;
 
-import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.extensions.settings.VirtualDataSettings;
-import org.hkijena.jipipe.ui.JIPipeProjectWindow;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
-import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
-import org.hkijena.jipipe.utils.ParameterUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
@@ -28,8 +23,6 @@ import javax.swing.*;
  * A tool that automatically runs 'update cache' when any parameter or graph property is changed
  */
 public class MemoryOptionsControl extends JIPipeProjectWorkbenchPanel {
-
-    private final VirtualDataSettings virtualDataSettings = VirtualDataSettings.getInstance();
 
     /**
      * @param workbenchUI The workbench UI
