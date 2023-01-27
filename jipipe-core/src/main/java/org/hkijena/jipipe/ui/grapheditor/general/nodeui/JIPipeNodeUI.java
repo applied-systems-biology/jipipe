@@ -37,7 +37,6 @@ import org.hkijena.jipipe.ui.components.EditAlgorithmSlotPanel;
 import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.*;
-import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.*;
 import org.hkijena.jipipe.utils.ui.ViewOnlyMenuItem;
 
@@ -1252,7 +1251,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
     private void openSlotMenuAddOutputTargetSlotItems(JIPipeDataSlot slot, Set<JIPipeDataSlot> targetSlots, JMenu menu) {
         for (JIPipeDataSlot targetSlot : sortSlotsByDistance(slot, targetSlots)) {
-            JMenu targetSlotMenu = new JMenu(targetSlot.getDisplayName());
+            JMenu targetSlotMenu = new JMenu("<html>" + targetSlot.getName() + "<br><small>" + targetSlot.getNode().getDisplayName() + "</small></html>");
             targetSlotMenu.setIcon(JIPipe.getDataTypes().getIconFor(targetSlot.getAcceptedDataType()));
 
             JMenuItem disconnectButton = new JMenuItem("Disconnect", UIUtils.getIconFromResources("actions/cancel.png"));
@@ -1306,19 +1305,6 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
     private void openSlotMenuAddInputSlotMenuItems(JIPipeDataSlot slot, JPopupMenu menu) {
 
-        JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("actions/find.png"));
-        findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
-        findAlgorithmButton.addActionListener(e -> openInputAlgorithmFinder(slot));
-        menu.add(findAlgorithmButton);
-
-        Set<JIPipeDataSlot> availableSources = getGraphCanvasUI().getGraph().getAvailableSources(slot, true, false);
-        if(!availableSources.isEmpty()) {
-            JMenu connectMenu = new JMenu("Connect to ...");
-            connectMenu.setIcon(UIUtils.getIconFromResources("actions/plug.png"));
-            openSlotMenuAddInputConnectSourceSlotItems(slot, availableSources, connectMenu);
-            menu.add(connectMenu);
-        }
-
         Set<JIPipeDataSlot> sourceSlots = getGraphCanvasUI().getGraph().getInputIncomingSourceSlots(slot);
 
         if (!sourceSlots.isEmpty()) {
@@ -1333,7 +1319,25 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
         UIUtils.addSeparatorIfNeeded(menu);
 
-        openSlotMenuAddInputSourceSlotItems(slot, sourceSlots, menu);
+        JMenuItem findAlgorithmButton = new JMenuItem("Find matching algorithm ...", UIUtils.getIconFromResources("actions/find.png"));
+        findAlgorithmButton.setToolTipText("Opens a tool to find a matching algorithm based on the data");
+        findAlgorithmButton.addActionListener(e -> openInputAlgorithmFinder(slot));
+        menu.add(findAlgorithmButton);
+
+        Set<JIPipeDataSlot> availableSources = getGraphCanvasUI().getGraph().getAvailableSources(slot, true, false);
+        if(!availableSources.isEmpty()) {
+            JMenu connectMenu = new JMenu("Connect to ...");
+            connectMenu.setIcon(UIUtils.getIconFromResources("actions/plug.png"));
+            openSlotMenuAddInputConnectSourceSlotItems(slot, availableSources, connectMenu);
+            menu.add(connectMenu);
+        }
+
+        if(!sourceSlots.isEmpty()) {
+            JMenu manageMenu = new JMenu("Manage existing connections ...");
+            manageMenu.setIcon(UIUtils.getIconFromResources("actions/lines-connector.png"));
+            openSlotMenuAddInputSourceSlotItems(slot, sourceSlots, manageMenu);
+            menu.add(manageMenu);
+        }
 
         UIUtils.addSeparatorIfNeeded(menu);
 
@@ -1408,10 +1412,10 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         return unsorted.stream().sorted(Comparator.comparing(distances::get)).collect(Collectors.toList());
     }
 
-    private void openSlotMenuAddInputSourceSlotItems(JIPipeDataSlot slot, Set<JIPipeDataSlot> sourceSlots, JPopupMenu menu) {
+    private void openSlotMenuAddInputSourceSlotItems(JIPipeDataSlot slot, Set<JIPipeDataSlot> sourceSlots, JMenu menu) {
         JIPipeNodeUISlotActiveArea slotActiveArea = getSlotActiveArea(slot);
         for (JIPipeDataSlot sourceSlot : sortSlotsByDistance(slot, sourceSlots)) {
-            JMenu sourceSlotMenu = new JMenu(sourceSlot.getDisplayName());
+            JMenu sourceSlotMenu = new JMenu("<html>" + sourceSlot.getName() + "<br><small>" + sourceSlot.getNode().getDisplayName() + "</small></html>");
             sourceSlotMenu.setIcon(JIPipe.getDataTypes().getIconFor(sourceSlot.getAcceptedDataType()));
 
             JMenuItem disconnectButton = new JMenuItem("Disconnect", UIUtils.getIconFromResources("actions/cancel.png"));
