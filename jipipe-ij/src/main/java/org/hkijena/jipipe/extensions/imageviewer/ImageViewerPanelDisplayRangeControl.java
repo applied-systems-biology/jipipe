@@ -136,7 +136,8 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
     }
 
     public void updateFromCurrentSlice(boolean clearCustom) {
-        if (clearCustom || getCalibrationPlugin().getSelectedCalibration() != ImageJCalibrationMode.Custom) {
+        ImageJCalibrationMode selectedCalibration = getCalibrationPlugin().getSelectedCalibration();
+        if (clearCustom || selectedCalibration != ImageJCalibrationMode.Custom) {
             isUpdating = true;
             ImagePlus currentImage = getCalibrationPlugin().getCurrentImage();
             ImageProcessor currentSlice = getCalibrationPlugin().getCurrentSlice();
@@ -179,13 +180,15 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
                     maxSelectableValue = max;
                     lastSelectableValueCalculationBasis = new WeakReference<>(currentImage);
                 }
-                double[] calibration = ImageJUtils.calculateCalibration(currentSlice,
-                        getCalibrationPlugin().getSelectedCalibration(),
-                        minSelectableValue,
-                        maxSelectableValue,
-                        getCalibrationPlugin().getViewerPanel().getCurrentSliceStats());
-                customMin = calibration[0];
-                customMax = calibration[1];
+                if(selectedCalibration != ImageJCalibrationMode.Custom) {
+                    double[] calibration = ImageJUtils.calculateCalibration(currentSlice,
+                            selectedCalibration,
+                            minSelectableValue,
+                            maxSelectableValue,
+                            getCalibrationPlugin().getViewerPanel().getCurrentSliceStats());
+                    customMin = calibration[0];
+                    customMax = calibration[1];
+                }
                 double displayRangeMin = customMin;
                 double displayRangeMax = customMax;
                 double positionMin = Math.min(1, Math.max(0, displayRangeMin - minSelectableValue) / (maxSelectableValue - minSelectableValue));
@@ -242,6 +245,16 @@ public class ImageViewerPanelDisplayRangeControl extends JPanel implements Thumb
 
     public CalibrationPlugin getCalibrationPlugin() {
         return calibrationPlugin;
+    }
+
+    public void setCustomMinMax(double displayRangeMin, double displayRangeMax) {
+        this.customMin = displayRangeMin;
+        this.customMax = displayRangeMax;
+        double positionMin = Math.min(1, Math.max(0, displayRangeMin - minSelectableValue) / (maxSelectableValue - minSelectableValue));
+        double positionMax = Math.min(1, Math.max(0, displayRangeMax - minSelectableValue) / (maxSelectableValue - minSelectableValue));
+        slider.getModel().getThumbAt(0).setPosition((float) positionMin);
+        slider.getModel().getThumbAt(1).setPosition((float) positionMax);
+        slider.repaint();
     }
 
     public enum DisplayRangeStop {
