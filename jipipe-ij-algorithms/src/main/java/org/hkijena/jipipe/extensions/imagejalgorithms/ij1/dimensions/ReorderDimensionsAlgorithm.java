@@ -47,7 +47,7 @@ public class ReorderDimensionsAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus image = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
 
-        if (!image.isStack()) {
+        if (!image.hasImageStack()) {
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(image), progressInfo);
             return;
         }

@@ -445,7 +445,7 @@ public class ImageJUtils {
      * @return the processor
      */
     public static ImageProcessor getSliceZero(ImagePlus img, ImageSliceIndex index) {
-        if (img.isStack()) {
+        if (img.hasImageStack()) {
             return img.getStack().getProcessor(img.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1));
         } else {
             if (index.getZ() != 0 || index.getC() != 0 || index.getT() != 0)
@@ -461,7 +461,7 @@ public class ImageJUtils {
      * @return the processor
      */
     public static ImageProcessor getSliceZero(ImagePlus img, int c, int z, int t) {
-        if (img.isStack()) {
+        if (img.hasImageStack()) {
             return img.getStack().getProcessor(img.getStackIndex(c + 1, z + 1, t + 1));
         } else {
             if (z != 0 || c != 0 || t != 0)
@@ -743,10 +743,10 @@ public class ImageJUtils {
      * @param progressInfo the progress
      */
     public static void forEachSlice(ImagePlus img, Consumer<ImageProcessor> function, JIPipeProgressInfo progressInfo) {
-        if (img.isStack()) {
-            for (int i = 0; i < img.getStack().size(); ++i) {
-                ImageProcessor ip = img.getStack().getProcessor(i + 1);
-                progressInfo.resolveAndLog("Slice", i, img.getStackSize());
+        if (img.hasImageStack()) {
+            for (int i = 0; i < img.getImageStackSize(); ++i) {
+                ImageProcessor ip = img.getImageStack().getProcessor(i + 1);
+                progressInfo.resolveAndLog("Slice", i, img.getImageStackSize());
                 function.accept(ip);
             }
         } else {
@@ -932,11 +932,11 @@ public class ImageJUtils {
      * @param progressInfo the progress
      */
     public static void forEachIndexedSlice(ImagePlus img, BiConsumer<ImageProcessor, Integer> function, JIPipeProgressInfo progressInfo) {
-        if (img.isStack()) {
+        if (img.hasImageStack()) {
             for (int i = 0; i < img.getStack().size(); ++i) {
                 if (progressInfo.isCancelled())
                     return;
-                ImageProcessor ip = img.getStack().getProcessor(i + 1);
+                ImageProcessor ip = img.getImageStack().getProcessor(i + 1);
                 progressInfo.resolveAndLog("Slice", i, img.getStackSize());
                 function.accept(ip, i);
             }
@@ -953,7 +953,7 @@ public class ImageJUtils {
      * @param progressInfo the progress
      */
     public static void forEachIndexedZCTSlice(ImagePlus img, BiConsumer<ImageProcessor, ImageSliceIndex> function, JIPipeProgressInfo progressInfo) {
-        if (img.isStack()) {
+        if (img.hasImageStack()) {
             int iterationIndex = 0;
             for (int t = 0; t < img.getNFrames(); t++) {
                 for (int z = 0; z < img.getNSlices(); z++) {
@@ -980,7 +980,7 @@ public class ImageJUtils {
      * @param progressInfo the progress
      */
     public static void forEachIndexedZCTSliceWithProgress(ImagePlus img, TriConsumer<ImageProcessor, ImageSliceIndex, JIPipeProgressInfo> function, JIPipeProgressInfo progressInfo) {
-        if (img.isStack()) {
+        if (img.hasImageStack()) {
             int iterationIndex = 0;
             for (int t = 0; t < img.getNFrames(); t++) {
                 for (int z = 0; z < img.getNSlices(); z++) {
@@ -1025,7 +1025,7 @@ public class ImageJUtils {
      * @param progressInfo the progress
      */
     public static ImagePlus generateForEachIndexedZCTSlice(ImagePlus sourceImage, BiFunction<ImageProcessor, ImageSliceIndex, ImageProcessor> function, JIPipeProgressInfo progressInfo) {
-        if (sourceImage.isStack()) {
+        if (sourceImage.hasImageStack()) {
             ImageStack stack = new ImageStack(sourceImage.getWidth(), sourceImage.getHeight(), sourceImage.getStackSize());
             int iterationIndex = 0;
             for (int t = 0; t < sourceImage.getNFrames(); t++) {
@@ -1062,6 +1062,7 @@ public class ImageJUtils {
      * @param function     the function. The indices are ZERO-based
      * @param progressInfo the progress
      */
+    @Deprecated
     public static void forEachIndexedZTSlice(ImagePlus img, BiConsumer<Map<Integer, ImageProcessor>, ImageSliceIndex> function, JIPipeProgressInfo progressInfo) {
         int iterationIndex = 0;
         for (int t = 0; t < img.getNFrames(); t++) {
@@ -1291,6 +1292,23 @@ public class ImageJUtils {
         return new LUT(reds, greens, blues);
     }
 
+    public static Map<ImageSliceIndex, DisplayRange> readCalibration(ImagePlus imagePlus) {
+        Map<ImageSliceIndex, DisplayRange> result = new HashMap<>();
+        ImageJUtils.forEachIndexedZCTSlice(imagePlus, (ip, index) -> {
+            result.put(index, new DisplayRange(ip.getMin(), ip.getMax()));
+        }, new JIPipeProgressInfo());
+        return result;
+    }
+
+    public static void writeCalibration(ImagePlus imagePlus, Map<ImageSliceIndex, DisplayRange> calibrationMap) {
+        ImageJUtils.forEachIndexedZCTSlice(imagePlus, (ip, index) -> {
+            DisplayRange displayRange = calibrationMap.getOrDefault(index, null);
+            if(displayRange != null) {
+                ip.setMinAndMax(displayRange.getDisplayedMin(), displayRange.getDisplayedMax());
+            }
+        }, new JIPipeProgressInfo());
+    }
+
     public static void calibrate(ImageProcessor imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax, ImageStatistics stats) {
         double min = calibrationMode.getMin();
         double max = calibrationMode.getMax();
@@ -1390,7 +1408,7 @@ public class ImageJUtils {
     }
 
     /**
-     * Calibrates the image. Ported from {@link ij.plugin.frame.ContrastAdjuster}
+     * Calibrates the image (all processors). Ported from {@link ij.plugin.frame.ContrastAdjuster}
      *
      * @param imp             the image
      * @param calibrationMode the calibration mode
@@ -1398,61 +1416,13 @@ public class ImageJUtils {
      * @param customMax       custom max value (only used if calibrationMode is Custom)
      */
     public static void calibrate(ImagePlus imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax) {
-        double min = calibrationMode.getMin();
-        double max = calibrationMode.getMax();
-        if (calibrationMode == ImageJCalibrationMode.Custom) {
-            min = customMin;
-            max = customMax;
-        } else if (calibrationMode == ImageJCalibrationMode.AutomaticImageJ) {
-            ImageStatistics stats = imp.getRawStatistics();
-            int limit = stats.pixelCount / 10;
-            int[] histogram = stats.histogram;
-            int threshold = stats.pixelCount / 5000;
-            int i = -1;
-            boolean found = false;
-            int count;
-            do {
-                i++;
-                count = histogram[i];
-                if (count > limit) count = 0;
-                found = count > threshold;
-            } while (!found && i < 255);
-            int hmin = i;
-            i = 256;
-            do {
-                i--;
-                count = histogram[i];
-                if (count > limit) count = 0;
-                found = count > threshold;
-            } while (!found && i > 0);
-            int hmax = i;
-            if (hmax >= hmin) {
-                min = stats.histMin + hmin * stats.binSize;
-                max = stats.histMin + hmax * stats.binSize;
-                if (min == max) {
-                    min = stats.min;
-                    max = stats.max;
-                }
-            } else {
-                int bitDepth = imp.getBitDepth();
-                if (bitDepth == 16 || bitDepth == 32) {
-                    imp.resetDisplayRange();
-                    min = imp.getDisplayRangeMin();
-                    max = imp.getDisplayRangeMax();
-                }
-            }
-        } else if (calibrationMode == ImageJCalibrationMode.MinMax) {
-            ImageStatistics stats = imp.getRawStatistics();
-            min = stats.min;
-            max = stats.max;
+        if(imp.getType() == ImagePlus.COLOR_RGB)
+            return;
+        ImageProcessor ip = imp.getProcessor();
+        ImageJUtils.calibrate(ip, calibrationMode, customMin, customMax, ip.getStats());
+        if(imp.hasImageStack()) {
+          imp.getImageStack().update(ip);
         }
-
-        boolean rgb = imp.getType() == ImagePlus.COLOR_RGB;
-        int channels = imp.getNChannels();
-        if (channels != 7 && rgb)
-            imp.setDisplayRange(min, max, channels);
-        else
-            imp.setDisplayRange(min, max);
     }
 
     public static ImageStack expandImageStackCanvas(ImageStack stackOld, Color backgroundColor, int wNew, int hNew, int xOff, int yOff) {
@@ -1542,7 +1512,7 @@ public class ImageJUtils {
                 yOff = yC;
                 break;
         }
-        if (imp.isStack()) {
+        if (imp.hasImageStack()) {
             ImagePlus resultImage = new ImagePlus(imp.getTitle() + "_Expanded", expandImageStackCanvas(imp.getImageStack(), backgroundColor, newWidth, newHeight, xOff, yOff));
             resultImage.copyScale(imp);
             return resultImage;
@@ -1669,7 +1639,7 @@ public class ImageJUtils {
     }
 
     public static void removeLUT(ImagePlus image, boolean applyToAllPlanes) {
-        if (applyToAllPlanes && image.isStack()) {
+        if (applyToAllPlanes && image.hasImageStack()) {
             ImageSliceIndex original = new ImageSliceIndex(image.getC(), image.getZ(), image.getT());
             for (int z = 0; z < image.getNSlices(); z++) {
                 for (int c = 0; c < image.getNChannels(); c++) {

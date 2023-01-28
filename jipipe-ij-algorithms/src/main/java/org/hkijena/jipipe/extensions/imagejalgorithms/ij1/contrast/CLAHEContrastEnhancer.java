@@ -75,7 +75,7 @@ public class CLAHEContrastEnhancer extends JIPipeSimpleIteratingAlgorithm {
         ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo);
         Flat clahe = fastMode ? Flat.getFastInstance() : Flat.getInstance();
 
-        if (inputData.getImage().isStack()) {
+        if (inputData.getImage().hasImageStack()) {
             ImageStack stack = new ImageStack(inputData.getImage().getWidth(), inputData.getImage().getHeight(), inputData.getImage().getProcessor().getColorModel());
             ImageJUtils.forEachIndexedSlice(inputData.getImage(), (imp, index) -> {
                 ImagePlus slice = new ImagePlus("slice", imp.duplicate());

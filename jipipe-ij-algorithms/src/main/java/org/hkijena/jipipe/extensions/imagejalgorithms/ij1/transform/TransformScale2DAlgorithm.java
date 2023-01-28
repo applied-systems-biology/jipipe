@@ -168,7 +168,7 @@ public class TransformScale2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
             progressInfo.log("Image already has the target size. No scaling needed.");
             dataBatch.addOutputData(getFirstOutputSlot(), inputData, progressInfo);
         } else {
-            if (img.isStack()) {
+            if (img.hasImageStack()) {
                 ImageStack result = new ImageStack(sx, sy, img.getStackSize());
                 int finalSx = sx;
                 int finalSy = sy;

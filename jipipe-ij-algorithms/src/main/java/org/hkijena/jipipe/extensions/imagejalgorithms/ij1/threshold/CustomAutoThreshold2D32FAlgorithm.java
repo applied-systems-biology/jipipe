@@ -179,7 +179,7 @@ public class CustomAutoThreshold2D32FAlgorithm extends JIPipeIteratingAlgorithm 
         }
         ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             // Get target processor and threshold
-            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.isStack() ?
+            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.hasImageStack() ?
                     outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
                     : outputImage.getProcessor());
             applyThreshold((FloatProcessor) ip, targetProcessor, threshold);
@@ -212,7 +212,7 @@ public class CustomAutoThreshold2D32FAlgorithm extends JIPipeIteratingAlgorithm 
         }
         ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             // Get target processor and threshold
-            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.isStack() ?
+            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.hasImageStack() ?
                     outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
                     : outputImage.getProcessor());
             applyThreshold((FloatProcessor) ip, targetProcessor, threshold);
@@ -241,7 +241,7 @@ public class CustomAutoThreshold2D32FAlgorithm extends JIPipeIteratingAlgorithm 
             getMaskedPixels(ip, mask, pixels);
             ImageStatistics statistics = new FloatProcessor(pixels.size(), 1, pixels.toArray(), inputImage.getProcessor().getColorModel()).getStatistics();
             // Get target processor and threshold
-            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.isStack() ?
+            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.hasImageStack() ?
                     outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
                     : outputImage.getProcessor());
             float threshold = getThreshold(parameters, statistics, pixels);

@@ -178,7 +178,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         }
         ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             // Get target processor and threshold
-            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.isStack() ?
+            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.hasImageStack() ?
                     outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
                     : outputImage.getProcessor());
             applyThreshold((ShortProcessor) ip, targetProcessor, threshold);
@@ -211,7 +211,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
         }
         ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
             // Get target processor and threshold
-            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.isStack() ?
+            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.hasImageStack() ?
                     outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
                     : outputImage.getProcessor());
             applyThreshold((ShortProcessor) ip, targetProcessor, threshold);
@@ -242,7 +242,7 @@ public class CustomAutoThreshold2D16UAlgorithm extends JIPipeIteratingAlgorithm 
             int threshold = getThreshold(parameters, statistics, pixels);
 
             // Get target processor and threshold
-            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.isStack() ?
+            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.hasImageStack() ?
                     outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
                     : outputImage.getProcessor());
             applyThreshold((ShortProcessor) ip, targetProcessor, threshold);

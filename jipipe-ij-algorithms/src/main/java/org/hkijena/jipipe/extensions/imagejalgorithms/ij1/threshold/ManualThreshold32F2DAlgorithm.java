@@ -95,7 +95,7 @@ public class ManualThreshold32F2DAlgorithm extends JIPipeSimpleIteratingAlgorith
                 inputImage.getNFrames(),
                 8);
         ImageJUtils.forEachIndexedZCTSlice(inputImage, (ip, index) -> {
-            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.isStack() ?
+            ByteProcessor targetProcessor = (ByteProcessor) (outputImage.hasImageStack() ?
                     outputImage.getStack().getProcessor(outputImage.getStackIndex(index.getC() + 1, index.getZ() + 1, index.getT() + 1))
                     : outputImage.getProcessor());
             for (int i = 0; i < ip.getPixelCount(); i++) {

@@ -80,7 +80,7 @@ public class StackToMontageAlgorithm extends JIPipeIteratingAlgorithm {
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         ImagePlus imp = dataBatch.getInputData(getFirstInputSlot(), ImagePlusData.class, progressInfo).getImage();
-        if (!imp.isStack() || imp.getStackSize() <= 1) {
+        if (!imp.hasImageStack() || imp.getStackSize() <= 1) {
             dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusData(imp), progressInfo);
             return;
         }

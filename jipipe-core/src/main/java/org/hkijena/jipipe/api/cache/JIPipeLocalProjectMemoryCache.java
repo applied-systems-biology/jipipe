@@ -4,10 +4,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.JIPipeProject;
-import org.hkijena.jipipe.api.data.JIPipeDataSlotInfo;
-import org.hkijena.jipipe.api.data.JIPipeDataTable;
-import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeSlotType;
+import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.jgrapht.graph.DefaultDirectedGraph;
 import org.jgrapht.graph.DefaultEdge;
@@ -18,9 +15,26 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
 
     private final JIPipeProject project;
     private final EventBus eventBus = new EventBus();
+
+    /**
+     * The cached data
+     */
     private final Map<UUID, Map<String, JIPipeDataTable>> cachedOutputSlots = new HashMap<>();
+
+    /**
+     * A copy of all nodes
+     */
     private final Map<UUID, JIPipeGraphNode> currentNodeStates = new HashMap<>();
+
+    /**
+     * For each node UUID the set of expected predecessor UUIDs
+     */
     private final Map<UUID, Set<UUID>> expectedNodePredecessors = new HashMap<>();
+
+    /**
+     * For each node the set of expected parents
+     */
+    private final Map<UUID, Set<UUID>> currentNodeStateInputs = new HashMap<>();
     private DefaultDirectedGraph<UUID, DefaultEdge> currentNodeStatePredecessorGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
     private int currentSize = 0;
@@ -63,9 +77,26 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         getEventBus().post(new ModifiedEvent(this));
     }
 
+    private Set<UUID> getDirectParentNodeUUIDs(JIPipeGraphNode graphNode) {
+        Set<UUID> inputUUIDs = new HashSet<>();
+        for (JIPipeInputDataSlot inputSlot : graphNode.getInputSlots()) {
+            Set<JIPipeDataSlot> inputIncomingSourceSlots = graphNode.getParentGraph().getInputIncomingSourceSlots(inputSlot);
+            if(inputIncomingSourceSlots != null) {
+                for (JIPipeDataSlot sourceSlot : inputIncomingSourceSlots) {
+                    inputUUIDs.add(sourceSlot.getNode().getUUIDInParentGraph());
+                }
+            }
+        }
+        return inputUUIDs;
+    }
+
     private void putNodeIntoGraph(JIPipeGraphNode projectNode, JIPipeProgressInfo progressInfo) {
         UUID uuid = projectNode.getUUIDInParentGraph();
         currentNodeStatePredecessorGraph.addVertex(uuid);
+
+        // Store the direct parent UUIDs for later comparison
+        Set<UUID> inputUUIDs = getDirectParentNodeUUIDs(projectNode);
+        currentNodeStateInputs.put(uuid, inputUUIDs);
 
         // Store all existing predecessors
         Set<UUID> existingPredecessors = new HashSet<>();
@@ -113,6 +144,15 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         for (UUID uuid : ImmutableList.copyOf(currentNodeStates.keySet())) {
             JIPipeGraphNode currentNode = project.getGraph().getNodeByUUID(uuid);
             JIPipeGraphNode cachedNode = currentNodeStates.get(uuid);
+
+            // Check inputs
+            Set<UUID> directParentNodeUUIDs = getDirectParentNodeUUIDs(currentNode);
+            if(!Objects.equals(directParentNodeUUIDs, currentNodeStateInputs.get(uuid))) {
+                updated = true;
+                removeNodeCache(uuid, progressInfo);
+                progressInfo.log("Removed invalid node state for " + uuid + " [inputs changed]");
+                continue;
+            }
 
             // Check output slots
             Map<String, JIPipeDataTable> slotMap = cachedOutputSlots.getOrDefault(uuid, null);
@@ -180,6 +220,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         }
         cachedOutputSlots.remove(uuid);
         currentNodeStates.remove(uuid);
+        currentNodeStateInputs.remove(uuid);
         expectedNodePredecessors.remove(uuid);
         currentNodeStatePredecessorGraph.removeVertex(uuid);
     }
@@ -206,6 +247,7 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
         cachedOutputSlots.clear();
         currentNodeStates.clear();
         expectedNodePredecessors.clear();
+        currentNodeStateInputs.clear();
         currentNodeStatePredecessorGraph = new DefaultDirectedGraph<>(DefaultEdge.class);
 
         updateSize();

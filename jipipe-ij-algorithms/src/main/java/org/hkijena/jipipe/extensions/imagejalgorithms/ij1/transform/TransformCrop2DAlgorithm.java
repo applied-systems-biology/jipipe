@@ -68,7 +68,7 @@ public class TransformCrop2DAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     public static ImagePlus crop(JIPipeProgressInfo progressInfo, ImagePlus img, Rectangle cropped) {
         ImagePlus croppedImg;
-        if (img.isStack()) {
+        if (img.hasImageStack()) {
             ImageStack result = new ImageStack(cropped.width, cropped.height, img.getStackSize());
             ImageJUtils.forEachIndexedZCTSlice(img, (imp, index) -> {
                 imp.setRoi(cropped);
