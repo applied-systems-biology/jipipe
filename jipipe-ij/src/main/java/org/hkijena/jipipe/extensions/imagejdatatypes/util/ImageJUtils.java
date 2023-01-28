@@ -1416,8 +1416,6 @@ public class ImageJUtils {
      * @param customMax       custom max value (only used if calibrationMode is Custom)
      */
     public static void calibrate(ImagePlus imp, ImageJCalibrationMode calibrationMode, double customMin, double customMax) {
-        if(imp.getType() == ImagePlus.COLOR_RGB)
-            return;
         ImageProcessor ip = imp.getProcessor();
         ImageJUtils.calibrate(ip, calibrationMode, customMin, customMax, ip.getStats());
         if(imp.hasImageStack()) {

@@ -35,6 +35,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageJUtils;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSliceIndex;
 import org.hkijena.jipipe.extensions.imagejdatatypes.util.ImageSource;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
+import org.hkijena.jipipe.utils.ImageJCalibrationMode;
 import org.hkijena.jipipe.utils.PathUtils;
 import org.hkijena.jipipe.utils.ReflectionUtils;
 
@@ -362,7 +363,7 @@ public class ImagePlusData implements JIPipeData {
                 rgbImage = ImageJUtils.duplicate(rgbImage);
             }
             if (rgbImage.getType() != ImagePlus.COLOR_RGB) {
-//                ImageJUtils.calibrate(rgbImage, ImageJCalibrationMode.AutomaticImageJ, 0, 1);
+                ImageJUtils.calibrate(rgbImage, ImageJCalibrationMode.AutomaticImageJ, 0, 1);
             }
             rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
 
