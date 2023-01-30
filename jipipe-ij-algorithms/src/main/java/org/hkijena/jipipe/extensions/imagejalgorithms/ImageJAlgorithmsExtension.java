@@ -127,6 +127,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OverlapStatistics;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.OverlapStatisticsSetParameter;
 import org.hkijena.jipipe.extensions.imagejalgorithms.utils.SourceWrapMode;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
+import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.ApplyDisplayContrastAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.algorithms.DisplayRangeCalibrationAlgorithm;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.color.ImagePlusColorHSBData;
@@ -1179,6 +1180,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-contrast-clahe", CLAHEContrastEnhancer.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
         registerNodeType("ij1-contrast-illumination-correction2d", IlluminationCorrection2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
         registerNodeType("ij1-contrast-calibrate", DisplayRangeCalibrationAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
+        registerNodeType("ij1-contrast-apply-displayed-contrast", ApplyDisplayContrastAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
         registerNodeType("ij1-contrast-histogram-enhancer", HistogramContrastEnhancerAlgorithm.class, UIUtils.getIconURLFromResources("actions/contrast.png"));
 
         registerEnumParameterType(HistogramContrastEnhancerAlgorithm.Method.class.getCanonicalName(), HistogramContrastEnhancerAlgorithm.Method.class,
