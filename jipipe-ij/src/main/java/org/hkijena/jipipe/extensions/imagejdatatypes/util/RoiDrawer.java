@@ -318,7 +318,8 @@ public class RoiDrawer implements JIPipeParameterCollection {
 
         ImagePlus result;
         if (drawOver) {
-            result = ImageJUtils.convertToColorRGBIfNeeded(ImageJUtils.duplicate(reference));
+            ImagePlus duplicate = ImageJUtils.duplicate(reference);
+            result = ImageJUtils.renderToRGBWithLUTIfNeeded(duplicate, progressInfo.resolve("Render RGB"));
             result.setTitle("Reference+ROIs");
         } else {
             result = IJ.createImage("ROIs", "RGB", sx, sy, sc, sz, st);

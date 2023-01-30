@@ -39,10 +39,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePl
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale32FData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.greyscale.ImagePlusGreyscale8UData;
 import org.hkijena.jipipe.extensions.parameters.library.roi.Anchor;
-import org.hkijena.jipipe.utils.ColorUtils;
-import org.hkijena.jipipe.utils.ImageJCalibrationMode;
-import org.hkijena.jipipe.utils.StringUtils;
-import org.hkijena.jipipe.utils.TriConsumer;
+import org.hkijena.jipipe.utils.*;
 
 import javax.swing.*;
 import java.awt.*;
@@ -249,7 +246,6 @@ public class ImageJUtils {
             }
             copyStack.addSlice(stack.getSliceLabel(i), targetProcessor);
         }
-        IJ.showProgress(1.0);
         ImagePlus imp2 = imp.createImagePlus();
         imp2.setStack("DUP_" + imp.getTitle(), copyStack);
         String info = (String) imp.getProperty("Info");
@@ -270,6 +266,9 @@ public class ImageJUtils {
         Overlay overlay = imp.getOverlay();
         if (overlay != null && !imp.getHideOverlay())
             imp2.setOverlay(overlay);
+
+        calibrate(imp2, ImageJCalibrationMode.Custom, min, max);
+
         return imp2;
     }
 
