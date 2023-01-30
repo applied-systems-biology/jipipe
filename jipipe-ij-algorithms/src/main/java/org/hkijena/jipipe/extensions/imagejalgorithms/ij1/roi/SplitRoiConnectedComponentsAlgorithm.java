@@ -41,7 +41,7 @@ import java.util.*;
 
 @JIPipeDocumentation(name = "Split into connected components", description = "Algorithm that extracts connected components across one or multiple dimensions. The output consists of multiple ROI lists, one for each connected component.")
 @JIPipeNode(menuPath = "Split", nodeTypeCategory = RoiNodeTypeCategory.class)
-@JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", autoCreate = true)
+@JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
 @JIPipeInputSlot(value = ImagePlusData.class, slotName = "Reference", autoCreate = true, optional = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Components", autoCreate = true)
 public class SplitRoiConnectedComponentsAlgorithm extends JIPipeIteratingAlgorithm {
