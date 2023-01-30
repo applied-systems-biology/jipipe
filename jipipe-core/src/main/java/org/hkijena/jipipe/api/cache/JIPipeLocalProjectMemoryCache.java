@@ -145,6 +145,14 @@ public class JIPipeLocalProjectMemoryCache implements JIPipeCache {
             JIPipeGraphNode currentNode = project.getGraph().getNodeByUUID(uuid);
             JIPipeGraphNode cachedNode = currentNodeStates.get(uuid);
 
+            // Remove deleted node
+            if(currentNode == null) {
+                updated = true;
+                removeNodeCache(uuid, progressInfo);
+                progressInfo.log("Removed invalid node state for " + uuid + " [node deleted]");
+                continue;
+            }
+
             // Check inputs
             Set<UUID> directParentNodeUUIDs = getDirectParentNodeUUIDs(currentNode);
             if(!Objects.equals(directParentNodeUUIDs, currentNodeStateInputs.get(uuid))) {
