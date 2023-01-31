@@ -24,6 +24,7 @@ import ij.io.RoiDecoder;
 import ij.io.RoiEncoder;
 import ij.measure.Calibration;
 import ij.measure.ResultsTable;
+import ij.plugin.RoiRotator;
 import ij.plugin.RoiScaler;
 import ij.plugin.filter.Analyzer;
 import ij.plugin.filter.Filler;
@@ -657,6 +658,7 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
 
     /**
      * Scales the ROI in this list and returns a new list containing the scaled instances
+     * Does not change the ROIs in this list
      *
      * @param scaleX   the x-scale
      * @param scaleY   the y-scale
@@ -666,6 +668,21 @@ public class ROIListData extends ArrayList<Roi> implements JIPipeData {
         ROIListData result = new ROIListData();
         for (Roi roi : this) {
             result.add(RoiScaler.scale(roi, scaleX, scaleY, centered));
+        }
+        return result;
+    }
+
+    /**
+     * Rotates the ROI around the center
+     * Does not change the ROIs in this list
+     * @param angle the angle
+     * @param center the center point
+     * @return the rotated ROIs
+     */
+    public ROIListData rotate(double angle, Point2D center) {
+        ROIListData result = new ROIListData();
+        for (Roi roi : this) {
+            result.add(RoiRotator.rotate(roi, angle, center.getX(), center.getY()));
         }
         return result;
     }

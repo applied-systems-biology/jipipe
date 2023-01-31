@@ -104,6 +104,7 @@ import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.Extract
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.RemoveROIMetadataAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.SetROIMetadataFromTableAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.properties.SetRoiMetadataByStatisticsAlgorithm;
+import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.register.RegisterRoiToImageByBrightnessAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.sort.SortAndExtractRoiByStatisticsAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.sort.SortAndExtractRoiByStatisticsAlgorithm2;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ij1.roi.sort.SortRoiListByExpressionsAndMeasurementsAlgorithm;
@@ -842,6 +843,7 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-roi-sort-by-statistics-expression", SortRoiListByExpressionsAndMeasurementsAlgorithm.class, UIUtils.getIconURLFromResources("actions/view-sort.png"));
         registerNodeType("ij1-roi-set-properties", ChangeRoiPropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
         registerNodeType("ij1-roi-scale", ScaleRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-scale.png"));
+        registerNodeType("ij1-roi-rotate", RotateRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/transform-rotate.png"));
         registerNodeType("ij1-roi-set-properties-from-annotation", ChangeRoiPropertiesFromAnnotationsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
         registerNodeType("ij1-roi-set-properties-from-expressions", ChangeRoiPropertiesFromExpressionsAlgorithm.class, UIUtils.getIconURLFromResources("actions/document-edit.png"));
         registerNodeType("ij1-roi-to-rgb-unreferenced", UnreferencedRoiToRGBAlgorithm.class, UIUtils.getIconURLFromResources("actions/color-management.png"));
@@ -878,6 +880,8 @@ public class ImageJAlgorithmsExtension extends JIPipePrepackagedDefaultJavaExten
         registerNodeType("ij1-roi-draw-oval", DrawOvalRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-ellipse.png"));
         registerNodeType("ij1-roi-draw-text", DrawTextRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-text.png"));
         registerNodeType("ij1-roi-draw-scalebar", DrawScaleBarRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/draw-geometry-show-measuring-info.png"));
+
+//        registerNodeType("ij1-roi-register-max-brightness", RegisterRoiToImageByBrightnessAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_search.png"));
 
         registerEnumParameterType("ij1-roi-flood-fill:mode",
                 RoiFloodFillAlgorithm.Mode.class,

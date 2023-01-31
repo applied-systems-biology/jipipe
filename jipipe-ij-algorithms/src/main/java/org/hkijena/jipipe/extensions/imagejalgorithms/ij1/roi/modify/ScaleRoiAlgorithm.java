@@ -27,7 +27,7 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ROIListData;
 /**
  * Wrapper around {@link ij.plugin.frame.RoiManager}
  */
-@JIPipeDocumentation(name = "Scale ROI", description = "Scales all ROI in the ROI list. If you want to have more flexibility, use one of the 'Change ROI properties' nodes.")
+@JIPipeDocumentation(name = "Scale ROI 2D", description = "Scales all ROI in the ROI list. If you want to have more flexibility, use one of the 'Change ROI properties' nodes.")
 @JIPipeNode(nodeTypeCategory = RoiNodeTypeCategory.class, menuPath = "Modify")
 @JIPipeInputSlot(value = ROIListData.class, slotName = "Input", autoCreate = true)
 @JIPipeOutputSlot(value = ROIListData.class, slotName = "Output", autoCreate = true)
@@ -56,15 +56,8 @@ public class ScaleRoiAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ROIListData data = (ROIListData) dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo).duplicate(progressInfo);
-        for (int i = 0; i < data.size(); i++) {
-            Roi roi = data.get(i);
-            if (scaleX != 1.0 || scaleY != 1.0) {
-                roi = RoiScaler.scale(roi, scaleX, scaleY, centerScale);
-                data.set(i, roi);
-            }
-        }
-
+        ROIListData data = dataBatch.getInputData(getFirstInputSlot(), ROIListData.class, progressInfo);
+        data = data.scale(scaleX, scaleY, centerScale);
         dataBatch.addOutputData(getFirstOutputSlot(), data, progressInfo);
     }
 

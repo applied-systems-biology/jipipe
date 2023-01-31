@@ -82,5 +82,16 @@ public class IJLogToJIPipeProgressInfoPump implements Closeable, AutoCloseable {
             copyLog();
         target.log("Ending IJ.log() hook");
         timer.stop();
+
+        try {
+            SwingUtilities.invokeAndWait(() -> {
+                Window windowAncestor = SwingUtilities.getWindowAncestor(logTextPanel);
+                if (windowAncestor != null) {
+                    windowAncestor.setVisible(false);
+                }
+            });
+        } catch (Throwable e) {
+            target.log("Unable to close IJ.log() window: " + e);
+        }
     }
 }
