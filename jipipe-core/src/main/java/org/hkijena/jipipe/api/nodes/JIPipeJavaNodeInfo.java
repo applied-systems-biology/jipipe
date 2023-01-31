@@ -24,6 +24,8 @@ import org.hkijena.jipipe.api.JIPipeCitation;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeHidden;
 import org.hkijena.jipipe.api.JIPipeNode;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.categories.InternalNodeTypeCategory;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
@@ -57,6 +59,7 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         setDescription(getDescriptionOf(nodeClass));
         setCategory(getCategoryOf(nodeClass));
         setMenuPath(getMenuPathOf(nodeClass));
+        setDataSourceMenuLocation(getDataSourceMenuLocationOf(nodeClass));
         setAliases(getAliasesOf(nodeClass));
         if (nodeClass.getAnnotation(JIPipeHidden.class) != null) {
             setHidden(true);
@@ -125,6 +128,22 @@ public class JIPipeJavaNodeInfo extends JIPipeMutableNodeInfo {
         }
     }
 
+    /**
+     * Returns the alternative assignment to another data source type menu for a node
+     * Only applicable if the node is of node category {@link org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory}
+     * {@link JIPipeEmptyData} means that no re-assignment should be applied
+     *
+     * @param klass The data class
+     * @return The menu path of the data class
+     */
+    static Class<? extends JIPipeData> getDataSourceMenuLocationOf(Class<? extends JIPipeGraphNode> klass) {
+        JIPipeNode[] annotations = klass.getAnnotationsByType(JIPipeNode.class);
+        if (annotations.length > 0) {
+            return annotations[0].dataSourceMenuLocation();
+        } else {
+            return JIPipeEmptyData.class;
+        }
+    }
     /**
      * Gets alternative menu locations
      *

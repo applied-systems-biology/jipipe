@@ -270,7 +270,7 @@ public class DataBatchAssistantUI extends JIPipeProjectWorkbenchPanel {
         ParameterPanel parameterPanel = new ParameterPanel(getWorkbench(),
                 ((JIPipeDataBatchAlgorithm) algorithm).getGenerationSettingsInterface(),
                 null,
-                ParameterPanel.WITH_SCROLLING);
+                ParameterPanel.WITH_SCROLLING | ParameterPanel.WITH_DOCUMENTATION | ParameterPanel.DOCUMENTATION_NO_UI);
         splitPane.setTopComponent(parameterPanel);
     }
 

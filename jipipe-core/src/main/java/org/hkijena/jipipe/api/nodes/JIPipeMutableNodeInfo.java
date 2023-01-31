@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.api.nodes;
 
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 
 import java.util.ArrayList;
@@ -31,11 +33,22 @@ public abstract class JIPipeMutableNodeInfo implements JIPipeNodeInfo {
     private List<JIPipeInputSlot> inputSlots = new ArrayList<>();
     private List<JIPipeOutputSlot> outputSlots = new ArrayList<>();
     private String menuPath;
+
+    private Class<? extends JIPipeData> dataSourceMenuLocation = JIPipeEmptyData.class;
     private boolean hidden = false;
     private boolean runnable = true;
     private List<String> additionalCitations = new ArrayList<>();
 
     private List<JIPipeNodeMenuLocation> aliases = new ArrayList<>();
+
+    @Override
+    public Class<? extends JIPipeData> getDataSourceMenuLocation() {
+        return dataSourceMenuLocation;
+    }
+
+    public void setDataSourceMenuLocation(Class<? extends JIPipeData> dataSourceMenuLocation) {
+        this.dataSourceMenuLocation = dataSourceMenuLocation;
+    }
 
     @Override
     public Class<? extends JIPipeGraphNode> getInstanceClass() {

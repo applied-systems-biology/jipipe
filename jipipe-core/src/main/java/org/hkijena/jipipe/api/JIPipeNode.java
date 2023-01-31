@@ -13,6 +13,8 @@
 
 package org.hkijena.jipipe.api;
 
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeTypeCategory;
@@ -47,4 +49,11 @@ public @interface JIPipeNode {
      * @return the category
      */
     Class<? extends JIPipeNodeTypeCategory> nodeTypeCategory() default InternalNodeTypeCategory.class;
+
+    /**
+     * Only used if the node type category is set to {@link org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory}.
+     * Allows to re-assign the data source node into the menu of another data type
+     * If set to {@link JIPipeEmptyData}, no re-allocation is applied.
+     */
+    Class<? extends JIPipeData> dataSourceMenuLocation() default JIPipeEmptyData.class;
 }

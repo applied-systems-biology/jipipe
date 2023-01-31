@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.JIPipeIssueReport;
 import org.hkijena.jipipe.api.JIPipeNodeTemplate;
 import org.hkijena.jipipe.api.JIPipeValidatable;
 import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
@@ -148,17 +149,23 @@ public class JIPipeNodeRegistry implements JIPipeValidatable {
 
     /**
      * Returns data source algorithms that can generate the specified data type
+     * Adheres to the data source menu location
      *
      * @param <T>       The data class
      * @param dataClass The data class
      * @return Available datasource algorithms that generate the data
      */
-    public <T extends JIPipeData> Set<JIPipeNodeInfo> getDataSourcesFor(Class<? extends T> dataClass) {
+    public <T extends JIPipeData> Set<JIPipeNodeInfo> getMenuDataSourcesFor(Class<? extends T> dataClass) {
         Set<JIPipeNodeInfo> result = new HashSet<>();
         for (JIPipeNodeInfo info : registeredNodeInfos.values()) {
             if (info.getCategory() instanceof DataSourceNodeTypeCategory) {
-                if (info.getOutputSlots().stream().anyMatch(slot -> slot.value() == dataClass)) {
+                if(info.getDataSourceMenuLocation() == dataClass) {
                     result.add(info);
+                }
+                else if(info.getDataSourceMenuLocation() == JIPipeEmptyData.class) {
+                    if (info.getOutputSlots().stream().anyMatch(slot -> slot.value() == dataClass)) {
+                        result.add(info);
+                    }
                 }
             }
         }

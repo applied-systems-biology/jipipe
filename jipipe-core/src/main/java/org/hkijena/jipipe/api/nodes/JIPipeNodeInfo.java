@@ -15,6 +15,8 @@ package org.hkijena.jipipe.api.nodes;
 
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.JIPipeDependency;
+import org.hkijena.jipipe.api.data.JIPipeData;
+import org.hkijena.jipipe.api.data.JIPipeEmptyData;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.utils.StringUtils;
 
@@ -79,6 +81,15 @@ public interface JIPipeNodeInfo {
      * @return The ID
      */
     String getId();
+
+    /**
+     * If the node is of category {@link org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory}, allows to re-assign them to a new menu
+     * If {@link JIPipeEmptyData} is returned, no re-assignment is applied
+     * @return the re-assigned data type menu or {@link JIPipeEmptyData}
+     */
+    default Class<? extends JIPipeData> getDataSourceMenuLocation() {
+        return JIPipeEmptyData.class;
+    }
 
     /**
      * The algorithm class that is generated

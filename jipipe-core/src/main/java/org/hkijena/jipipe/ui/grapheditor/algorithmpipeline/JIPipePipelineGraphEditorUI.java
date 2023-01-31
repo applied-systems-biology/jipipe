@@ -200,7 +200,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
             for (Class<? extends JIPipeData> dataClass : JIPipeData.getSortedList(entry.getValue())) {
                 if (JIPipeData.isHidden(dataClass))
                     continue;
-                Set<JIPipeNodeInfo> dataSources = registryService.getNodeRegistry().getDataSourcesFor(dataClass);
+                Set<JIPipeNodeInfo> dataSources = registryService.getNodeRegistry().getMenuDataSourcesFor(dataClass);
                 boolean isEmpty = true;
                 Icon icon = registryService.getDatatypeRegistry().getIconFor(dataClass);
                 JMenu dataMenu = new JMenu(JIPipeData.getNameOf(dataClass));
