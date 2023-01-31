@@ -25,7 +25,7 @@ import java.util.Set;
 /**
  * Contains all JIPipe resources
  */
-public interface JIPipeRegistry extends Service, JIPipeValidatable {
+public interface JIPipeService extends Service, JIPipeValidatable {
 
     EventBus getEventBus();
 
@@ -52,6 +52,10 @@ public interface JIPipeRegistry extends Service, JIPipeValidatable {
     JIPipeExtensionRegistry getExtensionRegistry();
 
     JIPipeProjectTemplateRegistry getProjectTemplateRegistry();
+
+    JIPipeGraphAnnotationRegistry getGraphAnnotationRegistry();
+
+    JIPipeExpressionRegistry getTableOperationRegistry();
 
     Set<String> getRegisteredExtensionIds();
 

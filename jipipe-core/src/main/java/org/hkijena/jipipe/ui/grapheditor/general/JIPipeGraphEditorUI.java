@@ -314,6 +314,13 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         navigator.setRenderer(new NavigationRenderer());
         navigator.getEventBus().register(this);
         navigator.setRankingFunction(JIPipeGraphEditorUI::rankNavigationEntry);
+
+        initializeAnnotationTools();
+    }
+
+    private void initializeAnnotationTools() {
+        JToolBar toolBar = new JToolBar(null, JToolBar.VERTICAL);
+        add(toolBar, BorderLayout.WEST);
     }
 
     /**

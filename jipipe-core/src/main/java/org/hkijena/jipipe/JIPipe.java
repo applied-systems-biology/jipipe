@@ -33,7 +33,6 @@ import org.hkijena.jipipe.api.data.JIPipeDataImportOperation;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.storage.JIPipeReadDataStorage;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.notifications.JIPipeNotification;
@@ -91,8 +90,8 @@ import java.util.zip.GZIPInputStream;
 /**
  * A scijava service that discovers JIPipe plugins in the classpath
  */
-@Plugin(type = JIPipeRegistry.class)
-public class JIPipe extends AbstractService implements JIPipeRegistry {
+@Plugin(type = JIPipeService.class)
+public class JIPipe extends AbstractService implements JIPipeService {
 
     /**
      * Resource manager for core JIPipe
@@ -116,6 +115,8 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     private final JIPipeExternalEnvironmentRegistry externalEnvironmentRegistry;
     private final JIPipeExtensionRegistry extensionRegistry;
 
+    private final JIPipeGraphAnnotationRegistry graphAnnotationRegistry;
+
     private final JIPipeProjectTemplateRegistry projectTemplateRegistry;
     private FilesCollection imageJPlugins = null;
     private boolean initializing = false;
@@ -137,6 +138,7 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
         externalEnvironmentRegistry = new JIPipeExternalEnvironmentRegistry(this);
         extensionRegistry = new JIPipeExtensionRegistry(this);
         projectTemplateRegistry = new JIPipeProjectTemplateRegistry(this);
+        graphAnnotationRegistry = new JIPipeGraphAnnotationRegistry(this);
     }
 
     /**
@@ -194,6 +196,15 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
 
     public static JIPipeDatatypeRegistry getDataTypes() {
         return instance.datatypeRegistry;
+    }
+
+    public JIPipeExpressionRegistry getTableOperationRegistry() {
+        return tableOperationRegistry;
+    }
+
+    @Override
+    public JIPipeGraphAnnotationRegistry getGraphAnnotationRegistry() {
+        return graphAnnotationRegistry;
     }
 
     /**
@@ -1285,22 +1296,22 @@ public class JIPipe extends AbstractService implements JIPipeRegistry {
     }
 
     /**
-     * Triggered by {@link JIPipeRegistry} when an extension is registered
+     * Triggered by {@link JIPipeService} when an extension is registered
      */
     public static class ExtensionRegisteredEvent {
-        private final JIPipeRegistry registry;
+        private final JIPipeService registry;
         private final JIPipeDependency extension;
 
         /**
          * @param registry  event source
          * @param extension registered extension
          */
-        public ExtensionRegisteredEvent(JIPipeRegistry registry, JIPipeDependency extension) {
+        public ExtensionRegisteredEvent(JIPipeService registry, JIPipeDependency extension) {
             this.registry = registry;
             this.extension = extension;
         }
 
-        public JIPipeRegistry getRegistry() {
+        public JIPipeService getRegistry() {
             return registry;
         }
 
