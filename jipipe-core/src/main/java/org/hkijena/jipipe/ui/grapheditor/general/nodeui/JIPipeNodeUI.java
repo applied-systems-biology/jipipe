@@ -19,6 +19,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeGraphType;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.cache.JIPipeCache;
+import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
 import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
@@ -997,6 +998,17 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 slotState.setSlotStatus(SlotStatus.Cached);
             } else {
                 slotState.setSlotStatus(SlotStatus.Default);
+            }
+        }
+
+        // Special case for project compartments
+        if(graph != null && graph.getProject() != null && node instanceof JIPipeProjectCompartment) {
+            JIPipeCompartmentOutput outputNode = ((JIPipeProjectCompartment) node).getOutputNode();
+            cachedData = graph.getProject().getCache().query(outputNode, outputNode.getUUIDInParentGraph(), new JIPipeProgressInfo());
+            if(cachedData != null && !cachedData.isEmpty()) {
+                for (JIPipeNodeUISlotActiveArea activeArea : outputSlotMap.values()) {
+                    activeArea.setSlotStatus(SlotStatus.Cached);
+                }
             }
         }
 
