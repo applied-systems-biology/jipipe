@@ -362,9 +362,9 @@ public class ImagePlusData implements JIPipeData {
             if (rgbImage == image) {
                 rgbImage = ImageJUtils.duplicate(rgbImage);
             }
-            if (rgbImage.getType() != ImagePlus.COLOR_RGB) {
-                ImageJUtils.calibrate(rgbImage, ImageJCalibrationMode.AutomaticImageJ, 0, 1);
-            }
+//            if (rgbImage.getType() != ImagePlus.COLOR_RGB) {
+//                ImageJUtils.calibrate(rgbImage, ImageJCalibrationMode.AutomaticImageJ, 0, 1);
+//            }
             rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
 
             // ROI rendering
