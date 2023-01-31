@@ -22,6 +22,7 @@ import org.hkijena.jipipe.api.cache.JIPipeCacheClearOutdatedRun;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataTable;
+import org.hkijena.jipipe.api.data.JIPipeOutputDataSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
@@ -89,7 +90,7 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         for (JIPipeGraphNode node : getProject().getGraph().getGraphNodes()) {
             Map<String, JIPipeDataTable> slotMap = getProject().getCache().query(node, node.getUUIDInParentGraph(), new JIPipeProgressInfo());
             if(slotMap != null) {
-                result.addAll(slotMap.values());
+                result.addAll(getSortedDataTables(slotMap, node));
             }
         }
         showDataTables(result);
@@ -99,7 +100,7 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         Map<String, JIPipeDataTable> slotMap = getProject().getCache().query(node, node.getUUIDInParentGraph(), new JIPipeProgressInfo());
         List<JIPipeDataTable> result = new ArrayList<>();
         if(slotMap != null) {
-           result.addAll(slotMap.values());
+           result.addAll(getSortedDataTables(slotMap, node));
         }
         showDataTables(result);
     }
@@ -111,11 +112,22 @@ public class JIPipeCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
             if (Objects.equals(algorithm.getCompartmentUUIDInParentGraph(), uuid)) {
                 Map<String, JIPipeDataTable> slotMap = getProject().getCache().query(algorithm, algorithm.getUUIDInParentGraph(), new JIPipeProgressInfo());
                 if(slotMap != null) {
-                    result.addAll(slotMap.values());
+                    result.addAll(getSortedDataTables(slotMap, algorithm));
                 }
             }
         }
         showDataTables(result);
+    }
+
+    private List<JIPipeDataTable> getSortedDataTables(Map<String, JIPipeDataTable> slotMap, JIPipeGraphNode graphNode) {
+        List<JIPipeDataTable> result = new ArrayList<>();
+        for (JIPipeOutputDataSlot outputSlot : graphNode.getOutputSlots()) {
+            JIPipeDataTable dataTable = slotMap.getOrDefault(outputSlot.getName(), null);
+            if(dataTable != null) {
+                result.add(dataTable);
+            }
+        }
+        return result;
     }
 
     private void showDataTables(List<JIPipeDataTable> dataTables) {

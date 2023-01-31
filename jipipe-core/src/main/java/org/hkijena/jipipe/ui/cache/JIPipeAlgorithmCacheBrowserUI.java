@@ -91,7 +91,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         Map<String, JIPipeDataTable> slotMap = getProject().getCache().query(graphNode, graphNode.getUUIDInParentGraph(), new JIPipeProgressInfo());
         if (slotMap != null) {
             if (selectedSlot == null) {
-                slotsToDisplay.addAll(slotMap.values());
+                slotsToDisplay.addAll(getSortedDataTables(slotMap));
             } else {
                 JIPipeDataTable cachedSlot = slotMap.getOrDefault(selectedSlot.getName(), null);
                 if (cachedSlot != null) {
@@ -105,6 +105,17 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         } else {
             showDataSlots(slotsToDisplay);
         }
+    }
+
+    private List<JIPipeDataTable> getSortedDataTables(Map<String, JIPipeDataTable> slotMap) {
+        List<JIPipeDataTable> result = new ArrayList<>();
+        for (JIPipeOutputDataSlot outputSlot : graphNode.getOutputSlots()) {
+            JIPipeDataTable dataTable = slotMap.getOrDefault(outputSlot.getName(), null);
+            if(dataTable != null) {
+                result.add(dataTable);
+            }
+        }
+        return result;
     }
 
     private void showDataSlots(List<JIPipeDataTable> dataTables) {
