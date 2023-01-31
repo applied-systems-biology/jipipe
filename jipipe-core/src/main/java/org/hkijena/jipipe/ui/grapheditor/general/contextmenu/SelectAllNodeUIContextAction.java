@@ -57,4 +57,9 @@ public class SelectAllNodeUIContextAction implements NodeUIContextAction {
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_A, InputEvent.CTRL_MASK, true);
     }
+
+    @Override
+    public boolean showInMultiSelectionPanel() {
+        return false;
+    }
 }

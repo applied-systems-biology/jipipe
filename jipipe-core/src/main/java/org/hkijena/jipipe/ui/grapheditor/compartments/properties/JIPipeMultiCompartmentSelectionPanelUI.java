@@ -13,14 +13,18 @@
 
 package org.hkijena.jipipe.ui.grapheditor.compartments.properties;
 
+import com.google.common.collect.ImmutableSet;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
+import org.hkijena.jipipe.ui.components.FormPanel;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
+import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.utils.TooltipUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
@@ -53,16 +57,41 @@ public class JIPipeMultiCompartmentSelectionPanelUI extends JIPipeProjectWorkben
         setLayout(new BorderLayout());
         MarkdownReader content = new MarkdownReader(false);
         add(content, BorderLayout.CENTER);
-
-        StringBuilder markdownContent = new StringBuilder();
-        for (JIPipeProjectCompartment compartment : compartments.stream().sorted(Comparator.comparing(JIPipeGraphNode::getName)).collect(Collectors.toList())) {
-            markdownContent.append(TooltipUtils.getProjectCompartmentTooltip(compartment, getProject().getGraph())
-                    .replace("<html>", "<div style=\"border: 1px solid gray; border-radius: 4px; margin: 4px; padding: 4px;\">")
-                    .replace("</html>", "</div>"));
-            markdownContent.append("\n\n");
-        }
-        content.setDocument(new MarkdownDocument(markdownContent.toString()));
         initializeToolbar();
+        initializeActionPanel();
+    }
+
+    private void initializeActionPanel() {
+        FormPanel content = new FormPanel(FormPanel.WITH_SCROLLING);
+        Set<JIPipeNodeUI> nodeUIs = canvas.getNodeUIsFor(compartments);
+        boolean canAddSeparator = false;
+        for (NodeUIContextAction action : canvas.getContextActions()) {
+            if (action == null) {
+                if(canAddSeparator) {
+                    content.addWideToForm(new JSeparator());
+                    canAddSeparator = false;
+                }
+                continue;
+            }
+            if (action.isHidden())
+                continue;
+            if(!action.showInMultiSelectionPanel())
+                continue;
+            boolean matches = action.matches(nodeUIs);
+            if (!matches && !action.disableOnNonMatch())
+                continue;
+
+            JButton item = new JButton("<html>" + action.getName() + "<br/><small>" + action.getDescription() + "</small></html>", action.getIcon());
+            item.setHorizontalAlignment(SwingConstants.LEFT);
+            item.setToolTipText(action.getDescription());
+            if (matches) {
+                item.addActionListener(e -> action.run(canvas, ImmutableSet.copyOf(nodeUIs)));
+                content.addWideToForm(item);
+                canAddSeparator = true;
+            }
+        }
+        content.addVerticalGlue();
+        add(content, BorderLayout.CENTER);
     }
 
     private void initializeToolbar() {

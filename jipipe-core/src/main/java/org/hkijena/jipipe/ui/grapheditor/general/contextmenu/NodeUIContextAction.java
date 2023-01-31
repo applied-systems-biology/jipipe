@@ -76,8 +76,14 @@ public interface NodeUIContextAction {
      * @return if an item should be disabled or removed if it does not match
      */
     default boolean disableOnNonMatch() {
-        return true;
+        return false;
     }
+
+    /**
+     * Determines if the item should be shown in the multi-node selection panel
+     * @return if the item should be shown in the multi-node selection panel
+     */
+    default boolean showInMultiSelectionPanel() { return true; }
 
     /**
      * Returns an optional keyboard shortcut. Can be null
