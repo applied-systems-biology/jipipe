@@ -21,6 +21,7 @@ import gnu.trove.list.array.TIntArrayList;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
@@ -1265,12 +1266,46 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges())
             paintOutsideEdges(g, false, Color.DARK_GRAY, STROKE_DEFAULT, STROKE_DEFAULT_BORDER);
-        paintEdges(g, STROKE_DEFAULT, STROKE_DEFAULT_BORDER, STROKE_COMMENT, false, false, false, 1, 0, 0, true, false);
 
-        if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges())
+        // Main edge drawing
+        paintEdges(g,
+                STROKE_DEFAULT,
+                STROKE_DEFAULT_BORDER,
+                STROKE_COMMENT,
+                false,
+                false,
+                false,
+                1,
+                0,
+                0,
+                true,
+                false
+        );
+
+        // Outside edges drawing
+        if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges()) {
             paintOutsideEdges(g, true, Color.DARK_GRAY, STROKE_HIGHLIGHT, null);
-        if (!selection.isEmpty())
-            paintEdges(g, STROKE_HIGHLIGHT, null, STROKE_COMMENT_HIGHLIGHT, true, true, settings.isColorSelectedNodeEdges(), 1, 0, 0, true, false);
+        }
+
+        // Selected edges drawing
+        if (!selection.isEmpty()) {
+            paintEdges(g,
+                    STROKE_HIGHLIGHT,
+                    null,
+                    STROKE_COMMENT_HIGHLIGHT,
+                    true,
+                    true,
+                    settings.isColorSelectedNodeEdges(),
+                    1,
+                    0,
+                    0,
+                    true,
+                    false
+            );
+        }
+
+        // Smart edges drawing
+        paintSmartEdges(g);
 
         // Draw highlights
         paintCurrentlyDraggedConnection(g);
@@ -1510,7 +1545,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             // Hidden edges
             if (!ignoreHiddenEdges && !withHidden) {
                 if (edge.isUiHidden()) {
-                    paintHiddenSlotEdge(g, source, target, multicolor, multiColorIndex, multiColorMax);
+                    paintHiddenSlotEdge(g, source, target,  sourceUI, targetUI, multicolor, multiColorIndex, multiColorMax);
                     continue;
                 }
             }
@@ -1524,9 +1559,51 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
     }
 
-    private void paintHiddenSlotEdge(Graphics2D g, JIPipeDataSlot source, JIPipeDataSlot target, boolean multicolor, int multiColorIndex, int multiColorMax) {
-        JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
-        JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
+    private void paintSmartEdges(Graphics2D g) {
+        for (JIPipeNodeUI nodeUI : nodeUIs.values()) {
+            for (JIPipeInputDataSlot inputSlot : nodeUI.getNode().getInputSlots()) {
+                PointRange inputSlotLocation = nodeUI.getSlotLocation(inputSlot);
+                if(inputSlotLocation == null)
+                    continue;
+
+                // Find smart edge candidates
+                Set<JIPipeDataSlot> inputIncomingSourceSlots = graph.getInputIncomingSourceSlots(inputSlot).stream().filter(outputSlot -> calculateApproximateSlotManhattanDistance(outputSlot, inputSlot) > 512).collect(Collectors.toSet());
+
+                // Render the smart edge
+                if(!inputIncomingSourceSlots.isEmpty()) {
+                    JIPipeNodeUISlotActiveArea slotActiveArea = nodeUI.getSlotActiveArea(inputSlot);
+                    if(slotActiveArea.getZoomedHitArea() != null) {
+                        int spacing = (int)Math.round(zoom * viewMode.getGridHeight() / 3.0);
+                        int x = nodeUI.getX() + slotActiveArea.getZoomedHitArea().x;
+                        int y = nodeUI.getY() - slotActiveArea.getZoomedHitArea().height - spacing;
+                        int width = slotActiveArea.getZoomedHitArea().width;
+                        int height = slotActiveArea.getZoomedHitArea().height;
+                        g.setPaint(Color.RED);
+                        g.drawRect(x, y, width, height);
+                    }
+                }
+            }
+        }
+    }
+
+    private double calculateApproximateSlotManhattanDistance(JIPipeDataSlot source, JIPipeDataSlot target) {
+        JIPipeNodeUI sourceNode = nodeUIs.get(source.getNode());
+        JIPipeNodeUI targetNode = nodeUIs.get(target.getNode());
+        if(sourceNode != null && targetNode != null) {
+            PointRange sourceLocation = sourceNode.getSlotLocation(source);
+            PointRange targetLocation = targetNode.getSlotLocation(target);
+            if (sourceLocation != null && targetLocation != null) {
+                int x1 = sourceNode.getX() + sourceLocation.center.x;
+                int x2 = targetNode.getX() + targetLocation.center.x;
+                int y1 = sourceNode.getY() + sourceLocation.center.y;
+                int y2 = targetNode.getY() + targetLocation.center.y;
+                return Math.abs(x1 - x2) + Math.abs(y1 - y2);
+            }
+        }
+        return -1;
+    }
+
+    private void paintHiddenSlotEdge(Graphics2D g, JIPipeDataSlot source, JIPipeDataSlot target, JIPipeNodeUI sourceUI, JIPipeNodeUI targetUI, boolean multicolor, int multiColorIndex, int multiColorMax) {
 
         if (sourceUI == null || targetUI == null)
             return;
