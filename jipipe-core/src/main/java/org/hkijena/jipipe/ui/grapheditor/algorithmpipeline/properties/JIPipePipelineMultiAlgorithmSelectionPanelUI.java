@@ -19,20 +19,17 @@ import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbenchPanel;
 import org.hkijena.jipipe.ui.components.FormPanel;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
-import org.hkijena.jipipe.ui.components.markdown.MarkdownReader;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
+import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
-import org.hkijena.jipipe.utils.TooltipUtils;
+import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.Comparator;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * UI when multiple algorithms are selected
@@ -57,11 +54,19 @@ public class JIPipePipelineMultiAlgorithmSelectionPanelUI extends JIPipeProjectW
 
     private void initialize() {
         setLayout(new BorderLayout());
-        initializeToolbar();
-        initializeActionPanel();
+
+        AutoResizeSplitPane splitPane = new AutoResizeSplitPane(AutoResizeSplitPane.TOP_BOTTOM, AutoResizeSplitPane.RATIO_1_TO_3);
+        add(splitPane, BorderLayout.CENTER);
+
+        JPanel actionPanel = new JPanel(new BorderLayout());
+        splitPane.setBottomComponent(actionPanel);
+        splitPane.setTopComponent(new JIPipeGraphEditorMinimap(canvas.getGraphEditorUI()));
+
+        initializeToolbar(actionPanel);
+        initializeActionPanel(actionPanel);
     }
 
-    private void initializeActionPanel() {
+    private void initializeActionPanel(JPanel actionPanel) {
         FormPanel content = new FormPanel(FormPanel.WITH_SCROLLING);
         Set<JIPipeNodeUI> nodeUIs = canvas.getNodeUIsFor(nodes);
         boolean canAddSeparator = false;
@@ -91,10 +96,10 @@ public class JIPipePipelineMultiAlgorithmSelectionPanelUI extends JIPipeProjectW
             }
         }
         content.addVerticalGlue();
-        add(content, BorderLayout.CENTER);
+        actionPanel.add(content, BorderLayout.CENTER);
     }
 
-    private void initializeToolbar() {
+    private void initializeToolbar(JPanel actionPanel) {
         JToolBar toolBar = new JToolBar();
         toolBar.setFloatable(false);
         JLabel nameLabel = new JLabel(nodes.size() + " nodes", UIUtils.getIconFromResources("actions/edit-select-all.png"), JLabel.LEFT);
@@ -107,6 +112,6 @@ public class JIPipePipelineMultiAlgorithmSelectionPanelUI extends JIPipeProjectW
                 canvas.getContextActions(),
                 canvas);
 
-        add(toolBar, BorderLayout.NORTH);
+        actionPanel.add(toolBar, BorderLayout.NORTH);
     }
 }

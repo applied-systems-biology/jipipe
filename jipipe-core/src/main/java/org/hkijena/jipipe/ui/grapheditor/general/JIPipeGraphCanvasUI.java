@@ -1197,12 +1197,15 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         paintMinimapEdges(graphics2D, scale, viewX, viewY);
 
+        BasicStroke defaultStroke = new BasicStroke(1);
+        BasicStroke selectedStroke = new BasicStroke(3);
+
         for (JIPipeNodeUI nodeUI : nodeUIs.values()) {
             int x = (int) (nodeUI.getX() * scale) + viewX;
             int y = (int) (nodeUI.getY() * scale) + viewY;
             int width = (int) (nodeUI.getWidth() * scale);
             int height = (int) (nodeUI.getHeight() * scale);
-
+            graphics2D.setStroke(selection.contains(nodeUI) ? selectedStroke : defaultStroke);
             graphics2D.setColor(nodeUI.getFillColor());
             graphics2D.fillRect(x, y, width, height);
             if (nodeUI.getNode().isBookmarked()) {
