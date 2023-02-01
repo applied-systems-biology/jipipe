@@ -1833,7 +1833,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         Multimap<JIPipeDataSlot, DisplayedSlotEdge> labelledEdges = HashMultimap.create();
 
         for (DisplayedSlotEdge displayedSlotEdge : displayedMainEdges) {
-            if(displayedSlotEdge.isHidden() && displayedSlotEdge.edge.getUiVisibility() == JIPipeGraphEdge.Visibility.Smart) {
+            if(displayedSlotEdge.isHidden() && displayedSlotEdge.edge.getUiVisibility() == JIPipeGraphEdge.Visibility.Smart && settings.isAutoHideDrawLabels()) {
                 labelledEdges.put(displayedSlotEdge.target, displayedSlotEdge);
             }
             else if(settings.isDrawLabelsOnHover() && displayedSlotEdge.getTargetUI() == currentlyMouseEnteredNode && !isCurrentlyDraggingNode() && !isCurrentlyDraggingConnection()) {
@@ -1969,7 +1969,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             PointRange.tighten(sourcePoint, targetPoint);
 
             g.setStroke(STROKE_SMART_EDGE);
-            g.setColor(Color.DARK_GRAY);
+            g.setColor(Color.LIGHT_GRAY);
             paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, false);
             return;
         }
