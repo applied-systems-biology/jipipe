@@ -1162,58 +1162,12 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 JMenuItem disconnectButton = new JMenuItem("Disconnect all", UIUtils.getIconFromResources("actions/cancel.png"));
                 disconnectButton.addActionListener(e -> getGraphCanvasUI().disconnectAll(slot, targetSlots));
                 JIPipeNodeUISlotActiveArea slotActiveArea = getSlotActiveArea(slot);
-                if(slotActiveArea != null) {
+                if (slotActiveArea != null) {
                     openSlotMenuInstallHighlightForDisconnect(slotActiveArea, disconnectButton, targetSlots);
                 }
                 menu.add(disconnectButton);
 
                 UIUtils.addSeparatorIfNeeded(menu);
-            }
-
-            Set<JIPipeGraphEdge> hiddenEdges = new HashSet<>();
-            Set<JIPipeGraphEdge> visibleEdges = new HashSet<>();
-            for (JIPipeDataSlot targetSlot : targetSlots) {
-                JIPipeGraphEdge edge = getGraphCanvasUI().getGraph().getGraph().getEdge(slot, targetSlot);
-                if (edge.isUiHidden()) {
-                    hiddenEdges.add(edge);
-                } else {
-                    visibleEdges.add(edge);
-                }
-            }
-
-            if (!hiddenEdges.isEmpty()) {
-                JMenuItem showButton = new JMenuItem("Show all outgoing edges", UIUtils.getIconFromResources("actions/eye.png"));
-                showButton.setToolTipText("Un-hides all outgoing edges");
-                showButton.addActionListener(e -> {
-                    if (getGraphCanvasUI().getHistoryJournal() != null) {
-                        getGraphCanvasUI().getHistoryJournal().snapshot("Un-hide edges",
-                                "Shown all edges of slot " + slot.getDisplayName(),
-                                slot.getNode().getCompartmentUUIDInParentGraph(),
-                                UIUtils.getIconFromResources("actions/eye.png"));
-                    }
-                    for (JIPipeGraphEdge target : hiddenEdges) {
-                        target.setUiHidden(false);
-                    }
-                    getGraphCanvasUI().repaint(50);
-                });
-                menu.add(showButton);
-            }
-            if (!visibleEdges.isEmpty()) {
-                JMenuItem showButton = new JMenuItem("Hide all outgoing edges", UIUtils.getIconFromResources("actions/eye-slash.png"));
-                showButton.setToolTipText("Hides all outgoing edges");
-                showButton.addActionListener(e -> {
-                    if (getGraphCanvasUI().getHistoryJournal() != null) {
-                        getGraphCanvasUI().getHistoryJournal().snapshot("Hide edges",
-                                "Hidden all edges of slot " + slot.getDisplayName(),
-                                slot.getNode().getCompartmentUUIDInParentGraph(),
-                                UIUtils.getIconFromResources("actions/eye-slash.png"));
-                    }
-                    for (JIPipeGraphEdge target : visibleEdges) {
-                        target.setUiHidden(true);
-                    }
-                    getGraphCanvasUI().repaint(50);
-                });
-                menu.add(showButton);
             }
         }
 
@@ -1238,6 +1192,37 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             openSlotMenuAddOutputTargetSlotItems(slot, targetSlots, manageMenu);
             menu.add(manageMenu);
         }
+        if(!targetSlots.isEmpty()) {
+            // Customize menu
+            JMenu edgeMenu = new JMenu("Customize edges");
+            edgeMenu.setIcon(UIUtils.getIconFromResources("actions/draw-connector.png"));
+            edgeMenu.add(UIUtils.createMenuItem("Draw all outputs as elbow",
+                    "All outgoing edges will be drawn as elbow",
+                    UIUtils.getIconFromResources("actions/standard-connector.png"),
+                    () -> setOutputEdgesShape(JIPipeGraphEdge.Shape.Elbow)));
+            edgeMenu.add(UIUtils.createMenuItem("Draw all outputs as line",
+                    "All outgoing edges will be drawn as line",
+                    UIUtils.getIconFromResources("actions/draw-line.png"),
+                    () -> setOutputEdgesShape(JIPipeGraphEdge.Shape.Line)));
+            edgeMenu.addSeparator();
+            edgeMenu.add(UIUtils.createMenuItem("Always show all outputs",
+                    "All output edges are shown regardless of their length",
+                    UIUtils.getIconFromResources("actions/eye.png"),
+                    () -> setOutputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysVisible)));
+            edgeMenu.add(UIUtils.createMenuItem("Always hide all outputs",
+                    "All output edges are hidden (displayed as dashed line) regardless of their length",
+                    UIUtils.getIconFromResources("actions/eye-slash.png"),
+                    () -> setOutputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysHidden)));
+            edgeMenu.add(UIUtils.createMenuItem("Auto-hide long output edges (with label)",
+                    "Long edges are automatically hidden (displayed as dashed line). A label is displayed at the targets that contains information about the source.",
+                    UIUtils.getIconFromResources("actions/fcitx-remind-active.png"),
+                    () -> setOutputEdgesVisibility(JIPipeGraphEdge.Visibility.Smart)));
+            edgeMenu.add(UIUtils.createMenuItem("Auto-hide long output edges (without label)",
+                    "Long edges are automatically hidden (displayed as dashed line).",
+                    UIUtils.getIconFromResources("actions/fcitx-remind-active.png"),
+                    () -> setOutputEdgesVisibility(JIPipeGraphEdge.Visibility.SmartSilent)));
+            menu.add(edgeMenu);
+        }
 
         UIUtils.addSeparatorIfNeeded(menu);
 
@@ -1261,6 +1246,66 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
     }
 
+    private void setOutputEdgesVisibility(JIPipeGraphEdge.Visibility visibility) {
+        if (getGraphCanvasUI().getHistoryJournal() != null) {
+            getGraphCanvasUI().getHistoryJournal().snapshot("Set edge visibility",
+                    "Set the visibility of all output edges of " + node.getDisplayName(),
+                    getNode().getCompartmentUUIDInParentGraph(),
+                    UIUtils.getIconFromResources("actions/eye.png"));
+        }
+        for (JIPipeOutputDataSlot outputSlot : node.getOutputSlots()) {
+            for (JIPipeGraphEdge graphEdge : node.getParentGraph().getGraph().outgoingEdgesOf(outputSlot)) {
+                graphEdge.setUiVisibility(visibility);
+            }
+        }
+        graphCanvasUI.repaint(50);
+    }
+
+    private void setOutputEdgesShape(JIPipeGraphEdge.Shape shape) {
+        if (getGraphCanvasUI().getHistoryJournal() != null) {
+            getGraphCanvasUI().getHistoryJournal().snapshot("Set edge shape",
+                    "Set the shape of all output edges of " + node.getDisplayName(),
+                    getNode().getCompartmentUUIDInParentGraph(),
+                    UIUtils.getIconFromResources("actions/eye.png"));
+        }
+        for (JIPipeOutputDataSlot outputSlot : node.getOutputSlots()) {
+            for (JIPipeGraphEdge graphEdge : node.getParentGraph().getGraph().outgoingEdgesOf(outputSlot)) {
+                graphEdge.setUiShape(shape);
+            }
+        }
+        graphCanvasUI.repaint(50);
+    }
+
+    private void setInputEdgesVisibility(JIPipeGraphEdge.Visibility visibility) {
+        if (getGraphCanvasUI().getHistoryJournal() != null) {
+            getGraphCanvasUI().getHistoryJournal().snapshot("Set edge visibility",
+                    "Set the visibility of all input edges of " + node.getDisplayName(),
+                    getNode().getCompartmentUUIDInParentGraph(),
+                    UIUtils.getIconFromResources("actions/eye.png"));
+        }
+        for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
+            for (JIPipeGraphEdge graphEdge : node.getParentGraph().getGraph().incomingEdgesOf(inputSlot)) {
+                graphEdge.setUiVisibility(visibility);
+            }
+        }
+        graphCanvasUI.repaint(50);
+    }
+
+    private void setInputEdgesShape(JIPipeGraphEdge.Shape shape) {
+        if (getGraphCanvasUI().getHistoryJournal() != null) {
+            getGraphCanvasUI().getHistoryJournal().snapshot("Set edge edge",
+                    "Set the shape of all input edges of " + node.getDisplayName(),
+                    getNode().getCompartmentUUIDInParentGraph(),
+                    UIUtils.getIconFromResources("actions/eye.png"));
+        }
+        for (JIPipeDataSlot inputSlot : node.getInputSlots()) {
+            for (JIPipeGraphEdge graphEdge : node.getParentGraph().getGraph().incomingEdgesOf(inputSlot)) {
+                graphEdge.setUiShape(shape);
+            }
+        }
+        graphCanvasUI.repaint(50);
+    }
+
     private void openSlotMenuAddOutputTargetSlotItems(JIPipeDataSlot slot, Set<JIPipeDataSlot> targetSlots, JMenu menu) {
         for (JIPipeDataSlot targetSlot : sortSlotsByDistance(slot, targetSlots)) {
             JMenu targetSlotMenu = new JMenu("<html>" + targetSlot.getName() + "<br><small>" + targetSlot.getNode().getDisplayName() + "</small></html>");
@@ -1275,43 +1320,44 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             targetSlotMenu.add(disconnectButton);
 
             JIPipeGraphEdge edge = getGraphCanvasUI().getGraph().getGraph().getEdge(slot, targetSlot);
-            if (edge.isUiHidden()) {
-                JMenuItem showButton = new JMenuItem("Show outgoing edge", UIUtils.getIconFromResources("actions/eye.png"));
-                showButton.setToolTipText("Un-hides the outgoing edge");
-                showButton.addActionListener(e -> {
-                    if (getGraphCanvasUI().getHistoryJournal() != null) {
-                        getGraphCanvasUI().getHistoryJournal().snapshot("Un-hide edge",
-                                "Shown the edge " + slot.getDisplayName() + " -> " + targetSlot.getDisplayName(),
-                                getNode().getCompartmentUUIDInParentGraph(),
-                                UIUtils.getIconFromResources("actions/eye.png"));
-                    }
-                    edge.setUiHidden(false);
-                    getGraphCanvasUI().repaint(50);
-                });
-                if(slotActiveArea != null) {
-                    openSlotMenuInstallHighlightForConnect(slotActiveArea, targetSlot, showButton);
-                }
-                targetSlotMenu.add(showButton);
-            } else {
-                JMenuItem hideButton = new JMenuItem("Hide outgoing edge", UIUtils.getIconFromResources("actions/eye-slash.png"));
-                hideButton.setToolTipText("Hides the outgoing edge");
-                hideButton.addActionListener(e -> {
-                    if (getGraphCanvasUI().getHistoryJournal() != null) {
-                        getGraphCanvasUI().getHistoryJournal().snapshot("Hide edge",
-                                "Hidden the edge " + slot.getDisplayName() + " -> " + targetSlot.getDisplayName(),
-                                getNode().getCompartmentUUIDInParentGraph(),
-                                UIUtils.getIconFromResources("actions/eye-slash.png"));
-                    }
-                    edge.setUiHidden(true);
-                    getGraphCanvasUI().repaint(50);
-                });
-                if(slotActiveArea != null) {
-                    openSlotMenuInstallHighlightForDisconnect(slotActiveArea, hideButton, Collections.singleton(targetSlot));
-                }
-                targetSlotMenu.add(hideButton);
-            }
+
+            // Shape menu
             openSlotMenuAddShapeToggle(slot, targetSlotMenu, edge);
+
+            // Visibility options
+            openSlotMenuAddVisibilityToggle(slot, targetSlotMenu, edge);
+
             menu.add(targetSlotMenu);
+        }
+    }
+
+    private void openSlotMenuAddVisibilityToggle(JIPipeDataSlot slot, JMenu menu, JIPipeGraphEdge edge) {
+
+        menu.addSeparator();
+
+        if(edge.getUiVisibility() != JIPipeGraphEdge.Visibility.AlwaysVisible) {
+            menu.add(UIUtils.createMenuItem("Show all outputs",
+                    "The edge shown regardless of its length",
+                    UIUtils.getIconFromResources("actions/eye.png"),
+                    () -> setEdgeVisibility(slot, edge, JIPipeGraphEdge.Visibility.AlwaysVisible)));
+        }
+        if(edge.getUiVisibility() != JIPipeGraphEdge.Visibility.AlwaysHidden) {
+            menu.add(UIUtils.createMenuItem("Always hide all outputs",
+                    "All output edges are hidden (displayed as dashed line) regardless of their length",
+                    UIUtils.getIconFromResources("actions/eye-slash.png"),
+                    () -> setEdgeVisibility(slot, edge, JIPipeGraphEdge.Visibility.AlwaysHidden)));
+        }
+        if(edge.getUiVisibility() != JIPipeGraphEdge.Visibility.Smart) {
+            menu.add(UIUtils.createMenuItem("Auto-hide long output edges (with label)",
+                    "Long edges are automatically hidden (displayed as dashed line). A label is displayed at the targets that contains information about the source.",
+                    UIUtils.getIconFromResources("actions/fcitx-remind-active.png"),
+                    () -> setEdgeVisibility(slot, edge, JIPipeGraphEdge.Visibility.Smart)));
+        }
+        if(edge.getUiVisibility() != JIPipeGraphEdge.Visibility.SmartSilent) {
+            menu.add(UIUtils.createMenuItem("Auto-hide long output edges (without label)",
+                    "Long edges are automatically hidden (displayed as dashed line).",
+                    UIUtils.getIconFromResources("actions/fcitx-remind-active.png"),
+                    () -> setEdgeVisibility(slot, edge, JIPipeGraphEdge.Visibility.SmartSilent)));
         }
     }
 
@@ -1349,6 +1395,37 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             manageMenu.setIcon(UIUtils.getIconFromResources("actions/lines-connector.png"));
             openSlotMenuAddInputSourceSlotItems(slot, sourceSlots, manageMenu);
             menu.add(manageMenu);
+        }
+        if(!sourceSlots.isEmpty()) {
+            // Customize menu
+            JMenu edgeMenu = new JMenu("Customize edges");
+            edgeMenu.setIcon(UIUtils.getIconFromResources("actions/draw-connector.png"));
+            edgeMenu.add(UIUtils.createMenuItem("Draw all inputs as elbow",
+                    "All outgoing edges will be drawn as elbow",
+                    UIUtils.getIconFromResources("actions/standard-connector.png"),
+                    () -> setInputEdgesShape(JIPipeGraphEdge.Shape.Elbow)));
+            edgeMenu.add(UIUtils.createMenuItem("Draw all inputs as line",
+                    "All outgoing edges will be drawn as line",
+                    UIUtils.getIconFromResources("actions/draw-line.png"),
+                    () -> setInputEdgesShape(JIPipeGraphEdge.Shape.Line)));
+            edgeMenu.addSeparator();
+            edgeMenu.add(UIUtils.createMenuItem("Always show all inputs",
+                    "All output edges are shown regardless of their length",
+                    UIUtils.getIconFromResources("actions/eye.png"),
+                    () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysVisible)));
+            edgeMenu.add(UIUtils.createMenuItem("Always hide all inputs",
+                    "All output edges are hidden (displayed as dashed line) regardless of their length",
+                    UIUtils.getIconFromResources("actions/eye-slash.png"),
+                    () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysHidden)));
+            edgeMenu.add(UIUtils.createMenuItem("Auto-hide long input edges (with label)",
+                    "Long edges are automatically hidden (displayed as dashed line). A label is displayed at the targets that contains information about the source.",
+                    UIUtils.getIconFromResources("actions/fcitx-remind-active.png"),
+                    () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.Smart)));
+            edgeMenu.add(UIUtils.createMenuItem("Auto-hide long input edges (without label)",
+                    "Long edges are automatically hidden (displayed as dashed line).",
+                    UIUtils.getIconFromResources("actions/fcitx-remind-active.png"),
+                    () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.SmartSilent)));
+            menu.add(edgeMenu);
         }
 
         UIUtils.addSeparatorIfNeeded(menu);
@@ -1438,42 +1515,13 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             sourceSlotMenu.add(disconnectButton);
 
             JIPipeGraphEdge edge = getGraphCanvasUI().getGraph().getGraph().getEdge(sourceSlot, slot);
-            if (edge.isUiHidden()) {
-                JMenuItem showButton = new JMenuItem("Show incoming edge", UIUtils.getIconFromResources("actions/eye.png"));
-                showButton.setToolTipText("Un-hides the incoming edge");
-                showButton.addActionListener(e -> {
-                    if (getGraphCanvasUI().getHistoryJournal() != null) {
-                        getGraphCanvasUI().getHistoryJournal().snapshot("Un-hide edge",
-                                "Shown the edge " + sourceSlot.getDisplayName() + " -> " + slot.getDisplayName(),
-                                getNode().getCompartmentUUIDInParentGraph(),
-                                UIUtils.getIconFromResources("actions/eye.png"));
-                    }
-                    edge.setUiHidden(false);
-                    getGraphCanvasUI().repaint(50);
-                });
-                if(slotActiveArea != null) {
-                    openSlotMenuInstallHighlightForConnect(slotActiveArea, sourceSlot, showButton);
-                }
-                sourceSlotMenu.add(showButton);
-            } else {
-                JMenuItem hideButton = new JMenuItem("Hide incoming edge", UIUtils.getIconFromResources("actions/eye-slash.png"));
-                hideButton.setToolTipText("Hides the incoming edge");
-                hideButton.addActionListener(e -> {
-                    if (getGraphCanvasUI().getHistoryJournal() != null) {
-                        getGraphCanvasUI().getHistoryJournal().snapshot("Hide edge",
-                                "Hidden the edge " + sourceSlot.getDisplayName() + " -> " + slot.getDisplayName(),
-                                getNode().getCompartmentUUIDInParentGraph(),
-                                UIUtils.getIconFromResources("actions/eye-slash.png"));
-                    }
-                    edge.setUiHidden(true);
-                    getGraphCanvasUI().repaint(50);
-                });
-                if(slotActiveArea != null) {
-                    openSlotMenuInstallHighlightForDisconnect(slotActiveArea, hideButton, Collections.singleton(sourceSlot));
-                }
-                sourceSlotMenu.add(hideButton);
-            }
+
+            // Shape menu
             openSlotMenuAddShapeToggle(slot, sourceSlotMenu, edge);
+
+            // Visibility options
+            openSlotMenuAddVisibilityToggle(slot, sourceSlotMenu, edge);
+
             menu.add(sourceSlotMenu);
         }
     }
@@ -1502,9 +1550,6 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             connectButton.addActionListener(e -> getGraphCanvasUI().connectSlot(source, slot));
             if(slotActiveArea != null) {
                 openSlotMenuInstallHighlightForConnect(slotActiveArea, source, connectButton);
-            }
-            else {
-                System.out.println("hy");
             }
             if (currentMenu instanceof JMenu)
                 ((JMenu) currentMenu).add(connectButton);
@@ -1544,6 +1589,17 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             });
             menu.add(setShapeItem);
         }
+    }
+
+    private void setEdgeVisibility(JIPipeDataSlot slot, JIPipeGraphEdge edge, JIPipeGraphEdge.Visibility visible) {
+        if (getGraphCanvasUI().getHistoryJournal() != null) {
+            getGraphCanvasUI().getHistoryJournal().snapshot("Set edge visibility",
+                    slot.getDisplayName(),
+                    getNode().getCompartmentUUIDInParentGraph(),
+                    UIUtils.getIconFromResources("actions/eye.png"));
+        }
+        edge.setUiVisibility(visible);
+        getGraphCanvasUI().repaint(50);
     }
 
     private void openSlotMenuAddOutputSlotEditItems(JIPipeDataSlot slot, JPopupMenu menu) {

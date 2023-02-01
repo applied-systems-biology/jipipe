@@ -21,7 +21,6 @@ import gnu.trove.list.array.TIntArrayList;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
-import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
@@ -43,9 +42,11 @@ import org.hkijena.jipipe.ui.grapheditor.general.layout.SugiyamaGraphAutoLayoutM
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUISlotActiveArea;
 import org.hkijena.jipipe.utils.PointRange;
+import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.ScreenImage;
 import org.hkijena.jipipe.utils.ui.ScreenImageSVG;
+import org.jetbrains.annotations.NotNull;
 import org.jfree.graphics2d.svg.SVGGraphics2D;
 
 import javax.swing.FocusManager;
@@ -90,6 +91,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     public static final Stroke STROKE_MARQUEE = new BasicStroke(1, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
     public static final Stroke STROKE_COMMENT = new BasicStroke(2, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
     public static final Stroke STROKE_COMMENT_HIGHLIGHT = new BasicStroke(4, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{8}, 0);
+    public static final Stroke STROKE_SMART_EDGE = new BasicStroke(1, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_BEVEL, 0, new float[]{2}, 0);
     private static final Color COMMENT_EDGE_COLOR = new Color(194, 141, 0);
     private final JIPipeWorkbench workbench;
     private final JIPipeGraphEditorUI graphEditorUI;
@@ -104,6 +106,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private final Map<JIPipeNodeUI, Point> currentlyDraggedOffsets = new HashMap<>();
     private final NodeHotKeyStorage nodeHotKeyStorage;
     private final Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");
+
+    private final Color smartEdgeSlotBackground = UIManager.getColor("EditorPane.background");
+
+    private final Color smartEdgeSlotForeground = UIManager.getColor("Label.foreground");
     private final JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.VerticalCompact;
     private JIPipeGraphDragAndDropBehavior dragAndDropBehavior;
     private Point graphEditCursor;
@@ -134,6 +140,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     private ConnectHighlight connectHighlight;
 
+    private Font smartEdgeTooltipSlotFont;
+    private Font smartEdgeTooltipNodeFont;
+    private List<DisplayedSlotEdge> lastDisplayedMainEdges;
+
     /**
      * Creates a new UI
      *
@@ -157,6 +167,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         addNewNodes(false);
         graph.getEventBus().register(this);
         initializeHotkeys();
+        updateAssets();
     }
 
     public boolean isRenderOutsideEdges() {
@@ -798,6 +809,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseMoved(MouseEvent mouseEvent) {
+        boolean changed = false;
         JIPipeNodeUI nodeUI = pickComponent(mouseEvent);
         if(nodeUI != null) {
             if(nodeUI != currentlyMouseEnteredNode) {
@@ -806,14 +818,19 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 }
                 currentlyMouseEnteredNode = nodeUI;
                 currentlyMouseEnteredNode.mouseEntered(mouseEvent);
+                changed = true;
             }
         }
         else if(currentlyMouseEnteredNode != null) {
             currentlyMouseEnteredNode.mouseExited(mouseEvent);
             currentlyMouseEnteredNode = null;
+            changed = true;
         }
         if(currentlyMouseEnteredNode != null) {
             currentlyMouseEnteredNode.mouseMoved(mouseEvent);
+        }
+        if(changed && settings.isDrawLabelsOnHover()) {
+            repaint(50);
         }
     }
 
@@ -1083,6 +1100,14 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         hasDragSnapshot = false;
     }
 
+    public boolean isCurrentlyDraggingNode() {
+        return hasDragSnapshot;
+    }
+
+    public boolean isCurrentlyDraggingConnection() {
+        return currentConnectionDragSource != null && currentConnectionDragTarget != null;
+    }
+
     @Override
     public void mouseEntered(MouseEvent mouseEvent) {
 
@@ -1240,12 +1265,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 STROKE_UNIT_COMMENT,
                 false,
                 false,
-                false,
                 scale,
                 viewX,
                 viewY,
                 false,
-                true);
+                false);
     }
 
     @Override
@@ -1254,6 +1278,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         Graphics2D g = (Graphics2D) graphics;
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
         if (settings.isDrawNodeShadows()) {
             for (JIPipeNodeUI ui : nodeUIs.values()) {
@@ -1268,19 +1293,17 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             paintOutsideEdges(g, false, Color.DARK_GRAY, STROKE_DEFAULT, STROKE_DEFAULT_BORDER);
 
         // Main edge drawing
-        paintEdges(g,
+        lastDisplayedMainEdges = paintEdges(g,
                 STROKE_DEFAULT,
                 STROKE_DEFAULT_BORDER,
                 STROKE_COMMENT,
-                false,
                 false,
                 false,
                 1,
                 0,
                 0,
                 true,
-                false
-        );
+                settings.isAutoHideEdgeEnabled());
 
         // Outside edges drawing
         if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges()) {
@@ -1294,18 +1317,13 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     null,
                     STROKE_COMMENT_HIGHLIGHT,
                     true,
-                    true,
                     settings.isColorSelectedNodeEdges(),
                     1,
                     0,
                     0,
                     true,
-                    false
-            );
+                    false);
         }
-
-        // Smart edges drawing
-        paintSmartEdges(g);
 
         // Draw highlights
         paintCurrentlyDraggedConnection(g);
@@ -1339,7 +1357,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                         PointRange.tighten(sourcePoint, targetPoint);
 
                         // Draw arrow
-                        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+                        paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
                     }
                 }
             } else if (disconnectHighlight.getTarget().getSlot().isOutput()) {
@@ -1361,7 +1379,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                         PointRange.tighten(sourcePoint, targetPoint);
 
                         // Draw arrow
-                        drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+                        paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
                     }
                 }
             }
@@ -1391,7 +1409,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     PointRange.tighten(sourcePoint, targetPoint);
 
                     // Draw arrow
-                    drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+                    paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
                 }
             } else if (disconnectHighlight.getTarget().getSlot().isOutput()) {
                 JIPipeDataSlot target = connectHighlight.getSource().getSlot();
@@ -1411,7 +1429,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                     PointRange.tighten(sourcePoint, targetPoint);
 
                     // Draw arrow
-                    drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+                    paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
                 }
             }
         }
@@ -1456,9 +1474,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
                 // Draw arrow
                 if (currentConnectionDragSource.getSlot().isOutput())
-                    drawEdge(g, sourcePoint.center, currentConnectionDragSource.getNodeUI().getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+                    paintEdge(g, sourcePoint.center, currentConnectionDragSource.getNodeUI().getBounds(), targetPoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
                 else
-                    drawEdge(g, targetPoint.center, currentConnectionDragSource.getNodeUI().getBounds(), sourcePoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
+                    paintEdge(g, targetPoint.center, currentConnectionDragSource.getNodeUI().getBounds(), sourcePoint.center, JIPipeGraphEdge.Shape.Elbow, 1, 0, 0, true);
             }
         }
     }
@@ -1467,6 +1485,12 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     public void paint(Graphics g) {
         super.paint(g);
         Graphics2D graphics2D = (Graphics2D) g;
+        graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
+        // Smart edges drawing
+        if(lastDisplayedMainEdges != null)
+            paintNodeInputLabels(graphics2D, lastDisplayedMainEdges);
 
         // Draw cursor over the components
         if (graphEditCursor != null && renderCursor) {
@@ -1503,9 +1527,145 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
     }
 
-    private void paintEdges(Graphics2D g, Stroke stroke, Stroke strokeBorder, Stroke strokeComment, boolean onlySelected, boolean withHidden, boolean multicolor, double scale, int viewX, int viewY, boolean enableArrows, boolean ignoreHiddenEdges) {
-        int multiColorMax = 1;
+    private List<DisplayedSlotEdge> paintEdges(Graphics2D g, Stroke stroke, Stroke strokeBorder, Stroke strokeComment, boolean onlySelected, boolean multicolor, double scale, int viewX, int viewY, boolean enableArrows, boolean enableAutoHide) {
         Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> slotEdges = graph.getSlotEdges();
+        List<DisplayedSlotEdge> displayedSlotEdges = new ArrayList<>();
+
+        int multiColorMax = findMultiColorMax(slotEdges, multicolor, onlySelected);
+        int multiColorIndex = 0;
+
+        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> kv : slotEdges) {
+            JIPipeDataSlot source = kv.getKey();
+            JIPipeDataSlot target = kv.getValue();
+            JIPipeGraphEdge edge = graph.getGraph().getEdge(kv.getKey(), kv.getValue());
+
+            // Check for only showing selected nodes
+            JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
+            JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
+
+            if (sourceUI == null || targetUI == null) {
+                continue;
+            }
+            if (onlySelected && !selection.contains(sourceUI) && !selection.contains(targetUI)) {
+                continue;
+            }
+
+            // Get the locations
+            PointRange sourcePoint = sourceUI.getSlotLocation(source);
+            PointRange targetPoint = targetUI.getSlotLocation(target);
+            sourcePoint.add(sourceUI.getLocation());
+            targetPoint.add(targetUI.getLocation());
+
+            // Save into the slot edges list
+            DisplayedSlotEdge displayedSlotEdge = new DisplayedSlotEdge(source, target, edge);
+            displayedSlotEdge.setMultiColorMax(multiColorMax);
+            displayedSlotEdge.setMultiColorIndex(multiColorIndex);
+            displayedSlotEdge.setSourcePoint(sourcePoint);
+            displayedSlotEdge.setTargetPoint(targetPoint);
+            displayedSlotEdge.setSourceCenter(new Point(sourcePoint.center));
+            displayedSlotEdge.setTargetCenter(new Point(targetPoint.center));
+            displayedSlotEdge.setSourceUI(sourceUI);
+            displayedSlotEdge.setTargetUI(targetUI);
+            displayedSlotEdges.add(displayedSlotEdge);
+
+            ++multiColorIndex;
+        }
+
+        if(enableAutoHide) {
+            displayedSlotEdges.sort(Comparator.naturalOrder());
+        }
+
+        Set<Rectangle> existingDrawnSlots = new HashSet<>();
+
+        for (DisplayedSlotEdge displayedSlotEdge : displayedSlotEdges) {
+
+            Rectangle rectangle = null;
+            if(enableAutoHide) {
+                rectangle = new Rectangle(displayedSlotEdge.sourcePoint.center);
+                rectangle.add(displayedSlotEdge.targetPoint.center);
+            }
+
+            // Hidden edges
+            if (displayedSlotEdge.isCommentEdge()) {
+                paintSlotEdge(g,
+                        strokeComment,
+                        null,
+                        displayedSlotEdge,
+                        multicolor,
+                        scale,
+                        viewX,
+                        viewY,
+                        enableArrows
+                );
+            } else {
+
+                boolean hidden;
+
+                switch (displayedSlotEdge.edge.getUiVisibility()) {
+                    case Smart:
+                    case SmartSilent: {
+                        hidden = false;
+                        if( enableAutoHide) {
+                            if (displayedSlotEdge.getUIManhattanDistance() > settings.getAutoHideEdgeDistanceThreshold()) {
+                                int currentArea = rectangle.width * rectangle.height;
+                                for (Rectangle existingDrawnSlot : existingDrawnSlots) {
+                                    Rectangle intersection = rectangle.intersection(existingDrawnSlot);
+                                    int intersectionArea = intersection.width * intersection.height;
+                                    int existingArea = existingDrawnSlot.width * existingDrawnSlot.height;
+                                    double diceScore = (2.0 * intersectionArea) / (existingArea + currentArea);
+                                    if (diceScore > settings.getAutoHideEdgeOverlapThreshold()) {
+                                        hidden = true;
+                                        break;
+                                    }
+//                                    if(intersectionArea > 0) {
+//                                        g.setPaint(Color.RED);
+//                                        g.draw(intersection);
+//                                    }
+//                                    g.setPaint(Color.BLUE);
+//                                    g.draw(rectangle);
+                                }
+                            }
+                        }
+                    }
+                    break;
+                    case AlwaysHidden: {
+                        hidden = true;
+                    }
+                    break;
+                    case AlwaysVisible: {
+                        hidden = false;
+                    }
+                    break;
+                    default:
+                        hidden = false;
+                    break;
+                }
+
+                displayedSlotEdge.setHidden(hidden);
+
+                paintSlotEdge(g,
+                        stroke,
+                        strokeBorder,
+                        displayedSlotEdge,
+                        multicolor,
+                        scale,
+                        viewX,
+                        viewY,
+                        enableArrows
+                );
+            }
+
+            // Save for later
+            if(enableAutoHide) {
+                existingDrawnSlots.add(rectangle);
+            }
+        }
+
+        return displayedSlotEdges;
+    }
+
+    private int findMultiColorMax( Set<Map.Entry<JIPipeDataSlot, JIPipeDataSlot>> slotEdges, boolean multicolor, boolean onlySelected) {
+        int multiColorMax = 1;
         if (multicolor) {
             if (onlySelected) {
                 multiColorMax = 0;
@@ -1525,61 +1685,226 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 multiColorMax = slotEdges.size();
             }
         }
-        int multiColorIndex = 0;
-        for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> kv : slotEdges) {
-            JIPipeDataSlot source = kv.getKey();
-            JIPipeDataSlot target = kv.getValue();
-            JIPipeGraphEdge edge = graph.getGraph().getEdge(kv.getKey(), kv.getValue());
+        return multiColorMax;
+    }
 
-            // Check for only showing selected nodes
-            JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
-            JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
+    public static class DisplayedSlotEdge implements Comparable<DisplayedSlotEdge> {
+        private final JIPipeDataSlot source;
+        private final JIPipeDataSlot target;
+        private final JIPipeGraphEdge edge;
 
-            if (sourceUI == null || targetUI == null) {
-                continue;
-            }
-            if (onlySelected && !selection.contains(sourceUI) && !selection.contains(targetUI)) {
-                continue;
-            }
+        private int multiColorIndex;
 
-            // Hidden edges
-            if (!ignoreHiddenEdges && !withHidden) {
-                if (edge.isUiHidden()) {
-                    paintHiddenSlotEdge(g, source, target,  sourceUI, targetUI, multicolor, multiColorIndex, multiColorMax);
-                    continue;
-                }
-            }
-            if (source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode) {
-                paintSlotEdge(g, strokeComment, null, source, target, sourceUI, targetUI, edge.getUiShape(), multicolor, multiColorIndex, multiColorMax, scale, viewX, viewY, enableArrows);
-            } else {
-                paintSlotEdge(g, stroke, strokeBorder, source, target, sourceUI, targetUI, edge.getUiShape(), multicolor, multiColorIndex, multiColorMax, scale, viewX, viewY, enableArrows);
-            }
+        private int multiColorMax;
 
-            ++multiColorIndex;
+        private JIPipeNodeUI sourceUI;
+
+        private JIPipeNodeUI targetUI;
+
+        private Point sourceCenter;
+
+        private Point targetCenter;
+
+        private PointRange sourcePoint;
+
+        private PointRange targetPoint;
+
+        private boolean hidden;
+
+        public DisplayedSlotEdge(JIPipeDataSlot source, JIPipeDataSlot target, JIPipeGraphEdge edge) {
+            this.source = source;
+            this.target = target;
+            this.edge = edge;
+        }
+
+        public boolean isHidden() {
+            return hidden;
+        }
+
+        public void setHidden(boolean hidden) {
+            this.hidden = hidden;
+        }
+
+        public int getMultiColorMax() {
+            return multiColorMax;
+        }
+
+        public void setMultiColorMax(int multiColorMax) {
+            this.multiColorMax = multiColorMax;
+        }
+
+        public Point getSourceCenter() {
+            return sourceCenter;
+        }
+
+        public void setSourceCenter(Point sourceCenter) {
+            this.sourceCenter = sourceCenter;
+        }
+
+        public Point getTargetCenter() {
+            return targetCenter;
+        }
+
+        public void setTargetCenter(Point targetCenter) {
+            this.targetCenter = targetCenter;
+        }
+
+        public JIPipeGraphEdge getEdge() {
+            return edge;
+        }
+
+        public JIPipeDataSlot getSource() {
+            return source;
+        }
+
+        public JIPipeDataSlot getTarget() {
+            return target;
+        }
+
+        public int getMultiColorIndex() {
+            return multiColorIndex;
+        }
+
+        public void setMultiColorIndex(int multiColorIndex) {
+            this.multiColorIndex = multiColorIndex;
+        }
+
+        public PointRange getSourcePoint() {
+            return sourcePoint;
+        }
+
+        public void setSourcePoint(PointRange sourcePoint) {
+            this.sourcePoint = sourcePoint;
+        }
+
+        public PointRange getTargetPoint() {
+            return targetPoint;
+        }
+
+        public void setTargetPoint(PointRange targetPoint) {
+            this.targetPoint = targetPoint;
+        }
+
+        private boolean isCommentEdge() {
+            return source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode;
+        }
+
+        public JIPipeNodeUI getSourceUI() {
+            return sourceUI;
+        }
+
+        public void setSourceUI(JIPipeNodeUI sourceUI) {
+            this.sourceUI = sourceUI;
+        }
+
+        public JIPipeNodeUI getTargetUI() {
+            return targetUI;
+        }
+
+        public void setTargetUI(JIPipeNodeUI targetUI) {
+            this.targetUI = targetUI;
+        }
+
+        public int getUIManhattanDistance() {
+            if(sourcePoint != null && targetPoint != null) {
+                return Math.abs(sourcePoint.center.x - targetPoint.center.x) + Math.abs(sourcePoint.center.y - targetPoint.center.y);
+            }
+            else {
+                return -1;
+            }
+        }
+
+        @Override
+        public int compareTo(@NotNull JIPipeGraphCanvasUI.DisplayedSlotEdge o) {
+            return Integer.compare(getUIManhattanDistance(), o.getUIManhattanDistance());
         }
     }
 
-    private void paintSmartEdges(Graphics2D g) {
-        for (JIPipeNodeUI nodeUI : nodeUIs.values()) {
-            for (JIPipeInputDataSlot inputSlot : nodeUI.getNode().getInputSlots()) {
-                PointRange inputSlotLocation = nodeUI.getSlotLocation(inputSlot);
-                if(inputSlotLocation == null)
-                    continue;
+    private void paintNodeInputLabels(Graphics2D g, List<DisplayedSlotEdge> displayedMainEdges) {
 
-                // Find smart edge candidates
-                Set<JIPipeDataSlot> inputIncomingSourceSlots = graph.getInputIncomingSourceSlots(inputSlot).stream().filter(outputSlot -> calculateApproximateSlotManhattanDistance(outputSlot, inputSlot) > 512).collect(Collectors.toSet());
+        if(!settings.isDrawLabelsOnHover() && !settings.isAutoHideDrawLabels())
+            return;
+
+        FontMetrics slotFontMetrics = g.getFontMetrics(smartEdgeTooltipSlotFont);
+        FontMetrics nodeFontMetrics = g.getFontMetrics(smartEdgeTooltipNodeFont);
+
+        // Collect labelled inputs based on pre-calculated
+        // Target to sources
+        Multimap<JIPipeDataSlot, DisplayedSlotEdge> labelledEdges = HashMultimap.create();
+
+        for (DisplayedSlotEdge displayedSlotEdge : displayedMainEdges) {
+            if(displayedSlotEdge.isHidden() && displayedSlotEdge.edge.getUiVisibility() == JIPipeGraphEdge.Visibility.Smart) {
+                labelledEdges.put(displayedSlotEdge.target, displayedSlotEdge);
+            }
+            else if(settings.isDrawLabelsOnHover() && displayedSlotEdge.getTargetUI() == currentlyMouseEnteredNode && !isCurrentlyDraggingNode() && !isCurrentlyDraggingConnection()) {
+                labelledEdges.put(displayedSlotEdge.target, displayedSlotEdge);
+            }
+        }
+
+        for (JIPipeNodeUI nodeUI : nodeUIs.values()) {
+            for (JIPipeDataSlot inputSlot : nodeUI.getNode().getInputSlots()) {
+                Collection<DisplayedSlotEdge> inputIncomingSourceSlots = labelledEdges.get(inputSlot);
 
                 // Render the smart edge
                 if(!inputIncomingSourceSlots.isEmpty()) {
                     JIPipeNodeUISlotActiveArea slotActiveArea = nodeUI.getSlotActiveArea(inputSlot);
                     if(slotActiveArea.getZoomedHitArea() != null) {
+
+                        final int baseHeight = 28;
+                        int tooltipHeight = (int)Math.round(zoom * inputIncomingSourceSlots.size() * baseHeight);
+                        int maxAvailableWidth = slotActiveArea.getZoomedHitArea().width;
+                        int tooltipWidth = 0;
+                        for (DisplayedSlotEdge slotEdge : inputIncomingSourceSlots) {
+                            JIPipeDataSlot sourceSlot = slotEdge.source;
+                            tooltipWidth = Math.max(tooltipWidth, Math.max(slotFontMetrics.stringWidth(sourceSlot.getName()),
+                                    nodeFontMetrics.stringWidth(sourceSlot.getNode().getName())) + (int)Math.round(zoom * 16 + zoom * 8));
+                        }
+                        tooltipWidth = Math.min(maxAvailableWidth, tooltipWidth);
+
+                        // Generate tooltip
                         int spacing = (int)Math.round(zoom * viewMode.getGridHeight() / 3.0);
-                        int x = nodeUI.getX() + slotActiveArea.getZoomedHitArea().x;
-                        int y = nodeUI.getY() - slotActiveArea.getZoomedHitArea().height - spacing;
-                        int width = slotActiveArea.getZoomedHitArea().width;
-                        int height = slotActiveArea.getZoomedHitArea().height;
-                        g.setPaint(Color.RED);
-                        g.drawRect(x, y, width, height);
+                        int tooltipX = nodeUI.getX() + slotActiveArea.getZoomedHitArea().x;
+                        int tooltipY = nodeUI.getY() - tooltipHeight - spacing - (int)Math.round(zoom * 4);
+
+                        Polygon tooltipPolygon = new Polygon(new int[] { tooltipX, tooltipX, tooltipX + tooltipWidth, tooltipX + tooltipWidth, tooltipX + tooltipWidth / 2 + spacing, tooltipX + tooltipWidth / 2, tooltipX + tooltipWidth / 2 - spacing },
+                                new int[] { tooltipY + tooltipHeight, tooltipY, tooltipY, tooltipY + tooltipHeight, tooltipY + tooltipHeight, tooltipY + tooltipHeight + spacing, tooltipY + tooltipHeight },
+                                7);
+                        g.setStroke(STROKE_UNIT);
+                        g.setPaint(smartEdgeSlotBackground);
+                        g.fill(tooltipPolygon);
+                        g.setPaint(nodeUI.getBorderColor());
+                        g.draw(tooltipPolygon);
+
+                        int startY = tooltipY;
+                        int slotInfoHeight = (int)Math.round(zoom * baseHeight);
+
+                        g.setPaint(smartEdgeSlotForeground);
+
+                        for (DisplayedSlotEdge slotEdge : inputIncomingSourceSlots) {
+
+                            JIPipeDataSlot sourceSlot = slotEdge.source;
+
+                            // Draw icon
+                            Image icon = JIPipe.getNodes().getIconFor(sourceSlot.getNode().getInfo()).getImage();
+                            int iconX = tooltipX + (int) Math.round(zoom * 3);
+                            int iconSize = (int) Math.round(12 * zoom);
+                            g.drawImage(icon, iconX, startY + slotInfoHeight / 2 - iconSize / 2, iconSize, iconSize, null);
+
+                            // Draw text
+                            double centerY = startY + slotInfoHeight / 2.0;
+                            int textX = tooltipX + (int) Math.round(zoom * 2) + (int) Math.round(zoom * 16);
+                            int slotTextY = (int)Math.round(centerY);
+                            int nodeTextY = (int)Math.round(centerY + (slotFontMetrics.getAscent() - slotFontMetrics.getLeading()));
+                            int availableTextWidth = tooltipWidth - (textX - tooltipX) - (int)Math.round(zoom * 4);
+
+                            g.setFont(smartEdgeTooltipSlotFont);
+                            g.drawString(StringUtils.limitWithEllipsis(sourceSlot.getName(), availableTextWidth, slotFontMetrics), textX, slotTextY);
+
+                            g.setFont(smartEdgeTooltipNodeFont);
+                            g.drawString(StringUtils.limitWithEllipsis(sourceSlot.getNode().getName(), availableTextWidth, nodeFontMetrics), textX, nodeTextY);
+
+                            startY += slotInfoHeight;
+                        }
                     }
                 }
             }
@@ -1603,46 +1928,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         return -1;
     }
 
-    private void paintHiddenSlotEdge(Graphics2D g, JIPipeDataSlot source, JIPipeDataSlot target, JIPipeNodeUI sourceUI, JIPipeNodeUI targetUI, boolean multicolor, int multiColorIndex, int multiColorMax) {
-
-        if (sourceUI == null || targetUI == null)
-            return;
-
-        g.setStroke(STROKE_UNIT);
-        g.setColor(getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax));
-
-        PointRange sourcePoint;
-        PointRange targetPoint;
-
-        sourcePoint = sourceUI.getSlotLocation(source);
-        sourcePoint.add(sourceUI.getLocation());
-        targetPoint = targetUI.getSlotLocation(target);
-        targetPoint.add(targetUI.getLocation());
-
-        // Tighten the point ranges: Bringing the centers together
-        PointRange.tighten(sourcePoint, targetPoint);
-
-        // From source to target
-        {
-            int x = sourcePoint.center.x;
-            int y = sourcePoint.center.y;
-            int h = viewMode.getGridHeight() / 3;
-            int d = 6;
-            g.drawLine(x, y, x, y + h);
-            g.drawOval(x - d / 2, y + h, d, d);
-        }
-
-        // At target
-        {
-            int x = targetPoint.center.x;
-            int y = targetPoint.center.y;
-            int h = viewMode.getGridHeight() / 3;
-            int d = 6;
-            g.drawLine(x, y, x, y - h);
-            g.drawOval(x - d / 2, y - h - d, d, d);
-        }
-    }
-
     private Color getEdgeColor(JIPipeDataSlot source, JIPipeDataSlot target, boolean multicolor, int multiColorIndex, int multiColorMax) {
         Color result;
         if (source.getNode() instanceof JIPipeCommentNode || target.getNode() instanceof JIPipeCommentNode) {
@@ -1657,49 +1942,37 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             else
                 result = Color.RED;
         }
-        // Generate fading color
-//        if(fade && getScrollPane() != null) {
-//            JIPipeNodeUI sourceUI = nodeUIs.getOrDefault(source.getNode(), null);
-//            JIPipeNodeUI targetUI = nodeUIs.getOrDefault(target.getNode(), null);
-//            if(sourceUI != null && targetUI != null) {
-//                boolean visibleSource = getScrollPane().getViewport().getViewRect().intersects(sourceUI.getBounds());
-//                boolean visibleTarget = getScrollPane().getViewport().getViewRect().intersects(targetUI.getBounds());
-//                if (!visibleSource && !visibleTarget) {
-//                    result = new Color(result.getRed(), result.getGreen(), result.getBlue(), 80);
-//                } else if (!visibleSource || !visibleTarget) {
-//                    result = new Color(result.getRed(), result.getGreen(), result.getBlue(), 128);
-//                }
-//            }
-//        }
         return result;
     }
 
     private void paintSlotEdge(Graphics2D g,
                                Stroke stroke,
                                Stroke strokeBorder,
-                               JIPipeDataSlot source,
-                               JIPipeDataSlot target,
-                               JIPipeNodeUI sourceUI,
-                               JIPipeNodeUI targetUI,
-                               JIPipeGraphEdge.Shape uiShape,
+                               DisplayedSlotEdge displayedSlotEdge,
                                boolean multicolor,
-                               int multiColorIndex,
-                               int multiColorMax,
                                double scale,
                                int viewX,
                                int viewY,
                                boolean enableArrows) {
 
-        if (sourceUI == null || targetUI == null)
+        PointRange sourcePoint = displayedSlotEdge.getSourcePoint();
+        PointRange targetPoint = displayedSlotEdge.getTargetPoint();
+        JIPipeNodeUI sourceUI = displayedSlotEdge.getSourceUI();
+        JIPipeDataSlot source = displayedSlotEdge.getSource();
+        JIPipeDataSlot target = displayedSlotEdge.getTarget();
+        JIPipeGraphEdge.Shape uiShape = displayedSlotEdge.getEdge().getUiShape();
+        int multiColorMax = displayedSlotEdge.getMultiColorMax();
+        int multiColorIndex = displayedSlotEdge.getMultiColorIndex();
+
+        if(displayedSlotEdge.isHidden()) {
+            // Tighten the point ranges: Bringing the centers together
+            PointRange.tighten(sourcePoint, targetPoint);
+
+            g.setStroke(STROKE_SMART_EDGE);
+            g.setColor(Color.DARK_GRAY);
+            paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, false);
             return;
-
-        PointRange sourcePoint;
-        PointRange targetPoint;
-
-        sourcePoint = sourceUI.getSlotLocation(source);
-        sourcePoint.add(sourceUI.getLocation());
-        targetPoint = targetUI.getSlotLocation(target);
-        targetPoint.add(targetUI.getLocation());
+        }
 
         // Tighten the point ranges: Bringing the centers together
         PointRange.tighten(sourcePoint, targetPoint);
@@ -1708,14 +1981,14 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         if (settings.isDrawImprovedEdges() && strokeBorder != null) {
             g.setStroke(strokeBorder);
             g.setColor(getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax));
-            drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
+            paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
             g.setStroke(stroke);
             g.setColor(improvedStrokeBackgroundColor);
-            drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
+            paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
         } else {
             g.setStroke(stroke);
             g.setColor(getEdgeColor(source, target, multicolor, multiColorIndex, multiColorMax));
-            drawEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
+            paintEdge(g, sourcePoint.center, sourceUI.getBounds(), targetPoint.center, uiShape, scale, viewX, viewY, enableArrows);
         }
     }
 
@@ -1749,14 +2022,14 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 if (settings.isDrawImprovedEdges() && borderStroke != null) {
                     g.setStroke(borderStroke);
                     g.setColor(baseColor);
-                    drawOutsideEdge(g, sourcePoint, targetPoint, !uiIsOutput);
+                    paintOutsideEdge(g, sourcePoint, targetPoint, !uiIsOutput);
                     g.setStroke(stroke);
                     g.setColor(improvedStrokeBackgroundColor);
-                    drawOutsideEdge(g, sourcePoint, targetPoint, !uiIsOutput);
+                    paintOutsideEdge(g, sourcePoint, targetPoint, !uiIsOutput);
                 } else {
                     g.setStroke(stroke);
                     g.setColor(baseColor);
-                    drawOutsideEdge(g, sourcePoint, targetPoint, !uiIsOutput);
+                    paintOutsideEdge(g, sourcePoint, targetPoint, !uiIsOutput);
                 }
             }
         }
@@ -1779,7 +2052,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         return null;
     }
 
-    private void drawOutsideEdge(Graphics2D g, Point sourcePoint, Point targetPoint, boolean drawArrowHead) {
+    private void paintOutsideEdge(Graphics2D g, Point sourcePoint, Point targetPoint, boolean drawArrowHead) {
         int arrowHeadShift = getArrowHeadShift();
         int dx;
         int dy;
@@ -1792,7 +2065,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
         g.drawLine(sourcePoint.x, sourcePoint.y, targetPoint.x + dx, targetPoint.y + dy);
         if (drawArrowHead && settings.isDrawArrowHeads()) {
-            drawArrowHead(g, targetPoint.x, targetPoint.y);
+            paintArrowHead(g, targetPoint.x, targetPoint.y);
         }
 
     }
@@ -1810,13 +2083,13 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      * @param viewY        the view y
      * @param enableArrows enable arrows
      */
-    private void drawEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, boolean enableArrows) {
+    private void paintEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, JIPipeGraphEdge.Shape shape, double scale, int viewX, int viewY, boolean enableArrows) {
         switch (shape) {
             case Elbow:
-                drawElbowEdge(g, sourcePoint, sourceBounds, targetPoint, scale, viewX, viewY);
+                paintElbowEdge(g, sourcePoint, sourceBounds, targetPoint, scale, viewX, viewY, enableArrows);
                 break;
             case Line: {
-                int arrowHeadShift = getArrowHeadShift();
+                int arrowHeadShift = enableArrows ? getArrowHeadShift() : 0;
                 int dx;
                 int dy;
                 dx = 0;
@@ -1829,7 +2102,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             break;
         }
         if (enableArrows && settings.isDrawArrowHeads()) {
-            drawArrowHead(g, targetPoint.x, targetPoint.y);
+            paintArrowHead(g, targetPoint.x, targetPoint.y);
         }
     }
 
@@ -1842,13 +2115,13 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         }
     }
 
-    private void drawArrowHead(Graphics2D g, int x, int y) {
+    private void paintArrowHead(Graphics2D g, int x, int y) {
         int sz = 1;
         int dy = -2 * sz - 4;
         g.drawPolygon(new int[]{x - sz, x + sz, x}, new int[]{y - sz + dy, y - sz + dy, y + dy}, 3);
     }
 
-    private void drawElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, double scale, int viewX, int viewY) {
+    private void paintElbowEdge(Graphics2D g, Point sourcePoint, Rectangle sourceBounds, Point targetPoint, double scale, int viewX, int viewY, boolean enableArrows) {
         int buffer;
         int sourceA;
         int targetA;
@@ -1859,7 +2132,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         buffer = viewMode.getGridHeight() / 2;
         sourceA = sourcePoint.y;
-        targetA = targetPoint.y + getArrowHeadShift();
+        targetA = targetPoint.y;
+        if(enableArrows) {
+            targetA += getArrowHeadShift();
+        }
         sourceB = sourcePoint.x;
         targetB = targetPoint.x;
         componentStartB = sourceBounds.x;
@@ -2156,6 +2432,9 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     }
 
     public void setZoom(double zoom) {
+        // Recalculate assets
+        updateAssets();
+
         // Zoom the cursor
         double oldZoom = this.zoom;
         double normalizedCursorX = getGraphEditorCursor().x / oldZoom;
@@ -2170,6 +2449,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             ui.setZoom(zoom);
         }
         eventBus.post(new GraphCanvasUpdatedEvent(this));
+    }
+
+    private void updateAssets() {
+        smartEdgeTooltipSlotFont = new Font(Font.DIALOG, Font.PLAIN, Math.max(1, (int)Math.round(10 * zoom)));
+        smartEdgeTooltipNodeFont = new Font(Font.DIALOG, Font.PLAIN, Math.max(1, (int)Math.round(9 * zoom)));
     }
 
     @Override

@@ -16,9 +16,9 @@ package org.hkijena.jipipe.extensions.settings;
 import com.google.common.eventbus.EventBus;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
-import org.hkijena.jipipe.ui.grapheditor.JIPipeGraphViewMode;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.ui.grapheditor.general.layout.GraphAutoLayout;
 
@@ -44,13 +44,86 @@ public class GraphEditorUISettings implements JIPipeParameterCollection {
     private boolean drawNodeShadows = true;
     private boolean drawImprovedEdges = true;
     private boolean drawArrowHeads = true;
-
     private boolean layoutAfterAlgorithmFinder = true;
-
     private boolean layoutAfterConnect = false;
+    private int autoHideEdgeDistanceThreshold = 512;
+    private boolean autoHideEdgeEnabled = true;
+
+    private boolean autoHideDrawLabels = true;
+
+    private boolean drawLabelsOnHover = true;
+    private double autoHideEdgeOverlapThreshold = 0.5;
+
+    private JIPipeGraphEdge.Visibility defaultEdgeVisibility = JIPipeGraphEdge.Visibility.Smart;
 
     public static GraphEditorUISettings getInstance() {
         return JIPipe.getSettings().getSettings(ID, GraphEditorUISettings.class);
+    }
+
+    @JIPipeDocumentation(name = "Draw input labels on hovering nodes", description = "If enabled, display a label for node inputs if it is hovered by the mouse cursor")
+    @JIPipeParameter("draw-labels-on-hover")
+    public boolean isDrawLabelsOnHover() {
+        return drawLabelsOnHover;
+    }
+
+    @JIPipeParameter("draw-labels-on-hover")
+    public void setDrawLabelsOnHover(boolean drawLabelsOnHover) {
+        this.drawLabelsOnHover = drawLabelsOnHover;
+    }
+
+    @JIPipeDocumentation(name = "Draw input labels for hidden edges", description = "If enabled, hidden edges will draw labels (unless the labels are disabled on a slot level)")
+    @JIPipeParameter("auto-hide-draw-labels")
+    public boolean isAutoHideDrawLabels() {
+        return autoHideDrawLabels;
+    }
+
+    @JIPipeParameter("auto-hide-draw-labels")
+    public void setAutoHideDrawLabels(boolean autoHideDrawLabels) {
+        this.autoHideDrawLabels = autoHideDrawLabels;
+    }
+
+    @JIPipeDocumentation(name = "Auto-hide edges", description = "Enabled/disables the automated hiding of edges")
+    @JIPipeParameter("auto-hide-edges-enabled")
+    public boolean isAutoHideEdgeEnabled() {
+        return autoHideEdgeEnabled;
+    }
+
+    @JIPipeParameter("auto-hide-edges-enabled")
+    public void setAutoHideEdgeEnabled(boolean autoHideEdgeEnabled) {
+        this.autoHideEdgeEnabled = autoHideEdgeEnabled;
+    }
+
+    @JIPipeDocumentation(name = "Auto-hide edges overlap threshold", description = "Determines how much overlap with an existing edge is considered as condition for hiding the longer connection")
+    @JIPipeParameter("auto-hide-edge-overlap-threshold")
+    public double getAutoHideEdgeOverlapThreshold() {
+        return autoHideEdgeOverlapThreshold;
+    }
+
+    @JIPipeParameter("auto-hide-edge-overlap-threshold")
+    public void setAutoHideEdgeOverlapThreshold(double autoHideEdgeOverlapThreshold) {
+        this.autoHideEdgeOverlapThreshold = autoHideEdgeOverlapThreshold;
+    }
+
+    @JIPipeDocumentation(name = "Auto-hide edges distance threshold", description = "The minimum distance considered as long distance edge for the auto-hiding feature")
+    @JIPipeParameter("auto-hide-edge-distance-threshold")
+    public int getAutoHideEdgeDistanceThreshold() {
+        return autoHideEdgeDistanceThreshold;
+    }
+
+    @JIPipeParameter("auto-hide-edge-distance-threshold")
+    public void setAutoHideEdgeDistanceThreshold(int longDistanceEdgeThreshold) {
+        this.autoHideEdgeDistanceThreshold = longDistanceEdgeThreshold;
+    }
+
+    @JIPipeDocumentation(name = "Default edge visibility", description = "Determines the default visibility of all newly created edges.")
+    @JIPipeParameter("default-edge-visibility")
+    public JIPipeGraphEdge.Visibility getDefaultEdgeVisibility() {
+        return defaultEdgeVisibility;
+    }
+
+    @JIPipeParameter("default-edge-visibility")
+    public void setDefaultEdgeVisibility(JIPipeGraphEdge.Visibility defaultEdgeVisibility) {
+        this.defaultEdgeVisibility = defaultEdgeVisibility;
     }
 
     @JIPipeDocumentation(name = "Algorithm finder settings", description = "Settings related to the algorithm finder")

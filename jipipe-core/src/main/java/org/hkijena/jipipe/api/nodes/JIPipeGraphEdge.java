@@ -15,6 +15,9 @@ package org.hkijena.jipipe.api.nodes;
 
 import com.fasterxml.jackson.annotation.JsonGetter;
 import com.fasterxml.jackson.annotation.JsonSetter;
+import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.JIPipeDocumentation;
+import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.jgrapht.graph.DefaultEdge;
 
 /**
@@ -23,13 +26,20 @@ import org.jgrapht.graph.DefaultEdge;
 public class JIPipeGraphEdge extends DefaultEdge {
 
     private boolean userCanDisconnect;
-    private boolean uiHidden = false;
+
+    private Visibility uiVisibility = Visibility.Smart;
     private Shape uiShape = Shape.Elbow;
 
     /**
      * Initializes a new graph edge that cannot be disconnected by users
      */
     public JIPipeGraphEdge() {
+        if(JIPipe.isInstantiated()) {
+            GraphEditorUISettings settings = JIPipe.getSettings().getSettings(GraphEditorUISettings.ID, GraphEditorUISettings.class);
+            if(settings != null) {
+                uiVisibility = settings.getDefaultEdgeVisibility();
+            }
+        }
     }
 
     /**
@@ -48,21 +58,6 @@ public class JIPipeGraphEdge extends DefaultEdge {
         return userCanDisconnect;
     }
 
-    /**
-     * Determines if the edge should be shown in UI
-     *
-     * @return if the edge should be shown in UI
-     */
-    @JsonGetter("ui-hidden")
-    public boolean isUiHidden() {
-        return uiHidden;
-    }
-
-    @JsonSetter("ui-hidden")
-    public void setUiHidden(boolean uiHidden) {
-        this.uiHidden = uiHidden;
-    }
-
     @JsonGetter("ui-shape")
     public Shape getUiShape() {
         return uiShape;
@@ -73,8 +68,19 @@ public class JIPipeGraphEdge extends DefaultEdge {
         this.uiShape = uiShape;
     }
 
+    @JsonGetter("ui-visibility")
+    public Visibility getUiVisibility() {
+        return uiVisibility;
+    }
+
+    @JsonSetter("ui-visibility")
+    public void setUiVisibility(Visibility uiVisibility) {
+        this.uiVisibility = uiVisibility;
+    }
+
     public void setMetadataFrom(JIPipeGraphEdge other) {
-        this.uiHidden = other.uiHidden;
+        this.uiShape = other.uiShape;
+        this.uiVisibility = other.uiVisibility;
     }
 
     /**
@@ -83,5 +89,26 @@ public class JIPipeGraphEdge extends DefaultEdge {
     public enum Shape {
         Elbow,
         Line
+    }
+
+    public enum Visibility {
+        /**
+         * The edge is always visible
+         */
+        AlwaysVisible,
+        /**
+         * The edge will auto-hide if it is too far away
+         * A label is always displayed next to input
+         */
+        Smart,
+        /**
+         * The edge will auto-hide if it is too far away
+         * No label is shown
+         */
+        SmartSilent,
+        /**
+         * The edge is always hidden
+         */
+        AlwaysHidden
     }
 }
