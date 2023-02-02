@@ -41,6 +41,6 @@ public class RewireConnectionsToolUI extends JDialog {
     }
 
     private void initializeConnectionsList(FormPanel connectionsList) {
-        connectionsList.addGroupHeader("List of rewired connections", UIUtils.getIconFromResources(""))
+//        connectionsList.addGroupHeader("List of rewired connections", UIUtils.getIconFromResources(""))
     }
 }
