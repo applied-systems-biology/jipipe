@@ -49,6 +49,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.*;
 import java.util.function.Consumer;
@@ -119,6 +120,10 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
     private final List<JIPipeNodeUIActiveArea> activeAreas = new ArrayList<>();
     private JIPipeNodeUIActiveArea currentActiveArea;
+
+    private BufferedImage nodeBuffer;
+
+    private boolean nodeBufferInvalid = true;
 
     /**
      * Creates a new UI
@@ -206,7 +211,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         }
         if (slots || size) {
             updateSize();
-            getGraphCanvasUI().repaint(50);
+            invalidateAndRepaint(true, true);
         }
         updateActiveAreas();
     }
@@ -391,11 +396,11 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         if (event.getSource() == node && "jipipe:node:name".equals(event.getKey())) {
             updateView(false, false, true);
         } else if (event.getSource() == node && "jipipe:algorithm:enabled".equals(event.getKey())) {
-            getGraphCanvasUI().repaint(50);
+            invalidateAndRepaint(true, false);
         } else if (event.getSource() == node && "jipipe:algorithm:pass-through".equals(event.getKey())) {
-            getGraphCanvasUI().repaint(50);
+            invalidateAndRepaint(true, false);
         } else if (event.getSource() == node && "jipipe:node:bookmarked".equals(event.getKey())) {
-            getGraphCanvasUI().repaint(50);
+            invalidateAndRepaint(false, true);
         }
     }
 
@@ -617,9 +622,34 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     @Override
     protected void paintComponent(Graphics g) {
         Graphics2D g2 = (Graphics2D) g;
-        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
         super.paintComponent(g);
+
+        if(nodeBufferInvalid || nodeBuffer == null || nodeBuffer.getWidth() != getWidth() || nodeBuffer.getHeight() != getHeight()) {
+            if(nodeBuffer == null || nodeBuffer.getWidth() != getWidth() || nodeBuffer.getHeight() != getHeight()) {
+                nodeBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_BGR);
+            }
+            Graphics2D bufferGraphics = nodeBuffer.createGraphics();
+            bufferGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+            bufferGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            bufferGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+            paintNode(bufferGraphics);
+            bufferGraphics.dispose();
+            nodeBufferInvalid = false;
+        }
+
+        g2.drawImage(nodeBuffer, 0, 0, getWidth(), getHeight(), null);
+
+//        for (JIPipeNodeUIActiveArea activeArea : activeAreas) {
+//            g2.setPaint(Color.RED);
+//            g2.draw(activeArea.getZoomedHitArea());
+//        }
+    }
+
+    private void paintNode(Graphics2D g2) {
+
+        g2.setPaint(nodeFillColor);
+        g2.fillRect(0,0,getWidth(), getHeight());
 
         // Paint disabled/pass-through
         if (node instanceof JIPipeAlgorithm) {
@@ -658,12 +688,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         g2.setStroke(JIPipeGraphCanvasUI.STROKE_UNIT);
         g2.setColor(currentActiveArea instanceof JIPipeNodeUIWholeNodeActiveArea ? highlightedNodeBorderColor : nodeBorderColor);
         g2.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
-
-//        for (JIPipeNodeUIActiveArea activeArea : activeAreas) {
-//            g2.setPaint(Color.RED);
-//            g2.draw(activeArea.getZoomedHitArea());
-//        }
     }
+
 
     private void paintOutputSlots(Graphics2D g2, int realSlotHeight) {
         List<JIPipeOutputDataSlot> outputSlots = node.getOutputSlots();
@@ -1101,13 +1127,13 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             JMenuItem moveUpButton = new JMenuItem("Move to the left",
                     UIUtils.getIconFromResources("actions/go-left.png"));
             moveUpButton.setToolTipText("Reorders the slots");
-            moveUpButton.addActionListener(e -> moveSlotUp(slotState.getSlot()));
+            moveUpButton.addActionListener(e -> moveSlotLeft(slotState.getSlot()));
             menu.add(moveUpButton);
 
             JMenuItem moveDownButton = new JMenuItem("Move to the right",
                     UIUtils.getIconFromResources("actions/go-right.png"));
             moveDownButton.setToolTipText("Reorders the slots");
-            moveDownButton.addActionListener(e -> moveSlotDown(slotState.getSlot()));
+            moveDownButton.addActionListener(e -> moveSlotRight(slotState.getSlot()));
             menu.add(moveDownButton);
         }
 
@@ -1126,7 +1152,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 getGraphCanvasUI().setCurrentConnectionDragTarget(null);
                 getGraphCanvasUI().setDisconnectHighlight(null);
                 getGraphCanvasUI().setConnectHighlight(null);
-                getGraphCanvasUI().repaint(50);
+                invalidateAndRepaint(false, true);
             }
 
             @Override
@@ -1135,7 +1161,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 getGraphCanvasUI().setCurrentConnectionDragTarget(null);
                 getGraphCanvasUI().setDisconnectHighlight(null);
                 getGraphCanvasUI().setConnectHighlight(null);
-                getGraphCanvasUI().repaint(50);
+                invalidateAndRepaint(false, true);
             }
         });
 
@@ -1258,7 +1284,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 graphEdge.setUiVisibility(visibility);
             }
         }
-        graphCanvasUI.repaint(50);
+        invalidateAndRepaint(false, true);
     }
 
     private void setOutputEdgesShape(JIPipeGraphEdge.Shape shape) {
@@ -1273,7 +1299,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 graphEdge.setUiShape(shape);
             }
         }
-        graphCanvasUI.repaint(50);
+        invalidateAndRepaint(false, true);
     }
 
     private void setInputEdgesVisibility(JIPipeGraphEdge.Visibility visibility) {
@@ -1288,7 +1314,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 graphEdge.setUiVisibility(visibility);
             }
         }
-        graphCanvasUI.repaint(50);
+        invalidateAndRepaint(false, true);
     }
 
     private void setInputEdgesShape(JIPipeGraphEdge.Shape shape) {
@@ -1303,7 +1329,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 graphEdge.setUiShape(shape);
             }
         }
-        graphCanvasUI.repaint(50);
+        invalidateAndRepaint(false, true);
     }
 
     private void openSlotMenuAddOutputTargetSlotItems(JIPipeDataSlot slot, Set<JIPipeDataSlot> targetSlots, JMenu menu) {
@@ -1571,7 +1597,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                             UIUtils.getIconFromResources("actions/standard-connector.png"));
                 }
                 edge.setUiShape(JIPipeGraphEdge.Shape.Elbow);
-                getGraphCanvasUI().repaint(50);
+                invalidateAndRepaint(false, true);
             });
             menu.add(setShapeItem);
         }
@@ -1585,7 +1611,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                             UIUtils.getIconFromResources("actions/draw-line.png"));
                 }
                 edge.setUiShape(JIPipeGraphEdge.Shape.Line);
-                getGraphCanvasUI().repaint(50);
+                invalidateAndRepaint(false, true);
             });
             menu.add(setShapeItem);
         }
@@ -1599,7 +1625,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     UIUtils.getIconFromResources("actions/eye.png"));
         }
         edge.setUiVisibility(visible);
-        getGraphCanvasUI().repaint(50);
+        invalidateAndRepaint(false, true);
     }
 
     private void openSlotMenuAddOutputSlotEditItems(JIPipeDataSlot slot, JPopupMenu menu) {
@@ -1725,23 +1751,23 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             slotConfiguration.removeOutputSlot(slot.getName(), true);
     }
 
-    private void moveSlotDown(JIPipeDataSlot slot) {
+    private void moveSlotRight(JIPipeDataSlot slot) {
         if (slot != null) {
             if (getGraphCanvasUI().getHistoryJournal() != null) {
                 getGraphCanvasUI().getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInParentGraph());
             }
             ((JIPipeMutableSlotConfiguration) getNode().getSlotConfiguration()).moveDown(slot.getName(), slot.getSlotType());
-            getGraphCanvasUI().repaint(50);
+            invalidateAndRepaint(true, true);
         }
     }
 
-    private void moveSlotUp(JIPipeDataSlot slot) {
+    private void moveSlotLeft(JIPipeDataSlot slot) {
         if (slot != null) {
             if (getGraphCanvasUI().getHistoryJournal() != null) {
                 getGraphCanvasUI().getHistoryJournal().snapshotBeforeMoveSlot(slot, slot.getNode().getCompartmentUUIDInParentGraph());
             }
             ((JIPipeMutableSlotConfiguration) getNode().getSlotConfiguration()).moveUp(slot.getName(), slot.getSlotType());
-            getGraphCanvasUI().repaint(50);
+            invalidateAndRepaint(true, true);
         }
     }
 
@@ -1770,7 +1796,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             cursorLocation.x = getX() + slotLocation.x;
             cursorLocation.y = getBottomY() + getGraphCanvasUI().getViewMode().getGridHeight();
             getGraphCanvasUI().setGraphEditCursor(cursorLocation);
-            getGraphCanvasUI().repaint(50);
+            invalidateAndRepaint(false, true);
         }
 
         dialog.setVisible(true);
@@ -1801,7 +1827,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             cursorLocation.x = getX() + slotLocation.x;
             cursorLocation.y = getY() - getGraphCanvasUI().getViewMode().getGridHeight() * 4;
             getGraphCanvasUI().setGraphEditCursor(cursorLocation);
-            getGraphCanvasUI().repaint(50);
+            invalidateAndRepaint(false, true);
         }
 
         dialog.setVisible(true);
@@ -1829,14 +1855,14 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     public void mouseEntered(MouseEvent e) {
         mouseIsEntered = true;
         updateCurrentActiveArea(e);
-        repaint(50);
+        invalidateAndRepaint(true, false);
     }
 
     @Override
     public void mouseExited(MouseEvent e) {
         mouseIsEntered = false;
         updateCurrentActiveArea(e);
-        repaint(50);
+        invalidateAndRepaint(true, false);
     }
 
     @Override
@@ -1862,7 +1888,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 if (activeArea.getZoomedHitArea() != null && activeArea.getZoomedHitArea().contains(mousePosition)) {
                     if (currentActiveArea != activeArea) {
                         currentActiveArea = activeArea;
-                        repaint(50);
+                        invalidateAndRepaint(true, false);
                     }
                     break;
                 }
@@ -1870,8 +1896,20 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         } else {
             if (currentActiveArea != null) {
                 currentActiveArea = null;
-                repaint(50);
+                invalidateAndRepaint(true, false);
             }
+        }
+    }
+
+    private void invalidateAndRepaint(boolean node, boolean canvas) {
+        if(node) {
+            nodeBufferInvalid = true;
+        }
+        if(canvas) {
+            graphCanvasUI.repaint(50);
+        }
+        else {
+            repaint(50);
         }
     }
 
