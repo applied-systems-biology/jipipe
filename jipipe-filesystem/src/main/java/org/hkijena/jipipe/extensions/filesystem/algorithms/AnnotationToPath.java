@@ -37,7 +37,7 @@ import java.nio.file.Paths;
 @JIPipeOutputSlot(value = PathData.class, slotName = "Output", autoCreate = true)
 public class AnnotationToPath extends JIPipeSimpleIteratingAlgorithm {
 
-    private AnnotationQueryExpression annotationExpression = new AnnotationQueryExpression("\"#Dataset\"");
+    private AnnotationQueryExpression annotationExpression = new AnnotationQueryExpression("key == \"#Dataset\"");
 
     /**
      * Instantiates the algorithm
