@@ -365,6 +365,7 @@ public class JIPipeProjectWindow extends JFrame {
                 if (!notifications.isEmpty()) {
                     UIUtils.openNotificationsDialog(window.getProjectUI(), this, notifications, "Potential issues found", "There seem to be potential issues that might prevent the successful execution of the pipeline. Please review the following entries and resolve the issues if possible.", true);
                 }
+                FileChooserSettings.getInstance().setLastDirectoryBy(FileChooserSettings.LastDirectoryKey.Projects, path.getParent());
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -391,6 +392,9 @@ public class JIPipeProjectWindow extends JFrame {
                 JIPipeProjectWindow window = openProjectInThisOrNewWindow("Open JIPipe output", run.getProject(), false, false);
                 if (window == null)
                     return;
+
+                FileChooserSettings.getInstance().setLastDirectoryBy(FileChooserSettings.LastDirectoryKey.Projects, path);
+
                 window.projectSavePath = path.resolve("project.jip");
                 window.getProjectUI().sendStatusBarText("Opened project from " + window.projectSavePath);
                 window.updateTitle();
