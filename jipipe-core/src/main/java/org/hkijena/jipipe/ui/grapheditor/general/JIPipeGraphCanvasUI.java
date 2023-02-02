@@ -1852,7 +1852,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 // Render the smart edge
                 if(!inputIncomingSourceSlots.isEmpty()) {
                     JIPipeNodeUISlotActiveArea slotActiveArea = nodeUI.getSlotActiveArea(inputSlot);
-                    if(slotActiveArea.getZoomedHitArea() != null) {
+                    if(slotActiveArea != null && slotActiveArea.getZoomedHitArea() != null) {
 
                         final int baseHeight = 28;
                         int tooltipHeight = (int)Math.round(zoom * inputIncomingSourceSlots.size() * baseHeight);
