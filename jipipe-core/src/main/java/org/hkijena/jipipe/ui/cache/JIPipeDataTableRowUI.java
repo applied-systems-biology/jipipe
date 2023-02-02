@@ -399,7 +399,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
     }
 
     private class ExportAsFolderRun implements JIPipeRunnable {
-        private final JIPipeDataTable dataTable;
+        private JIPipeDataTable dataTable;
         private final Path path;
         private JIPipeProgressInfo progressInfo;
 
@@ -421,8 +421,13 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
 
         @Override
         public void run() {
-            JIPipeData data = dataTable.getData(row, JIPipeData.class, progressInfo);
-            data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path), "data", false, progressInfo);
+            try {
+                JIPipeData data = dataTable.getData(row, JIPipeData.class, progressInfo);
+                data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path), "data", false, progressInfo);
+            }
+            finally {
+                dataTable = null;
+            }
         }
 
         @Override
@@ -434,7 +439,7 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
     }
 
     private class ExportToFolderRun implements JIPipeRunnable {
-        private final JIPipeDataTable dataTable;
+        private JIPipeDataTable dataTable;
         private final Path path;
         private JIPipeProgressInfo progressInfo;
 
@@ -456,8 +461,13 @@ public class JIPipeDataTableRowUI extends JIPipeWorkbenchPanel {
 
         @Override
         public void run() {
-            JIPipeData data = dataTable.getData(row, JIPipeData.class, progressInfo);
-            data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path.getParent()), path.getFileName().toString(), true, progressInfo);
+            try {
+                JIPipeData data = dataTable.getData(row, JIPipeData.class, progressInfo);
+                data.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, path.getParent()), path.getFileName().toString(), true, progressInfo);
+            }
+            finally {
+                dataTable = null;
+            }
         }
 
         @Override

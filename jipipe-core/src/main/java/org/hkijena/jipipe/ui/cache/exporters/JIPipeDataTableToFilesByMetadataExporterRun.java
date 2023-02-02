@@ -121,25 +121,30 @@ public class JIPipeDataTableToFilesByMetadataExporterRun extends JIPipeWorkbench
 
     @Override
     public void run() {
-        Set<String> existing = new HashSet<>();
-        progressInfo.setMaxProgress(dataTables.size());
-        for (int i = 0; i < dataTables.size(); i++) {
-            progressInfo.setProgress(i + 1);
-            JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Slot", i, dataTables.size());
-            JIPipeDataTable slot = dataTables.get(i);
-            Path targetPath = outputPath;
-            if (settings.splitBySlotName) {
-                targetPath = outputPath.resolve(StringUtils.makeUniqueString(slot.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, ""), " ", existing));
+        try {
+            Set<String> existing = new HashSet<>();
+            progressInfo.setMaxProgress(dataTables.size());
+            for (int i = 0; i < dataTables.size(); i++) {
+                progressInfo.setProgress(i + 1);
+                JIPipeProgressInfo subProgress = progressInfo.resolveAndLog("Slot", i, dataTables.size());
+                JIPipeDataTable slot = dataTables.get(i);
+                Path targetPath = outputPath;
+                if (settings.splitBySlotName) {
+                    targetPath = outputPath.resolve(StringUtils.makeUniqueString(slot.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, ""), " ", existing));
+                }
+                try {
+                    if (!Files.isDirectory(targetPath))
+                        Files.createDirectories(targetPath);
+                    settings.exporter.writeToFolder(slot, targetPath, subProgress.resolve("Slot " + slot.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "")));
+                } catch (Exception e) {
+                    IJ.handleException(e);
+                    progressInfo.log(ExceptionUtils.getStackTrace(e));
+                    throw new RuntimeException(e);
+                }
             }
-            try {
-                if (!Files.isDirectory(targetPath))
-                    Files.createDirectories(targetPath);
-                settings.exporter.writeToFolder(slot, targetPath, subProgress.resolve("Slot " + slot.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, "")));
-            } catch (Exception e) {
-                IJ.handleException(e);
-                progressInfo.log(ExceptionUtils.getStackTrace(e));
-                throw new RuntimeException(e);
-            }
+        }
+        finally {
+            dataTables.clear();
         }
     }
 

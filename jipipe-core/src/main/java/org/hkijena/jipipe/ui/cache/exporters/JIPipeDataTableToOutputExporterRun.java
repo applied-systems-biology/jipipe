@@ -64,39 +64,44 @@ public class JIPipeDataTableToOutputExporterRun extends JIPipeWorkbenchPanel imp
 
     @Override
     public void run() {
-        Set<String> existing = new HashSet<>();
-        progressInfo.setMaxProgress(dataTables.size());
+        try {
+            Set<String> existing = new HashSet<>();
+            progressInfo.setMaxProgress(dataTables.size());
 
-        if (clearDirectory) {
-            try {
-                if (Files.isDirectory(outputPath) && Files.list(outputPath).findAny().isPresent()) {
-                    if (Files.isDirectory(outputPath)) {
-                        PathUtils.deleteDirectoryRecursively(outputPath, getProgressInfo().resolve("Delete existing files"));
+            if (clearDirectory) {
+                try {
+                    if (Files.isDirectory(outputPath) && Files.list(outputPath).findAny().isPresent()) {
+                        if (Files.isDirectory(outputPath)) {
+                            PathUtils.deleteDirectoryRecursively(outputPath, getProgressInfo().resolve("Delete existing files"));
+                        }
+                        Files.createDirectories(outputPath);
                     }
-                    Files.createDirectories(outputPath);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            }
+
+            for (int i = 0; i < dataTables.size(); i++) {
+                progressInfo.setProgress(i);
+                JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Slot", i, dataTables.size());
+                JIPipeDataTable dataTable = dataTables.get(i);
+                Path targetPath = outputPath;
+                if (splitBySlot) {
+                    targetPath = outputPath.resolve(StringUtils.makeUniqueString(dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, ""), " ", existing));
+                }
+                try {
+                    if (!Files.isDirectory(targetPath))
+                        Files.createDirectories(targetPath);
+                    dataTable.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, targetPath), slotProgress);
+                } catch (Exception e) {
+                    IJ.handleException(e);
+                    progressInfo.log(ExceptionUtils.getStackTrace(e));
+                    throw new RuntimeException(e);
+                }
             }
         }
-
-        for (int i = 0; i < dataTables.size(); i++) {
-            progressInfo.setProgress(i);
-            JIPipeProgressInfo slotProgress = progressInfo.resolveAndLog("Slot", i, dataTables.size());
-            JIPipeDataTable dataTable = dataTables.get(i);
-            Path targetPath = outputPath;
-            if (splitBySlot) {
-                targetPath = outputPath.resolve(StringUtils.makeUniqueString(dataTable.getLocation(JIPipeDataSlot.LOCATION_KEY_SLOT_NAME, ""), " ", existing));
-            }
-            try {
-                if (!Files.isDirectory(targetPath))
-                    Files.createDirectories(targetPath);
-                dataTable.exportData(new JIPipeFileSystemWriteDataStorage(progressInfo, targetPath), slotProgress);
-            } catch (Exception e) {
-                IJ.handleException(e);
-                progressInfo.log(ExceptionUtils.getStackTrace(e));
-                throw new RuntimeException(e);
-            }
+        finally {
+            dataTables.clear();
         }
     }
 
