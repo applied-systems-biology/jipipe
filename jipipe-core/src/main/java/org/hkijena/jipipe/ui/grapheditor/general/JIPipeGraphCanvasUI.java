@@ -1277,8 +1277,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         super.paintComponent(graphics);
 
         Graphics2D g = (Graphics2D) graphics;
-        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_OFF);
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);
 
         if (settings.isDrawNodeShadows()) {
             for (JIPipeNodeUI ui : nodeUIs.values()) {
@@ -1288,6 +1288,10 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 }
             }
         }
+
+        // Set render settings
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
         if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges())
             paintOutsideEdges(g, false, Color.DARK_GRAY, STROKE_DEFAULT, STROKE_DEFAULT_BORDER);
@@ -1843,7 +1847,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         for (JIPipeNodeUI nodeUI : nodeUIs.values()) {
             for (JIPipeDataSlot inputSlot : nodeUI.getNode().getInputSlots()) {
-                Collection<DisplayedSlotEdge> inputIncomingSourceSlots = labelledEdges.get(inputSlot);
+                List<DisplayedSlotEdge> inputIncomingSourceSlots = labelledEdges.get(inputSlot).stream().sorted(Comparator.comparing(DisplayedSlotEdge::getUIManhattanDistance)).collect(Collectors.toList());
 
                 // Render the smart edge
                 if(!inputIncomingSourceSlots.isEmpty()) {
