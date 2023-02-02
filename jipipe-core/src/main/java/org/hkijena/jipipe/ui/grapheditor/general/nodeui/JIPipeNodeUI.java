@@ -74,6 +74,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             NodeUIContextAction.SEPARATOR,
             new RunAndShowResultsNodeUIContextAction(),
             new RunAndShowIntermediateResultsNodeUIContextAction(),
+            new UpdateCacheOnlyPredecessorsNodeUIContextAction(),
             NodeUIContextAction.SEPARATOR,
             new ClearCacheNodeUIContextAction()
     };
