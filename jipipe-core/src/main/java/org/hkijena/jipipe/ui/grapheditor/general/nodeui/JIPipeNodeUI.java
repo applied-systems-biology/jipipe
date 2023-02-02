@@ -1216,7 +1216,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         if(!targetSlots.isEmpty()) {
             JMenu manageMenu = new JMenu("Manage existing connections ...");
             manageMenu.setIcon(UIUtils.getIconFromResources("actions/lines-connector.png"));
-            openSlotMenuAddOutputTargetSlotItems(slot, targetSlots, manageMenu);
+            openSlotMenuAddOutputManageExistingConnectionsMenuItems(slot, targetSlots, manageMenu);
             menu.add(manageMenu);
         }
         if(!targetSlots.isEmpty()) {
@@ -1333,7 +1333,15 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         invalidateAndRepaint(false, true);
     }
 
-    private void openSlotMenuAddOutputTargetSlotItems(JIPipeDataSlot slot, Set<JIPipeDataSlot> targetSlots, JMenu menu) {
+    private void openSlotMenuAddOutputManageExistingConnectionsMenuItems(JIPipeDataSlot slot, Set<JIPipeDataSlot> targetSlots, JMenu menu) {
+
+        if(!targetSlots.isEmpty()) {
+            JMenuItem rewireItem = new JMenuItem("Rewire to different output ...", UIUtils.getIconFromResources("actions/go-jump.png"));
+            rewireItem.setToolTipText("Opens a tool that allows to rewire the connections of this slot to another output.");
+            rewireItem.addActionListener(e -> openRewireOutputTool(slot, targetSlots));
+            menu.add(rewireItem);
+        }
+
         for (JIPipeDataSlot targetSlot : sortSlotsByDistance(slot, targetSlots)) {
             JMenu targetSlotMenu = new JMenu("<html>" + targetSlot.getName() + "<br><small>" + targetSlot.getNode().getDisplayName() + "</small></html>");
             targetSlotMenu.setIcon(JIPipe.getDataTypes().getIconFor(targetSlot.getAcceptedDataType()));
@@ -1356,6 +1364,15 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
             menu.add(targetSlotMenu);
         }
+    }
+
+    private void openRewireOutputTool(JIPipeDataSlot slot, Set<JIPipeDataSlot> targetSlots) {
+        RewireConnectionsToolUI ui = new RewireConnectionsToolUI(slot, targetSlots);
+        ui.setTitle("Rewire output");
+        ui.setLocationRelativeTo(graphCanvasUI.getGraphEditorUI());
+        ui.setVisible(true);
+        ui.revalidate();
+        ui.repaint();
     }
 
     private void openSlotMenuAddVisibilityToggle(JIPipeDataSlot slot, JMenu menu, JIPipeGraphEdge edge) {
@@ -1420,7 +1437,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         if(!sourceSlots.isEmpty()) {
             JMenu manageMenu = new JMenu("Manage existing connections ...");
             manageMenu.setIcon(UIUtils.getIconFromResources("actions/lines-connector.png"));
-            openSlotMenuAddInputSourceSlotItems(slot, sourceSlots, manageMenu);
+            openSlotMenuAddInputManageExistingConnectionsMenuItems(slot, sourceSlots, manageMenu);
             menu.add(manageMenu);
         }
         if(!sourceSlots.isEmpty()) {
@@ -1528,7 +1545,15 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         return unsorted.stream().sorted(Comparator.comparing(distances::get)).collect(Collectors.toList());
     }
 
-    private void openSlotMenuAddInputSourceSlotItems(JIPipeDataSlot slot, Set<JIPipeDataSlot> sourceSlots, JMenu menu) {
+    private void openSlotMenuAddInputManageExistingConnectionsMenuItems(JIPipeDataSlot slot, Set<JIPipeDataSlot> sourceSlots, JMenu menu) {
+
+        if(!sourceSlots.isEmpty()) {
+            JMenuItem rewireItem = new JMenuItem("Rewire to different input ...", UIUtils.getIconFromResources("actions/go-jump.png"));
+            rewireItem.setToolTipText("Opens a tool that allows to rewire the connections of this slot to another input.");
+            rewireItem.addActionListener(e -> openRewireInputTool(slot, sourceSlots));
+            menu.add(rewireItem);
+        }
+
         JIPipeNodeUISlotActiveArea slotActiveArea = getSlotActiveArea(slot);
         for (JIPipeDataSlot sourceSlot : sortSlotsByDistance(slot, sourceSlots)) {
             JMenu sourceSlotMenu = new JMenu("<html>" + sourceSlot.getName() + "<br><small>" + sourceSlot.getNode().getDisplayName() + "</small></html>");
@@ -1551,6 +1576,15 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
             menu.add(sourceSlotMenu);
         }
+    }
+
+    private void openRewireInputTool(JIPipeDataSlot slot, Set<JIPipeDataSlot> sourceSlots) {
+        RewireConnectionsToolUI ui = new RewireConnectionsToolUI(slot, sourceSlots);
+        ui.setTitle("Rewire input");
+        ui.setLocationRelativeTo(graphCanvasUI.getGraphEditorUI());
+        ui.setVisible(true);
+        ui.revalidate();
+        ui.repaint();
     }
 
     private void openSlotMenuAddInputConnectSourceSlotItems(JIPipeDataSlot slot, Set<JIPipeDataSlot> availableSources, JMenu menu) {
