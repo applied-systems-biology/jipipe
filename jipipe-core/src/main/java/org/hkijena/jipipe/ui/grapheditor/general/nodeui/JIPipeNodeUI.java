@@ -631,9 +631,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 nodeBuffer = new BufferedImage(getWidth(), getHeight(), BufferedImage.TYPE_INT_BGR);
             }
             Graphics2D bufferGraphics = nodeBuffer.createGraphics();
-//            bufferGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 //            bufferGraphics.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             bufferGraphics.setRenderingHints(graphCanvasUI.getDesktopRenderingHints());
+            bufferGraphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
             bufferGraphics.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
             paintNode(bufferGraphics);
             bufferGraphics.dispose();
