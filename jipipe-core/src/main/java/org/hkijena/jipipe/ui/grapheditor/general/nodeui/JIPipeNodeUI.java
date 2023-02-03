@@ -1368,7 +1368,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     }
 
     private void openRewireOutputTool(JIPipeDataSlot slot, Set<JIPipeDataSlot> targetSlots) {
-        RewireConnectionsToolUI ui = new RewireConnectionsToolUI(slot, targetSlots);
+        RewireConnectionsToolUI ui = new RewireConnectionsToolUI(graphCanvasUI, slot, targetSlots);
         ui.setTitle("Rewire output");
         ui.setLocationRelativeTo(graphCanvasUI.getGraphEditorUI());
         ui.setVisible(true);
@@ -1580,7 +1580,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     }
 
     private void openRewireInputTool(JIPipeDataSlot slot, Set<JIPipeDataSlot> sourceSlots) {
-        RewireConnectionsToolUI ui = new RewireConnectionsToolUI(slot, sourceSlots);
+        RewireConnectionsToolUI ui = new RewireConnectionsToolUI(graphCanvasUI, slot, sourceSlots);
         ui.setTitle("Rewire input");
         ui.setLocationRelativeTo(graphCanvasUI.getGraphEditorUI());
         ui.setVisible(true);
