@@ -13,6 +13,8 @@ import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import java.awt.*;
 import java.util.Comparator;
 import java.util.HashSet;
@@ -192,6 +194,16 @@ public class RewireConnectionsToolUI extends JDialog {
         alternativesPanel.addVerticalGlue(listPanel, null);
 
         searchTextField.addActionListener(e -> refreshAlternativesList());
+        alternativesList.addListSelectionListener(e -> {
+            if(alternativesList.getSelectedValue() != null) {
+                // Select the alternative node
+                graphCanvasUI.selectOnly(graphCanvasUI.getNodeUIs().get(alternativesList.getSelectedValue().getNode()));
+            }
+            else {
+                // Select the source node
+                graphCanvasUI.selectOnly(graphCanvasUI.getNodeUIs().get(currentSlot.getNode()));
+            }
+        });
     }
 
     private void refreshAlternativesList() {
