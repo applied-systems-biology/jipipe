@@ -1471,7 +1471,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             edgeMenu.add(UIUtils.createMenuItem("Always hide all inputs (with label)",
                     "All output edges are hidden (displayed as dashed line) regardless of their length. A label is displayed at the targets that contains information about the source.",
                     UIUtils.getIconFromResources("actions/eye-slash.png"),
-                    () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysHidden)));
+                    () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysHiddenWithLabel)));
             edgeMenu.add(UIUtils.createMenuItem("Always hide all inputs (without label)",
                     "All output edges are hidden (displayed as dashed line) regardless of their length",
                     UIUtils.getIconFromResources("actions/eye-slash.png"),
