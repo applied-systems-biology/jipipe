@@ -55,7 +55,7 @@ public class JIPipeDataSlotListCellRenderer extends JPanel implements ListCellRe
     @Override
     public Component getListCellRendererComponent(JList<? extends JIPipeDataSlot> list, JIPipeDataSlot value, int index, boolean isSelected, boolean cellHasFocus) {
 
-        nodeLabel.setText(value.getNode().getDisplayName());
+        nodeLabel.setText(value.getNode().getName());
         nodeLabel.setIcon(JIPipe.getNodes().getIconFor(value.getNode().getInfo()));
         slotNameLabel.setText("<html>" + value.getName() + " (<i>" + value.getSlotType() + ")</i></html>");
         slotNameLabel.setIcon(JIPipe.getDataTypes().getIconFor(value.getAcceptedDataType()));

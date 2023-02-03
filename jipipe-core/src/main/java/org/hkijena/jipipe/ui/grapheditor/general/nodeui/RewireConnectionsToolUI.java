@@ -17,6 +17,7 @@ import java.awt.*;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class RewireConnectionsToolUI extends JDialog {
@@ -30,12 +31,15 @@ public class RewireConnectionsToolUI extends JDialog {
     private final SearchTextField searchTextField = new SearchTextField();
 
     private final JList<JIPipeDataSlot> alternativesList = new JList<>();
+    
+    private final UUID compartment;
 
     public RewireConnectionsToolUI(JIPipeGraphCanvasUI graphCanvasUI, JIPipeDataSlot currentSlot, Set<JIPipeDataSlot> currentConnections) {
         this.graphCanvasUI = graphCanvasUI;
         this.currentSlot = currentSlot;
         this.currentConnections = currentConnections;
         this.enabledConnections.addAll(currentConnections);
+        this.compartment = graphCanvasUI.getCompartment();
         initialize();
         refreshAlternativesList();
     }
@@ -125,7 +129,7 @@ public class RewireConnectionsToolUI extends JDialog {
         if(graphCanvasUI.getHistoryJournal() != null) {
             graphCanvasUI.getHistoryJournal().snapshot("Rewire connection(s)",
                     "Rewire connections of " + currentSlot.getDisplayName() + " to " + selectedAlternative.getDisplayName(),
-                    graphCanvasUI.getCompartment(),
+                    compartment,
                     UIUtils.getIconFromResources("actions/go-jump.png"));
         }
 
@@ -159,9 +163,12 @@ public class RewireConnectionsToolUI extends JDialog {
                     "Rewire not possible",
                     JOptionPane.ERROR_MESSAGE);
             if(graphCanvasUI.getHistoryJournal() != null) {
-                graphCanvasUI.getHistoryJournal().undo(graphCanvasUI.getCompartment());
+                graphCanvasUI.getHistoryJournal().undo(compartment);
             }
         }
+
+        // Select the targeted node
+        graphCanvasUI.selectOnly(graphCanvasUI.getNodeUIs().get(selectedAlternative.getNode()));
 
         setVisible(false);
     }
@@ -183,6 +190,8 @@ public class RewireConnectionsToolUI extends JDialog {
         listPanel.setBorder(BorderFactory.createEtchedBorder());
 
         alternativesPanel.addVerticalGlue(listPanel, null);
+
+        searchTextField.addActionListener(e -> refreshAlternativesList());
     }
 
     private void refreshAlternativesList() {
@@ -196,7 +205,9 @@ public class RewireConnectionsToolUI extends JDialog {
                 for (JIPipeDataSlot availableSource : enabledConnection.getNode().getParentGraph().getAvailableSources(enabledConnection, true, false)) {
                     if(currentConnectionNodes.contains(availableSource.getNode()))
                         continue;
-                    if(availableSource.getNode().isVisibleIn(currentSlot.getNode().getCompartmentUUIDInParentGraph())) {
+                    if(!availableSource.getNode().getInfo().isRunnable())
+                        continue;
+                    if(availableSource.getNode().isVisibleIn(compartment)) {
                         alternatives.add(availableSource);
                     }
                 }
@@ -206,7 +217,9 @@ public class RewireConnectionsToolUI extends JDialog {
                 for (JIPipeDataSlot availableTarget : enabledConnection.getNode().getParentGraph().getAvailableTargets(enabledConnection, true, false)) {
                     if(currentConnectionNodes.contains(availableTarget.getNode()))
                         continue;
-                    if(availableTarget.getNode().isVisibleIn(currentSlot.getNode().getCompartmentUUIDInParentGraph())) {
+                    if(!availableTarget.getNode().getInfo().isRunnable())
+                        continue;
+                    if(availableTarget.getNode().isVisibleIn(compartment)) {
                         alternatives.add(availableTarget);
                     }
                 }
