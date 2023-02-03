@@ -116,7 +116,7 @@ public class RewireConnectionsToolUI extends JDialog {
         catch (Throwable e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(this,
-                    "The rewire operation failed. The changes were reverted.\nPlease check if the new connections lead to the creation of loops.",
+                    "The rewire operation failed. No changes were applied.\nPlease check if the new connections lead to the creation of loops.",
                     "Rewire not possible",
                     JOptionPane.ERROR_MESSAGE);
         }
@@ -215,16 +215,32 @@ public class RewireConnectionsToolUI extends JDialog {
         alternatives.remove(currentSlot);
 
         // Search filter
-        alternatives.removeIf(slot -> !searchTextField.test(slot.getName() + " " + slot.getNode().getName()));
+        alternatives.removeIf(alternative -> {
+            for (JIPipeDataSlot enabledConnection : enabledConnections) {
+                if(enabledConnection.isInput()) {
+                    if(!JIPipe.getDataTypes().isConvertible(alternative.getAcceptedDataType(), enabledConnection.getAcceptedDataType())) {
+                        return true;
+                    }
+                }
+                else {
+                    if(!JIPipe.getDataTypes().isConvertible(enabledConnection.getAcceptedDataType(), alternative.getAcceptedDataType())) {
+                        return true;
+                    }
+                }
+            }
+            return !searchTextField.test(alternative.getName() + " " + alternative.getNode().getName());
+        });
         DefaultListModel<JIPipeDataSlot> model = new DefaultListModel<>();
         alternatives.stream().sorted(Comparator.comparing( (JIPipeDataSlot alternative) -> {
                     int sumDistance = 0;
                     for (JIPipeDataSlot enabledConnection : enabledConnections) {
                         if(enabledConnection.isInput()) {
-                            sumDistance += JIPipe.getDataTypes().getConversionDistance(alternative.getAcceptedDataType(), enabledConnection.getAcceptedDataType());
+                            int d = JIPipe.getDataTypes().getConversionDistance(alternative.getAcceptedDataType(), enabledConnection.getAcceptedDataType());
+                            sumDistance += d;
                         }
                         else {
-                            sumDistance += JIPipe.getDataTypes().getConversionDistance(enabledConnection.getAcceptedDataType(), alternative.getAcceptedDataType());
+                            int d = JIPipe.getDataTypes().getConversionDistance(enabledConnection.getAcceptedDataType(), alternative.getAcceptedDataType());
+                            sumDistance += d;
                         }
                     }
                     return sumDistance;
