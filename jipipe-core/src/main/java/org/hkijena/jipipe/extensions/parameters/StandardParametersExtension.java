@@ -48,9 +48,7 @@ import org.hkijena.jipipe.extensions.parameters.library.auth.PasswordParameterEd
 import org.hkijena.jipipe.extensions.parameters.library.collections.ParameterCollectionList;
 import org.hkijena.jipipe.extensions.parameters.library.colors.*;
 import org.hkijena.jipipe.extensions.parameters.library.editors.JIPipeParameterCollectionVisibilitiesParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.FilePathParameterEditorUI;
-import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
+import org.hkijena.jipipe.extensions.parameters.library.filesystem.*;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameterEditorUI;
 import org.hkijena.jipipe.extensions.parameters.library.jipipe.*;
@@ -674,6 +672,16 @@ public class StandardParametersExtension extends JIPipePrepackagedDefaultJavaExt
                 "Node template",
                 "Stores a copy of a node",
                 JIPipeNodeTemplateParameterEditorUI.class);
+
+        // File chooser
+        registerParameterType("file-chooser-bookmark",
+                FileChooserBookmark.class,
+                FileChooserBookmarkList.class,
+                null,
+                null,
+                "File chooser bookmark",
+                "Bookmark for a path",
+                null);
     }
 
     private void registerCommonJavaTypes() {

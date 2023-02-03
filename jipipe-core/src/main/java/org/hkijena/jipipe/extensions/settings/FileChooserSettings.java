@@ -18,6 +18,7 @@ import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
+import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileChooserBookmarkList;
 import org.hkijena.jipipe.extensions.parameters.library.filesystem.PathList;
 import org.hkijena.jipipe.ui.components.AdvancedFileChooser;
 import org.hkijena.jipipe.utils.PathIOMode;
@@ -41,14 +42,15 @@ import java.util.stream.Collectors;
 public class FileChooserSettings implements JIPipeParameterCollection {
 
     public static String ID = "file-chooser";
-    private EventBus eventBus = new EventBus();
+    private final EventBus eventBus = new EventBus();
     private FileChooserType fileChooserType = FileChooserType.Advanced;
     private Path lastProjectsDirectory;
     private Path lastParametersDirectory;
     private Path lastDataDirectory;
     private Path lastExternalDirectory;
     private boolean addFileExtension = true;
-    private PathList bookmarks = new PathList();
+
+    private FileChooserBookmarkList bookmarks = new FileChooserBookmarkList();
 
     private static FileDialog createFileDialog(Component parent, String title, int mode) {
         Window windowAncestor = SwingUtilities.getWindowAncestor(parent);
@@ -609,13 +611,13 @@ public class FileChooserSettings implements JIPipeParameterCollection {
     }
 
     @JIPipeDocumentation(name = "Bookmarks", description = "Bookmarks used by the advanced file dialog")
-    @JIPipeParameter("bookmarks")
-    public PathList getBookmarks() {
+    @JIPipeParameter("bookmarks-v2")
+    public FileChooserBookmarkList getBookmarks() {
         return bookmarks;
     }
 
-    @JIPipeParameter("bookmarks")
-    public void setBookmarks(PathList bookmarks) {
+    @JIPipeParameter("bookmarks-v2")
+    public void setBookmarks(FileChooserBookmarkList bookmarks) {
         this.bookmarks = bookmarks;
     }
 

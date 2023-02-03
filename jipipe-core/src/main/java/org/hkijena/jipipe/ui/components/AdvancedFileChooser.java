@@ -3,6 +3,8 @@ package org.hkijena.jipipe.ui.components;
 import ij.Prefs;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileChooserBookmark;
+import org.hkijena.jipipe.extensions.parameters.library.filesystem.FileChooserBookmarkList;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
 import org.hkijena.jipipe.utils.StringUtils;
@@ -359,12 +361,21 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
             FileChooserSettings settings = FileChooserSettings.getInstance();
             Path path = directory.toPath();
             if (bookmarked) {
-                if (!settings.getBookmarks().contains(path)) {
-                    settings.getBookmarks().add(path);
-                    settings.triggerParameterChange("bookmarks");
+                if (settings.getBookmarks().stream().noneMatch(bookmark -> Objects.equals(path, bookmark.getPath()))) {
+                    Object name = JOptionPane.showInputDialog(this,
+                            "Please enter the name of the new bookmark",
+                            "Create bookmark",
+                            JOptionPane.INFORMATION_MESSAGE,
+                            null,
+                            null,
+                            path.getFileName().toString());
+                    if(name != null && !StringUtils.nullToEmpty(name).trim().isEmpty()) {
+                        settings.getBookmarks().add(new FileChooserBookmark(name.toString(), path));
+                        settings.triggerParameterChange("bookmarks");
+                    }
                 }
             } else {
-                settings.getBookmarks().remove(path);
+                settings.getBookmarks().removeIf(bookmark -> Objects.equals(path, bookmark.getPath()));
                 settings.triggerParameterChange("bookmarks");
             }
             updateLinks();
@@ -495,14 +506,13 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
             }
 
             // Bookmarks
-            List<Path> bookmarks = settings.getBookmarks().stream().filter(Files::isDirectory).collect(Collectors.toList());
+            List<FileChooserBookmark> bookmarks = settings.getBookmarks().stream().filter(FileChooserBookmark::isDirectory).collect(Collectors.toList());
             if (!bookmarks.isEmpty()) {
                 addLinkCategory("Bookmarks");
-                for (Path path : bookmarks) {
-                    String name = renderPathLabel(path);
-                    addLink(name,
+                for (FileChooserBookmark bookmark : bookmarks) {
+                    addLink(bookmark.getName(),
                             UIUtils.getIconFromResources("actions/bookmark.png"),
-                            path.toFile());
+                            bookmark.getPath().toFile());
                 }
             }
         }
@@ -553,7 +563,7 @@ public class AdvancedFileChooser extends JPanel implements PropertyChangeListene
         if (JIPipe.isInstantiated() && !JIPipe.getInstance().isInitializing()) {
             FileChooserSettings settings = FileChooserSettings.getInstance();
             if (fileChooserComponent.getCurrentDirectory() != null) {
-                bookmarkToggle.setSelected(settings.getBookmarks().contains(fileChooserComponent.getCurrentDirectory().toPath()));
+                bookmarkToggle.setSelected(settings.getBookmarks().stream().anyMatch(bookmark -> Objects.equals(fileChooserComponent.getCurrentDirectory().toPath(), bookmark.getPath())));
             }
         }
     }
