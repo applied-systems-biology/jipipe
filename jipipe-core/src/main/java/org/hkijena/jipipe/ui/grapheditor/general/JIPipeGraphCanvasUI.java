@@ -1641,6 +1641,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                         }
                     }
                     break;
+                    case AlwaysHiddenWithLabel:
                     case AlwaysHidden: {
                         hidden = true;
                     }
@@ -1846,7 +1847,8 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         Multimap<JIPipeDataSlot, DisplayedSlotEdge> labelledEdges = HashMultimap.create();
 
         for (DisplayedSlotEdge displayedSlotEdge : displayedMainEdges) {
-            if(displayedSlotEdge.isHidden() && displayedSlotEdge.edge.getUiVisibility() == JIPipeGraphEdge.Visibility.Smart && settings.isAutoHideDrawLabels()) {
+            JIPipeGraphEdge.Visibility uiVisibility = displayedSlotEdge.edge.getUiVisibility();
+            if(displayedSlotEdge.isHidden() && (uiVisibility == JIPipeGraphEdge.Visibility.Smart || uiVisibility == JIPipeGraphEdge.Visibility.AlwaysHiddenWithLabel) && settings.isAutoHideDrawLabels()) {
                 labelledEdges.put(displayedSlotEdge.target, displayedSlotEdge);
             }
             else if(settings.isDrawLabelsOnHover() && displayedSlotEdge.getTargetUI() == currentlyMouseEnteredNode && !isCurrentlyDraggingNode() && !isCurrentlyDraggingConnection()) {

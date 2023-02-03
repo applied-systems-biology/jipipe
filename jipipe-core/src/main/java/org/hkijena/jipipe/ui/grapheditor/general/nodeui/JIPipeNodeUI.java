@@ -1237,7 +1237,11 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     "All output edges are shown regardless of their length",
                     UIUtils.getIconFromResources("actions/eye.png"),
                     () -> setOutputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysVisible)));
-            edgeMenu.add(UIUtils.createMenuItem("Always hide all outputs",
+            edgeMenu.add(UIUtils.createMenuItem("Always hide all outputs (with label)",
+                    "All output edges are hidden (displayed as dashed line) regardless of their length. A label is displayed at the targets that contains information about the source.",
+                    UIUtils.getIconFromResources("actions/eye-slash.png"),
+                    () -> setOutputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysHiddenWithLabel)));
+            edgeMenu.add(UIUtils.createMenuItem("Always hide all outputs (without label)",
                     "All output edges are hidden (displayed as dashed line) regardless of their length",
                     UIUtils.getIconFromResources("actions/eye-slash.png"),
                     () -> setOutputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysHidden)));
@@ -1387,10 +1391,16 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     () -> setEdgeVisibility(slot, edge, JIPipeGraphEdge.Visibility.AlwaysVisible)));
         }
         if(edge.getUiVisibility() != JIPipeGraphEdge.Visibility.AlwaysHidden) {
-            menu.add(UIUtils.createMenuItem("Always hide all outputs",
+            menu.add(UIUtils.createMenuItem("Always hide all outputs (without label)",
                     "All output edges are hidden (displayed as dashed line) regardless of their length",
                     UIUtils.getIconFromResources("actions/eye-slash.png"),
                     () -> setEdgeVisibility(slot, edge, JIPipeGraphEdge.Visibility.AlwaysHidden)));
+        }
+        if(edge.getUiVisibility() != JIPipeGraphEdge.Visibility.AlwaysHiddenWithLabel) {
+            menu.add(UIUtils.createMenuItem("Always hide all outputs (with label)",
+                    "All output edges are hidden (displayed as dashed line) regardless of their length. A label is displayed at the targets that contains information about the source.",
+                    UIUtils.getIconFromResources("actions/eye-slash.png"),
+                    () -> setEdgeVisibility(slot, edge, JIPipeGraphEdge.Visibility.AlwaysHiddenWithLabel)));
         }
         if(edge.getUiVisibility() != JIPipeGraphEdge.Visibility.Smart) {
             menu.add(UIUtils.createMenuItem("Auto-hide long output edges (with label)",
@@ -1458,7 +1468,11 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                     "All output edges are shown regardless of their length",
                     UIUtils.getIconFromResources("actions/eye.png"),
                     () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysVisible)));
-            edgeMenu.add(UIUtils.createMenuItem("Always hide all inputs",
+            edgeMenu.add(UIUtils.createMenuItem("Always hide all inputs (with label)",
+                    "All output edges are hidden (displayed as dashed line) regardless of their length. A label is displayed at the targets that contains information about the source.",
+                    UIUtils.getIconFromResources("actions/eye-slash.png"),
+                    () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysHidden)));
+            edgeMenu.add(UIUtils.createMenuItem("Always hide all inputs (without label)",
                     "All output edges are hidden (displayed as dashed line) regardless of their length",
                     UIUtils.getIconFromResources("actions/eye-slash.png"),
                     () -> setInputEdgesVisibility(JIPipeGraphEdge.Visibility.AlwaysHidden)));

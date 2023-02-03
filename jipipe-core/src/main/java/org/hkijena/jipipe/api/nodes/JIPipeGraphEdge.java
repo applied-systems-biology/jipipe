@@ -107,8 +107,14 @@ public class JIPipeGraphEdge extends DefaultEdge {
          */
         SmartSilent,
         /**
-         * The edge is always hidden
+         * The edge is always hidden.
+         * No label is shown
          */
-        AlwaysHidden
+        AlwaysHidden,
+        /**
+         * The edge is always hidden
+         * A label is shown
+         */
+        AlwaysHiddenWithLabel
     }
 }
