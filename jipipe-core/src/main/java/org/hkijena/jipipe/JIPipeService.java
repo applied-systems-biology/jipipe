@@ -53,7 +53,7 @@ public interface JIPipeService extends Service, JIPipeValidatable {
 
     JIPipeProjectTemplateRegistry getProjectTemplateRegistry();
 
-    JIPipeGraphAnnotationRegistry getGraphAnnotationRegistry();
+    JIPipeGraphEditorToolRegistry getGraphEditorToolRegistry();
 
     JIPipeExpressionRegistry getTableOperationRegistry();
 

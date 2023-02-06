@@ -21,6 +21,7 @@ import gnu.trove.list.array.TIntArrayList;
 import org.apache.commons.lang3.SystemUtils;
 import org.hkijena.jipipe.JIPipe;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.JIPipeGraph;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
@@ -147,6 +148,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private final Map<?, ?> desktopRenderingHints =
             (Map<?, ?>) Toolkit.getDefaultToolkit().getDesktopProperty("awt.font.desktophints");
 
+    private JIPipeToggleableGraphEditorTool currentTool;
+
+    private boolean autoHideEdges;
+
+    private boolean autoHideDrawLabels;
 
     /**
      * Creates a new UI
@@ -166,12 +172,36 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         this.nodeHotKeyStorage = NodeHotKeyStorage.getInstance(graph);
         this.compartment = compartment;
         this.settings = GraphEditorUISettings.getInstance();
+
+        this.autoHideEdges = settings.isAutoHideEdgeEnabled();
+        this.autoHideDrawLabels = settings.isAutoHideDrawLabels();
+
         graph.attachAdditionalMetadata("jipipe:graph:view-mode", JIPipeGraphViewMode.VerticalCompact);
         initialize();
         addNewNodes(false);
         graph.getEventBus().register(this);
         initializeHotkeys();
         updateAssets();
+    }
+
+    public boolean isAutoHideEdges() {
+        return autoHideEdges;
+    }
+
+    public void setAutoHideEdges(boolean autoHideEdges) {
+        this.autoHideEdges = autoHideEdges;
+        settings.setAutoHideEdgeEnabled(autoHideEdges);
+        repaint(50);
+    }
+
+    public boolean isAutoHideDrawLabels() {
+        return autoHideDrawLabels;
+    }
+
+    public void setAutoHideDrawLabels(boolean autoHideDrawLabels) {
+        this.autoHideDrawLabels = autoHideDrawLabels;
+        settings.setAutoHideDrawLabels(autoHideDrawLabels);
+        repaint(50);
     }
 
     public boolean isRenderOutsideEdges() {
@@ -930,10 +960,17 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                         }
                     }
                     this.hasDragSnapshot = false;
-                    JIPipeNodeUISlotActiveArea slotState = ui.pickSlotAtMousePosition(mouseEvent);
-                    if (slotState != null) {
-                        startDragSlot(slotState);
-                    } else {
+                    if(currentToolAllowsConnectionDragging()) {
+                        // Attempt to drag a slot
+                        JIPipeNodeUISlotActiveArea slotState = ui.pickSlotAtMousePosition(mouseEvent);
+                        if (slotState != null) {
+                            startDragSlot(slotState);
+                        } else {
+                            startDragCurrentNodeSelection(mouseEvent);
+                        }
+                    }
+                    else {
+                        // Dragging slots disabled by tools
                         startDragCurrentNodeSelection(mouseEvent);
                     }
                 } else {
@@ -944,19 +981,29 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     }
 
     private void startDragSlot(JIPipeNodeUISlotActiveArea startSlot) {
-        this.currentConnectionDragSourceDragged = false;
-        setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
-        setCurrentConnectionDragSource(startSlot);
+        if(currentToolAllowsConnectionDragging()) {
+            this.currentConnectionDragSourceDragged = false;
+            setCursor(Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR));
+            setCurrentConnectionDragSource(startSlot);
+        }
+        else {
+            stopAllDragging();
+        }
     }
 
     private void startDragCurrentNodeSelection(MouseEvent mouseEvent) {
-        this.hasDragSnapshot = false;
-        this.currentConnectionDragSourceDragged = false;
-        for (JIPipeNodeUI nodeUI : selection) {
-            Point offset = new Point();
-            offset.x = nodeUI.getX() - mouseEvent.getX();
-            offset.y = nodeUI.getY() - mouseEvent.getY();
-            currentlyDraggedOffsets.put(nodeUI, offset);
+        if(currentToolAllowsNodeDragging()) {
+            this.hasDragSnapshot = false;
+            this.currentConnectionDragSourceDragged = false;
+            for (JIPipeNodeUI nodeUI : selection) {
+                Point offset = new Point();
+                offset.x = nodeUI.getX() - mouseEvent.getX();
+                offset.y = nodeUI.getY() - mouseEvent.getY();
+                currentlyDraggedOffsets.put(nodeUI, offset);
+            }
+        }
+        else {
+            stopAllDragging();
         }
     }
 
@@ -1311,7 +1358,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
                 0,
                 0,
                 true,
-                settings.isAutoHideEdgeEnabled());
+                isAutoHideEdges());
 
         // Outside edges drawing
         if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges()) {
@@ -1501,17 +1548,6 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         graphics2D.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
-        // Smart edges drawing
-        if(lastDisplayedMainEdges != null)
-            paintNodeInputLabels(graphics2D, lastDisplayedMainEdges);
-
-        // Draw cursor over the components
-        if (graphEditCursor != null && renderCursor) {
-            g.drawImage(cursorImage.getImage(),
-                    graphEditCursor.x - cursorImage.getIconWidth() / 2,
-                    graphEditCursor.y - cursorImage.getIconHeight() / 2,
-                    null);
-        }
         // Draw node selections
         graphics2D.setStroke(STROKE_SELECTION);
         for (JIPipeNodeUI ui : selection) {
@@ -1537,6 +1573,19 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             int w = Math.abs(x0 - x1);
             int h = Math.abs(y0 - y1);
             graphics2D.drawRect(x, y, w, h);
+        }
+
+        // Smart edges drawing
+        if(lastDisplayedMainEdges != null) {
+            paintNodeInputLabels(graphics2D, lastDisplayedMainEdges);
+        }
+
+        // Draw cursor over the components
+        if (graphEditCursor != null && renderCursor) {
+            g.drawImage(cursorImage.getImage(),
+                    graphEditCursor.x - cursorImage.getIconWidth() / 2,
+                    graphEditCursor.y - cursorImage.getIconHeight() / 2,
+                    null);
         }
     }
 
@@ -1702,6 +1751,22 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         return multiColorMax;
     }
 
+    public JIPipeToggleableGraphEditorTool getCurrentTool() {
+        return currentTool;
+    }
+
+    public void setCurrentTool(JIPipeToggleableGraphEditorTool currentTool) {
+        this.currentTool = currentTool;
+    }
+
+    public boolean currentToolAllowsNodeDragging() {
+        return currentTool == null || currentTool.allowsDragNodes();
+    }
+
+    public boolean currentToolAllowsConnectionDragging() {
+        return currentTool == null || currentTool.allowsDragConnections();
+    }
+
     public static class DisplayedSlotEdge implements Comparable<DisplayedSlotEdge> {
         private final JIPipeDataSlot source;
         private final JIPipeDataSlot target;
@@ -1836,7 +1901,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     private void paintNodeInputLabels(Graphics2D g, List<DisplayedSlotEdge> displayedMainEdges) {
 
-        if(!settings.isDrawLabelsOnHover() && !settings.isAutoHideDrawLabels())
+        if(!settings.isDrawLabelsOnHover() && !isAutoHideDrawLabels())
             return;
 
         FontMetrics slotFontMetrics = g.getFontMetrics(smartEdgeTooltipSlotFont);
@@ -1848,7 +1913,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
         for (DisplayedSlotEdge displayedSlotEdge : displayedMainEdges) {
             JIPipeGraphEdge.Visibility uiVisibility = displayedSlotEdge.edge.getUiVisibility();
-            if(displayedSlotEdge.isHidden() && (uiVisibility == JIPipeGraphEdge.Visibility.Smart || uiVisibility == JIPipeGraphEdge.Visibility.AlwaysHiddenWithLabel) && settings.isAutoHideDrawLabels()) {
+            if(displayedSlotEdge.isHidden() && (uiVisibility == JIPipeGraphEdge.Visibility.Smart || uiVisibility == JIPipeGraphEdge.Visibility.AlwaysHiddenWithLabel) && isAutoHideDrawLabels()) {
                 labelledEdges.put(displayedSlotEdge.target, displayedSlotEdge);
             }
             else if(settings.isDrawLabelsOnHover() && displayedSlotEdge.getTargetUI() == currentlyMouseEnteredNode && !isCurrentlyDraggingNode() && !isCurrentlyDraggingConnection()) {

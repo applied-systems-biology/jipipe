@@ -712,7 +712,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             int slotWidth = (int) Math.round(slotState.getNativeWidth() * zoom);
 
             // Draw highlight
-            if (slotState == currentActiveArea) {
+            if (slotState == currentActiveArea && graphCanvasUI.currentToolAllowsConnectionDragging()) {
                 g2.setPaint(buttonFillColor);
                 g2.fillRect(startX, getHeight() - realSlotHeight, slotWidth, realSlotHeight);
             }
@@ -794,7 +794,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             int slotWidth = (int) Math.round(slotState.getNativeWidth() * zoom);
 
             // Draw highlight
-            if (slotState == currentActiveArea) {
+            if (slotState == currentActiveArea && graphCanvasUI.currentToolAllowsConnectionDragging()) {
                 g2.setPaint(buttonFillColor);
                 g2.fillRect(startX, 0, slotWidth, realSlotHeight);
             }

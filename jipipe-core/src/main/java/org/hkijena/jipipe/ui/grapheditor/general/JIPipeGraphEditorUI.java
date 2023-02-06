@@ -13,9 +13,14 @@
 
 package org.hkijena.jipipe.ui.grapheditor.general;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.eventbus.Subscribe;
 import org.hkijena.jipipe.JIPipe;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeDefaultGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeToggleableGraphEditorTool;
 import org.hkijena.jipipe.api.history.JIPipeHistoryJournal;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.extensions.settings.FileChooserSettings;
@@ -31,6 +36,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.contextmenu.NodeUIContextAction
 import org.hkijena.jipipe.ui.grapheditor.general.nodeui.JIPipeNodeUI;
 import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.AutoResizeSplitPane;
+import org.hkijena.jipipe.utils.ReflectionUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.hkijena.jipipe.utils.ui.CopyImageToClipboard;
@@ -81,6 +87,11 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private Point panningScrollbarOffset = null;
     private boolean isPanning = false;
     private Set<JIPipeNodeInfo> addableAlgorithms = new HashSet<>();
+    private JIPipeToggleableGraphEditorTool currentTool;
+    private final List<JIPipeGraphEditorTool> tools = new ArrayList<>();
+    private final BiMap<JIPipeToggleableGraphEditorTool, JToggleButton> toolToggles = HashBiMap.create();
+
+
 
     /**
      * @param workbenchUI    the workbench
@@ -96,13 +107,19 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         this.flags = flags;
         this.canvasUI = new JIPipeGraphCanvasUI(getWorkbench(), this, algorithmGraph, compartment, historyJournal);
         this.graphUISettings = settings;
+
+
+
         initialize();
         reloadMenuBar();
         JIPipe.getNodes().getEventBus().register(this);
         algorithmGraph.getEventBus().register(this);
         updateNavigation();
         initializeHotkeys();
-        SwingUtilities.invokeLater(() -> canvasUI.crop(true));
+        SwingUtilities.invokeLater(() -> {
+            canvasUI.crop(true);
+            selectDefaultTool();
+        });
     }
 
     /**
@@ -315,12 +332,79 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         navigator.getEventBus().register(this);
         navigator.setRankingFunction(JIPipeGraphEditorUI::rankNavigationEntry);
 
-        initializeAnnotationTools();
+        initializeEditingToolbar();
     }
 
-    private void initializeAnnotationTools() {
-        JToolBar toolBar = new JToolBar(null, JToolBar.VERTICAL);
+    private void initializeEditingToolbar() {
+        JToolBar toolBar = UIUtils.createVerticalToolbar();
+
+        for (Class<? extends JIPipeGraphEditorTool> klass : JIPipe.getInstance().getGraphEditorToolRegistry().getRegisteredTools()) {
+            JIPipeGraphEditorTool tool = (JIPipeGraphEditorTool) ReflectionUtils.newInstance(klass);
+            if(tool.supports(this)) {
+                tools.add(tool);
+            }
+        }
+        tools.sort(Comparator.comparing(JIPipeGraphEditorTool::getCategory).thenComparing(JIPipeGraphEditorTool::getPriority));
+        for (int i = 0; i < tools.size(); i++) {
+            JIPipeGraphEditorTool tool = tools.get(i);
+            if(i > 0 && !Objects.equals(tool.getCategory(), tools.get(i - 1).getCategory())) {
+                toolBar.addSeparator();
+            }
+            if(tool instanceof JIPipeToggleableGraphEditorTool) {
+                JToggleButton toggleButton = new JToggleButton(tool.getIcon());
+                toggleButton.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() + "</html>");
+                toggleButton.addActionListener( e -> selectTool(tool));
+                UIUtils.makeFlat25x25(toggleButton);
+                toolBar.add(toggleButton);
+                toolToggles.put((JIPipeToggleableGraphEditorTool) tool, toggleButton);
+            }
+            else {
+                JButton button = new JButton(tool.getIcon());
+                button.setToolTipText("<html><strong>" + tool.getName() + "</strong><br/><br/>" + tool.getTooltip() + "</html>");
+                button.addActionListener( e -> selectTool(tool));
+                UIUtils.makeFlat25x25(button);
+                toolBar.add(button);
+            }
+        }
+
+
         add(toolBar, BorderLayout.WEST);
+    }
+
+    public List<JIPipeGraphEditorTool> getTools() {
+        return Collections.unmodifiableList(tools);
+    }
+
+    public void selectDefaultTool() {
+        selectTool(tools.stream().filter(tool -> tool instanceof JIPipeDefaultGraphEditorTool).findFirst().orElse(null));
+    }
+
+    public void selectTool(JIPipeGraphEditorTool tool) {
+        if(tool instanceof JIPipeToggleableGraphEditorTool) {
+            if(tool == currentTool)
+                return;
+            if(currentTool != null) {
+                // Deselect current tool
+                JToggleButton toggleButton = toolToggles.get(currentTool);
+                toggleButton.setSelected(false);
+                currentTool.deactivate();
+                currentTool = null;
+                canvasUI.setCurrentTool(null);
+            }
+
+            JToggleButton toggleButton = toolToggles.get(tool);
+            toggleButton.setSelected(true);
+            currentTool = (JIPipeToggleableGraphEditorTool) tool;
+            canvasUI.setCurrentTool(currentTool);
+            tool.activate();
+        }
+        else {
+            tool.activate();
+        }
+    }
+
+    public JIPipeToggleableGraphEditorTool getCurrentTool() {
+        return currentTool;
     }
 
     /**
@@ -428,18 +512,18 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     }
 
     private void initializeToggleShowLabelsCommand(JMenu graphMenu) {
-        JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Show input labels", graphUISettings.isAutoHideDrawLabels());
+        JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Show input labels", canvasUI.isAutoHideDrawLabels());
         toggle.addActionListener(e -> {
-            graphUISettings.setAutoHideDrawLabels(toggle.getState());
+            canvasUI.setAutoHideDrawLabels(toggle.getState());
             canvasUI.repaint(50);
         });
         graphMenu.add(toggle);
     }
 
     private void initializeToggleHideEdgesCommand(JMenu graphMenu) {
-        JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Auto-hide edges", graphUISettings.isAutoHideEdgeEnabled());
+        JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Auto-hide edges", canvasUI.isAutoHideEdges());
         toggle.addActionListener(e -> {
-            graphUISettings.setAutoHideEdgeEnabled(toggle.getState());
+            canvasUI.setAutoHideEdges(toggle.getState());
             canvasUI.repaint(50);
         });
         graphMenu.add(toggle);

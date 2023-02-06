@@ -30,6 +30,7 @@ import org.hkijena.jipipe.api.notifications.JIPipeNotificationInbox;
 import org.hkijena.jipipe.api.registries.JIPipeSettingsRegistry;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.settings.GeneralDataSettings;
+import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
@@ -39,7 +40,9 @@ import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtension;
 import org.hkijena.jipipe.ui.extension.JIPipeMenuExtensionTarget;
 import org.hkijena.jipipe.ui.notifications.GenericNotificationInboxUI;
+import org.hkijena.jipipe.ui.theme.DarkModernMetalTheme;
 import org.hkijena.jipipe.ui.theme.JIPipeUITheme;
+import org.hkijena.jipipe.ui.theme.ModernMetalTheme;
 import org.hkijena.jipipe.utils.json.JsonUtils;
 import org.hkijena.jipipe.utils.ui.ListSelectionMode;
 import org.hkijena.jipipe.utils.ui.RoundedLineBorder;
@@ -1829,6 +1832,22 @@ public class UIUtils {
         item.setToolTipText(description);
         item.addActionListener(e -> action.run());
         return item;
+    }
+
+    public static JToolBar createVerticalToolbar() {
+        JToolBar toolBar = new JToolBar(null, SwingConstants.VERTICAL);
+        toolBar.setFloatable(false);
+
+        switch (GeneralUISettings.getInstance().getTheme()) {
+            case ModernLight:
+                toolBar.setBorder(BorderFactory.createMatteBorder(0,0,0,1, ModernMetalTheme.GRAY));
+                break;
+            case ModernDark:
+                toolBar.setBorder(BorderFactory.createMatteBorder(0,0,0,1, DarkModernMetalTheme.GRAY));
+                break;
+        }
+
+        return toolBar;
     }
 
 

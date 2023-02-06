@@ -25,6 +25,7 @@ import org.hkijena.jipipe.api.environments.ExternalEnvironment;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentInstaller;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentParameterEditorUI;
 import org.hkijena.jipipe.api.environments.ExternalEnvironmentSettings;
+import org.hkijena.jipipe.api.grapheditortool.JIPipeGraphEditorTool;
 import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
 import org.hkijena.jipipe.api.nodes.JIPipeJavaNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
@@ -784,6 +785,10 @@ public abstract class JIPipeDefaultJavaExtension extends AbstractService impleme
                 }
             }
         }
+    }
+
+    public void registerGraphEditorTool(Class<? extends JIPipeGraphEditorTool> klass) {
+        registry.getGraphEditorToolRegistry().register(klass);
     }
 
     /**

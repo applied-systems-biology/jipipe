@@ -115,7 +115,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
     private final JIPipeExternalEnvironmentRegistry externalEnvironmentRegistry;
     private final JIPipeExtensionRegistry extensionRegistry;
 
-    private final JIPipeGraphAnnotationRegistry graphAnnotationRegistry;
+    private final JIPipeGraphEditorToolRegistry graphEditorToolRegistry;
 
     private final JIPipeProjectTemplateRegistry projectTemplateRegistry;
     private FilesCollection imageJPlugins = null;
@@ -138,7 +138,7 @@ public class JIPipe extends AbstractService implements JIPipeService {
         externalEnvironmentRegistry = new JIPipeExternalEnvironmentRegistry(this);
         extensionRegistry = new JIPipeExtensionRegistry(this);
         projectTemplateRegistry = new JIPipeProjectTemplateRegistry(this);
-        graphAnnotationRegistry = new JIPipeGraphAnnotationRegistry(this);
+        graphEditorToolRegistry = new JIPipeGraphEditorToolRegistry(this);
     }
 
     /**
@@ -203,8 +203,8 @@ public class JIPipe extends AbstractService implements JIPipeService {
     }
 
     @Override
-    public JIPipeGraphAnnotationRegistry getGraphAnnotationRegistry() {
-        return graphAnnotationRegistry;
+    public JIPipeGraphEditorToolRegistry getGraphEditorToolRegistry() {
+        return graphEditorToolRegistry;
     }
 
     /**
