@@ -341,6 +341,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         for (Class<? extends JIPipeGraphEditorTool> klass : JIPipe.getInstance().getGraphEditorToolRegistry().getRegisteredTools()) {
             JIPipeGraphEditorTool tool = (JIPipeGraphEditorTool) ReflectionUtils.newInstance(klass);
             if(tool.supports(this)) {
+                tool.setGraphEditor(this);
                 tools.add(tool);
             }
         }
