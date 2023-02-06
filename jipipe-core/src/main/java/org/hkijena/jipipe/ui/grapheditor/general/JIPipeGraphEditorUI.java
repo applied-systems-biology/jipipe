@@ -405,7 +405,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         menuBar.add(UIUtils.createVerticalSeparator());
 
-        graphMenu.setIcon(UIUtils.getIconFromResources("actions/draw-connector.png"));
+        graphMenu.setIcon(UIUtils.getIconFromResources("actions/configure.png"));
         menuBar.add(graphMenu);
 
         initializeCenterViewCommand(graphMenu);
