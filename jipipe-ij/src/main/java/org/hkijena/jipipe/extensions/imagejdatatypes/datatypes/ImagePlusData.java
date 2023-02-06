@@ -365,7 +365,17 @@ public class ImagePlusData implements JIPipeData {
 //            if (rgbImage.getType() != ImagePlus.COLOR_RGB) {
 //                ImageJUtils.calibrate(rgbImage, ImageJCalibrationMode.AutomaticImageJ, 0, 1);
 //            }
-            rgbImage = ImageJUtils.convertToColorRGBIfNeeded(rgbImage);
+            if(rgbImage.getType() != ImagePlus.COLOR_RGB) {
+                // Copy LUT
+                rgbImage.setLut(image.getProcessor().getLut());
+
+                // Render to RGB
+                rgbImage = ImageJUtils.renderToRGBWithLUTIfNeeded(rgbImage, new JIPipeProgressInfo());
+            }
+            else {
+                // Convert to RGB if necessary (HSB, LAB, ...)
+                getColorSpace().convertToRGB(rgbImage, new JIPipeProgressInfo());
+            }
 
             // ROI rendering
             ROIListData rois = new ROIListData();

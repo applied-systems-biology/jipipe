@@ -267,6 +267,15 @@ public class ImageJUtils {
         if (overlay != null && !imp.getHideOverlay())
             imp2.setOverlay(overlay);
 
+        // Copy the LUT
+        if(imp.getType() != ImagePlus.COLOR_RGB) {
+            imp2.setLut(imp.getProcessor().getLut());
+            if(imp2.hasImageStack()) {
+                imp2.getStack().setColorModel(imp.getStack().getColorModel());
+            }
+        }
+
+        // Calibrate
         calibrate(imp2, ImageJCalibrationMode.Custom, min, max);
 
         return imp2;
@@ -1939,16 +1948,16 @@ public class ImageJUtils {
     public static ImagePlus renderToRGBWithLUTIfNeeded(ImagePlus inputImage, JIPipeProgressInfo progressInfo) {
         if (inputImage.getType() == ImagePlus.COLOR_RGB)
             return inputImage;
-//        ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
-//        forEachIndexedZCTSlice(inputImage, (ip, slice) -> {
-//            ColorProcessor colorProcessor = new ColorProcessor(ip.getBufferedImage());
-//            stack.setProcessor(colorProcessor, slice.zeroSliceIndexToOneStackIndex(inputImage));
-//        }, progressInfo);
-//        ImagePlus outputImage = new ImagePlus(inputImage.getTitle(), stack);
-//        outputImage.copyScale(inputImage);
-//        outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
-//        return outputImage;
-        return ImageJUtils.convertToColorRGBIfNeeded(inputImage);
+        ImageStack stack = new ImageStack(inputImage.getWidth(), inputImage.getHeight(), inputImage.getStackSize());
+        forEachIndexedZCTSlice(inputImage, (ip, slice) -> {
+            ColorProcessor colorProcessor = new ColorProcessor(ip.getBufferedImage());
+            stack.setProcessor(colorProcessor, slice.zeroSliceIndexToOneStackIndex(inputImage));
+        }, progressInfo);
+        ImagePlus outputImage = new ImagePlus(inputImage.getTitle(), stack);
+        outputImage.copyScale(inputImage);
+        outputImage.setDimensions(inputImage.getNChannels(), inputImage.getNSlices(), inputImage.getNFrames());
+        return outputImage;
+//        return ImageJUtils.convertToColorRGBIfNeeded(inputImage);
     }
 
     public static void convolveSlice(Convolver convolver, int kernelWidth, int kernelHeight, float[] kernel, ImageProcessor imp) {

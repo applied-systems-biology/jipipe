@@ -46,13 +46,8 @@ public class ApplyLUTAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
-        ImagePlusData data = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo);
-        ImageStack stack = new ImageStack(data.getImage().getWidth(), data.getImage().getHeight(), data.getImage().getStackSize());
-        ImageJUtils.forEachIndexedZCTSlice(data.getImage(), (sourceProcessor, index) -> {
-            ImageProcessor duplicate = sourceProcessor.duplicate();
-            ColorProcessor rgb = new ColorProcessor(duplicate.getBufferedImage());
-            stack.setProcessor(rgb, index.zeroSliceIndexToOneStackIndex(data.getImage()));
-        }, progressInfo);
-        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(new ImagePlus(data.getImage().getTitle(), stack)), progressInfo);
+        ImagePlusData inputData = dataBatch.getInputData(getFirstInputSlot(), ImagePlusGreyscaleData.class, progressInfo);
+        ImagePlus outputData = ImageJUtils.renderToRGBWithLUTIfNeeded(inputData.getImage(), progressInfo);
+        dataBatch.addOutputData(getFirstOutputSlot(), new ImagePlusColorRGBData(outputData), progressInfo);
     }
 }

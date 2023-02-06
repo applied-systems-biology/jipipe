@@ -123,6 +123,7 @@ public class UtilitiesExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerNodeType("run-process-merging", RunProcessMergingAlgorithm.class, UIUtils.getIconURLFromResources("actions/cm_runterm.png"));
 
         registerNodeType("sleep", SleepAlgorithm.class, UIUtils.getIconURLFromResources("actions/clock.png"));
+        registerNodeType("duplicate", DuplicateDataAlgorithm.class, UIUtils.getIconURLFromResources("actions/edit-duplicate.png"));
 
         // Comment node
         JIPipeJavaNodeInfo commentNodeInfo = new JIPipeJavaNodeInfo("jipipe:comment", JIPipeCommentNode.class);

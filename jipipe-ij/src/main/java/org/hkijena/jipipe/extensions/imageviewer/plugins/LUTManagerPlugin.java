@@ -18,7 +18,7 @@ import java.util.List;
 
 public class LUTManagerPlugin extends GeneralImageViewerPanelPlugin {
 
-    private List<ImageViewerLUTEditor> lutEditors = new ArrayList<>();
+    private final List<ImageViewerLUTEditor> lutEditors = new ArrayList<>();
 
     public LUTManagerPlugin(ImageViewerPanel viewerPanel) {
         super(viewerPanel);
@@ -26,6 +26,7 @@ public class LUTManagerPlugin extends GeneralImageViewerPanelPlugin {
 
     @Override
     public void onImageChanged() {
+        lutEditors.clear();
     }
 
     @Override

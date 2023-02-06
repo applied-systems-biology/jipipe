@@ -779,6 +779,7 @@ public class ImageViewerPanel extends JPanel implements JIPipeWorkbenchAccess {
         }
         revalidate();
         repaint();
+        uploadSliceToCanvas();
     }
 
     private void refreshMenus() {
