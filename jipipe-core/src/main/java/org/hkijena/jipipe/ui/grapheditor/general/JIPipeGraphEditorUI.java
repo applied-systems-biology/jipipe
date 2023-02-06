@@ -412,10 +412,12 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
         menuBar.add(UIUtils.createVerticalSeparator());
 
-        graphMenu.setIcon(UIUtils.getIconFromResources("actions/draw-connector.png"));
+        graphMenu.setIcon(UIUtils.getIconFromResources("actions/configure.png"));
         menuBar.add(graphMenu);
 
         initializeCenterViewCommand(graphMenu);
+        initializeToggleHideEdgesCommand(graphMenu);
+        initializeToggleShowLabelsCommand(graphMenu);
         initializeExportMenu(graphMenu);
         initializeLayoutMenu(graphMenu);
         initializeSearchMenu(graphMenu);
@@ -423,6 +425,24 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         menuBar.add(UIUtils.createVerticalSeparator());
 
         initializeZoomMenu();
+    }
+
+    private void initializeToggleShowLabelsCommand(JMenu graphMenu) {
+        JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Show input labels", graphUISettings.isAutoHideDrawLabels());
+        toggle.addActionListener(e -> {
+            graphUISettings.setAutoHideDrawLabels(toggle.getState());
+            canvasUI.repaint(50);
+        });
+        graphMenu.add(toggle);
+    }
+
+    private void initializeToggleHideEdgesCommand(JMenu graphMenu) {
+        JCheckBoxMenuItem toggle = new JCheckBoxMenuItem("Auto-hide edges", graphUISettings.isAutoHideEdgeEnabled());
+        toggle.addActionListener(e -> {
+            graphUISettings.setAutoHideEdgeEnabled(toggle.getState());
+            canvasUI.repaint(50);
+        });
+        graphMenu.add(toggle);
     }
 
     private void initializeZoomMenu() {

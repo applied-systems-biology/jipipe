@@ -312,6 +312,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                 NodeUIContextAction.SEPARATOR,
                 new RunAndShowIntermediateResultsNodeUIContextAction(),
                 new UpdateCacheShowIntermediateNodeUIContextAction(),
+                new UpdateCacheOnlyPredecessorsNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new ClearCacheNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
@@ -465,7 +466,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                     false,
                     false,
                     ((UpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
-                    false);
+                    ((UpdateCacheAction) event.getAction()).isOnlyPredecessors());
             SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
         }
     }

@@ -135,6 +135,8 @@ public class JIPipeRunnerQueue {
             } else {
                 queue.remove(worker);
                 eventBus.post(new RunWorkerInterruptedEvent(worker, new InterruptedException("Operation was cancelled.")));
+
+                worker.getEventBus().unregister(this);
             }
         }
     }
@@ -150,6 +152,8 @@ public class JIPipeRunnerQueue {
             assignedWorkers.remove(currentlyRunningWorker.getRun());
             currentlyRunningWorker = null;
             tryDequeue();
+
+            event.getWorker().getEventBus().unregister(this);
         }
         eventBus.post(event);
     }
@@ -165,6 +169,8 @@ public class JIPipeRunnerQueue {
             assignedWorkers.remove(currentlyRunningWorker.getRun());
             currentlyRunningWorker = null;
             tryDequeue();
+
+            event.getWorker().getEventBus().unregister(this);
         }
         eventBus.post(event);
     }

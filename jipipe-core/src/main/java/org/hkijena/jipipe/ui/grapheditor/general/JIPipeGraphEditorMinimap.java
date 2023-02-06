@@ -108,13 +108,8 @@ public class JIPipeGraphEditorMinimap extends JIPipeWorkbenchPanel implements Mo
     private void refreshView() {
         int graphImageWidth;
         int graphImageHeight;
-        if (graphImage != null) {
-            graphImageWidth = graphImage.getWidth();
-            graphImageHeight = graphImage.getHeight();
-        } else {
-            graphImageWidth = graphEditorUI.getCanvasUI().getWidth();
-            graphImageHeight = graphEditorUI.getCanvasUI().getHeight();
-        }
+        graphImageWidth = graphEditorUI.getCanvasUI().getWidth();
+        graphImageHeight = graphEditorUI.getCanvasUI().getHeight();
 
         if (graphImageWidth <= 0)
             graphImageWidth = getWidth();

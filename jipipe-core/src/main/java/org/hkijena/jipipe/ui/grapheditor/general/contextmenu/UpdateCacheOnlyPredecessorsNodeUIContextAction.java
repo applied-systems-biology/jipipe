@@ -27,9 +27,11 @@ import org.hkijena.jipipe.ui.running.JIPipeRunnerQueue;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.util.Set;
 
-public class UpdateCacheShowIntermediateNodeUIContextAction implements NodeUIContextAction {
+public class UpdateCacheOnlyPredecessorsNodeUIContextAction implements NodeUIContextAction {
     @Override
     public boolean matches(Set<JIPipeNodeUI> selection) {
         for (JIPipeNodeUI nodeUI : selection) {
@@ -51,7 +53,7 @@ public class UpdateCacheShowIntermediateNodeUIContextAction implements NodeUICon
         if(selection.size() == 1) {
             // Classic mode (via UI)
             JIPipeNodeUI ui = selection.iterator().next();
-            ui.getEventBus().post(new JIPipeGraphCanvasUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(true, false)));
+            ui.getEventBus().post(new JIPipeGraphCanvasUI.NodeUIActionRequestedEvent(ui, new UpdateCacheAction(false, true)));
         }
         else {
             // Batch mode (enqueue)
@@ -66,7 +68,7 @@ public class UpdateCacheShowIntermediateNodeUIContextAction implements NodeUICon
                     settings.setSaveToDisk(false);
                     settings.setStoreToCache(true);
                     settings.setStoreIntermediateResults(false);
-                    settings.setExcludeSelected(false);
+                    settings.setExcludeSelected(true);
                     QuickRun run = new QuickRun(project, node, settings);
                     JIPipeRunnerQueue.getInstance().enqueue(run);
                 }
@@ -76,17 +78,17 @@ public class UpdateCacheShowIntermediateNodeUIContextAction implements NodeUICon
 
     @Override
     public String getName() {
-        return "Cache intermediate results";
+        return "Update predecessor cache";
     }
 
     @Override
     public String getDescription() {
-        return "Runs the pipeline up until this algorithm and caches the results (including intermediate results). Nothing is written to disk.";
+        return "Runs the pipeline up until the predecessors of the selected node. Nothing is written to disk.";
     }
 
     @Override
     public Icon getIcon() {
-        return UIUtils.getIconFromResources("actions/cache-intermediate-results.png");
+        return UIUtils.getIconFromResources("actions/cache-predecessors.png");
     }
 
     @Override

@@ -19,8 +19,8 @@ import org.hkijena.jipipe.utils.ColorUtils;
 import org.hkijena.jipipe.utils.StringUtils;
 
 import java.awt.*;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
+import java.util.List;
 
 /**
  * A parameter that contains an expression.
@@ -110,6 +110,34 @@ public abstract class AbstractExpressionParameter {
         }
         else {
             return StringUtils.parseDouble(StringUtils.nullToEmpty(result));
+        }
+    }
+
+    /**
+     * Runs the expression and returns the numeric result. If no number is returned, an error is thrown.
+     *
+     * @param variables the variables
+     * @return the result
+     */
+    public List<Double> evaluateToDoubleList(ExpressionVariables variables) {
+        Object result = evaluate(variables);
+        if(result instanceof Number) {
+            return Collections.singletonList(((Number) result).doubleValue());
+        }
+        else if(result instanceof Collection) {
+            List<Double> list = new ArrayList<>();
+            for (Object o : (Collection) result) {
+                if(o instanceof Number) {
+                    list.add(((Number) o).doubleValue());
+                }
+                else {
+                    list.add(StringUtils.parseDouble(StringUtils.nullToEmpty(o)));
+                }
+            }
+            return list;
+        }
+        else {
+            return Collections.singletonList(StringUtils.parseDouble(StringUtils.nullToEmpty(result)));
         }
     }
 

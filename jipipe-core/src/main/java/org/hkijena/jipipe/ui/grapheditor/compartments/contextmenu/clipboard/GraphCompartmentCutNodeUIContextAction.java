@@ -61,4 +61,9 @@ public class GraphCompartmentCutNodeUIContextAction extends GraphCompartmentCopy
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_X, InputEvent.CTRL_MASK, true);
     }
+
+    @Override
+    public boolean showInMultiSelectionPanel() {
+        return false;
+    }
 }

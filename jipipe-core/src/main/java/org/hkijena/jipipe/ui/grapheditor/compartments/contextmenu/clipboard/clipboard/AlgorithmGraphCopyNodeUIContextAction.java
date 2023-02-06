@@ -70,4 +70,9 @@ public class AlgorithmGraphCopyNodeUIContextAction implements NodeUIContextActio
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_C, InputEvent.CTRL_MASK, true);
     }
+
+    @Override
+    public boolean showInMultiSelectionPanel() {
+        return false;
+    }
 }

@@ -14,6 +14,7 @@
 package org.hkijena.jipipe.extensions.imageviewer;
 
 import ij.gui.Roi;
+import org.apache.commons.math3.util.Precision;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
@@ -81,7 +82,7 @@ public class RoiListCellRenderer extends JPanel implements ListCellRenderer<Roi>
             strokeFillPreview.setBorderColor(Color.YELLOW);
 
         iconLabel.setText("" + index);
-        infoLabel.setText("x: " + value.getXBase() + ", y: " + value.getYBase() + ", z: " + (value.getZPosition() != 0 ? value.getZPosition() : "*") +
+        infoLabel.setText("x: " + Precision.round(value.getXBase(), 3) + ", y: " + Precision.round(value.getYBase(), 3) + ", z: " + (value.getZPosition() != 0 ? value.getZPosition() : "*") +
                 ", c: " + (value.getCPosition() != 0 ? value.getCPosition() : "*") + ", t: " + (value.getTPosition() != 0 ? value.getTPosition() : "*"));
 
         if (isSelected) {

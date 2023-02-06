@@ -87,4 +87,9 @@ public class GraphCompartmentPasteNodeUIContextAction implements NodeUIContextAc
     public KeyStroke getKeyboardShortcut() {
         return KeyStroke.getKeyStroke(KeyEvent.VK_V, InputEvent.CTRL_MASK, true);
     }
+
+    @Override
+    public boolean showInMultiSelectionPanel() {
+        return false;
+    }
 }

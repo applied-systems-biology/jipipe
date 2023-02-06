@@ -37,7 +37,7 @@ import java.util.List;
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Output", inheritedSlot = "Input", autoCreate = true)
 public class RemoveAnnotationAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
-    private AnnotationQueryExpression annotationExpression = new AnnotationQueryExpression("\"#Dataset\"");
+    private AnnotationQueryExpression annotationExpression = new AnnotationQueryExpression("key == \"#Dataset\"");
 
     /**
      * @param info algorithm info

@@ -314,7 +314,7 @@ public class JIPipeCompartmentsGraphEditorUI extends JIPipeGraphEditorUI {
                     true,
                     false,
                     ((UpdateCacheAction) event.getAction()).isStoreIntermediateResults(),
-                    false);
+                    ((UpdateCacheAction) event.getAction()).isOnlyPredecessors());
             SwingUtilities.invokeLater(() -> disableUpdateOnSelection = false);
         }
     }
