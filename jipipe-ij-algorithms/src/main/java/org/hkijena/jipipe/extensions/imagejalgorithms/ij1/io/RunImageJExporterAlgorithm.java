@@ -50,7 +50,7 @@ public class RunImageJExporterAlgorithm extends JIPipeMergingAlgorithm {
     protected void runIteration(JIPipeMergingDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         JIPipeDataTable dataTable = new JIPipeDataTable(exporterType.getInstance().getExportedJIPipeDataType());
         for (Integer row : dataBatch.getInputRows(getFirstInputSlot())) {
-            dataTable.addData(getFirstInputSlot().getVirtualData(row),
+            dataTable.addData(getFirstInputSlot().getDataItemStore(row),
                     getFirstInputSlot().getTextAnnotations(row),
                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
                     getFirstInputSlot().getDataAnnotations(row),

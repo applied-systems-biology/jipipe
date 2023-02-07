@@ -48,6 +48,21 @@ public class JIPipeCachedDataPreview extends JPanel {
             renderPreview();
     }
 
+    /**
+     * Creates a new instance
+     *
+     * @param parentComponent The parent component that contains the preview
+     * @param data            the data
+     * @param deferRendering  if true, the preview will not be immediately rendered
+     */
+    public JIPipeCachedDataPreview(Component parentComponent, Store<JIPipeDataItemStore> data, boolean deferRendering) {
+        this.parentComponent = parentComponent;
+        this.data = data;
+        initialize();
+        if (!deferRendering)
+            renderPreview();
+    }
+
     public boolean isRenderedOrRendering() {
         return worker != null;
     }

@@ -259,7 +259,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
             } else {
                 if (keepOriginalAnnotations) {
                     for (int row : rows) {
-                        JIPipeDataItemStore virtualData = inputSlot.getVirtualData(row);
+                        JIPipeDataItemStore virtualData = inputSlot.getDataItemStore(row);
                         List<JIPipeTextAnnotation> annotations = inputSlot.getTextAnnotations(row);
                         outputSlot.addData(virtualData,
                                 annotations,
@@ -269,7 +269,7 @@ public abstract class JIPipeMissingDataGeneratorAlgorithm extends JIPipeParamete
                     }
                 } else {
                     for (int row : rows) {
-                        JIPipeDataItemStore virtualData = inputSlot.getVirtualData(row);
+                        JIPipeDataItemStore virtualData = inputSlot.getDataItemStore(row);
                         dataBatch.addOutputData(outputSlot, virtualData);
                     }
                 }

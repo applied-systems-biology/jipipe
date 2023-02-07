@@ -69,8 +69,8 @@ public class SetSingleAnnotation extends JIPipeSimpleIteratingAlgorithm {
         for (JIPipeTextAnnotation annotation : dataBatch.getMergedTextAnnotations().values()) {
             variableSet.set(annotation.getName(), annotation.getValue());
         }
-        variableSet.set("data_string", getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
-        variableSet.set("data_type", JIPipe.getDataTypes().getIdOf(getFirstInputSlot().getVirtualData(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getDataClass()));
+        variableSet.set("data_string", getFirstInputSlot().getDataItemStore(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getStringRepresentation());
+        variableSet.set("data_type", JIPipe.getDataTypes().getIdOf(getFirstInputSlot().getDataItemStore(dataBatch.getInputSlotRows().get(getFirstInputSlot())).getDataClass()));
         variableSet.set("row", dataBatch.getInputSlotRows().get(getFirstInputSlot()));
         variableSet.set("num_rows", getFirstInputSlot().getRowCount());
         String name = StringUtils.nullToEmpty(annotationName.generate(variableSet));

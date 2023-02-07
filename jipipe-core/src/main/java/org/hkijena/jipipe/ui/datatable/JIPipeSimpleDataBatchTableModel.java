@@ -19,6 +19,8 @@ import org.hkijena.jipipe.api.data.JIPipeDataSlot;
 import org.hkijena.jipipe.api.data.JIPipeDataItemStore;
 import org.hkijena.jipipe.api.nodes.JIPipeMergingDataBatch;
 import org.hkijena.jipipe.ui.cache.JIPipeCachedDataPreview;
+import org.hkijena.jipipe.utils.ReflectionUtils;
+import org.hkijena.jipipe.utils.data.Store;
 
 import javax.swing.*;
 import javax.swing.event.TableModelListener;
@@ -36,11 +38,11 @@ public class JIPipeSimpleDataBatchTableModel implements TableModel {
     private final List<String> inputSlotNames = new ArrayList<>();
     private final List<String> annotationColumns = new ArrayList<>();
     private final Map<String, List<Component>> previews = new HashMap<>();
-    private final List<Map<String, JIPipeDataItemStore>> previewedData = new ArrayList<>();
+    private final List<Map<String, Store<JIPipeDataItemStore>>> previewedData = new ArrayList<>();
     private final JTable table;
     private JScrollPane scrollPane;
 
-    public JIPipeSimpleDataBatchTableModel(JTable table, List<JIPipeMergingDataBatch> dataBatchList) {
+    public JIPipeSimpleDataBatchTableModel(JTable table, List<JIPipeMergingDataBatch> dataBatchList, Class<? extends Store> storeClass) {
         this.table = table;
         this.dataBatchList = dataBatchList;
 
@@ -48,12 +50,14 @@ public class JIPipeSimpleDataBatchTableModel implements TableModel {
         Set<String> inputSlotNameSet = new HashSet<>();
         Set<String> annotationColumnSet = new HashSet<>();
         for (JIPipeMergingDataBatch dataBatch : dataBatchList) {
-            Map<String, JIPipeDataItemStore> previewMap = new HashMap<>();
+            Map<String, Store<JIPipeDataItemStore>> previewMap = new HashMap<>();
             for (Map.Entry<JIPipeDataSlot, Set<Integer>> entry : dataBatch.getInputSlotRows().entrySet()) {
                 inputSlotNameSet.add(entry.getKey().getName());
                 // We just preview any data available
                 if (entry.getValue().size() > 0) {
-                    previewMap.put(entry.getKey().getName(), entry.getKey().getVirtualData(entry.getValue().iterator().next()));
+                    previewMap.put(entry.getKey().getName(),
+                            (Store<JIPipeDataItemStore>) ReflectionUtils.newInstance(storeClass,
+                                    entry.getKey().getDataItemStore(entry.getValue().iterator().next())));
                 }
             }
             annotationColumnSet.addAll(dataBatch.getMergedTextAnnotations().keySet());
@@ -118,8 +122,8 @@ public class JIPipeSimpleDataBatchTableModel implements TableModel {
             String slotName = inputSlotNames.get(columnIndex - 1);
             Component preview = previews.get(slotName).get(rowIndex);
             if (preview == null) {
-                JIPipeDataItemStore previewed = previewedData.get(rowIndex).getOrDefault(slotName, null);
-                if (previewed != null) {
+                Store<JIPipeDataItemStore> previewed = previewedData.get(rowIndex).getOrDefault(slotName, null);
+                if (previewed != null && previewed.isPresent()) {
                     preview = new JIPipeCachedDataPreview(table, previewed, true);
                 } else {
                     preview = new JLabel("N/A");

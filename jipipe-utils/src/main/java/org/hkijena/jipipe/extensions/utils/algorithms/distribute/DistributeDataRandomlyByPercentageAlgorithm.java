@@ -71,7 +71,7 @@ public class DistributeDataRandomlyByPercentageAlgorithm extends JIPipeMergingAl
             String target = weightMap.keySet().iterator().next();
             double available = weightMap.get(target);
             if (available > 0) {
-                getOutputSlot(target).addData(getFirstInputSlot().getVirtualData(row),
+                getOutputSlot(target).addData(getFirstInputSlot().getDataItemStore(row),
                         getFirstInputSlot().getTextAnnotations(row),
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         getFirstInputSlot().getDataAnnotations(row),

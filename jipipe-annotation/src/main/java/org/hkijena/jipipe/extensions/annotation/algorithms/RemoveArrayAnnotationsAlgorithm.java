@@ -72,7 +72,7 @@ public class RemoveArrayAnnotationsAlgorithm extends JIPipeParameterSlotAlgorith
             for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
                 List<JIPipeTextAnnotation> annotations = getFirstInputSlot().getTextAnnotations(row);
                 annotations.removeIf(annotation -> annotationNameFilter.test(annotation.getName()) && annotation.isArray());
-                getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row),
+                getFirstOutputSlot().addData(getFirstInputSlot().getDataItemStore(row),
                         annotations,
                         JIPipeTextAnnotationMergeMode.Merge,
                         getFirstInputSlot().getDataAnnotations(row),

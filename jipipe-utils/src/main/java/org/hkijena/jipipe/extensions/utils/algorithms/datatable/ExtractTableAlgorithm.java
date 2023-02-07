@@ -12,7 +12,6 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeParameterSlotAlgorithm;
-import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.MiscellaneousNodeTypeCategory;
 import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 
@@ -58,7 +57,7 @@ public class ExtractTableAlgorithm extends JIPipeParameterSlotAlgorithm {
                 if (mergeAnnotations) {
                     annotations.addAll(getFirstInputSlot().getTextAnnotations(row));
                 }
-                getFirstOutputSlot().addData(dataTable.getVirtualData(row2),
+                getFirstOutputSlot().addData(dataTable.getDataItemStore(row2),
                         annotations,
                         mergeStrategy,
                         dataTable.getDataAnnotations(row2),

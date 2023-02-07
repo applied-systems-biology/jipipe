@@ -59,7 +59,7 @@ public class DistributeDataRandomlyByCountAlgorithm extends JIPipeMergingAlgorit
             int available = countMap.get(target);
             if (available > 0) {
                 // Add output with restoring annotations
-                getOutputSlot(target).addData(getFirstInputSlot().getVirtualData(row),
+                getOutputSlot(target).addData(getFirstInputSlot().getDataItemStore(row),
                         getFirstInputSlot().getTextAnnotations(row),
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         getFirstInputSlot().getDataAnnotations(row),

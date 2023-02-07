@@ -41,7 +41,7 @@ public class DataBatchSlicer extends JIPipeMergingAlgorithm {
         for (int i = 0; i < rows.size(); i++) {
             if (indices.contains(i)) {
                 int row = rows.get(i);
-                getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row),
+                getFirstOutputSlot().addData(getFirstInputSlot().getDataItemStore(row),
                         getFirstInputSlot().getTextAnnotations(row),
                         JIPipeTextAnnotationMergeMode.OverwriteExisting,
                         getFirstInputSlot().getDataAnnotations(row),

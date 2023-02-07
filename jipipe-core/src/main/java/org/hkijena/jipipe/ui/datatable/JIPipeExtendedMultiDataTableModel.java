@@ -299,7 +299,7 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
             } else if (columnIndex == 6) {
                 JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
                 if(dataTable != null) {
-                    return "" + dataTable.getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
+                    return "" + dataTable.getDataItemStore(rowList.get(rowIndex)).getStringRepresentation();
                 }
                 else {
                     return "NA";
@@ -340,7 +340,7 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
             } else if (columnIndex == 4) {
                 JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
                 if(dataTable != null) {
-                    return "" + dataTable.getVirtualData(rowList.get(rowIndex)).getStringRepresentation();
+                    return "" + dataTable.getDataItemStore(rowList.get(rowIndex)).getStringRepresentation();
                 }
                 else {
                     return "NA";
@@ -395,7 +395,7 @@ public class JIPipeExtendedMultiDataTableModel implements TableModel {
             JIPipeDataTable dataTable = slotReferencesList.get(rowIndex).get();
             if(dataTable != null) {
                 if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                    preview = new JIPipeCachedDataPreview(table, dataTable.getVirtualData(rowList.get(rowIndex)), true);
+                    preview = new JIPipeCachedDataPreview(table, dataTable.getDataItemStore(rowList.get(rowIndex)), true);
                     previewCache.set(rowIndex, preview);
                 } else {
                     preview = new JLabel("N/A");

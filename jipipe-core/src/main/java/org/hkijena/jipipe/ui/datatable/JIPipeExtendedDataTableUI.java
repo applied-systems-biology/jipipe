@@ -264,7 +264,7 @@ public class JIPipeExtendedDataTableUI extends JIPipeWorkbenchPanel {
             if (table.getRowFilter() != null) {
                 for (int viewRow = 0; viewRow < table.getRowCount(); viewRow++) {
                     int modelRow = table.convertRowIndexToModel(viewRow);
-                    copy.addData(dataTable.getVirtualData(modelRow),
+                    copy.addData(dataTable.getDataItemStore(modelRow),
                             dataTable.getTextAnnotations(modelRow),
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             dataTable.getDataAnnotations(modelRow),

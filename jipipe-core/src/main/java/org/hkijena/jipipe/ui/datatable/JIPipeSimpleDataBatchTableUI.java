@@ -24,18 +24,21 @@ import org.hkijena.jipipe.ui.components.search.SearchTextField;
 import org.hkijena.jipipe.ui.components.search.SearchTextFieldTableRowFilter;
 import org.hkijena.jipipe.utils.StringUtils;
 import org.hkijena.jipipe.utils.UIUtils;
+import org.hkijena.jipipe.utils.data.WeakStore;
 import org.jdesktop.swingx.JXTable;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import java.awt.*;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Panel that displays a data batch table
  */
 public class JIPipeSimpleDataBatchTableUI extends JPanel {
-    private final List<JIPipeMergingDataBatch> dataBatchList;
+    private List<JIPipeMergingDataBatch> dataBatchList;
     private JXTable table;
     private JScrollPane scrollPane;
     private SearchTextField searchTextField;
@@ -102,7 +105,7 @@ public class JIPipeSimpleDataBatchTableUI extends JPanel {
     }
 
     private void reloadTable() {
-        dataTableModel = new JIPipeSimpleDataBatchTableModel(table, dataBatchList);
+        dataTableModel = new JIPipeSimpleDataBatchTableModel(table, dataBatchList, WeakStore.class);
         table.setModel(dataTableModel);
         dataTableModel.setScrollPane(scrollPane);
         if (GeneralDataSettings.getInstance().isGenerateCachePreviews())
@@ -120,6 +123,17 @@ public class JIPipeSimpleDataBatchTableUI extends JPanel {
     public void resetSearch() {
         if (!StringUtils.isNullOrEmpty(searchTextField.getText())) {
             searchTextField.setText("");
+        }
+    }
+
+    public void dispose() {
+        try {
+            dataBatchList = new ArrayList<>();
+            dataTableModel = null;
+            table.setModel(new DefaultTableModel());
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
         }
     }
 }

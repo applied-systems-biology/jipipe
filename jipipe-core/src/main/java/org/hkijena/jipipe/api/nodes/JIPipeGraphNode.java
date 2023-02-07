@@ -91,13 +91,13 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
             for (JIPipeInputSlot slot : getClass().getAnnotationsByType(JIPipeInputSlot.class)) {
                 if (slot.autoCreate()) {
                     created = true;
-                    builder.addInputSlot(slot.slotName(), slot.description(), slot.value(), slot.optional());
+                    builder.addInputSlot(slot);
                 }
             }
             for (JIPipeOutputSlot slot : getClass().getAnnotationsByType(JIPipeOutputSlot.class)) {
                 if (slot.autoCreate()) {
                     created = true;
-                    builder.addOutputSlot(slot.slotName(), slot.description(), slot.value());
+                    builder.addOutputSlot(slot);
                 }
             }
 
@@ -105,13 +105,13 @@ public abstract class JIPipeGraphNode implements JIPipeValidatable, JIPipeParame
                 for (JIPipeInputSlot slot : info.getInputSlots()) {
                     if (slot.autoCreate()) {
                         created = true;
-                        builder.addInputSlot(slot.slotName(), slot.description(), slot.value(), slot.optional());
+                        builder.addInputSlot(slot);
                     }
                 }
                 for (JIPipeOutputSlot slot : info.getOutputSlots()) {
                     if (slot.autoCreate()) {
                         created = true;
-                        builder.addOutputSlot(slot.slotName(), slot.description(), slot.value());
+                        builder.addOutputSlot(slot);
                     }
                 }
             }

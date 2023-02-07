@@ -53,12 +53,12 @@ public class AnnotateWithData extends JIPipeIteratingAlgorithm {
         if (mergeLabelAnnotations)
             annotationList.addAll(inputAnnotationSlot.getTextAnnotations(annotationRow));
 
-        getFirstOutputSlot().addData(inputDataSlot.getVirtualData(dataRow),
+        getFirstOutputSlot().addData(inputDataSlot.getDataItemStore(dataRow),
                 annotationList,
                 annotationMergeStrategy);
-        getFirstOutputSlot().setVirtualDataAnnotation(getFirstOutputSlot().getRowCount() - 1,
+        getFirstOutputSlot().setDataAnnotationItemStore(getFirstOutputSlot().getRowCount() - 1,
                 annotationName,
-                inputAnnotationSlot.getVirtualData(annotationRow));
+                inputAnnotationSlot.getDataItemStore(annotationRow));
     }
 
     @JIPipeDocumentation(name = "Generated annotation", description = "The name of the generated data annotation")

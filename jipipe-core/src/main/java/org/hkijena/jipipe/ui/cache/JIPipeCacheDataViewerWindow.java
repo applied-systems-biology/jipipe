@@ -377,7 +377,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
 
     private void loadFromDataSource() {
         if (dataSource.getDataAnnotation() == null) {
-            JIPipeDataItemStore virtualData = dataSource.getDataTable().getVirtualData(dataSource.getRow());
+            JIPipeDataItemStore virtualData = dataSource.getDataTable().getDataItemStore(dataSource.getRow());
             if (lastVirtualData != null && virtualData == lastVirtualData.get())
                 return;
             if (dataConverterFunction != null)
@@ -385,7 +385,7 @@ public abstract class JIPipeCacheDataViewerWindow extends JFrame {
             loadData(virtualData, new JIPipeProgressInfo());
             lastVirtualData = new WeakStore<>(virtualData);
         } else {
-            JIPipeDataItemStore virtualData = dataSource.getDataTable().getVirtualDataAnnotation(dataSource.getRow(), dataSource.getDataAnnotation());
+            JIPipeDataItemStore virtualData = dataSource.getDataTable().getDataAnnotationItemStore(dataSource.getRow(), dataSource.getDataAnnotation());
             if (virtualData == null) {
                 showErrorUI();
                 return;

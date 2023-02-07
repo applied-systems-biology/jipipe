@@ -72,7 +72,6 @@ import javax.swing.table.TableColumnModel;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.lang.ref.WeakReference;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -283,7 +282,7 @@ public class JIPipeExtendedMultiDataTableUI extends JIPipeWorkbenchPanel {
                 if(slotStore.isPresent()) {
                     JIPipeDataTable slot = slotStore.get();
                     int row = multiSlotTable.getRow(modelRow);
-                    copy.addData(slot.getVirtualData(row),
+                    copy.addData(slot.getDataItemStore(row),
                             slot.getTextAnnotations(row),
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             slot.getDataAnnotations(row),

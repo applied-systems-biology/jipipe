@@ -77,7 +77,7 @@ public class ConvertToAnnotationTable extends JIPipeMergingAlgorithm {
         for (int sourceRow : inputDataRows) {
             output.addRow();
             if (dataColumn >= 0)
-                output.setValueAt(getFirstInputSlot().getVirtualData(sourceRow).getStringRepresentation(), row, dataColumn);
+                output.setValueAt(getFirstInputSlot().getDataItemStore(sourceRow).getStringRepresentation(), row, dataColumn);
             for (JIPipeTextAnnotation annotation : getFirstInputSlot().getTextAnnotations(sourceRow)) {
                 if (annotation != null) {
                     int col = output.addAnnotationColumn(annotation.getName());

@@ -68,6 +68,12 @@ public class FormsDialog extends JFrame {
         gotoNextBatch();
     }
 
+    @Override
+    public void dispose() {
+        super.dispose();
+        dataBatchTableUI.dispose();
+    }
+
     private JIPipeDataSlot createFormsInstanceFor(int index, JIPipeProgressInfo progressInfo) {
         JIPipeDataSlot copy = originalForms.getInfo().createInstance(originalForms.getNode());
         for (int row = 0; row < originalForms.getRowCount(); row++) {

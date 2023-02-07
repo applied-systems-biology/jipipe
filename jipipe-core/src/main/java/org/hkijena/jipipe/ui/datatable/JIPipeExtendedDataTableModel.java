@@ -26,7 +26,6 @@ import javax.swing.*;
 import javax.swing.event.TableModelListener;
 import javax.swing.table.TableModel;
 import java.awt.*;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -210,7 +209,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
                 Component preview = previewCache.get(rowIndex);
                 if (preview == null) {
                     if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                        preview = new JIPipeCachedDataPreview(table, dataTable.getVirtualData(rowIndex), true);
+                        preview = new JIPipeCachedDataPreview(table, dataTable.getDataItemStore(rowIndex), true);
                         previewCache.set(rowIndex, preview);
                     } else {
                         preview = new JLabel("N/A");
@@ -220,7 +219,7 @@ public class JIPipeExtendedDataTableModel implements TableModel {
                 return preview;
             } else if (columnIndex == 3)
                 try {
-                    return "" + dataTable.getVirtualData(rowIndex).getStringRepresentation();
+                    return "" + dataTable.getDataItemStore(rowIndex).getStringRepresentation();
                 } catch (IndexOutOfBoundsException e) {
                     return "<Invalid>";
                 }

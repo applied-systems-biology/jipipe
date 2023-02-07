@@ -193,7 +193,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             String value = metadataValue.getValue();
             parameters.put(metadataKey, value);
         }
-        parameters.set("data_string", dataTable.getVirtualData(row).getStringRepresentation());
+        parameters.set("data_string", dataTable.getDataItemStore(row).getStringRepresentation());
         parameters.set("data_type", JIPipe.getDataTypes().getIdOf(dataTable.getDataClass(row)));
         parameters.set("row", row + "");
         parameters.set("annotations", JIPipeTextAnnotation.annotationListToMap(dataTable.getTextAnnotations(row),
@@ -248,7 +248,7 @@ public class JIPipeDataByMetadataExporter implements JIPipeParameterCollection {
             String value = metadataValue.getValue();
             parameters.put(metadataKey, value);
         }
-        parameters.set("data_string", dataTable.getVirtualData(row).getStringRepresentation());
+        parameters.set("data_string", dataTable.getDataItemStore(row).getStringRepresentation());
         parameters.set("data_type", JIPipe.getDataTypes().getIdOf(dataTable.getDataClass(row)));
         parameters.set("row", row + "");
         parameters.set("annotations", JIPipeTextAnnotation.annotationListToMap(dataTable.getTextAnnotations(row),

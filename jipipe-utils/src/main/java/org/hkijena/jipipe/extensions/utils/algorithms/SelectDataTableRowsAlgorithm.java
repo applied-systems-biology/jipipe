@@ -42,7 +42,7 @@ public class SelectDataTableRowsAlgorithm extends JIPipeParameterSlotAlgorithm {
         TIntSet allowedRows = new TIntHashSet(limit.getIntegers(0, getFirstInputSlot().getRowCount(), new ExpressionVariables()));
         for (int row = 0; row < getFirstInputSlot().getRowCount(); row++) {
             if (allowedRows.contains(row)) {
-                getFirstOutputSlot().addData(getFirstInputSlot().getVirtualData(row),
+                getFirstOutputSlot().addData(getFirstInputSlot().getDataItemStore(row),
                         getFirstInputSlot().getTextAnnotations(row),
                         JIPipeTextAnnotationMergeMode.Merge,
                         getFirstInputSlot().getDataAnnotations(row),

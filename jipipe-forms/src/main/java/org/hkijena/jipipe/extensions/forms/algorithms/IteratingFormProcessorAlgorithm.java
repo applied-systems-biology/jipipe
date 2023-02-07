@@ -161,6 +161,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
                                 cancelled.set(dialog.isCancelled());
                                 uiResult[0] = dialog.getDataBatchForms();
                                 windowOpened.set(false);
+                                dialog.dispose();
                                 synchronized (lock) {
                                     lock.notify();
                                 }
@@ -226,7 +227,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
                             } else {
                                 annotations = new ArrayList<>(dataBatch.getMergedTextAnnotations().values());
                             }
-                            outputSlot.addData(inputSlot.getVirtualData(row),
+                            outputSlot.addData(inputSlot.getDataItemStore(row),
                                     annotations,
                                     JIPipeTextAnnotationMergeMode.OverwriteExisting,
                                     inputSlot.getDataAnnotations(row),
@@ -237,7 +238,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
                 for (int row = 0; row < forms.getRowCount(); row++) {
                     List<JIPipeTextAnnotation> annotations = new ArrayList<>(forms.getTextAnnotations(row));
                     annotations.addAll(dataBatch.getMergedTextAnnotations().values());
-                    formsOutputSlot.addData(forms.getVirtualData(row),
+                    formsOutputSlot.addData(forms.getDataItemStore(row),
                             annotations,
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             forms.getDataAnnotations(row),

@@ -782,6 +782,17 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
         }
 
         /**
+         * Adds an input slot from an annotation
+         *
+         * @param annotation the annotation
+         * @return The builder
+         */
+        public Builder addInputSlot(JIPipeInputSlot annotation) {
+            JIPipeDataSlotInfo slot = object.addSlot(annotation.slotName(), new JIPipeDataSlotInfo(annotation), false);
+            return this;
+        }
+
+        /**
          * Adds an input slot
          *
          * @param name           Unique slot name
@@ -860,6 +871,17 @@ public class JIPipeDefaultMutableSlotConfiguration implements JIPipeMutableSlotC
          */
         public Builder addOutputSlot(String name, String description, Class<? extends JIPipeData> klass) {
             object.addSlot(name, new JIPipeDataSlotInfo(klass, JIPipeSlotType.Output, name, description), false);
+            return this;
+        }
+
+        /**
+         * Adds an output slot from an annotation
+         *
+         * @param annotation the annotation
+         * @return The builder
+         */
+        public Builder addOutputSlot(JIPipeOutputSlot annotation) {
+            object.addSlot(annotation.slotName(), new JIPipeDataSlotInfo(annotation), false);
             return this;
         }
 

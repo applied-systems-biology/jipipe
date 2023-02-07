@@ -68,7 +68,7 @@ public enum JIPipeDataAnnotationMergeMode {
                     if (JIPipeDataTable.class.isAssignableFrom(dataAnnotation.getDataClass())) {
                         JIPipeDataTable table = dataAnnotation.getData(JIPipeDataTable.class, new JIPipeProgressInfo());
                         for (int row = 0; row < table.getRowCount(); row++) {
-                            allData.add(table.getVirtualData(row));
+                            allData.add(table.getDataItemStore(row));
                         }
                     } else {
                         allData.add(dataAnnotation.getVirtualData());

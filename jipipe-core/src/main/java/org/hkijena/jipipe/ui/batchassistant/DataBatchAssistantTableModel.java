@@ -158,7 +158,7 @@ public class DataBatchAssistantTableModel implements TableModel {
             Component preview = previewCache.get(rowIndex);
             if (preview == null) {
                 if (GeneralDataSettings.getInstance().isGenerateCachePreviews()) {
-                    preview = new JIPipeCachedDataPreview(table, dataTable.getVirtualData(rowIndex), true);
+                    preview = new JIPipeCachedDataPreview(table, dataTable.getDataItemStore(rowIndex), true);
                     previewCache.set(rowIndex, preview);
                 } else {
                     preview = new JLabel("N/A");

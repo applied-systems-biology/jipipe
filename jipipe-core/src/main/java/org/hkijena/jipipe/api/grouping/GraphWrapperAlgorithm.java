@@ -166,7 +166,7 @@ public class GraphWrapperAlgorithm extends JIPipeAlgorithm implements JIPipeData
             for (JIPipeDataSlot inputSlot : getInputSlots()) {
                 JIPipeDataSlot groupInputSlot = getGroupInput().getInputSlot(inputSlot.getName());
                 for (Integer row : dataBatch.getInputRows(inputSlot)) {
-                    groupInputSlot.addData(inputSlot.getVirtualData(row),
+                    groupInputSlot.addData(inputSlot.getDataItemStore(row),
                             inputSlot.getTextAnnotations(row),
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             inputSlot.getDataAnnotations(row),

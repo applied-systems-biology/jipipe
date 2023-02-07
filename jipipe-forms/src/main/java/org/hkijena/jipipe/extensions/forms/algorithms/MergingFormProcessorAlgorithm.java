@@ -104,6 +104,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
                                 cancelled.set(dialog.isCancelled());
                                 uiResult[0] = dialog.getDataBatchForms();
                                 windowOpened.set(false);
+                                dialog.dispose();
                                 synchronized (lock) {
                                     lock.notify();
                                 }
@@ -166,7 +167,7 @@ public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JI
                 for (int row = 0; row < forms.getRowCount(); row++) {
                     List<JIPipeTextAnnotation> annotations = new ArrayList<>(forms.getTextAnnotations(row));
                     annotations.addAll(dataBatch.getMergedTextAnnotations().values());
-                    formsOutputSlot.addData(forms.getVirtualData(row),
+                    formsOutputSlot.addData(forms.getDataItemStore(row),
                             annotations,
                             JIPipeTextAnnotationMergeMode.OverwriteExisting,
                             forms.getDataAnnotations(row),
