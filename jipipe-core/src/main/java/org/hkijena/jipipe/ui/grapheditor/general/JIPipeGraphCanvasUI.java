@@ -1401,6 +1401,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
 
+        // Below node paint
+        if(currentTool != null) {
+            currentTool.paintAfterNodes(g);
+        }
+
         if (renderOutsideEdges && getCompartment() != null && settings.isDrawOutsideEdges())
             paintOutsideEdges(g, false, Color.DARK_GRAY, STROKE_DEFAULT, STROKE_DEFAULT_BORDER);
 
@@ -1630,6 +1635,11 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             int w = Math.abs(x0 - x1);
             int h = Math.abs(y0 - y1);
             graphics2D.drawRect(x, y, w, h);
+        }
+
+        // Above node paint
+        if(currentTool != null) {
+            currentTool.paintAfterNodesAndEdges(graphics2D);
         }
 
         // Smart edges drawing

@@ -4,8 +4,12 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
 
     void deactivate();
 
-    boolean allowsDragNodes();
+    default boolean allowsDragNodes() {
+        return true;
+    }
 
-    boolean allowsDragConnections();
-
+    default boolean allowsDragConnections() {
+        return true;
+    }
+    
 }

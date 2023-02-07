@@ -33,4 +33,12 @@ public interface JIPipeGraphEditorTool extends MouseMotionListener, MouseListene
     default Cursor getCursor() {
         return Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
     }
+
+    default void paintAfterNodes(Graphics2D graphics2D) {
+
+    }
+
+    default void paintAfterNodesAndEdges(Graphics2D graphics2D) {
+
+    }
 }
