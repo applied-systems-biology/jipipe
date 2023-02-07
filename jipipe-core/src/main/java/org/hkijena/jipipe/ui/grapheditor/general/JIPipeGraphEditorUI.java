@@ -28,6 +28,7 @@ import org.hkijena.jipipe.extensions.settings.GraphEditorUISettings;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbenchPanel;
+import org.hkijena.jipipe.ui.components.VerticalToolBar;
 import org.hkijena.jipipe.ui.components.ZoomViewPort;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.search.SearchBox;
@@ -336,7 +337,7 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     }
 
     private void initializeEditingToolbar() {
-        JToolBar toolBar = UIUtils.createVerticalToolbar();
+        VerticalToolBar toolBar = new VerticalToolBar();
 
         for (Class<? extends JIPipeGraphEditorTool> klass : JIPipe.getInstance().getGraphEditorToolRegistry().getRegisteredTools()) {
             JIPipeGraphEditorTool tool = (JIPipeGraphEditorTool) ReflectionUtils.newInstance(klass);
@@ -382,8 +383,11 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
 
     public void selectTool(JIPipeGraphEditorTool tool) {
         if(tool instanceof JIPipeToggleableGraphEditorTool) {
-            if(tool == currentTool)
+            if(tool == currentTool) {
+                JToggleButton toggleButton = toolToggles.get(currentTool);
+                toggleButton.setSelected(true);
                 return;
+            }
             if(currentTool != null) {
                 // Deselect current tool
                 JToggleButton toggleButton = toolToggles.get(currentTool);

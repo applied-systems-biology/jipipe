@@ -34,6 +34,7 @@ import org.hkijena.jipipe.extensions.settings.GeneralUISettings;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
 import org.hkijena.jipipe.ui.components.JIPipeValidityReportUI;
 import org.hkijena.jipipe.ui.components.UserFriendlyErrorUI;
+import org.hkijena.jipipe.ui.components.VerticalToolBar;
 import org.hkijena.jipipe.ui.components.html.HTMLEditor;
 import org.hkijena.jipipe.ui.components.icons.SolidColorIcon;
 import org.hkijena.jipipe.ui.components.markdown.MarkdownDocument;
@@ -1833,23 +1834,6 @@ public class UIUtils {
         item.addActionListener(e -> action.run());
         return item;
     }
-
-    public static JToolBar createVerticalToolbar() {
-        JToolBar toolBar = new JToolBar(null, SwingConstants.VERTICAL);
-        toolBar.setFloatable(false);
-
-        switch (GeneralUISettings.getInstance().getTheme()) {
-            case ModernLight:
-                toolBar.setBorder(BorderFactory.createMatteBorder(0,0,0,1, ModernMetalTheme.GRAY));
-                break;
-            case ModernDark:
-                toolBar.setBorder(BorderFactory.createMatteBorder(0,0,0,1, DarkModernMetalTheme.GRAY));
-                break;
-        }
-
-        return toolBar;
-    }
-
 
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;
