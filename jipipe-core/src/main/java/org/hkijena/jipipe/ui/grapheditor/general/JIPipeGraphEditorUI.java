@@ -92,8 +92,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     private final List<JIPipeGraphEditorTool> tools = new ArrayList<>();
     private final BiMap<JIPipeToggleableGraphEditorTool, JToggleButton> toolToggles = HashBiMap.create();
 
-
-
     /**
      * @param workbenchUI    the workbench
      * @param algorithmGraph the algorithm graph
@@ -290,6 +288,12 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
     public boolean isFlagSet(int flag) {
         return (flags & flag) == flag;
     }
+
+    private void drawStringVerticallyCentered(Graphics2D g2, String text, int x, int y, FontMetrics fontMetrics) {
+        int metricHeight = fontMetrics.getAscent() - fontMetrics.getLeading();
+        g2.drawString(text, x, y + metricHeight / 2);
+    }
+
 
     private void initialize() {
         setLayout(new BorderLayout());

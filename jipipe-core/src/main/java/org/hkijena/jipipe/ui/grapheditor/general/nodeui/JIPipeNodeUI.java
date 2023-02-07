@@ -135,6 +135,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         super(workbench);
         this.graphCanvasUI = graphCanvasUI;
         this.node = node;
+        this.zoom = graphCanvasUI.getZoom();
         this.node.getEventBus().register(this);
         this.graphCanvasUI.getGraph().getEventBus().register(this);
         if(workbench instanceof JIPipeProjectWorkbench) {

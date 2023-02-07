@@ -107,9 +107,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     private final Map<JIPipeNodeUI, Point> currentlyDraggedOffsets = new HashMap<>();
     private final NodeHotKeyStorage nodeHotKeyStorage;
     private final Color improvedStrokeBackgroundColor = UIManager.getColor("Panel.background");
-
     private final Color smartEdgeSlotBackground = UIManager.getColor("EditorPane.background");
-
     private final Color smartEdgeSlotForeground = UIManager.getColor("Label.foreground");
     private final JIPipeGraphViewMode viewMode = JIPipeGraphViewMode.VerticalCompact;
     private JIPipeGraphDragAndDropBehavior dragAndDropBehavior;
@@ -333,7 +331,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
      * @param force if the positioning is forced
      */
     private void addNewNodes(boolean force) {
-        int newlyPlacedAlgorithms = 0;
+        List<JIPipeNodeUI> newlyPlacedAlgorithms = new ArrayList<>();
         JIPipeNodeUI ui = null;
         for (JIPipeGraphNode algorithm : graph.getGraphNodes()) {
             if (!algorithm.isVisibleIn(getCompartment()))
@@ -347,19 +345,19 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
             nodeUIs.put(algorithm, ui);
             if (!ui.moveToStoredGridLocation(force)) {
                 autoPlaceCloseToCursor(ui, force);
-                ++newlyPlacedAlgorithms;
+                newlyPlacedAlgorithms.add(ui);
             }
         }
         revalidate();
         repaint();
 
-        if (newlyPlacedAlgorithms == nodeUIs.size()) {
+        if (newlyPlacedAlgorithms.size() == nodeUIs.size()) {
             autoLayoutAll();
         }
         if (ui != null) {
             getEventBus().post(new JIPipeNodeUI.AlgorithmEvent(ui));
         }
-        if (newlyPlacedAlgorithms > 0) {
+        if (newlyPlacedAlgorithms.size() > 0) {
             getEventBus().post(new GraphCanvasUpdatedEvent(this));
         }
         if (scheduledSelection != null && !scheduledSelection.isEmpty()) {
@@ -1817,6 +1815,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
     public void setCurrentTool(JIPipeToggleableGraphEditorTool currentTool) {
         this.currentTool = currentTool;
         resetCursor();
+        repaint(50);
     }
 
     public boolean currentToolAllowsNodeDragging() {
