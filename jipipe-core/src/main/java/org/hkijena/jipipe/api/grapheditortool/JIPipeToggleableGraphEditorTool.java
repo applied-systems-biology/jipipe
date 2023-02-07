@@ -11,5 +11,5 @@ public interface JIPipeToggleableGraphEditorTool extends JIPipeGraphEditorTool {
     default boolean allowsDragConnections() {
         return true;
     }
-    
+
 }
