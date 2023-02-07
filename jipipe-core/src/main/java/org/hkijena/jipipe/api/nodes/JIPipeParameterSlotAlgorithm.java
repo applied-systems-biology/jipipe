@@ -226,6 +226,7 @@ public abstract class JIPipeParameterSlotAlgorithm extends JIPipeAlgorithm {
                     JIPipeDataSlotInfo slot = slotConfiguration.addSlot(SLOT_PARAMETERS,
                             new JIPipeDataSlotInfo(ParametersData.class, JIPipeSlotType.Input),
                             false);
+                    slot.setRole(JIPipeDataSlotRole.Parameters);
                     slot.setUserModifiable(false);
                 }
             } else {

@@ -22,10 +22,7 @@ import org.hkijena.jipipe.api.cache.JIPipeCache;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeCompartmentOutput;
 import org.hkijena.jipipe.api.compartments.algorithms.JIPipeProjectCompartment;
 import org.hkijena.jipipe.api.data.*;
-import org.hkijena.jipipe.api.nodes.JIPipeAlgorithm;
-import org.hkijena.jipipe.api.nodes.JIPipeGraph;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphEdge;
-import org.hkijena.jipipe.api.nodes.JIPipeGraphNode;
+import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.parameters.JIPipeParameterCollection;
 import org.hkijena.jipipe.ui.JIPipeProjectWorkbench;
 import org.hkijena.jipipe.ui.JIPipeWorkbench;
@@ -97,6 +94,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
     private final boolean slotsOutputsEditable;
     private final Map<String, JIPipeNodeUISlotActiveArea> inputSlotMap = new HashMap<>();
     private final Map<String, JIPipeNodeUISlotActiveArea> outputSlotMap = new HashMap<>();
+    private final Color slotParametersFillColor;
     private JIPipeNodeUIAddSlotButtonActiveArea addInputSlotArea;
     private JIPipeNodeUIAddSlotButtonActiveArea addOutputSlotArea;
 
@@ -161,6 +159,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         this.nodeBorderColor = UIUtils.getBorderColorFor(node.getInfo());
         this.highlightedNodeBorderColor = UIUtils.DARK_THEME ? new Color(0xBBBBBF) : new Color(0x444444);
         this.slotFillColor = UIManager.getColor("Panel.background");
+        this.slotParametersFillColor = ColorUtils.mix(slotFillColor, nodeFillColor, 0.5);
         this.mainTextColor = UIManager.getColor("Label.foreground");
         this.secondaryTextColor = nodeBorderColor;
         this.nodeDisabledPaint = new LinearGradientPaint(
@@ -793,6 +792,12 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
             int slotWidth = (int) Math.round(slotState.getNativeWidth() * zoom);
 
+            // Draw parameter slots differently
+            if(slotState.getSlot().getInfo().getRole() == JIPipeDataSlotRole.Parameters) {
+                g2.setPaint(slotParametersFillColor);
+                g2.fillRect(startX, 0, slotWidth, realSlotHeight);
+            }
+
             // Draw highlight
             if (slotState == currentActiveArea && graphCanvasUI.currentToolAllowsConnectionDragging()) {
                 g2.setPaint(buttonFillColor);
@@ -993,6 +998,9 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             } else {
                 slotState.setSlotLabel(inputSlot.getInfo().getCustomName());
                 slotState.setSlotLabelIsCustom(true);
+            }
+            if(slotState.getSlot().getInfo().getRole() == JIPipeDataSlotRole.Parameters) {
+                slotState.setSlotLabel("Parameters");
             }
             if (graph != null) {
                 if (!inputSlot.getInfo().isOptional() && graph.getGraph().inDegreeOf(inputSlot) <= 0) {

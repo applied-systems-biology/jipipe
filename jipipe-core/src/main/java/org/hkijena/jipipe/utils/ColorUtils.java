@@ -288,6 +288,10 @@ public class ColorUtils {
         return Color.getHSBColor(Math.max(0, Math.min(1, hsb[0] * factorH)), Math.max(0, Math.min(1, hsb[1] * factorS)), Math.max(0, Math.min(1, hsb[2] * factorB)));
     }
 
+    public static Color mix(Color first, Color second, double percentage) {
+        return new Color((first.getRed() + second.getRed()) / 2, (first.getGreen() + second.getGreen()) / 2, (first.getBlue() + second.getBlue()) / 2);
+    }
+
     public static class GradientStop implements Comparable<GradientStop> {
         private Color color;
         private float position;
