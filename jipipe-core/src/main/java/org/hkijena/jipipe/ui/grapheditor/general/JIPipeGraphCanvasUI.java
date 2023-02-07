@@ -596,6 +596,15 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseDragged(MouseEvent mouseEvent) {
+
+        // Let the tool handle the event
+        if(currentTool != null) {
+            currentTool.mouseDragged(mouseEvent);
+            if(mouseEvent.isConsumed()) {
+                return;
+            }
+        }
+
         if (currentConnectionDragSource != null) {
             // Mark this as actual dragging
             this.currentConnectionDragSourceDragged = true;
@@ -843,6 +852,14 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseMoved(MouseEvent mouseEvent) {
+        // Let the tool handle the event
+        if(currentTool != null) {
+            currentTool.mouseMoved(mouseEvent);
+            if(mouseEvent.isConsumed()) {
+                return;
+            }
+        }
+
         boolean changed = false;
         JIPipeNodeUI nodeUI = pickComponent(mouseEvent);
         if(nodeUI != null) {
@@ -870,6 +887,15 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseClicked(MouseEvent mouseEvent) {
+
+        // Let the tool handle the event
+        if(currentTool != null) {
+            currentTool.mouseClicked(mouseEvent);
+            if(mouseEvent.isConsumed()) {
+                return;
+            }
+        }
+
         JIPipeNodeUI ui = pickComponent(mouseEvent);
 
         if(ui != null) {
@@ -941,6 +967,15 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mousePressed(MouseEvent mouseEvent) {
+
+        // Let the tool handle the event
+        if(currentTool != null) {
+            currentTool.mousePressed(mouseEvent);
+            if(mouseEvent.isConsumed()) {
+                return;
+            }
+        }
+
         if (SwingUtilities.isLeftMouseButton(mouseEvent)) {
             if (currentlyDraggedOffsets.isEmpty()) {
                 JIPipeNodeUI ui = pickComponent(mouseEvent);
@@ -1021,6 +1056,14 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
+
+        // Let the tool handle the event
+        if(currentTool != null) {
+            currentTool.mouseReleased(mouseEvent);
+            if(mouseEvent.isConsumed()) {
+                return;
+            }
+        }
 
         if (mouseEvent.getButton() != MouseEvent.BUTTON1) {
             stopAllDragging();
@@ -1143,12 +1186,16 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
         this.currentConnectionDragSourceDragged = false;
         setCurrentConnectionDragSource(null);
         setCurrentConnectionDragTarget(null);
-        setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+        resetCursor();
         repaint(50);
 
         // Node dragging
         currentlyDraggedOffsets.clear();
         hasDragSnapshot = false;
+    }
+
+    private void resetCursor() {
+        setCursor(currentTool != null ? currentTool.getCursor() : Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
     }
 
     public boolean isCurrentlyDraggingNode() {
@@ -1161,12 +1208,24 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     @Override
     public void mouseEntered(MouseEvent mouseEvent) {
-
+        // Let the tool handle the event
+        if(currentTool != null) {
+            currentTool.mouseEntered(mouseEvent);
+            if(mouseEvent.isConsumed()) {
+                return;
+            }
+        }
     }
 
     @Override
     public void mouseExited(MouseEvent mouseEvent) {
-
+        // Let the tool handle the event
+        if(currentTool != null) {
+            currentTool.mouseExited(mouseEvent);
+            if(mouseEvent.isConsumed()) {
+                return;
+            }
+        }
     }
 
     @Override
@@ -1757,6 +1816,7 @@ public class JIPipeGraphCanvasUI extends JLayeredPane implements JIPipeWorkbench
 
     public void setCurrentTool(JIPipeToggleableGraphEditorTool currentTool) {
         this.currentTool = currentTool;
+        resetCursor();
     }
 
     public boolean currentToolAllowsNodeDragging() {

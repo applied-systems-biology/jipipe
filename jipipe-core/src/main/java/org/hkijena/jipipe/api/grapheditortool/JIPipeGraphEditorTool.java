@@ -3,8 +3,11 @@ package org.hkijena.jipipe.api.grapheditortool;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 
 import javax.swing.*;
+import java.awt.*;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
-public interface JIPipeGraphEditorTool {
+public interface JIPipeGraphEditorTool extends MouseMotionListener, MouseListener {
 
     String getName();
 
@@ -26,4 +29,8 @@ public interface JIPipeGraphEditorTool {
     void activate();
 
     int getCategory();
+
+    default Cursor getCursor() {
+        return Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR);
+    }
 }

@@ -4,6 +4,7 @@ import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
 import org.hkijena.jipipe.utils.UIUtils;
 
 import javax.swing.*;
+import java.awt.event.MouseEvent;
 
 public class JIPipeDefaultGraphEditorTool implements JIPipeToggleableGraphEditorTool {
 
@@ -61,5 +62,40 @@ public class JIPipeDefaultGraphEditorTool implements JIPipeToggleableGraphEditor
     @Override
     public boolean allowsDragConnections() {
         return true;
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mousePressed(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseDragged(MouseEvent e) {
+
+    }
+
+    @Override
+    public void mouseMoved(MouseEvent e) {
+
     }
 }
