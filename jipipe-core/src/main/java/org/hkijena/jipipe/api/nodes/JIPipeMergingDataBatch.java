@@ -32,8 +32,8 @@ import java.util.*;
  * This is a less restricted variant of {@link JIPipeDataBatch} used by {@link JIPipeMergingAlgorithm}
  */
 public class JIPipeMergingDataBatch implements Comparable<JIPipeMergingDataBatch> {
-    private JIPipeGraphNode node;
-    private Map<JIPipeDataSlot, Set<Integer>> inputSlotRows;
+    private final JIPipeGraphNode node;
+    private final Map<JIPipeDataSlot, Set<Integer>> inputSlotRows;
     private Map<String, JIPipeTextAnnotation> mergedTextAnnotations = new HashMap<>();
     private Map<String, JIPipeDataAnnotation> mergedDataAnnotations = new HashMap<>();
 

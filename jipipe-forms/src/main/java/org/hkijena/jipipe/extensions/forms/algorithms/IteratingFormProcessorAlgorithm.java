@@ -39,9 +39,9 @@ import java.util.stream.Collectors;
         "After the user input, the form data objects are stored in an output slot (one set of copies per data batch).")
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Forms")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data")
-@JIPipeInputSlot(value = FormData.class, slotName = "Forms")
+@JIPipeInputSlot(value = FormData.class, slotName = "Forms", role = JIPipeDataSlotRole.Parameters)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data")
-@JIPipeOutputSlot(value = FormData.class, slotName = "Forms")
+@JIPipeOutputSlot(value = FormData.class, slotName = "Forms", role = JIPipeDataSlotRole.Parameters)
 public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements JIPipeDataBatchAlgorithm {
 
     public static final String SLOT_FORMS = "Forms";
@@ -104,6 +104,7 @@ public class IteratingFormProcessorAlgorithm extends JIPipeAlgorithm implements 
         }
         if (existing == null) {
             JIPipeDataSlotInfo info = new JIPipeDataSlotInfo(FormData.class, JIPipeSlotType.Input);
+            info.setRole(JIPipeDataSlotRole.Parameters);
             info.setUserModifiable(false);
             slotConfiguration.addSlot(SLOT_FORMS,
                     info,

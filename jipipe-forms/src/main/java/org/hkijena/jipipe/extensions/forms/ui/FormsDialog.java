@@ -37,14 +37,14 @@ public class FormsDialog extends JFrame {
     private final JIPipeDataSlot originalForms;
     private boolean cancelled = false;
     private JIPipeSimpleDataBatchTableUI dataBatchTableUI;
-    private DocumentTabPane tabPane = new DocumentTabPane(true);
+    private final DocumentTabPane tabPane = new DocumentTabPane(true);
     private String lastTab = "";
-    private List<DataBatchStatus> dataBatchStatuses = new ArrayList<>();
-    private JLabel unvisitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorUnvisited()));
-    private JLabel visitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorVisited()));
-    private JLabel invalidLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorInvalid()));
-    private JToggleButton visitedButton = new JToggleButton("Reviewed", UIUtils.getIconFromResources("actions/eye.png"));
-    private MarkdownDocument documentation;
+    private final List<DataBatchStatus> dataBatchStatuses = new ArrayList<>();
+    private final JLabel unvisitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorUnvisited()));
+    private final JLabel visitedLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorVisited()));
+    private final JLabel invalidLabel = new JLabel(new SolidColorIcon(16, 16, DataBatchStatusTableCellRenderer.getColorInvalid()));
+    private final JToggleButton visitedButton = new JToggleButton("Reviewed", UIUtils.getIconFromResources("actions/eye.png"));
+    private final MarkdownDocument documentation;
 
     public FormsDialog(JIPipeWorkbench workbench, List<JIPipeMergingDataBatch> dataBatchList, JIPipeDataSlot originalForms, String tabAnnotation) {
         this.originalForms = originalForms;

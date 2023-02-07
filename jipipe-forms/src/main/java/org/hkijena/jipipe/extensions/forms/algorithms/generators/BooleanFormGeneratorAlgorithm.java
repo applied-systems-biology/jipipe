@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.forms.algorithms;
+package org.hkijena.jipipe.extensions.forms.algorithms.generators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -6,20 +6,21 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.extensions.forms.algorithms.SimpleFormGeneratorAlgorithm;
+import org.hkijena.jipipe.extensions.forms.datatypes.BooleanFormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
-import org.hkijena.jipipe.extensions.forms.datatypes.IntegerFormData;
 
-@JIPipeDocumentation(name = "Integer input form", description = "Creates a integer input form. ")
+@JIPipeDocumentation(name = "Boolean input form", description = "Creates a boolean input form (a checkbox). ")
 @JIPipeInputSlot(value = FormData.class, slotName = "Existing")
 @JIPipeOutputSlot(value = FormData.class, slotName = "Combined")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-public class IntegerFormGeneratorAlgorithm extends SimpleFormGeneratorAlgorithm {
+public class BooleanFormGeneratorAlgorithm extends SimpleFormGeneratorAlgorithm {
 
-    public IntegerFormGeneratorAlgorithm(JIPipeNodeInfo info) {
-        super(info, new IntegerFormData());
+    public BooleanFormGeneratorAlgorithm(JIPipeNodeInfo info) {
+        super(info, new BooleanFormData());
     }
 
-    public IntegerFormGeneratorAlgorithm(IntegerFormGeneratorAlgorithm other) {
+    public BooleanFormGeneratorAlgorithm(BooleanFormGeneratorAlgorithm other) {
         super(other);
     }
 

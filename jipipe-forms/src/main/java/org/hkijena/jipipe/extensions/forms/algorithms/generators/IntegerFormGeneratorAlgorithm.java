@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.forms.algorithms;
+package org.hkijena.jipipe.extensions.forms.algorithms.generators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -6,20 +6,21 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
-import org.hkijena.jipipe.extensions.forms.datatypes.EnumFormData;
+import org.hkijena.jipipe.extensions.forms.algorithms.SimpleFormGeneratorAlgorithm;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
+import org.hkijena.jipipe.extensions.forms.datatypes.IntegerFormData;
 
-@JIPipeDocumentation(name = "Selection input form", description = "Creates a selection input form (combo box). ")
+@JIPipeDocumentation(name = "Integer input form", description = "Creates a integer input form. ")
 @JIPipeInputSlot(value = FormData.class, slotName = "Existing")
 @JIPipeOutputSlot(value = FormData.class, slotName = "Combined")
 @JIPipeNode(nodeTypeCategory = DataSourceNodeTypeCategory.class)
-public class EnumFormGeneratorAlgorithm extends SimpleFormGeneratorAlgorithm {
+public class IntegerFormGeneratorAlgorithm extends SimpleFormGeneratorAlgorithm {
 
-    public EnumFormGeneratorAlgorithm(JIPipeNodeInfo info) {
-        super(info, new EnumFormData());
+    public IntegerFormGeneratorAlgorithm(JIPipeNodeInfo info) {
+        super(info, new IntegerFormData());
     }
 
-    public EnumFormGeneratorAlgorithm(EnumFormGeneratorAlgorithm other) {
+    public IntegerFormGeneratorAlgorithm(IntegerFormGeneratorAlgorithm other) {
         super(other);
     }
 

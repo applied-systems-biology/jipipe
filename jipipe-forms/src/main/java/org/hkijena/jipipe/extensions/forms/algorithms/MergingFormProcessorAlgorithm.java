@@ -10,6 +10,7 @@ import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotation;
 import org.hkijena.jipipe.api.annotation.JIPipeTextAnnotationMergeMode;
 import org.hkijena.jipipe.api.data.JIPipeData;
 import org.hkijena.jipipe.api.data.JIPipeDataSlot;
+import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.data.JIPipeInputDataSlot;
 import org.hkijena.jipipe.api.exceptions.UserFriendlyRuntimeException;
 import org.hkijena.jipipe.api.nodes.*;
@@ -43,9 +44,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
         "After the user input, the form data objects are stored in an output slot (one set of copies per data batch).")
 @JIPipeNode(nodeTypeCategory = MiscellaneousNodeTypeCategory.class, menuPath = "Forms")
 @JIPipeInputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeInputSlot(value = FormData.class, slotName = "Forms", autoCreate = true)
+@JIPipeInputSlot(value = FormData.class, slotName = "Forms", autoCreate = true, role = JIPipeDataSlotRole.Parameters)
 @JIPipeOutputSlot(value = JIPipeData.class, slotName = "Data", autoCreate = true)
-@JIPipeOutputSlot(value = FormData.class, slotName = "Forms", autoCreate = true)
+@JIPipeOutputSlot(value = FormData.class, slotName = "Forms", autoCreate = true, role = JIPipeDataSlotRole.Parameters)
 public class MergingFormProcessorAlgorithm extends JIPipeAlgorithm implements JIPipeDataBatchAlgorithm {
 
     private String tabAnnotation = "Tab";

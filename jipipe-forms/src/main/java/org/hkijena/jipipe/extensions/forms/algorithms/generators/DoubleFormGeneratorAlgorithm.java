@@ -1,4 +1,4 @@
-package org.hkijena.jipipe.extensions.forms.algorithms;
+package org.hkijena.jipipe.extensions.forms.algorithms.generators;
 
 import org.hkijena.jipipe.api.JIPipeDocumentation;
 import org.hkijena.jipipe.api.JIPipeNode;
@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.nodes.JIPipeInputSlot;
 import org.hkijena.jipipe.api.nodes.JIPipeNodeInfo;
 import org.hkijena.jipipe.api.nodes.JIPipeOutputSlot;
 import org.hkijena.jipipe.api.nodes.categories.DataSourceNodeTypeCategory;
+import org.hkijena.jipipe.extensions.forms.algorithms.SimpleFormGeneratorAlgorithm;
 import org.hkijena.jipipe.extensions.forms.datatypes.DoubleFormData;
 import org.hkijena.jipipe.extensions.forms.datatypes.FormData;
 

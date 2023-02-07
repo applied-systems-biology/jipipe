@@ -999,7 +999,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
                 slotState.setSlotLabel(inputSlot.getInfo().getCustomName());
                 slotState.setSlotLabelIsCustom(true);
             }
-            if(slotState.getSlot().getInfo().getRole() == JIPipeDataSlotRole.Parameters) {
+            if(slotState.getSlot().getInfo().getRole() == JIPipeDataSlotRole.Parameters && slotState.getSlotName().equals(JIPipeParameterSlotAlgorithm.SLOT_PARAMETERS)) {
                 slotState.setSlotLabel("Parameters");
             }
             if (graph != null) {
@@ -1755,6 +1755,12 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
         JIPipeDataInfo dataInfo = JIPipeDataInfo.getInstance(slot.getAcceptedDataType());
         ViewOnlyMenuItem infoItem = new ViewOnlyMenuItem("<html>" + dataInfo.getName() + "<br><small>" + StringUtils.orElse(dataInfo.getDescription(), "No description provided") + "</small></html>", JIPipe.getDataTypes().getIconFor(slot.getAcceptedDataType()));
         menu.add(infoItem);
+
+        // Role information item
+        if(slot.getInfo().getRole() == JIPipeDataSlotRole.Parameters) {
+            ViewOnlyMenuItem roleInfoItem = new ViewOnlyMenuItem("<html>Parameter-like data<br><small>This slot contains parametric data that is not considered for data batch generation.</small></html>", UIUtils.getIconFromResources("actions/wrench.png"));
+            menu.add(roleInfoItem);
+        }
 
         // Missing input item
         if(slotState.getSlotStatus() == SlotStatus.Unconnected) {
