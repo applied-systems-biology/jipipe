@@ -1835,6 +1835,11 @@ public class UIUtils {
         return item;
     }
 
+    public static void drawStringVerticallyCentered(Graphics2D g2, String text, int x, int y, FontMetrics fontMetrics) {
+        int metricHeight = fontMetrics.getAscent() - fontMetrics.getLeading();
+        g2.drawString(text, x, y + metricHeight / 2);
+    }
+
     public static class DragThroughMouseListener implements MouseListener, MouseMotionListener {
         private final Component component;
         private final Component target;

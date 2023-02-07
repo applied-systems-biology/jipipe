@@ -289,12 +289,6 @@ public abstract class JIPipeGraphEditorUI extends JIPipeWorkbenchPanel implement
         return (flags & flag) == flag;
     }
 
-    private void drawStringVerticallyCentered(Graphics2D g2, String text, int x, int y, FontMetrics fontMetrics) {
-        int metricHeight = fontMetrics.getAscent() - fontMetrics.getLeading();
-        g2.drawString(text, x, y + metricHeight / 2);
-    }
-
-
     private void initialize() {
         setLayout(new BorderLayout());
         int splitPaneSplit = isFlagSet(FLAGS_SPLIT_PANE_VERTICAL) ? JSplitPane.VERTICAL_SPLIT : JSplitPane.HORIZONTAL_SPLIT;

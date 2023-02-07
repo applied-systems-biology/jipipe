@@ -894,7 +894,7 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
             g2.setPaint(mainTextColor);
         }
         FontMetrics fontMetrics = g2.getFontMetrics();
-        drawStringVerticallyCentered(g2, slotState.getSlotLabel(), (int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 1 * zoom), fontMetrics);
+        UIUtils.drawStringVerticallyCentered(g2, slotState.getSlotLabel(), (int) Math.round(startX + 3 * zoom), (int) Math.round(centerY - 1 * zoom), fontMetrics);
 
         if(slotState.getSlotStatus() == SlotStatus.Cached) {
             startX =  originalStartX + slotWidth - 8 * zoom - 12 * zoom;
@@ -945,13 +945,8 @@ public class JIPipeNodeUI extends JIPipeWorkbenchPanel implements MouseListener,
 
             // Draw name
             g2.setPaint(mainTextColor);
-            drawStringVerticallyCentered(g2, node.getName(), (int) Math.round(startX + 3 * zoom), centerY, fontMetrics);
+            UIUtils.drawStringVerticallyCentered(g2, node.getName(), (int) Math.round(startX + 3 * zoom), centerY, fontMetrics);
         }
-    }
-
-    private void drawStringVerticallyCentered(Graphics2D g2, String text, int x, int y, FontMetrics fontMetrics) {
-        int metricHeight = fontMetrics.getAscent() - fontMetrics.getLeading();
-        g2.drawString(text, x, y + metricHeight / 2);
     }
 
     /**
