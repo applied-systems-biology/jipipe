@@ -79,7 +79,12 @@ public class CLIJImageData implements JIPipeData {
 
     @Override
     public void close() {
-        image.close();
+        try {
+            image.close();
+        }
+        catch (Throwable e) {
+            e.printStackTrace();
+        }
         image = null;
     }
 
@@ -94,7 +99,12 @@ public class CLIJImageData implements JIPipeData {
     @Override
     public Component preview(int width, int height) {
         ImagePlusData data = pull();
-        return data.preview(width, height);
+        if(data != null) {
+            return data.preview(width, height);
+        }
+        else {
+            return null;
+        }
     }
 
     /**

@@ -15,17 +15,32 @@ import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 @JIPipeNode(nodeTypeCategory = ImagesNodeTypeCategory.class, menuPath = "CLIJ")
 public class Clij2PullAlgorithm extends JIPipeSimpleIteratingAlgorithm {
 
+    private boolean deallocate = false;
+
     public Clij2PullAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
     public Clij2PullAlgorithm(Clij2PullAlgorithm other) {
         super(other);
+        this.deallocate = other.deallocate;
     }
 
     @Override
     protected void runIteration(JIPipeDataBatch dataBatch, JIPipeProgressInfo progressInfo) {
         CLIJImageData inputData = dataBatch.getInputData(getFirstInputSlot(), CLIJImageData.class, progressInfo);
         dataBatch.addOutputData(getFirstOutputSlot(), JIPipe.getDataTypes().convert(inputData, ImagePlusData.class), progressInfo);
+        if(deallocate) {
+            inputData.getImage().close();
+        }
+    }
+
+    @JIPipeDocumentation(name = "Deallocate", description = "Removes the image from the GPU memory afterwards. Please be ensure that the image is not used anywhere else.")
+    public boolean isDeallocate() {
+        return deallocate;
+    }
+
+    public void setDeallocate(boolean deallocate) {
+        this.deallocate = deallocate;
     }
 }
