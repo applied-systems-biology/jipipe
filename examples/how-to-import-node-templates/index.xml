@@ -34,7 +34,7 @@ In the figure, we already have two templates that are stored application-wide (m
       
       <guid>https://www.jipipe.org/examples/how-to-import-node-templates/json2/</guid>
       <description>You will now have two options that determine where the loaded templates will be stored:
- Globally: the newly imported templates will be available in whole JIPipe (all projects) Inside project: the templates will be directly stored inside the project and thus only available within the project itself  Choose the option that is most convenient for you.
+Globally: the newly imported templates will be available in whole JIPipe (all projects) Inside project: the templates will be directly stored inside the project and thus only available within the project itself Choose the option that is most convenient for you.
 You can also move templates from/to global store into/from project storage via the Manage menu.</description>
     </item>
     
@@ -65,8 +65,7 @@ You can now see the newly added templates and use them by dragging them into the
       <guid>https://www.jipipe.org/examples/how-to-import-node-templates/download2/</guid>
       <description>Please select the templates that will be downloaded.
 Proceed by clicking Download selected templates.
-We currently made only a small selection of templates available that are related to our tutorials. The list will be expanded in the future.
-</description>
+We currently made only a small selection of templates available that are related to our tutorials. The list will be expanded in the future.</description>
     </item>
     
     <item>
@@ -76,7 +75,7 @@ We currently made only a small selection of templates available that are related
       
       <guid>https://www.jipipe.org/examples/how-to-import-node-templates/download3/</guid>
       <description>You will now have two options that determine where the loaded templates will be stored:
- Global storage: the newly imported templates will be available in whole JIPipe (all projects) Project storage: the templates will be directly stored inside the project and thus only available within the project itself  Choose the option that is most convenient for you.
+Global storage: the newly imported templates will be available in whole JIPipe (all projects) Project storage: the templates will be directly stored inside the project and thus only available within the project itself Choose the option that is most convenient for you.
 You can also move templates from/to global store into/from project storage via the Manage menu.</description>
     </item>
     

@@ -24,8 +24,7 @@ On the GUI, draw around a group of nodes using the mouse with the left button do
       <guid>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step2/</guid>
       <description>Right-click anywhere in the white area of the GUI (red arrow 1) and select the Group option (red arrow 2.)
 The Group option will automatically add and configure a node of the type Group. You can also add node groups via already established means to add nodes.
-Group nodes contain a dedicated pipeline that is automatically executed when the node itself is run.
-</description>
+Group nodes contain a dedicated pipeline that is automatically executed when the node itself is run.</description>
     </item>
     
     <item>
@@ -54,8 +53,7 @@ Another reason to keep the original nodes is that the nodes inside a group DO NO
       
       <guid>https://www.jipipe.org/tutorials/intermediate/create-node-groups-1/step5/</guid>
       <description>In order to use the new group node, we will connect it to the nodes preceding and proceeding the individual file reading nodes. Select the Split channels node (red arrow 1) and duplicate it (red arrow 2).
-Here we opt to create a branching path instead of replacing the existing nodes. You are completely free to replace nodes with groups or implement a branching how you see fit.
-</description>
+Here we opt to create a branching path instead of replacing the existing nodes. You are completely free to replace nodes with groups or implement a branching how you see fit.</description>
     </item>
     
     <item>

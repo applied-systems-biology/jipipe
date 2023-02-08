@@ -7,12 +7,21 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language><atom:link href="https://www.jipipe.org/download/changelog/index.xml" rel="self" type="application/rss+xml" />
     <item>
-      <title>Version 1.77.x (current version)</title>
+      <title>Version 1.77.x</title>
       <link>https://www.jipipe.org/download/changelog/1.77.x/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/download/changelog/1.77.x/</guid>
-      <description>Table Of Contents 1.77.0   1.77.0  new Archive functionality for projects (Project &amp;gt; Archive project ...) that collects all files and generates a directory or ZIP containing the project and all its data new Node &amp;ldquo;Replace label values by table&amp;rdquo; (mapping labels) new Node &amp;ldquo;Table column to image&amp;rdquo; (convert a table column into a 1px wide image with height = number of rows; allows to apply image operations on table columns) new Node &amp;ldquo;Image to table column&amp;rdquo; (put image back into a table column) new Image viewer measurement tool now measures physical sizes fixed Crash on starting JIPipe with a fresh Fiji installation fixed Previews of RGB images were changing the image fixed Freeze caused by updating certain parameters improved Rename &amp;ldquo;Integrate table columns&amp;rdquo; to &amp;ldquo;Summarize table&amp;rdquo; improved Performance of previews improved Expression-based hyperstack slicer now has custom variables improved &amp;ldquo;Set annotations&amp;rdquo; now has access to the number of rows in the data table  </description>
+      <description> Table Of Contents 1.77.0 1.77.0 new Archive functionality for projects (Project &amp;gt; Archive project ...) that collects all files and generates a directory or ZIP containing the project and all its data new Node &amp;ldquo;Replace label values by table&amp;rdquo; (mapping labels) new Node &amp;ldquo;Table column to image&amp;rdquo; (convert a table column into a 1px wide image with height = number of rows; allows to apply image operations on table columns) new Node &amp;ldquo;Image to table column&amp;rdquo; (put image back into a table column) new Image viewer measurement tool now measures physical sizes fixed Crash on starting JIPipe with a fresh Fiji installation fixed Previews of RGB images were changing the image fixed Freeze caused by updating certain parameters improved Rename &amp;ldquo;Integrate table columns&amp;rdquo; to &amp;ldquo;Summarize table&amp;rdquo; improved Performance of previews improved Expression-based hyperstack slicer now has custom variables improved &amp;ldquo;Set annotations&amp;rdquo; now has access to the number of rows in the data table </description>
+    </item>
+    
+    <item>
+      <title>Version 1.78.x (current version)</title>
+      <link>https://www.jipipe.org/download/changelog/1.78.x/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://www.jipipe.org/download/changelog/1.78.x/</guid>
+      <description>1.78.0 You can find the changelog on image.sc</description>
     </item>
     
     <item>
@@ -21,7 +30,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/download/changelog/1.76.x/</guid>
-      <description>Table Of Contents 1.76.0   1.76.0  improved Layout manager: do not move nodes (by default) improved &amp;ldquo;Add table columns&amp;rdquo; now supports annotations and custom variables improved &amp;ldquo;Add table columns&amp;rdquo; now allows to ensure a minimum number of rows improved &amp;ldquo;Split ROI into individual ROI lists&amp;rdquo;: support for custom annotation value new Cache manager: saving/loading all cached data from directory/zip new Node &amp;ldquo;Draw scale bar ROI&amp;rdquo; new Node &amp;ldquo;Combine ROI lists&amp;rdquo; (like Merge ROI lists but with strict ordering) new Node &amp;ldquo;Pull annotations from data tables&amp;rdquo; new Node &amp;ldquo;Annotate with data table properties&amp;rdquo; new Node &amp;ldquo;Push annotations into data tables&amp;rdquo; improved UX of the cache manager button in the menu bar improved &amp;ldquo;Reduce &amp;amp; split stacks (slice)&amp;rdquo; now supports annotations improved UX of the task/process manager button in the menu bar (now can cancel enqueued tasks) fixed Draw ROI nodes not applying ROI properties improved Cache cleanup performance improved Image viewer: minima and maxima for calibration are now sourced from all slices fixed Comment nodes: crash if icon is null improved Organization of annotation nodes (now in sub-menus that indicate the type of addressed data) improved UX of &amp;ldquo;Add slots&amp;rdquo;/&amp;ldquo;Edit slots&amp;rdquo;  </description>
+      <description> Table Of Contents 1.76.0 1.76.0 improved Layout manager: do not move nodes (by default) improved &amp;ldquo;Add table columns&amp;rdquo; now supports annotations and custom variables improved &amp;ldquo;Add table columns&amp;rdquo; now allows to ensure a minimum number of rows improved &amp;ldquo;Split ROI into individual ROI lists&amp;rdquo;: support for custom annotation value new Cache manager: saving/loading all cached data from directory/zip new Node &amp;ldquo;Draw scale bar ROI&amp;rdquo; new Node &amp;ldquo;Combine ROI lists&amp;rdquo; (like Merge ROI lists but with strict ordering) new Node &amp;ldquo;Pull annotations from data tables&amp;rdquo; new Node &amp;ldquo;Annotate with data table properties&amp;rdquo; new Node &amp;ldquo;Push annotations into data tables&amp;rdquo; improved UX of the cache manager button in the menu bar improved &amp;ldquo;Reduce &amp;amp; split stacks (slice)&amp;rdquo; now supports annotations improved UX of the task/process manager button in the menu bar (now can cancel enqueued tasks) fixed Draw ROI nodes not applying ROI properties improved Cache cleanup performance improved Image viewer: minima and maxima for calibration are now sourced from all slices fixed Comment nodes: crash if icon is null improved Organization of annotation nodes (now in sub-menus that indicate the type of addressed data) improved UX of &amp;ldquo;Add slots&amp;rdquo;/&amp;ldquo;Edit slots&amp;rdquo; </description>
     </item>
     
     <item>
@@ -30,7 +39,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/download/changelog/1.75.x/</guid>
-      <description>Table Of Contents 1.75.2 1.75.1   1.75.2  fixed Convolution nodes now behave exactly as the convolution operations from ImageJ improved Expressions are now marked more clearly in the parameter UI  1.75.1  fixed Critical bug where enum parameters could not be initialized  </description>
+      <description> Table Of Contents 1.75.2 1.75.1 1.75.2 fixed Convolution nodes now behave exactly as the convolution operations from ImageJ improved Expressions are now marked more clearly in the parameter UI 1.75.1 fixed Critical bug where enum parameters could not be initialized </description>
     </item>
     
     <item>
@@ -39,8 +48,8 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/download/changelog/1.75.0/</guid>
-      <description>Table Of Contents 1.75.1 Image processing Data processing Expressions User interface Bugfixes and small improvements Known issues   1.75.1  fixed Critical bug where enum parameters could not be initialized  Image processing Various nodes that generate statistics on labels
- new Node &amp;ldquo;Merge 2D slices into hyperstack&amp;rdquo; (inverse operation of &amp;ldquo;Split into 2D slices&amp;rdquo;). Intended for more advanced filtering of hyperstack slices. new Node &amp;ldquo;Merge small labels&amp;rdquo; (merges labels with a low number of pixels into a neighboring label index) new Node &amp;ldquo;Key/Value Histogram 5D&amp;rdquo; new Node &amp;ldquo;Key/Value threshold statistics 5D&amp;rdquo; new Node &amp;ldquo;Key/Value statistics 5D (fast averages)&amp;rdquo; new Node &amp;ldquo;Key/Value threshold statistics 5D (fast averages)&amp;rdquo; improved Convolve operators now have normalization parameter improved Convolve operators now support RGB images (same behavior as ImageJ)  Data processing  new Node &amp;ldquo;Filter by annotation&amp;rdquo; (more compact version of &amp;ldquo;Split &amp;amp; filter by annotation&amp;rdquo; that applies the same operation)  Expressions  new New function STRING_FORMAT (C-style string formatting) new New function NUM (Alternative to TO_NUMBER) improved Expressions that return numbers: valid numeric strings are automatically converted to numbers (before there was an exception if not a Number type is returned) fixed Escaping of expressions did not work as expected (errors if sub-strings contained spaces)  User interface  improved New &amp;ldquo;Memory&amp;rdquo; menu in the status bar that contains all memory-related operations (before was only a gear icon) improved &amp;ldquo;Reduce memory&amp;rdquo; moved into the &amp;ldquo;Memory&amp;rdquo; menu fixed Number editor behaved erratically in non-english locales (now uses the advanced number parser capable of parsing NA and infinity)  Bugfixes and small improvements Please refer to the commits in the JIPipe GitHub repository to find a list of all bugfixes and improvements.</description>
+      <description>Table Of Contents 1.75.1 Image processing Data processing Expressions User interface Bugfixes and small improvements Known issues 1.75.1 fixed Critical bug where enum parameters could not be initialized Image processing Various nodes that generate statistics on labels
+new Node &amp;ldquo;Merge 2D slices into hyperstack&amp;rdquo; (inverse operation of &amp;ldquo;Split into 2D slices&amp;rdquo;). Intended for more advanced filtering of hyperstack slices. new Node &amp;ldquo;Merge small labels&amp;rdquo; (merges labels with a low number of pixels into a neighboring label index) new Node &amp;ldquo;Key/Value Histogram 5D&amp;rdquo; new Node &amp;ldquo;Key/Value threshold statistics 5D&amp;rdquo; new Node &amp;ldquo;Key/Value statistics 5D (fast averages)&amp;rdquo; new Node &amp;ldquo;Key/Value threshold statistics 5D (fast averages)&amp;rdquo; improved Convolve operators now have normalization parameter improved Convolve operators now support RGB images (same behavior as ImageJ) Data processing new Node &amp;ldquo;Filter by annotation&amp;rdquo; (more compact version of &amp;ldquo;Split &amp;amp; filter by annotation&amp;rdquo; that applies the same operation) Expressions new New function STRING_FORMAT (C-style string formatting) new New function NUM (Alternative to TO_NUMBER) improved Expressions that return numbers: valid numeric strings are automatically converted to numbers (before there was an exception if not a Number type is returned) fixed Escaping of expressions did not work as expected (errors if sub-strings contained spaces) User interface improved New &amp;ldquo;Memory&amp;rdquo; menu in the status bar that contains all memory-related operations (before was only a gear icon) improved &amp;ldquo;Reduce memory&amp;rdquo; moved into the &amp;ldquo;Memory&amp;rdquo; menu fixed Number editor behaved erratically in non-english locales (now uses the advanced number parser capable of parsing NA and infinity) Bugfixes and small improvements Please refer to the commits in the JIPipe GitHub repository to find a list of all bugfixes and improvements.</description>
     </item>
     
     <item>
@@ -49,7 +58,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/download/changelog/1.74.0/</guid>
-      <description>Table Of Contents Plugin manager Environment EasyInstaller TrackMate integration (Beta) Cellpose integration Omnipose integration (Beta) Image processing  ROI processing Coloc2 integration   Table processing Plotting General data processing Parameters Expressions Node examples User interface  Project management Parameters Graph editor Compartment editor Cache browser / Results viewer ImageJ alias menu Image viewer  ROI manager Measurement tool / mask drawer / ROI drawer   Plot editor Table editor Dependency management Node templates   Data management Data API Bugfixes and small improvements Known issues   Plugin manager In older JIPipe versions, all extensions are automatically loaded during the JIPipe startup.</description>
+      <description>Table Of Contents Plugin manager Environment EasyInstaller TrackMate integration (Beta) Cellpose integration Omnipose integration (Beta) Image processing ROI processing Coloc2 integration Table processing Plotting General data processing Parameters Expressions Node examples User interface Project management Parameters Graph editor Compartment editor Cache browser / Results viewer ImageJ alias menu Image viewer ROI manager Measurement tool / mask drawer / ROI drawer Plot editor Table editor Dependency management Node templates Data management Data API Bugfixes and small improvements Known issues Plugin manager In older JIPipe versions, all extensions are automatically loaded during the JIPipe startup.</description>
     </item>
     
     <item>
@@ -58,8 +67,8 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/download/changelog/1.73.0/</guid>
-      <description>Table Of Contents Trainable Weka Segmentation nodes  Example   Skeletons  Example   ROIs and labels   Trainable Weka Segmentation nodes JIPipe nodes and data types encapsulating the Trainable Weka Segmentation were added, making it possible to utilize these without the Macro node.
- new Data type “Weka model” (saves classifier, data, and metadata of the segmenter) new Node “Import Weka model” (allows to import existing models) new Node “Train Weka model from ROI (2D)” new Node “Train Weka model from ROI (3D)” new Node “Train Weka model from mask (2D)” new Node “Train Weka model from labels (2D)” new Node “Weka classifier 2D” new Node “Weka classifier 3D”  Example  Using the Weka segmentation nodessmall sizewekasimpletutorialA small example showcasing how to utilize the Trainable Weka Segmentation nodes.</description>
+      <description>Table Of Contents Trainable Weka Segmentation nodes Example Skeletons Example ROIs and labels Trainable Weka Segmentation nodes JIPipe nodes and data types encapsulating the Trainable Weka Segmentation were added, making it possible to utilize these without the Macro node.
+new Data type “Weka model” (saves classifier, data, and metadata of the segmenter) new Node “Import Weka model” (allows to import existing models) new Node “Train Weka model from ROI (2D)” new Node “Train Weka model from ROI (3D)” new Node “Train Weka model from mask (2D)” new Node “Train Weka model from labels (2D)” new Node “Weka classifier 2D” new Node “Weka classifier 3D” Example Using the Weka segmentation nodes small size weka simple tutorial A small example showcasing how to utilize the Trainable Weka Segmentation nodes.</description>
     </item>
     
     <item>
@@ -68,7 +77,7 @@
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/download/changelog/1.72.x/</guid>
-      <description>Version 1.72.0  This is the first public release of JIPipe  Version 1.72.x  Mostly changes to make JIPipe compatible to SciJava Maven and cleanup new Node “Reduce &amp;amp; split hyperstack” (allows the slicing of Hyperstacks by indices; a more simple alternative to “Reduce &amp;amp; split hyperstack (Expression)”) new Node “Draw/modify ROIs” (interactive editing of ROI; it works but is currently incomplete and subject to change)  </description>
+      <description>Version 1.72.0 This is the first public release of JIPipe Version 1.72.x Mostly changes to make JIPipe compatible to SciJava Maven and cleanup new Node “Reduce &amp;amp; split hyperstack” (allows the slicing of Hyperstacks by indices; a more simple alternative to “Reduce &amp;amp; split hyperstack (Expression)”) new Node “Draw/modify ROIs” (interactive editing of ROI; it works but is currently incomplete and subject to change) </description>
     </item>
     
   </channel>

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-19T20:28:46 CET">
+<meta name="revised" content="2023-02-08T18:44:40 CET">
 <title>Creating an extension project :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -79,7 +79,14 @@
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.77.x/" class="dd-item">
         <div>
           <a href="../../download/changelog/1.77.x/">
-            Version 1.77.x (current version)
+            Version 1.77.x
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.78.x/" class="dd-item">
+        <div>
+          <a href="../../download/changelog/1.78.x/">
+            Version 1.78.x (current version)
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -1317,7 +1324,7 @@
 </ul>
 <h1 id="creating-the-project">Creating the project</h1>
 <p>The project should have following structure:</p>
-<pre><code>Project root
+<pre tabindex="0"><code>Project root
 └── pom.xml
 └── src
     └── main
@@ -1339,94 +1346,94 @@ you can create as many extensions as you want.</p>
 <p>Java extension inherit from <a href="../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a> and require a <a href="https://javadoc.scijava.org/SciJava/org/scijava/plugin/Plugin.html">@Plugin</a> annotation.</p>
 <p>We recommend to inherit from <a href="../../apidocs/org/hkijena/jipipe/JIPipeDefaultJavaExtension.html">JIPipeDefaultJavaExtension</a> that comes with some convenience-functions.</p>
 <p>A minimal extension can be found here:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
-<span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
-
-    <span style="color:#75715e">// We recommend to create a static AS_DEPENDENCY variable that contains the dependency ID, name, and version of the extension
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// This simplifies the usage in getDependencies() for extensions that are based on your library
-</span><span style="color:#75715e"></span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">final</span> <span style="color:#111">JIPipeDependency</span> <span style="color:#111">AS_DEPENDENCY</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeMutableDependency</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;CHANGEME&#34;</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;1.0.0&#34;</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;My extension&#34;</span><span style="color:#f92672">);</span>
-
-    <span style="color:#75715e">// If you have custom icons, thumbnails etc., create a JIPipeResourceManager instance that points towards the root directory of your resources
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// Please read the documentation of JIPipeResourceManager for more information on how to structure the resources directory 
-</span><span style="color:#75715e"></span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">final</span> <span style="color:#111">JIPipeResourceManager</span> <span style="color:#111">RESOURCES</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeResourceManager</span><span style="color:#f92672">(</span><span style="color:#111">MyExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;resource/directory/of/my/extension&#34;</span><span style="color:#f92672">);</span>
-
-    <span style="color:#00a8c8">public</span> <span style="color:#75af00">MyExtension</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#111">getMetadata</span><span style="color:#f92672">().</span><span style="color:#75af00">addCategories</span><span style="color:#f92672">(</span><span style="color:#111">PluginCategoriesEnumParameter</span><span style="color:#f92672">.</span><span style="color:#75af00">CATEGORY_SCRIPTING</span><span style="color:#f92672">);</span> <span style="color:#75715e">// You can annotate your extension with ImageJ Wiki categories (Optional)
-</span><span style="color:#75715e"></span>        <span style="color:#111">getMetadata</span><span style="color:#f92672">().</span><span style="color:#75af00">setThumbnail</span><span style="color:#f92672">(</span><span style="color:#00a8c8">new</span> <span style="color:#111">ImageParameter</span><span style="color:#f92672">(</span><span style="color:#111">RESOURCES</span><span style="color:#f92672">.</span><span style="color:#75af00">getResourceURL</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;thumbnail.png&#34;</span><span style="color:#f92672">)));</span> <span style="color:#75715e">// Set the thumbnail from the extension&#39;s resources (Optional)
-</span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
-
-    <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getName</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;My extension&#34;</span><span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-
-    <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#111">HTMLText</span> <span style="color:#75af00">getDescription</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">new</span> <span style="color:#111">HTMLText</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;A Java extension&#34;</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-
-    <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getDependencyId</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// We recommend the following structure: &lt;groupId&gt;.&lt;artifactId&gt;:&lt;dependencyId&gt;
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// (!) The dependency Id should be unique for each extension @Plugin (!)
-</span><span style="color:#75715e"></span>        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;CHANGEME&#34;</span><span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-
-    <span style="color:#75715e">// You can optionally override the version.
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// @Override
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// public String getDependencyVersion() {
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">//    return &#34;1.0.0&#34;;
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// }
-</span><span style="color:#75715e"></span>
-    <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getAuthors</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;Ruman Gerst&#34;</span><span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-
-    <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getWebsite</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;https://jipipe.org/&#34;</span><span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-
-    <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getLicense</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;BSD-2&#34;</span><span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-
-    <span style="color:#75715e">// You can add one more multiple logos on the JIPipe splash screen
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// They must be 32x32 in size
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// Please do not add too many of them to not fill up all the space
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// @Override
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// public List&lt;ImageIcon&gt; getSplashIcons() {
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">//     return Collections.singletonList(new ImageIcon(getClass().getResource(&#34;org/hkijena/jipipe/extensions/myextension/icon-32.png&#34;)));
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// }
-</span><span style="color:#75715e"></span>
-    <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getCitation</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// Here you can enter a citation for your publication
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// It will be displayed in the plugin manager
-</span><span style="color:#75715e"></span>        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-
-    <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">register</span><span style="color:#f92672">(</span><span style="color:#111">JIPipe</span> <span style="color:#111">jiPipe</span><span style="color:#f92672">,</span> <span style="color:#111">Context</span> <span style="color:#111">context</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progressInfo</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// Content is registered here
-</span><span style="color:#75715e"></span>        <span style="color:#75715e">// You can have multiple registerNodeType, registerDataType etc. in this place
-</span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
-
-    <span style="color:#75715e">// Optional: run code after this and other extensions are registered (for example to create notifications; see https://github.com/applied-systems-biology/jipipe/blob/master/jipipe-python/src/main/java/org/hkijena/jipipe/extensions/python/PythonExtension.java)
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// @Override
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// public void postprocess() {
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// }
-</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
-</code></pre></div><h1 id="testing-your-extension">Testing your extension</h1>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// We recommend to create a static AS_DEPENDENCY variable that contains the dependency ID, name, and version of the extension
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// This simplifies the usage in getDependencies() for extensions that are based on your library
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">final</span> <span style="color:#111">JIPipeDependency</span> <span style="color:#111">AS_DEPENDENCY</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeMutableDependency</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;CHANGEME&#34;</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;1.0.0&#34;</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;My extension&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// If you have custom icons, thumbnails etc., create a JIPipeResourceManager instance that points towards the root directory of your resources
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Please read the documentation of JIPipeResourceManager for more information on how to structure the resources directory 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">final</span> <span style="color:#111">JIPipeResourceManager</span> <span style="color:#111">RESOURCES</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeResourceManager</span><span style="color:#f92672">(</span><span style="color:#111">MyExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;resource/directory/of/my/extension&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#75af00">MyExtension</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#111">getMetadata</span><span style="color:#f92672">().</span><span style="color:#75af00">addCategories</span><span style="color:#f92672">(</span><span style="color:#111">PluginCategoriesEnumParameter</span><span style="color:#f92672">.</span><span style="color:#75af00">CATEGORY_SCRIPTING</span><span style="color:#f92672">);</span> <span style="color:#75715e">// You can annotate your extension with ImageJ Wiki categories (Optional)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#111">getMetadata</span><span style="color:#f92672">().</span><span style="color:#75af00">setThumbnail</span><span style="color:#f92672">(</span><span style="color:#00a8c8">new</span> <span style="color:#111">ImageParameter</span><span style="color:#f92672">(</span><span style="color:#111">RESOURCES</span><span style="color:#f92672">.</span><span style="color:#75af00">getResourceURL</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;thumbnail.png&#34;</span><span style="color:#f92672">)));</span> <span style="color:#75715e">// Set the thumbnail from the extension&#39;s resources (Optional)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getName</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;My extension&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#111">HTMLText</span> <span style="color:#75af00">getDescription</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">new</span> <span style="color:#111">HTMLText</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;A Java extension&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getDependencyId</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// We recommend the following structure: &lt;groupId&gt;.&lt;artifactId&gt;:&lt;dependencyId&gt;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// (!) The dependency Id should be unique for each extension @Plugin (!)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;CHANGEME&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// You can optionally override the version.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// @Override
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// public String getDependencyVersion() {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">//    return &#34;1.0.0&#34;;
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getAuthors</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;Ruman Gerst&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getWebsite</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;https://jipipe.org/&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getLicense</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;BSD-2&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// You can add one more multiple logos on the JIPipe splash screen
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// They must be 32x32 in size
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// Please do not add too many of them to not fill up all the space
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// @Override
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// public List&lt;ImageIcon&gt; getSplashIcons() {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">//     return Collections.singletonList(new ImageIcon(getClass().getResource(&#34;org/hkijena/jipipe/extensions/myextension/icon-32.png&#34;)));
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#111">String</span> <span style="color:#75af00">getCitation</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Here you can enter a citation for your publication
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// It will be displayed in the plugin manager
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#00a8c8">return</span> <span style="color:#d88200">&#34;&#34;</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">register</span><span style="color:#f92672">(</span><span style="color:#111">JIPipe</span> <span style="color:#111">jiPipe</span><span style="color:#f92672">,</span> <span style="color:#111">Context</span> <span style="color:#111">context</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progressInfo</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Content is registered here
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#75715e">// You can have multiple registerNodeType, registerDataType etc. in this place
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Optional: run code after this and other extensions are registered (for example to create notifications; see https://github.com/applied-systems-biology/jipipe/blob/master/jipipe-python/src/main/java/org/hkijena/jipipe/extensions/python/PythonExtension.java)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// @Override
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// public void postprocess() {
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// }
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h1 id="testing-your-extension">Testing your extension</h1>
 <p>Use following code to create an ImageJ2 instance that immediately loads JIPipe:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#00a8c8">final</span> <span style="color:#111">String</span><span style="color:#f92672">...</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#00a8c8">final</span> <span style="color:#111">ImageJ</span> <span style="color:#111">ij</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">ImageJ</span><span style="color:#f92672">();</span>
-    <span style="color:#111">ij</span><span style="color:#f92672">.</span><span style="color:#75af00">ui</span><span style="color:#f92672">().</span><span style="color:#75af00">showUI</span><span style="color:#f92672">();</span> <span style="color:#75715e">// If your ImageJ freezes, you can leave this out. JIPipe will show anyways.
-</span><span style="color:#75715e"></span>    <span style="color:#111">ij</span><span style="color:#f92672">.</span><span style="color:#75af00">command</span><span style="color:#f92672">().</span><span style="color:#75af00">run</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeGUICommand</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">);</span>
-<span style="color:#f92672">}</span>
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#00a8c8">final</span> <span style="color:#111">String</span><span style="color:#f92672">...</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">final</span> <span style="color:#111">ImageJ</span> <span style="color:#111">ij</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">ImageJ</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#111">ij</span><span style="color:#f92672">.</span><span style="color:#75af00">ui</span><span style="color:#f92672">().</span><span style="color:#75af00">showUI</span><span style="color:#f92672">();</span> <span style="color:#75715e">// If your ImageJ freezes, you can leave this out. JIPipe will show anyways.
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#111">ij</span><span style="color:#f92672">.</span><span style="color:#75af00">command</span><span style="color:#f92672">().</span><span style="color:#75af00">run</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeGUICommand</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div>
 
     
     

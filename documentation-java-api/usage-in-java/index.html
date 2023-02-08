@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-19T20:28:46 CET">
+<meta name="revised" content="2023-02-08T18:44:40 CET">
 <title>Usage in Java :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -79,7 +79,14 @@
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.77.x/" class="dd-item">
         <div>
           <a href="../../download/changelog/1.77.x/">
-            Version 1.77.x (current version)
+            Version 1.77.x
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.78.x/" class="dd-item">
+        <div>
+          <a href="../../download/changelog/1.78.x/">
+            Version 1.78.x (current version)
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -1302,122 +1309,122 @@ without the need for a GUI or through ImageJ1 or ImageJ2 scripts.</p>
 <h1 id="prerequisites">Prerequisites</h1>
 <p>To use the JIPipe API JIPipe must be initialized first. This requires an ImageJ instance
 or any other way to load SciJava plugins. The following example shows how to initialize JIPipe manually from a main function.</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-  <span style="color:#75715e">// Just call this function before all others. It will create a new ImageJ instance and passes the context to JIPipe
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// If JIPipe is already initialized, the function has no effect
-</span><span style="color:#75715e"></span>  <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">ensureInstance</span><span style="color:#f92672">();</span>
-
-  <span style="color:#75715e">// If you already have a Context object: JIPipe.ensureInstance(context)
-</span><span style="color:#75715e"></span>
-  <span style="color:#75715e">// JIPipe is now ready to use
-</span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
-</code></pre></div><h1 id="loading-and-running-a-project">Loading and running a project</h1>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Just call this function before all others. It will create a new ImageJ instance and passes the context to JIPipe
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// If JIPipe is already initialized, the function has no effect
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">ensureInstance</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// If you already have a Context object: JIPipe.ensureInstance(context)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// JIPipe is now ready to use
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h1 id="loading-and-running-a-project">Loading and running a project</h1>
 <p>You can load a <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeProject.html">project</a> via a static method.
 Running the project either involves enqueuing a <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeRun.html">run</a> into the <a href="../../apidocs/org/hkijena/jipipe/ui/running/JIPipeRunnerQueue.html">global queue</a> or running it on the current thread.
 The run has a multitude of <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeRunSettings.html">settings</a> that control how/if output is written or how many threads are used.</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-  <span style="color:#75715e">// First initialize JIPipe before this line!
-</span><span style="color:#75715e"></span>
-  <span style="color:#75715e">// Load the project
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// JIPipe will put any non-exception errors or warnings into the report
-</span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeValidityReport</span> <span style="color:#111">report</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeValidityReport</span><span style="color:#f92672">();</span>
-  <span style="color:#111">JIPipeProject</span> <span style="color:#111">project</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeProject</span><span style="color:#f92672">.</span><span style="color:#75af00">loadProject</span><span style="color:#f92672">(</span><span style="color:#111">Paths</span><span style="color:#f92672">.</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-project.jip&#34;</span><span style="color:#f92672">),</span> <span style="color:#111">report</span><span style="color:#f92672">);</span>
-
-  <span style="color:#75715e">// Create a run that generates a deep-copy of the project&#39;s graph
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// The run is controlled by the JIPipeRunSettings instance that allows you to
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// have runs without caching or writing outputs if needed
-</span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeRunSettings</span> <span style="color:#111">settings</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeRunSettings</span><span style="color:#f92672">();</span>
-  <span style="color:#111">settings</span><span style="color:#f92672">.</span><span style="color:#75af00">setOutputPath</span><span style="color:#f92672">(</span><span style="color:#111">Paths</span><span style="color:#f92672">.</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/data/my-project-output&#34;</span><span style="color:#f92672">));</span>
-  <span style="color:#111">JIPipeRun</span> <span style="color:#111">run</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeRun</span><span style="color:#f92672">(</span><span style="color:#111">project</span><span style="color:#f92672">,</span> <span style="color:#111">settings</span><span style="color:#f92672">);</span>
-
-  <span style="color:#75715e">// Option 1: Run in separate thread (Async)
-</span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeRunnerQueue</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">enqueue</span><span style="color:#f92672">(</span><span style="color:#111">run</span><span style="color:#f92672">);</span>
-
-  <span style="color:#75715e">// Option 2: Run it on the current thread
-</span><span style="color:#75715e"></span>  <span style="color:#75715e">// The run itself has a property getProgressInfo() that allows access to the progress &amp; log
-</span><span style="color:#75715e"></span>  <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">run</span><span style="color:#f92672">();</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><h1 id="loading-a-result">Loading a result</h1>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// First initialize JIPipe before this line!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Load the project
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// JIPipe will put any non-exception errors or warnings into the report
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeValidityReport</span> <span style="color:#111">report</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeValidityReport</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#111">JIPipeProject</span> <span style="color:#111">project</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeProject</span><span style="color:#f92672">.</span><span style="color:#75af00">loadProject</span><span style="color:#f92672">(</span><span style="color:#111">Paths</span><span style="color:#f92672">.</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-project.jip&#34;</span><span style="color:#f92672">),</span> <span style="color:#111">report</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Create a run that generates a deep-copy of the project&#39;s graph
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// The run is controlled by the JIPipeRunSettings instance that allows you to
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// have runs without caching or writing outputs if needed
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeRunSettings</span> <span style="color:#111">settings</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeRunSettings</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#111">settings</span><span style="color:#f92672">.</span><span style="color:#75af00">setOutputPath</span><span style="color:#f92672">(</span><span style="color:#111">Paths</span><span style="color:#f92672">.</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/data/my-project-output&#34;</span><span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#111">JIPipeRun</span> <span style="color:#111">run</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeRun</span><span style="color:#f92672">(</span><span style="color:#111">project</span><span style="color:#f92672">,</span> <span style="color:#111">settings</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Option 1: Run in separate thread (Async)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeRunnerQueue</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">enqueue</span><span style="color:#f92672">(</span><span style="color:#111">run</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Option 2: Run it on the current thread
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#75715e">// The run itself has a property getProgressInfo() that allows access to the progress &amp; log
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">run</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><h1 id="loading-a-result">Loading a result</h1>
 <p>To load an existing result folder, the <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeRun.html">run</a> is imported back into JIPipe.
 The run itself contains a <a href="../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeGraph.html">graph</a> instance with nodes that are aware
 of the data storage location. The storage location contains a <code>data-table.json</code> file that can be imported into an <a href="../../apidocs/org/hkijena/jipipe/api/data/JIPipeExportedDataTable.html">exported data table</a>.
 This table contains all metadata and the relative storage location of each row.</p>
 <p>Row data is always stored in folders that correspond to the row index. For example, the first row&rsquo;s data is stored in a folder <code>0</code>.</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#75715e">// First initialize JIPipe before this line!
-</span><span style="color:#75715e"></span>
-    <span style="color:#75715e">// Load the run
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// It will load the project as well
-</span><span style="color:#75715e"></span>    <span style="color:#111">Path</span> <span style="color:#111">path</span> <span style="color:#f92672">=</span> <span style="color:#111">Paths</span><span style="color:#f92672">.</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/data/my-project-output&#34;</span><span style="color:#f92672">);</span>
-    <span style="color:#111">JIPipeRun</span> <span style="color:#111">run</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeRun</span><span style="color:#f92672">.</span><span style="color:#75af00">loadFromFolder</span><span style="color:#f92672">(</span><span style="color:#111">path</span><span style="color:#f92672">,</span> <span style="color:#111">report</span><span style="color:#f92672">);</span>
-    <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">getProject</span><span style="color:#f92672">().</span><span style="color:#75af00">setWorkDirectory</span><span style="color:#f92672">(</span><span style="color:#111">path</span><span style="color:#f92672">);</span>
-
-    <span style="color:#75715e">// You can now access the run&#39;s graph and access the data slots
-</span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeDataSlot</span> <span style="color:#111">slot</span> <span style="color:#f92672">=</span> <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">getGraph</span><span style="color:#f92672">().</span><span style="color:#75af00">getNodes</span><span style="color:#f92672">().</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;some-node&#34;</span><span style="color:#f92672">).</span><span style="color:#75af00">getOutputSlot</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;Output&#34;</span><span style="color:#f92672">);</span>
-
-    <span style="color:#75715e">// Load the slot&#39;s data table
-</span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeExportedDataTable</span> <span style="color:#111">table</span> <span style="color:#f92672">=</span> <span style="color:#111">slot</span><span style="color:#f92672">.</span><span style="color:#75af00">getStorageDataTable</span><span style="color:#f92672">();</span>
-
-    <span style="color:#75715e">// Example: Get the folder where the first row stores its data
-</span><span style="color:#75715e"></span>    <span style="color:#111">Path</span> <span style="color:#111">firstRowStorage</span> <span style="color:#f92672">=</span> <span style="color:#111">slot</span><span style="color:#f92672">.</span><span style="color:#75af00">getRowStoragePath</span><span style="color:#f92672">(</span><span style="color:#111">0</span><span style="color:#f92672">);</span>
-  <span style="color:#f92672">}</span>
-</code></pre></div><h1 id="building-and-running-a-graph">Building and running a graph</h1>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>  <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// First initialize JIPipe before this line!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Load the run
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// It will load the project as well
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#111">Path</span> <span style="color:#111">path</span> <span style="color:#f92672">=</span> <span style="color:#111">Paths</span><span style="color:#f92672">.</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/data/my-project-output&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#111">JIPipeRun</span> <span style="color:#111">run</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeRun</span><span style="color:#f92672">.</span><span style="color:#75af00">loadFromFolder</span><span style="color:#f92672">(</span><span style="color:#111">path</span><span style="color:#f92672">,</span> <span style="color:#111">report</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">getProject</span><span style="color:#f92672">().</span><span style="color:#75af00">setWorkDirectory</span><span style="color:#f92672">(</span><span style="color:#111">path</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// You can now access the run&#39;s graph and access the data slots
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeDataSlot</span> <span style="color:#111">slot</span> <span style="color:#f92672">=</span> <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">getGraph</span><span style="color:#f92672">().</span><span style="color:#75af00">getNodes</span><span style="color:#f92672">().</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;some-node&#34;</span><span style="color:#f92672">).</span><span style="color:#75af00">getOutputSlot</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;Output&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Load the slot&#39;s data table
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeExportedDataTable</span> <span style="color:#111">table</span> <span style="color:#f92672">=</span> <span style="color:#111">slot</span><span style="color:#f92672">.</span><span style="color:#75af00">getStorageDataTable</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Example: Get the folder where the first row stores its data
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#111">Path</span> <span style="color:#111">firstRowStorage</span> <span style="color:#f92672">=</span> <span style="color:#111">slot</span><span style="color:#f92672">.</span><span style="color:#75af00">getRowStoragePath</span><span style="color:#f92672">(</span><span style="color:#111">0</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span></code></pre></div><h1 id="building-and-running-a-graph">Building and running a graph</h1>
 <p>JIPipe allows to create and run <a href="../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeGraph.html">graphs</a> without involving a project.
 A simple <a href="../../apidocs/org/hkijena/jipipe/api/JIPipeGraphRunner.html">graph runner</a> is available to execute a graph.</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java">  <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#75715e">// First initialize JIPipe before this line!
-</span><span style="color:#75715e"></span>
-    <span style="color:#111">JIPipeGraph</span> <span style="color:#111">graph</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeGraph</span><span style="color:#f92672">();</span>
-
-    <span style="color:#75715e">// There are multiple ways to instantiate a new node:
-</span><span style="color:#75715e"></span>
-    <span style="color:#75715e">// Option 1: Utility function
-</span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeGraphNode</span> <span style="color:#111">first</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">createNode</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;import-file&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeGraphNode</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
-
-    <span style="color:#75715e">// Option 2: Using the registry
-</span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeGraphNode</span> <span style="color:#111">second</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeNodeRegistry</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">getInfoById</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;import-imagej-imgplus-from-file&#34;</span><span style="color:#f92672">).</span><span style="color:#75af00">newInstance</span><span style="color:#f92672">();</span>
-
-
-    <span style="color:#75715e">// Add the nodes into the graph and connect them
-</span><span style="color:#75715e"></span>    <span style="color:#111">graph</span><span style="color:#f92672">.</span><span style="color:#75af00">insertNode</span><span style="color:#f92672">(</span><span style="color:#111">first</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeGraph</span><span style="color:#f92672">.</span><span style="color:#75af00">COMPARTMENT_DEFAULT</span><span style="color:#f92672">);</span>
-    <span style="color:#111">graph</span><span style="color:#f92672">.</span><span style="color:#75af00">insertNode</span><span style="color:#f92672">(</span><span style="color:#111">second</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeGraph</span><span style="color:#f92672">.</span><span style="color:#75af00">COMPARTMENT_DEFAULT</span><span style="color:#f92672">);</span>
-    <span style="color:#111">graph</span><span style="color:#f92672">.</span><span style="color:#75af00">connect</span><span style="color:#f92672">(</span><span style="color:#111">first</span><span style="color:#f92672">,</span> <span style="color:#111">second</span><span style="color:#f92672">);</span>
-
-
-    <span style="color:#75715e">// Use the graph runner
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// We always recommend to make a copy of the graph if it is used somehere else
-</span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeGraphRunner</span> <span style="color:#111">run</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeGraphRunner</span><span style="color:#f92672">(</span><span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeGraph</span><span style="color:#f92672">(</span><span style="color:#111">graph</span><span style="color:#f92672">));</span>
-
-    <span style="color:#75715e">// Option 1: Run in separate thread (Async)
-</span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeRunnerQueue</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">enqueue</span><span style="color:#f92672">(</span><span style="color:#111">run</span><span style="color:#f92672">);</span>
-
-    <span style="color:#75715e">// Option 2: Run it on the current thread
-</span><span style="color:#75715e"></span>    <span style="color:#75715e">// The run itself has a property getProgressInfo() that allows access to the progress &amp; log
-</span><span style="color:#75715e"></span>    <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">run</span><span style="color:#f92672">();</span>
-  <span style="color:#f92672">}</span>
-</code></pre></div><h1 id="running-a-single-node">Running a single node</h1>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span>  <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// First initialize JIPipe before this line!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#111">JIPipeGraph</span> <span style="color:#111">graph</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeGraph</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// There are multiple ways to instantiate a new node:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Option 1: Utility function
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeGraphNode</span> <span style="color:#111">first</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">createNode</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;import-file&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeGraphNode</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Option 2: Using the registry
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeGraphNode</span> <span style="color:#111">second</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeNodeRegistry</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">getInfoById</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;import-imagej-imgplus-from-file&#34;</span><span style="color:#f92672">).</span><span style="color:#75af00">newInstance</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Add the nodes into the graph and connect them
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#111">graph</span><span style="color:#f92672">.</span><span style="color:#75af00">insertNode</span><span style="color:#f92672">(</span><span style="color:#111">first</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeGraph</span><span style="color:#f92672">.</span><span style="color:#75af00">COMPARTMENT_DEFAULT</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#111">graph</span><span style="color:#f92672">.</span><span style="color:#75af00">insertNode</span><span style="color:#f92672">(</span><span style="color:#111">second</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeGraph</span><span style="color:#f92672">.</span><span style="color:#75af00">COMPARTMENT_DEFAULT</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#111">graph</span><span style="color:#f92672">.</span><span style="color:#75af00">connect</span><span style="color:#f92672">(</span><span style="color:#111">first</span><span style="color:#f92672">,</span> <span style="color:#111">second</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Use the graph runner
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// We always recommend to make a copy of the graph if it is used somehere else
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeGraphRunner</span> <span style="color:#111">run</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeGraphRunner</span><span style="color:#f92672">(</span><span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeGraph</span><span style="color:#f92672">(</span><span style="color:#111">graph</span><span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Option 1: Run in separate thread (Async)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#111">JIPipeRunnerQueue</span><span style="color:#f92672">.</span><span style="color:#75af00">getInstance</span><span style="color:#f92672">().</span><span style="color:#75af00">enqueue</span><span style="color:#f92672">(</span><span style="color:#111">run</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// Option 2: Run it on the current thread
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75715e">// The run itself has a property getProgressInfo() that allows access to the progress &amp; log
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#111">run</span><span style="color:#f92672">.</span><span style="color:#75af00">run</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#f92672">}</span>
+</span></span></code></pre></div><h1 id="running-a-single-node">Running a single node</h1>
 <p>You can run single algorithm nodes without involving a project or a graph:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-  <span style="color:#75715e">// First initialize JIPipe before this line!
-</span><span style="color:#75715e"></span>
-  <span style="color:#111">JIPipeSimpleIteratingAlgorithm</span> <span style="color:#111">node</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">createNode</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;import-imagej-imgplus-from-file&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeSimpleIteratingAlgorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
-
-  <span style="color:#75715e">// The node requires a progress info 
-</span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeProgressInfo</span><span style="color:#f92672">();</span>
-
-  <span style="color:#75715e">// Always clear the node first (allows you to re-use it)
-</span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">clearSlotData</span><span style="color:#f92672">();</span>
-
-  <span style="color:#75715e">// Add inputs
-</span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">getFirstInputSlot</span><span style="color:#f92672">().</span><span style="color:#75af00">addData</span><span style="color:#f92672">(</span><span style="color:#00a8c8">new</span> <span style="color:#111">FileData</span><span style="color:#f92672">(</span><span style="color:#111">Paths</span><span style="color:#f92672">.</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/data/image.tif&#34;</span><span style="color:#f92672">)),</span> <span style="color:#111">progress</span><span style="color:#f92672">);</span>
-
-  <span style="color:#75715e">// Run the node
-</span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">run</span><span style="color:#f92672">(</span><span style="color:#111">progress</span><span style="color:#f92672">);</span>
-
-  <span style="color:#75715e">// Extract the output
-</span><span style="color:#75715e"></span>  <span style="color:#111">ImagePlusData</span> <span style="color:#111">image</span> <span style="color:#f92672">=</span> <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">getFirstOutputSlot</span><span style="color:#f92672">().</span><span style="color:#75af00">getData</span><span style="color:#f92672">(</span><span style="color:#111">0</span><span style="color:#f92672">,</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">progress</span><span style="color:#f92672">);</span>
-<span style="color:#f92672">}</span>
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">static</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">main</span><span style="color:#f92672">(</span><span style="color:#111">String</span><span style="color:#f92672">[]</span> <span style="color:#111">args</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// First initialize JIPipe before this line!
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>  <span style="color:#111">JIPipeSimpleIteratingAlgorithm</span> <span style="color:#111">node</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">createNode</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;import-imagej-imgplus-from-file&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeSimpleIteratingAlgorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// The node requires a progress info 
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#111">JIPipeProgressInfo</span> <span style="color:#111">progress</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeProgressInfo</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Always clear the node first (allows you to re-use it)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">clearSlotData</span><span style="color:#f92672">();</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Add inputs
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">getFirstInputSlot</span><span style="color:#f92672">().</span><span style="color:#75af00">addData</span><span style="color:#f92672">(</span><span style="color:#00a8c8">new</span> <span style="color:#111">FileData</span><span style="color:#f92672">(</span><span style="color:#111">Paths</span><span style="color:#f92672">.</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;/data/image.tif&#34;</span><span style="color:#f92672">)),</span> <span style="color:#111">progress</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Run the node
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">run</span><span style="color:#f92672">(</span><span style="color:#111">progress</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>  <span style="color:#75715e">// Extract the output
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>  <span style="color:#111">ImagePlusData</span> <span style="color:#111">image</span> <span style="color:#f92672">=</span> <span style="color:#111">node</span><span style="color:#f92672">.</span><span style="color:#75af00">getFirstOutputSlot</span><span style="color:#f92672">().</span><span style="color:#75af00">getData</span><span style="color:#f92672">(</span><span style="color:#111">0</span><span style="color:#f92672">,</span> <span style="color:#111">ImagePlusData</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">progress</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div>
 
     
     

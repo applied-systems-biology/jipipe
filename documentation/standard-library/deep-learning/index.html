@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-19T20:28:46 CET">
+<meta name="revised" content="2023-02-08T18:44:40 CET">
 <title>Deep Learning :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -79,7 +79,14 @@
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.77.x/" class="dd-item">
         <div>
           <a href="../../../download/changelog/1.77.x/">
-            Version 1.77.x (current version)
+            Version 1.77.x
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.78.x/" class="dd-item">
+        <div>
+          <a href="../../../download/changelog/1.78.x/">
+            Version 1.78.x (current version)
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -1323,8 +1330,8 @@ allows to train/segment with different networks.</p>
 <p>Deep Learning requires a Python installation that comes with Tensorflow 2. To simplify this process,
 we included automated installers for this environment that can be accessed via <code>Project &gt; Application settings &gt; Extensions &gt; Deep learning</code>.
 Here, click <code>Select/install</code> at the <code>Tensorflow</code> item.</p>
-<p>The installer will ask you to review various settings - these should be fine for most system configurations. 
-If you are more experienced, then you can change the settings accordingly. You can also select an existing Conda or virtualenv 
+<p>The installer will ask you to review various settings - these should be fine for most system configurations.
+If you are more experienced, then you can change the settings accordingly. You can also select an existing Conda or virtualenv
 environment by choosing the <code>Additional compatible installers</code> section inside <code>Select/Install</code>.</p>
 
 <div class="notices info" ><p>GPU processing requires large amounts of VRAM. You can always disable GPU processing on a per-node basis if
@@ -1342,9 +1349,9 @@ On Windows, download the CUDA toolkit from the <a href="https://developer.nvidia
 otherwise the installed files will not be found by Tensorflow.
 </div>
 <h1 id="training">Training</h1>
-<p>To train a network from scratch, add a <code>Create model</code> node into the pipeline and set it up. It allows you to choose from 
-different architectures and setup the expected image size, the number of classes, and additional factors like the 
-learning rate. Here you also have to decide which kind of model is created: For example you can create segmentation oder 
+<p>To train a network from scratch, add a <code>Create model</code> node into the pipeline and set it up. It allows you to choose from
+different architectures and setup the expected image size, the number of classes, and additional factors like the
+learning rate. Here you also have to decide which kind of model is created: For example you can create segmentation oder
 classification models.</p>
 <p>Depending on the model choice, you will need to prepare your data in different ways:</p>
 <h2 id="segmentation-models">Segmentation models</h2>

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-19T20:28:46 CET">
+<meta name="revised" content="2023-02-08T18:44:40 CET">
 <title>Parameters :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -79,7 +79,14 @@
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.77.x/" class="dd-item">
         <div>
           <a href="../../../download/changelog/1.77.x/">
-            Version 1.77.x (current version)
+            Version 1.77.x
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.78.x/" class="dd-item">
+        <div>
+          <a href="../../../download/changelog/1.78.x/">
+            Version 1.78.x (current version)
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -1311,30 +1318,30 @@
 Then you annotate the getter <strong>and</strong> setter with the same <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameter.html">@JIPipeParameter</a> keys. Also add an <a href="../../../apidocs/org/hkijena/jipipe/api/JIPipeDocumentation.html">@JIPipeDocumentation</a> annotation to <strong>either</strong> the getter or setter.</p>
 <p>Parameters are automatically serialized and deserialized.</p>
 <p>Please make sure to send an event when the parameter is set, so the UI can update.</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// ... see previous tutorials
-</span><span style="color:#75715e"></span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyAlgorithm</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeIteratingAlgorithm</span> <span style="color:#f92672">{</span>
-
-    <span style="color:#00a8c8">private</span> <span style="color:#00a8c8">float</span> <span style="color:#111">roundness</span> <span style="color:#f92672">=</span> <span style="color:#111">0</span><span style="color:#f92672">.</span><span style="color:#75af00">5f</span><span style="color:#f92672">;</span>
-
-    <span style="color:#75715e">// ... see previous tutorials
-</span><span style="color:#75715e"></span>
-    <span style="color:#75af00">@JIPipeParameter</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;roundness&#34;</span><span style="color:#f92672">)</span>
-    <span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Roundness&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Value within [0, 1]&#34;</span><span style="color:#f92672">)</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">float</span> <span style="color:#75af00">getRoundness</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#00a8c8">return</span> <span style="color:#111">roundness</span><span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-
-    <span style="color:#75af00">@JIPipeParameter</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;roundness&#34;</span><span style="color:#f92672">)</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">boolean</span> <span style="color:#75af00">setRoundness</span><span style="color:#f92672">(</span><span style="color:#00a8c8">float</span> <span style="color:#111">roundness</span><span style="color:#f92672">)</span>  <span style="color:#f92672">{</span>
-        <span style="color:#00a8c8">if</span><span style="color:#f92672">(</span><span style="color:#111">roundness</span> <span style="color:#f92672">&lt;</span> <span style="color:#111">0</span> <span style="color:#f92672">||</span> <span style="color:#111">roundness</span> <span style="color:#f92672">&gt;</span> <span style="color:#111">1</span><span style="color:#f92672">)</span>
-            <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">false</span><span style="color:#f92672">;</span> <span style="color:#75715e">// Reject this value
-</span><span style="color:#75715e"></span>        <span style="color:#00a8c8">this</span><span style="color:#f92672">.</span><span style="color:#75af00">roundness</span> <span style="color:#f92672">=</span> <span style="color:#111">roundness</span><span style="color:#f92672">;</span>
-        <span style="color:#75715e">// Send the change out to listeners
-</span><span style="color:#75715e"></span>        <span style="color:#111">getEventBus</span><span style="color:#f92672">().</span><span style="color:#75af00">post</span><span style="color:#f92672">(</span><span style="color:#00a8c8">new</span> <span style="color:#111">ParameterChangedEvent</span><span style="color:#f92672">(</span><span style="color:#00a8c8">this</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;roundness&#34;</span><span style="color:#f92672">));</span>
-    <span style="color:#f92672">}</span>
-
-<span style="color:#f92672">}</span>
-</code></pre></div><p>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// ... see previous tutorials
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyAlgorithm</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeIteratingAlgorithm</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">private</span> <span style="color:#00a8c8">float</span> <span style="color:#111">roundness</span> <span style="color:#f92672">=</span> <span style="color:#111">0</span><span style="color:#f92672">.</span><span style="color:#75af00">5f</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ... see previous tutorials
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">@JIPipeParameter</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;roundness&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Roundness&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">description</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Value within [0, 1]&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">float</span> <span style="color:#75af00">getRoundness</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">return</span> <span style="color:#111">roundness</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75af00">@JIPipeParameter</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;roundness&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">boolean</span> <span style="color:#75af00">setRoundness</span><span style="color:#f92672">(</span><span style="color:#00a8c8">float</span> <span style="color:#111">roundness</span><span style="color:#f92672">)</span>  <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">if</span><span style="color:#f92672">(</span><span style="color:#111">roundness</span> <span style="color:#f92672">&lt;</span> <span style="color:#111">0</span> <span style="color:#f92672">||</span> <span style="color:#111">roundness</span> <span style="color:#f92672">&gt;</span> <span style="color:#111">1</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">false</span><span style="color:#f92672">;</span> <span style="color:#75715e">// Reject this value
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#00a8c8">this</span><span style="color:#f92672">.</span><span style="color:#75af00">roundness</span> <span style="color:#f92672">=</span> <span style="color:#111">roundness</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// Send the change out to listeners
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#111">getEventBus</span><span style="color:#f92672">().</span><span style="color:#75af00">post</span><span style="color:#f92672">(</span><span style="color:#00a8c8">new</span> <span style="color:#111">ParameterChangedEvent</span><span style="color:#f92672">(</span><span style="color:#00a8c8">this</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;roundness&#34;</span><span style="color:#f92672">));</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>
 <div class="notices tip" ><p>Your setter can return a boolean. If the output is true, JIPipe considers the value as valid. If false, the JIPipe UI re-loads a valid value via the getter.</p></div>
 
 
@@ -1349,51 +1356,51 @@ This object is responsible for triggering the required events to notify the UI.<
 <p>If you set a parameter setter via code, you will notice that any open parameter UI does not respond to this change - due to the absence of the <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterCollection.ParameterChangedEvent.html">JIPipeParameterAccess.ParameterChangedEvent</a>.</p>
 <p>Use the provided <code>triggerParameterChange(key)</code> function to trigger the appropriate parameter change event for a parameter.
 Alternatively, you can use the <code>setParameter(key, value)</code> method to set parameters.</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#111">MyAlgorithm</span> <span style="color:#111">algorithm</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">MyAlgorithm</span><span style="color:#f92672">(...);</span>
-
-<span style="color:#75715e">// This will NOT update the UI
-</span><span style="color:#75715e"></span><span style="color:#111">algorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">setRoundness</span><span style="color:#f92672">(</span><span style="color:#111">1</span><span style="color:#f92672">.</span><span style="color:#75af00">0f</span><span style="color:#f92672">);</span>
-
-<span style="color:#75715e">// Either trigger the event manually
-</span><span style="color:#75715e"></span><span style="color:#111">algorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">setRoundness</span><span style="color:#f92672">(</span><span style="color:#111">1</span><span style="color:#f92672">.</span><span style="color:#75af00">0f</span><span style="color:#f92672">);</span>
-<span style="color:#111">algorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">triggerParameterChange</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;roundness&#34;</span><span style="color:#f92672">);</span>
-
-<span style="color:#75715e">// Or just use the setParameter() function
-</span><span style="color:#75715e"></span><span style="color:#111">algorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">setParameter</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;roundness&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">1</span><span style="color:#f92672">.</span><span style="color:#75af00">0f</span><span style="color:#f92672">);</span>
-
-<span style="color:#75715e">// DO NOT DO THIS EVER:
-</span><span style="color:#75715e"></span><span style="color:#111">algorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">setRoundness</span><span style="color:#f92672">(</span><span style="color:#111">1</span><span style="color:#f92672">.</span><span style="color:#75af00">0f</span><span style="color:#f92672">);</span>
-<span style="color:#111">algorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">isParameterUIVisible</span><span style="color:#f92672">();</span> <span style="color:#75715e">// DON&#39;T DO THIS!!! THIS WILL UPDATE THE UI, BUT NOT INFORM DEPENDENT PARAMETERS
-</span></code></pre></div><p>You can also read parameters via their key using <code>getParameter()</code></p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#111">MyAlgorithm</span> <span style="color:#111">algorithm</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">MyAlgorithm</span><span style="color:#f92672">(...);</span>
-<span style="color:#111">algorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">getParameter</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;roundness&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">Float</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span> <span style="color:#75715e">// Returns 1.0 
-</span></code></pre></div><h2 id="accessing-the-whole-parameter-tree">Accessing the whole parameter tree</h2>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#111">MyAlgorithm</span> <span style="color:#111">algorithm</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">MyAlgorithm</span><span style="color:#f92672">(...);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// This will NOT update the UI
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#111">algorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">setRoundness</span><span style="color:#f92672">(</span><span style="color:#111">1</span><span style="color:#f92672">.</span><span style="color:#75af00">0f</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Either trigger the event manually
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#111">algorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">setRoundness</span><span style="color:#f92672">(</span><span style="color:#111">1</span><span style="color:#f92672">.</span><span style="color:#75af00">0f</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">algorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">triggerParameterChange</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;roundness&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Or just use the setParameter() function
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#111">algorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">setParameter</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;roundness&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">1</span><span style="color:#f92672">.</span><span style="color:#75af00">0f</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// DO NOT DO THIS EVER:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#111">algorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">setRoundness</span><span style="color:#f92672">(</span><span style="color:#111">1</span><span style="color:#f92672">.</span><span style="color:#75af00">0f</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">algorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">isParameterUIVisible</span><span style="color:#f92672">();</span> <span style="color:#75715e">// DON&#39;T DO THIS!!! THIS WILL UPDATE THE UI, BUT NOT INFORM DEPENDENT PARAMETERS
+</span></span></span></code></pre></div><p>You can also read parameters via their key using <code>getParameter()</code></p>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#111">MyAlgorithm</span> <span style="color:#111">algorithm</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">MyAlgorithm</span><span style="color:#f92672">(...);</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">algorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">getParameter</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;roundness&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">Float</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span> <span style="color:#75715e">// Returns 1.0 
+</span></span></span></code></pre></div><h2 id="accessing-the-whole-parameter-tree">Accessing the whole parameter tree</h2>
 <p>The mentioned functions <code>getParameter</code> and <code>setParameter</code> are utilities around <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterTree.html">JIPipeParameterTree</a>,
 which manages the whole set of parameters and sub-parameters of a <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterCollection.html">JIPipeParameterCollection</a>.
 We recommend to create such an object directly, if you want to access many parameters at once or want to read parameter metadata like names, documentation, annotations, and more.
 It also gives you more control on how parameters are accessed (for example it can force using reflection parameters), which can be helpful 
 in more special cases.</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#111">MyAlgorithm</span> <span style="color:#111">algorithm</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">MyAlgorithm</span><span style="color:#f92672">(...);</span>
-<span style="color:#111">JIPipeParameterTree</span> <span style="color:#111">tree</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeParameterTree</span><span style="color:#f92672">(</span><span style="color:#111">algorithm</span><span style="color:#f92672">);</span>
-
-<span style="color:#75715e">// The access object contains the metadata
-</span><span style="color:#75715e"></span><span style="color:#111">JIPipeParameterAccess</span> <span style="color:#111">access</span> <span style="color:#f92672">=</span> <span style="color:#111">tree</span><span style="color:#f92672">.</span><span style="color:#75af00">getParameters</span><span style="color:#f92672">().</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;roundness&#34;</span><span style="color:#f92672">);</span>
-<span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">set</span><span style="color:#f92672">(</span><span style="color:#111">1</span><span style="color:#f92672">.</span><span style="color:#75af00">0f</span><span style="color:#f92672">);</span>
-
-<span style="color:#75715e">// You can also access sub-parameters (by key or by object)
-</span><span style="color:#75715e"></span><span style="color:#111">JIPipeParameterTree</span><span style="color:#f92672">.</span><span style="color:#75af00">Node</span> <span style="color:#111">subParameterNode</span> <span style="color:#f92672">=</span> <span style="color:#111">tree</span><span style="color:#f92672">.</span><span style="color:#75af00">getSourceNode</span><span style="color:#f92672">(</span><span style="color:#111">algorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">getSubParameter</span><span style="color:#f92672">());</span>
-<span style="color:#111">subParameterNode</span><span style="color:#f92672">.</span><span style="color:#75af00">getDescription</span><span style="color:#f92672">();</span> <span style="color:#75715e">// Access to various settings
-</span></code></pre></div><h1 id="parameter-settings">Parameter settings</h1>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#111">MyAlgorithm</span> <span style="color:#111">algorithm</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">MyAlgorithm</span><span style="color:#f92672">(...);</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">JIPipeParameterTree</span> <span style="color:#111">tree</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeParameterTree</span><span style="color:#f92672">(</span><span style="color:#111">algorithm</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// The access object contains the metadata
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#111">JIPipeParameterAccess</span> <span style="color:#111">access</span> <span style="color:#f92672">=</span> <span style="color:#111">tree</span><span style="color:#f92672">.</span><span style="color:#75af00">getParameters</span><span style="color:#f92672">().</span><span style="color:#75af00">get</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;roundness&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">set</span><span style="color:#f92672">(</span><span style="color:#111">1</span><span style="color:#f92672">.</span><span style="color:#75af00">0f</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// You can also access sub-parameters (by key or by object)
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#111">JIPipeParameterTree</span><span style="color:#f92672">.</span><span style="color:#75af00">Node</span> <span style="color:#111">subParameterNode</span> <span style="color:#f92672">=</span> <span style="color:#111">tree</span><span style="color:#f92672">.</span><span style="color:#75af00">getSourceNode</span><span style="color:#f92672">(</span><span style="color:#111">algorithm</span><span style="color:#f92672">.</span><span style="color:#75af00">getSubParameter</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span><span style="color:#111">subParameterNode</span><span style="color:#f92672">.</span><span style="color:#75af00">getDescription</span><span style="color:#f92672">();</span> <span style="color:#75715e">// Access to various settings
+</span></span></span></code></pre></div><h1 id="parameter-settings">Parameter settings</h1>
 <p>Some parameter types have different styles or other settings that can change the behavior of the parameter editor UI. An example is <a href="../../../apidocs/org/hkijena/jipipe/extensions/standardparametereditors/ui/parametereditors/StringParameterSettings.html">StringParameterSettings</a> that allows to change between single-line and multi-line editors.</p>
 <h1 id="sub-parameters">Sub-parameters</h1>
 <p><a href="../../../apidocs/org/hkijena/jipipe/api/nodes/JIPipeAlgorithm.html">JIPipeAlgorithm</a>, like any <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterCollection.html">JIPipeParameterCollection</a> allows sub-parameters.</p>
 <p>To create a sub-parameter create a getter to an <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterCollection.html">JIPipeParameterCollection</a> and annotate it with <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeSubParameters.html">@JIPipeParameter</a>. The key provided with the annotation should be an unique parameter key. The parameters in the sub-parameter instance are automatically displayed as new group in the parameter editor.</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Gaussian filter&#34;</span><span style="color:#f92672">)</span>
-<span style="color:#75af00">@JIPipeParameter</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;gaussian-algorithm&#34;</span><span style="color:#f92672">)</span>
-<span style="color:#00a8c8">public</span> <span style="color:#111">GaussianBlur2DAlgorithm</span> <span style="color:#75af00">getGaussianAlgorithm</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-    <span style="color:#00a8c8">return</span> <span style="color:#111">gaussianAlgorithm</span><span style="color:#f92672">;</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><p>The <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeSubParameters.html">@JIPipeParameter</a> annotation allows you to determine various properties, like 
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Gaussian filter&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75af00">@JIPipeParameter</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;gaussian-algorithm&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#00a8c8">public</span> <span style="color:#111">GaussianBlur2DAlgorithm</span> <span style="color:#75af00">getGaussianAlgorithm</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">return</span> <span style="color:#111">gaussianAlgorithm</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>The <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeSubParameters.html">@JIPipeParameter</a> annotation allows you to determine various properties, like 
 if the sub-parameter should be collapsed or hidden by default.</p>
 
 <div class="notices warning" ><p>Please do not forget to listen for the ParameterStructureChangedEvent and pass it to the algorithm&rsquo;s event bus. Otherwise there can be issues with the extension builder.
@@ -1403,56 +1410,56 @@ You can use the registerSubParameter() method in the constructor and copy constr
 <p>Each parameter collection (including nodes) allow the conditional display of parameters or sub-parameters.
 To setup this display, override the <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeParameterCollection.html#isParameterUIVisible-org.hkijena.jipipe.api.parameters.JIPipeParameterTree-org.hkijena.jipipe.api.parameters.JIPipeParameterAccess-">isParameterUIVisible</a>
 method. There are two overloads, one for displaying or hiding single parameters, and one for controlling the display of sub-parameters.</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// Example for conditional showing/hidding of single parameters
-</span><span style="color:#75715e"></span> <span style="color:#75af00">@Override</span>
-<span style="color:#00a8c8">public</span> <span style="color:#00a8c8">boolean</span> <span style="color:#75af00">isParameterUIVisible</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeParameterTree</span> <span style="color:#111">tree</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeParameterAccess</span> <span style="color:#111">access</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">getKey</span><span style="color:#f92672">().</span><span style="color:#75af00">equals</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;mode&#34;</span><span style="color:#f92672">))</span>
-        <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">;</span>
-    <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">mode</span> <span style="color:#f92672">==</span> <span style="color:#111">Mode</span><span style="color:#f92672">.</span><span style="color:#75af00">Automatic</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-        <span style="color:#00a8c8">return</span> <span style="color:#f92672">!</span><span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">getKey</span><span style="color:#f92672">().</span><span style="color:#75af00">equals</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;custom-name&#34;</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span> <span style="color:#00a8c8">else</span> <span style="color:#f92672">{</span>
-        <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">getKey</span><span style="color:#f92672">().</span><span style="color:#75af00">equals</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;ignore-missing-metadata&#34;</span><span style="color:#f92672">))</span>
-            <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">;</span>
-        <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">getKey</span><span style="color:#f92672">().</span><span style="color:#75af00">equals</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;missing-string&#34;</span><span style="color:#f92672">))</span>
-            <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">;</span>
-        <span style="color:#00a8c8">return</span> <span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">getKey</span><span style="color:#f92672">().</span><span style="color:#75af00">equals</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;custom-name&#34;</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-<span style="color:#f92672">}</span> 
-
-<span style="color:#75715e">// Example for sub-parameters
-</span><span style="color:#75715e"></span><span style="color:#75af00">@Override</span>
-<span style="color:#00a8c8">public</span> <span style="color:#00a8c8">boolean</span> <span style="color:#75af00">isParameterUIVisible</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeParameterTree</span> <span style="color:#111">tree</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeParameterCollection</span> <span style="color:#111">subParameter</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#00a8c8">if</span><span style="color:#f92672">(!</span><span style="color:#111">scaleToModelSize</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#111">subParameter</span> <span style="color:#f92672">==</span> <span style="color:#111">getScale2DAlgorithm</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
-        <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">false</span><span style="color:#f92672">;</span>
-    <span style="color:#f92672">}</span>
-    <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">super</span><span style="color:#f92672">.</span><span style="color:#75af00">isParameterUIVisible</span><span style="color:#f92672">(</span><span style="color:#111">tree</span><span style="color:#f92672">,</span> <span style="color:#111">subParameter</span><span style="color:#f92672">);</span>
-<span style="color:#f92672">}</span>
-</code></pre></div>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Example for conditional showing/hidding of single parameters
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span> <span style="color:#75af00">@Override</span>
+</span></span><span style="display:flex;"><span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">boolean</span> <span style="color:#75af00">isParameterUIVisible</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeParameterTree</span> <span style="color:#111">tree</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeParameterAccess</span> <span style="color:#111">access</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">getKey</span><span style="color:#f92672">().</span><span style="color:#75af00">equals</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;mode&#34;</span><span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">mode</span> <span style="color:#f92672">==</span> <span style="color:#111">Mode</span><span style="color:#f92672">.</span><span style="color:#75af00">Automatic</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">return</span> <span style="color:#f92672">!</span><span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">getKey</span><span style="color:#f92672">().</span><span style="color:#75af00">equals</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;custom-name&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span> <span style="color:#00a8c8">else</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">getKey</span><span style="color:#f92672">().</span><span style="color:#75af00">equals</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;ignore-missing-metadata&#34;</span><span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">if</span> <span style="color:#f92672">(</span><span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">getKey</span><span style="color:#f92672">().</span><span style="color:#75af00">equals</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;missing-string&#34;</span><span style="color:#f92672">))</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">true</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">return</span> <span style="color:#111">access</span><span style="color:#f92672">.</span><span style="color:#75af00">getKey</span><span style="color:#f92672">().</span><span style="color:#75af00">equals</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;custom-name&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span> 
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75715e">// Example for sub-parameters
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#75af00">@Override</span>
+</span></span><span style="display:flex;"><span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">boolean</span> <span style="color:#75af00">isParameterUIVisible</span><span style="color:#f92672">(</span><span style="color:#111">JIPipeParameterTree</span> <span style="color:#111">tree</span><span style="color:#f92672">,</span> <span style="color:#111">JIPipeParameterCollection</span> <span style="color:#111">subParameter</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">if</span><span style="color:#f92672">(!</span><span style="color:#111">scaleToModelSize</span> <span style="color:#f92672">&amp;&amp;</span> <span style="color:#111">subParameter</span> <span style="color:#f92672">==</span> <span style="color:#111">getScale2DAlgorithm</span><span style="color:#f92672">())</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">false</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">return</span> <span style="color:#00a8c8">super</span><span style="color:#f92672">.</span><span style="color:#75af00">isParameterUIVisible</span><span style="color:#f92672">(</span><span style="color:#111">tree</span><span style="color:#f92672">,</span> <span style="color:#111">subParameter</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div>
 <div class="notices tip" ><p>Use triggerParameterUIChange() to trigger an update of the UI in the setter function if you have dependencies between parameters. 
 This will work for parameters and parameter groups.</p></div>
 
 <h1 id="user-defined-parameters">User-defined parameters</h1>
 <p>If you want to make it possible for users to create custom parameters, create an <a href="../../../apidocs/org/hkijena/jipipe/api/parameters/JIPipeDynamicParameterCollection.html">JIPipeDynamicParameterCollection</a> as sub-parameter.
 You can control the list of allowed parameter types and other settings.</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75715e">// Field that initializes the dynamic parameter collection with all supported parameter types
-</span><span style="color:#75715e"></span><span style="color:#00a8c8">private</span> <span style="color:#111">JIPipeDynamicParameterCollection</span> <span style="color:#111">scriptParameters</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeDynamicParameterCollection</span><span style="color:#f92672">(</span><span style="color:#00a8c8">true</span><span style="color:#f92672">,</span>
-            <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">getParameterTypes</span><span style="color:#f92672">().</span><span style="color:#75af00">getRegisteredParameters</span><span style="color:#f92672">().</span><span style="color:#75af00">values</span><span style="color:#f92672">());</span>
-            
-<span style="color:#00a8c8">public</span> <span style="color:#75af00">MyClass</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-    <span style="color:#111">registerSubParameter</span><span style="color:#f92672">(</span><span style="color:#111">scriptParameters</span><span style="color:#f92672">);</span>
-<span style="color:#f92672">}</span>
-
-<span style="color:#00a8c8">public</span> <span style="color:#75af00">MyClass</span><span style="color:#f92672">(</span><span style="color:#111">MyClass</span> <span style="color:#111">other</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
-    <span style="color:#00a8c8">this</span><span style="color:#f92672">.</span><span style="color:#75af00">scriptParameters</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeDynamicParameterCollection</span><span style="color:#f92672">(</span><span style="color:#111">other</span><span style="color:#f92672">.</span><span style="color:#75af00">scriptParameters</span><span style="color:#f92672">);</span>
-    <span style="color:#111">registerSubParameter</span><span style="color:#f92672">(</span><span style="color:#111">scriptParameters</span><span style="color:#f92672">);</span>
-<span style="color:#f92672">}</span>
-
-<span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Script parameters&#34;</span><span style="color:#f92672">)</span>
-<span style="color:#75af00">@JIPipeParameter</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;script-parameters&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">persistence</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeParameterPersistence</span><span style="color:#f92672">.</span><span style="color:#75af00">Object</span><span style="color:#f92672">)</span> <span style="color:#75715e">// Important: Set persistence
-</span><span style="color:#75715e"></span><span style="color:#00a8c8">public</span> <span style="color:#111">JIPipeDynamicParameterCollection</span> <span style="color:#75af00">getScriptParameters</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-    <span style="color:#00a8c8">return</span> <span style="color:#111">scriptParameters</span><span style="color:#f92672">;</span>
-<span style="color:#f92672">}</span>
-</code></pre></div><p>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75715e">// Field that initializes the dynamic parameter collection with all supported parameter types
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#00a8c8">private</span> <span style="color:#111">JIPipeDynamicParameterCollection</span> <span style="color:#111">scriptParameters</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeDynamicParameterCollection</span><span style="color:#f92672">(</span><span style="color:#00a8c8">true</span><span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>            <span style="color:#111">JIPipe</span><span style="color:#f92672">.</span><span style="color:#75af00">getParameterTypes</span><span style="color:#f92672">().</span><span style="color:#75af00">getRegisteredParameters</span><span style="color:#f92672">().</span><span style="color:#75af00">values</span><span style="color:#f92672">());</span>
+</span></span><span style="display:flex;"><span>            
+</span></span><span style="display:flex;"><span><span style="color:#00a8c8">public</span> <span style="color:#75af00">MyClass</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#111">registerSubParameter</span><span style="color:#f92672">(</span><span style="color:#111">scriptParameters</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#00a8c8">public</span> <span style="color:#75af00">MyClass</span><span style="color:#f92672">(</span><span style="color:#111">MyClass</span> <span style="color:#111">other</span><span style="color:#f92672">)</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">this</span><span style="color:#f92672">.</span><span style="color:#75af00">scriptParameters</span> <span style="color:#f92672">=</span> <span style="color:#00a8c8">new</span> <span style="color:#111">JIPipeDynamicParameterCollection</span><span style="color:#f92672">(</span><span style="color:#111">other</span><span style="color:#f92672">.</span><span style="color:#75af00">scriptParameters</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#111">registerSubParameter</span><span style="color:#f92672">(</span><span style="color:#111">scriptParameters</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#75af00">@JIPipeDocumentation</span><span style="color:#f92672">(</span><span style="color:#111">name</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;Script parameters&#34;</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#75af00">@JIPipeParameter</span><span style="color:#f92672">(</span><span style="color:#111">value</span> <span style="color:#f92672">=</span> <span style="color:#d88200">&#34;script-parameters&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">persistence</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeParameterPersistence</span><span style="color:#f92672">.</span><span style="color:#75af00">Object</span><span style="color:#f92672">)</span> <span style="color:#75715e">// Important: Set persistence
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span><span style="color:#00a8c8">public</span> <span style="color:#111">JIPipeDynamicParameterCollection</span> <span style="color:#75af00">getScriptParameters</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">return</span> <span style="color:#111">scriptParameters</span><span style="color:#f92672">;</span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>
 <div class="notices warning" ><p>Do not forget to deep-copy the JIPipeDynamicParameterCollection. The class has a copy constructor for
 such an operation.</p></div>
 

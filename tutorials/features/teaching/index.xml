@@ -14,7 +14,7 @@
       <guid>https://www.jipipe.org/tutorials/features/teaching/introduction/</guid>
       <description>JIPipe comes with various features that help lecturers to setup exercises where students can have hands-on experience and first achievements in creating image analysis workflows.
 The following features will be explained:
- Graph compartments as means to structure the analysis into units with a clear purpose The project overview tab that allows to provide the list of tasks and explanations directly within the project file Comment nodes to annotate specific areas or nodes within a pipeline Node templates and its associated menu can be utilized to provide students with a selection of nodes to be used in a project A project permission system to prevent students from applying accidental modifications  </description>
+Graph compartments as means to structure the analysis into units with a clear purpose The project overview tab that allows to provide the list of tasks and explanations directly within the project file Comment nodes to annotate specific areas or nodes within a pipeline Node templates and its associated menu can be utilized to provide students with a selection of nodes to be used in a project A project permission system to prevent students from applying accidental modifications </description>
     </item>
     
     <item>
@@ -25,7 +25,7 @@ The following features will be explained:
       <guid>https://www.jipipe.org/tutorials/features/teaching/compartments1/</guid>
       <description>In many lectures it is common to teach that image analysis tasks can be divided into a steps, for example Preprocessing, Analysis, and Postprocessing.
 JIPipe facilitates this concept by its graph compartment feature that can be accessed via the Compartments tab (red arrow 1). The compartment function separates the pipeline into units that can be connected to each other to enforce a specific order of operations (red arrow 2).
-👉 Related tutorial: Compartments I (Creating and connecting)Learn how to create and use compartments.</description>
+👉 Related tutorial: Compartments I (Creating and connecting) Learn how to create and use compartments.</description>
     </item>
     
     <item>
@@ -58,7 +58,7 @@ For example, if the pipeline within the Preprocessing compartment (red box 1) co
       <guid>https://www.jipipe.org/tutorials/features/teaching/projectoverview1/</guid>
       <description>Each JIPipe project comes with a customizable Project overview tab that can be accessed via the Help &amp;gt; Project overview menu (red box 1).
 It contains the following elements:
- A customizable title with authors, website, contact info and more (red box 2) A customizable rich text description with text and images (red box 3) Quick access to bookmarked nodes and selected parameters (both fully customizable; red box 4)  👉 Save the project while the Project overview is open.</description>
+A customizable title with authors, website, contact info and more (red box 2) A customizable rich text description with text and images (red box 3) Quick access to bookmarked nodes and selected parameters (both fully customizable; red box 4) 👉 Save the project while the Project overview is open.</description>
     </item>
     
     <item>
@@ -68,8 +68,8 @@ It contains the following elements:
       
       <guid>https://www.jipipe.org/tutorials/features/teaching/projectoverview2/</guid>
       <description>The custom titles, authors, and descriptions can be edited via the Project settings that can be accessed in two ways:
- While the Project overview tab is open, click Edit metadata in the top right panel Navigate to Project &amp;gt; Project settings  The General category includes the following settings:
- The project name/title The description editor Fields where other metadata like a citation, license, and website can be given The list of authors Acknowledgements  </description>
+While the Project overview tab is open, click Edit metadata in the top right panel Navigate to Project &amp;gt; Project settings The General category includes the following settings:
+The project name/title The description editor Fields where other metadata like a citation, license, and website can be given The list of authors Acknowledgements </description>
     </item>
     
     <item>
@@ -92,7 +92,7 @@ To do this, select your node of interest (red arrow 1) and check the Bookmark th
       <guid>https://www.jipipe.org/tutorials/features/teaching/comments1/</guid>
       <description>Comment nodes are a great way to highlight a specific area or node of interest within the pipeline. For example, students can be pointed towards a node where the parameters should be adjusted to generate the expected results.
 To add a Comment node, use the Miscellaneous menu and select Comment (red arrow 1). The node will appear within the current pipeline (red arrow 2).
-👉 Related tutorial: Importing an image I/II/IIILearn how to find and add nodes.</description>
+👉 Related tutorial: Importing an image I/II/III Learn how to find and add nodes.</description>
     </item>
     
     <item>
@@ -123,8 +123,8 @@ Bookmarks also render the description, so you can also use comments to ask for a
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       
       <guid>https://www.jipipe.org/tutorials/features/teaching/templates1/</guid>
-      <description>👉 Related tutorial: Creating node groups ILearn how to group a set of nodes into a single compound node.👉 Related tutorial: Creating node templatesLearn how to store nodes for re-use. Node groups and node templates enable full control over the following aspects:
- How to reduce the complexity of some operations? Which functions/parameters should be accessible to students to avoid confusion and frustration?</description>
+      <description>👉 Related tutorial: Creating node groups I Learn how to group a set of nodes into a single compound node. 👉 Related tutorial: Creating node templates Learn how to store nodes for re-use. Node groups and node templates enable full control over the following aspects:
+How to reduce the complexity of some operations? Which functions/parameters should be accessible to students to avoid confusion and frustration? Which nodes should students use?</description>
     </item>
     
     <item>
@@ -134,7 +134,7 @@ Bookmarks also render the description, so you can also use comments to ask for a
       
       <guid>https://www.jipipe.org/tutorials/features/teaching/templates2/</guid>
       <description>JIPipe node groups can be used to contain a set of multiple operations (red box 2) into a single node (red box 1). This is for example useful if advanced visualization or file loading processes should be provided to students without establishing all implementation details behind the operation.
-👉 Related tutorial: Creating node groups ILearn how to group a set of nodes into a single compound node. 👉 Node groups contents can be easily viewed by double-clicking them.</description>
+👉 Related tutorial: Creating node groups I Learn how to group a set of nodes into a single compound node. 👉 Node groups contents can be easily viewed by double-clicking them.</description>
     </item>
     
     <item>
@@ -144,7 +144,7 @@ Bookmarks also render the description, so you can also use comments to ask for a
       
       <guid>https://www.jipipe.org/tutorials/features/teaching/templates3/</guid>
       <description>Groups by themselves are a an excellent mode of reducing the complexity of various operations. To still provide users of the group with means to customize the behaviour of the nodes contained within the group, Group nodes support the referencing/export of group-internal parameters (red box 1) to the group itself (red arrow 2).
-👉 Related tutorial: Creating node groups IILearn how to export group parameters. 👉 For example, teachers can provide a group responsible for segmenting and filtering objects with settings where students can input custom object size constraints:</description>
+👉 Related tutorial: Creating node groups II Learn how to export group parameters. 👉 For example, teachers can provide a group responsible for segmenting and filtering objects with settings where students can input custom object size constraints:</description>
     </item>
     
     <item>
@@ -155,7 +155,7 @@ Bookmarks also render the description, so you can also use comments to ask for a
       <guid>https://www.jipipe.org/tutorials/features/teaching/templates4/</guid>
       <description>The node template system allows projects to carry a list of user-defined nodes. These node templates can be created for pre-configured nodes or a group with exported parameters.
 👉 Create project-associated node templates for nodes that should be used by the students
-👉 Related tutorial: Creating node templatesLearn how to create node templates and store them inside the project. Node templates appear both in the Node templates tab (red box 1), as well as in the Templates menu (red box 2).</description>
+👉 Related tutorial: Creating node templates Learn how to create node templates and store them inside the project. Node templates appear both in the Node templates tab (red box 1), as well as in the Templates menu (red box 2).</description>
     </item>
     
     <item>

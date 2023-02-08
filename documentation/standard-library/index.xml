@@ -13,7 +13,7 @@
       
       <guid>https://www.jipipe.org/documentation/standard-library/imagej-integration/</guid>
       <description>The ImageJ integration library integrates common data types from ImageJ into JIPipe:
- Multi-dimensional images (ImagePlus). The standard output file format are TIFF files. Result tables. They are serialized to CSV files. Region of interest (ROI Manager). JIPipe handles ROI as *.zip files.  The ImageJ data types are marked as accessible from outside JIPipe, meaning that algorithms that only use those types can be executed standalone
+Multi-dimensional images (ImagePlus). The standard output file format are TIFF files. Result tables. They are serialized to CSV files. Region of interest (ROI Manager). JIPipe handles ROI as *.zip files. The ImageJ data types are marked as accessible from outside JIPipe, meaning that algorithms that only use those types can be executed standalone
 Image data types Various ImageJ algorithms only work on data with a specific color type, or dimensionality.</description>
     </item>
     
@@ -36,7 +36,7 @@ By default, there are four data types that can be used as input and output:</des
       <guid>https://www.jipipe.org/documentation/standard-library/filesystem/</guid>
       <description>The JIPipe standard library contains data types and algorithms to apply file system operations. The common use case is to extract the list of input files for the following algorithms.
 The filesystem library has two basic data types:
- A  File contains a path to a file A  Folder contains a path to a folder A Path contains a path to a file or folder  In the Add data menu you can define one file/folder or a list of files/folders.</description>
+A File contains a path to a file A Folder contains a path to a folder A Path contains a path to a file or folder In the Add data menu you can define one file/folder or a list of files/folders.</description>
     </item>
     
     <item>
@@ -76,8 +76,8 @@ Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot 
       
       <guid>https://www.jipipe.org/documentation/standard-library/jython/</guid>
       <description>The standard library contains nodes that allow to run Python scripts using the Jython library. Python scripts have access to all JIPipe and ImageJ APIs that are available at runtime.
-Due to restrictions in the Jython library, Python libraries that are built on a native backend (such as Numpy) will not work.
-As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on how to expand Jython with additional libraries.</description>
+Due to restrictions in the Jython library, Python libraries that are built on a native backend (such as Numpy) will not work.
+As JIPipe builds on the functionality provided by ImageJ. Please refer to the ImageJ documentation to find information on how to expand Jython with additional libraries.</description>
     </item>
     
     <item>
@@ -88,7 +88,7 @@ Creating plots Plots can be created via the Analyze &amp;gt; Plot &amp;gt; Plot 
       <guid>https://www.jipipe.org/documentation/standard-library/r-integration/</guid>
       <description>The standard library contains nodes that allow to run R scripts. This means that you will need to install a distribution of R.
 You will need to install R (https://www.r-project.org/) and setup JIPipe to find this installation.
-Setting up R You have the option to either select an existing R environment, or let JIPipe install a new R environment into a folder (only available on Windows).
+Setting up R You have the option to either select an existing R environment, or let JIPipe install a new R environment into a folder (only available on Windows).
 To setup Python, navigate to Project &amp;gt; Application settings &amp;gt; Extensions &amp;gt; R integration.</description>
     </item>
     

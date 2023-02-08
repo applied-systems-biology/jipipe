@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-19T20:28:46 CET">
+<meta name="revised" content="2023-02-08T18:44:40 CET">
 <title>Step 12 :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../../css/font-awesome.min.css" rel="stylesheet">
@@ -79,7 +79,14 @@
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.77.x/" class="dd-item">
         <div>
           <a href="../../../../download/changelog/1.77.x/">
-            Version 1.77.x (current version)
+            Version 1.77.x
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.78.x/" class="dd-item">
+        <div>
+          <a href="../../../../download/changelog/1.78.x/">
+            Version 1.78.x (current version)
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -1379,7 +1386,7 @@
     
     
     <p>Begin by deleting the existing example expression. The expression will now be</p>
-<pre><code></code></pre><p>We will now use the function builder component of the expression editor to convert the annotation value of <code>Image composite channel count</code> to a number that can be tested to be equal to <code>3</code>:</p>
+<pre tabindex="0"><code></code></pre><p>We will now use the function builder component of the expression editor to convert the annotation value of <code>Image composite channel count</code> to a number that can be tested to be equal to <code>3</code>:</p>
 <ol>
 <li>Use the search field to look for functions that work with numbers  by using the search word <code>number</code> (red arrow 1), which will yield a function <code>TO_NUMBER</code> (red arrow 3). Select the item in the list.</li>
 <li>You will see a tab <code>Function Convert to number</code></li>
@@ -1388,9 +1395,9 @@
 <li>Click the <code>Insert</code> button</li>
 </ol>
 <p>The expression now will be</p>
-<pre><code>TO_NUMBER($&quot;Image composite channel count&quot;)
+<pre tabindex="0"><code>TO_NUMBER($&#34;Image composite channel count&#34;)
 </code></pre><p>Finally, add the code to test if the number of channels is <code>3</code> (red arrow 6)</p>
-<pre><code>TO_NUMBER($&quot;Image composite channel count&quot;) == 3
+<pre tabindex="0"><code>TO_NUMBER($&#34;Image composite channel count&#34;) == 3
 </code></pre><p>Now you can accept the changes to the expression by clicking the <code>Accept</code> button (red arrow 7).</p>
 
 

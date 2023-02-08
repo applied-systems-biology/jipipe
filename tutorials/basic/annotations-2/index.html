@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-19T20:28:48 CET">
+<meta name="revised" content="2023-02-08T18:44:41 CET">
 <title>Annotations II: Branching :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -79,7 +79,14 @@
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.77.x/" class="dd-item">
         <div>
           <a href="../../../download/changelog/1.77.x/">
-            Version 1.77.x (current version)
+            Version 1.77.x
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.78.x/" class="dd-item">
+        <div>
+          <a href="../../../download/changelog/1.78.x/">
+            Version 1.78.x (current version)
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -320,7 +327,7 @@
         <ul>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/tutorials/basic/annotations-2/" class="dd-item parent active haschildren
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/annotations-2/" class="dd-item active haschildren
         ">
       <div>
       <a href="../../../tutorials/basic/annotations-2/">Annotations II: Branching</a><i class="fa fa-circle-thin read-icon"></i>
@@ -1279,8 +1286,7 @@
    Annotations I: Filtering</option>
     <option value="/tutorials/basic/annotations-2/"  selected>
   -- 
-   Annotations II: Branching</option> 
-  
+   Annotations II: Branching</option>
     <option value="/tutorials/basic/annotations-3/" >
   -- 
    Annotations III: Modifying and merging</option>
@@ -1383,11 +1389,11 @@
     <div class="link-box">
     
     <div class="link">
-    <a href="../../../tutorials/basic/annotations-1/">👉 Related tutorial: Annotations I (Filtering)</a>
-    <div class="link-description">
-        This guide is a followup of other tutorials.
+        <a href="../../../tutorials/basic/annotations-1/">👉 Related tutorial: Annotations I (Filtering)</a>
+        <div class="link-description">
+            This guide is a followup of other tutorials.
+        </div>
     </div>
-</div>
 
 </div>
 <div class="examples">
@@ -1541,9 +1547,9 @@
 <p>In the expression editor window (red arrow 2) look for a number conversion function (red arrow 3) and select the <code>TO_NUMBER</code> function (red arrow 4). Choose the <code>Variable</code> value type (red arrow 5) and paste in the name of the variable based on which the filtering will be done (here: <code>Image composite channel count</code> as seen in the previous tutorial, red arrow 6).</p>
 <p>Insert the new expression (red arrow 7)
 The editor field will now read:</p>
-<pre><code>TO_NUMBER($&quot;Image composite channel count&quot;)
+<pre tabindex="0"><code>TO_NUMBER($&#34;Image composite channel count&#34;)
 </code></pre><p>Adapt the expression further to test for <code>3</code> channels via the comparison operator (red arrow 8):</p>
-<pre><code>TO_NUMBER($&quot;Image composite channel count&quot;) == 3
+<pre tabindex="0"><code>TO_NUMBER($&#34;Image composite channel count&#34;) == 3
 </code></pre><p>Accept the changes (red arrow 9).</p>
 
             </div>

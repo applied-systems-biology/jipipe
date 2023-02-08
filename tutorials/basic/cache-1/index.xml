@@ -74,8 +74,7 @@ The opened UI is connected to a directory on the hard-drive that is located with
       
       <guid>https://www.jipipe.org/tutorials/basic/cache-1/step7/</guid>
       <description>The entire project-wide cache can be viewed and managed via the Tools menu (red arrow 1), using the Cache browser option (red arrow 2).
-So far, we only used the Cache browser tab that is associated to a specific node. The global Cache browser option is useful for browsing through all data that has been cached.
-</description>
+So far, we only used the Cache browser tab that is associated to a specific node. The global Cache browser option is useful for browsing through all data that has been cached.</description>
     </item>
     
     <item>

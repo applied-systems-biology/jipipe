@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-19T20:28:48 CET">
+<meta name="revised" content="2023-02-08T18:44:41 CET">
 <title>Data API documentation :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../images/favicon.png" type="image/x-icon" />
 <link href="../css/font-awesome.min.css" rel="stylesheet">
@@ -79,7 +79,14 @@
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.77.x/" class="dd-item">
         <div>
           <a href="../download/changelog/1.77.x/">
-            Version 1.77.x (current version)
+            Version 1.77.x
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.78.x/" class="dd-item">
+        <div>
+          <a href="../download/changelog/1.78.x/">
+            Version 1.78.x (current version)
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -1172,11 +1179,10 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/documentation-data-api/" class="dd-item parent active haschildren
+    <li data-nav-id="https://www.jipipe.org/documentation-data-api/" class="dd-item active haschildren
         ">
       <div>
-      <a href="../documentation-data-api/">Data API documentation</a>
-            <i class="fa fa-angle-down fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
+      <a href="../documentation-data-api/">Data API documentation</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
       <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-table/" class="dd-item">
@@ -1252,12 +1258,7 @@
     <option value="/documentation-json-api/" >
    JSON API documentation</option>
     <option value="/documentation-data-api/"  selected>
-   Data API documentation</option> 
-      <option value="/documentation-data-api/data-table/" >- Data table</option>
-      <option value="/documentation-data-api/row-folder/" >- Row folder</option>
-      <option value="/documentation-data-api/data-types/" >- Data types</option>
-      <option value="/documentation-data-api/pipeline-output/" >- Pipeline output</option>
-  
+   Data API documentation</option>
     <option value="/citation/" >
    Citation</option>
     <option value="/supplementary-information/" >
@@ -1335,7 +1336,7 @@ ExportedCache["Exported cache"] --> DataTable;
 <a href="../documentation-data-api/pipeline-output/" >Pipeline output</a></li></p>
 <p>A pipeline output folder is generated on running a pipeline using the Run function or via other means of running the pipeline and saving the results to the hard drive.
 The generated folder follows a hierarchical structure that is based on the location of data within graph compartments, nodes, and slots. It also contains a copy of the project that generated the data in a file project.jip.
-mermaid.initialize({startOnLoad:true});graph LR;Root["</p>
+graph LR; Root["/"] --> DataTable["</p>
 </span>
 </ul>
 

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-19T20:28:46 CET">
+<meta name="revised" content="2023-02-08T18:44:40 CET">
 <title>Loop nodes :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -79,7 +79,14 @@
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.77.x/" class="dd-item">
         <div>
           <a href="../../../download/changelog/1.77.x/">
-            Version 1.77.x (current version)
+            Version 1.77.x
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.78.x/" class="dd-item">
+        <div>
+          <a href="../../../download/changelog/1.78.x/">
+            Version 1.78.x (current version)
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -1311,7 +1318,7 @@
     
     
     
-    <p>JIPipe processes data <a href="../../../documentation/basic-concepts/batch-processing">node-per-node</a>, meaning that a node always processes all available input data before passing the results to the next node. 
+    <p>JIPipe processes data <a href="../../../documentation/basic-concepts/batch-processing">node-per-node</a>, meaning that a node always processes all available input data before passing the results to the next node.
 This is easy to understand and makes no assumptions about the structure of the data. The issue is that such a model allocates all memory required to process the data at once.</p>
 <p><a href="https://www.jipipe.org/documentation/create-pipelines/groups/">Group nodes</a> provide a feature that allows to loop the contained pipeline for each input data batch, reducing the memory allocated during the processing (if the groups are set up so that memory-intensive tasks are split).
 The nodes on the other hand have no access to the project-wide data cache, as groups contain separate pipelines. Loop nodes solve this issue by providing the looping ability of group nodes within the main pipeline.</p>
@@ -1322,7 +1329,7 @@ The nodes on the other hand have no access to the project-wide data cache, as gr
 <li><strong>Per merging data batch:</strong> Finds data batches where multiple data items per slot are found. Iterates through all data batches.</li>
 <li><strong>Pass data through:</strong> Disables looping</li>
 </ol>
-<p>You can also enable the <code>Pass through</code> parameter of loop starts and ends to disable their functionality. In the case of loop starts, the pipeline will be run as if there is no loop. 
+<p>You can also enable the <code>Pass through</code> parameter of loop starts and ends to disable their functionality. In the case of loop starts, the pipeline will be run as if there is no loop.
 In case of loop ends, more nodes will be inside the loop.</p>
 <p>
 <div class="notices info" ><p>Always ensure that there are no multiple loop starts per node. Your pipeline will not run in such cases.</p></div>

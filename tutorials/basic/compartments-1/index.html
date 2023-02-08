@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-19T20:28:48 CET">
+<meta name="revised" content="2023-02-08T18:44:41 CET">
 <title>Compartments I: Creating and connecting :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -79,7 +79,14 @@
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.77.x/" class="dd-item">
         <div>
           <a href="../../../download/changelog/1.77.x/">
-            Version 1.77.x (current version)
+            Version 1.77.x
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.78.x/" class="dd-item">
+        <div>
+          <a href="../../../download/changelog/1.78.x/">
+            Version 1.78.x (current version)
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -336,7 +343,7 @@
         <ul>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/tutorials/basic/compartments-1/" class="dd-item parent active haschildren
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/compartments-1/" class="dd-item active haschildren
         ">
       <div>
       <a href="../../../tutorials/basic/compartments-1/">Compartments I: Creating and connecting</a><i class="fa fa-circle-thin read-icon"></i>
@@ -1247,76 +1254,6 @@
     <option value="/tutorials/basic/" >
   - 
    Basic</option> 
-    <option value="/tutorials/basic/adding-nodes-saving/" >
-  -- 
-   Adding and running nodes</option>
-    <option value="/tutorials/basic/finding-connecting-nodes-1/" >
-  -- 
-   Importing an image I</option>
-    <option value="/tutorials/basic/finding-connecting-nodes-2/" >
-  -- 
-   Importing an image II</option>
-    <option value="/tutorials/basic/finding-connecting-nodes-3/" >
-  -- 
-   Importing an image III</option>
-    <option value="/tutorials/basic/node-parameters/" >
-  -- 
-   Changing node parameters</option>
-    <option value="/tutorials/basic/importing-multiple-images-1/" >
-  -- 
-   Importing a directory of images I</option>
-    <option value="/tutorials/basic/importing-multiple-images-2/" >
-  -- 
-   Importing a directory of images II</option>
-    <option value="/tutorials/basic/multi-channel-images-1/" >
-  -- 
-   Handling multi-channel images I</option>
-    <option value="/tutorials/basic/comment-nodes/" >
-  -- 
-   Comment nodes</option>
-    <option value="/tutorials/basic/annotations-1/" >
-  -- 
-   Annotations I: Filtering</option>
-    <option value="/tutorials/basic/annotations-2/" >
-  -- 
-   Annotations II: Branching</option>
-    <option value="/tutorials/basic/annotations-3/" >
-  -- 
-   Annotations III: Modifying and merging</option>
-    <option value="/tutorials/basic/compartments-1/"  selected>
-  -- 
-   Compartments I: Creating and connecting</option> 
-  
-    <option value="/tutorials/basic/compartments-2/" >
-  -- 
-   Compartments II: Basic image segmentation</option>
-    <option value="/tutorials/basic/quantification-plotting/" >
-  -- 
-   Quantification and plotting</option>
-    <option value="/tutorials/basic/cache-1/" >
-  -- 
-   Cache I: Generating and viewing</option>
-    <option value="/tutorials/basic/cache-2/" >
-  -- 
-   Cache II: Managing and exporting</option>
-    <option value="/tutorials/basic/image-physical-dimensions/" >
-  -- 
-   Image properties and LUT</option>
-    <option value="/tutorials/basic/image-roi-processing/" >
-  -- 
-   ROI processing</option>
-    <option value="/tutorials/basic/table-processing/" >
-  -- 
-   Table processing</option>
-    <option value="/tutorials/basic/annotating-data-with-measurements/" >
-  -- 
-   Annotating data with measurements</option>
-    <option value="/tutorials/basic/exporting-data-1/" >
-  -- 
-   Exporting data I: Machine-readable</option>
-    <option value="/tutorials/basic/exporting-data-2/" >
-  -- 
-   Exporting data II: Human-readable</option>
   
     <option value="/tutorials/features/" >
   - 
@@ -1383,11 +1320,11 @@
     <div class="link-box">
     
     <div class="link">
-    <a href="../../../tutorials/basic/annotations-2/">👉 Related tutorial: Annotations II (Branching)</a>
-    <div class="link-description">
-        This guide is a followup of other tutorials.
+        <a href="../../../tutorials/basic/annotations-2/">👉 Related tutorial: Annotations II (Branching)</a>
+        <div class="link-description">
+            This guide is a followup of other tutorials.
+        </div>
     </div>
-</div>
 
 </div>
 <div class="examples">
@@ -1551,7 +1488,7 @@
 <p>Move the node close to the rest of the nodes, click on the ➕ button to add a new input slot (red arrow 2). The input type should be an image, so use <code>image</code> as a search word (red arrow 3). The <code>Image</code> type will now be selected (red arrow 4) and the new slot will be given a name (red arrow 5).</p>
 <p>Click <code>Add</code> when the editing is done (red arrow 6).</p>
 
-<div class="notices info" ><p>Each compartment contains a <code>xyz output</code> node that acts as interface to transfer data to other compartments. 
+<div class="notices info" ><p>Each compartment contains a <code>xyz output</code> node that acts as interface to transfer data to other compartments.
 {{ /notice }}</p></div>
 
 

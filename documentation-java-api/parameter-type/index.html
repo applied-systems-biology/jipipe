@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-19T20:28:48 CET">
+<meta name="revised" content="2023-02-08T18:44:41 CET">
 <title>Creating a parameter type :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../images/favicon.png" type="image/x-icon" />
 <link href="../../css/font-awesome.min.css" rel="stylesheet">
@@ -79,7 +79,14 @@
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.77.x/" class="dd-item">
         <div>
           <a href="../../download/changelog/1.77.x/">
-            Version 1.77.x (current version)
+            Version 1.77.x
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.78.x/" class="dd-item">
+        <div>
+          <a href="../../download/changelog/1.78.x/">
+            Version 1.78.x (current version)
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -800,38 +807,31 @@
       <a href="../../documentation/run-pipelines/">Running pipelines</a><i class="fa fa-angle-right fa-lg category-icon"></i><i class="fa fa-circle-thin read-icon"></i>
       </div>
         <ul>
-      <li data-nav-id="https://www.jipipe.org/documentation/run-pipelines/run/" class="dd-item">
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-table/" class="dd-item">
         <div>
-          <a href="../../documentation/run-pipelines/run/">
-            Running the whole pipeline
+          <a href="../../documentation-data-api/data-table/">
+            Data table
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://www.jipipe.org/documentation/run-pipelines/result-analysis/" class="dd-item">
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/row-folder/" class="dd-item">
         <div>
-          <a href="../../documentation/run-pipelines/result-analysis/">
-            Review results
+          <a href="../../documentation-data-api/row-folder/">
+            Row folder
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://www.jipipe.org/documentation/run-pipelines/connect-external-software/" class="dd-item">
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/data-types/" class="dd-item">
         <div>
-          <a href="../../documentation/run-pipelines/connect-external-software/">
-            Use results in external software
+          <a href="../../documentation-data-api/data-types/">
+            Data types
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
-      <li data-nav-id="https://www.jipipe.org/documentation/run-pipelines/quick-run/" class="dd-item">
+      <li data-nav-id="https://www.jipipe.org/documentation-data-api/pipeline-output/" class="dd-item">
         <div>
-          <a href="../../documentation/run-pipelines/quick-run/">
-            Running a single node
-          </a><i class="fa fa-circle-thin read-icon"></i>
-        </div>
-    </li>
-      <li data-nav-id="https://www.jipipe.org/documentation/run-pipelines/cache/" class="dd-item">
-        <div>
-          <a href="../../documentation/run-pipelines/cache/">
-            Data caching
+          <a href="../../documentation-data-api/pipeline-output/">
+            Pipeline output
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -1059,7 +1059,7 @@
     </li>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/documentation-java-api/parameter-type/" class="dd-item parent active
+    <li data-nav-id="https://www.jipipe.org/documentation-java-api/parameter-type/" class="dd-item active
         ">
       <div>
       <a href="../../documentation-java-api/parameter-type/">Creating a parameter type</a><i class="fa fa-circle-thin read-icon"></i>
@@ -1259,8 +1259,7 @@
    Creating a data type</option>
     <option value="/documentation-java-api/parameter-type/"  selected>
   - 
-   Creating a parameter type</option> 
-  
+   Creating a parameter type</option>
       <option value="/documentation-java-api/usage-in-java/" >- Usage in Java</option>
   
     <option value="/documentation-json-api/" >
@@ -1319,30 +1318,30 @@ a parameter if you require a list of it down the line. The list parameter inheri
 
 <h2 id="registering-a-parameter">Registering a parameter</h2>
 <p>Register the parameter type and its UI in <a href="../../apidocs/org/hkijena/jipipe/JIPipeJavaExtension.html">JIPipeJavaExtension</a>:</p>
-<div class="highlight"><pre style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-java" data-lang="java"><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
-<span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
-
-    <span style="color:#75715e">// ... See previous tutorial for other methods
-</span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
-    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">register</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
-        <span style="color:#75715e">// You have to provide an unique ID, the parameter class, a method to create a new instance, a method to create a deep copy, and an UI class
-</span><span style="color:#75715e"></span>        <span style="color:#111">registerParameterType</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-parameter&#34;</span><span style="color:#f92672">,</span>
-                              <span style="color:#111">MyParameter</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span>
-                              <span style="color:#111">MyParameter</span><span style="color:#f92672">::</span><span style="color:#00a8c8">new</span><span style="color:#f92672">,</span>
-                              <span style="color:#111">p</span> <span style="color:#f92672">-&gt;</span> <span style="color:#111">p</span><span style="color:#f92672">.</span><span style="color:#75af00">clone</span><span style="color:#f92672">(),</span>
-                              <span style="color:#d88200">&#34;My parameter&#34;</span><span style="color:#f92672">,</span>
-                              <span style="color:#d88200">&#34;A custom parameter type&#34;</span><span style="color:#f92672">,</span>
-                              <span style="color:#111">MyParameterParameterEditorUI</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
-
-        <span style="color:#75715e">// If you have a hierarchy of parameters, you can register the editor for the whole hierarchy:
-</span><span style="color:#75715e"></span>        <span style="color:#111">registerParameterEditor</span><span style="color:#f92672">(</span><span style="color:#111">MyCollectionBase</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">MyCollectionParameterEditorUI</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
-
-        <span style="color:#75715e">// There is a predefined method to register enum values:
-</span><span style="color:#75715e"></span>        <span style="color:#111">registerEnumParameterType</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-enum&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">MyEnum</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;My Enum&#34;</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;Enum of values&#34;</span><span style="color:#f92672">);</span>
-    <span style="color:#f92672">}</span>
-
-<span style="color:#f92672">}</span>
-</code></pre></div><p>
+<div class="highlight"><pre tabindex="0" style="color:#272822;background-color:#fafafa;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-java" data-lang="java"><span style="display:flex;"><span><span style="color:#75af00">@Plugin</span><span style="color:#f92672">(</span><span style="color:#111">type</span> <span style="color:#f92672">=</span> <span style="color:#111">JIPipeJavaExtension</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">)</span>
+</span></span><span style="display:flex;"><span><span style="color:#00a8c8">public</span> <span style="color:#00a8c8">class</span> <span style="color:#75af00">MyExtension</span> <span style="color:#00a8c8">extends</span> <span style="color:#111">JIPipeDefaultJavaExtension</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>    <span style="color:#75715e">// ... See previous tutorial for other methods
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>    <span style="color:#75af00">@Override</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#00a8c8">public</span> <span style="color:#00a8c8">void</span> <span style="color:#75af00">register</span><span style="color:#f92672">()</span> <span style="color:#f92672">{</span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// You have to provide an unique ID, the parameter class, a method to create a new instance, a method to create a deep copy, and an UI class
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#111">registerParameterType</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-parameter&#34;</span><span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>                              <span style="color:#111">MyParameter</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>                              <span style="color:#111">MyParameter</span><span style="color:#f92672">::</span><span style="color:#00a8c8">new</span><span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>                              <span style="color:#111">p</span> <span style="color:#f92672">-&gt;</span> <span style="color:#111">p</span><span style="color:#f92672">.</span><span style="color:#75af00">clone</span><span style="color:#f92672">(),</span>
+</span></span><span style="display:flex;"><span>                              <span style="color:#d88200">&#34;My parameter&#34;</span><span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>                              <span style="color:#d88200">&#34;A custom parameter type&#34;</span><span style="color:#f92672">,</span>
+</span></span><span style="display:flex;"><span>                              <span style="color:#111">MyParameterParameterEditorUI</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// If you have a hierarchy of parameters, you can register the editor for the whole hierarchy:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#111">registerParameterEditor</span><span style="color:#f92672">(</span><span style="color:#111">MyCollectionBase</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#111">MyCollectionParameterEditorUI</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span>        <span style="color:#75715e">// There is a predefined method to register enum values:
+</span></span></span><span style="display:flex;"><span><span style="color:#75715e"></span>        <span style="color:#111">registerEnumParameterType</span><span style="color:#f92672">(</span><span style="color:#d88200">&#34;my-enum&#34;</span><span style="color:#f92672">,</span> <span style="color:#111">MyEnum</span><span style="color:#f92672">.</span><span style="color:#75af00">class</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;My Enum&#34;</span><span style="color:#f92672">,</span> <span style="color:#d88200">&#34;Enum of values&#34;</span><span style="color:#f92672">);</span>
+</span></span><span style="display:flex;"><span>    <span style="color:#f92672">}</span>
+</span></span><span style="display:flex;"><span>
+</span></span><span style="display:flex;"><span><span style="color:#f92672">}</span>
+</span></span></code></pre></div><p>
 <div class="notices warning" ><p>Do not forget to register all algorithm parameter types. JIPipe will throw an error if it detects a missing parameter registration.</p></div>
 
 

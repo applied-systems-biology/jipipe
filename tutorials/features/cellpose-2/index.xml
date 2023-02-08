@@ -77,8 +77,8 @@ Both the image and the annotations are scaled (red arrows 2 and 3) with a factor
       
       <guid>https://www.jipipe.org/tutorials/features/cellpose-2/step7/</guid>
       <description>Use the slot editing capabilities of Split data randomly (percentage) to create the following output slots of type Image:
- Train Validate Test  Then configure the percentages in the Parameters tab and the Weights category (red rectangle 1) as following:
- Train set to 80 Validate set to 10 Test set to 10  </description>
+Train Validate Test Then configure the percentages in the Parameters tab and the Weights category (red rectangle 1) as following:
+Train set to 80 Validate set to 10 Test set to 10 </description>
     </item>
     
     <item>

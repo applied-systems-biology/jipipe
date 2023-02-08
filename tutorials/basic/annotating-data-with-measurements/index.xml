@@ -27,7 +27,7 @@ Scroll to the end of the table and observe that the AVG Density column now appea
       <description>Add the node Annotate data with table values to the UI (red arrow 1).
 In the Parameters tab (red arrow 2) add the average density as an image annotation (red arrows 3 and 4).
 Each annotation consists of two parts:
- The Name is the name of the annotation. Set it to &amp;quot;Density&amp;quot;. Please note that this is an expression (as the text is colored) and text should be put into quotes.</description>
+The Name is the name of the annotation. Set it to &amp;quot;Density&amp;quot;. Please note that this is an expression (as the text is colored) and text should be put into quotes.</description>
     </item>
     
     <item>

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-19T20:28:48 CET">
+<meta name="revised" content="2023-02-08T18:44:41 CET">
 <title>Exporting data II: Human-readable :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../css/font-awesome.min.css" rel="stylesheet">
@@ -79,7 +79,14 @@
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.77.x/" class="dd-item">
         <div>
           <a href="../../../download/changelog/1.77.x/">
-            Version 1.77.x (current version)
+            Version 1.77.x
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.78.x/" class="dd-item">
+        <div>
+          <a href="../../../download/changelog/1.78.x/">
+            Version 1.78.x (current version)
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -416,7 +423,7 @@
         <ul>
         </ul>
     </li>
-    <li data-nav-id="https://www.jipipe.org/tutorials/basic/exporting-data-2/" class="dd-item parent active haschildren
+    <li data-nav-id="https://www.jipipe.org/tutorials/basic/exporting-data-2/" class="dd-item active haschildren
         ">
       <div>
       <a href="../../../tutorials/basic/exporting-data-2/">Exporting data II: Human-readable</a><i class="fa fa-circle-thin read-icon"></i>
@@ -1315,8 +1322,7 @@
    Exporting data I: Machine-readable</option>
     <option value="/tutorials/basic/exporting-data-2/"  selected>
   -- 
-   Exporting data II: Human-readable</option> 
-  
+   Exporting data II: Human-readable</option>
   
     <option value="/tutorials/features/" >
   - 
@@ -1383,11 +1389,11 @@
     <div class="link-box">
     
     <div class="link">
-    <a href="../../../tutorials/basic/cache-2/">👉 Related tutorial: Cache II (Managing and exporting)</a>
-    <div class="link-description">
-        This guide is a followup of other tutorials.
+        <a href="../../../tutorials/basic/cache-2/">👉 Related tutorial: Cache II (Managing and exporting)</a>
+        <div class="link-description">
+            This guide is a followup of other tutorials.
+        </div>
     </div>
-</div>
 
 </div>
 <div class="examples">
@@ -1535,15 +1541,15 @@
             <h2 id="step-4">Step 4</h2>
             <p>Now JIPipe will give you options that determine how the file names should be generated. This is required, as JIPipe does not know anymore the name of the original input file unless it is stored in the annotations.</p>
 <p>The most important setting is the <code>File name</code> expression that defaults to</p>
-<pre><code>SUMMARIZE_ANNOTATIONS_MAP(annotations, &quot;#&quot;)
+<pre tabindex="0"><code>SUMMARIZE_ANNOTATIONS_MAP(annotations, &#34;#&#34;)
 </code></pre><p>The expression is applied <em>for each exported data item</em> and returns the file name that should be used. The default method will take all known annotations that are marked with a <code>#</code> and form a filename based on the following pattern:</p>
-<pre><code>[Annotation 1 name]=[Annotation 1 value]
+<pre tabindex="0"><code>[Annotation 1 name]=[Annotation 1 value]
 </code></pre><p>If you want to know more about <code>SUMMARIZE_ANNOTATIONS_MAP</code>, please click <code>Edit</code> and search for the function in the function list.</p>
 <p>In this case, you can leave the setting as-is.</p>
 
 <div class="notices tip" ><p><p>You can build your custom filenames based on annotations. For example, if you just type in <code>#Filename</code>, the <code>#Filename</code> annotation will be utilized.</p>
 <p>You can also create complex filenames by utilizing expression functions. For example, if you want a text <code>overlay_</code> in front of all filenames, just type in</p>
-<pre><code>&quot;overlay_&quot; + #FileName
+<pre tabindex="0"><code>&#34;overlay_&#34; + #FileName
 </code></pre></p></div>
 
 
@@ -1589,7 +1595,7 @@
 <div class="notices warning" ><p><code>Output relative to project directory</code> only works if you loaded the project from a *.jip file or have saved it at least once.</p></div>
 
 <p>It is common that the type of the output is stored within the filename. To to this in JIPipe, modify the <code>File name</code> property as follows:</p>
-<pre><code>&quot;density_&quot; + #Filename
+<pre tabindex="0"><code>&#34;density_&#34; + #Filename
 </code></pre><p>The exporter will use the expression to determine the filename of each exported data item. As the images are annotated with a <code>#Filename</code> annotation, we can combine it with a custom text <code>&quot;density_&quot;</code> to generate files with that pattern.</p>
 
             </div>
@@ -1613,7 +1619,7 @@
             <p>Select the <code>Export image</code> node and navigate to its parameters. Unlike the generic data exporter <code>Export data</code>, it allows you to change the output type of the generated file from TIFF to PNG or other formats.</p>
 <p>Again, set the <code>Output directory</code> to <code>ExampleExports/ViaNodes</code> with <code>Output relative to project directory</code> enabled.</p>
 <p>The filename expression set to</p>
-<pre><code>&quot;overlay_&quot; + #Filename
+<pre tabindex="0"><code>&#34;overlay_&#34; + #Filename
 </code></pre><p>This would yield a file that is for example named <code>overlay_blobs.png</code>.</p>
 
             </div>
@@ -1625,7 +1631,7 @@
             <p>Move on to the <code>Export table as XLSX</code> node. While <code>Export data</code> will always export CSV files, this node will instead Excel files. It can even be configured to export multiple tables into one XLSX file.</p>
 <p>Again, set the <code>Output directory</code> to <code>ExampleExports/ViaNodes</code> with <code>Output relative to project directory</code> enabled.</p>
 <p>The filename expression set to</p>
-<pre><code>&quot;measurements_&quot; + #Filename
+<pre tabindex="0"><code>&#34;measurements_&#34; + #Filename
 </code></pre><p>This would yield a file that is for example named <code>measurements_blobs.xlsx</code>.</p>
 
             </div>
@@ -1637,7 +1643,7 @@
             <p>Finally, edit the parameters of <code>Export ROI</code> node. <code>Export data</code> will export a *.roi file if only one ROI is present and otherwise compress all ROIs into a *.zip file. This node can optionally turn off this export behavior and export all ROIs into an individual *.roi file.</p>
 <p>Again, set the <code>Output directory</code> to <code>ExampleExports/ViaNodes</code> with <code>Output relative to project directory</code> enabled.</p>
 <p>The filename expression set to</p>
-<pre><code>&quot;rois_&quot; + #Filename
+<pre tabindex="0"><code>&#34;rois_&#34; + #Filename
 </code></pre><p>This would yield a file that is for example named <code>rois_blobs.zip</code> or <code>rois_blobs.roi</code> depending on whether one or multiple ROIs are present.</p>
 
             </div>

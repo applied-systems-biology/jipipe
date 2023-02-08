@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-19T20:28:46 CET">
+<meta name="revised" content="2023-02-08T18:44:40 CET">
 <title>Step 2 :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../../css/font-awesome.min.css" rel="stylesheet">
@@ -79,7 +79,14 @@
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.77.x/" class="dd-item">
         <div>
           <a href="../../../../download/changelog/1.77.x/">
-            Version 1.77.x (current version)
+            Version 1.77.x
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.78.x/" class="dd-item">
+        <div>
+          <a href="../../../../download/changelog/1.78.x/">
+            Version 1.78.x (current version)
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -1388,17 +1395,17 @@
 
 <div class="notices info" ><p><p>The <code>Value</code> setting is provided with access to the annotations of the data (for example you can access the <code>#Filename</code> annotation), as well as variables that contain all values of the column with the same name.</p>
 <p>In our case, we have a input table column <code>AVG density</code>. The <code>AVG density</code> variable inside the expression will be a list that contains all the <code>AVG density</code> values:</p>
-<pre><code>AVG density = [ 1.06705, 0, 0, 0, 0, ... ]
+<pre tabindex="0"><code>AVG density = [ 1.06705, 0, 0, 0, 0, ... ]
 </code></pre><p>All other columns will also be available:</p>
-<pre><code>Solidity = [ 0.91845, 0.94189, 0.97469, ... ]
+<pre tabindex="0"><code>Solidity = [ 0.91845, 0.94189, 0.97469, ... ]
 SliceZ = [ 0, 0, 0, ...]
 SliceC = [ 0, 0, 0, ...]
 ...
 </code></pre><p>If we type in <code>AVG density</code> into the expression, it fails because of the space character. This is why the variable is accessed via <code>$&quot;AVG density&quot;</code>, which is a special operator designed to handle such issues.</p>
 <p>The valid expression then would be</p>
-<pre><code>$&quot;AVG density&quot;
+<pre tabindex="0"><code>$&#34;AVG density&#34;
 </code></pre><p>This will create an annotation with the name <code>Density</code> and the value <code>[ 1.06705, 0, 0, 0, 0, ... ]</code>, as there are multiple values in a column. To only access the first of these items, we used <code>FIRST_OF</code>:</p>
-<pre><code>FIRST_OF($&quot;AVG density&quot;)
+<pre tabindex="0"><code>FIRST_OF($&#34;AVG density&#34;)
 </code></pre><p>Depending on your project, you might want other integration functions, e.g., <code>SUM($&quot;AVG density&quot;)</code>, <code>MEAN($&quot;AVG density&quot;)</code>, or access the second number via <code>GET_ITEM($&quot;AVG density&quot;, 1)</code>.</p>
 </p></div>
 

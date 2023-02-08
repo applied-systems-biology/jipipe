@@ -82,7 +82,7 @@ Do a search in the upper search bar (red arrow 2) for filters and annotations. T
       <guid>https://www.jipipe.org/tutorials/basic/annotations-1/step8/</guid>
       <description>Go to the Parameters tab and examine the filter expression in the category Filters (red arrow 1).
 The figure shows an expression (by default the expression is empty)
-TO_NUMBER($&amp;quot;Image composite channel count&amp;quot;) == 3This text is called an expression and determines the filter conditions that determine wether an input data item is pass through the output.
+TO_NUMBER($&amp;#34;Image composite channel count&amp;#34;) == 3 This text is called an expression and determines the filter conditions that determine wether an input data item is pass through the output.
 In the following steps, we will briefly explain the functionality behind the expression.</description>
     </item>
     
@@ -127,7 +127,7 @@ The Split &amp;amp; filter by annotation node iterates through each individual i
       <guid>https://www.jipipe.org/tutorials/basic/annotations-1/step12/</guid>
       <description>Begin by deleting the existing example expression. The expression will now be
 We will now use the function builder component of the expression editor to convert the annotation value of Image composite channel count to a number that can be tested to be equal to 3:
- Use the search field to look for functions that work with numbers by using the search word number (red arrow 1), which will yield a function TO_NUMBER (red arrow 3).</description>
+Use the search field to look for functions that work with numbers by using the search word number (red arrow 1), which will yield a function TO_NUMBER (red arrow 3).</description>
     </item>
     
     <item>

@@ -5,7 +5,7 @@
     
       <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<meta name="revised" content="2023-01-19T20:28:47 CET">
+<meta name="revised" content="2023-02-08T18:44:41 CET">
 <title>Step 10 :: JIPipe for ImageJ</title>
 <link rel="shortcut icon" href="../../../../images/favicon.png" type="image/x-icon" />
 <link href="../../../../css/font-awesome.min.css" rel="stylesheet">
@@ -79,7 +79,14 @@
       <li data-nav-id="https://www.jipipe.org/download/changelog/1.77.x/" class="dd-item">
         <div>
           <a href="../../../../download/changelog/1.77.x/">
-            Version 1.77.x (current version)
+            Version 1.77.x
+          </a><i class="fa fa-circle-thin read-icon"></i>
+        </div>
+    </li>
+      <li data-nav-id="https://www.jipipe.org/download/changelog/1.78.x/" class="dd-item">
+        <div>
+          <a href="../../../../download/changelog/1.78.x/">
+            Version 1.78.x (current version)
           </a><i class="fa fa-circle-thin read-icon"></i>
         </div>
     </li>
@@ -1381,7 +1388,7 @@
     <p>Move on to the <code>Export table as XLSX</code> node. While <code>Export data</code> will always export CSV files, this node will instead Excel files. It can even be configured to export multiple tables into one XLSX file.</p>
 <p>Again, set the <code>Output directory</code> to <code>ExampleExports/ViaNodes</code> with <code>Output relative to project directory</code> enabled.</p>
 <p>The filename expression set to</p>
-<pre><code>&quot;measurements_&quot; + #Filename
+<pre tabindex="0"><code>&#34;measurements_&#34; + #Filename
 </code></pre><p>This would yield a file that is for example named <code>measurements_blobs.xlsx</code>.</p>
 
 
