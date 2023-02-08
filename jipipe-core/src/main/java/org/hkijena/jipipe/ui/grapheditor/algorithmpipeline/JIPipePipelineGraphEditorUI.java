@@ -40,10 +40,7 @@ import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.actions.UpdateCacheAc
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.dragdrop.JIPipeCreateNodesFromDraggedDataDragAndDropBehavior;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties.JIPipePipelineMultiAlgorithmSelectionPanelUI;
 import org.hkijena.jipipe.ui.grapheditor.algorithmpipeline.properties.JIPipePipelineSingleAlgorithmSelectionPanelUI;
-import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.AlgorithmGraphCopyNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.AlgorithmGraphCutNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.AlgorithmGraphDuplicateNodeUIContextAction;
-import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.AlgorithmGraphPasteNodeUIContextAction;
+import org.hkijena.jipipe.ui.grapheditor.compartments.contextmenu.clipboard.clipboard.*;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphCanvasUI;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorMinimap;
 import org.hkijena.jipipe.ui.grapheditor.general.JIPipeGraphEditorUI;
@@ -305,6 +302,7 @@ public class JIPipePipelineGraphEditorUI extends JIPipeGraphEditorUI {
                 new AlgorithmGraphCopyNodeUIContextAction(),
                 new AlgorithmGraphPasteNodeUIContextAction(),
                 new AlgorithmGraphDuplicateNodeUIContextAction(),
+                new AlgorithmGraphDuplicateWithInputConnectionsNodeUIContextAction(),
                 NodeUIContextAction.SEPARATOR,
                 new RunAndShowResultsNodeUIContextAction(),
                 new UpdateCacheNodeUIContextAction(),

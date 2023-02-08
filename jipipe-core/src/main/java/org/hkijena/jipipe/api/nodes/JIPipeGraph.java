@@ -1064,20 +1064,24 @@ public class JIPipeGraph implements JIPipeValidatable, JIPipeFunctionallyCompara
      * The input is not copied!
      *
      * @param otherGraph The other graph
-     * @return A map from ID in source graph to algorithm in target graph
+     * @return A map from old UUID in source graph to the node in the target graph
      */
     public Map<UUID, JIPipeGraphNode> mergeWith(JIPipeGraph otherGraph) {
-        Map<UUID, JIPipeGraphNode> insertedNodes = new HashMap<>();
+        Map<UUID, JIPipeGraphNode> oldToNewMapping = new HashMap<>();
+        Map<UUID, JIPipeGraphNode> newToNewMapping = new HashMap<>();
         for (JIPipeGraphNode node : otherGraph.getGraphNodes()) {
+            UUID oldUUID = node.getUUIDInParentGraph();
             UUID newId = insertNode(node, otherGraph.getCompartmentUUIDOf(node));
-            insertedNodes.put(newId, node);
+            oldToNewMapping.put(oldUUID, node);
+            newToNewMapping.put(newId, node);
         }
         for (Map.Entry<JIPipeDataSlot, JIPipeDataSlot> edge : otherGraph.getSlotEdges()) {
-            JIPipeGraphNode copySource = insertedNodes.get(edge.getKey().getNode().getUUIDInParentGraph());
-            JIPipeGraphNode copyTarget = insertedNodes.get(edge.getValue().getNode().getUUIDInParentGraph());
+            // Info: the parent graph was now set by the target graph
+            JIPipeGraphNode copySource = newToNewMapping.get(edge.getKey().getNode().getUUIDInParentGraph());
+            JIPipeGraphNode copyTarget = newToNewMapping.get(edge.getValue().getNode().getUUIDInParentGraph());
             connect(copySource.getOutputSlotMap().get(edge.getKey().getName()), copyTarget.getInputSlotMap().get(edge.getValue().getName()));
         }
-        return insertedNodes;
+        return oldToNewMapping;
     }
 
     /**

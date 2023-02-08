@@ -30,15 +30,12 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextAction {
-    public static void pasteNodes(JIPipeGraphCanvasUI canvasUI, String json) throws com.fasterxml.jackson.core.JsonProcessingException {
+    public static Map<UUID, JIPipeGraphNode> pasteNodes(JIPipeGraphCanvasUI canvasUI, String json) throws com.fasterxml.jackson.core.JsonProcessingException {
         if (!JIPipeProjectWorkbench.canAddOrDeleteNodes(canvasUI.getWorkbench()))
-            return;
+            return Collections.emptyMap();
         JIPipeGraph graph = JsonUtils.getObjectMapper().readValue(json, JIPipeGraph.class);
         if (graph.isEmpty()) {
             throw new NullPointerException("Empty graph pasted.");
@@ -92,7 +89,7 @@ public class AlgorithmGraphPasteNodeUIContextAction implements NodeUIContextActi
         if (canvasUI.getHistoryJournal() != null) {
             canvasUI.getHistoryJournal().snapshotBeforePasteNodes(graph.getGraphNodes(), canvasUI.getCompartment());
         }
-        canvasUI.getGraph().mergeWith(graph);
+        return canvasUI.getGraph().mergeWith(graph);
     }
 
     @Override
