@@ -166,7 +166,7 @@ public class JIPipeAlgorithmCacheBrowserUI extends JIPipeProjectWorkbenchPanel {
         cacheUpdateBand.add(updateCacheAction);
 
         Ribbon.Band cacheManageBand = cacheTask.addBand("Data");
-        cacheManageBand.add(new SmallButtonAction("Clear all", "Clears all cached data of this node", UIUtils.getIconFromResources("actions/clear-brush.png"), () -> getProject().getCache().clearAll(this.graphNode.getUUIDInParentGraph(), new JIPipeProgressInfo())));
+        cacheManageBand.add(new SmallButtonAction("Clear all", "Clears all cached data of this node", UIUtils.getIconFromResources("actions/clear-brush.png"), () -> getProject().getCache().clearAll(this.graphNode.getUUIDInParentGraph(), false, new JIPipeProgressInfo())));
         cacheManageBand.add(new SmallButtonAction("Clear outdated", "Clears all cached data of this node that was not generated with the current parameters", UIUtils.getIconFromResources("actions/document-open-recent.png"), () -> JIPipeRunnerQueue.getInstance().enqueue(new JIPipeCacheClearOutdatedRun(getProject().getCache()))));
 
         // Export task

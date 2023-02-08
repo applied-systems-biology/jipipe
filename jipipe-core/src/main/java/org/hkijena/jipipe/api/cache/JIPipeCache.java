@@ -32,7 +32,13 @@ public interface JIPipeCache {
      */
     void clearAll(JIPipeProgressInfo progressInfo);
 
-    void clearAll(UUID nodeUUID, JIPipeProgressInfo progressInfo);
+    /**
+     * Clears the cache of the specified node
+     * @param nodeUUID the node
+     * @param invalidateChildren whether all nodes utilizing that node's data will be invalidated (remove structure)
+     * @param progressInfo the progress
+     */
+    void clearAll(UUID nodeUUID, boolean invalidateChildren, JIPipeProgressInfo progressInfo);
 
     boolean isEmpty();
 
