@@ -478,15 +478,16 @@ public class ParameterPanel extends FormPanel implements Contextual {
 //            }
 
             // Add to form
+            JComponent wrappedUI = displayedParameters.installUIOverrideParameterEditor(this, ui);
             if (ui.isUILabelEnabled() || parameterCollection instanceof JIPipeDynamicParameterCollection) {
-                addToForm(ui, labelPanel, documentation);
+                addToForm(wrappedUI, labelPanel, documentation);
                 uiComponents.add(labelPanel);
             } else {
                 if (!parameterAccess.isImportant() || !ui.isUIImportantLabelEnabled()) {
-                    addWideToForm(ui, documentation);
+                    addWideToForm(wrappedUI, documentation);
                 } else {
                     JPanel wrapperPanel = new JPanel(new BorderLayout());
-                    wrapperPanel.add(ui, BorderLayout.CENTER);
+                    wrapperPanel.add(wrappedUI, BorderLayout.CENTER);
                     wrapperPanel.add(labelPanel, BorderLayout.WEST);
                     addWideToForm(wrapperPanel, documentation);
                     uiComponents.add(labelPanel);
@@ -584,6 +585,9 @@ public class ParameterPanel extends FormPanel implements Contextual {
                 optionsMenu.addSeparator();
                 optionsMenu.add(restoreDefaultItem);
             }
+
+            // Additional options
+            displayedParameters.installUIParameterOptions(this, (JIPipeParameterEditorUI) component, optionsMenu);
 
             propertyPanel.add(optionsButton, BorderLayout.EAST);
             installComponentHighlighter(optionsButton, Sets.newHashSet(component, description));

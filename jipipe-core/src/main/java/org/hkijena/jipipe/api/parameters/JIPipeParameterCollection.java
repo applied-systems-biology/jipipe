@@ -15,7 +15,10 @@ package org.hkijena.jipipe.api.parameters;
 
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
+import org.hkijena.jipipe.ui.parameters.JIPipeParameterEditorUI;
+import org.hkijena.jipipe.ui.parameters.ParameterPanel;
 
+import javax.swing.*;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -162,6 +165,29 @@ public interface JIPipeParameterCollection {
      * @return The event bus triggering {@link ParameterChangedEvent} and {@link ParameterStructureChangedEvent}
      */
     EventBus getEventBus();
+
+    /**
+     * Allows to install additional operations into the context menu of each parameter (triangle menu next to the help)
+     * Please note that the root parameter collection handles this task for all sub-parameters
+     * @param parameterPanel the parameter panel
+     * @param parameterEditorUI the currently handled parameter editor
+     * @param menu the menu
+     */
+    default void installUIParameterOptions(ParameterPanel parameterPanel, JIPipeParameterEditorUI parameterEditorUI, JPopupMenu menu) {
+
+    }
+
+    /**
+     * Allows to replace the UI that is inserted into the parameter panel with a different component
+     * Labels are not affected
+     * Please note that the root parameter collection handles this task for all sub-parameters
+     * @param parameterPanel the parameter panel
+     * @param parameterEditorUI the currently handled parameter editor
+     * @return the component to be inserted into the parameter panel
+     */
+    default JComponent installUIOverrideParameterEditor(ParameterPanel parameterPanel, JIPipeParameterEditorUI parameterEditorUI) {
+        return parameterEditorUI;
+    }
 
     /**
      * Triggered when a parameter holder's parameters are changed
