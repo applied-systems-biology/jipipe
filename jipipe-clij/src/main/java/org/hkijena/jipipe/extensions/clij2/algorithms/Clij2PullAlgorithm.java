@@ -6,6 +6,7 @@ import org.hkijena.jipipe.api.JIPipeNode;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.api.nodes.*;
 import org.hkijena.jipipe.api.nodes.categories.ImagesNodeTypeCategory;
+import org.hkijena.jipipe.api.parameters.JIPipeParameter;
 import org.hkijena.jipipe.extensions.clij2.datatypes.CLIJImageData;
 import org.hkijena.jipipe.extensions.imagejdatatypes.datatypes.ImagePlusData;
 
@@ -36,10 +37,12 @@ public class Clij2PullAlgorithm extends JIPipeSimpleIteratingAlgorithm {
     }
 
     @JIPipeDocumentation(name = "Deallocate", description = "Removes the image from the GPU memory afterwards. Please be ensure that the image is not used anywhere else.")
+    @JIPipeParameter("deallocate")
     public boolean isDeallocate() {
         return deallocate;
     }
 
+    @JIPipeParameter("deallocate")
     public void setDeallocate(boolean deallocate) {
         this.deallocate = deallocate;
     }
