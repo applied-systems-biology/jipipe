@@ -4,6 +4,7 @@ import org.hkijena.jipipe.JIPipeDependency;
 import org.hkijena.jipipe.api.data.JIPipeDataInfo;
 import org.hkijena.jipipe.api.data.JIPipeDataSlotRole;
 import org.hkijena.jipipe.api.nodes.*;
+import org.hkijena.jipipe.api.nodes.categories.ImageJNodeTypeCategory;
 import org.hkijena.jipipe.api.nodes.categories.TableNodeTypeCategory;
 import org.hkijena.jipipe.extensions.parameters.library.markup.HTMLText;
 import org.hkijena.jipipe.extensions.plots.datatypes.PlotData;
@@ -82,7 +83,7 @@ public class PlotTables2AlgorithmInfo implements JIPipeNodeInfo {
 
     @Override
     public List<JIPipeNodeMenuLocation> getAliases() {
-        return Collections.singletonList(new JIPipeNodeMenuLocation(new TableNodeTypeCategory(), "Analyze\nPlot (JFreeChart)", null));
+        return Collections.singletonList(new JIPipeNodeMenuLocation(new ImageJNodeTypeCategory(), "Analyze\nPlot (JFreeChart)", null));
     }
 
     @Override
