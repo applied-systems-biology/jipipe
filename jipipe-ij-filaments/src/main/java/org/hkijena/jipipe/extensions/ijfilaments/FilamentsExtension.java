@@ -20,6 +20,8 @@ import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.ChangeFilamentVertexPropertiesAlgorithm;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.FilterFilamentVerticesByProperties;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.ImportFilamentsFromJsonAlgorithm;
 import org.hkijena.jipipe.extensions.ijfilaments.nodes.SkeletonToFilamentsFijiAlgorithm;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
@@ -98,6 +100,8 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
         registerDatatype("filaments", FilamentsData.class, RESOURCES.getIcon16URLFromResources("data-type-filaments.png"));
         registerNodeType("filaments-from-json", ImportFilamentsFromJsonAlgorithm.class);
         registerNodeType("filaments-skeleton-to-filaments", SkeletonToFilamentsFijiAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
+        registerNodeType("filaments-set-vertex-properties", ChangeFilamentVertexPropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
+        registerNodeType("filaments-filter-vertices-by-properties", FilterFilamentVerticesByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));
     }
 
 
