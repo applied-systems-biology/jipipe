@@ -36,7 +36,8 @@ import sc.fiji.analyzeSkeleton.*;
 import java.util.IdentityHashMap;
 import java.util.Map;
 
-@JIPipeDocumentation(name = "Binary skeleton to filaments", description = "Converts a binary skeleton into filaments by utilizing the Analyze Skeleton (2D/3D) plugin from Fiji.")
+@JIPipeDocumentation(name = "Binary skeleton to simplified filaments", description = "Converts a binary skeleton into filaments by utilizing the Analyze Skeleton (2D/3D) plugin from Fiji. " +
+        "Please note that the generated filaments are were automatically simplified by the method and might not fully represent anymore all structural information contained within the skeleton.")
 @JIPipeCitation("Arganda-Carreras, I., Fernández-González, R., Muñoz-Barrutia, A., & Ortiz-De-Solorzano, C. (2010). 3D reconstruction of histological sections: Application to mammary gland tissue. Microscopy Research and Technique, 73(11), 1019–1029. doi:10.1002/jemt.20829")
 @JIPipeCitation("G. Polder, H.L.E Hovens and A.J Zweers, Measuring shoot length of submerged aquatic plants using graph analysis (2010), In: Proceedings of the ImageJ User and Developer Conference, Centre de Recherche Public Henri Tudor, Luxembourg, 27-29 October, pp 172-177.")
 @JIPipeNode(menuPath = "Convert", nodeTypeCategory = ImagesNodeTypeCategory.class)
@@ -44,18 +45,18 @@ import java.util.Map;
 @JIPipeInputSlot(value = ROIListData.class, slotName = "ROI", description = "ROI to exclude on pruning ends")
 @JIPipeInputSlot(value = ImagePlus3DGreyscaleData.class, slotName = "Reference", description = "Original grayscale input image (for lowest pixel intensity pruning mode)")
 @JIPipeOutputSlot(value = FilamentsData.class, slotName = "Filaments", description = "The filaments as extracted by the algorithm", autoCreate = true)
-public class SkeletonToFilamentsFijiAlgorithm extends JIPipeIteratingAlgorithm {
+public class SkeletonToSimplifiedFilamentsFijiAlgorithm extends JIPipeIteratingAlgorithm {
 
     public static final JIPipeDataSlotInfo ROI_INPUT_SLOT = new JIPipeDataSlotInfo(ROIListData.class, JIPipeSlotType.Input, "ROI", "ROI to exclude on pruning ends", true);
     public static final JIPipeDataSlotInfo REFERENCE_INPUT_SLOT = new JIPipeDataSlotInfo(ImagePlus3DGreyscale8UData.class, JIPipeSlotType.Input, "Reference", "Original grayscale input image (for lowest pixel intensity pruning mode)", true);
     private AnalyzeSkeleton2D3DAlgorithm.CycleRemovalMethod pruneCyclesMethod = AnalyzeSkeleton2D3DAlgorithm.CycleRemovalMethod.None;
     private AnalyzeSkeleton2D3DAlgorithm.EndRemovalMethod pruneEndsMethod = AnalyzeSkeleton2D3DAlgorithm.EndRemovalMethod.None;
 
-    public SkeletonToFilamentsFijiAlgorithm(JIPipeNodeInfo info) {
+    public SkeletonToSimplifiedFilamentsFijiAlgorithm(JIPipeNodeInfo info) {
         super(info);
     }
 
-    public SkeletonToFilamentsFijiAlgorithm(SkeletonToFilamentsFijiAlgorithm other) {
+    public SkeletonToSimplifiedFilamentsFijiAlgorithm(SkeletonToSimplifiedFilamentsFijiAlgorithm other) {
         super(other);
         setPruneCyclesMethod(other.pruneCyclesMethod);
         setPruneEndsMethod(other.pruneEndsMethod);

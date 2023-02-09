@@ -10,7 +10,7 @@ public class FilamentVertex {
 
     private FilamentLocation centroid = new FilamentLocation();
 
-    private double thickness;
+    private double thickness = 1;
 
     private Map<String, String> metadata = new HashMap<>();
 

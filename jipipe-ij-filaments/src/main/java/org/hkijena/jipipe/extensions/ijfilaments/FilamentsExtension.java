@@ -15,15 +15,11 @@ package org.hkijena.jipipe.extensions.ijfilaments;
 
 import org.apache.commons.compress.utils.Sets;
 import org.hkijena.jipipe.*;
-import org.hkijena.jipipe.api.JIPipeAuthorMetadata;
 import org.hkijena.jipipe.api.JIPipeProgressInfo;
 import org.hkijena.jipipe.extensions.JIPipePrepackagedDefaultJavaExtension;
 import org.hkijena.jipipe.extensions.core.CoreExtension;
 import org.hkijena.jipipe.extensions.ijfilaments.datatypes.FilamentsData;
-import org.hkijena.jipipe.extensions.ijfilaments.nodes.ChangeFilamentVertexPropertiesAlgorithm;
-import org.hkijena.jipipe.extensions.ijfilaments.nodes.FilterFilamentVerticesByProperties;
-import org.hkijena.jipipe.extensions.ijfilaments.nodes.ImportFilamentsFromJsonAlgorithm;
-import org.hkijena.jipipe.extensions.ijfilaments.nodes.SkeletonToFilamentsFijiAlgorithm;
+import org.hkijena.jipipe.extensions.ijfilaments.nodes.*;
 import org.hkijena.jipipe.extensions.imagejalgorithms.ImageJAlgorithmsExtension;
 import org.hkijena.jipipe.extensions.imagejdatatypes.ImageJDataTypesExtension;
 import org.hkijena.jipipe.extensions.parameters.library.images.ImageParameter;
@@ -33,13 +29,10 @@ import org.hkijena.jipipe.extensions.parameters.library.primitives.list.StringLi
 import org.hkijena.jipipe.extensions.strings.StringsExtension;
 import org.hkijena.jipipe.extensions.tables.TablesExtension;
 import org.hkijena.jipipe.utils.JIPipeResourceManager;
-import org.hkijena.jipipe.utils.ResourceUtils;
 import org.hkijena.jipipe.utils.UIUtils;
 import org.scijava.Context;
 import org.scijava.plugin.Plugin;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 /**
@@ -99,9 +92,13 @@ public class FilamentsExtension extends JIPipePrepackagedDefaultJavaExtension {
     public void register(JIPipe jiPipe, Context context, JIPipeProgressInfo progressInfo) {
         registerDatatype("filaments", FilamentsData.class, RESOURCES.getIcon16URLFromResources("data-type-filaments.png"));
         registerNodeType("filaments-from-json", ImportFilamentsFromJsonAlgorithm.class);
-        registerNodeType("filaments-skeleton-to-filaments", SkeletonToFilamentsFijiAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
+        registerNodeType("filaments-skeleton-to-filaments-2d3d-simplified", SkeletonToSimplifiedFilamentsFijiAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
+        registerNodeType("filaments-skeleton-to-filaments-2d", SkeletonToFilaments2DAlgorithm.class, UIUtils.getIconURLFromResources("actions/path-mode-spiro.png"));
         registerNodeType("filaments-set-vertex-properties", ChangeFilamentVertexPropertiesAlgorithm.class, UIUtils.getIconURLFromResources("actions/stock_edit.png"));
         registerNodeType("filaments-filter-vertices-by-properties", FilterFilamentVerticesByProperties.class, UIUtils.getIconURLFromResources("actions/filter.png"));
+        registerNodeType("filaments-split-into-connected-components", SplitFilamentsIntoConnectedComponentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/split.png"));
+        registerNodeType("filaments-merge", MergeFilamentsAlgorithm.class, UIUtils.getIconURLFromResources("actions/merge.png"));
+        registerNodeType("filaments-convert-to-roi", ConvertFilamentsToRoiAlgorithm.class, UIUtils.getIconURLFromResources("actions/roi.png"));
     }
 
 

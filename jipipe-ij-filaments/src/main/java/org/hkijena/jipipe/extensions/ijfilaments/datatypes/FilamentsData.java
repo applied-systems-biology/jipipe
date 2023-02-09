@@ -56,6 +56,17 @@ public class FilamentsData  extends DefaultDirectedGraph<FilamentVertex, Filamen
         }
     }
 
+    public void mergeWith(FilamentsData other) {
+        for (FilamentVertex vertex : other.vertexSet()) {
+            addVertex(vertex);
+        }
+        for (FilamentEdge edge : other.edgeSet()) {
+            FilamentVertex edgeSource = other.getEdgeSource(edge);
+            FilamentVertex edgeTarget = other.getEdgeTarget(edge);
+            addEdge(edgeSource, edgeTarget, edge);
+        }
+    }
+
     @Override
     public void exportData(JIPipeWriteDataStorage storage, String name, boolean forceName, JIPipeProgressInfo progressInfo) {
         try(OutputStream stream = storage.write("graph.json")) {
@@ -96,4 +107,6 @@ public class FilamentsData  extends DefaultDirectedGraph<FilamentVertex, Filamen
         }
         return graph;
     }
+
+
 }
